@@ -171,7 +171,7 @@ public class AccountManager: NSObject {
         }.then {
             self.createPreKeys()
         }.done {
-            self.profileManager.fetchAndUpdateLocalUsersProfile()
+            self.profileManager.fetchLocalUsersProfile()
         }.then { _ -> Promise<Void> in
             return self.syncPushTokens().recover { (error) -> Promise<Void> in
                 switch error {

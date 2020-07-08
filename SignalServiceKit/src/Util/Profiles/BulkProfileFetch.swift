@@ -21,7 +21,11 @@ public class BulkProfileFetch: NSObject {
         return SSKEnvironment.shared.reachabilityManager
     }
 
-    // MARK: - 
+    private var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
+    // MARK: -
 
     private let serialQueue = DispatchQueue(label: "BulkProfileFetch")
 
@@ -62,9 +66,11 @@ public class BulkProfileFetch: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            // TODO: There would be benefit to trying to update
-            // missing & stale profiles on launch.
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+            // Try to update missing & stale profiles on launch.
+            DispatchQueue.global(qos: .utility).async {
+                self.fetchMissingAndStaleProfiles()
+            }
         }
 
         observeNotifications()
@@ -88,19 +94,19 @@ public class BulkProfileFetch: NSObject {
 
     // This should be used for non-urgent profile updates.
     @objc
-    public func fetchAndUpdateProfiles(thread: TSThread) {
-        fetchAndUpdateProfiles(addresses: thread.recipientAddresses)
+    public func fetchProfiles(thread: TSThread) {
+        fetchProfiles(addresses: thread.recipientAddresses)
     }
 
     // This should be used for non-urgent profile updates.
     @objc
-    public func fetchAndUpdateProfile(address: SignalServiceAddress) {
-        fetchAndUpdateProfiles(addresses: [address])
+    public func fetchProfile(address: SignalServiceAddress) {
+        fetchProfiles(addresses: [address])
     }
 
     // This should be used for non-urgent profile updates.
     @objc
-    public func fetchAndUpdateProfiles(addresses: [SignalServiceAddress]) {
+    public func fetchProfiles(addresses: [SignalServiceAddress]) {
         serialQueue.async {
             guard let localAddress = self.tsAccountManager.localAddress else {
                 owsFailDebug("missing local address")
@@ -156,6 +162,21 @@ public class BulkProfileFetch: NSObject {
         isUpdateInFlight = true
 
         // We need to throttle these jobs.
+        //
+        // The profile fetch rate limit is a bucket size of 4320, which
+        // refills at a rate of 3 per minute.
+        //
+        // This class handles the "bulk" profile fetches which
+        // are common but not urgent.  The app also does other
+        // "blocking" profile fetches which are less common but urgent.
+        // To ensure that "blocking" profile fetches never fail,
+        // the "bulk" profile fetches need to be cautious. This
+        // takes two forms:
+        //
+        // * Rate-limiting bulk profiles somewhat (faster than the
+        //   service rate limit).
+        // * Backing off aggressively if we hit the rate limit.
+        //
         // Always wait N seconds between update jobs.
         let updateDelaySeconds: TimeInterval = 0.1
 
@@ -171,14 +192,15 @@ public class BulkProfileFetch: NSObject {
         firstly { () -> Guarantee<Void> in
             if hasHitRateLimitRecently {
                 // Wait before updating if we've recently hit the rate limit.
-                return after(seconds: 5.0)
+                // This will give the rate limit bucket time to refill.
+                return after(seconds: 20.0)
             } else {
                 return Guarantee.value(())
             }
         }.then(on: .global()) {
-            self.profileManager.updateProfile(forAddressPromise: address,
-                                              mainAppOnly: true,
-                                              ignoreThrottling: false).asVoid()
+            self.profileManager.fetchProfile(forAddressPromise: address,
+                                             mainAppOnly: true,
+                                             ignoreThrottling: false).asVoid()
         }.done(on: .global()) {
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
@@ -256,5 +278,39 @@ public class BulkProfileFetch: NSObject {
         }
 
         return elapsedSeconds >= minElapsedSeconds
+    }
+
+    private func fetchMissingAndStaleProfiles() {
+        databaseStorage.read(.promise) { (transaction: SDSAnyReadTransaction) -> [OWSUserProfile] in
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            formatter.timeStyle = .short
+
+            var userProfiles = [OWSUserProfile]()
+            let userProfileFinder = AnyUserProfileFinder()
+            userProfileFinder.enumerateMissingAndStaleUserProfiles(transaction: transaction) { (userProfile: OWSUserProfile) in
+                guard !userProfile.publicAddress.isLocalAddress else {
+                    // Ignore the local user.
+                    return
+                }
+                var lastFetchDateString = "nil"
+                if let lastFetchDate = userProfile.lastFetchDate {
+                    lastFetchDateString = formatter.string(from: lastFetchDate)
+                }
+                var lastMessagingDateString = "nil"
+                if let lastMessagingDate = userProfile.lastMessagingDate {
+                    lastMessagingDateString = formatter.string(from: lastMessagingDate)
+                }
+                Logger.verbose("Missing or stale profile: \(userProfile.address), lastFetchDate: \(lastFetchDateString), lastMessagingDate: \(lastMessagingDateString).")
+                userProfiles.append(userProfile)
+            }
+            return userProfiles
+        }.map(on: .global()) { (userProfiles: [OWSUserProfile]) -> Void in
+            let addresses: [SignalServiceAddress] = userProfiles.map { $0.publicAddress }
+            self.fetchProfiles(addresses: addresses)
+            Logger.verbose("Complete.")
+        }.catch(on: .global()) { (error: Error) -> Void in
+            owsFailDebug("Error: \(error)")
+        }
     }
 }

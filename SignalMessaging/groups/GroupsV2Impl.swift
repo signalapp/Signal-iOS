@@ -1003,10 +1003,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         var promises = [Promise<UUID>]()
         for uuid in uuidsWithoutCredentials {
             let address = SignalServiceAddress(uuid: uuid)
-            let promise = ProfileFetcherJob.fetchAndUpdateProfilePromise(address: address,
-                                                                         mainAppOnly: false,
-                                                                         ignoreThrottling: true,
-                                                                         fetchType: .versioned)
+            let promise = ProfileFetcherJob.fetchProfilePromise(address: address,
+                                                                mainAppOnly: false,
+                                                                ignoreThrottling: true,
+                                                                fetchType: .versioned)
                 .map(on: DispatchQueue.global()) { (_: SignalServiceProfile) -> (UUID) in
                     // Ideally we'd pull the credential off of SignalServiceProfile here,
                     // but the credential response needs to be parsed and verified
@@ -1090,10 +1090,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         var promises = [Promise<SignalServiceProfile>]()
         for uuid in uuidsWithoutProfileKeyCredentials {
             let address = SignalServiceAddress(uuid: uuid)
-            promises.append(ProfileFetcherJob.fetchAndUpdateProfilePromise(address: address,
-                                                                           mainAppOnly: false,
-                                                                           ignoreThrottling: true,
-                                                                           fetchType: .versioned))
+            promises.append(ProfileFetcherJob.fetchProfilePromise(address: address,
+                                                                  mainAppOnly: false,
+                                                                  ignoreThrottling: true,
+                                                                  fetchType: .versioned))
         }
         return when(fulfilled: promises).asVoid()
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkDeviceViewController.h"
@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // Fetch the local profile to determine if all
                 // linked devices support UD.
-                [self.profileManager fetchAndUpdateLocalUsersProfile];
+                [self.profileManager fetchLocalUsersProfile];
             });
         }
         failure:^(NSError *error) {
