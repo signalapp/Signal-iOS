@@ -281,6 +281,16 @@ public class BulkProfileFetch: NSObject {
     }
 
     private func fetchMissingAndStaleProfiles() {
+        guard !CurrentAppContext().isRunningTests else {
+            return
+        }
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+        guard tsAccountManager.isRegisteredAndReady else {
+            return
+        }
+
         databaseStorage.read(.promise) { (transaction: SDSAnyReadTransaction) -> [OWSUserProfile] in
             let formatter = DateFormatter()
             formatter.dateStyle = .short
