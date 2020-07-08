@@ -243,9 +243,11 @@ message DataMessage {
 
   message ClosedGroupUpdate { // Loki
     enum Type {
-      NEW        = 0; // groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
-      INFO       = 1; // groupPublicKey, name, senderKeys, members, admins
-      SENDER_KEY = 2; // groupPublicKey, senderKeys
+      NEW                = 0; // groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
+      INFO               = 1; // groupPublicKey, name, senderKeys, members, admins
+      SENDER_KEY_REQUEST = 2; // groupPublicKey
+      SENDER_KEY         = 3; // groupPublicKey, senderKeys
+      
     }
 
     message SenderKey {
@@ -254,7 +256,7 @@ message DataMessage {
       // @required
       optional uint32 keyIndex  = 2;
       // @required
-      optional string publicKey = 3;
+      optional bytes  publicKey = 3;
     }
 
     optional string    name            = 1;
@@ -262,8 +264,8 @@ message DataMessage {
     optional bytes     groupPublicKey  = 2;
     optional bytes     groupPrivateKey = 3;
     repeated SenderKey senderKeys      = 4;
-    repeated string    members         = 5;
-    repeated string    admins          = 6;
+    repeated bytes     members         = 5;
+    repeated bytes     admins          = 6;
     // @required
     optional Type      type            = 7;
   }
