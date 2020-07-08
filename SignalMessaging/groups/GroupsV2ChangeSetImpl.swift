@@ -69,6 +69,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var membersToRemove = [UUID]()
     private var membersToChangeRole = [UUID: TSGroupMemberRole]()
     private var pendingMembersToAdd = [UUID: TSGroupMemberRole]()
+    private var invalidInvitesToRemove = [Data: InvalidInvite]()
 
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
@@ -149,6 +150,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         for uuid in oldUserUuids.subtracting(newUserUuids) {
             removeMember(uuid)
+        }
+
+        oldGroupMembership.enumerateInvalidInvites { (invalidInvite: InvalidInvite) in
+            if !newGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) {
+                removeInvalidInvite(invalidInvite: invalidInvite)
+            }
         }
 
         let oldMemberUuids = Set(oldGroupMembership.nonPendingMembers.compactMap { $0.uuid })
@@ -237,6 +244,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public func setShouldLeaveGroupDeclineInvite() {
         assert(!shouldLeaveGroupDeclineInvite)
         shouldLeaveGroupDeclineInvite = true
+    }
+
+    public func removeInvalidInvite(invalidInvite: InvalidInvite) {
+        assert(invalidInvitesToRemove[invalidInvite.userId] == nil)
+        invalidInvitesToRemove[invalidInvite.userId] = invalidInvite
     }
 
     public func setAccessForMembers(_ value: GroupV2Access) {
@@ -464,6 +476,19 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             actionsBuilder.addAddPendingMembers(try actionBuilder.build())
             didChange = true
             allMemberCount += 1
+        }
+
+        for invalidInvite in invalidInvitesToRemove.values {
+            guard currentGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) else {
+                // Another user has already removed this invite.
+                // We don't treat that as a conflict.
+                continue
+            }
+
+            let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+            actionBuilder.setDeletedUserID(invalidInvite.userId)
+            actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+            didChange = true
         }
 
         for (uuid, newRole) in self.membersToChangeRole {

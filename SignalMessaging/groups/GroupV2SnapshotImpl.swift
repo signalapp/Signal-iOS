@@ -29,11 +29,6 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         let addedByUuid: UUID
     }
 
-    public struct InvalidInvite {
-        let userId: Data
-        let addedByUserId: Data
-    }
-
     public let groupSecretParamsData: Data
 
     public let groupProto: GroupsProtoGroup

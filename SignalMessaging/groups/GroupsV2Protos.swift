@@ -265,7 +265,7 @@ public class GroupsV2Protos {
         }
 
         var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
-        var invalidInvites = [GroupV2SnapshotImpl.InvalidInvite]()
+        var invalidInvites = [InvalidInvite]()
         for pendingMemberProto in groupProto.pendingMembers {
             guard let memberProto = pendingMemberProto.member else {
                 throw OWSAssertionError("Group pending member missing memberProto.")
@@ -295,7 +295,7 @@ public class GroupsV2Protos {
             do {
                 uuid = try groupV2Params.uuid(forUserId: userId)
             } catch {
-                invalidInvites.append(GroupV2SnapshotImpl.InvalidInvite(userId: userId, addedByUserId: addedByUserId))
+                invalidInvites.append(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
                 owsFailDebug("Error parsing uuid: \(error)")
                 continue
             }

@@ -340,6 +340,18 @@ public struct GroupV2DownloadedAvatars {
 
 // MARK: -
 
+public struct InvalidInvite {
+    public let userId: Data
+    public let addedByUserId: Data
+
+    public init(userId: Data, addedByUserId: Data) {
+        self.userId = userId
+        self.addedByUserId = addedByUserId
+    }
+}
+
+// MARK: -
+
 public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func createNewGroupOnService(groupModel: TSGroupModelV2) -> Promise<Void> {

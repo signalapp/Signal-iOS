@@ -77,8 +77,8 @@ public class GroupMembership: MTLModel {
     }
 
     // This class is immutable.
-    @objc(GroupMembershipInvalidInvite)
-    class InvalidInvite: MTLModel {
+    @objc(GroupMembershipInvalidInviteModel)
+    class InvalidInviteModel: MTLModel {
         @objc
         var userId: Data?
 
@@ -113,7 +113,7 @@ public class GroupMembership: MTLModel {
     @objc
     var memberStateMap: MemberStateMap
 
-    typealias InvalidInviteMap = [Data: InvalidInvite]
+    typealias InvalidInviteMap = [Data: InvalidInviteModel]
     @objc
     var invalidInviteMap: InvalidInviteMap
 
@@ -239,7 +239,7 @@ public class GroupMembership: MTLModel {
         }
 
         public mutating func addInvalidInvite(userId: Data, addedByUserId: Data) {
-            invalidInviteMap[userId] = InvalidInvite(userId: userId, addedByUserId: addedByUserId)
+            invalidInviteMap[userId] = InvalidInviteModel(userId: userId, addedByUserId: addedByUserId)
         }
 
         public mutating func removeInvalidInvite(userId: Data) {
@@ -382,6 +382,24 @@ public class GroupMembership: MTLModel {
         return Array(Set(addresses))
             .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
 
+    }
+
+    public func hasInvalidInvite(forUserId userId: Data) -> Bool {
+        return invalidInviteMap[userId] != nil
+    }
+
+    public func enumerateInvalidInvites(_ block: (InvalidInvite) -> Void) {
+        for invalidInvite in invalidInviteMap.values {
+            guard let userId = invalidInvite.userId else {
+                owsFailDebug("Missing userId.")
+                continue
+            }
+            guard let addedByUserId = invalidInvite.addedByUserId else {
+                owsFailDebug("Missing addedByUserId.")
+                continue
+            }
+            block(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
+        }
     }
 
     public var asBuilder: Builder {
