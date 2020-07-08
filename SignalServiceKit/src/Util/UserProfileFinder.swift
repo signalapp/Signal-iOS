@@ -61,7 +61,7 @@ extension AnyUserProfileFinder {
         case .grdbRead(let transaction):
             grdbAdapter.enumerateMissingAndStaleUserProfiles(transaction: transaction, block: block)
         case .yapRead:
-            owsFailDebug("Invalid database.")
+            owsFail("Invalid database.")
         }
     }
 }
