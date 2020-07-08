@@ -79,7 +79,6 @@ public class GRDBSchemaMigrator: NSObject {
         case addMarkedUnreadIndexToThread
         case fixIncorrectIndexes
         case resetThreadVisibility
-        case indexSignalRecipients
         case trackUserProfileFetches
 
         // NOTE: Every time we add a migration id, consider
@@ -108,6 +107,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_resetStorageServiceData
         case dataMigration_markAllInteractionsAsNotDeleted
         case dataMigration_recordMessageRequestInteractionIdEpoch
+        case dataMigration_indexSignalRecipients
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -719,16 +719,6 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.indexSignalRecipients.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
-                _: UnsafeMutablePointer<ObjCBool>) in
-                GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
-            }
-        }
-
         migrator.registerMigration(MigrationId.trackUserProfileFetches.rawValue) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
@@ -812,6 +802,16 @@ public class GRDBSchemaMigrator: NSObject {
 
             let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction)
             SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_indexSignalRecipients.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
+                _: UnsafeMutablePointer<ObjCBool>) in
+                GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
+            }
         }
     }
 }
