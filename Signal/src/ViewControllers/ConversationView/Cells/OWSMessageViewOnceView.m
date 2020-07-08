@@ -126,6 +126,11 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
 
 #pragma mark - Load
 
+- (BOOL)isBorderless
+{
+    return NO;
+}
+
 - (void)configureViews
 {
     OWSAssertDebug(self.conversationStyle);
