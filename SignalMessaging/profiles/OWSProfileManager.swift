@@ -36,7 +36,7 @@ public extension OWSProfileManager {
             guard let localAddress = TSAccountManager.sharedInstance().localAddress else {
                 throw OWSAssertionError("missing local address")
             }
-            return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
+            return ProfileFetcherJob.fetchProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
         }.done(on: .global()) { () -> Void in
             Logger.verbose("Profile update did complete.")
         }
@@ -699,4 +699,26 @@ public extension OWSProfileManager {
             backgroundTask = nil
         }
     }
+}
+
+// MARK: -
+
+extension OWSUserProfile {
+    #if TESTABLE_BUILD
+    func logDates(prefix: String) {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+
+        var lastFetchDateString = "nil"
+        if let lastFetchDate = lastFetchDate {
+            lastFetchDateString = formatter.string(from: lastFetchDate)
+        }
+        var lastMessagingDateString = "nil"
+        if let lastMessagingDate = lastMessagingDate {
+            lastMessagingDateString = formatter.string(from: lastMessagingDate)
+        }
+        Logger.verbose("\(prefix): \(address), lastFetchDate: \(lastFetchDateString), lastMessagingDate: \(lastMessagingDateString).")
+    }
+    #endif
 }

@@ -41,6 +41,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 @property (atomic) BOOL isUuidCapable;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
+@property (atomic, nullable) NSDate *lastFetchDate;
+@property (atomic, nullable) NSDate *lastMessagingDate;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
 @property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
@@ -105,6 +107,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       familyName:(nullable NSString *)familyName
                    isUuidCapable:(BOOL)isUuidCapable
+                   lastFetchDate:(nullable NSDate *)lastFetchDate
+               lastMessagingDate:(nullable NSDate *)lastMessagingDate
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -122,6 +126,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _avatarUrlPath = avatarUrlPath;
     _familyName = familyName;
     _isUuidCapable = isUuidCapable;
+    _lastFetchDate = lastFetchDate;
+    _lastMessagingDate = lastMessagingDate;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
@@ -480,6 +486,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    username:(nullable NSString *)username
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
+              lastFetchDate:(NSDate *)lastFetchDate
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
@@ -490,6 +497,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    [userProfile setUsername:username];
                    [userProfile setIsUuidCapable:isUuidCapable];
                    [userProfile setAvatarUrlPath:avatarUrlPath];
+                   [userProfile setLastFetchDate:lastFetchDate];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES
@@ -503,6 +511,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
              avatarFileName:(nullable NSString *)avatarFileName
+              lastFetchDate:(NSDate *)lastFetchDate
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
@@ -514,6 +523,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    [userProfile setIsUuidCapable:isUuidCapable];
                    // Update the avatar properties in lockstep.
                    [userProfile setAvatarUrlPath:avatarUrlPath avatarFileName:avatarFileName];
+                   [userProfile setLastFetchDate:lastFetchDate];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES
@@ -622,6 +632,32 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                 transaction:transaction
                  completion:nil];
 }
+
+- (void)updateWithLastMessagingDate:(NSDate *)lastMessagingDate transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // We use wasLocallyInitiated = NO because we don't need
+    // to sync lastMessagingDate to the storage service.
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) { userProfile.lastMessagingDate = lastMessagingDate; }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:NO
+                transaction:transaction
+                 completion:nil];
+}
+
+#if TESTABLE_BUILD
+- (void)updateWithLastFetchDate:(NSDate *)lastFetchDate transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // We use wasLocallyInitiated = NO because we don't need
+    // to sync lastMessagingDate to the storage service.
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) { userProfile.lastFetchDate = lastFetchDate; }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:NO
+                transaction:transaction
+                 completion:nil];
+}
+#endif
 
 // This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
@@ -841,9 +877,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         [userProfileForUuid updateWithProfileKey:userProfileForPhoneNumber.profileKey
                              wasLocallyInitiated:YES
                                      transaction:transaction
-                                      completion:^{
-                                          [self.profileManager updateProfileForAddress:address];
-                                      }];
+                                      completion:^{ [self.profileManager fetchProfileForAddress:address]; }];
     }
 }
 

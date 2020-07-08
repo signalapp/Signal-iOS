@@ -22,6 +22,7 @@
 #import "OWSRequestFactory.h"
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
+#import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSessionStore.h"
@@ -381,6 +382,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
+}
+
+- (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
 }
 
 #pragma mark -
@@ -1406,6 +1412,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // If we've just delivered a message to a user, we know they
         // have a valid Signal account.
         [SignalRecipient markRecipientAsRegisteredAndGet:recipient.address transaction:transaction];
+
+        [self.profileManager didSendOrReceiveMessageFromAddress:recipient.address transaction:transaction];
     });
 
     messageSend.success();

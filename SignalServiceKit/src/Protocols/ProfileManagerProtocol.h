@@ -88,16 +88,16 @@ NS_ASSUME_NONNULL_BEGIN
                       wasLocallyInitiated:(BOOL)wasLocallyInitiated
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)fetchAndUpdateLocalUsersProfile;
+- (void)fetchLocalUsersProfile;
 
 - (AnyPromise *)fetchLocalUsersProfilePromise;
 
-- (void)updateProfileForAddress:(SignalServiceAddress *)address;
+- (void)fetchProfileForAddress:(SignalServiceAddress *)address;
 
-- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address;
-- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
-                                   mainAppOnly:(BOOL)mainAppOnly
-                              ignoreThrottling:(BOOL)ignoreThrottling;
+- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address;
+- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
+                                  mainAppOnly:(BOOL)mainAppOnly
+                             ignoreThrottling:(BOOL)ignoreThrottling;
 
 // Profile fetches will make a best effort
 // to download and decrypt avatar data,
@@ -109,7 +109,8 @@ NS_ASSUME_NONNULL_BEGIN
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
-    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData;
+    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+                  lastFetchDate:(NSDate *)lastFetchDate;
 
 - (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
@@ -123,6 +124,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (AnyPromise *)downloadAndDecryptProfileAvatarForProfileAddress:(SignalServiceAddress *)profileAddress
                                                    avatarUrlPath:(NSString *)avatarUrlPath
                                                       profileKey:(OWSAES256Key *)profileKey;
+
+- (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
+                               transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 
