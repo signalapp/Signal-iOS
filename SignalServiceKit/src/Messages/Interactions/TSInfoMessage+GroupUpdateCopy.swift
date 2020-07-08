@@ -401,8 +401,22 @@ extension GroupUpdateCopy {
             case .invited:
                 switch newMembershipStatus {
                 case .normalMember:
-                    addUserInviteWasAccepted(for: address,
-                                             oldGroupMembership: oldGroupMembership)
+                    var wasInviteAccepted = false
+                    switch updater {
+                    case .localUser:
+                        wasInviteAccepted = localAddress == address
+                    case .otherUser(_, let updaterAddress):
+                        wasInviteAccepted = updaterAddress == address
+                    case .unknown:
+                        wasInviteAccepted = false
+                    }
+
+                    if wasInviteAccepted {
+                        addUserInviteWasAccepted(for: address,
+                                                 oldGroupMembership: oldGroupMembership)
+                    } else {
+                        addUserWasAddedToTheGroup(for: address)
+                    }
                 case .invited:
                     // Membership status didn't change.
                     break
@@ -1288,7 +1302,7 @@ extension GroupUpdateCopy {
                           in groupMembership: GroupMembership) -> MembershipStatus {
         if groupMembership.isNonPendingMember(address) {
             return .normalMember
-        } else if groupMembership.isPending(address) {
+        } else if groupMembership.isPendingMember(address) {
             return .invited
         } else {
             return .none

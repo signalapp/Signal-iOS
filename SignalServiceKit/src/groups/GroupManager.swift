@@ -391,7 +391,7 @@ public class GroupManager: NSObject {
             return newGroupMembership
         }
         let localAddress = SignalServiceAddress(uuid: localUuid)
-        let newMembers: Set<SignalServiceAddress>
+        var newMembers: Set<SignalServiceAddress>
         var builder = GroupMembership.Builder()
         if let oldGroupModel = oldGroupModel {
             // Updating existing group
@@ -405,7 +405,13 @@ public class GroupManager: NSObject {
             // Carry over existing members as they stand.
             let existingMembers = oldGroupMembership.allUsers.intersection(newGroupMembership.allUsers)
             for address in existingMembers {
-                builder.copyMember(address, from: oldGroupMembership)
+                if oldGroupMembership.isPendingMember(address),
+                    newGroupMembership.isNonPendingMember(address) {
+                    // If we're adding a pending member, treat them as a new member.
+                    newMembers.insert(address)
+                } else {
+                    builder.copyMember(address, from: oldGroupMembership)
+                }
             }
         } else {
             // Creating new group
@@ -456,7 +462,9 @@ public class GroupManager: NSObject {
                 builder.addNonPendingMember(address, role: role)
             }
         }
-        return builder.build()
+        let groupMembership = builder.build()
+        assert(groupMembership.isValid)
+        return groupMembership
     }
 
     // success and failure are invoked on the main thread.
@@ -1100,10 +1108,13 @@ public class GroupManager: NSObject {
                                                wasLocallyInitiated: true,
                                                transaction: transaction)
             }
-        }.then(on: .global()) { _ in
-            updateGroupV2(groupModel: groupModel,
-                          description: "Accept invite") { groupChangeSet in
-                            groupChangeSet.setShouldAcceptInvite()
+        }.then(on: .global()) { _ -> Promise<TSGroupThread> in
+            guard let localUuid = tsAccountManager.localUuid else {
+                throw OWSAssertionError("Missing localUuid.")
+            }
+            return updateGroupV2(groupModel: groupModel,
+                                 description: "Accept invite") { groupChangeSet in
+                                    groupChangeSet.promotePendingMember(localUuid)
             }
         }
     }

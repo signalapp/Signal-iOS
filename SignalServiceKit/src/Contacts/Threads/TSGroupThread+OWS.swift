@@ -24,6 +24,6 @@ public extension TSGroupThread {
         guard let localAddress = TSAccountManager.localAddress else {
             return false
         }
-        return groupModel.groupMembership.isPending(localAddress)
+        return groupModel.groupMembership.isPendingMember(localAddress)
     }
 }

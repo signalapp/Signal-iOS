@@ -70,12 +70,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var membersToChangeRole = [UUID: TSGroupMemberRole]()
     private var pendingMembersToAdd = [UUID: TSGroupMemberRole]()
     private var invalidInvitesToRemove = [Data: InvalidInvite]()
+    private var pendingMembersToPromote = [UUID]()
 
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
     private var accessForAttributes: GroupV2Access?
 
-    private var shouldAcceptInvite = false
     private var shouldLeaveGroupDeclineInvite = false
     private var shouldRevokeInvalidInvites = false
 
@@ -139,8 +139,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         let newUserUuids = Set(newGroupMembership.allUsers.compactMap { $0.uuid })
 
         for uuid in newUserUuids.subtracting(oldUserUuids) {
-            let isAdministrator = newGroupMembership.isAdministrator(SignalServiceAddress(uuid: uuid))
-            let isPending = newGroupMembership.isPending(SignalServiceAddress(uuid: uuid))
+            let isAdministrator = newGroupMembership.isAdministrator(uuid)
+            let isPending = newGroupMembership.isPendingMember(uuid)
             let role: TSGroupMemberRole = isAdministrator ? .administrator : .normal
             if isPending {
                 addPendingMember(uuid, role: role)
@@ -159,12 +159,19 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
+        for uuid in oldUserUuids.intersection(newUserUuids) {
+            if oldGroupMembership.isPendingMember(uuid),
+                newGroupMembership.isNonPendingMember(uuid) {
+                Logger.verbose("promotePendingMember")
+                addMember(uuid, role: .normal)
+            }
+        }
+
         let oldMemberUuids = Set(oldGroupMembership.nonPendingMembers.compactMap { $0.uuid })
         let newMemberUuids = Set(newGroupMembership.nonPendingMembers.compactMap { $0.uuid })
         for uuid in oldMemberUuids.intersection(newMemberUuids) {
-            let address = SignalServiceAddress(uuid: uuid)
-            let oldIsAdministrator = oldGroupMembership.isAdministrator(address)
-            let newIsAdministrator = newGroupMembership.isAdministrator(address)
+            let oldIsAdministrator = oldGroupMembership.isAdministrator(uuid)
+            let newIsAdministrator = newGroupMembership.isAdministrator(uuid)
             guard oldIsAdministrator != newIsAdministrator else {
                 continue
             }
@@ -227,6 +234,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         membersToRemove.append(uuid)
     }
 
+    @objc
+    public func promotePendingMember(_ uuid: UUID) {
+        assert(!pendingMembersToPromote.contains(uuid))
+        pendingMembersToPromote.append(uuid)
+    }
+
     public func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole) {
         assert(membersToChangeRole[uuid] == nil)
         membersToChangeRole[uuid] = role
@@ -235,11 +248,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public func addPendingMember(_ uuid: UUID, role: TSGroupMemberRole) {
         assert(pendingMembersToAdd[uuid] == nil)
         pendingMembersToAdd[uuid] = role
-    }
-
-    public func setShouldAcceptInvite() {
-        assert(!shouldAcceptInvite)
-        shouldAcceptInvite = true
     }
 
     public func setShouldLeaveGroupDeclineInvite() {
@@ -306,13 +314,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
         var uuidsForProfileKeyCredentials = Set<UUID>()
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
+        uuidsForProfileKeyCredentials.formUnion(pendingMembersToPromote)
         // This should be redundant, but we'll also double-check that we have
         // the local profile key credential.
         uuidsForProfileKeyCredentials.insert(localUuid)
         let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
-        if shouldAcceptInvite || shouldUpdateLocalProfileKey {
-            uuidsForProfileKeyCredentials.insert(localUuid)
-        }
 
         return firstly {
             groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
@@ -372,7 +378,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         guard let localUuid = tsAccountManager.localUuid else {
             throw OWSAssertionError("Missing localUuid.")
         }
-        let localAddress = SignalServiceAddress(uuid: localUuid)
 
         let oldRevision = currentGroupModel.revision
         let newRevision = oldRevision + 1
@@ -414,8 +419,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         let currentGroupMembership = currentGroupModel.groupMembership
         for (uuid, role) in self.membersToAdd {
-            guard !currentGroupMembership.isPendingOrNonPendingMember(uuid) else {
-                // Another user has already added or invited this member.
+            guard !currentGroupMembership.isNonPendingMember(uuid) else {
+                // Another user has already added this member.
                 // They may have been added with a different role.
                 // We don't treat that as a conflict.
                 continue
@@ -443,7 +448,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true
 
-                if currentGroupMembership.isAdministrator(SignalServiceAddress(uuid: uuid)) {
+                if currentGroupMembership.isAdministrator(uuid) {
                     nonPendingAdministratorCount -= 1
                 }
                 allMemberCount -= 1
@@ -516,7 +521,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 // User is no longer a member.
                 throw GroupsV2Error.conflictingChange
             }
-            let currentRole = currentGroupMembership.role(for: SignalServiceAddress(uuid: uuid))
+            let currentRole = currentGroupMembership.role(for: uuid)
             guard currentRole != newRole else {
                 // Another user has already modifed the role of this member.
                 // We don't treat that as a conflict.
@@ -558,13 +563,13 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
-        if self.shouldAcceptInvite {
-            // Check that we are still invited.
-            guard currentGroupMembership.pendingMembers.contains(localAddress) else {
+        for uuid in pendingMembersToPromote {
+            // Check that pending member is still invited.
+            guard currentGroupMembership.isPendingMember(uuid) else {
                 throw GroupsV2Error.redundantChange
             }
-            guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
-                throw OWSAssertionError("Missing profile key credential: \(localUuid)")
+            guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
+                throw OWSAssertionError("Missing profile key credential: \(uuid)")
             }
             let actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
             actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
@@ -574,8 +579,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if self.shouldLeaveGroupDeclineInvite {
-            let isLastAdminInV2Group = (currentGroupMembership.isNonPendingMember(localAddress) &&
-                currentGroupMembership.isAdministrator(localAddress) &&
+            let isLastAdminInV2Group = (currentGroupMembership.isNonPendingMember(localUuid) &&
+                currentGroupMembership.isAdministrator(localUuid) &&
                 nonPendingAdministratorCount == 1)
             guard !isLastAdminInV2Group else {
                 // This could happen if the last two admins leave at the same time
@@ -584,14 +589,14 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
 
             // Check that we are still invited or in group.
-            if currentGroupMembership.pendingMembers.contains(localAddress) {
+            if currentGroupMembership.isPendingMember(localUuid) {
                 // Decline invite
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let localUserId = try groupV2Params.userId(forUuid: localUuid)
                 actionBuilder.setDeletedUserID(localUserId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
-            } else if currentGroupMembership.nonPendingMembers.contains(localAddress) {
+            } else if currentGroupMembership.isNonPendingMember(localUuid) {
                 // Leave group
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
                 let localUserId = try groupV2Params.userId(forUuid: localUuid)

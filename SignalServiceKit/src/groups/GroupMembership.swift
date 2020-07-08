@@ -220,7 +220,9 @@ public class GroupMembership: MTLModel {
                                                addedByUuid: UUID) {
             for address in addresses {
                 if memberStateMap[address] != nil {
-                    owsFailDebug("Duplicate address.")
+                    Logger.error("Duplicate address.")
+                    continue
+//                    owsFailDebug("Duplicate address.")
                 }
                 memberStateMap[address] = MemberState(role: role, isPending: true, addedByUuid: addedByUuid)
             }
@@ -326,13 +328,6 @@ public class GroupMembership: MTLModel {
         return memberState.role
     }
 
-    public func isPending(_ address: SignalServiceAddress) -> Bool {
-        guard let memberState = memberStateMap[address] else {
-            return false
-        }
-        return memberState.isPending
-    }
-
     public func isAdministrator(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStateMap[address] else {
             return false
@@ -346,7 +341,10 @@ public class GroupMembership: MTLModel {
 
     @objc
     public func isNonPendingMember(_ address: SignalServiceAddress) -> Bool {
-        return nonPendingMembers.contains(address)
+        guard let memberState = memberStateMap[address] else {
+            return false
+        }
+        return !memberState.isPending
     }
 
     public func isNonPendingMember(_ uuid: UUID) -> Bool {
@@ -355,11 +353,14 @@ public class GroupMembership: MTLModel {
 
     @objc
     public func isPendingMember(_ address: SignalServiceAddress) -> Bool {
-        return pendingMembers.contains(address)
+        guard let memberState = memberStateMap[address] else {
+            return false
+        }
+        return memberState.isPending
     }
 
     public func isPendingMember(_ uuid: UUID) -> Bool {
-        return isPendingMember(SignalServiceAddress(uuid: uuid))
+        isPendingMember(SignalServiceAddress(uuid: uuid))
     }
 
     // When we check "is X a member?" we might mean...
@@ -382,6 +383,8 @@ public class GroupMembership: MTLModel {
     }
 
     public func addedByUuid(forPendingMember address: SignalServiceAddress) -> UUID? {
+        assert(isPendingMember(address))
+
         return memberStateMap[address]?.addedByUuid
     }
 
@@ -389,7 +392,6 @@ public class GroupMembership: MTLModel {
     public static func normalize(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
         return Array(Set(addresses))
             .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
-
     }
 
     public func hasInvalidInvite(forUserId userId: Data) -> Bool {
@@ -427,5 +429,9 @@ public class GroupMembership: MTLModel {
         }
         result += "]"
         return result
+    }
+
+    public var isValid: Bool {
+        return true
     }
 }

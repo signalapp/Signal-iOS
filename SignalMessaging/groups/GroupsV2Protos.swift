@@ -110,7 +110,7 @@ public class GroupsV2Protos {
         let groupMembership = groupModel.groupMembership
         let localAddress = SignalServiceAddress(uuid: localUuid)
         assert(groupMembership.isAdministrator(localAddress))
-        assert(!groupMembership.isPending(localAddress))
+        assert(!groupMembership.isPendingMember(localAddress))
         groupBuilder.addMembers(try buildMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                      role: .administrator,
                                                      groupV2Params: groupV2Params))
@@ -120,7 +120,7 @@ public class GroupsV2Protos {
             }
             let address = SignalServiceAddress(uuid: uuid)
             let isAdministrator = groupMembership.isAdministrator(address)
-            let isPending = groupMembership.isPending(address)
+            let isPending = groupMembership.isPendingMember(address)
             let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
             guard !isPending else {
                 continue
