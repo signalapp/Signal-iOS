@@ -11,10 +11,10 @@ public class RemoteConfig: BaseFlags {
     // rather than interact with `config` directly, prefer encoding any string constants
     // into a getter below...
     private let isEnabledFlags: [String: Bool]
-    private let valueFlags: [String: Any]
+    private let valueFlags: [String: AnyObject]
 
     init(isEnabledFlags: [String: Bool],
-         valueFlags: [String: Any]) {
+         valueFlags: [String: AnyObject]) {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
     }
@@ -321,7 +321,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         AssertIsOnMainThread()
 
         var isEnabledFlags = [String: Bool]()
-        var valueFlags = [String: Any]()
+        var valueFlags = [String: AnyObject]()
         self.databaseStorage.read { transaction in
             isEnabledFlags = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) ?? [:]
             valueFlags = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) ?? [:]
