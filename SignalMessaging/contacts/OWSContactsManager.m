@@ -1047,7 +1047,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return profileName;
     }
 
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
+    NSString *_Nullable phoneNumber = [[self phoneNumberForAddress:address
+                                                       transaction:transaction] filterStringForDisplay];
     if (phoneNumber.length > 0) {
         phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
         if (phoneNumber.length > 0) {
@@ -1055,8 +1056,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
     }
 
-    NSString *_Nullable username = [[self.profileManager usernameForAddress:address
-                                                                transaction:transaction] filterStringForDisplay];
+    // We don't need to filterStringForDisplay(); usernames are strictly filtered.
+    NSString *_Nullable username = [self.profileManager usernameForAddress:address transaction:transaction];
     if (username.length > 0) {
         username = [CommonFormats formatUsername:username];
         return username;
