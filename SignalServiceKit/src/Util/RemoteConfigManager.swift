@@ -71,8 +71,19 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static func groupsV2maxMemberCount(defaultValue: UInt) -> UInt {
-        value(.groupsV2memberCountMax,
-              defaultValue: defaultValue)
+        guard let rawValue: AnyObject = value(.groupsV2memberCountMax) else {
+            owsFailDebug("Missing value.")
+            return defaultValue
+        }
+        guard let stringValue = rawValue as? String else {
+            owsFailDebug("Unexpected value.")
+            return defaultValue
+        }
+        guard let uintValue = UInt(stringValue) else {
+            owsFailDebug("Invalid value.")
+            return defaultValue
+        }
+        return uintValue
     }
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
@@ -82,16 +93,16 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.isEnabledFlags[flag.rawFlag] ?? defaultValue
     }
 
-    private static func value<T>(_ flag: Flags.SupportedValuesFlags, defaultValue: T) -> T {
+    private static func value<T>(_ flag: Flags.SupportedValuesFlags) -> T? {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
-            return defaultValue
+            return nil
         }
         guard let remoteObject = remoteConfig.valueFlags[flag.rawFlag] else {
-            return defaultValue
+            return nil
         }
         guard let remoteValue = remoteObject as? T else {
             owsFailDebug("Remote value has unexpected type: \(remoteObject)")
-            return defaultValue
+            return nil
         }
         return remoteValue
     }
