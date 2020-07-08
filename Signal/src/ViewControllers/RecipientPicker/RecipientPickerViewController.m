@@ -836,8 +836,13 @@ const NSUInteger kMinimumSearchLength = 2;
         if (!startsWithNumberRegex || error) {
             OWSFailDebug(@"Unexpected error creating regex %@", error.localizedDescription);
         }
+        BOOL startsWithNumber = [startsWithNumberRegex hasMatchWithInput:usernameMatch];
+        // If user searches for e164 starting with +, don't treat that as a
+        // username search.
+        BOOL startsWithPlus = [usernameMatch hasPrefix:@"+"];
+        // TODO: Should we use validUsernameRegex?
 
-        if (usernameMatch.length > 0 && ![startsWithNumberRegex hasMatchWithInput:usernameMatch]
+        if (usernameMatch.length > 0 && !startsWithNumber && !startsWithPlus
             && ![NSObject isNullableObject:usernameMatch equalTo:localUsername]
             && ![matchedAccountUsernames containsObject:usernameMatch]) {
             hasSearchResults = YES;
