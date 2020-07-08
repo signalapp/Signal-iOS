@@ -97,7 +97,7 @@ public class GroupManager: NSObject {
 
     public static var maxGroupMemberCount: UInt {
         let defaultValue: UInt = 100
-        guard OWSStorage.isStorageReady() else {
+        guard AppReadiness.isAppReady() else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
         }

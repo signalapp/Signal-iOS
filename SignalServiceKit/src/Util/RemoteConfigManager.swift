@@ -71,7 +71,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static func groupsV2maxMemberCount(defaultValue: UInt) -> UInt {
-        value(.groupsV2maxMemberCount,
+        value(.groupsV2memberCountMax,
               defaultValue: defaultValue)
     }
 
@@ -111,14 +111,24 @@ public class RemoteConfig: BaseFlags {
             }
         }
 
-        for flag in Flags.Supported.allCases {
-            let value = remoteConfig.config[flag.rawFlag]
-            logFlag("Config.Supported", flag.rawFlag, value)
+        for flag in Flags.SupportedIsEnabledFlags.allCases {
+            let value = remoteConfig.isEnabledFlags[flag.rawFlag]
+            logFlag("Config.SupportedIsEnabled", flag.rawFlag, value)
         }
 
-        for flag in Flags.Sticky.allCases {
-            let value = remoteConfig.config[flag.rawFlag]
-            logFlag("Config.Sticky", flag.rawFlag, value)
+        for flag in Flags.StickyIsEnabledFlags.allCases {
+            let value = remoteConfig.isEnabledFlags[flag.rawFlag]
+            logFlag("Config.StickyIsEnabled", flag.rawFlag, value)
+        }
+
+        for flag in Flags.SupportedValuesFlags.allCases {
+            let value = remoteConfig.valueFlags[flag.rawFlag]
+            logFlag("Config.SupportedValues", flag.rawFlag, value)
+        }
+
+        for flag in Flags.StickyValuesFlags.allCases {
+            let value = remoteConfig.valueFlags[flag.rawFlag]
+            logFlag("Config.StickyValues", flag.rawFlag, value)
         }
 
         let flagMap = buildFlagMap()
@@ -164,7 +174,7 @@ private struct Flags {
     // Values defined in this array remain set once they are
     // set regardless of the remote state.
     enum StickyValuesFlags: String, FlagType {
-        case groupsV2maxMemberCount
+        case groupsV2memberCountMax
     }
 
     // We filter the received config down to just the supported values.
@@ -172,7 +182,7 @@ private struct Flags {
     // set because we cached a value before it went public. e.g. if we set
     // a sticky value to X in beta then remove it before going to production.
     enum SupportedValuesFlags: String, FlagType {
-        case groupsV2maxMemberCount
+        case groupsV2memberCountMax
     }
 }
 
