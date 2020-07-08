@@ -2807,9 +2807,9 @@
 "You will not have full metadata protection when sending GIFs." = "You will not have full metadata protection when sending GIFs.";
 "The ability to add members to a closed group is coming soon." = "The ability to add members to a closed group is coming soon.";
 "A closed group cannot have more than 10 members" = "A closed group cannot have more than 10 members";
-"A closed group cannot have more than 20 members" = "A closed group cannot have more than 20 members";
+"A closed group cannot have more than 50 members" = "A closed group cannot have more than 50 members";
 "Closed groups support up to 10 members" = "Closed groups support up to 10 members";
-"Closed groups support up to 20 members" = "Closed groups support up to 20 members";
+"Closed groups support up to 50 members" = "Closed groups support up to 50 members";
 "No messages yet" = "No messages yet";
 "Would you like to join the Session Public Chat?" = "Would you like to join the Session Public Chat?";
 "Join Public Chat" = "Join Public Chat";

@@ -174,8 +174,8 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard selectedContacts.count >= 2 else {
             return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
         }
-        guard selectedContacts.count < 20 else { // Minus one because we're going to include self later
-            return showError(title: NSLocalizedString("A closed group cannot have more than 20 members", comment: ""))
+        guard selectedContacts.count < 50 else { // Minus one because we're going to include self later
+            return showError(title: NSLocalizedString("A closed group cannot have more than 50 members", comment: ""))
         }
         let selectedContacts = self.selectedContacts
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
