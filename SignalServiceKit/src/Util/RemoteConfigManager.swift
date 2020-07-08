@@ -382,20 +382,23 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     private func refresh() {
         firstly {
             self.serviceClient.getRemoteConfig()
-        }.done(on: .global()) { (fetchedConfig: [String: ConfigItem]) in
+        }.done(on: .global()) { (fetchedConfig: [String: RemoteConfigItem]) in
             // Extract the _supported_ flags from the fetched config.
             var isEnabledFlags = [String: Bool]()
-            var valueFlags = [String: Any]()
-            fetchedConfig.forEach { (key: String, item: ConfigItem) in
-                if Flags.SupportedIsEnabledFlags.allRawFlags.contains(key) {
-                    isEnabledFlags[key] = item.isEnabled
-                }
-                if Flags.SupportedValuesFlags.allRawFlags.contains(key),
-                    let value = item.value {
-                    if Self.isValidValue(value) {
-                        valueFlags[key] = value
-                    } else {
-                        owsFailDebug("Invalid value: \(value) \(type(of: value))")
+            var valueFlags = [String: AnyObject]()
+            fetchedConfig.forEach { (key: String, item: RemoteConfigItem) in
+                switch item {
+                case .isEnabled(let isEnabled):
+                    if Flags.SupportedIsEnabledFlags.allRawFlags.contains(key) {
+                        isEnabledFlags[key] = isEnabled
+                    }
+                case .value(let value):
+                    if Flags.SupportedValuesFlags.allRawFlags.contains(key) {
+                        if Self.isValidValue(value) {
+                            valueFlags[key] = value
+                        } else {
+                            owsFailDebug("Invalid value: \(value) \(type(of: value))")
+                        }
                     }
                 }
             }
@@ -412,7 +415,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
                     }
                 }
                 if let existingConfig = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) {
-                    existingConfig.forEach { (key: String, value: Any) in
+                    existingConfig.forEach { (key: String, value: AnyObject) in
                         // Preserve "value" flags if they are sticky and already set and missing from the fetched config.
                         if Flags.StickyValuesFlags.allRawFlags.contains(key),
                             valueFlags[key] == nil {
@@ -464,12 +467,12 @@ private extension SDSKeyValueStore {
 
     private static let remoteConfigValueFlagsKey = "remoteConfigValueFlags"
 
-    func getRemoteConfigValueFlags(transaction: SDSAnyReadTransaction) -> [String: Any]? {
+    func getRemoteConfigValueFlags(transaction: SDSAnyReadTransaction) -> [String: AnyObject]? {
         guard let object = getObject(forKey: Self.remoteConfigValueFlagsKey, transaction: transaction) else {
             return nil
         }
 
-        guard let remoteConfig = object as? [String: Any] else {
+        guard let remoteConfig = object as? [String: AnyObject] else {
             owsFailDebug("unexpected object: \(object)")
             return nil
         }
@@ -477,7 +480,7 @@ private extension SDSKeyValueStore {
         return remoteConfig
     }
 
-    func setRemoteConfigValueFlags(_ newValue: [String: Any], transaction: SDSAnyWriteTransaction) {
+    func setRemoteConfigValueFlags(_ newValue: [String: AnyObject], transaction: SDSAnyWriteTransaction) {
         return setObject(newValue, key: Self.remoteConfigValueFlagsKey, transaction: transaction)
     }
 

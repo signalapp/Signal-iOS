@@ -24,7 +24,7 @@ public protocol SignalServiceClient {
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountUuid() -> Promise<UUID>
     func requestStorageAuth() -> Promise<(username: String, password: String)>
-    func getRemoteConfig() -> Promise<[String: ConfigItem]>
+    func getRemoteConfig() -> Promise<[String: RemoteConfigItem]>
 
     // MARK: - Secondary Devices
 
@@ -33,14 +33,9 @@ public protocol SignalServiceClient {
 
 // MARK: -
 
-public struct ConfigItem {
-    public let isEnabled: Bool
-    public let value: Any?
-
-    init(isEnabled: Bool, value: Any? = nil) {
-        self.isEnabled = isEnabled
-        self.value = value
-    }
+public enum RemoteConfigItem {
+    case isEnabled(isEnabled: Bool)
+    case value(value: AnyObject)
 }
 
 // MARK: -
@@ -195,7 +190,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     }
 
     // yields a map of ["feature_name": isEnabled]
-    public func getRemoteConfig() -> Promise<[String: ConfigItem]> {
+    public func getRemoteConfig() -> Promise<[String: RemoteConfigItem]> {
         let request = OWSRequestFactory.getRemoteConfigRequest()
 
         return networkManager.makePromise(request: request).map { _, responseObject in
@@ -214,9 +209,12 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
                 let name: String = try itemParser.required(key: "name")
                 let isEnabled: Bool = try itemParser.required(key: "enabled")
-                let value: Any? = try itemParser.optional(key: "value")
 
-                accum[name] = ConfigItem(isEnabled: isEnabled, value: value)
+                if let value: AnyObject = try itemParser.optional(key: "value") {
+                    accum[name] = RemoteConfigItem.value(value: value)
+                } else {
+                    accum[name] = RemoteConfigItem.isEnabled(isEnabled: isEnabled)
+                }
 
                 return accum
             }
