@@ -302,7 +302,7 @@ extension ConversationSettingsViewController {
                 rowLabel.textColor = Theme.primaryTextColor
                 rowLabel.font = OWSTableItem.primaryLabelFont
                 // don't truncate useful duration info which is in the tail
-                rowLabel.lineBreakMode = .byTruncatingHead
+                rowLabel.lineBreakMode = .byTruncatingTail
 
                 let topRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
                 topRow.spacing = self.iconSpacingLarge

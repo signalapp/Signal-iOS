@@ -55,6 +55,12 @@ public class DisappearingMessageToken: MTLModel {
             return .disabledToken
         }
     }
+
+    @objc
+    public var durationString: String {
+        // This might be zero if DMs are not enabled.
+        NSString.formatDurationLossless(durationSeconds: durationSeconds)
+    }
 }
 
 // MARK: -

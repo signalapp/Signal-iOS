@@ -387,3 +387,100 @@ public extension NSString {
         return addingPercentEncoding(withAllowedCharacters: characterSet)
     }
 }
+
+// MARK: -
+
+public extension String {
+    static func formatDurationLossless(durationSeconds: UInt32) -> String {
+        return NSString.formatDurationLossless(durationSeconds: durationSeconds)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension NSString {
+    static func formatDurationLossless(durationSeconds: UInt32) -> String {
+        let secondsPerMinute: UInt32 = 60
+        let secondsPerHour: UInt32 = secondsPerMinute * 60
+        let secondsPerDay: UInt32 = secondsPerHour * 24
+        let secondsPerWeek: UInt32 = secondsPerDay * 7
+        let secondsPerYear: UInt32 = secondsPerDay * 365
+
+        struct Unit {
+            let secondsPerUnit: UInt32
+            let singleUnitFormat: String
+            let multipleUnitsFormat: String
+        }
+
+        // Listed in descending order.
+        let units: [Unit] = [
+            // Years
+            Unit(secondsPerUnit: secondsPerYear,
+                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_YEAR",
+                                                     comment: "{{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings"),
+                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_YEARS_FORMAT",
+                                                        comment: "{{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings")),
+
+            // Weeks
+            Unit(secondsPerUnit: secondsPerWeek,
+                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_WEEK",
+                                                     comment:
+                    "{{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings"),
+                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_WEEKS",
+                                                        comment: "{{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings")),
+            // Days
+            Unit(secondsPerUnit: secondsPerDay,
+                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_DAY",
+                                                     comment:
+                    "{{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings"),
+                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_DAYS",
+                                                        comment: "{{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings")),
+            // Hours
+            Unit(secondsPerUnit: secondsPerHour,
+                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_HOUR",
+                                                     comment:
+                    "{{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings"),
+                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_HOURS",
+                                                        comment: "{{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings")),
+            // Minutes
+            Unit(secondsPerUnit: secondsPerMinute,
+                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_MINUTE",
+                                                     comment: "{{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings"),
+                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_MINUTES",
+                                                        comment:
+                    "{{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings")),
+            // Seconds
+            Unit(secondsPerUnit: 1,
+                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_SECOND",
+                                                     comment:
+                    "{{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings"),
+                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_SECONDS",
+                                                        comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"))
+        ]
+
+        var components = [String]()
+        var remainder = durationSeconds
+        for unit in units {
+            let secondsPerUnit = unit.secondsPerUnit
+            if remainder >= secondsPerUnit {
+                let units = remainder / secondsPerUnit
+                remainder -= units * secondsPerUnit
+                assert(units > 0)
+                let formattedUnits = String(format: "%ld", Int(units))
+                let format = (units > 1
+                    ? unit.multipleUnitsFormat
+                    : unit.singleUnitFormat)
+                components.append(String(format: format, formattedUnits))
+            }
+        }
+
+        if components.isEmpty {
+            return NSLocalizedString("TIME_AMOUNT_ZERO_SECONDS",
+                                     comment: "Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings")
+        } else {
+            // TODO: Can we localize this join?
+            return components.joined(separator: ", ")
+        }
+    }
+}

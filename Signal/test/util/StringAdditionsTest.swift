@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -143,7 +143,7 @@ class StringAdditionsTest: SignalBaseTest {
 
         let testTime = "9:41"
 
-        let testStrings: Array<(day: String, expectedConcatentation: String)> = [
+        let testStrings: [(day: String, expectedConcatentation: String)] = [
             // LTR Tests
             ("Today", "Today 9:41"), // English
             ("Heute", "Heute 9:41"), // German
@@ -158,5 +158,96 @@ class StringAdditionsTest: SignalBaseTest {
             XCTAssertEqual((day as NSString).appending(" ").appending(testTime), expectedConcatentation)
             XCTAssertEqual(NSAttributedString(string: day) + " " + testTime, NSAttributedString(string: expectedConcatentation))
         }
+    }
+
+    func test_formatDurationLossless() {
+        let secondsPerMinute: UInt32 = 60
+        let secondsPerHour: UInt32 = secondsPerMinute * 60
+        let secondsPerDay: UInt32 = secondsPerHour * 24
+        let secondsPerWeek: UInt32 = secondsPerDay * 7
+        let secondsPerYear: UInt32 = secondsPerDay * 365
+
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 0), "0 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1), "1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2), "2 seconds")
+
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerMinute - 1), "59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerMinute), "1 minute")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerMinute + 1), "1 minute, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerMinute + 2), "1 minute, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerMinute - 1), "1 minute, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerMinute), "2 minutes")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerMinute + 1), "2 minutes, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerMinute + 2), "2 minutes, 2 seconds")
+
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour - 1), "59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour), "1 hour")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour + 1), "1 hour, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour + 2), "1 hour, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour + 1 * secondsPerMinute + 1), "1 hour, 1 minute, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour + 1 * secondsPerMinute + 2), "1 hour, 1 minute, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour + 2 * secondsPerMinute + 1), "1 hour, 2 minutes, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerHour + 2 * secondsPerMinute + 2), "1 hour, 2 minutes, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour - 1), "1 hour, 59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour), "2 hours")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour + 1), "2 hours, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour + 2), "2 hours, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour + 1 * secondsPerMinute + 1), "2 hours, 1 minute, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour + 1 * secondsPerMinute + 2), "2 hours, 1 minute, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour + 2 * secondsPerMinute + 1), "2 hours, 2 minutes, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerHour + 2 * secondsPerMinute + 2), "2 hours, 2 minutes, 2 seconds")
+
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay - 1), "23 hours, 59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay), "1 day")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay + 1), "1 day, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay + 2), "1 day, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay + 1 * secondsPerHour + 1), "1 day, 1 hour, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay + 1 * secondsPerHour + 2), "1 day, 1 hour, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay + 2 * secondsPerHour + 1), "1 day, 2 hours, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerDay + 2 * secondsPerHour + 2), "1 day, 2 hours, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay - 1), "1 day, 23 hours, 59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay), "2 days")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay + 1), "2 days, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay + 2), "2 days, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay + 1 * secondsPerHour + 1), "2 days, 1 hour, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay + 1 * secondsPerHour + 2), "2 days, 1 hour, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay + 2 * secondsPerHour + 1), "2 days, 2 hours, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerDay + 2 * secondsPerHour + 2), "2 days, 2 hours, 2 seconds")
+
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek - 1), "6 days, 23 hours, 59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek), "1 week")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek + 1), "1 week, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek + 2), "1 week, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek + 1 * secondsPerDay + 1), "1 week, 1 day, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek + 1 * secondsPerDay + 2), "1 week, 1 day, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek + 2 * secondsPerDay + 1), "1 week, 2 days, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerWeek + 2 * secondsPerDay + 2), "1 week, 2 days, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek - 1), "1 week, 6 days, 23 hours, 59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek), "2 weeks")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek + 1), "2 weeks, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek + 2), "2 weeks, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek + 1 * secondsPerDay + 1), "2 weeks, 1 day, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek + 1 * secondsPerDay + 2), "2 weeks, 1 day, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek + 2 * secondsPerDay + 1), "2 weeks, 2 days, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerWeek + 2 * secondsPerDay + 2), "2 weeks, 2 days, 2 seconds")
+
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear - 1), "52 weeks, 23 hours, 59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear), "1 year")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear + 1), "1 year, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear + 2), "1 year, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear + 1 * secondsPerWeek + 1), "1 year, 1 week, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear + 1 * secondsPerWeek + 2), "1 year, 1 week, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear + 2 * secondsPerWeek + 1), "1 year, 2 weeks, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 1 * secondsPerYear + 2 * secondsPerWeek + 2), "1 year, 2 weeks, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear - 1), "1 year, 52 weeks, 23 hours, 59 minutes, 59 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear), "2 years")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear + 1), "2 years, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear + 2), "2 years, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear + 1 * secondsPerWeek + 1), "2 years, 1 week, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear + 1 * secondsPerWeek + 2), "2 years, 1 week, 2 seconds")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear + 2 * secondsPerWeek + 1), "2 years, 2 weeks, 1 second")
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 2 * secondsPerYear + 2 * secondsPerWeek + 2), "2 years, 2 weeks, 2 seconds")
+
+        XCTAssertEqual(String.formatDurationLossless(durationSeconds: 88 * secondsPerYear + 7 * secondsPerWeek + 6 * secondsPerDay + 5 * secondsPerHour + 4 * secondsPerMinute + 3), "88 years, 7 weeks, 6 days, 5 hours, 4 minutes, 3 seconds")
     }
 }
