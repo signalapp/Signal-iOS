@@ -29,6 +29,11 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         let addedByUuid: UUID
     }
 
+    public struct InvalidInvite {
+        let userId: Data
+        let addedByUserId: Data
+    }
+
     public let groupSecretParamsData: Data
 
     public let groupProto: GroupsProtoGroup
@@ -42,6 +47,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
     private let members: [Member]
     private let pendingMembers: [PendingMember]
+    private let invalidInvites: [InvalidInvite]
 
     public let accessControlForAttributes: GroupsProtoAccessControlAccessRequired
     public let accessControlForMembers: GroupsProtoAccessControlAccessRequired
@@ -62,6 +68,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 avatarData: Data?,
                 members: [Member],
                 pendingMembers: [PendingMember],
+                invalidInvites: [InvalidInvite],
                 accessControlForAttributes: GroupsProtoAccessControlAccessRequired,
                 accessControlForMembers: GroupsProtoAccessControlAccessRequired,
                 disappearingMessageToken: DisappearingMessageToken,
@@ -75,6 +82,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         self.avatarData = avatarData
         self.members = members
         self.pendingMembers = pendingMembers
+        self.invalidInvites = invalidInvites
         self.accessControlForAttributes = accessControlForAttributes
         self.accessControlForMembers = accessControlForMembers
         self.disappearingMessageToken = disappearingMessageToken
@@ -97,6 +105,10 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 continue
             }
             builder.addPendingMember(member.address, role: role, addedByUuid: member.addedByUuid)
+        }
+
+        for invalidInvite in invalidInvites {
+            builder.addInvalidInvite(userId: invalidInvite.userId, addedByUserId: invalidInvite.addedByUserId)
         }
 
         return builder.build()

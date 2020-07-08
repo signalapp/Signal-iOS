@@ -78,6 +78,7 @@ public class GroupsV2Changes {
 
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
+        groupMembershipBuilder.copyInvalidInvites(from: oldGroupMembership)
 
         let oldGroupAccess: GroupAccess = oldGroupModel.access
         var newMembersAccess = oldGroupAccess.members
@@ -147,6 +148,7 @@ public class GroupsV2Changes {
             guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
             groupMembershipBuilder.addNonPendingMember(uuid, role: role)
 
@@ -176,6 +178,7 @@ public class GroupsV2Changes {
             if !oldGroupMembership.isNonPendingMember(uuid) {
                 owsFailDebug("Invalid membership.")
             }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
         }
 
@@ -243,13 +246,13 @@ public class GroupsV2Changes {
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
-            guard let addedByUserID = pendingMember.addedByUserID else {
-                throw OWSAssertionError("Group pending member missing addedByUserID.")
+            guard let addedByUserId = pendingMember.addedByUserID else {
+                throw OWSAssertionError("Group pending member missing addedByUserId.")
             }
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
-            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
+            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
 
             if role == .administrator && !isChangeAuthorAdmin {
                 owsFailDebug("Only authors can add admins.")
@@ -265,12 +268,14 @@ public class GroupsV2Changes {
             do {
                 uuid = try groupV2Params.uuid(forUserId: userId)
             } catch {
+                groupMembershipBuilder.addInvalidInvite(userId: userId, addedByUserId: addedByUserId)
                 owsFailDebug("Error parsing uuid: \(error)")
                 continue
             }
             guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
             groupMembershipBuilder.addPendingMember(uuid, role: role, addedByUuid: addedByUuid)
         }
@@ -279,6 +284,7 @@ public class GroupsV2Changes {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
+
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
@@ -292,6 +298,7 @@ public class GroupsV2Changes {
             guard oldGroupMembership.isPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
         }
 
@@ -301,6 +308,7 @@ public class GroupsV2Changes {
             }
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let uuidCiphertext = try presentation.getUuidCiphertext()
+            let userId = uuidCiphertext.serialize().asData
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
 
             guard oldGroupMembership.isPendingMember(uuid) else {
@@ -312,6 +320,7 @@ public class GroupsV2Changes {
             guard let role = oldGroupMembership.role(for: uuid) else {
                 throw OWSAssertionError("Missing role.")
             }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
             groupMembershipBuilder.addNonPendingMember(uuid, role: role)
 

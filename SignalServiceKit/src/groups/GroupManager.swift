@@ -392,6 +392,8 @@ public class GroupManager: NSObject {
             // Updating existing group
             let oldGroupMembership = oldGroupModel.groupMembership
 
+            builder.copyInvalidInvites(from: oldGroupMembership)
+
             assert(oldGroupModel.groupsVersion == .V2)
             newMembers = newGroupMembership.allUsers.subtracting(oldGroupMembership.allUsers)
 
