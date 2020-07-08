@@ -150,21 +150,25 @@ typedef struct {
 {
     OWSAssertDebug(DisplayableText.kMaxJumbomojiCount == 5);
 
-    CGFloat basePointSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
-    switch (self.displayableBodyText.jumbomojiCount) {
-        case 0:
-            break;
-        case 1:
-        case 2:
-            return [UIFont ows_regularFontWithSize:basePointSize * 2.4f];
-        case 3:
-        case 4:
-            return [UIFont ows_regularFontWithSize:basePointSize * 2.2f];
-        case 5:
-            return [UIFont ows_regularFontWithSize:basePointSize * 1.8f];
-        default:
-            OWSFailDebug(@"Unexpected jumbomoji count: %zd", self.displayableBodyText.jumbomojiCount);
-            break;
+    if (self.isJumbomoji) {
+        CGFloat basePointSize = UIFont.ows_dynamicTypeBodyClampedFont.pointSize;
+        switch (self.displayableBodyText.jumbomojiCount) {
+            case 0:
+                break;
+            case 1:
+                return [UIFont ows_regularFontWithSize:basePointSize * 3.5f];
+            case 2:
+                return [UIFont ows_regularFontWithSize:basePointSize * 3.f];
+            case 3:
+                return [UIFont ows_regularFontWithSize:basePointSize * 2.75f];
+            case 4:
+                return [UIFont ows_regularFontWithSize:basePointSize * 2.5f];
+            case 5:
+                return [UIFont ows_regularFontWithSize:basePointSize * 2.25f];
+            default:
+                OWSFailDebug(@"Unexpected jumbomoji count: %zd", self.displayableBodyText.jumbomojiCount);
+                break;
+        }
     }
 
     return UIFont.ows_dynamicTypeBodyFont;
@@ -243,7 +247,7 @@ typedef struct {
 - (BOOL)isBorderless
 {
     if (self.hasBodyText) {
-        if (self.displayableBodyText.jumbomojiCount > 0) {
+        if (self.isJumbomoji) {
             return YES;
         } else {
             return NO;
@@ -252,6 +256,12 @@ typedef struct {
 
     return self.viewItem.mediaAlbumItems.count == 1
         && self.viewItem.mediaAlbumItems.firstObject.attachment.attachmentType == TSAttachmentTypeBorderless;
+}
+
+- (BOOL)isJumbomoji
+{
+    return self.viewItem.messageCellType == OWSMessageCellType_TextOnlyMessage && !self.viewItem.isQuotedReply
+        && self.displayableBodyText.jumbomojiCount > 0;
 }
 
 - (CGFloat)maxMediaMessageWidth
