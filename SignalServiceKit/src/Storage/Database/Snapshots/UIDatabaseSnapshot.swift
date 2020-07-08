@@ -105,7 +105,7 @@ public class UIDatabaseObserver: NSObject {
             // Never notify delegates until the app is ready.
             // This prevents us from shooting ourselves in the foot
             // and registering for database changes too early.
-            assert(AppReadiness.isAppReady())
+            assert(AppReadiness.isAppReady)
             AppReadiness.runNowOrWhenAppWillBecomeReady(append)
         }
     }
@@ -178,7 +178,7 @@ public class UIDatabaseObserver: NSObject {
         }
 
         let shouldBeActive: Bool = {
-            guard AppReadiness.isAppReady() else {
+            guard AppReadiness.isAppReady else {
                 return false
             }
             guard !CurrentAppContext().isInBackground() else {

@@ -161,7 +161,7 @@ class NotificationService: UNNotificationServiceExtension {
         AssertIsOnMainThread()
 
         // Only mark the app as ready once.
-        guard !AppReadiness.isAppReady() else { return }
+        guard !AppReadiness.isAppReady else { return }
 
         // App isn't ready until storage is ready AND all version migrations are complete.
         guard storageCoordinator.isStorageReady && areVersionMigrationsComplete else { return }

@@ -11,8 +11,8 @@ typedef void (^AppReadyBlock)(void);
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-// This method can be called on any thread.
-+ (BOOL)isAppReady;
+// This property can be accessed on any thread.
+@property (class, readonly) BOOL isAppReady;
 
 // This method should only be called on the main thread.
 + (void)setAppIsReady;
