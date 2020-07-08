@@ -1,3 +1,4 @@
+import PromiseKit
 
 final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIScrollViewDelegate {
     private var selectedContacts: Set<String> = []
@@ -173,20 +174,27 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard selectedContacts.count >= 2 else {
             return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
         }
-        guard selectedContacts.count <= 20 else {
+        guard selectedContacts.count < 20 else { // Minus one because we're going to include self later
             return showError(title: NSLocalizedString("A closed group cannot have more than 20 members", comment: ""))
         }
         let selectedContacts = self.selectedContacts
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
-            let _ = FileServerAPI.getDeviceLinks(associatedWith: selectedContacts).ensure2 {
-                var thread: TSGroupThread!
+            FileServerAPI.getDeviceLinks(associatedWith: selectedContacts).then2 { _ -> Promise<TSGroupThread> in
+                var promise: Promise<TSGroupThread>!
                 try! Storage.writeSync { transaction in
-                    thread = ClosedGroupsProtocol.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
+                    promise = ClosedGroupsProtocol.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
                 }
-                DispatchQueue.main.async {
-                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                    SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
-                }
+                return promise
+            }.done(on: DispatchQueue.main) { thread in
+                self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+            }.catch(on: DispatchQueue.main) { _ in
+                self?.dismiss(animated: true, completion: nil) // Dismiss the modal
+                let title = NSLocalizedString("Couldn't Create Group", comment: "")
+                let message = NSLocalizedString("Please check your internet connection and try again.", comment: "")
+                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                self?.presentAlert(alert)
             }
         }
     }
@@ -206,7 +214,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard selectedContacts.count >= 2 else {
             return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
         }
-        guard selectedContacts.count <= 10 else {
+        guard selectedContacts.count < 10 else { // Minus one because we're going to include self later
             return showError(title: NSLocalizedString("A closed group cannot have more than 10 members", comment: ""))
         }
         let userPublicKey = getUserHexEncodedPublicKey()

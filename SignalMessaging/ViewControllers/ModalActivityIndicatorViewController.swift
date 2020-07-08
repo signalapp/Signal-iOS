@@ -42,6 +42,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         let view = ModalActivityIndicatorViewController(canCancel: canCancel)
         // Present this modal _over_ the current view contents.
         view.modalPresentationStyle = .overFullScreen
+        view.modalTransitionStyle = .crossDissolve
         fromViewController.present(view,
                                    animated: false) {
                                     DispatchQueue.global().async {

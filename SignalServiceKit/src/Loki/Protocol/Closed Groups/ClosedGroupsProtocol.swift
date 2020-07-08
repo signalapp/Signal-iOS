@@ -12,11 +12,11 @@ import PromiseKit
 /// See [the documentation](https://github.com/loki-project/session-protocol-docs/wiki/Medium-Size-Groups) for more information.
 @objc(LKClosedGroupsProtocol)
 public final class ClosedGroupsProtocol : NSObject {
-    public static let isSharedSenderKeysEnabled = false
+    public static let isSharedSenderKeysEnabled = true
 
     /// - Note: It's recommended to batch fetch the device links for the given set of members before invoking this, to avoid the message sending pipeline
     /// making a request for each member.
-    public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> TSGroupThread {
+    public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare
         var members = members
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
@@ -48,13 +48,14 @@ public final class ClosedGroupsProtocol : NSObject {
         // Establish sessions if needed
         establishSessionsIfNeeded(with: [String](members), using: transaction) // Not `membersAndLinkedDevices` as this internally takes care of multi device already
         // Send a closed group update message to all members (and their linked devices) using established channels
+        var promises: [Promise<Void>] = []
         for member in members { // Not `membersAndLinkedDevices` as this internally takes care of multi device already
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
                 groupPrivateKey: groupKeyPair.privateKey, senderKeys: senderKeys, members: [String](members), admins: admins)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-            messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
+            promises.append(SSKEnvironment.shared.messageSender.sendPromise(message: closedGroupUpdateMessage))
         }
         // Add the group to the user's set of public keys to poll for
         Storage.setClosedGroupPrivateKey(groupKeyPair.privateKey.toHexString(), for: groupPublicKey, using: transaction)
@@ -62,7 +63,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
         // Return
-        return thread
+        return when(fulfilled: promises).map2 { thread }
     }
 
     public static func addMembers(_ newMembers: Set<String>, to groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
