@@ -808,6 +808,11 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
+            // This migration was initially created as a schema migration instead of a data migration.
+            // If we already ran it there, we need to skip it here since we're doing inserts below that
+            // cannot be repeated.
+            guard !hasRunMigration("indexSignalRecipients", transaction: transaction) else { return }
+
             SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
                 _: UnsafeMutablePointer<ObjCBool>) in
                 GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
@@ -1523,5 +1528,13 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
             Logger.info("removing redundant recipient: \(redundantRecipient)")
             redundantRecipient.anyRemove(transaction: transaction)
         }
+    }
+}
+
+private func hasRunMigration(_ identifier: String, transaction: GRDBReadTransaction) -> Bool {
+    do {
+        return try String.fetchOne(transaction.database, sql: "SELECT identifier FROM grdb_migrations WHERE identifier = ?", arguments: [identifier]) != nil
+    } catch {
+        owsFail("Error: \(error)")
     }
 }
