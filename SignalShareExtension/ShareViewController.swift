@@ -428,6 +428,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         super.viewWillDisappear(animated)
 
         Logger.flush()
+
+        if #available(iOS 13, *) {
+            // This block is necessary since iOS 13 for the share extension will
+            // never get called back viewDidDisappear if the share sheet is not
+            // full screen. Ours is not full screen at the moment.
+
+            // May not be necessary to wait until the next loop but
+            // just in case to avoid any conflicts.
+            DispatchQueue.main.async {
+                // Share extensions reside in a process that may be reused between usages.
+                // That isn't safe; the codebase is full of statics (e.g. singletons) which
+                // we can't easily clean up.
+                ExitShareExtension()
+            }
+        }
     }
 
     override open func viewDidDisappear(_ animated: Bool) {
@@ -437,10 +452,16 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.flush()
 
-        // Share extensions reside in a process that may be reused between usages.
-        // That isn't safe; the codebase is full of statics (e.g. singletons) which
-        // we can't easily clean up.
-        ExitShareExtension()
+        if #available(iOS 13, *) {
+            // viewWillAppear will call ExitShareExtension in iOS 13 or later.
+            // This trick is necessary because iOS 13 won't call viewDidDisappear
+            // after this view controller was dismissed.
+        } else {
+            // Share extensions reside in a process that may be reused between usages.
+            // That isn't safe; the codebase is full of statics (e.g. singletons) which
+            // we can't easily clean up.
+            ExitShareExtension()
+        }
     }
 
     @objc
