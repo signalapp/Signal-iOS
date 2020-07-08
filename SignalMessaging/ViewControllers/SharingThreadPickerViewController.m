@@ -237,6 +237,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)cancelShareExperience
 {
+    [self.navigationController popToRootViewControllerAnimated:NO];
     [self.shareViewDelegate shareViewWasCancelled];
 }
 
@@ -459,7 +460,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
                                            style:ActionSheetActionStyleCancel
                                          handler:^(ActionSheetAction *_Nonnull action) {
-                                             [self.shareViewDelegate shareViewWasCancelled];
+                                             [self cancelShareExperience];
                                          }];
     [progressActionSheet addAction:progressCancelAction];
 
@@ -477,6 +478,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             }
 
             OWSLogInfo(@"Sending message succeeded.");
+            [self.navigationController popToRootViewControllerAnimated:NO];
             [self.shareViewDelegate shareViewWasCompleted];
         });
     };
@@ -514,7 +516,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
                                                style:ActionSheetActionStyleCancel
                                              handler:^(ActionSheetAction *_Nonnull action) {
-                                                 [self.shareViewDelegate shareViewWasCancelled];
+                                                 [self cancelShareExperience];
                                              }];
         [failureAlert addAction:failureCancelAction];
 
@@ -546,7 +548,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
                                                style:ActionSheetActionStyleCancel
                                              handler:^(ActionSheetAction *_Nonnull action) {
-                                                 [self.shareViewDelegate shareViewWasCancelled];
+                                                 [self cancelShareExperience];
                                              }];
         [failureAlert addAction:failureCancelAction];
 
@@ -624,7 +626,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         [[ActionSheetAction alloc] initWithTitle:[CommonStrings cancelButton]
                                            style:ActionSheetActionStyleCancel
                                          handler:^(ActionSheetAction *_Nonnull action) {
-                                             [self.shareViewDelegate shareViewWasCancelled];
+                                             [self cancelShareExperience];
                                          }];
     [progressAlert addAction:progressCancelAction];
 
