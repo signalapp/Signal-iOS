@@ -289,6 +289,10 @@ public class BulkProfileFetch: NSObject {
             var userProfiles = [OWSUserProfile]()
             let userProfileFinder = AnyUserProfileFinder()
             userProfileFinder.enumerateMissingAndStaleUserProfiles(transaction: transaction) { (userProfile: OWSUserProfile) in
+                guard !userProfile.publicAddress.isLocalAddress else {
+                    // Ignore the local user.
+                    return
+                }
                 var lastFetchDateString = "nil"
                 if let lastFetchDate = userProfile.lastFetchDate {
                     lastFetchDateString = formatter.string(from: lastFetchDate)
@@ -302,7 +306,7 @@ public class BulkProfileFetch: NSObject {
             }
             return userProfiles
         }.map(on: .global()) { (userProfiles: [OWSUserProfile]) -> Void in
-            let addresses: [SignalServiceAddress] = userProfiles.map { $0.address }
+            let addresses: [SignalServiceAddress] = userProfiles.map { $0.publicAddress }
             self.fetchProfiles(addresses: addresses)
             Logger.verbose("Complete.")
         }.catch(on: .global()) { (error: Error) -> Void in
