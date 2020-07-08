@@ -70,7 +70,11 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static func groupsV2maxMemberCount(defaultValue: UInt) -> UInt {
+    public static let groupsV2maxMemberCountDefault: UInt = 100
+
+    @objc
+    public static var groupsV2maxMemberCount: UInt {
+        let defaultValue = groupsV2maxMemberCountDefault
         guard let rawValue: AnyObject = value(.groupsV2memberCountMax) else {
             owsFailDebug("Missing value.")
             return defaultValue
