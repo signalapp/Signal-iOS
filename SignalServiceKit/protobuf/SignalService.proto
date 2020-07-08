@@ -245,7 +245,7 @@ message DataMessage {
     enum Type {
       NEW                = 0; // groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
       INFO               = 1; // groupPublicKey, name, senderKeys, members, admins
-      SENDER_KEY_REQUEST = 2; // groupPublicKey
+      SENDER_KEY_REQUEST = 2; // groupPublicKey, members
       SENDER_KEY         = 3; // groupPublicKey, senderKeys
       
     }
