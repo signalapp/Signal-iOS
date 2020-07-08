@@ -152,7 +152,7 @@ public class MessageFetcherJob: NSObject {
         Logger.debug("")
 
         guard tsAccountManager.isRegisteredAndReady else {
-            assert(AppReadiness.isAppReady())
+            assert(AppReadiness.isAppReady)
             Logger.warn("not registered")
             return resolver.fulfill(())
         }

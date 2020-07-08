@@ -67,6 +67,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug([self.storageCoordinator isStorageReady]);
+    OWSAssertDebug(AppReadiness.isAppReady);
 
     self.delegate = delegate;
     self.recipientId = recipientId;

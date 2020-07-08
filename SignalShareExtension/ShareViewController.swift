@@ -252,7 +252,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         guard storageCoordinator.isStorageReady else {
             return
         }
-        guard !AppReadiness.isAppReady() else {
+        guard !AppReadiness.isAppReady else {
             // Only mark the app as ready once.
             return
         }
@@ -307,7 +307,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("")
 
-        guard AppReadiness.isAppReady() else {
+        guard AppReadiness.isAppReady else {
             return
         }
         guard !hasInitialRootViewController else {

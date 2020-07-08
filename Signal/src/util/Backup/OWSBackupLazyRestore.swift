@@ -77,7 +77,7 @@ public class BackupLazyRestore: NSObject {
         guard !CurrentAppContext().isRunningTests else {
             return
         }
-        guard AppReadiness.isAppReady() else {
+        guard AppReadiness.isAppReady else {
             return
         }
         guard CurrentAppContext().isMainAppAndActive else {

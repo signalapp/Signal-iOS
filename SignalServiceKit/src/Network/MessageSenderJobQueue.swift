@@ -57,7 +57,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     private func add(message: OutgoingMessagePreparer, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
-        assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
+        assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
         do {
             let messageRecord = try message.prepareMessage(transaction: transaction)
             let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord, removeMessageAfterSending: removeMessageAfterSending, label: self.jobRecordLabel, transaction: transaction)

@@ -264,7 +264,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
                 if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
                     uiDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
-                } else if AppReadiness.isAppReady() {
+                } else if AppReadiness.isAppReady {
                     owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
                 }
                 GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
@@ -285,7 +285,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
                 if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
                     uiDatabaseObserver.didTouch(thread: thread, transaction: grdb)
-                } else if AppReadiness.isAppReady() {
+                } else if AppReadiness.isAppReady {
                     owsFailDebug("conversationListDatabaseObserver was unexpectedly nil")
                 }
                 GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
@@ -390,7 +390,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                                block: @escaping (SDSAnyWriteTransaction) -> Void) {
         #if TESTABLE_BUILD
         if Thread.isMainThread &&
-            AppReadiness.isAppReady() {
+            AppReadiness.isAppReady {
             Logger.warn("Database write on main thread.")
         }
         #endif

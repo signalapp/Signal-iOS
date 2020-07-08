@@ -149,7 +149,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
     }
 
     private func drainQueue(retryDelayAfterFailure: TimeInterval = 1.0) {
-        guard AppReadiness.isAppReady() || CurrentAppContext().isRunningTests else {
+        guard AppReadiness.isAppReady || CurrentAppContext().isRunningTests else {
             owsFailDebug("App is not ready.")
             return
         }
