@@ -12,7 +12,7 @@ import PromiseKit
 /// See [the documentation](https://github.com/loki-project/session-protocol-docs/wiki/Medium-Size-Groups) for more information.
 @objc(LKClosedGroupsProtocol)
 public final class ClosedGroupsProtocol : NSObject {
-    public static let isSharedSenderKeysEnabled = true
+    public static let isSharedSenderKeysEnabled = false
 
     /// - Note: It's recommended to batch fetch the device links for the given set of members before invoking this, to avoid the message sending pipeline
     /// making a request for each member.
