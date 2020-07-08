@@ -84,7 +84,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        guard AppReadiness.isAppReady() else {
+        guard AppReadiness.isAppReady else {
             owsFailDebug("App is unexpectedly not ready.")
             return
         }
@@ -95,7 +95,7 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     }
 
     private func startNotifier() {
-        guard AppReadiness.isAppReady() else {
+        guard AppReadiness.isAppReady else {
             owsFailDebug("App is unexpectedly not ready.")
             return
         }

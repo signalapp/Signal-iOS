@@ -150,21 +150,25 @@ typedef struct {
 {
     OWSAssertDebug(DisplayableText.kMaxJumbomojiCount == 5);
 
-    CGFloat basePointSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
-    switch (self.displayableBodyText.jumbomojiCount) {
-        case 0:
-            break;
-        case 1:
-        case 2:
-            return [UIFont ows_regularFontWithSize:basePointSize * 2.4f];
-        case 3:
-        case 4:
-            return [UIFont ows_regularFontWithSize:basePointSize * 2.2f];
-        case 5:
-            return [UIFont ows_regularFontWithSize:basePointSize * 1.8f];
-        default:
-            OWSFailDebug(@"Unexpected jumbomoji count: %zd", self.displayableBodyText.jumbomojiCount);
-            break;
+    if (self.isJumbomoji) {
+        CGFloat basePointSize = UIFont.ows_dynamicTypeBodyClampedFont.pointSize;
+        switch (self.displayableBodyText.jumbomojiCount) {
+            case 0:
+                break;
+            case 1:
+                return [UIFont ows_regularFontWithSize:basePointSize * 3.5f];
+            case 2:
+                return [UIFont ows_regularFontWithSize:basePointSize * 3.f];
+            case 3:
+                return [UIFont ows_regularFontWithSize:basePointSize * 2.75f];
+            case 4:
+                return [UIFont ows_regularFontWithSize:basePointSize * 2.5f];
+            case 5:
+                return [UIFont ows_regularFontWithSize:basePointSize * 2.25f];
+            default:
+                OWSFailDebug(@"Unexpected jumbomoji count: %zd", self.displayableBodyText.jumbomojiCount);
+                break;
+        }
     }
 
     return UIFont.ows_dynamicTypeBodyFont;
@@ -243,7 +247,7 @@ typedef struct {
 - (BOOL)isBorderless
 {
     if (self.hasBodyText) {
-        if (self.displayableBodyText.jumbomojiCount > 0) {
+        if (self.isJumbomoji) {
             return YES;
         } else {
             return NO;
@@ -252,6 +256,12 @@ typedef struct {
 
     return self.viewItem.mediaAlbumItems.count == 1
         && self.viewItem.mediaAlbumItems.firstObject.attachment.attachmentType == TSAttachmentTypeBorderless;
+}
+
+- (BOOL)isJumbomoji
+{
+    return self.viewItem.messageCellType == OWSMessageCellType_TextOnlyMessage && !self.viewItem.isQuotedReply
+        && self.displayableBodyText.jumbomojiCount > 0;
 }
 
 - (CGFloat)maxMediaMessageWidth
@@ -1326,6 +1336,39 @@ typedef struct {
     OWSAssertDebug(self.viewItem);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
+    // This method has become a huge mess as we've added more and more complexity
+    // & possible permutations to the message bubbles.  There's simply a ton of
+    // layout rules and edge cases.
+    //
+    // Most message bubbles' content can be thought of as a vertical stack of
+    // components: (sender name, quoted message, a link preview, text, bottom
+    // footer, etc.).  We measure and collect the sizes of these components in
+    // `textViewSizes` (This name is stale: they're no longer all
+    // text views). Within a given cluster of these "text view" components, we
+    // need to insert v-spacing.
+    //
+    // However we also need to handle "media" views (this name is stale too):
+    // images, views, audio, generic attachments like PDFs, contact shares,
+    // oversize text.
+    //
+    // Note that a given message's layout might interleave clusters of "text"
+    // views and "media" views.
+    //
+    // "Media" views are treated differently than the "text" views.  Usually
+    // they are "full width" (e.g. take up as much horizontal space as possible,
+    // regardless of the actual content).
+    //
+    // Note: We sometimes want to treat "media" views as "text" views, e.g. when
+    // they are not "full width". See: hasFullWidthMediaView().
+    //
+    // Therefore the layout algorithm is to proceed from the top of the cell to
+    // the bottom, collecting the sizes of "text" views in "textViewSizes".
+    // Whenever we encounter a "non-text" views (e.g. body media or quoted
+    // reply), we "flush" the current cluster of text views. That is, we measure
+    // the size of the current "text view cluster" using sizeForTextViewGroup,
+    // insert that into the overall layout, then reset textViewSizes.  We can
+    // then insert the "non-text" view into the overall layout, then proceed.
+
     CGSize cellSize = CGSizeZero;
 
     [self configureBubbleRounding];
@@ -1347,13 +1390,14 @@ typedef struct {
     }
 
     NSValue *_Nullable bodyMediaSize = [self bodyMediaSize];
+    BOOL hasFullWidthBodyMedia = NO;
     if (bodyMediaSize) {
         if (self.hasFullWidthMediaView) {
             cellSize.width = MAX(cellSize.width, bodyMediaSize.CGSizeValue.width);
             cellSize.height += bodyMediaSize.CGSizeValue.height;
+            hasFullWidthBodyMedia = YES;
         } else {
             [textViewSizes addObject:bodyMediaSize];
-            bodyMediaSize = nil;
         }
 
         if (self.contactShareHasSpacerTop) {
@@ -1364,7 +1408,10 @@ typedef struct {
         }
     }
 
-    if (bodyMediaSize || quotedMessageSize) {
+    // If there is full-width content _and_ text views that appear
+    // above them (e.g. the sender name), we need to "flush" the
+    // text views at this time.
+    if (hasFullWidthBodyMedia || quotedMessageSize) {
         if (textViewSizes.count > 0) {
             CGSize groupSize = [self sizeForTextViewGroup:textViewSizes];
             cellSize.width = MAX(cellSize.width, groupSize.width);
@@ -1372,9 +1419,11 @@ typedef struct {
             [textViewSizes removeAllObjects];
         }
 
-        if (bodyMediaSize && quotedMessageSize && self.hasFullWidthMediaView) {
+        if (hasFullWidthBodyMedia && quotedMessageSize) {
+            // Add spacing between body media and the quoted message.
             cellSize.height += self.bodyMediaQuotedReplyVSpacing;
         } else if (quotedMessageSize && self.viewItem.linkPreview) {
+            // Add spacing between link preview and the quoted message.
             cellSize.height += self.bodyMediaQuotedReplyVSpacing;
         }
     }

@@ -31,11 +31,6 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return SDSDatabaseStorage.shared;
 }
 
-- (StorageCoordinator *)storageCoordinator
-{
-    return SSKEnvironment.shared.storageCoordinator;
-}
-
 #pragma mark -
 
 + (SDSKeyValueStore *)keyValueStore
@@ -91,7 +86,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.storageCoordinator.isStorageReady) {
+    if (!AppReadiness.isAppReady) {
         // Don't cache this value until it reflects the data store.
         return self.isSystemDarkThemeEnabled;
     }
@@ -133,7 +128,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
         return self.cachedCurrentThemeNumber.unsignedIntegerValue;
     }
 
-    if (!self.storageCoordinator.isStorageReady) {
+    if (!AppReadiness.isAppReady) {
         return self.defaultTheme;
     }
 

@@ -113,6 +113,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
+- (BOOL)isBorderless
+{
+    return YES;
+}
+
 - (void)configureViews
 {
     OWSAssertDebug(self.conversationStyle);

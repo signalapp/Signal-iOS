@@ -706,10 +706,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)useSwipeFadeTransition
 {
-    // Right now, only stickers need the reply button to fade in.
-    // If we add other message types that don't have bubbles,
-    // we should add them here.
-    return self.messageCellType == OWSMessageCellType_StickerMessage;
+    return self.messageView.isBorderless;
 }
 
 - (void)setIsReplyActive:(BOOL)isReplyActive

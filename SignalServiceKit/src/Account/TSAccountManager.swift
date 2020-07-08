@@ -132,7 +132,7 @@ public extension TSAccountManager {
         guard isRegisteredAndReady else {
             return Promise.value(())
         }
-        guard AppReadiness.isAppReady() else {
+        guard AppReadiness.isAppReady else {
             return Promise.value(())
         }
 

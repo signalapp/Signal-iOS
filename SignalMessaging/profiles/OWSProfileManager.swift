@@ -137,7 +137,7 @@ extension OWSProfileManager {
     public class func updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) {
         AssertIsOnMainThread()
 
-        guard AppReadiness.isAppReady() else {
+        guard AppReadiness.isAppReady else {
             return
         }
         guard tsAccountManager.isRegisteredAndReady else {
