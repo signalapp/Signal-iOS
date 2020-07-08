@@ -145,14 +145,15 @@ public class SDSDatabaseStorage: SDSTransactable {
         GRDBSchemaMigrator().runSchemaMigrations()
         grdbStorage.forceUpdateSnapshot()
 
+        // We need to do this _before_ warmCaches().
+        NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
+
         SSKEnvironment.shared.warmCaches()
         OWSIdentityManager.shared().recreateDatabaseQueue()
 
         if wasRegistered != TSAccountManager.sharedInstance().isRegistered {
             NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
         }
-
-        NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
     }
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
