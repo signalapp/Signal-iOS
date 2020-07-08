@@ -348,33 +348,12 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         }
     }
 
-    private static func isValidValue(_ value: Any) -> Bool {
+    private static func isValidValue(_ value: AnyObject) -> Bool {
         // Discard Data for now; ParamParser can't auto-decode them.
         if value as? String != nil {
             return true
-        } else if value as? Bool != nil {
-            return true
-        } else if value as? Int != nil {
-            return true
-        } else if value as? UInt != nil {
-            return true
-        } else if value as? Int8 != nil {
-            return true
-        } else if value as? UInt8 != nil {
-            return true
-        } else if value as? Int16 != nil {
-            return true
-        } else if value as? UInt16 != nil {
-            return true
-        } else if value as? Int32 != nil {
-            return true
-        } else if value as? UInt32 != nil {
-            return true
-        } else if value as? Int64 != nil {
-            return true
-        } else if value as? UInt64 != nil {
-            return true
         } else {
+            owsFailDebug("Unexpected value: \(type(of: value))")
             return false
         }
     }
