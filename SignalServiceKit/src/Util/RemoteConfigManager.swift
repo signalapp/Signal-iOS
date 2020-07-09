@@ -77,7 +77,6 @@ public class RemoteConfig: BaseFlags {
             return defaultValue
         }
         guard let rawValue: AnyObject = value(.groupsV2memberCountMax) else {
-            owsFailDebug("Missing value.")
             return defaultValue
         }
         guard let stringValue = rawValue as? String else {
