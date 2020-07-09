@@ -773,11 +773,17 @@ extension ConversationSettingsViewController {
         section.customHeaderHeight = 14
         section.customFooterHeight = 14
 
+        // Only admins can revoke invites.
+        let canRevokeInvites = groupViewHelper.canRevokePendingInvites
+
         let pendingMembers = groupModel.groupMembership.pendingMembers
+        let pendingInviteCount = (canRevokeInvites
+            ? pendingMembers.count + groupModel.groupMembership.invalidInvites.count
+            : pendingMembers.count)
         let accessoryText: String
-        let hasPendingMembers = !pendingMembers.isEmpty
+        let hasPendingMembers = pendingInviteCount > 0
         if hasPendingMembers {
-            accessoryText = OWSFormat.formatInt(pendingMembers.count)
+            accessoryText = OWSFormat.formatInt(pendingInviteCount)
         } else {
             accessoryText = NSLocalizedString("CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE",
                                               comment: "Indicates that there are no pending member invites in the group.")

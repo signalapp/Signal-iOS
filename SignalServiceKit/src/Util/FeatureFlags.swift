@@ -333,6 +333,24 @@ public class DebugFlags: BaseFlags {
         }
     }
 
+    // If set, client will always send corrupt invites.
+    private static let _groupsV2corruptInvites = AtomicBool(false)
+    @objc
+    public static var groupsV2corruptInvites: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2corruptInvites.get()
+        }
+        set {
+            _groupsV2corruptInvites.set(newValue)
+        }
+    }
+
+    @objc
+    public static let groupsV2ignoreCorruptInvites = false
+
     @objc
     public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
 

@@ -78,7 +78,6 @@ public class GroupsV2Changes {
 
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
-        groupMembershipBuilder.copyInvalidInvites(from: oldGroupMembership)
 
         let oldGroupAccess: GroupAccess = oldGroupModel.access
         var newMembersAccess = oldGroupAccess.members
@@ -269,7 +268,11 @@ public class GroupsV2Changes {
                 uuid = try groupV2Params.uuid(forUserId: userId)
             } catch {
                 groupMembershipBuilder.addInvalidInvite(userId: userId, addedByUserId: addedByUserId)
-                owsFailDebug("Error parsing uuid: \(error)")
+                if DebugFlags.groupsV2ignoreCorruptInvites {
+                    Logger.warn("Error parsing uuid: \(error)")
+                } else {
+                    owsFailDebug("Error parsing uuid: \(error)")
+                }
                 continue
             }
             guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
@@ -285,21 +288,34 @@ public class GroupsV2Changes {
                 throw OWSAssertionError("Missing userID.")
             }
 
-            // Some userIds/uuidCiphertexts can be validated by
-            // the service. This is one.
-            let uuid = try groupV2Params.uuid(forUserId: userId)
+            // DeletePendingMemberAction is used to remove invalid invites,
+            // so uuid ciphertexts might be invalid.
+            do {
+                let uuid = try groupV2Params.uuid(forUserId: userId)
 
-            if !canRemoveMembers && uuid != changeAuthorUuid {
-                // Admin can revoke any invitation.
-                // The invitee can decline the invitation.
-                owsFailDebug("Cannot revoke invitation.")
-            }
+                if !canRemoveMembers && uuid != changeAuthorUuid {
+                    // Admin can revoke any invitation.
+                    // The invitee can decline the invitation.
+                    owsFailDebug("Cannot revoke invitation.")
+                }
 
-            guard oldGroupMembership.isPendingMember(uuid) else {
-                throw OWSAssertionError("Invalid membership.")
+                guard oldGroupMembership.hasInvalidInvite(forUserId: userId) ||
+                    oldGroupMembership.isPendingMember(uuid) else {
+                        throw OWSAssertionError("Invalid membership.")
+                }
+                groupMembershipBuilder.removeInvalidInvite(userId: userId)
+                groupMembershipBuilder.remove(uuid)
+            } catch {
+                if !canRemoveMembers {
+                    // Admin can revoke any invitation.
+                    owsFailDebug("Cannot revoke invitation.")
+                }
+
+                guard oldGroupMembership.hasInvalidInvite(forUserId: userId) else {
+                        throw OWSAssertionError("Invalid membership.")
+                }
+                groupMembershipBuilder.removeInvalidInvite(userId: userId)
             }
-            groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
         }
 
         for action in changeActionsProto.promotePendingMembers {

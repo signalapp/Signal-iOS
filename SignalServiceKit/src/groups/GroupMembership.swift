@@ -388,7 +388,8 @@ public class GroupMembership: MTLModel {
         return invalidInviteMap[userId] != nil
     }
 
-    public func enumerateInvalidInvites(_ block: (InvalidInvite) -> Void) {
+    public var invalidInvites: [InvalidInvite] {
+        var result = [InvalidInvite]()
         for invalidInvite in invalidInviteMap.values {
             guard let userId = invalidInvite.userId else {
                 owsFailDebug("Missing userId.")
@@ -398,8 +399,9 @@ public class GroupMembership: MTLModel {
                 owsFailDebug("Missing addedByUserId.")
                 continue
             }
-            block(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
+            result.append(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
         }
+        return result
     }
 
     public var asBuilder: Builder {

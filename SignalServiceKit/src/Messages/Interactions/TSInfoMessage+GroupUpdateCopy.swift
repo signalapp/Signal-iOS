@@ -28,6 +28,8 @@ struct GroupUpdateCopy {
         case userMembershipState_invitesNew
         case userMembershipState_invitesDeclined
         case userMembershipState_invitesRevoked
+        case userMembershipState_invalidInvitesAdded
+        case userMembershipState_invalidInvitesRemoved
         case userRole
         case groupName
         case groupAvatar
@@ -145,8 +147,7 @@ struct GroupUpdateCopy {
     mutating func addItem(_ type: UpdateType,
                           address: SignalServiceAddress? = nil,
                           copy: String) {
-        let item = UpdateItem(type: type,
-                              address: address)
+        let item = UpdateItem(type: type, address: address)
         if itemSet.contains(item),
             item.type != .debug {
             Logger.verbose("item: \(item)")
@@ -433,6 +434,89 @@ extension GroupUpdateCopy {
         // members, so we render these as counts.
         addUnnamedUsersWereInvited(count: membershipCounts.invitedUserCount)
         addUnnamedUserInvitesWereRevoked(count: membershipCounts.inviteRevokedCount)
+
+        addInvalidInviteUpdates(oldGroupMembership: oldGroupMembership,
+                                newGroupMembership: newGroupMembership)
+    }
+
+    mutating func addInvalidInviteUpdates(oldGroupMembership: GroupMembership,
+                                          newGroupMembership: GroupMembership) {
+        let oldInvalidInviteUserIds = Set(oldGroupMembership.invalidInvites.map { $0.userId })
+        let newInvalidInviteUserIds = Set(newGroupMembership.invalidInvites.map { $0.userId })
+        let addedInvalidInviteCount = newInvalidInviteUserIds.subtracting(oldInvalidInviteUserIds).count
+        let removedInvalidInviteCount = oldInvalidInviteUserIds.subtracting(newInvalidInviteUserIds).count
+
+        if addedInvalidInviteCount > 0 {
+            switch updater {
+            case .localUser:
+                let copy: String
+                if addedInvalidInviteCount > 1 {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N",
+                                             comment: "Message indicating that multiple invalid invites were added by the local user.")
+                } else {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1",
+                                             comment: "Message indicating that 1 invalid invite was added by the local user.")
+                }
+                addItem(.userMembershipState_invalidInvitesAdded, copy: copy)
+            case .otherUser(let updaterName, _):
+                let format: String
+                if addedInvalidInviteCount > 1 {
+                    format = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N",
+                                               comment: "Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}.")
+                } else {
+                    format = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1",
+                                               comment: "Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}.")
+                }
+                addItem(.userMembershipState_invalidInvitesAdded,
+                        format: format, updaterName)
+            case .unknown:
+                let copy: String
+                if addedInvalidInviteCount > 1 {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_N",
+                                             comment: "Message indicating that multiple invalid invites were added to the group.")
+                } else {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_1",
+                                             comment: "Message indicating that 1 invalid invite was added to the group.")
+                }
+                addItem(.userMembershipState_invalidInvitesAdded, copy: copy)
+            }
+        }
+
+        if removedInvalidInviteCount > 0 {
+            switch updater {
+            case .localUser:
+                let copy: String
+                if removedInvalidInviteCount > 1 {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N",
+                                             comment: "Message indicating that multiple invalid invites were revoked by the local user.")
+                } else {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1",
+                                             comment: "Message indicating that 1 invalid invite was revoked by the local user.")
+                }
+                addItem(.userMembershipState_invalidInvitesRemoved, copy: copy)
+            case .otherUser(let updaterName, _):
+                let format: String
+                if removedInvalidInviteCount > 1 {
+                    format = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N",
+                                               comment: "Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}.")
+                } else {
+                    format = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1",
+                                               comment: "Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}.")
+                }
+                addItem(.userMembershipState_invalidInvitesRemoved,
+                        format: format, updaterName)
+            case .unknown:
+                let copy: String
+                if removedInvalidInviteCount > 1 {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_N",
+                                             comment: "Message indicating that multiple invalid invites were revoked.")
+                } else {
+                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_1",
+                                             comment: "Message indicating that 1 invalid invite was revoked.")
+                }
+                addItem(.userMembershipState_invalidInvitesRemoved, copy: copy)
+            }
+        }
     }
 
     mutating func addMemberRoleUpdates(for address: SignalServiceAddress,

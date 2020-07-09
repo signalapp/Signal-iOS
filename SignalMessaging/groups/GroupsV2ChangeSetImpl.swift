@@ -77,6 +77,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
     private var shouldAcceptInvite = false
     private var shouldLeaveGroupDeclineInvite = false
+    private var shouldRevokeInvalidInvites = false
 
     private var shouldUpdateLocalProfileKey = false
 
@@ -152,7 +153,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             removeMember(uuid)
         }
 
-        oldGroupMembership.enumerateInvalidInvites { (invalidInvite: InvalidInvite) in
+        for invalidInvite in oldGroupMembership.invalidInvites {
             if !newGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) {
                 removeInvalidInvite(invalidInvite: invalidInvite)
             }
@@ -269,6 +270,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public func setShouldUpdateLocalProfileKey() {
         assert(!shouldUpdateLocalProfileKey)
         shouldUpdateLocalProfileKey = true
+    }
+
+    public func revokeInvalidInvites() {
+        assert(!shouldRevokeInvalidInvites)
+        shouldRevokeInvalidInvites = true
     }
 
     // MARK: - Change Protos
@@ -478,17 +484,31 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             allMemberCount += 1
         }
 
-        for invalidInvite in invalidInvitesToRemove.values {
-            guard currentGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) else {
-                // Another user has already removed this invite.
+        if shouldRevokeInvalidInvites {
+            if currentGroupMembership.invalidInvites.count < 1 {
+                // Another user has already revoked any invalid invites.
                 // We don't treat that as a conflict.
-                continue
+                owsFailDebug("No invalid invites to revoke.")
             }
+            for invalidInvite in currentGroupMembership.invalidInvites {
+                let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+                actionBuilder.setDeletedUserID(invalidInvite.userId)
+                actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                didChange = true
+            }
+        } else {
+            for invalidInvite in invalidInvitesToRemove.values {
+                guard currentGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) else {
+                    // Another user has already removed this invite.
+                    // We don't treat that as a conflict.
+                    continue
+                }
 
-            let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
-            actionBuilder.setDeletedUserID(invalidInvite.userId)
-            actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
-            didChange = true
+                let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+                actionBuilder.setDeletedUserID(invalidInvite.userId)
+                actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                didChange = true
+            }
         }
 
         for (uuid, newRole) in self.membersToChangeRole {

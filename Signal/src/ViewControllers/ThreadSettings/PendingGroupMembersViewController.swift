@@ -92,8 +92,10 @@ public class PendingGroupMembersViewController: OWSTableViewController {
         }
 
         // Only admins can revoke invites.
-        let canRevoke = groupViewHelper.canRevokePendingInvites
+        let canRevokeInvites = groupViewHelper.canRevokePendingInvites
         let canResendInvites = groupViewHelper.canResendInvites
+
+        // MARK: - People You Invited
 
         let localSection = OWSTableSection()
         localSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED",
@@ -107,7 +109,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
                     }
 
                     let cell = ContactTableViewCell()
-                    cell.selectionStyle = canRevoke ? .default : .none
+                    cell.selectionStyle = canRevokeInvites ? .default : .none
 
                     if canResendInvites {
                         cell.ows_setAccessoryView(self.buildResendInviteButton(isPlural: false))
@@ -118,7 +120,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
                     },
                                               customRowHeight: UITableView.automaticDimension) { [weak self] in
                                                 self?.inviteFromLocalUserWasTapped(address,
-                                                                                   canRevoke: canRevoke,
+                                                                                   canRevoke: canRevokeInvites,
                                                                                    canResendInvites: canResendInvites)
                 })
             }
@@ -128,6 +130,8 @@ public class PendingGroupMembersViewController: OWSTableViewController {
                                                      customRowHeight: UITableView.automaticDimension))
         }
         contents.addSection(localSection)
+
+        // MARK: - Other Users
 
         let otherUsersSection = OWSTableSection()
         otherUsersSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS",
@@ -153,7 +157,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
                     }
 
                     let cell = ContactTableViewCell()
-                    cell.selectionStyle = canRevoke ? .default : .none
+                    cell.selectionStyle = canRevokeInvites ? .default : .none
 
                     let inviterName = self.contactsManager.displayName(for: inviterAddress)
                     let customName: String
@@ -179,9 +183,9 @@ public class PendingGroupMembersViewController: OWSTableViewController {
                                                    customRowHeight: UITableView.automaticDimension) { [weak self] in
                                                     self?.invitesFromOtherUserWasTapped(invitedAddresses: invitedAddresses,
                                                                                         inviterAddress: inviterAddress,
-                                                                                        canRevoke: canRevoke,
+                                                                                        canRevoke: canRevokeInvites,
                                                                                         canResendInvites: canResendInvites)
-                    })
+                })
             }
         } else {
             otherUsersSection.add(OWSTableItem.softCenterLabel(withText: NSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
@@ -189,6 +193,30 @@ public class PendingGroupMembersViewController: OWSTableViewController {
                                                                customRowHeight: UITableView.automaticDimension))
         }
         contents.addSection(otherUsersSection)
+
+        // MARK: - Invalid Invites
+
+        let invalidInvitesCount = groupMembership.invalidInvites.count
+        if canRevokeInvites, invalidInvitesCount > 0 {
+            let invalidInvitesSection = OWSTableSection()
+            invalidInvitesSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES",
+                                                                  comment: "Title for the 'invalid invites' section of the 'pending group members' view.")
+
+            let cellTitle: String
+            if invalidInvitesCount > 1 {
+                let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT",
+                                               comment: "Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}.")
+                cellTitle = String(format: format, OWSFormat.formatInt(invalidInvitesCount))
+            } else {
+                cellTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1",
+                                              comment: "Format for 'revoke invalid 1 invite' item.")
+            }
+
+            invalidInvitesSection.add(OWSTableItem.disclosureItem(withText: cellTitle) { [weak self] in
+                                                self?.revokeInvalidInvites()
+            })
+            contents.addSection(invalidInvitesSection)
+        }
 
         self.contents = contents
     }
@@ -380,6 +408,29 @@ private extension PendingGroupMembersViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, uuids: uuids)
+        }.asVoid()
+    }
+
+    func revokeInvalidInvites() {
+        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+                                                        updatePromiseBlock: {
+                                                            self.revokeInvalidInvitesPromise()
+        },
+                                                        completion: {
+                                                            self.reloadGroupModelAndTableContents()
+        })
+    }
+
+    func revokeInvalidInvitesPromise() -> Promise<Void> {
+        guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
+            return Promise(error: OWSAssertionError("Invalid group model."))
+        }
+
+        return firstly { () -> Promise<Void> in
+            return GroupManager.messageProcessingPromise(for: groupModel,
+                                                         description: self.logTag)
+        }.then(on: .global()) { _ in
+            GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
         }.asVoid()
     }
 }

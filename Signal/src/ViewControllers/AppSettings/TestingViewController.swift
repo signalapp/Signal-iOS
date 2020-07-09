@@ -27,6 +27,17 @@ class TestingViewController: OWSTableViewController {
 
         do {
             let section = OWSTableSection()
+            section.footerTitle = "The app will not send 'group update' messages for v2 groups. " +
+            "Other group members will only learn of group changes from normal group messages."
+            section.add(OWSTableItem.switch(withText: "Groups v2: Don't Send Updates",
+                                            isOn: { DebugFlags.groupsV2dontSendUpdates },
+                                            target: self,
+                                            selector: #selector(didToggleGroupsV2dontSendUpdates(_:))))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
             section.footerTitle = "Members added to a v2 group will always be invited instead of added."
             section.add(OWSTableItem.switch(withText: "Groups v2: Always Invite",
                                             isOn: { DebugFlags.groupsV2forceInvites },
@@ -37,16 +48,20 @@ class TestingViewController: OWSTableViewController {
 
         do {
             let section = OWSTableSection()
-            section.footerTitle = "The app will not send 'group update' messages for v2 groups. " +
-                "Other group members will only learn of group changes from normal group messages."
-            section.add(OWSTableItem.switch(withText: "Groups v2: Don't Send Updates",
-                                            isOn: { DebugFlags.groupsV2dontSendUpdates },
+            section.footerTitle = "Client will only emit corrupt invites to v2 groups."
+            section.add(OWSTableItem.switch(withText: "Groups v2: Corrupt Invites",
+                                            isOn: { DebugFlags.groupsV2corruptInvites },
                                             target: self,
-                                            selector: #selector(didToggleGroupsV2dontSendUpdates(_:))))
+                                            selector: #selector(didToggleGroupsV2corruptInvites)))
             contents.addSection(section)
         }
 
         self.contents = contents
+    }
+
+    @objc
+    func didToggleGroupsV2dontSendUpdates(_ sender: UISwitch) {
+        DebugFlags.groupsV2dontSendUpdates = sender.isOn
     }
 
     @objc
@@ -55,7 +70,7 @@ class TestingViewController: OWSTableViewController {
     }
 
     @objc
-    func didToggleGroupsV2dontSendUpdates(_ sender: UISwitch) {
-        DebugFlags.groupsV2dontSendUpdates = sender.isOn
+    func didToggleGroupsV2corruptInvites(_ sender: UISwitch) {
+        DebugFlags.groupsV2corruptInvites = sender.isOn
     }
 }

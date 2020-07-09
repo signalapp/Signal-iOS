@@ -51,7 +51,12 @@ public class GroupsV2Protos {
         let memberBuilder = GroupsProtoMember.builder()
         memberBuilder.setRole(role)
         let userId = try groupV2Params.userId(forUuid: uuid)
-        memberBuilder.setUserID(userId)
+        if DebugFlags.groupsV2corruptInvites {
+            let corruptUserId = Randomness.generateRandomBytes(Int32(userId.count))
+            memberBuilder.setUserID(corruptUserId)
+        } else {
+            memberBuilder.setUserID(userId)
+        }
         builder.setMember(try memberBuilder.build())
 
         return try builder.build()
@@ -296,7 +301,11 @@ public class GroupsV2Protos {
                 uuid = try groupV2Params.uuid(forUserId: userId)
             } catch {
                 invalidInvites.append(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
-                owsFailDebug("Error parsing uuid: \(error)")
+                if DebugFlags.groupsV2ignoreCorruptInvites {
+                    Logger.warn("Error parsing uuid: \(error)")
+                } else {
+                    owsFailDebug("Error parsing uuid: \(error)")
+                }
                 continue
             }
             let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userId,

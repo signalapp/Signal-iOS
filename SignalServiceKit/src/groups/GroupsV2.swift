@@ -107,6 +107,8 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
     func removeMember(_ uuid: UUID)
 
+    func revokeInvalidInvites()
+
     func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole)
 
     func setAccessForMembers(_ value: GroupV2Access)
