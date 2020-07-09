@@ -2,10 +2,10 @@
 internal final class ClosedGroupSenderKey : NSObject, NSCoding {
     internal let chainKey: Data
     internal let keyIndex: UInt
-    internal let publicKey: String
+    internal let publicKey: Data
 
     // MARK: Initialization
-    init(chainKey: Data, keyIndex: UInt, publicKey: String) {
+    init(chainKey: Data, keyIndex: UInt, publicKey: Data) {
         self.chainKey = chainKey
         self.keyIndex = keyIndex
         self.publicKey = publicKey
@@ -15,7 +15,7 @@ internal final class ClosedGroupSenderKey : NSObject, NSCoding {
     public init?(coder: NSCoder) {
         guard let chainKey = coder.decodeObject(forKey: "chainKey") as? Data,
             let keyIndex = coder.decodeObject(forKey: "keyIndex") as? UInt,
-            let publicKey = coder.decodeObject(forKey: "publicKey") as? String else { return nil }
+            let publicKey = coder.decodeObject(forKey: "publicKey") as? Data else { return nil }
         self.chainKey = chainKey
         self.keyIndex = UInt(keyIndex)
         self.publicKey = publicKey
@@ -45,5 +45,7 @@ internal final class ClosedGroupSenderKey : NSObject, NSCoding {
     }
 
     // MARK: Description
-    override public var description: String { return "[ chainKey : \(chainKey), keyIndex : \(keyIndex), publicKey: \(publicKey) ]" }
+    override public var description: String {
+        return "[ chainKey : \(chainKey), keyIndex : \(keyIndex), publicKey: \(publicKey.toHexString()) ]"
+    }
 }

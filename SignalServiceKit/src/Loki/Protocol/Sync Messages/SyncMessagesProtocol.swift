@@ -74,8 +74,8 @@ public final class SyncMessagesProtocol : NSObject {
         let group = thread.groupModel
         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(group.groupId)
         let name = group.groupName!
-        let members = group.groupMemberIds
-        let admins = group.groupAdminIds
+        let members = group.groupMemberIds.map { Data(hex: $0) }
+        let admins = group.groupAdminIds.map { Data(hex: $0) }
         guard let groupPrivateKey = Storage.getClosedGroupPrivateKey(for: groupPublicKey) else {
             print("[Loki] Couldn't get private key for SSK based closed group.")
             return AnyPromise.from(Promise<Void>(error: SyncMessagesProtocolError.privateKeyMissing))
@@ -87,7 +87,7 @@ public final class SyncMessagesProtocol : NSObject {
         let linkedDevices = deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] }.filter { $0 != userPublicKey }
         let senderKeys: [ClosedGroupSenderKey] = linkedDevices.map { publicKey in
             let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
-            return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: publicKey)
+            return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: Data(hex: publicKey))
         }
         // Send a closed group update message to the existing members with the linked devices' ratchets (this message is aimed at the group)
         func sendMessageToGroup() {

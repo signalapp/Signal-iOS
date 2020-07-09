@@ -3293,7 +3293,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     // MARK: - SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder
 
-    @objc public class func builder(chainKey: Data, keyIndex: UInt32, publicKey: String) -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
+    @objc public class func builder(chainKey: Data, keyIndex: UInt32, publicKey: Data) -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
         return SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex, publicKey: publicKey)
     }
 
@@ -3309,7 +3309,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(chainKey: Data, keyIndex: UInt32, publicKey: String) {
+        @objc fileprivate init(chainKey: Data, keyIndex: UInt32, publicKey: Data) {
             super.init()
 
             setChainKey(chainKey)
@@ -3325,7 +3325,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
             proto.keyIndex = valueParam
         }
 
-        @objc public func setPublicKey(_ valueParam: String) {
+        @objc public func setPublicKey(_ valueParam: Data) {
             proto.publicKey = valueParam
         }
 
@@ -3344,12 +3344,12 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     @objc public let keyIndex: UInt32
 
-    @objc public let publicKey: String
+    @objc public let publicKey: Data
 
     private init(proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey,
                  chainKey: Data,
                  keyIndex: UInt32,
-                 publicKey: String) {
+                 publicKey: Data) {
         self.proto = proto
         self.chainKey = chainKey
         self.keyIndex = keyIndex
@@ -3423,13 +3423,15 @@ extension SSKProtoDataMessageClosedGroupUpdateSenderKey.SSKProtoDataMessageClose
     @objc public enum SSKProtoDataMessageClosedGroupUpdateType: Int32 {
         case new = 0
         case info = 1
-        case senderKey = 2
+        case senderKeyRequest = 2
+        case senderKey = 3
     }
 
     private class func SSKProtoDataMessageClosedGroupUpdateTypeWrap(_ value: SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum) -> SSKProtoDataMessageClosedGroupUpdateType {
         switch value {
         case .new: return .new
         case .info: return .info
+        case .senderKeyRequest: return .senderKeyRequest
         case .senderKey: return .senderKey
         }
     }
@@ -3438,6 +3440,7 @@ extension SSKProtoDataMessageClosedGroupUpdateSenderKey.SSKProtoDataMessageClose
         switch value {
         case .new: return .new
         case .info: return .info
+        case .senderKeyRequest: return .senderKeyRequest
         case .senderKey: return .senderKey
         }
     }
@@ -3498,23 +3501,23 @@ extension SSKProtoDataMessageClosedGroupUpdateSenderKey.SSKProtoDataMessageClose
             proto.senderKeys = wrappedItems.map { $0.proto }
         }
 
-        @objc public func addMembers(_ valueParam: String) {
+        @objc public func addMembers(_ valueParam: Data) {
             var items = proto.members
             items.append(valueParam)
             proto.members = items
         }
 
-        @objc public func setMembers(_ wrappedItems: [String]) {
+        @objc public func setMembers(_ wrappedItems: [Data]) {
             proto.members = wrappedItems
         }
 
-        @objc public func addAdmins(_ valueParam: String) {
+        @objc public func addAdmins(_ valueParam: Data) {
             var items = proto.admins
             items.append(valueParam)
             proto.admins = items
         }
 
-        @objc public func setAdmins(_ wrappedItems: [String]) {
+        @objc public func setAdmins(_ wrappedItems: [Data]) {
             proto.admins = wrappedItems
         }
 
@@ -3559,11 +3562,11 @@ extension SSKProtoDataMessageClosedGroupUpdateSenderKey.SSKProtoDataMessageClose
         return proto.hasGroupPrivateKey
     }
 
-    @objc public var members: [String] {
+    @objc public var members: [Data] {
         return proto.members
     }
 
-    @objc public var admins: [String] {
+    @objc public var admins: [Data] {
         return proto.admins
     }
 

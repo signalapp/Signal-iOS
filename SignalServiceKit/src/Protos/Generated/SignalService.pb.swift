@@ -1527,9 +1527,9 @@ struct SignalServiceProtos_DataMessage {
 
     var senderKeys: [SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey] = []
 
-    var members: [String] = []
+    var members: [Data] = []
 
-    var admins: [String] = []
+    var admins: [Data] = []
 
     /// @required
     var type: SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum {
@@ -1552,8 +1552,11 @@ struct SignalServiceProtos_DataMessage {
       /// groupPublicKey, name, senderKeys, members, admins
       case info // = 1
 
+      /// groupPublicKey
+      case senderKeyRequest // = 2
+
       /// groupPublicKey, senderKeys
-      case senderKey // = 2
+      case senderKey // = 3
 
       init() {
         self = .new
@@ -1563,7 +1566,8 @@ struct SignalServiceProtos_DataMessage {
         switch rawValue {
         case 0: self = .new
         case 1: self = .info
-        case 2: self = .senderKey
+        case 2: self = .senderKeyRequest
+        case 3: self = .senderKey
         default: return nil
         }
       }
@@ -1572,7 +1576,8 @@ struct SignalServiceProtos_DataMessage {
         switch self {
         case .new: return 0
         case .info: return 1
-        case .senderKey: return 2
+        case .senderKeyRequest: return 2
+        case .senderKey: return 3
         }
       }
 
@@ -1604,8 +1609,8 @@ struct SignalServiceProtos_DataMessage {
       mutating func clearKeyIndex() {self._keyIndex = nil}
 
       /// @required
-      var publicKey: String {
-        get {return _publicKey ?? String()}
+      var publicKey: Data {
+        get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
         set {_publicKey = newValue}
       }
       /// Returns true if `publicKey` has been explicitly set.
@@ -1619,7 +1624,7 @@ struct SignalServiceProtos_DataMessage {
 
       fileprivate var _chainKey: Data? = nil
       fileprivate var _keyIndex: UInt32? = nil
-      fileprivate var _publicKey: String? = nil
+      fileprivate var _publicKey: Data? = nil
     }
 
     init() {}
@@ -4044,8 +4049,8 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
       case 2: try decoder.decodeSingularBytesField(value: &self._groupPublicKey)
       case 3: try decoder.decodeSingularBytesField(value: &self._groupPrivateKey)
       case 4: try decoder.decodeRepeatedMessageField(value: &self.senderKeys)
-      case 5: try decoder.decodeRepeatedStringField(value: &self.members)
-      case 6: try decoder.decodeRepeatedStringField(value: &self.admins)
+      case 5: try decoder.decodeRepeatedBytesField(value: &self.members)
+      case 6: try decoder.decodeRepeatedBytesField(value: &self.admins)
       case 7: try decoder.decodeSingularEnumField(value: &self._type)
       default: break
       }
@@ -4066,10 +4071,10 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
       try visitor.visitRepeatedMessageField(value: self.senderKeys, fieldNumber: 4)
     }
     if !self.members.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.members, fieldNumber: 5)
+      try visitor.visitRepeatedBytesField(value: self.members, fieldNumber: 5)
     }
     if !self.admins.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.admins, fieldNumber: 6)
+      try visitor.visitRepeatedBytesField(value: self.admins, fieldNumber: 6)
     }
     if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 7)
@@ -4094,7 +4099,8 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum: SwiftProto
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "NEW"),
     1: .same(proto: "INFO"),
-    2: .same(proto: "SENDER_KEY"),
+    2: .same(proto: "SENDER_KEY_REQUEST"),
+    3: .same(proto: "SENDER_KEY"),
   ]
 }
 
@@ -4111,7 +4117,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self._chainKey)
       case 2: try decoder.decodeSingularUInt32Field(value: &self._keyIndex)
-      case 3: try decoder.decodeSingularStringField(value: &self._publicKey)
+      case 3: try decoder.decodeSingularBytesField(value: &self._publicKey)
       default: break
       }
     }
@@ -4125,7 +4131,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
     }
     if let v = self._publicKey {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
