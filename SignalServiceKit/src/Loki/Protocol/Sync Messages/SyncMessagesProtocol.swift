@@ -175,6 +175,7 @@ public final class SyncMessagesProtocol : NSObject {
         SessionMetaProtocol.updateProfileKeyIfNeeded(for: userMasterPublicKey, using: dataMessage)
     }
 
+    /// - Note: Deprecated.
     @objc(handleClosedGroupUpdateSyncMessageIfNeeded:wrappedIn:transaction:)
     public static func handleClosedGroupUpdateSyncMessageIfNeeded(_ transcript: OWSIncomingSentMessageTranscript, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // Check preconditions
@@ -199,6 +200,7 @@ public final class SyncMessagesProtocol : NSObject {
         infoMessage.save(with: transaction)
     }
 
+    /// - Note: Deprecated.
     @objc(handleClosedGroupQuitSyncMessageIfNeeded:wrappedIn:transaction:)
     public static func handleClosedGroupQuitSyncMessageIfNeeded(_ transcript: OWSIncomingSentMessageTranscript, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // Check preconditions
@@ -259,6 +261,7 @@ public final class SyncMessagesProtocol : NSObject {
         }
     }
 
+    /// - Note: Deprecated.
     @objc(handleClosedGroupSyncMessageIfNeeded:wrappedIn:transaction:)
     public static func handleClosedGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         let publicKey = envelope.source! // Set during UD decryption

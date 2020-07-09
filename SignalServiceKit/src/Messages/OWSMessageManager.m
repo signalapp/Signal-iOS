@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
-#pragma mark - Dependencies
+#pragma mark -
 
 - (id<OWSCallMessageHandler>)callMessageHandler
 {
@@ -208,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - Blocking
+#pragma mark -
 
 - (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
 {
@@ -234,7 +234,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - message handling
+#pragma mark -
 
 - (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
                  plaintextData:(NSData *_Nullable)plaintextData
@@ -435,7 +435,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"Handling content: <Content: %@>.", [self descriptionForContent:contentProto]);
 
-        // Loki: Ignore friend requests from before restoration
+        // Loki: Ignore friend requests from before restoration (deprecated)
         if ([LKFriendRequestProtocol isFriendRequestFromBeforeRestoration:envelope]) {
             [LKLogger print:@"[Loki] Ignoring friend request from before restoration."];
             return;
@@ -455,12 +455,12 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        // Loki: Handle session restoration request if needed
+        // Loki: Handle session restoration request if needed (deprecated)
         if ([LKSessionManagementProtocol isSessionRestorationRequest:contentProto.dataMessage]) {
             return;
         }
 
-        // Loki: Handle friend request acceptance if needed
+        // Loki: Handle friend request acceptance if needed (deprecated)
         [LKFriendRequestProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
 
         // Loki: Handle device linking message if needed
@@ -594,6 +594,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    // Loki: Handle SSK logic if needed
     [LKClosedGroupsProtocol handleSharedSenderKeysUpdateIfNeeded:dataMessage from:envelope.source transaction:transaction];
 
     if (dataMessage.group) {
@@ -1004,10 +1005,10 @@ NS_ASSUME_NONNULL_BEGIN
              ];
         } else {
             if (transcript.isGroupUpdate) {
-                // Loki: Handle closed group updated sync message
+                // Loki: Handle closed group updated sync message (deprecated)
                 [LKSyncMessagesProtocol handleClosedGroupUpdateSyncMessageIfNeeded:transcript wrappedIn:envelope transaction:transaction];
             } else if (transcript.isGroupQuit) {
-                // Loki: Handle closed group quit sync message
+                // Loki: Handle closed group quit sync message (deprecated)
                 [LKSyncMessagesProtocol handleClosedGroupQuitSyncMessageIfNeeded:transcript wrappedIn:envelope transaction:transaction];
             } else {
                 [OWSRecordTranscriptJob
@@ -1060,7 +1061,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Handle contact sync message
         [LKSyncMessagesProtocol handleContactSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else if (syncMessage.groups != nil) {
-        // Loki: Handle closed groups sync message
+        // Loki: Handle closed groups sync message (deprecated)
         [LKSyncMessagesProtocol handleClosedGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else if (syncMessage.openGroups != nil) {
         // Loki: Handle open group sync message
@@ -1368,7 +1369,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
-                // Loki: Ignore updates from non-admins
+                // Loki: Ignore updates from non-admins (deprecated)
                 if (oldGroupThread != nil && [LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope]) {
                     return nil;
                 }
@@ -1596,7 +1597,7 @@ NS_ASSUME_NONNULL_BEGIN
             [incomingMessage.attachmentIds addObject:pointer.uniqueId];
         }
 
-        // Loki: Handle friend request if needed
+        // Loki: Handle friend request if needed (deprecated)
         [LKFriendRequestProtocol handleFriendRequestMessageIfNeededFromEnvelope:envelope using:transaction];
 
         // Loki: Ignore empty data messages
