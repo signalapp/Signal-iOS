@@ -65,8 +65,7 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
 
     public func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         // If this method ends up being used by the tests, we should provide a better implementation.
-        assertionFailure("TODO")
-        return ComparisonResult.orderedAscending
+        owsFail("TODO")
     }
 
     public func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {

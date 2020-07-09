@@ -63,7 +63,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, Contac
     }
 
     func applyToContact(contact: ContactShareViewModel) {
-        preconditionFailure("This method must be overridden")
+        owsFailDebug("This method must be overridden")
     }
 }
 
