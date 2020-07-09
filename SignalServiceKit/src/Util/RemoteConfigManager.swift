@@ -8,13 +8,16 @@ import PromiseKit
 @objc
 public class RemoteConfig: BaseFlags {
 
-    init(_ config: [String: Bool]) {
-        self.config = config
-    }
-
     // rather than interact with `config` directly, prefer encoding any string constants
     // into a getter below...
-    private let config: [String: Bool]
+    private let isEnabledFlags: [String: Bool]
+    private let valueFlags: [String: AnyObject]
+
+    init(isEnabledFlags: [String: Bool],
+         valueFlags: [String: AnyObject]) {
+        self.isEnabledFlags = isEnabledFlags
+        self.valueFlags = valueFlags
+    }
 
     @objc
     public static var mandatoryPins: Bool { isEnabled(.mandatoryPins) }
@@ -66,11 +69,47 @@ public class RemoteConfig: BaseFlags {
         return isEnabled(.versionedProfiles)
     }
 
-    private static func isEnabled(_ flag: Flags.Supported, defaultValue: Bool = false) -> Bool {
+    @objc
+    public static var groupsV2maxMemberCount: UInt {
+        let defaultValue: UInt = 100
+        guard AppReadiness.isAppReady else {
+            owsFailDebug("Storage is not yet ready.")
+            return defaultValue
+        }
+        guard let rawValue: AnyObject = value(.groupsV2memberCountMax) else {
+            owsFailDebug("Missing value.")
+            return defaultValue
+        }
+        guard let stringValue = rawValue as? String else {
+            owsFailDebug("Unexpected value.")
+            return defaultValue
+        }
+        guard let uintValue = UInt(stringValue) else {
+            owsFailDebug("Invalid value.")
+            return defaultValue
+        }
+        return uintValue
+    }
+
+    private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
             return defaultValue
         }
-        return remoteConfig.config[flag.rawFlag] ?? defaultValue
+        return remoteConfig.isEnabledFlags[flag.rawFlag] ?? defaultValue
+    }
+
+    private static func value<T>(_ flag: Flags.SupportedValuesFlags) -> T? {
+        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
+            return nil
+        }
+        guard let remoteObject = remoteConfig.valueFlags[flag.rawFlag] else {
+            return nil
+        }
+        guard let remoteValue = remoteObject as? T else {
+            owsFailDebug("Remote value has unexpected type: \(remoteObject)")
+            return nil
+        }
+        return remoteValue
     }
 
     @objc
@@ -88,14 +127,24 @@ public class RemoteConfig: BaseFlags {
             }
         }
 
-        for flag in Flags.Supported.allCases {
-            let value = remoteConfig.config[flag.rawFlag]
-            logFlag("Config.Supported", flag.rawFlag, value)
+        for flag in Flags.SupportedIsEnabledFlags.allCases {
+            let value = remoteConfig.isEnabledFlags[flag.rawFlag]
+            logFlag("Config.SupportedIsEnabled", flag.rawFlag, value)
         }
 
-        for flag in Flags.Sticky.allCases {
-            let value = remoteConfig.config[flag.rawFlag]
-            logFlag("Config.Sticky", flag.rawFlag, value)
+        for flag in Flags.StickyIsEnabledFlags.allCases {
+            let value = remoteConfig.isEnabledFlags[flag.rawFlag]
+            logFlag("Config.StickyIsEnabled", flag.rawFlag, value)
+        }
+
+        for flag in Flags.SupportedValuesFlags.allCases {
+            let value = remoteConfig.valueFlags[flag.rawFlag]
+            logFlag("Config.SupportedValues", flag.rawFlag, value)
+        }
+
+        for flag in Flags.StickyValuesFlags.allCases {
+            let value = remoteConfig.valueFlags[flag.rawFlag]
+            logFlag("Config.StickyValues", flag.rawFlag, value)
         }
 
         let flagMap = buildFlagMap()
@@ -112,12 +161,14 @@ public class RemoteConfig: BaseFlags {
     }
 }
 
+// MARK: -
+
 private struct Flags {
     static let prefix = "ios."
 
     // Values defined in this array remain forever true once they are
     // marked true regardless of the remote state.
-    enum Sticky: String, FlagType {
+    enum StickyIsEnabledFlags: String, FlagType {
         case groupsV2GoodCitizen
         case versionedProfiles
     }
@@ -127,7 +178,7 @@ private struct Flags {
     // set because we cached a value before it went public. e.g. if we set
     // a sticky flag to 100% in beta then turn it back to 0% before going
     // to production.
-    enum Supported: String, FlagType {
+    enum SupportedIsEnabledFlags: String, FlagType {
         case kbs
         case mandatoryPins
         case groupsV2CreateGroups
@@ -135,7 +186,23 @@ private struct Flags {
         case deleteForEveryone
         case versionedProfiles
     }
+
+    // Values defined in this array remain set once they are
+    // set regardless of the remote state.
+    enum StickyValuesFlags: String, FlagType {
+        case groupsV2memberCountMax
+    }
+
+    // We filter the received config down to just the supported values.
+    // This ensures if we have a sticky value it doesn't get inadvertently
+    // set because we cached a value before it went public. e.g. if we set
+    // a sticky value to X in beta then remove it before going to production.
+    enum SupportedValuesFlags: String, FlagType {
+        case groupsV2memberCountMax
+    }
 }
+
+// MARK: -
 
 private protocol FlagType: CaseIterable {
     var rawValue: String { get }
@@ -143,10 +210,14 @@ private protocol FlagType: CaseIterable {
     static var allRawFlags: [String] { get }
 }
 
+// MARK: -
+
 private extension FlagType {
     var rawFlag: String { Flags.prefix + rawValue }
     static var allRawFlags: [String] { allCases.map { $0.rawFlag } }
 }
+
+// MARK: -
 
 @objc
 public protocol RemoteConfigManager: AnyObject {
@@ -155,12 +226,16 @@ public protocol RemoteConfigManager: AnyObject {
     func warmCaches()
 }
 
+// MARK: -
+
 @objc
 public class StubbableRemoteConfigManager: NSObject, RemoteConfigManager {
     public var cachedConfig: RemoteConfig?
 
     public func warmCaches() {}
 }
+
+// MARK: -
 
 @objc
 public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
@@ -246,11 +321,16 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     private func cacheCurrent() {
         AssertIsOnMainThread()
 
-        if let storedConfig = self.databaseStorage.read(block: { transaction in
-            self.keyValueStore.getRemoteConfig(transaction: transaction)
-        }) {
-            Logger.info("loaded stored config: \(storedConfig)")
-            self.cachedConfig = RemoteConfig(storedConfig)
+        var isEnabledFlags = [String: Bool]()
+        var valueFlags = [String: AnyObject]()
+        self.databaseStorage.read { transaction in
+            isEnabledFlags = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) ?? [:]
+            valueFlags = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) ?? [:]
+        }
+
+        if !isEnabledFlags.isEmpty || !valueFlags.isEmpty {
+            Logger.info("Loaded stored config. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags)")
+            self.cachedConfig = RemoteConfig(isEnabledFlags: isEnabledFlags, valueFlags: valueFlags)
         } else {
             Logger.info("no stored remote config")
         }
@@ -273,37 +353,83 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         }
     }
 
+    private static func isValidValue(_ value: AnyObject) -> Bool {
+        // Discard Data for now; ParamParser can't auto-decode them.
+        if value as? String != nil {
+            return true
+        } else {
+            owsFailDebug("Unexpected value: \(type(of: value))")
+            return false
+        }
+    }
+
     private func refresh() {
         firstly {
             self.serviceClient.getRemoteConfig()
-        }.done(on: .global()) { fetchedConfig in
-            var configToStore = fetchedConfig.filter { Flags.Supported.allRawFlags.contains($0.key) }
+        }.done(on: .global()) { (fetchedConfig: [String: RemoteConfigItem]) in
+            // Extract the _supported_ flags from the fetched config.
+            var isEnabledFlags = [String: Bool]()
+            var valueFlags = [String: AnyObject]()
+            fetchedConfig.forEach { (key: String, item: RemoteConfigItem) in
+                switch item {
+                case .isEnabled(let isEnabled):
+                    if Flags.SupportedIsEnabledFlags.allRawFlags.contains(key) {
+                        isEnabledFlags[key] = isEnabled
+                    }
+                case .value(let value):
+                    if Flags.SupportedValuesFlags.allRawFlags.contains(key) {
+                        if Self.isValidValue(value) {
+                            valueFlags[key] = value
+                        } else {
+                            owsFailDebug("Invalid value: \(value) \(type(of: value))")
+                        }
+                    }
+                }
+            }
+
             self.databaseStorage.write { transaction in
-                // Update fetched config to reflect any sticky flags.
-                if let existingConfig = self.keyValueStore.getRemoteConfig(transaction: transaction) {
-                    existingConfig.lazy.filter { Flags.Sticky.allRawFlags.contains($0.key) }.forEach {
-                        configToStore[$0.key] = $0.value || (fetchedConfig[$0.key] ?? false)
+                // Preserve any sticky flags.
+                if let existingConfig = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) {
+                    existingConfig.forEach { (key: String, value: Bool) in
+                        // Preserve "is enabled" flags if they are sticky and already set.
+                        if Flags.StickyIsEnabledFlags.allRawFlags.contains(key),
+                            value == true {
+                            isEnabledFlags[key] = value
+                        }
+                    }
+                }
+                if let existingConfig = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) {
+                    existingConfig.forEach { (key: String, value: AnyObject) in
+                        // Preserve "value" flags if they are sticky and already set and missing from the fetched config.
+                        if Flags.StickyValuesFlags.allRawFlags.contains(key),
+                            valueFlags[key] == nil {
+                            valueFlags[key] = value
+                        }
                     }
                 }
 
-                self.keyValueStore.setRemoteConfig(configToStore, transaction: transaction)
+                self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
+                self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
                 self.keyValueStore.setLastFetched(Date(), transaction: transaction)
             }
-            Logger.info("stored new remoteConfig: \(configToStore)")
+            Logger.info("stored new remoteConfig. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags)")
         }.catch { error in
             Logger.error("error: \(error)")
         }
     }
 }
 
+// MARK: -
+
 private extension SDSKeyValueStore {
 
-    // MARK: - Remote Config
+    // MARK: - Remote Config Enabled Flags
 
-    var remoteConfigKey: String { "remoteConfigKey" }
+    private static let remoteConfigIsEnabledFlagsKey = "remoteConfigKey"
 
-    func getRemoteConfig(transaction: SDSAnyReadTransaction) -> [String: Bool]? {
-        guard let object = getObject(forKey: remoteConfigKey, transaction: transaction) else {
+    func getRemoteConfigIsEnabledFlags(transaction: SDSAnyReadTransaction) -> [String: Bool]? {
+        guard let object = getObject(forKey: Self.remoteConfigIsEnabledFlagsKey,
+                                     transaction: transaction) else {
             return nil
         }
 
@@ -315,8 +441,31 @@ private extension SDSKeyValueStore {
         return remoteConfig
     }
 
-    func setRemoteConfig(_ newValue: [String: Bool], transaction: SDSAnyWriteTransaction) {
-        return setObject(newValue, key: remoteConfigKey, transaction: transaction)
+    func setRemoteConfigIsEnabledFlags(_ newValue: [String: Bool], transaction: SDSAnyWriteTransaction) {
+        return setObject(newValue,
+                         key: Self.remoteConfigIsEnabledFlagsKey,
+                         transaction: transaction)
+    }
+
+    // MARK: - Remote Config Value Flags
+
+    private static let remoteConfigValueFlagsKey = "remoteConfigValueFlags"
+
+    func getRemoteConfigValueFlags(transaction: SDSAnyReadTransaction) -> [String: AnyObject]? {
+        guard let object = getObject(forKey: Self.remoteConfigValueFlagsKey, transaction: transaction) else {
+            return nil
+        }
+
+        guard let remoteConfig = object as? [String: AnyObject] else {
+            owsFailDebug("unexpected object: \(object)")
+            return nil
+        }
+
+        return remoteConfig
+    }
+
+    func setRemoteConfigValueFlags(_ newValue: [String: AnyObject], transaction: SDSAnyWriteTransaction) {
+        return setObject(newValue, key: Self.remoteConfigValueFlagsKey, transaction: transaction)
     }
 
     // MARK: - Last Fetched
