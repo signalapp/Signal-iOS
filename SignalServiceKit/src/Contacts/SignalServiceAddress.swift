@@ -228,6 +228,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 @objc
 public class SignalServiceAddressCache: NSObject {
     private let serialQueue = DispatchQueue(label: "SignalServiceAddressCache")
+    internal var testing_disableCache = false
 
     private var uuidToPhoneNumberCache = [UUID: String]()
     private var phoneNumberToUUIDCache = [String: UUID]()
@@ -258,6 +259,21 @@ public class SignalServiceAddressCache: NSObject {
     @discardableResult
     func hashAndCache(uuid: UUID?, phoneNumber: String?) -> Int {
         return serialQueue.sync {
+
+            guard !testing_disableCache else {
+                assert(OWSIsDebugBuild(), "Testing modifier not supported in release")
+
+                // If the cache is disabled, we just still return a valid hash to speed up isEqual: checks
+                // Anything works as long as it's consistent.
+                if let uuid = uuid {
+                    return uuid.hashValue
+                } else if let digits = phoneNumber?.filter({ $0.isWholeNumber }) {
+                    return Int(digits) ?? 0
+                } else {
+                    return 0
+                }
+            }
+
             // If we have a UUID and a phone number, cache the mapping.
             if let uuid = uuid, let phoneNumber = phoneNumber {
                 uuidToPhoneNumberCache[uuid] = phoneNumber
@@ -296,10 +312,12 @@ public class SignalServiceAddressCache: NSObject {
     }
 
     func uuid(forPhoneNumber phoneNumber: String) -> UUID? {
+        guard !testing_disableCache else { return nil }
         return serialQueue.sync { phoneNumberToUUIDCache[phoneNumber] }
     }
 
     func phoneNumber(forUuid uuid: UUID) -> String? {
+        guard !testing_disableCache else { return nil }
         return serialQueue.sync { uuidToPhoneNumberCache[uuid] }
     }
 }

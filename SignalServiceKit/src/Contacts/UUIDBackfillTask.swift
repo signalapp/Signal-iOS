@@ -13,7 +13,7 @@ public class UUIDBackfillTask: NSObject {
     private let queue: DispatchQueue
     private let persistence: PersistenceProvider
     private let network: NetworkProvider
-    private let phoneNumbersToFetch: [String]
+    private var phoneNumbersToFetch: [String] = []
 
     private var completionBlock: (() -> Void)?
 
@@ -27,17 +27,9 @@ public class UUIDBackfillTask: NSObject {
          persistence: PersistenceProvider = .default,
          network: NetworkProvider = .default) {
 
-        let allRecipientsWithoutUUID = persistence.fetchSignalRecipientsWithoutUUID()
-        assert(allRecipientsWithoutUUID.allSatisfy({ (recipient) in
-            recipient.recipientPhoneNumber != nil &&
-            recipient.recipientUUID == nil &&
-            true // Pull request note: Is there a way to check for valid e164?
-        }), "Invalid recipient returned from persistence")
-
         self.queue = DispatchQueue(label: "org.whispersystems.signal.\(type(of: self))", target: targetQueue)
         self.persistence = persistence
         self.network = network
-        self.phoneNumbersToFetch = allRecipientsWithoutUUID.compactMap { $0.recipientPhoneNumber }
         super.init()
     }
 
@@ -46,30 +38,76 @@ public class UUIDBackfillTask: NSObject {
     func perform(completion: @escaping () -> Void = {}) {
         queue.async {
             guard self.didStart == false else {
-                assertionFailure("perform() invoked multiple times")
+                owsFailDebug("perform() invoked multiple times")
                 return
             }
             self.didStart = true
             self.completionBlock = completion
 
-            // Early exit if there's nothing to do:
-            if self.phoneNumbersToFetch.count > 0 {
-                Logger.info("Scheduling a fetch for \(self.phoneNumbersToFetch.count) phone numbers.")
-                self.onqueue_schedule()
-            } else {
+            let allRecipientsWithoutUUID = self.persistence.fetchRegisteredRecipientsWithoutUUID()
+            assert(allRecipientsWithoutUUID.allSatisfy({ (recipient) in
+                recipient.recipientPhoneNumber != nil &&
+                recipient.recipientUUID == nil
+            }), "Invalid recipient returned from persistence")
+            self.phoneNumbersToFetch = allRecipientsWithoutUUID.compactMap { $0.recipientPhoneNumber }
+
+            if FeatureFlags.isUsingProductionService {
+                Logger.info("Modern CDS is not available in production. Completing early.")
+                self.onqueue_complete()
+
+            } else if self.phoneNumbersToFetch.isEmpty {
                 Logger.info("Completing early, no phone numbers to fetch.")
                 self.onqueue_complete()
+
+            } else {
+                Logger.info("Scheduling a fetch for \(self.phoneNumbersToFetch.count) phone numbers.")
+                self.onqueue_schedule()
             }
+        }
+    }
+
+    // MARK: - Testing
+
+    internal var testing_shortBackoffInterval = false
+    internal var testing_backoffInterval: DispatchTimeInterval {
+        return backoffInterval
+    }
+    internal var testing_attemptCount: Int {
+        get {
+            return attemptCount
+        }
+        set {
+            attemptCount = newValue
         }
     }
 
     // MARK: - Private
 
+    private var backoffInterval: DispatchTimeInterval {
+        // (Similar code exists elsewhere in the project, this pattern is used in a few places)
+        // (IOS-649: Factor out exponential backoff tracking into class)
+        //
+        // Arbitrary backoff factor...
+        // With backOffFactor of 1.9
+        // attempt 1:  0.00s
+        // attempt 2:  90ms
+        // ...
+        // attempt 5:  1.20s
+        // ...
+        // attempt 11:  61.2s
+        let backoffFactor = 1.9
+        let maxBackoff = 15 * kMinuteInterval
+        let secondsToBackoff = 0.1 * (pow(backoffFactor, Double(attemptCount)) - 1)
+        let secondsCapped = min(maxBackoff, secondsToBackoff)
+        let milliseconds = Int(secondsCapped * 1000)
+
+        let millisecondsToBackoff = testing_shortBackoffInterval ? (milliseconds / 100) : milliseconds
+        return .milliseconds(millisecondsToBackoff)
+    }
+
     private func onqueue_schedule() {
         assertOnQueue(queue)
-
-        let delay = DispatchTimeInterval.seconds(1)   // TODO: Incremental backoff based on the number of attempts
-        queue.asyncAfter(deadline: .now() + delay) {
+        queue.asyncAfter(deadline: .now() + backoffInterval) {
             self.onqueue_perform()
         }
     }
@@ -95,16 +133,15 @@ public class UUIDBackfillTask: NSObject {
     func onqueue_handleError(error: Error) {
         assertOnQueue(queue)
 
-        switch error {
-        case TSNetworkManagerError.failedConnection:
+        if IsNetworkConnectivityFailure(error) {
             Logger.info("UUID Backfill failed due to network failure")
-        default:
+        } else {
             Logger.error("UUID Backfill failed: \(error)")
             hardFailureCount += 1
         }
 
         // After a certain number of unexpected errors we'll just give up
-        if hardFailureCount <= 5 {
+        if hardFailureCount < 5 {
             Logger.info("UUID backfill will retry")
             self.onqueue_schedule()
         } else {
@@ -125,8 +162,13 @@ public class UUIDBackfillTask: NSObject {
         let toRegister = addresses.filter { $0.uuid != nil }
         let toUnregister = addresses.filter { $0.uuid == nil }
 
-        toRegister.forEach { Logger.info("Registering \($0)") }
-        toUnregister.forEach { Logger.info("Unregistering \($0)") }
+        assert({
+            let registeredNumberSet = Set(toRegister.map { $0.phoneNumber })
+            let unregisteredNumberSet = Set(toUnregister.map { $0.phoneNumber })
+            return registeredNumberSet.isDisjoint(with: unregisteredNumberSet)
+        }(), "The same number is being both registered an unregistered")
+        Logger.info("Updating \(toRegister.count) recipients with UUID")
+        Logger.info("Unregistering \(toUnregister.count) recipients")
 
         persistence.updateSignalRecipients(registering: toRegister, unregistering: toUnregister)
         onqueue_complete()
@@ -189,9 +231,9 @@ extension UUIDBackfillTask {
     class PersistenceProvider {
         static let `default` = PersistenceProvider()
 
-        func fetchSignalRecipientsWithoutUUID() -> [SignalRecipient] {
+        func fetchRegisteredRecipientsWithoutUUID() -> [SignalRecipient] {
             SDSDatabaseStorage.shared.read { (readTx) in
-                return AnySignalRecipientFinder().signalRecipientsWithoutUUID(transaction: readTx)
+                return AnySignalRecipientFinder().registeredRecipientsWithoutUUID(transaction: readTx)
             }
         }
 
