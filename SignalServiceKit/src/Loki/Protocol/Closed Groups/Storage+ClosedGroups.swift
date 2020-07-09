@@ -26,7 +26,7 @@ public extension Storage {
         read { transaction in
             transaction.enumerateRows(inCollection: collection) { key, object, _, _ in
                 guard let publicKey = key as? String, let ratchet = object as? ClosedGroupRatchet else { return }
-                let senderKey = ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: publicKey)
+                let senderKey = ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: Data(hex: publicKey))
                 result.insert(senderKey)
             }
         }
