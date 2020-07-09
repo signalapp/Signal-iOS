@@ -315,7 +315,9 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     public func warmCaches() {
         cacheCurrent()
 
-        RemoteConfig.logFlags()
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            RemoteConfig.logFlags()
+        }
     }
 
     private func cacheCurrent() {
