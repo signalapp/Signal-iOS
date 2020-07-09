@@ -94,12 +94,12 @@ public final class SessionManagementProtocol : NSObject {
         // Check that we don't already have a session
         let hasSession = storage.containsSession(publicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
         guard !hasSession else { return }
-        // Check that we didn't already send a session request
-        var hasSentSessionRequest = false
+        // Check that we didn't already send or process a session request
+        var hasSentOrProcessedSessionRequest = false
         storage.dbReadConnection.read { transaction in
-            hasSentSessionRequest = storage.getSessionRequestTimestamp(for: publicKey, in: transaction) != nil
+            hasSentOrProcessedSessionRequest = storage.getSessionRequestTimestamp(for: publicKey, in: transaction) != nil
         }
-        guard !hasSentSessionRequest else { return }
+        guard !hasSentOrProcessedSessionRequest else { return }
         // Create the thread if needed
         let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         thread.save(with: transaction)
@@ -184,9 +184,9 @@ public final class SessionManagementProtocol : NSObject {
             return print("[Loki] Couldn't parse pre key bundle received from: \(publicKey).")
         }
         if isSessionRequestMessage(protoContent.dataMessage),
-            let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: publicKey, in: transaction),
-            envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
-            // We sent a session request after this one was sent
+            let sessionRequestTimestamp = storage.getSessionRequestTimestamp(for: publicKey, in: transaction),
+            envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sessionRequestTimestamp) {
+            // We sent or processed a session request after this one was sent
             return print("[Loki] Ignoring session request from: \(publicKey).")
         }
         storage.setPreKeyBundle(preKeyBundle, forContact: publicKey, transaction: transaction)
@@ -199,10 +199,11 @@ public final class SessionManagementProtocol : NSObject {
         let publicKey = envelope.source! // Set during UD decryption
         if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: publicKey, in: transaction),
             envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
-            // We sent a session request after this one was sent
+            // We sent or processed a session request after this one was sent
             print("[Loki] Ignoring session request from: \(publicKey).")
             return false
         }
+        storage.setSessionRequestTimestamp(for: publicKey, to: Date(), in: transaction)
         sendSessionEstablishedMessage(to: publicKey, in: transaction)
         return true
     }

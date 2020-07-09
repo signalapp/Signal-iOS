@@ -25,6 +25,7 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
+#import "OWSOutgoingNullMessage.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage+Loki.h"
@@ -482,7 +483,53 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (contentProto.typingMessage) {
             [self handleIncomingEnvelope:envelope withTypingMessage:contentProto.typingMessage transaction:transaction];
         } else if (contentProto.nullMessage) {
-            OWSLogInfo(@"Received null message.");
+            // Loki: This is needed for compatibility with refactored desktop clients
+            // ========
+            NSString *publicKey = envelope.source;
+            if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
+                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:publicKey transaction:transaction];
+                [thread saveWithTransaction:transaction];
+                OWSOutgoingNullMessage *sessionEstablishedMessage = [[OWSOutgoingNullMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                                                            inThread:thread
+                                                                                                                         messageBody:nil
+                                                                                                                       attachmentIds:[NSMutableArray new]
+                                                                                                                    expiresInSeconds:0
+                                                                                                                     expireStartedAt:0
+                                                                                                                      isVoiceMessage:NO
+                                                                                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                                                                                       quotedMessage:nil
+                                                                                                                        contactShare:nil
+                                                                                                                         linkPreview:nil];
+                SSKMessageSenderJobQueue *messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue;
+                [messageSenderJobQueue addMessage:sessionEstablishedMessage transaction:transaction];
+            } else {
+                OWSLogWarn(@"Ignoring null message from: %@.", publicKey);
+            }
+            LKFriendRequestStatus friendRequestStatus = [self.primaryStorage getFriendRequestStatusForContact:publicKey transaction:transaction];
+            if (friendRequestStatus == LKFriendRequestStatusNone || friendRequestStatus == LKFriendRequestStatusRequestExpired) {
+                [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusRequestReceived forContact:publicKey transaction:transaction];
+            } else if (friendRequestStatus == LKFriendRequestStatusRequestSent) {
+                // Loki: Update device links in a blocking way
+                // FIXME: This is horrible for performance
+                // FIXME: ========
+                // The envelope source is set during UD decryption
+                if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:publicKey]) {
+                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+                    [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForPublicKey:envelope.source transaction:transaction].ensureOn(queue, ^() {
+                        dispatch_semaphore_signal(semaphore);
+                    }).catchOn(queue, ^(NSError *error) {
+                        dispatch_semaphore_signal(semaphore);
+                    }) retainUntilComplete];
+                    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
+                }
+                // FIXME: ========
+                [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusFriends forContact:publicKey transaction:transaction];
+                [LKFriendRequestProtocol sendFriendRequestAcceptedMessageToPublicKey:publicKey using:transaction];
+                NSString *masterPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:publicKey in:transaction] ?: publicKey);
+                [LKSyncMessagesProtocol syncContactWithPublicKey:masterPublicKey];
+            }
+            // ========
         } else if (contentProto.receiptMessage) {
             [self handleIncomingEnvelope:envelope
                       withReceiptMessage:contentProto.receiptMessage
@@ -1551,26 +1598,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Loki: Handle friend request if needed
         [LKFriendRequestProtocol handleFriendRequestMessageIfNeededFromEnvelope:envelope using:transaction];
-        
-        if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
-            if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
-                // Loki: This is needed for compatibility with refactored desktop clients
-                [LKSessionManagementProtocol sendSessionEstablishedMessageToPublicKey:publicKey transaction:transaction];
-            } else {
-                OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.", publicKey, (unsigned long)timestamp);
-            }
-            return nil;
-        }
-
-        // Loki: This is needed for compatibility with refactored desktop clients
-        LKFriendRequestStatus friendRequestStatus = [self.primaryStorage getFriendRequestStatusForContact:publicKey transaction:transaction];
-        if (friendRequestStatus == LKFriendRequestStatusNone || friendRequestStatus == LKFriendRequestStatusRequestExpired) {
-            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusRequestReceived forContact:publicKey transaction:transaction];
-        } else if (friendRequestStatus == LKFriendRequestStatusRequestSent) {
-            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusFriends forContact:publicKey transaction:transaction];
-            [LKFriendRequestProtocol sendFriendRequestAcceptedMessageToPublicKey:publicKey using:transaction];
-            [LKSyncMessagesProtocol syncContactWithPublicKey:masterPublicKey];
-        }
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread

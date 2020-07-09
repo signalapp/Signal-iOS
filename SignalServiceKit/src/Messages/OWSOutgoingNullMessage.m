@@ -51,16 +51,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 
-    NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
+    NSUInteger contentLength;
+    if (self.verificationStateSyncMessage != nil) {
+        contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
 
-    OWSAssertDebug(self.verificationStateSyncMessage.paddingBytesLength > 0);
+        OWSAssertDebug(self.verificationStateSyncMessage.paddingBytesLength > 0);
 
-    // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
-    // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
-    // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
-    // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a
-    // verification sync which is ~1-512 bytes larger then that.
-    contentLength += self.verificationStateSyncMessage.paddingBytesLength;
+        // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
+        // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
+        // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
+        // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a
+        // verification sync which is ~1-512 bytes larger then that.
+        contentLength += self.verificationStateSyncMessage.paddingBytesLength;
+    } else {
+        contentLength = arc4random_uniform(512);
+    }
 
     OWSAssertDebug(contentLength > 0);
 
@@ -68,8 +73,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *error;
     SSKProtoNullMessage *_Nullable nullMessage = [nullMessageBuilder buildAndReturnError:&error];
-    if (error || !nullMessage) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
+    if (error != nil || nullMessage == nil) {
+        OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);
         return nil;
     }
 
@@ -77,10 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
     contentBuilder.nullMessage = nullMessage;
 
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
-    if (error || !contentData) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
+    if (error != nil || contentData == nil) {
+        OWSFailDebug(@"Couldn't serialize protobuf due to error: %@.", error);
         return nil;
     }
+
     return contentData;
 }
 
