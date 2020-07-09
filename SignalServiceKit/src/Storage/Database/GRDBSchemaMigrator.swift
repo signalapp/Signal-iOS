@@ -79,7 +79,6 @@ public class GRDBSchemaMigrator: NSObject {
         case addMarkedUnreadIndexToThread
         case fixIncorrectIndexes
         case resetThreadVisibility
-        case indexSignalRecipients
         case trackUserProfileFetches
 
         // NOTE: Every time we add a migration id, consider
@@ -108,6 +107,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_resetStorageServiceData
         case dataMigration_markAllInteractionsAsNotDeleted
         case dataMigration_recordMessageRequestInteractionIdEpoch
+        case dataMigration_indexSignalRecipients
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -719,16 +719,6 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.indexSignalRecipients.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
-                _: UnsafeMutablePointer<ObjCBool>) in
-                GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
-            }
-        }
-
         migrator.registerMigration(MigrationId.trackUserProfileFetches.rawValue) { db in
             do {
                 try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
@@ -812,6 +802,21 @@ public class GRDBSchemaMigrator: NSObject {
 
             let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction)
             SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_indexSignalRecipients.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // This migration was initially created as a schema migration instead of a data migration.
+            // If we already ran it there, we need to skip it here since we're doing inserts below that
+            // cannot be repeated.
+            guard !hasRunMigration("indexSignalRecipients", transaction: transaction) else { return }
+
+            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
+                _: UnsafeMutablePointer<ObjCBool>) in
+                GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
+            }
         }
     }
 }
@@ -1523,5 +1528,13 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
             Logger.info("removing redundant recipient: \(redundantRecipient)")
             redundantRecipient.anyRemove(transaction: transaction)
         }
+    }
+}
+
+private func hasRunMigration(_ identifier: String, transaction: GRDBReadTransaction) -> Bool {
+    do {
+        return try String.fetchOne(transaction.database, sql: "SELECT identifier FROM grdb_migrations WHERE identifier = ?", arguments: [identifier]) != nil
+    } catch {
+        owsFail("Error: \(error)")
     }
 }
