@@ -1599,6 +1599,9 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Handle friend request if needed
         [LKFriendRequestProtocol handleFriendRequestMessageIfNeededFromEnvelope:envelope using:transaction];
 
+        // Loki: Ignore empty data messages
+        if (body.length == 0 && attachmentPointers.count < 1 && !contact) { return nil; }
+
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
                          masterThread:thread
