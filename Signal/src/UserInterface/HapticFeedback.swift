@@ -37,8 +37,10 @@ class NotificationHapticFeedback: NSObject {
 class ImpactHapticFeedback: NSObject {
     @objc
     class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle) {
-        let generator = UIImpactFeedbackGenerator(style: style)
-        generator.prepare()
-        generator.impactOccurred()
+        DispatchQueue.main.async {
+            let generator = UIImpactFeedbackGenerator(style: style)
+            generator.prepare()
+            generator.impactOccurred()
+        }
     }
 }
