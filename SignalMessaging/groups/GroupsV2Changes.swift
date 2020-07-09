@@ -173,8 +173,8 @@ public class GroupsV2Changes {
                 // Any member can leave the group.
                 owsFailDebug("Cannot kick member.")
             }
-            guard oldGroupMembership.isNonPendingMember(uuid) else {
-                throw OWSAssertionError("Invalid membership.")
+            if !oldGroupMembership.isNonPendingMember(uuid) {
+                owsFailDebug("Invalid membership.")
             }
             groupMembershipBuilder.remove(uuid)
         }
