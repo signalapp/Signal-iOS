@@ -149,11 +149,23 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
     }
 
     public func decrypt(_ ivAndCiphertext: Data, for groupPublicKey: String, senderPublicKey: String, keyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction) throws -> Data {
-        let ratchet = try stepRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, until: keyIndex, using: transaction)
+        let ratchet: ClosedGroupRatchet
+        do {
+            ratchet = try stepRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, until: keyIndex, using: transaction)
+        } catch {
+            // FIXME: It'd be cleaner to handle this in OWSMessageDecrypter (where all the other decryption errors are handled), but this was a lot more
+            // convenient because there's an easy way to get the sender public key from here.
+            if case RatchetingError.loadingFailed(_, _) = error {
+                ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+            }
+            throw error
+        }
         let iv = ivAndCiphertext[0..<Int(SharedSenderKeysImplementation.ivSize)]
         let ciphertext = ivAndCiphertext[Int(SharedSenderKeysImplementation.ivSize)...]
         let gcm = GCM(iv: iv.bytes, tagLength: Int(SharedSenderKeysImplementation.gcmTagSize), mode: .combined)
-        guard let messageKey = ratchet.messageKeys.last else { throw RatchetingError.messageKeyMissing(targetKeyIndex: keyIndex, groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey) }
+        guard let messageKey = ratchet.messageKeys.last else {
+            throw RatchetingError.messageKeyMissing(targetKeyIndex: keyIndex, groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
+        }
         let aes = try AES(key: Data(hex: messageKey).bytes, blockMode: gcm, padding: .noPadding)
         return Data(try aes.decrypt(ciphertext.bytes))
     }

@@ -13,7 +13,7 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
     internal enum Kind {
         case new(groupPublicKey: Data, name: String, groupPrivateKey: Data, senderKeys: [ClosedGroupSenderKey], members: [Data], admins: [Data])
         case info(groupPublicKey: Data, name: String, senderKeys: [ClosedGroupSenderKey], members: [Data], admins: [Data])
-        case senderKeyRequest(groupPublicKey: Data, members: [Data])
+        case senderKeyRequest(groupPublicKey: Data)
         case senderKey(groupPublicKey: Data, senderKey: ClosedGroupSenderKey)
     }
 
@@ -49,9 +49,8 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
                 let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
             self.kind = .info(groupPublicKey: groupPublicKey, name: name, senderKeys: senderKeys, members: members, admins: admins)
         case "senderKeyRequest":
-            guard let name = coder.decodeObject(forKey: "name") as? String,
-                let members = coder.decodeObject(forKey: "members") as? [Data] else { return nil }
-            self.kind = .senderKeyRequest(groupPublicKey: groupPublicKey, members: members)
+            guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
+            self.kind = .senderKeyRequest(groupPublicKey: groupPublicKey)
         case "senderKey":
             guard let senderKey = senderKeys.first else { return nil }
             self.kind = .senderKey(groupPublicKey: groupPublicKey, senderKey: senderKey)
@@ -81,9 +80,8 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
             coder.encode(senderKeys, forKey: "senderKeys")
             coder.encode(members, forKey: "members")
             coder.encode(admins, forKey: "admins")
-        case .senderKeyRequest(let groupPublicKey, let members):
+        case .senderKeyRequest(let groupPublicKey):
             coder.encode(groupPublicKey, forKey: "groupPublicKey")
-            coder.encode(members, forKey: "members")
         case .senderKey(let groupPublicKey, let senderKey):
             coder.encode("senderKey", forKey: "kind")
             coder.encode(groupPublicKey, forKey: "groupPublicKey")
@@ -110,9 +108,8 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
                 closedGroupUpdate.setSenderKeys(try senderKeys.map { try $0.toProto() })
                 closedGroupUpdate.setMembers(members)
                 closedGroupUpdate.setAdmins(admins)
-            case .senderKeyRequest(let groupPublicKey, let members):
+            case .senderKeyRequest(let groupPublicKey):
                 closedGroupUpdate = SSKProtoDataMessageClosedGroupUpdate.builder(groupPublicKey: groupPublicKey, type: .senderKeyRequest)
-                closedGroupUpdate.setMembers(members)
             case .senderKey(let groupPublicKey, let senderKey):
                 closedGroupUpdate = SSKProtoDataMessageClosedGroupUpdate.builder(groupPublicKey: groupPublicKey, type: .senderKey)
                 closedGroupUpdate.setSenderKeys([ try senderKey.toProto() ])

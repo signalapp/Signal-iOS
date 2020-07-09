@@ -14,6 +14,8 @@ import PromiseKit
 public final class ClosedGroupsProtocol : NSObject {
     public static let isSharedSenderKeysEnabled = false
 
+    // MARK: - Sending
+
     /// - Note: It's recommended to batch fetch the device links for the given set of members before invoking this, to avoid the message sending pipeline
     /// making a request for each member.
     public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
@@ -186,6 +188,20 @@ public final class ClosedGroupsProtocol : NSObject {
         infoMessage.save(with: transaction)
     }
 
+    public static func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        // Establish session if needed
+        SessionManagementProtocol.establishSessionIfNeeded(with: senderPublicKey, using: transaction)
+        // Send the request
+        let thread = TSContactThread.getOrCreateThread(withContactId: senderPublicKey, transaction: transaction)
+        thread.save(with: transaction)
+        let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKeyRequest(groupPublicKey: Data(hex: groupPublicKey))
+        let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+        messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
+    }
+
+    // MARK: - Receiving
+
     @objc(handleSharedSenderKeysUpdateIfNeeded:from:transaction:)
     public static func handleSharedSenderKeysUpdateIfNeeded(_ dataMessage: SSKProtoDataMessage, from publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Note that `publicKey` is either the public key of the group or the public key of the
@@ -312,10 +328,6 @@ public final class ClosedGroupsProtocol : NSObject {
         guard membersAndLinkedDevices.contains(senderPublicKey) else {
             return print("[Loki] Ignoring closed group sender key request from non-member.")
         }
-        // Check that the current user is one of the members that the sender is requesting the sender key of
-        guard closedGroupUpdate.members.map({ $0.toHexString() }).contains(userPublicKey) else {
-            return print("[Loki] Ignoring closed group sender key request aimed at other members.")
-        }
         // Respond to the request
         SessionManagementProtocol.establishSessionIfNeeded(with: senderPublicKey, using: transaction) // This internally takes care of multi device
         let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
@@ -352,6 +364,8 @@ public final class ClosedGroupsProtocol : NSObject {
         let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
         Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, using: transaction)
     }
+
+    // MARK: - General
 
     @objc(establishSessionsIfNeededWithClosedGroupMembers:transaction:)
     public static func establishSessionsIfNeeded(with closedGroupMembers: [String], using transaction: YapDatabaseReadWriteTransaction) {
