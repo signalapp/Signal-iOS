@@ -73,7 +73,7 @@ internal extension DispatchQoS.QoSClass {
         default:
             // The provided QoS value is either greater than UserInteractive or less than Background
             // Fail safely to background QoS and assert.
-            assertionFailure("Invalid qos_class: \(rawQoS.rawValue). Defaulting background QoS.")
+            owsFailDebug("Invalid qos_class: \(rawQoS.rawValue). Defaulting background QoS.")
             self = .background
         }
     }

@@ -130,7 +130,7 @@ extension BidirectionalDictionary: Collection {
     }
 
     public subscript (position: Index) -> Iterator.Element {
-        precondition((startIndex ..< endIndex).contains(position), "out of bounds")
+        owsAssert((startIndex ..< endIndex).contains(position), "out of bounds")
         let element = forwardDictionary[position]
         return (element.key, element.value)
     }
