@@ -164,7 +164,7 @@
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
-/* Pressing this button moves a thread from the inbox to the archive */
+/* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arhiviraj";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
@@ -1488,7 +1488,7 @@
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Sada ste administrator.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
@@ -1509,13 +1509,13 @@
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Poništena je Vaša pozivnica u grupu.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Pozvani ste u grupu.";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Pridružili ste se grupi.";
@@ -2007,7 +2007,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Delete for Everyone";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ova će poruka biti bespovratno izbrisana za sve učesnike u konverzaciji. Oni će moći vidjeti da ste Vi izbrisali poruku.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
@@ -2702,6 +2702,15 @@
 /* Button asking if the user would like to create an numeric PIN */
 "PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
 
+/* Action of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+
+/* Message of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+
+/* Title of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Upozorenje";
+
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
 
@@ -2709,7 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN služi za šifriranje informacija na Signalu tako da im samo Vi možete pristupiti. Vaš profil, podešavanja i kontakti bit će sačuvani i učitani kad ponovo instalirate Signal.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+
+/* Learn more action on the pin creation view */
+"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
@@ -2729,11 +2741,29 @@
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Promijenite svoj PIN";
 
+/* Action of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Turn Off";
+
+/* Message of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+
+/* Title of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Turn Off Registration Lock?";
+
+/* Skip action on the pin creation view */
+"PIN_CREATION_SKIP" = "Skip PIN Creation";
+
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Kreirajte svoj PIN";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Izaberite snažniji PIN";
+
+/* Error body indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+
+/* Error title indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
@@ -2785,6 +2815,9 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+
+/* Toast indicating that a PIN has been disabled. */
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
@@ -3425,6 +3458,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Omogućite zapis o neispravnosti";
 
+/* Label for the 'advanced pin settings' button. */
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+
+/* The title for the advanced pin settings. */
+"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+
+/* Table header for the 'pins' section. */
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Podnesite zapis o neispravnosti";
 
@@ -3881,7 +3929,7 @@
 /* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Izbriši";
 
-/* Pressing this button moves an archived thread from the archive back to the inbox */
+/* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "Dearhiviraj";
 
 /* Message shown in conversation view that offers to block an unknown user. */
@@ -3965,11 +4013,17 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Kreirajte svoj PIN";
 
+/* Learn more action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN služi za šifriranje informacija na Signalu tako da im samo Vi možete pristupiti. Vaš profil, podešavanja i kontakti bit će sačuvani i učitani kad ponovo instalirate Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Novo: PIN-ovi";
+
+/* Skip action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
@@ -4068,7 +4122,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Obrisali ste ovu poruku.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Onemogućili ste nestajuće poruke.";

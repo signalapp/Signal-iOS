@@ -573,6 +573,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak PrivacySettingsTableViewController *weakSelf = self;
     OWSPinSetupViewController *vc = [OWSPinSetupViewController
         creatingWithCompletionHandler:^(OWSPinSetupViewController *pinSetupVC, NSError *_Nullable error) {
+            [weakSelf.navigationController setNavigationBarHidden:NO animated:NO];
             [weakSelf.navigationController popToViewController:weakSelf animated:YES];
         }];
     [self.navigationController pushViewController:vc animated:YES];
@@ -607,6 +608,7 @@ NS_ASSUME_NONNULL_BEGIN
                           OWSPinSetupViewController *vc =
                               [OWSPinSetupViewController creatingRegistrationLockWithCompletionHandler:^(
                                   OWSPinSetupViewController *pinSetupVC, NSError *_Nullable error) {
+                                  [weakSelf.navigationController setNavigationBarHidden:NO animated:NO];
                                   [weakSelf.navigationController popToViewController:weakSelf animated:YES];
                               }];
                           [self.navigationController pushViewController:vc animated:YES];

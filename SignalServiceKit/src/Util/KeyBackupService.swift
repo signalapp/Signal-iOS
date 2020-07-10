@@ -187,16 +187,20 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    @objc(generateAndBackupKeysWithPin:)
-    static func objc_generateAndBackupKeys(with pin: String) -> AnyPromise {
-        return AnyPromise(generateAndBackupKeys(with: pin))
+    @objc(generateAndBackupKeysWithPin:rotateMasterKey:)
+    @available(swift, obsoleted: 1.0)
+    static func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise {
+        return AnyPromise(generateAndBackupKeys(with: pin, rotateMasterKey: rotateMasterKey))
     }
 
     /// Backs up the user's master key to KBS and stores it locally in the database.
     /// If the user doesn't have a master key already a new one is generated.
-    public static func generateAndBackupKeys(with pin: String) -> Promise<Void> {
+    public static func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void> {
         return fetchBackupId(auth: nil).map(on: .global()) { backupId -> (Data, Data, Data) in
-            let masterKey = cacheQueue.sync { cachedMasterKey } ?? generateMasterKey()
+            let masterKey: Data = {
+                if rotateMasterKey { return generateMasterKey() }
+                return cacheQueue.sync { cachedMasterKey } ?? generateMasterKey()
+            }()
             let (encryptionKey, accessKey) = try deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
             let encryptedMasterKey = try encryptMasterKey(masterKey, encryptionKey: encryptionKey)
 
@@ -233,7 +237,13 @@ public class KeyBackupService: NSObject {
 
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    store(masterKey, pinType: PinType(forPin: pin), encodedVerificationString: encodedVerificationString, transaction: transaction)
+                    if rotateMasterKey { storageServiceManager.resetLocalData(transaction: transaction) }
+                    store(
+                        masterKey,
+                        pinType: PinType(forPin: pin),
+                        encodedVerificationString: encodedVerificationString,
+                        transaction: transaction
+                    )
                 }
             }
         }.recover(on: .global()) { error in

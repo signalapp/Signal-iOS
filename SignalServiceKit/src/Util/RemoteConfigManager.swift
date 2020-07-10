@@ -20,9 +20,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var mandatoryPins: Bool { isEnabled(.mandatoryPins) }
-
-    @objc
     public static var kbs: Bool {
         // This feature latches "on" – once they have a master key in KBS,
         // even if we turn it off on the server they will keep using KBS.
@@ -179,7 +176,6 @@ private struct Flags {
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
         case kbs
-        case mandatoryPins
         case groupsV2CreateGroups
         case groupsV2GoodCitizen
         case deleteForEveryone

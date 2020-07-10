@@ -5,6 +5,7 @@
 import UIKit
 import Lottie
 import PromiseKit
+import SafariServices
 
 @objc(OWSPinSetupViewController)
 public class PinSetupViewController: OWSViewController {
@@ -152,12 +153,26 @@ public class PinSetupViewController: OWSViewController {
         } else {
             // Back button
 
-            let topButton = UIButton()
+            let backButton = UIButton()
             let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
 
-            topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
-            topButton.autoSetDimensions(to: CGSize(square: 40))
-            topButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+            backButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
+            backButton.autoSetDimensions(to: CGSize(square: 40))
+            backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+
+            // More button
+
+            let trailingView: UIView
+            if mode.isConfirming {
+                trailingView = UIView.spacer(withWidth: 40)
+            } else {
+                let moreButton = UIButton()
+                moreButton.setTemplateImageName("more-horiz-24", tintColor: Theme.primaryIconColor)
+                moreButton.autoSetDimensions(to: CGSize(square: 40))
+                moreButton.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
+
+                trailingView = moreButton
+            }
 
             // Title
 
@@ -172,9 +187,9 @@ public class PinSetupViewController: OWSViewController {
 
             // If we're in creating mode AND we're the rootViewController, don't allow going back
             if case .creating = mode, navigationController?.viewControllers.first == self {
-                arrangedSubviews = [label]
+                arrangedSubviews = [UIView.spacer(withWidth: 40), label, trailingView]
             } else {
-                arrangedSubviews = [topButton, label, UIView.spacer(withWidth: 40)]
+                arrangedSubviews = [backButton, label, trailingView]
             }
 
             let row = UIStackView(arrangedSubviews: arrangedSubviews)
@@ -350,6 +365,50 @@ public class PinSetupViewController: OWSViewController {
         } else {
             navigationController?.popViewController(animated: true)
         }
+    }
+
+    @objc
+    func didTapMoreButton(_ sender: UIButton) {
+        let actionSheet = ActionSheetController()
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        let learnMoreAction = ActionSheetAction(
+            title: NSLocalizedString(
+                "PIN_CREATION_LEARN_MORE",
+                comment: "Learn more action on the pin creation view"
+            )
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/articles/360007059792")!)
+            self.present(vc, animated: true, completion: nil)
+        }
+        actionSheet.addAction(learnMoreAction)
+
+        let skipAction = ActionSheetAction(
+            title: NSLocalizedString(
+                "PIN_CREATION_SKIP",
+                comment: "Skip action on the pin creation view"
+            )
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            Self.disablePinWithConfirmation(fromViewController: self).done { [weak self] pinDisabled in
+                guard pinDisabled, let self = self else { return }
+                self.completionHandler(self, nil)
+            }.catch { [weak self] error in
+                guard let self = self else { return }
+                OWSActionSheets.showActionSheet(
+                    title: NSLocalizedString("PIN_DISABLE_ERROR_TITLE",
+                                             comment: "Error title indicating that the attempt to disable a PIN failed."),
+                    message: NSLocalizedString("PIN_DISABLE_ERROR_MESSAGE",
+                                               comment: "Error body indicating that the attempt to disable a PIN failed.")
+                ) { _ in
+                    self.completionHandler(self, error)
+                }
+            }
+        }
+        actionSheet.addAction(skipAction)
+
+        presentActionSheet(actionSheet)
     }
 
     @objc func nextPressed() {
@@ -587,6 +646,94 @@ extension PinSetupViewController: UITextFieldDelegate {
 
         // Inform our caller whether we took care of performing the change.
         return hasPendingChanges
+    }
+}
+
+extension PinSetupViewController {
+    public class func disablePinWithConfirmation(fromViewController: UIViewController) -> Promise<Bool> {
+        guard !OWS2FAManager.shared().isRegistrationLockV2Enabled else {
+            return showRegistrationLockConfirmation(fromViewController: fromViewController)
+        }
+
+        let (promise, resolver) = Promise<Bool>.pending()
+
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_TITLE",
+                                     comment: "Title of the 'pin disable' action sheet."),
+            message: NSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE",
+                                       comment: "Message of the 'pin disable' action sheet.")
+        )
+
+        let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
+            resolver.fulfill(false)
+        }
+        actionSheet.addAction(cancelAction)
+
+        let disableAction = ActionSheetAction(
+            title: NSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_ACTION",
+                                     comment: "Action of the 'pin disable' action sheet."),
+            style: .destructive
+        ) { _ in
+            ModalActivityIndicatorViewController.present(
+                fromViewController: fromViewController,
+                canCancel: false
+            ) { modal in
+                OWS2FAManager.shared().markEnabledWithRandomPin().done {
+                    modal.dismiss { resolver.fulfill(true) }
+                }.catch { error in
+                    modal.dismiss { resolver.reject(error) }
+                }
+            }
+        }
+        actionSheet.addAction(disableAction)
+
+        fromViewController.presentActionSheet(actionSheet)
+
+        return promise
+    }
+
+    private class func showRegistrationLockConfirmation(fromViewController: UIViewController) -> Promise<Bool> {
+        let (promise, resolver) = Promise<Bool>.pending()
+
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_TITLE",
+                                     comment: "Title of the 'pin disable' reglock action sheet."),
+            message: NSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE",
+                                       comment: "Message of the 'pin disable' reglock action sheet.")
+        )
+
+        let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
+            resolver.fulfill(false)
+        }
+        actionSheet.addAction(cancelAction)
+
+        let disableAction = ActionSheetAction(
+            title: NSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_ACTION",
+                                     comment: "Action of the 'pin disable' reglock action sheet."),
+            style: .destructive
+        ) { _ in
+            ModalActivityIndicatorViewController.present(
+                fromViewController: fromViewController,
+                canCancel: false
+            ) { modal in
+                OWS2FAManager.shared().disableRegistrationLockV2().then {
+                    Promise { resolver in
+                        modal.dismiss { resolver.fulfill(()) }
+                    }
+                }.then { () -> Promise<Bool> in
+                    disablePinWithConfirmation(fromViewController: fromViewController)
+                }.done { success in
+                    resolver.fulfill(success)
+                }.catch { error in
+                    modal.dismiss { resolver.reject(error) }
+                }
+            }
+        }
+        actionSheet.addAction(disableAction)
+
+        fromViewController.presentActionSheet(actionSheet)
+
+        return promise
     }
 }
 

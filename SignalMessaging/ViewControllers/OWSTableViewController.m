@@ -327,6 +327,17 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
              accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
                          actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
+    return [self actionItemWithText:text
+                          textColor:nil
+            accessibilityIdentifier:accessibilityIdentifier
+                        actionBlock:actionBlock];
+}
+
++ (OWSTableItem *)actionItemWithText:(NSString *)text
+                           textColor:(nullable UIColor *)textColor
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
     OWSAssertDebug(text.length > 0);
     OWSAssertDebug(actionBlock);
 
@@ -335,6 +346,9 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.customCellBlock = ^{
         UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
+        if (textColor) {
+            cell.textLabel.textColor = textColor;
+        }
         cell.accessibilityIdentifier = accessibilityIdentifier;
         return cell;
     };
