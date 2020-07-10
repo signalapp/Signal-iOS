@@ -324,8 +324,8 @@ public class FullTextSearcher: NSObject {
         // Filter out contact results with pending message requests.
         var signalContacts = Array(signalContactMap.values).filter { (contactResult: ContactSearchResult) in
             guard let thread = TSContactThread.getWithContactAddress(contactResult.recipientAddress, transaction: transaction) else {
-                // Do not filter out users with whom we've never had contact.
-                return true
+                // Filter out users with whom we've never had contact.
+                return false
             }
             return !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
         }
