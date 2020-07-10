@@ -8,13 +8,17 @@ class SelectionHapticFeedback {
     let selectionFeedbackGenerator: UISelectionFeedbackGenerator
 
     init() {
+        AssertIsOnMainThread()
+
         selectionFeedbackGenerator = UISelectionFeedbackGenerator()
         selectionFeedbackGenerator.prepare()
     }
 
     func selectionChanged() {
-        selectionFeedbackGenerator.selectionChanged()
-        selectionFeedbackGenerator.prepare()
+        DispatchQueue.main.async {
+            self.selectionFeedbackGenerator.selectionChanged()
+            self.selectionFeedbackGenerator.prepare()
+        }
     }
 }
 
@@ -23,13 +27,17 @@ class NotificationHapticFeedback: NSObject {
     let feedbackGenerator = UINotificationFeedbackGenerator()
 
     override init() {
+        AssertIsOnMainThread()
+
         feedbackGenerator.prepare()
     }
 
     @objc
     func notificationOccurred(_ notificationType: UINotificationFeedbackGenerator.FeedbackType) {
-        feedbackGenerator.notificationOccurred(notificationType)
-        feedbackGenerator.prepare()
+        DispatchQueue.main.async {
+            self.feedbackGenerator.notificationOccurred(notificationType)
+            self.feedbackGenerator.prepare()
+        }
     }
 }
 
