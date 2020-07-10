@@ -49,10 +49,16 @@ public class KeyBackupService: NSObject {
 
     static let maximumKeyAttempts: UInt32 = 10
 
-    /// Indicates whether or not we have a master key stored in KBS
+    /// Indicates whether or not we have a master key locally
     @objc
     public static var hasMasterKey: Bool {
         return getOrLoadStateWithSneakyTransaction().masterKey != nil
+    }
+
+    /// Indicates whether or not we have a master key stored in KBS
+    @objc
+    public static var hasBackedUpMasterKey: Bool {
+        return getOrLoadStateWithSneakyTransaction().isMasterKeyBackedUp
     }
 
     public static func hasMasterKey(transaction: SDSAnyReadTransaction) -> Bool {
@@ -176,6 +182,7 @@ public class KeyBackupService: NSObject {
                 databaseStorage.write { transaction in
                     store(
                         masterKey: masterKey,
+                        isMasterKeyBackedUp: true,
                         pinType: PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
                         transaction: transaction
@@ -242,9 +249,9 @@ public class KeyBackupService: NSObject {
 
                 // We successfully stored the new keys in KBS, save them in the database
                 databaseStorage.write { transaction in
-                    if rotateMasterKey { storageServiceManager.resetLocalData(transaction: transaction) }
                     store(
                         masterKey: masterKey,
+                        isMasterKeyBackedUp: true,
                         pinType: PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
                         transaction: transaction
@@ -496,6 +503,7 @@ public class KeyBackupService: NSObject {
     private static let encodedVerificationStringIdentifier = "encodedVerificationString"
     private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
     private static let hasPendingRestorationIdentifier = "hasPendingRestoration"
+    private static let isMasterKeyBackedUpIdentifer = "isMasterKeyBackedUp"
     private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
 
     private static var cachedState: State?
@@ -505,6 +513,7 @@ public class KeyBackupService: NSObject {
         let encodedVerificationString: String?
         let hasBackupKeyRequestFailed: Bool
         let hasPendingRestoration: Bool
+        let isMasterKeyBackedUp: Bool
         let syncedDerivedKeys: [DerivedKey: Data]
 
         init(transaction: SDSAnyReadTransaction) {
@@ -533,6 +542,12 @@ public class KeyBackupService: NSObject {
                 transaction: transaction
             )
 
+            isMasterKeyBackedUp = keyValueStore.getBool(
+                isMasterKeyBackedUpIdentifer,
+                defaultValue: false,
+                transaction: transaction
+            )
+
             var syncedDerivedKeys = [DerivedKey: Data]()
             for type in DerivedKey.syncableKeys {
                 syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
@@ -542,29 +557,24 @@ public class KeyBackupService: NSObject {
     }
 
     private static func getOrLoadState(transaction: SDSAnyReadTransaction) -> State {
-        cacheQueue.sync {
-            if let cachedState = cachedState { return cachedState }
-            return loadState(transaction: transaction)
-        }
+        if let cachedState = cacheQueue.sync(execute: { cachedState }) { return cachedState }
+        return loadState(transaction: transaction)
     }
 
     private static func getOrLoadStateWithSneakyTransaction() -> State {
-        cacheQueue.sync {
-            if let cachedState = cachedState { return cachedState }
-            return databaseStorage.read { loadState(transaction: $0) }
-        }
+        if let cachedState = cacheQueue.sync(execute: { cachedState }) { return cachedState }
+        return databaseStorage.read { loadState(transaction: $0) }
     }
 
     @discardableResult
     private static func loadState(transaction: SDSAnyReadTransaction) -> State {
-        assertOnQueue(cacheQueue)
         let state = State(transaction: transaction)
-        cachedState = state
+        cacheQueue.sync { cachedState = state }
         return state
     }
 
     private static func reloadState(transaction: SDSAnyReadTransaction) {
-        cacheQueue.sync { _ = loadState(transaction: transaction) }
+        _ = loadState(transaction: transaction)
     }
 
     @objc
@@ -580,6 +590,7 @@ public class KeyBackupService: NSObject {
 
         keyValueStore.removeValues(forKeys: [
             masterKeyIdentifer,
+            isMasterKeyBackedUpIdentifer,
             pinTypeIdentifier,
             encodedVerificationStringIdentifier
         ], transaction: transaction)
@@ -593,6 +604,7 @@ public class KeyBackupService: NSObject {
 
     static func store(
         masterKey: Data,
+        isMasterKeyBackedUp: Bool,
         pinType: PinType,
         encodedVerificationString: String,
         transaction: SDSAnyWriteTransaction
@@ -600,12 +612,19 @@ public class KeyBackupService: NSObject {
         let previousState = getOrLoadState(transaction: transaction)
 
         guard masterKey != previousState.masterKey
+            || isMasterKeyBackedUp != previousState.isMasterKeyBackedUp
             || pinType != previousState.pinType
             || encodedVerificationString != previousState.encodedVerificationString else { return }
 
         keyValueStore.setData(
             masterKey,
             key: masterKeyIdentifer,
+            transaction: transaction
+        )
+
+        keyValueStore.setBool(
+            isMasterKeyBackedUp,
+            key: isMasterKeyBackedUpIdentifer,
             transaction: transaction
         )
 
@@ -641,6 +660,11 @@ public class KeyBackupService: NSObject {
         guard masterKey != previousState.masterKey, tsAccountManager.isRegisteredAndReady else { return }
 
         // Trigger a re-creation of the storage manifest, our keys have changed
+        storageServiceManager.resetLocalData(transaction: transaction)
+
+        // If the app is ready start that restoration.
+        guard AppReadiness.isAppReady else { return }
+
         storageServiceManager.restoreOrCreateManifestIfNecessary()
 
         // Sync our new keys with linked devices.
@@ -684,6 +708,24 @@ public class KeyBackupService: NSObject {
         keyValueStore.removeValue(forKey: hasPendingRestorationIdentifier, transaction: transaction)
 
         reloadState(transaction: transaction)
+    }
+
+    public static func setMasterKeyBackedUp(_ value: Bool, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setBool(value, key: isMasterKeyBackedUpIdentifer, transaction: transaction)
+
+        reloadState(transaction: transaction)
+    }
+
+    public static func useDeviceLocalMasterKey(transaction: SDSAnyWriteTransaction) {
+        store(
+            masterKey: generateMasterKey(),
+            isMasterKeyBackedUp: false,
+            pinType: .alphanumeric,
+            encodedVerificationString: "",
+            transaction: transaction
+        )
+
+        OWS2FAManager.shared().markDisabled(transaction: transaction)
     }
 
     // PRAGMA MARK: - Requests

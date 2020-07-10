@@ -119,7 +119,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return;
     }
 
-    if (OWSKeyBackupService.hasMasterKey) {
+    if (OWSKeyBackupService.hasBackedUpMasterKey) {
         pin = [OWSKeyBackupService normalizePin:pin];
     } else {
         // Convert the pin to arabic numerals, we never want to
@@ -133,10 +133,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (OWS2FAMode)mode
 {
     // Identify what version of 2FA we're using
-    if (OWSKeyBackupService.hasMasterKey) {
-        if (self.isUsingRandomPin) {
-            return OWS2FAMode_Disabled;
-        }
+    if (OWSKeyBackupService.hasBackedUpMasterKey) {
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {
         return OWS2FAMode_V1;
@@ -171,9 +168,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     // Since we just created this pin, we know it doesn't need migration. Mark it as such.
     [self markLegacyPinAsMigratedWithTransaction:transaction];
-
-    // Reset random state for the new PIN
-    [self setIsUsingRandomPin:NO transaction:transaction];
 
     // Reset the reminder repetition interval for the new pin.
     [self setDefaultRepetitionIntervalWithTransaction:transaction];
@@ -341,15 +335,11 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return NO;
     }
 
-    if (!OWSKeyBackupService.hasMasterKey) {
+    if (!OWSKeyBackupService.hasBackedUpMasterKey) {
         return NO;
     }
 
     if (![self areRemindersEnabledTransaction:transaction]) {
-        return NO;
-    }
-
-    if ([self isUsingRandomPinWithTransaction:transaction]) {
         return NO;
     }
 

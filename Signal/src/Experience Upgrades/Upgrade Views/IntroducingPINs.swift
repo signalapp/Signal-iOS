@@ -227,9 +227,9 @@ class IntroducingPinsSplash: SplashViewController {
     }
 
     var toastText: String {
-        return OWS2FAManager.shared().isUsingRandomPin
-            ? NSLocalizedString("PINS_MEGAPHONE_TOAST_DISABLED", comment: "Toast indicating that a PIN has been disabled.")
-            : NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created.")
+        return KeyBackupService.hasBackedUpMasterKey
+            ? NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created.")
+            : NSLocalizedString("PINS_MEGAPHONE_TOAST_DISABLED", comment: "Toast indicating that a PIN has been disabled.")
     }
 
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {

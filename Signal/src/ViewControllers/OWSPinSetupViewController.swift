@@ -678,10 +678,12 @@ extension PinSetupViewController {
                 fromViewController: fromViewController,
                 canCancel: false
             ) { modal in
-                OWS2FAManager.shared().markEnabledWithRandomPin().done {
-                    modal.dismiss { resolver.fulfill(true) }
-                }.catch { error in
-                    modal.dismiss { resolver.reject(error) }
+                SDSDatabaseStorage.shared.asyncWrite { transaction in
+                    KeyBackupService.useDeviceLocalMasterKey(transaction: transaction)
+
+                    transaction.addAsyncCompletion {
+                        modal.dismiss { resolver.fulfill(true) }
+                    }
                 }
             }
         }
