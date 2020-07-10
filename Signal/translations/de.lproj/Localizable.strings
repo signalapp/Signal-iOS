@@ -164,7 +164,7 @@
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
-/* Pressing this button moves a thread from the inbox to the archive */
+/* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Archivieren";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Stummschalten";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ wird von dir eine Unterhaltungsanfrage erhalten. Du kannst anrufen, sobald diese angenommen wurde.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kamerarichtung wechseln";
@@ -1665,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ hat das Foto entfernt.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Das Gruppenfoto wurde aktualisiert.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Du hast das Foto aktualisiert.";
@@ -2702,6 +2702,15 @@
 /* Button asking if the user would like to create an numeric PIN */
 "PIN_CREATION_CREATE_NUMERIC" = "Numerische PIN erstellen";
 
+/* Action of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+
+/* Message of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+
+/* Title of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warnung";
+
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Deine PIN wurde nicht gespeichert. Wir fragen dich später, eine PIN zu erstellen.";
 
@@ -2709,7 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN konnte nicht erstellt werden";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs halten deine bei Signal gespeicherten Informationen verschlüsselt, sodass nur du auf sie zugreifen kannst. Falls du Signal erneut installierst, werden so dein Profil und deine Einstellungen und Kontakte wiederhergestellt.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+
+/* Learn more action on the pin creation view */
+"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs stimmen nicht überein. Bitte versuche es erneut.";
@@ -2729,11 +2741,29 @@
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Ändere deine PIN";
 
+/* Action of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Ausschalten";
+
+/* Message of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+
+/* Title of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Registrierungssperre ausschalten?";
+
+/* Skip action on the pin creation view */
+"PIN_CREATION_SKIP" = "Skip PIN Creation";
+
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Erstelle deine PIN";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Wähle eine stärkere PIN";
+
+/* Error body indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+
+/* Error title indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Damit du dir deine PIN besser merken kannst, werden wir gelegentlich nach ihr fragen. Mit der Zeit werden wir dies seltener tun.";
@@ -2785,6 +2815,9 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN erstellt. Du kannst sie in den Einstellungen ändern.";
+
+/* Toast indicating that a PIN has been disabled. */
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medieninhalt wiedergeben";
@@ -3425,6 +3458,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Diagnoseprotokoll aktivieren";
 
+/* Label for the 'advanced pin settings' button. */
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+
+/* The title for the advanced pin settings. */
+"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+
+/* Table header for the 'pins' section. */
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Diagnoseprotokoll senden";
 
@@ -3881,7 +3929,7 @@
 /* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Löschen";
 
-/* Pressing this button moves an archived thread from the archive back to the inbox */
+/* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "In Eingang verschieben";
 
 /* Message shown in conversation view that offers to block an unknown user. */
@@ -3960,16 +4008,22 @@
 "UPDATE_GROUP_FAILED" = "Gruppe konnte nicht aktualisiert werden.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Gruppe konnte nicht aktualisiert werden. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Deine PIN erstellen";
 
+/* Learn more action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs halten deine bei Signal gespeicherten Informationen verschlüsselt, sodass nur du auf sie zugreifen kannst. Falls du Signal erneut installierst, werden so dein Profil und deine Einstellungen und Kontakte wiederhergestellt.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Einführung von PINs";
+
+/* Skip action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal wird bald iOS 11 oder neuer erfordern. Bitte aktualisieren über die iOS-Einstellungen: Einstellungen >> Allgemein >> Softwareaktualisierung.";

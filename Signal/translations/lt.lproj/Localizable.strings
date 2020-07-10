@@ -164,7 +164,7 @@
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
-/* Pressing this button moves a thread from the inbox to the archive */
+/* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Archyvuoti";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
@@ -2702,6 +2702,15 @@
 /* Button asking if the user would like to create an numeric PIN */
 "PIN_CREATION_CREATE_NUMERIC" = "Sukurti skaitinį PIN kodą";
 
+/* Action of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+
+/* Message of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+
+/* Title of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Įspėjimas";
+
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Jūsų PIN kodas nebuvo įrašytas. Vėliau, jūsų bus paprašyta susikurti PIN kodą.";
 
@@ -2709,7 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN kodo sukūrimas nepavyko";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN kodai šifruotu pavidalu saugo informaciją, kuri yra laikoma Signal, taigi, tik jūs galite gauti prieigą prie jos. Jums įdiegus Signal iš naujo, jūsų profilis, nustatymai ir adresatai bus atkurti.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+
+/* Learn more action on the pin creation view */
+"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kodai nesutampa. Bandykite dar kartą.";
@@ -2729,11 +2741,29 @@
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Keisti PIN kodą";
 
+/* Action of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Išjungti";
+
+/* Message of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+
+/* Title of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Išjungti registracijos užraktą?";
+
+/* Skip action on the pin creation view */
+"PIN_CREATION_SKIP" = "Skip PIN Creation";
+
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Susikurti PIN kodą";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Pasirinkite stipresnį PIN kodą";
+
+/* Error body indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+
+/* Error title indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Tam, kad įsimintumėte savo PIN kodą, mes periodiškai prašysime jį įvesti. Bėgant laikui, mes tai darysime rečiau.";
@@ -2785,6 +2815,9 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN kodas sukurtas. Galite jį pasikeisti nustatymuose.";
+
+/* Toast indicating that a PIN has been disabled. */
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Atkurti mediją";
@@ -3425,6 +3458,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Įjungti derinimo žurnalą";
 
+/* Label for the 'advanced pin settings' button. */
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+
+/* The title for the advanced pin settings. */
+"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+
+/* Table header for the 'pins' section. */
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Pateikti derinimo žurnalą";
 
@@ -3881,7 +3929,7 @@
 /* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Ištrinti";
 
-/* Pressing this button moves an archived thread from the archive back to the inbox */
+/* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "Nebearchyvuoti";
 
 /* Message shown in conversation view that offers to block an unknown user. */
@@ -3965,11 +4013,17 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Susikurkite PIN kodą";
 
+/* Learn more action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN kodai šifruotu pavidalu saugo informaciją, kuri yra laikoma Signal, taigi, tik jūs galite gauti prieigą prie jos. Jums įdiegus Signal iš naujo, jūsų profilis, nustatymai ir adresatai bus atkurti.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Pristatome PIN kodus";
+
+/* Skip action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Greitu metu Signal reikalaus iOS 11 ar naujesnės versijos. Atsinaujinkite perėję į Nustatymų (angl. Settings) programėlę >> Bendra (angl. General) >> Programinės įrangos atnaujinimas (angl. Software Update).";

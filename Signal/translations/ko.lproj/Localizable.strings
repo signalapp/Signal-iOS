@@ -164,7 +164,7 @@
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
-/* Pressing this button moves a thread from the inbox to the archive */
+/* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "보관";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
@@ -2702,6 +2702,15 @@
 /* Button asking if the user would like to create an numeric PIN */
 "PIN_CREATION_CREATE_NUMERIC" = "숫자 PIN 만들기";
 
+/* Action of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+
+/* Message of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+
+/* Title of the 'pin disable' action sheet. */
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "PIN을 저장할 수 없습니다. 추후 PIN을 만들라고 알려드리겠습니다.";
 
@@ -2709,7 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN 생성 실패";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN은 Signal에 저장된 정보를 암호화하여 오직 나만 볼 수 있게 합니다. 내 프로필, 설정, 그리고 연락처는 Signal을 다시 설치할 때 복원됩니다.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+
+/* Learn more action on the pin creation view */
+"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN이 일치하지 않습니다. 다시 시도하세요.";
@@ -2729,11 +2741,29 @@
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "PIN 변경";
 
+/* Action of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "끄기";
+
+/* Message of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+
+/* Title of the 'pin disable' reglock action sheet. */
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "등록 잠금을 끄시겠습니까?";
+
+/* Skip action on the pin creation view */
+"PIN_CREATION_SKIP" = "Skip PIN Creation";
+
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "내 PIN 만들기";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "더 강력한 PIN 선택";
+
+/* Error body indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+
+/* Error title indicating that the attempt to disable a PIN failed. */
+"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "주기적으로 PIN을 입력하면 외우는 데 도움이 됩니다. 가끔 여쭤보겠습니다.";
@@ -2785,6 +2815,9 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN을 만들었습니다. 설정에서 변경할 수 있습니다.";
+
+/* Toast indicating that a PIN has been disabled. */
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "미디어 재생";
@@ -3425,6 +3458,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "디버그 파일 활성화시키기";
 
+/* Label for the 'advanced pin settings' button. */
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+
+/* The title for the advanced pin settings. */
+"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+
+/* No comment provided by engineer. */
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+
+/* Table header for the 'pins' section. */
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "디버그 로그 보내기";
 
@@ -3881,7 +3929,7 @@
 /* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "삭제";
 
-/* Pressing this button moves an archived thread from the archive back to the inbox */
+/* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "보관 취소";
 
 /* Message shown in conversation view that offers to block an unknown user. */
@@ -3965,11 +4013,17 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "내 PIN 만들기";
 
+/* Learn more action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN 번호는 Signal에 저장된 정보를 암호화하여 오직 나만 볼 수 있게 합니다. 내 프로필, 설정, 그리고 연락처는 Signal을 다시 설치할 때 복원됩니다.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN 소개";
+
+/* Skip action on the one time splash screen that appears after upgrading */
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "향후 Signal은 iOS 11 혹은 이상 버전에서만 작동합니다. 설정 앱 >> 일반 >> 소프트웨어 업데이트에서 업그레이드할 수 있습니다.";
