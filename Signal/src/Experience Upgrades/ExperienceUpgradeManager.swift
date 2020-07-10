@@ -107,7 +107,7 @@ class ExperienceUpgradeManager: NSObject {
             // Only use a splash for message requests if the user doesn't have a profile name.
             return OWSProfileManager.shared().localFullName()?.isEmpty != false
         case .introducingPins:
-            return RemoteConfig.mandatoryPins
+            return true
         default:
             return false
         }

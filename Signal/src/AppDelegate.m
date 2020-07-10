@@ -665,8 +665,8 @@ void uncaughtExceptionHandler(NSException *exception)
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegisteredAndReady]) {
-            // Ping server once a day to keep-alive 2FA clients.
+        if (OWS2FAManager.sharedManager.isRegistrationLockEnabled && [self.tsAccountManager isRegisteredAndReady]) {
+            // Ping server once a day to keep-alive reglock clients.
             const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
             [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
         } else {
