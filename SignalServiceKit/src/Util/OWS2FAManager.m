@@ -134,6 +134,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 {
     // Identify what version of 2FA we're using
     if (OWSKeyBackupService.hasMasterKey) {
+        if (self.isUsingRandomPin) {
+            return OWS2FAMode_Disabled;
+        }
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {
         return OWS2FAMode_V1;
@@ -169,6 +172,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     // Since we just created this pin, we know it doesn't need migration. Mark it as such.
     [self markLegacyPinAsMigratedWithTransaction:transaction];
 
+    // Reset random state for the new PIN
+    [self setIsUsingRandomPin:NO transaction:transaction];
+
     // Reset the reminder repetition interval for the new pin.
     [self setDefaultRepetitionIntervalWithTransaction:transaction];
 
@@ -188,6 +194,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (void)requestEnable2FAWithPin:(NSString *)pin
                            mode:(OWS2FAMode)mode
+                rotateMasterKey:(BOOL)rotateMasterKey
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure
 {
@@ -199,7 +206,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         case OWS2FAMode_V2: {
             // Enabling V2 2FA doesn't inherently enable registration lock,
             // it's managed by a separate setting.
-            [OWSKeyBackupService generateAndBackupKeysWithPin:pin]
+            [OWSKeyBackupService generateAndBackupKeysWithPin:pin rotateMasterKey:rotateMasterKey]
                 .then(^{
                     OWSAssertIsOnMainThread();
 
@@ -339,6 +346,10 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     }
 
     if (![self areRemindersEnabledTransaction:transaction]) {
+        return NO;
+    }
+
+    if ([self isUsingRandomPinWithTransaction:transaction]) {
         return NO;
     }
 

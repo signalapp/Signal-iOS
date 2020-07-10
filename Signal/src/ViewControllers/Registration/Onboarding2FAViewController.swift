@@ -367,17 +367,12 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         onboardingController.showNextMilestone(navigationController: navigationController)
     }
 
-    var hasEverGuessedWrongPIN = false
     private func updateValidationWarnings() {
         AssertIsOnMainThread()
 
-        if attemptState.isInvalid {
-            hasEverGuessedWrongPIN = true
-        }
         pinStrokeNormal.isHidden = attemptState.isInvalid
         pinStrokeError.isHidden = !attemptState.isInvalid
         validationWarningLabel.isHidden = !attemptState.isInvalid
-        needHelpLink.isHidden = !hasEverGuessedWrongPIN
 
         switch attemptState {
         case .exhausted:

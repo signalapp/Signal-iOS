@@ -229,6 +229,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [contents addSection:censorshipSection];
 
+    OWSTableSection *pinsSection = [OWSTableSection new];
+    pinsSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_ADVANCED_PINS_HEADER", @"Table header for the 'pins' section.");
+    [pinsSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_PIN_SETTINGS",
+                                                                  @"Label for the 'advanced pin settings' button.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"pins")
+                                                  actionBlock:^{
+                                                      [weakSelf showAdvancedPinSettings];
+                                                  }]];
+    [contents addSection:pinsSection];
+
     self.contents = contents;
 }
 
@@ -270,6 +281,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Actions
+
+- (void)showAdvancedPinSettings
+{
+    AdvancedPinSettingsTableViewController *vc = [AdvancedPinSettingsTableViewController new];
+    [self.navigationController pushViewController:vc animated:YES];
+}
 
 - (void)syncPushTokens
 {
