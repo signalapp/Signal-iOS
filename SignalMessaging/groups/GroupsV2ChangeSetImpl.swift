@@ -69,6 +69,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var membersToRemove = [UUID]()
     private var membersToChangeRole = [UUID: TSGroupMemberRole]()
     private var pendingMembersToAdd = [UUID: TSGroupMemberRole]()
+    private var invalidInvitesToRemove = [Data: InvalidInvite]()
 
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
@@ -76,6 +77,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
     private var shouldAcceptInvite = false
     private var shouldLeaveGroupDeclineInvite = false
+    private var shouldRevokeInvalidInvites = false
 
     private var shouldUpdateLocalProfileKey = false
 
@@ -149,6 +151,12 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         for uuid in oldUserUuids.subtracting(newUserUuids) {
             removeMember(uuid)
+        }
+
+        for invalidInvite in oldGroupMembership.invalidInvites {
+            if !newGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) {
+                removeInvalidInvite(invalidInvite: invalidInvite)
+            }
         }
 
         let oldMemberUuids = Set(oldGroupMembership.nonPendingMembers.compactMap { $0.uuid })
@@ -239,6 +247,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         shouldLeaveGroupDeclineInvite = true
     }
 
+    public func removeInvalidInvite(invalidInvite: InvalidInvite) {
+        assert(invalidInvitesToRemove[invalidInvite.userId] == nil)
+        invalidInvitesToRemove[invalidInvite.userId] = invalidInvite
+    }
+
     public func setAccessForMembers(_ value: GroupV2Access) {
         assert(accessForMembers == nil)
         accessForMembers = value
@@ -257,6 +270,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public func setShouldUpdateLocalProfileKey() {
         assert(!shouldUpdateLocalProfileKey)
         shouldUpdateLocalProfileKey = true
+    }
+
+    public func revokeInvalidInvites() {
+        assert(!shouldRevokeInvalidInvites)
+        shouldRevokeInvalidInvites = true
     }
 
     // MARK: - Change Protos
@@ -464,6 +482,33 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             actionsBuilder.addAddPendingMembers(try actionBuilder.build())
             didChange = true
             allMemberCount += 1
+        }
+
+        if shouldRevokeInvalidInvites {
+            if currentGroupMembership.invalidInvites.count < 1 {
+                // Another user has already revoked any invalid invites.
+                // We don't treat that as a conflict.
+                owsFailDebug("No invalid invites to revoke.")
+            }
+            for invalidInvite in currentGroupMembership.invalidInvites {
+                let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+                actionBuilder.setDeletedUserID(invalidInvite.userId)
+                actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                didChange = true
+            }
+        } else {
+            for invalidInvite in invalidInvitesToRemove.values {
+                guard currentGroupMembership.hasInvalidInvite(forUserId: invalidInvite.userId) else {
+                    // Another user has already removed this invite.
+                    // We don't treat that as a conflict.
+                    continue
+                }
+
+                let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
+                actionBuilder.setDeletedUserID(invalidInvite.userId)
+                actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                didChange = true
+            }
         }
 
         for (uuid, newRole) in self.membersToChangeRole {

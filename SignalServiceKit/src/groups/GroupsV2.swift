@@ -107,6 +107,8 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
     func removeMember(_ uuid: UUID)
 
+    func revokeInvalidInvites()
+
     func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole)
 
     func setAccessForMembers(_ value: GroupV2Access)
@@ -335,6 +337,18 @@ public struct GroupV2DownloadedAvatars {
         var downloadedAvatars = GroupV2DownloadedAvatars()
         downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
         return downloadedAvatars
+    }
+}
+
+// MARK: -
+
+public struct InvalidInvite {
+    public let userId: Data
+    public let addedByUserId: Data
+
+    public init(userId: Data, addedByUserId: Data) {
+        self.userId = userId
+        self.addedByUserId = addedByUserId
     }
 }
 

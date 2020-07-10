@@ -76,10 +76,46 @@ public class GroupMembership: MTLModel {
         }
     }
 
+    // This class is immutable.
+    @objc(GroupMembershipInvalidInviteModel)
+    class InvalidInviteModel: MTLModel {
+        @objc
+        var userId: Data?
+
+        @objc
+        var addedByUserId: Data?
+
+        @objc
+        public override init() {
+            super.init()
+        }
+
+        init(userId: Data?, addedByUserId: Data? = nil) {
+            self.userId = userId
+            self.addedByUserId = addedByUserId
+
+            super.init()
+        }
+
+        @objc
+        required public init?(coder aDecoder: NSCoder) {
+            super.init(coder: aDecoder)
+        }
+
+        @objc
+        public required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
     // By using a single dictionary we ensure that no address has more than one state.
     typealias MemberStateMap = [SignalServiceAddress: MemberState]
     @objc
     var memberStateMap: MemberStateMap
+
+    typealias InvalidInviteMap = [Data: InvalidInviteModel]
+    @objc
+    var invalidInviteMap: InvalidInviteMap
 
     @objc
     public var nonAdminMembers: Set<SignalServiceAddress> {
@@ -124,11 +160,13 @@ public class GroupMembership: MTLModel {
 
     public struct Builder {
         private var memberStateMap = MemberStateMap()
+        private var invalidInviteMap = InvalidInviteMap()
 
         public init() {}
 
-        internal init(memberStateMap: MemberStateMap) {
+        internal init(memberStateMap: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
             self.memberStateMap = memberStateMap
+            self.invalidInviteMap = invalidInviteMap
         }
 
         public mutating func remove(_ uuid: UUID) {
@@ -200,18 +238,33 @@ public class GroupMembership: MTLModel {
             memberStateMap[address] = memberState
         }
 
+        public mutating func addInvalidInvite(userId: Data, addedByUserId: Data) {
+            invalidInviteMap[userId] = InvalidInviteModel(userId: userId, addedByUserId: addedByUserId)
+        }
+
+        public mutating func removeInvalidInvite(userId: Data) {
+            invalidInviteMap.removeValue(forKey: userId)
+        }
+
+        public mutating func copyInvalidInvites(from other: GroupMembership) {
+            assert(invalidInviteMap.isEmpty)
+            invalidInviteMap = other.invalidInviteMap
+        }
+
         internal func asMemberStateMap() -> MemberStateMap {
             return memberStateMap
         }
 
         public func build() -> GroupMembership {
-            return GroupMembership(memberStateMap: memberStateMap)
+            return GroupMembership(memberStateMap: memberStateMap,
+                                   invalidInviteMap: invalidInviteMap)
         }
     }
 
     @objc
     public override init() {
         self.memberStateMap = MemberStateMap()
+        self.invalidInviteMap = [:]
 
         super.init()
     }
@@ -219,17 +272,22 @@ public class GroupMembership: MTLModel {
     @objc
     required public init?(coder aDecoder: NSCoder) {
         self.memberStateMap = MemberStateMap()
+        self.invalidInviteMap = [:]
+
         super.init(coder: aDecoder)
     }
 
     @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
         self.memberStateMap = MemberStateMap()
+        self.invalidInviteMap = [:]
+
         try super.init(dictionary: dictionaryValue)
     }
 
-    internal init(memberStateMap: MemberStateMap) {
+    internal init(memberStateMap: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
         self.memberStateMap = memberStateMap
+        self.invalidInviteMap = invalidInviteMap
 
         super.init()
     }
@@ -239,6 +297,7 @@ public class GroupMembership: MTLModel {
         var builder = Builder()
         builder.addNonPendingMembers(v1Members, role: .normal)
         self.memberStateMap = builder.asMemberStateMap()
+        self.invalidInviteMap = [:]
 
         super.init()
     }
@@ -325,8 +384,28 @@ public class GroupMembership: MTLModel {
 
     }
 
+    public func hasInvalidInvite(forUserId userId: Data) -> Bool {
+        return invalidInviteMap[userId] != nil
+    }
+
+    public var invalidInvites: [InvalidInvite] {
+        var result = [InvalidInvite]()
+        for invalidInvite in invalidInviteMap.values {
+            guard let userId = invalidInvite.userId else {
+                owsFailDebug("Missing userId.")
+                continue
+            }
+            guard let addedByUserId = invalidInvite.addedByUserId else {
+                owsFailDebug("Missing addedByUserId.")
+                continue
+            }
+            result.append(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
+        }
+        return result
+    }
+
     public var asBuilder: Builder {
-        return Builder(memberStateMap: memberStateMap)
+        return Builder(memberStateMap: memberStateMap, invalidInviteMap: invalidInviteMap)
     }
 
     public override var debugDescription: String {

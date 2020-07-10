@@ -336,7 +336,11 @@ public class GroupManager: NSObject {
                 if proposedGroupModel != createdGroupModel {
                     Logger.verbose("proposedGroupModel: \(proposedGroupModel.debugDescription)")
                     Logger.verbose("createdGroupModel: \(createdGroupModel.debugDescription)")
-                    owsFailDebug("Proposed group model does not match created group model.")
+                    if DebugFlags.groupsV2ignoreCorruptInvites {
+                        Logger.warn("Proposed group model does not match created group model.")
+                    } else {
+                        owsFailDebug("Proposed group model does not match created group model.")
+                    }
                 }
                 return createdGroupModel
             }
@@ -391,6 +395,8 @@ public class GroupManager: NSObject {
         if let oldGroupModel = oldGroupModel {
             // Updating existing group
             let oldGroupMembership = oldGroupModel.groupMembership
+
+            builder.copyInvalidInvites(from: oldGroupMembership)
 
             assert(oldGroupModel.groupsVersion == .V2)
             newMembers = newGroupMembership.allUsers.subtracting(oldGroupMembership.allUsers)
@@ -1174,6 +1180,13 @@ public class GroupManager: NSObject {
                                 for uuid in uuids {
                                     groupChangeSet.removeMember(uuid)
                                 }
+        }
+    }
+
+    public static func revokeInvalidInvites(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Revoke invalid invites") { groupChangeSet in
+                                groupChangeSet.revokeInvalidInvites()
         }
     }
 

@@ -51,7 +51,12 @@ public class GroupsV2Protos {
         let memberBuilder = GroupsProtoMember.builder()
         memberBuilder.setRole(role)
         let userId = try groupV2Params.userId(forUuid: uuid)
-        memberBuilder.setUserID(userId)
+        if DebugFlags.groupsV2corruptInvites {
+            let corruptUserId = Randomness.generateRandomBytes(Int32(userId.count))
+            memberBuilder.setUserID(corruptUserId)
+        } else {
+            memberBuilder.setUserID(userId)
+        }
         builder.setMember(try memberBuilder.build())
 
         return try builder.build()
@@ -265,6 +270,7 @@ public class GroupsV2Protos {
         }
 
         var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
+        var invalidInvites = [InvalidInvite]()
         for pendingMemberProto in groupProto.pendingMembers {
             guard let memberProto = pendingMemberProto.member else {
                 throw OWSAssertionError("Group pending member missing memberProto.")
@@ -294,7 +300,12 @@ public class GroupsV2Protos {
             do {
                 uuid = try groupV2Params.uuid(forUserId: userId)
             } catch {
-                owsFailDebug("Error parsing uuid: \(error)")
+                invalidInvites.append(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
+                if DebugFlags.groupsV2ignoreCorruptInvites {
+                    Logger.warn("Error parsing uuid: \(error)")
+                } else {
+                    owsFailDebug("Error parsing uuid: \(error)")
+                }
                 continue
             }
             let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userId,
@@ -329,6 +340,7 @@ public class GroupsV2Protos {
                                    avatarData: avatarData,
                                    members: members,
                                    pendingMembers: pendingMembers,
+                                   invalidInvites: invalidInvites,
                                    accessControlForAttributes: accessControlForAttributes,
                                    accessControlForMembers: accessControlForMembers,
                                    disappearingMessageToken: disappearingMessageToken,

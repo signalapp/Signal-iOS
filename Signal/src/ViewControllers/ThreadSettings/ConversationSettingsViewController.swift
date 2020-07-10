@@ -87,7 +87,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     var isShowingAllGroupMembers = false
 
-    private let groupViewHelper: GroupViewHelper
+    let groupViewHelper: GroupViewHelper
 
     @objc
     public required init(threadViewModel: ThreadViewModel) {
