@@ -2703,10 +2703,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "ಸಂಖ್ಯಾ ಪಿನ್ ರಚಿಸಿ";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
@@ -2751,7 +2751,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "ನೋಂದಣಿ ಲಾಕ್ ಅನ್ನು ಆಫ್ ಮಾಡುವುದೇ?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "Disable PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "ನಿಮ್ಮ ಪಿನ್ ರಚಿಸಿ";
@@ -3471,7 +3471,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal ಪಿನ್";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ಡೀಬಗ್ ಲಾಗ್ ಗ‌‌‌ಳನ್ನು ಸಲ್ಲಿಸಿ";
@@ -4023,7 +4023,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "ಪಿನ್‌ಗಳನ್ನು ಪರಿಚಯಿಸಲಾಗುತ್ತಿದೆ";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal ಗೆ ಕೆಲವೇ ಸಮಯದಲ್ಲಿ iOS 11 ಅಥವಾ ನಂತರದ್ದು ಅಗತ್ಯವಾಗುತ್ತದೆ. ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಆ್ಯಪ್ >> ಸಾಮಾನ್ಯ >> ಸಾಫ್ಟ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಇಲ್ಲ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.";

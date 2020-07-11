@@ -1998,7 +1998,7 @@
 "MEGAPHONE_REMIND_LATER" = "Me le rappeler plus tard";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "Nous vous le rappellerons ultérieurement.";
+"MEGAPHONE_WILL_REMIND_LATER" = "Nous vous le rappellerons plus tard.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copier le texto";
@@ -2469,13 +2469,13 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Vous avez épuisé tous vos essais de NIP, mais vous pouvez encore accéder à votre compte Signal en créant un nouveau NIP. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans renseignements de profil enregistrés ni préférences.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "En savoir plus sur les NIP";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "En apprendre davantage sur les NIP";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Afin de protéger vos données personnelles et la sécurité de votre compte, il sera verrouillé pendant sept jours.\n\nAprès sept jours d’inactivité, vous pourrez réinscrire ce numéro de téléphone sans avoir besoin de votre NIP. Tout le contenu sera effacé.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "En savoir plus sur les comptes verrouillés";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "En apprendre davantage sur les comptes verrouillés";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Le compte est verrouillé";
@@ -2703,16 +2703,16 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Créer un NIP numérique";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Désactiver le NIP";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Avertissement";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Votre NIP n’a pas été enregistré. Nous vous proposerons de créer un NIP ultérieurement.";
+"PIN_CREATION_ERROR_MESSAGE" = "Votre NIP n’a pas été enregistré. Nous vous proposerons de créer un NIP plus tard.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_TITLE" = "Échec de création du NIP";
@@ -2721,7 +2721,7 @@
 "PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "En apprendre davantage les NIP";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Les NIP ne correspondent pas. Veuillez ressayer.";
@@ -2745,13 +2745,13 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Désactiver";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Pour désactiver votre NIP, vous devez d’abord désactiver le blocage de l’inscription.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Désactiver le blocage de l’inscription ?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "Désactiver le NIP";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Créer votre NIP";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Choisissez une NIP plus robuste";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Impossible de désactiver votre NIP. Nous vous le proposerons plus tard.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "Échec de désactivation du NIP";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Pour vous aider à mémoriser votre NIP, nous vous demanderons de le saisir régulièrement. Nous vous le demanderons de moins en moins souvent.";
@@ -2808,7 +2808,7 @@
 "PINS_MEGAPHONE_BODY" = "Les NIP font en sorte que les renseignements sont enregistrés chiffrés dans Signal";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Nous vous le rappellerons ultérieurement. La création d’un NIP deviendra obligatoire dans %ld jours.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Nous vous le rappellerons plus tard. La création d’un NIP deviendra obligatoire dans %ld jours.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Créer un NIP";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "Le NIP a été créé. Vous pouvez le changer dans les paramètres.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "Le NIP a été désactivé.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Jouez le contenu multimédia";
@@ -2940,7 +2940,7 @@
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Le message original est introuvable.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Le message original n’est plus accessible";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Le message original n’est plus disponible";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Le message original est introuvable.";
@@ -3459,19 +3459,19 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Activer le journal de débogage";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Paramètres de NIP avancés";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Paramètres de NIP avancés";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Désactiver le NIP";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Activer le NIP";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "NIP Signal";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Envoyer le journal de débogage";
@@ -4014,7 +4014,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Créer votre NIP";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "En apprendre davantage sur les NIP";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
@@ -4023,7 +4023,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Nous présentons les NIP";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Désactiver le NIP";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal exigera bientôt iOS 11 ou une version ultérieure. Veuillez mettre iOS à niveau dans l’appli Réglages >> Général >> Mise à jour logicielle.";
@@ -4041,7 +4041,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Les noms d’utilisateur ne peuvent comprendre que a à z, 0 à 9 et a-z, 0-9 et _.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Une erreur s’est produite lors de la recherche du nom d’utilisateur. Veuillez ressayer ultérieurement.";
+"USERNAME_LOOKUP_ERROR" = "Une erreur s’est produite lors de la recherche du nom d’utilisateur. Veuillez ressayer plus tard.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ n’est pas un utilisateur de Signal. Assurez-vous d’avoir saisi le nom d’utilisateur en entier.";

@@ -1587,6 +1587,8 @@
 		8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationSuccess.json; sourceTree = "<group>"; };
 		8837F74023DA0B0F00772A32 /* MegaphoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MegaphoneView.swift; sourceTree = "<group>"; };
 		88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+LastVisibleSortId.swift"; sourceTree = "<group>"; };
+		884596EF24B93E13002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/Localizable.strings; sourceTree = "<group>"; };
+		884596F024B93E32002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88535063240829950011D318 /* DateHeaderInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderInteraction.swift; sourceTree = "<group>"; };
 		8853506724084E470011D318 /* OWSDateHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDateHeaderCell.swift; sourceTree = "<group>"; };
 		88535069240852F90011D318 /* OWSMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMessageCell.swift; sourceTree = "<group>"; };
@@ -5100,6 +5102,7 @@
 				888A280324B3E9820045D639 /* eu */,
 				888A280424B3E9820045D639 /* mk */,
 				888A280524B3E9820045D639 /* es */,
+				884596F024B93E32002F66D3 /* cy */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -5174,6 +5177,7 @@
 				887889A8247718F7001B5FCF /* jv */,
 				887889AB247E09B7001B5FCF /* kk */,
 				887B6B2324895F1F0075EBC7 /* eu */,
+				884596EF24B93E13002F66D3 /* cy */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

@@ -24,7 +24,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController {
                                                      comment: "Table header for the 'pins' section.")
 
         pinsSection.add(OWSTableItem.actionItem(
-            withText: OWS2FAManager.shared().isUsingRandomPin
+            withText: (KeyBackupService.hasMasterKey && !KeyBackupService.hasBackedUpMasterKey)
                 ? NSLocalizedString("SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION",
                                     comment: "")
                 : NSLocalizedString("SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION",
@@ -33,7 +33,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController {
             accessibilityIdentifier: "advancedPinSettings.disable",
             actionBlock: { [weak self] in
                 guard let self = self else { return }
-                if OWS2FAManager.shared().isUsingRandomPin {
+                if KeyBackupService.hasMasterKey && !KeyBackupService.hasBackedUpMasterKey {
                     let vc = PinSetupViewController.creating { [weak self] _, _ in
                         guard let self = self else { return }
                         self.navigationController?.setNavigationBarHidden(false, animated: false)

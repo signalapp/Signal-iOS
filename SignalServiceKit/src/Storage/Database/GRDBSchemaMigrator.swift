@@ -108,10 +108,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_markAllInteractionsAsNotDeleted
         case dataMigration_recordMessageRequestInteractionIdEpoch
         case dataMigration_indexSignalRecipients
+        case dataMigration_kbsStateCleanup
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 7
+    public static let grdbSchemaVersionLatest: UInt = 8
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -770,10 +771,8 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            guard KeyBackupService.hasMasterKey(transaction: transaction.asAnyWrite) else {
-                return
+            guard KeyBackupService.hasMasterKey(transaction: transaction.asAnyWrite) else { return }
 
-            }
             OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
         }
 
@@ -817,6 +816,23 @@ public class GRDBSchemaMigrator: NSObject {
                 _: UnsafeMutablePointer<ObjCBool>) in
                 GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_kbsStateCleanup.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            if KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead) {
+                KeyBackupService.setMasterKeyBackedUp(true, transaction: transaction.asAnyWrite)
+            }
+
+            guard let isUsingRandomPinKey = OWS2FAManager.keyValueStore().getBool(
+                "isUsingRandomPinKey",
+                transaction: transaction.asAnyRead
+            ), isUsingRandomPinKey else { return }
+
+            OWS2FAManager.keyValueStore().removeValue(forKey: "isUsingRandomPinKey", transaction: transaction.asAnyWrite)
+            KeyBackupService.useDeviceLocalMasterKey(transaction: transaction.asAnyWrite)
         }
     }
 }

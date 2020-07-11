@@ -476,7 +476,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSString *_Nullable registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
     if (registrationLockToken.length > 0 && OWS2FAManager.sharedManager.isRegistrationLockV2Enabled) {
         accountAttributes[@"registrationLock"] = registrationLockToken;
-    } else if (pin.length > 0 && self.ows2FAManager.mode != OWS2FAMode_V2 && !self.ows2FAManager.isUsingRandomPin) {
+    } else if (pin.length > 0 && self.ows2FAManager.mode != OWS2FAMode_V2) {
         accountAttributes[@"pin"] = pin;
     }
 
@@ -508,7 +508,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (SSKFeatureFlags.groupsV2SetCapability) {
         capabilities[@"gv2"] = @(YES);
     }
-    if (OWSKeyBackupService.hasMasterKey && !self.ows2FAManager.isUsingRandomPin) {
+    if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
     if (SSKDebugFlags.groupsV2memberStatusIndicators) {
