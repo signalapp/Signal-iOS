@@ -2703,10 +2703,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Utwórz liczbowy PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Wyłącz PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Uwaga";
@@ -2718,10 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "Utworzenie PINu nie powiodło się";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane i tylko Ty masz do nich dostęp. Twój profil, ustawienia i kontakty zostaną przywrócone, gdy ponownie zainstalujesz Signal. Nie będziesz potrzebować swojego kodu PIN do otwarcia aplikacji.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Dowiedz się więcej o kodach PIN";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Kody PIN się różnią. Spróbuj ponownie.";
@@ -2745,13 +2745,13 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Wyłącz";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Aby wyłączyć swój kod PIN, musisz najpierw wyłączyć blokadę rejestracji";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Wyłączyć blokadę rejestracji?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "Wyłącz PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Utwórz swój PIN";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Wybierz silniejszy PIN";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Nie udało się wyłączyć Twojego PINu. Później poprosimy Cię o jego wyłączenie.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "Wyłączenie PINu nie powiodło się";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Aby pomóc Ci zapamiętać Twój PIN, będziemy co jakiś czas o niego pytać. Z czasem pytania będą coraz rzadsze.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "Utworzono PIN. Możesz zmienić go w ustawieniach.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "Wyłączono PIN";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Odtwórz";
@@ -3459,19 +3459,19 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Włącz logi debugowania";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Zaawansowane ustawienia PIN";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Zaawansowane ustawienia PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Wyłącz PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Włącz PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "PIN Signal";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Wyślij logi debugowania";
@@ -4014,16 +4014,16 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Utwórz swój PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Dowiedz się więcej o kodach PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane i tylko Ty masz do nich dostęp. Twój profil, ustawienia i kontakty zostaną przywrócone, gdy ponownie zainstalujesz Signal. Nie będziesz potrzebować swojego kodu PIN do otwarcia aplikacji.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Przedstawiamy kody PIN";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Wyłącz PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal wkrótce będzie wymagał systemu iOS 11 lub nowszego. Zaktualizuj system przechodząc do Ustawienia >> Ogólne >> Aktualizacja oprogramowania.";

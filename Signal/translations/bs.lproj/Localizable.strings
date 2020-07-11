@@ -2469,7 +2469,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Learn more about PINs";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Saznajte više o PIN-ovima";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
@@ -2703,10 +2703,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Isključi PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Upozorenje";
@@ -2718,7 +2718,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN služi za šifriranje informacija na Signalu tako da im samo Vi možete pristupiti. Vaš profil, podešavanja i kontakti bit će sačuvani i učitani kad ponovo instalirate Signal. PIN Vam neće trebati da otvorite aplikaciju.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
@@ -2751,7 +2751,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Turn Off Registration Lock?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "Isključi PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Kreirajte svoj PIN";
@@ -3465,13 +3465,13 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Isključi PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Uključi PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Podnesite zapis o neispravnosti";
@@ -4017,13 +4017,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN služi za šifriranje informacija na Signalu tako da im samo Vi možete pristupiti. Vaš profil, podešavanja i kontakti bit će sačuvani i učitani kad ponovo instalirate Signal. PIN Vam neće trebati da otvorite aplikaciju.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Novo: PIN-ovi";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Isključi PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";

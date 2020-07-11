@@ -2007,7 +2007,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Smazat pro všechny";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tato zpráva bude trvale smazána pro všechny členy konverzace. Členové konverzace budou moci vidět, ze jste zprávu smazali.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
@@ -2703,10 +2703,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Vytvořit číselný PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Deaktivovat PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Varování";
@@ -2718,7 +2718,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Vytvoření PIN selhalo";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN uchovává informace uložené u Signalu zašifrované, takže pouze vy k nim můžete přistupovat. Váš profil, nastavení a kontakty budou při reinstalaci obnoveny. Pro spuštění aplikace PIN nebudete potřebovat. ";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
@@ -2751,7 +2751,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Vypnout zámek registrace?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "Deaktivovat PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Vytvořte váš PIN";
@@ -3465,13 +3465,13 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Zakázat PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Povolit PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Odeslat Debug Log";
@@ -4017,13 +4017,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN uchovává informace uložené u Signalu zašifrované, takže pouze vy k nim můžete přistupovat. Váš profil, nastavení a kontakty budou při reinstalaci obnoveny. Pro spuštění aplikace PIN nebudete potřebovat. ";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Představujeme PIN";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktivovat PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal bude brzy vyžadovat iOS 11 nebo novější. Proveďte prosím aktualizaci v aplikaci Nastavení >> Obecné >> Aktualizace softwaru.";
@@ -4122,7 +4122,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dokončete nastavení v aplikaci Signal Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Smazali jste tuto zprávu.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Zakázal(a) jste mizející zprávy.";

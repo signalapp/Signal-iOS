@@ -2703,10 +2703,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "ایجاد پین عددی";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "غیرفعال کردن پین";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "اخطار";
@@ -2718,7 +2718,7 @@
 "PIN_CREATION_ERROR_TITLE" = "ایجاد پین موفق نبود";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "پین‌ها اطلاعات ذخیره شده نزد Signal را رمزگذاری شده نگاه می‌دارند تا فقط شما بتوانید به آن‌ها دسترسی داشته باشید. پروفایل شما، تنظیمات و مخاطبان هنگام نصب مجدد بازگردانی خواهند شد. برای باز کردن برنامه به پین احتیاج نخواهید داشت.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
@@ -2751,7 +2751,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "قفل ثبت نام خاموش شود؟";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "غیرفعال کردن پین";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "پین خود را ایجاد کنید";
@@ -3465,13 +3465,13 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "غیرفعال کردن پین";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "فعال کردن پین";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "پین Signal";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ارسال گزارش رفع عیب";
@@ -4017,13 +4017,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "پین‌ها اطلاعات ذخیره شده نزد Signal را رمزگذاری شده نگاه می‌دارند تا فقط شما بتوانید به آن‌ها دسترسی داشته باشید. پروفایل شما، تنظیمات و مخاطبان هنگام نصب مجدد بازگردانی خواهند شد. برای باز کردن برنامه به پین احتیاج نخواهید داشت.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "تعریف پین ها";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "غیرفعال کردن پین";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal به زودی به iOS11 یا بالاتر نیاز خواهد داشت. لطفا در قسمت Settings app >> General >> Software Update اقدام به بروز رسانی کنید.";

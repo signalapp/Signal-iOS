@@ -2703,25 +2703,25 @@
 "PIN_CREATION_CREATE_NUMERIC" = "数字のPINを作成";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PINを無効化";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "警告";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "PINは保存されませんでした。あとでPINの作成について改めて伺います。 ";
+"PIN_CREATION_ERROR_MESSAGE" = "PINを保存できませんでした。もう一度作成できるようになるまでしばらくお待ちください。";
 
 /* Error title indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_TITLE" = "PINの作成に失敗しました";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PINは Signal 上に保管されている情報を暗号化するのに使われます。これによって、あなた以外の誰もその情報にアクセスできないようにしています。PINを使うことで、Signal を再インストールしたときにあなたのプロフィール、設定、連絡先の情報が復元されます。アプリを利用するときにPINを入力する必要はありません。";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "PINに関する詳細情報";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINが一致しません。再度試してください。";
@@ -2745,13 +2745,13 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "オフ";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "PINを無効にする前に登録ロックを解除してください。";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "登録ロックを外しますか?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "PINを無効化";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "あなたのPINを作成";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "もっと強いPINを選択してください";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "PINを無効にできませんでした。もう一度試せるようになるまでしばらくお待ちください。";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "PINの無効化に失敗";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "あなたがPINを忘れないよう、Signalは定期的に確認します。頻度は次第に減ってゆきます。";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "PINが作成されました。設定で変更することもできます。";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PINを無効にしました。";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "メディアを再生";
@@ -3459,19 +3459,19 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "デバッグログを有効";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "PINの詳細設定";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "PINの詳細設定";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PINを無効化";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PINを有効化";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "デバッグログを送信";
@@ -4014,16 +4014,16 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PINを作成";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PINに関する詳細情報";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINは Signal 上に保管されている情報を暗号化するのに使われます。これによって、あなた以外の誰もその情報にアクセスできないようにしています。PINを使うことで、Signal を再インストールしたときにあなたのプロフィール、設定、連絡先の情報が復元されます。アプリを利用するときにPINを入力する必要はありません。";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PINの紹介";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PINを無効化";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "SignalはもうすぐiOS 11以上のみの対応になります。設定 >> 一般 >> ソフトウェアアップデートからアップグレードしてください。";

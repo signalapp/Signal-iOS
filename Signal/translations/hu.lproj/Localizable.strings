@@ -2703,10 +2703,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Hozz létre szám alapú PIN kódot";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PIN letiltása";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Figyelmeztetés";
@@ -2718,7 +2718,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN létrehozása sikertelen.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "A PIN-nek köszönhetően a Signal által tárolt információk titkosítva lesznek, így csak te férhetsz hozzájuk. Újratelepítés esetén profilod, beállításaid és kontaktjaid visszaállításra kerülnek. Az alkalmazás megnyitásához nincs szükség a PIN kódra.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
@@ -2751,7 +2751,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Kikapcsolod a regisztrációs zárat?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "PIN letiltása";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "PIN létrehozása";
@@ -3465,13 +3465,13 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PIN letiltása";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN engedélyezése";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Debug Log továbbítása";
@@ -4017,13 +4017,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "A PIN-nek köszönhetően a Signal által tárolt információk titkosítva lesznek, így csak te férhetsz hozzájuk. Újratelepítés esetén profilod, beállításaid és kontaktjaid visszaállításra kerülnek. Az alkalmazás megnyitásához nincs szükség a PIN kódra.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "A PIN kódok bemutatása";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN letiltása";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "A Signal hamarosan iOS 11-et vagy későbbit igényel. Kérjük frissítsen a Beállítások app >> Általános >> Szoftver frissítés menüpont alatt.";

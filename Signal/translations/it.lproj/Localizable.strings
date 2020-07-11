@@ -2703,13 +2703,13 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Crea PIN numerico";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Skip PIN Creation";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disabilita PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Skipping PIN creation will create a hidden, high-entropy PIN associated with your account that is unrecoverable. When you re-register Signal you will lose all data unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Attenzione";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Il tuo PIN non è stato salvato. Ti chiederemo di creare un PIN più tardi.";
@@ -2718,10 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "Creazione PIN non riuscita";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "I PIN mantengono le informazioni memorizzate con Signal crittografate in modo che solo tu possa accedervi. Il profilo, le impostazioni e i contatti verranno ripristinati quando reinstalli. Non avrai bisogno del tuo PIN per aprire l'app.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Scopri di più sui PIN";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "I PIN non corrispondono. Riprova.";
@@ -2745,13 +2745,13 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Disattiva";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Per disabilitare il PIN, devi prima disattivare il Blocco registrazione.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Disattivare il blocco registrazione?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Skip PIN Creation";
+"PIN_CREATION_SKIP" = "Disabilita PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Crea il tuo PIN";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Scegli un PIN più complesso";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Non è stato possibile disabilitare il PIN. Te lo chiederemo di nuovo più tardi.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "Disabilitazione PIN fallita";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Per aiutarti a memorizzare il tuo PIN, ti chiederemo di inserirlo periodicamente. Lo chiederemo di meno nel corso del tempo.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN creato. Puoi cambiarlo nelle impostazioni.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN disabilitato.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Riproduci media";
@@ -3459,19 +3459,19 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Abilita il log di debug";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Impostazioni PIN avanzate";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Impostazioni PIN avanzate";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disabilita PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Abilita PIN";
 
 /* Table header for the 'pins' section. */
-"SETTINGS_ADVANCED_PINS_HEADER" = "Signal PiN";
+"SETTINGS_ADVANCED_PINS_HEADER" = "PIN di Signal";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Invia il log di debug";
@@ -4014,16 +4014,16 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Crea il tuo PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Scopri di più sui PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "I PIN mantengono le informazioni memorizzate con Signal crittografate in modo che solo tu possa accedervi. Il profilo, le impostazioni e i contatti verranno ripristinati quando reinstalli. Non avrai bisogno del tuo PIN per aprire l'app.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ti presentiamo i PIN";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Skip PIN Creation";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disabilita PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal presto richiederà iOS 11 o successivo. Ti preghiamo di aggiornare andando nelle Impostazioni >> Generali >> Aggiornamento Software.";
