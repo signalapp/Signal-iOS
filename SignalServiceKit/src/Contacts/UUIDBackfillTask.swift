@@ -11,63 +11,52 @@ public class UUIDBackfillTask: NSObject {
     // MARK: - Properties
 
     private let queue: DispatchQueue
-    private let persistence: PersistenceProvider
-    private let network: NetworkProvider
-    private var phoneNumbersToFetch: [String] = []
-
+    private var phoneNumbersToFetch: [(persisted: String, e164: String?)] = []
     private var completionBlock: (() -> Void)?
 
     private var didStart: Bool = false
     private var attemptCount = 0
     private var hardFailureCount = 0
 
+    // MARK: - Properies (External Dependencies)
+    private let readiness: ReadinessProvider
+    private let persistence: PersistenceProvider
+    private let network: NetworkProvider
+
     // MARK: - Lifecycle
+
+    public convenience init(targetQueue: DispatchQueue = .sharedUtility) {
+        self.init(targetQueue: targetQueue,
+                  persistence: .default,
+                  network: .default,
+                  readiness: .default)
+    }
 
     init(targetQueue: DispatchQueue = .sharedUtility,
          persistence: PersistenceProvider = .default,
-         network: NetworkProvider = .default) {
+         network: NetworkProvider = .default,
+         readiness: ReadinessProvider = .default) {
 
         self.queue = DispatchQueue(label: "org.whispersystems.signal.\(type(of: self))", target: targetQueue)
         self.persistence = persistence
         self.network = network
+        self.readiness = readiness
         super.init()
     }
 
     // MARK: - Public
 
     func perform(completion: @escaping () -> Void = {}) {
-        queue.async {
-            guard self.didStart == false else {
-                owsFailDebug("perform() invoked multiple times")
-                return
-            }
-            self.didStart = true
-            self.completionBlock = completion
-
-            let allRecipientsWithoutUUID = self.persistence.fetchRegisteredRecipientsWithoutUUID()
-            assert(allRecipientsWithoutUUID.allSatisfy({ (recipient) in
-                recipient.recipientPhoneNumber != nil &&
-                recipient.recipientUUID == nil
-            }), "Invalid recipient returned from persistence")
-            self.phoneNumbersToFetch = allRecipientsWithoutUUID.compactMap { $0.recipientPhoneNumber }
-
-            if FeatureFlags.isUsingProductionService {
-                Logger.info("Modern CDS is not available in production. Completing early.")
-                self.onqueue_complete()
-
-            } else if self.phoneNumbersToFetch.isEmpty {
-                Logger.info("Completing early, no phone numbers to fetch.")
-                self.onqueue_complete()
-
-            } else {
-                Logger.info("Scheduling a fetch for \(self.phoneNumbersToFetch.count) phone numbers.")
-                self.onqueue_schedule()
+        readiness.runNowOrWhenAppDidBecomeReady {
+            self.queue.async {
+                self.onqueue_start(with: completion)
             }
         }
     }
 
     // MARK: - Testing
 
+    internal var testing_skipProductionCheck = false
     internal var testing_shortBackoffInterval = false
     internal var testing_backoffInterval: DispatchTimeInterval {
         return backoffInterval
@@ -105,24 +94,57 @@ public class UUIDBackfillTask: NSObject {
         return .milliseconds(millisecondsToBackoff)
     }
 
-    private func onqueue_schedule() {
+    private func onqueue_start(with completion: @escaping () -> Void) {
         assertOnQueue(queue)
-        queue.asyncAfter(deadline: .now() + backoffInterval) {
-            self.onqueue_perform()
+
+        guard self.didStart == false else {
+            owsFailDebug("perform() invoked multiple times")
+            return
+        }
+        self.didStart = true
+        self.completionBlock = completion
+
+        let allRecipientsWithoutUUID = self.persistence.fetchRegisteredRecipientsWithoutUUID()
+        assert(allRecipientsWithoutUUID.allSatisfy({ (recipient) in
+            recipient.recipientPhoneNumber != nil &&
+            recipient.recipientUUID == nil
+        }), "Invalid recipient returned from persistence")
+
+        self.phoneNumbersToFetch = allRecipientsWithoutUUID
+            .compactMap { $0.recipientPhoneNumber }
+            .map { (persisted: $0, e164: PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: $0)?.toE164()) }
+
+        if FeatureFlags.isUsingProductionService && !testing_skipProductionCheck {
+            Logger.info("Modern CDS is not available in production. Completing early.")
+            self.onqueue_complete()
+
+        } else if self.phoneNumbersToFetch.isEmpty {
+            Logger.info("Completing early, no phone numbers to fetch.")
+            self.onqueue_complete()
+
+        } else {
+            Logger.info("Scheduling a fetch for \(self.phoneNumbersToFetch.count) phone numbers.")
+            self.onqueue_schedule()
         }
     }
 
-    private func onqueue_perform() {
+    private func onqueue_schedule() {
+        assertOnQueue(queue)
+        queue.asyncAfter(deadline: .now() + backoffInterval, execute: onqueue_performCDSFetch)
+    }
+
+    private func onqueue_performCDSFetch() {
         assertOnQueue(queue)
 
         attemptCount += 1
         firstly { () throws -> Promise<Set<CDSRegisteredContact>> in
-            Logger.info("Beginning CDS fetch for UUID backfill")
-            let (promise, resolver) = Promise<Set<CDSRegisteredContact>>.pending()
-            network.fetchServiceAddress(for: self.phoneNumbersToFetch) { (contacts, error) in
-                resolver.resolve(contacts, error)
+            return Promise { resolver in
+                Logger.info("Beginning CDS fetch for UUID backfill")
+                let e164Numbers = self.phoneNumbersToFetch.compactMap { $0.e164 }
+                network.fetchServiceAddress(for: e164Numbers) { (contacts, error) in
+                    resolver.resolve(contacts, error)
+                }
             }
-            return promise
         }.done(on: queue) { (result) in
             self.onqueue_handleResults(results: result)
         }.catch(on: queue) { (error) in
@@ -156,8 +178,13 @@ public class UUIDBackfillTask: NSObject {
         let resultMap = results.reduce(into: [:]) { (dict, contact) in
             dict[contact.e164PhoneNumber] = contact.signalUuid
         }
-        let addresses = phoneNumbersToFetch
-            .map { SignalServiceAddress(uuid: resultMap[$0], phoneNumber: $0) }
+        let addresses = phoneNumbersToFetch.map { (numberTuple) -> SignalServiceAddress in
+            if let e164 = numberTuple.e164, let uuid = resultMap[e164] {
+                return SignalServiceAddress(uuid: uuid, phoneNumber: numberTuple.persisted)
+            } else {
+                return SignalServiceAddress(uuid: nil, phoneNumber: numberTuple.persisted)
+            }
+        }
 
         let toRegister = addresses.filter { $0.uuid != nil }
         let toUnregister = addresses.filter { $0.uuid == nil }
@@ -182,31 +209,6 @@ public class UUIDBackfillTask: NSObject {
     }
 }
 
-@objc public extension UUIDBackfillTask {
-    private static let postLaunchLock = UnfairLock()
-    private static var postLaunchTask: UUIDBackfillTask?
-
-    static func registerPostLaunchTask(completion: @escaping () -> Void = {}) {
-        postLaunchLock.withLock {
-            guard postLaunchTask == nil else { return }
-            postLaunchTask = UUIDBackfillTask()
-        }
-
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            postLaunchTask?.perform(completion: {
-                completion()
-                didCompletePostLaunchTask()
-            })
-        }
-    }
-
-    private static func didCompletePostLaunchTask() {
-        postLaunchLock.withLock {
-            postLaunchTask = nil
-        }
-    }
-}
-
 // MARK: - Dependencies
 extension UUIDBackfillTask {
 
@@ -215,7 +217,7 @@ extension UUIDBackfillTask {
     // and overridden to shim out any dependencies for testing.
 
     class NetworkProvider {
-        static let `default` = NetworkProvider()
+        static var `default`: NetworkProvider { return NetworkProvider() }
 
         func fetchServiceAddress(for phoneNumbers: [String],
                                  completion: @escaping (Set<CDSRegisteredContact>, Error?) -> Void) {
@@ -229,7 +231,7 @@ extension UUIDBackfillTask {
     }
 
     class PersistenceProvider {
-        static let `default` = PersistenceProvider()
+        static var `default`: PersistenceProvider { return PersistenceProvider() }
 
         func fetchRegisteredRecipientsWithoutUUID() -> [SignalRecipient] {
             SDSDatabaseStorage.shared.read { (readTx) in
@@ -247,6 +249,14 @@ extension UUIDBackfillTask {
                     SignalRecipient.mark(asUnregistered: toUnregister, transaction: writeTx)
                 }
             }
+        }
+    }
+
+    class ReadinessProvider {
+        static var `default`: ReadinessProvider { return ReadinessProvider() }
+
+        func runNowOrWhenAppDidBecomeReady(_ workItem: @escaping () -> Void) {
+            AppReadiness.runNowOrWhenAppDidBecomeReady(workItem)
         }
     }
 }

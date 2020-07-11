@@ -8,29 +8,51 @@ import XCTest
 
 class UUIDBackfillTaskTest: SSKBaseTestSwift {
     private var dut: UUIDBackfillTask! = nil
+    private var readiness: MockReadiness! = nil
     private var persistence: MockPersistence! = nil
     private var network: MockNetwork! = nil
 
     override func setUp() {
         super.setUp()
+        let mockEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
 
-        // The shared signal service address cache will persist UUIDs as soon as they're created
-        // This messes with some of the verification checks performed in this test suite
-        SSKEnvironment.shared.signalServiceAddressCache.testing_disableCache = true
-
+        readiness = MockReadiness()
         persistence = MockPersistence()
         network = MockNetwork()
-        dut = UUIDBackfillTask(persistence: persistence,
-                               network: network)
-        dut.testing_shortBackoffInterval = true
-    }
+        mockEnvironment.signalServiceAddressCache = MockServiceAddressCache()
 
-    override func tearDown() {
-        super.tearDown()
-        SSKEnvironment.shared.signalServiceAddressCache.testing_disableCache = false
+        dut = UUIDBackfillTask(persistence: persistence,
+                               network: network,
+                               readiness: readiness)
+        dut.testing_shortBackoffInterval = true
+        dut.testing_skipProductionCheck = true
     }
 
     // MARK: - Tests
+
+    func testWaitsUntilReady() {
+        // Setup
+        let didComplete = expectation(description: "Task Completed")
+        configureMocks(expectingRegistrationFor: [],
+                       expectingUnregistrationFor: [])
+        readiness.ready = false
+        var didSetReady = false
+        var readyStateAtCompletion = false
+
+        // Test
+        dut.perform {
+            readyStateAtCompletion = didSetReady
+            didComplete.fulfill()
+        }
+        DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) {
+            didSetReady = true
+            self.readiness.ready = true
+        }
+
+        // Verify
+        waitForExpectations(timeout: 3)
+        XCTAssertTrue(readyStateAtCompletion)
+    }
 
     func testNoLegacyRecipients() {
         // Setup
@@ -52,7 +74,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testOneLegacyRecipient_Found() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        configureMocks(expectingRegistrationFor: ["+1234567890"],
+        configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [])
 
         // Test
@@ -70,7 +92,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
         // Setup
         let didComplete = expectation(description: "Task Completed")
         configureMocks(expectingRegistrationFor: [],
-                       expectingUnregistrationFor: ["+1234567890"])
+                       expectingUnregistrationFor: ["+11234567890"])
 
         // Test
         dut.perform {
@@ -86,7 +108,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testManyLegacyRecipients_AllFound() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        let registrations = (1234567890..<1234567890+1000).map { "+\($0)" }
+        let registrations = (1234567890..<1234567890+1000).map { "+1\($0)" }
         configureMocks(expectingRegistrationFor: registrations,
                        expectingUnregistrationFor: [])
 
@@ -104,8 +126,8 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testManyLegacyRecipients_SomeFound() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        let registrations = (1234567890..<1234567890+500).map { "+\($0)" }
-        let unregistrations = (2234567890..<2234567890+500).map { "+\($0)" }
+        let registrations = (1234567890..<1234567890+500).map { "+1\($0)" }
+        let unregistrations = (2234567890..<2234567890+500).map { "+1\($0)" }
         configureMocks(expectingRegistrationFor: registrations,
                        expectingUnregistrationFor: unregistrations)
 
@@ -123,7 +145,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testManyLegacyRecipients_NoneFound() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        let unregistrations = (1234567890..<1234567890+1000).map { "+\($0)" }
+        let unregistrations = (1234567890..<1234567890+1000).map { "+1\($0)" }
         configureMocks(expectingRegistrationFor: [],
                        expectingUnregistrationFor: unregistrations)
 
@@ -141,7 +163,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testNetworkFailure() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        configureMocks(expectingRegistrationFor: ["+1234567890"],
+        configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [],
                        forcedFailures: [
                             NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil)
@@ -161,7 +183,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testRepeatedNetworkFailures() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        configureMocks(expectingRegistrationFor: ["+1234567890"],
+        configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [],
                        forcedFailures: [
                             NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
@@ -187,7 +209,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testUnknownFailures() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        configureMocks(expectingRegistrationFor: ["+1234567890"],
+        configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [],
                        forcedFailures: [
                             NSError(domain: "TestDomain", code: 1, userInfo: nil)
@@ -207,7 +229,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testRepeatedUnknownFailures() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        configureMocks(expectingRegistrationFor: ["+1234567890"],
+        configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [],
                        forcedFailures: [
                             NSError(domain: "TestDomain", code: 1, userInfo: nil),
@@ -235,7 +257,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
     func testMixedFailures() {
         // Setup
         let didComplete = expectation(description: "Task Completed")
-        configureMocks(expectingRegistrationFor: ["+1234567890"],
+        configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [],
                        forcedFailures: [
                             NSError(domain: "TestDomain", code: 1, userInfo: nil),
@@ -256,38 +278,6 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
         waitForExpectations(timeout: 10)
         persistence.verifySuccess()
         network.verify(requestCount: 8)
-    }
-}
-
-extension UUIDBackfillTaskTest {
-
-    func configureMocks(expectingRegistrationFor registeredNumbers: [String],
-                        expectingUnregistrationFor unregisteredNumbers: [String],
-                        forcedFailures: [Error] = []) {
-
-        // Verify no duplicate entries
-        XCTAssertEqual(registeredNumbers.count + unregisteredNumbers.count,
-                       Set(registeredNumbers + unregisteredNumbers).count, "Invalid test configuration")
-
-        let initialRecipients = (registeredNumbers + unregisteredNumbers).map {
-            SignalRecipient(address: SignalServiceAddress(uuid: nil, phoneNumber: $0))
-        }
-        let expectedRegistration = registeredNumbers.map {
-            SignalServiceAddress(uuid: UUID(), phoneNumber: $0)
-        }
-        let expectedUnregistration = unregisteredNumbers.map {
-            SignalServiceAddress(uuid: nil, phoneNumber: $0)
-        }
-        let finalCDSResult = expectedRegistration.map {
-            CDSRegisteredContact(signalUuid: $0.uuid!, e164PhoneNumber: $0.phoneNumber!)
-        }
-
-        persistence.unknownRecipients = Set(initialRecipients)
-        persistence.expectedRegistration = Set(expectedRegistration)
-        persistence.expectedUnregistration = Set(expectedUnregistration)
-
-        network.scheduledErrors = forcedFailures
-        network.finalResult = Set(finalCDSResult)
     }
 
     func testBackoffInterval() {
@@ -315,12 +305,83 @@ extension UUIDBackfillTaskTest {
             dut.testing_attemptCount = $0
             XCTAssertEqual(dut.testing_backoffInterval, .seconds(15 * 60))
         }
+    }
+
+    func testUnnormalizedNumbers_nonE164() {
+        // Setup
+        let didComplete = expectation(description: "Task Completed")
+        configureMocks(expectingRegistrationFor: ["1234567890", "3134505219"],
+                       expectingUnregistrationFor: ["123",
+                                                    "999999999999999999"
+                                                    /*, "" (works for empty strings but hits a failDebug and stops test execution) */
+                                                    ])
+
+        // Test
+        dut.perform {
+            didComplete.fulfill()
+        }
 
         // Verify
+        waitForExpectations(timeout: 3)
+        persistence.verifySuccess()
+        network.verify(requestCount: 1)
+    }
+
+    func testUnnormalizedNumbers_onlyUnregistration() {
+        // Setup
+        let didComplete = expectation(description: "Task Completed")
+        configureMocks(expectingRegistrationFor: [],
+                       expectingUnregistrationFor: ["123", "999999999999999999"])
+
+        // Test
+        dut.perform {
+            didComplete.fulfill()
+        }
+
+        // Verify
+        waitForExpectations(timeout: 3)
+        persistence.verifySuccess()
+        network.verify(requestCount: 1)
     }
 }
 
 extension UUIDBackfillTaskTest {
+
+    class MockServiceAddressCache: SignalServiceAddressCache {
+        override func hashAndCache(uuid: UUID?, phoneNumber: String?) -> Int {
+            // If the cache is disabled, we just still return a valid hash to speed up isEqual: checks
+            // Anything works as long as it's consistent.
+            if let uuid = uuid {
+                return uuid.hashValue
+            } else if let digits = phoneNumber?.filter({ $0.isWholeNumber }) {
+                return Int(digits) ?? 0
+            } else {
+                return 0
+            }
+        }
+        override func uuid(forPhoneNumber phoneNumber: String) -> UUID? { return nil }
+        override func phoneNumber(forUuid uuid: UUID) -> String? { return nil }
+    }
+
+    class MockReadiness: UUIDBackfillTask.ReadinessProvider {
+        var queuedItems: [() -> Void] = []
+        var ready: Bool = true {
+            didSet {
+                if ready {
+                    queuedItems.forEach { $0() }
+                    queuedItems.removeAll()
+                }
+            }
+        }
+
+        override func runNowOrWhenAppDidBecomeReady(_ workItem: @escaping () -> Void) {
+            if ready {
+                workItem()
+            } else {
+                queuedItems.append(workItem)
+            }
+        }
+    }
 
     class MockPersistence: UUIDBackfillTask.PersistenceProvider {
 
@@ -379,11 +440,13 @@ extension UUIDBackfillTaskTest {
 
         var requestCount = 0
         var scheduledErrors: [Error] = []
+        var expectedRequest: Set<String> = Set()
         var finalResult: Set<CDSRegisteredContact> = Set()
 
         override func fetchServiceAddress(for phoneNumbers: [String],
                                           completion: @escaping (Set<CDSRegisteredContact>, Error?) -> Void) {
             requestCount += 1
+            XCTAssertEqual(Set(phoneNumbers), expectedRequest)
             if let error = scheduledErrors.first {
                 completion(Set(), error)
                 scheduledErrors.remove(at: 0)
@@ -398,6 +461,39 @@ extension UUIDBackfillTaskTest {
         func verify(requestCount expected: Int) {
             XCTAssertEqual(requestCount, expected)
         }
+    }
+
+    func e164(from number: String) -> String? {
+        return PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: number)?.toE164()
+    }
+
+    func configureMocks(expectingRegistrationFor registeredNumbers: [String],
+                        expectingUnregistrationFor unregisteredNumbers: [String],
+                        forcedFailures: [Error] = []) {
+
+        let initialRecipientSet = Set((registeredNumbers + unregisteredNumbers)
+            .map { SignalRecipient(address: SignalServiceAddress(uuid: nil, phoneNumber: $0)) })
+        let expectedCDSRequestSet = Set((registeredNumbers + unregisteredNumbers)
+            .compactMap { e164(from: $0) })
+
+        let expectedRegistrationSet = Set(registeredNumbers
+            .map { SignalServiceAddress(uuid: UUID(), phoneNumber: $0) })
+        let expectedUnregistrationSet = Set(unregisteredNumbers
+            .map { SignalServiceAddress(uuid: nil, phoneNumber: $0) })
+        let finalCDSResultSet = Set(expectedRegistrationSet
+            .map { CDSRegisteredContact(signalUuid: $0.uuid!, e164PhoneNumber: e164(from: $0.phoneNumber!)!) })
+
+        persistence.unknownRecipients = initialRecipientSet
+        persistence.expectedRegistration = expectedRegistrationSet
+        persistence.expectedUnregistration = expectedUnregistrationSet
+
+        network.expectedRequest = expectedCDSRequestSet
+        network.scheduledErrors = forcedFailures
+        network.finalResult = finalCDSResultSet
+
+        // Verify no duplicate entries
+        XCTAssertEqual(registeredNumbers.count + unregisteredNumbers.count,
+                       initialRecipientSet.count, "Invalid test configuration, duplicate numbers")
     }
 }
 
