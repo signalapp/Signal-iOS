@@ -81,7 +81,16 @@ class ConversationInputTextView: MentionTextView {
             }
         }
 
-        textContainerInset = UIEdgeInsets(top: 7, left: leftInset, bottom: 7, right: rightInset)
+        // Check the system font size and increase text inset accordingly
+        // to keep the text vertically centered
+        let currentFontSize = (font ?? UIFont.ows_dynamicTypeBody).pointSize
+        // Default body font size is 17 according to the HIG (Typography)
+        let systemDefaultFontSize: CGFloat = 17
+        let ourDefaultInset: CGFloat = 7
+        let insetFontAdjustment = systemDefaultFontSize > currentFontSize ? systemDefaultFontSize - currentFontSize : 0
+        let topInset = ourDefaultInset + insetFontAdjustment
+        let bottomInset = systemDefaultFontSize > currentFontSize ? topInset - 1 : topInset
+        textContainerInset = UIEdgeInsets(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)
     }
 
     private func ensurePlaceholderConstraints() {
