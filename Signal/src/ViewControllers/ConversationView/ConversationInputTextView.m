@@ -142,7 +142,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    self.textContainerInset = UIEdgeInsetsMake(7.f, leftInset, 7.f, rightInset);
+    // Check the system font size and increase text inset accordingly
+    // to keep the text vertically centered
+    CGFloat currentFontSize = self.font.pointSize;
+    // Default body font size is 17 according to the HIG (Typography)
+    CGFloat systemDefaultFontSize = 17.f;
+    CGFloat ourDefaultInset = 7.f;
+    CGFloat topInset = ourDefaultInset + (systemDefaultFontSize > currentFontSize ? systemDefaultFontSize - currentFontSize : 0);
+    CGFloat bottomInset = systemDefaultFontSize > currentFontSize ? topInset - 1 : topInset;
+    self.textContainerInset = UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
 }
 
 - (void)setText:(NSString *_Nullable)text

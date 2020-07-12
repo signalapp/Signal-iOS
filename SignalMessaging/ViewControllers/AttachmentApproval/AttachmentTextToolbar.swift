@@ -298,7 +298,16 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         textView.font = UIFont.ows_dynamicTypeBody
         textView.textColor = Theme.darkThemePrimaryColor
-        textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
+
+        // Check the system font size and increase text inset accordingly
+        // to keep the text vertically centered
+        let currentFontSize = textView.font!.pointSize
+        // Default body font size is 17 according to the HIG (Typography)
+        let systemDefaultFontSize: CGFloat = 17
+        let ourDefaultInset: CGFloat = 7
+        let topInset = ourDefaultInset + (systemDefaultFontSize > currentFontSize ? systemDefaultFontSize - currentFontSize : 0)
+        let bottomInset = systemDefaultFontSize > currentFontSize ? topInset - 1 : topInset
+        textView.textContainerInset = UIEdgeInsets(top: topInset, left: ourDefaultInset, bottom: bottomInset, right: ourDefaultInset)
 
         return textView
     }
