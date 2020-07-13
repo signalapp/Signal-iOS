@@ -142,7 +142,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 
     // Start processing.
     [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
-        [SSKEnvironment.shared.messagePipelineSupervisor registerPipelineStage:self];
+        [self.pipelineSupervisor registerPipelineStage:self];
         [self drainQueue];
     }];
 
@@ -152,6 +152,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self.pipelineSupervisor unregisterPipelineStage:self];
 }
 
 #pragma mark - Dependencies

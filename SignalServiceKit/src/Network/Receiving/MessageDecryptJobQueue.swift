@@ -21,6 +21,10 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
         }
     }
 
+    deinit {
+        pipelineSupervisor.unregister(pipelineStage: self)
+    }
+
     // MARK: 
 
     @objc(enqueueEnvelopeData:)
@@ -57,7 +61,6 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
 
         // The pipeline supervisor will post updates when we can process messages
         // Suspend our operation queue if we should pause our work
-        let pipelineSupervisor = SSKEnvironment.shared.messagePipelineSupervisor
         pipelineSupervisor.register(pipelineStage: self)
         defaultQueue.isSuspended = !pipelineSupervisor.isMessageProcessingPermitted
 
@@ -104,6 +107,10 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
 }
 
 extension SSKMessageDecryptJobQueue: MessageProcessingPipelineStage {
+    private var pipelineSupervisor: MessagePipelineSupervisor {
+        return SSKEnvironment.shared.messagePipelineSupervisor
+    }
+
     public func supervisorDidSuspendMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
         defaultQueue.isSuspended = true
     }

@@ -374,7 +374,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     if (!CurrentAppContext().shouldProcessIncomingMessages) {
         return;
     }
-    if (!SSKEnvironment.shared.messagePipelineSupervisor.isMessageProcessingPermitted) {
+    if (!self.pipelineSupervisor.isMessageProcessingPermitted) {
         return;
     }
     if (!self.tsAccountManager.isRegisteredAndReady) {

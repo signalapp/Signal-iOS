@@ -170,7 +170,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
-        guard SSKEnvironment.shared.messagePipelineSupervisor.isMessageProcessingPermitted else {
+        guard self.pipelineSupervisor.isMessageProcessingPermitted else {
             return
         }
         guard tsAccountManager.isRegisteredAndReady else {
