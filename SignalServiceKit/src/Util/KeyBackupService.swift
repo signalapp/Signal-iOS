@@ -647,13 +647,6 @@ public class KeyBackupService: NSObject {
             transaction: transaction
         )
 
-        // Clear pending restore status
-        keyValueStore.setBool(
-            false,
-            key: hasPendingRestorationIdentifier,
-            transaction: transaction
-        )
-
         reloadState(transaction: transaction)
 
         // Only continue if we didn't previously have a master key or our master key has changed
