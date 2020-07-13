@@ -177,6 +177,7 @@ static NSTimeInterval launchStartedAt;
 
     // Loki: Stop pollers
     [self stopPoller];
+    [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
 }
 
@@ -198,6 +199,7 @@ static NSTimeInterval launchStartedAt;
 
     // Loki: Stop pollers
     [self stopPoller];
+    [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
 }
 
@@ -752,6 +754,7 @@ static NSTimeInterval launchStartedAt;
 
             // Loki: Start pollers
             [self startPollerIfNeeded];
+            [self startClosedGroupPollerIfNeeded];
             [self startOpenGroupPollersIfNeeded];
 
             // Loki: Get device links
@@ -1261,6 +1264,7 @@ static NSTimeInterval launchStartedAt;
         
         // Loki: Start pollers
         [self startPollerIfNeeded];
+        [self startClosedGroupPollerIfNeeded];
         [self startOpenGroupPollersIfNeeded];
 
         // Loki: Get device links
@@ -1380,10 +1384,11 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startPollerIfNeeded
 {
-    if (self.poller != nil) { return; }
-    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    if (userPublicKey == nil) { return; }
-    self.poller = [[LKPoller alloc] init];
+    if (self.poller == nil) {
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        if (userPublicKey == nil) { return; }
+        self.poller = [[LKPoller alloc] init];
+    }
     [self.poller startIfNeeded];
 }
 
@@ -1391,10 +1396,11 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startClosedGroupPollerIfNeeded
 {
-    if (self.closedGroupPoller != nil) { return; }
-    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    if (userPublicKey == nil) { return; }
-    self.closedGroupPoller = [[LKClosedGroupPoller alloc] init];
+    if (self.closedGroupPoller == nil) {
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        if (userPublicKey == nil) { return; }
+        self.closedGroupPoller = [[LKClosedGroupPoller alloc] init];
+    }
     [self.closedGroupPoller startIfNeeded];
 }
 
@@ -1414,6 +1420,7 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.identityManager clearIdentityKey];
     [LKSnodeAPI clearSnodePool];
     [self stopPoller];
+    [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
     [LKPublicChatManager.shared stopPollers];
     bool wasUnlinked = [NSUserDefaults.standardUserDefaults boolForKey:@"wasUnlinked"];

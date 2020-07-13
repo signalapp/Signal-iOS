@@ -682,6 +682,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
             [LKSnodeAPI clearSnodePool];
             AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
             [appDelegate stopPoller];
+            [appDelegate stopClosedGroupPoller];
             [appDelegate stopOpenGroupPollers];
             [SSKEnvironment.shared.tsAccountManager resetForReregistration];
             UIViewController *rootViewController = [[OnboardingController new] initialViewController];
