@@ -385,7 +385,7 @@ public class KeyBackupService: NSObject {
             initializationVectorLength: kAESGCM256_DefaultIVLength,
             key: key
         ) else {
-            owsFailDebug("failed to decrypt data")
+//            owsFailDebug("failed to decrypt data")
             throw KBSError.assertion
         }
 
