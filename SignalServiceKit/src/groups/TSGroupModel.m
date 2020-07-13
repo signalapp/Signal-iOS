@@ -190,7 +190,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 
 - (NSString *)groupNameOrDefault
 {
-    NSString *_Nullable groupName = self.groupName;
+    NSString *_Nullable groupName = [self.groupName filterStringForDisplay];
     return groupName.length > 0 ? groupName : TSGroupThread.defaultGroupName;
 }
 

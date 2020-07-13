@@ -729,9 +729,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         return nil;
     }
 
-    return [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:self.nameComponents
-                                                                              style:0
-                                                                            options:0];
+    return [[NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:self.nameComponents
+                                                                               style:0
+                                                                             options:0] filterStringForDisplay];
 }
 
 #pragma mark - Profile Avatars Directory
