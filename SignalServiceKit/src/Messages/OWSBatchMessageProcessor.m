@@ -103,7 +103,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 
 #pragma mark - Queue Processing
 
-@interface OWSMessageContentQueue : NSObject
+@interface OWSMessageContentQueue : NSObject <OWSMessageProcessingPipelineStage>
 
 @property (nonatomic, readonly) AnyMessageContentJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
@@ -142,6 +142,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 
     // Start processing.
     [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+        [SSKEnvironment.shared.messagePipelineSupervisor registerPipelineStage:self];
         [self drainQueue];
     }];
 
@@ -177,6 +178,11 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 - (GroupsV2MessageProcessor *)groupsV2MessageProcessor
 {
     return SSKEnvironment.shared.groupsV2MessageProcessor;
+}
+
+- (OWSMessagePipelineSupervisor *)pipelineSupervisor
+{
+    return SSKEnvironment.shared.messagePipelineSupervisor;
 }
 
 #pragma mark - Notifications
@@ -237,6 +243,9 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     OWSAssertDebugUnlessRunningTests(AppReadiness.isAppReady);
 
     if (!CurrentAppContext().shouldProcessIncomingMessages) {
+        return;
+    }
+    if (!self.pipelineSupervisor.isMessageProcessingPermitted) {
         return;
     }
     if (!self.tsAccountManager.isRegisteredAndReady) {
@@ -360,6 +369,13 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         }
     }
     return processedJobs;
+}
+
+#pragma mark - <OWSMessageProcessingPipelineStage>
+
+- (void)supervisorDidResumeMessageProcessing:(OWSMessagePipelineSupervisor *)supervisor
+{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{ [self drainQueue]; }];
 }
 
 @end

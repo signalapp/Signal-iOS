@@ -14,7 +14,7 @@ private struct IncomingGroupsV2MessageJobInfo {
 
 // MARK: -
 
-class IncomingGroupsV2MessageQueue: NSObject {
+class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 
     // MARK: - Dependencies
 
@@ -44,6 +44,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
     private var notificationsManager: NotificationsProtocol {
         return SSKEnvironment.shared.notificationsManager
+    }
+
+    private var pipelineSupervisor: MessagePipelineSupervisor {
+        return SSKEnvironment.shared.messagePipelineSupervisor
     }
 
     // MARK: -
@@ -87,6 +91,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
                                                selector: #selector(reachabilityChanged),
                                                name: SSKReachability.owsReachabilityDidChange,
                                                object: nil)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.pipelineSupervisor.register(pipelineStage: self)
+        }
     }
 
     // MARK: - Notifications
@@ -119,6 +127,12 @@ class IncomingGroupsV2MessageQueue: NSObject {
         AssertIsOnMainThread()
 
         drainQueueWhenReady()
+    }
+
+    func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
+        DispatchQueue.main.async {
+            self.drainQueueWhenReady()
+        }
     }
 
     // MARK: -
@@ -154,6 +168,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
             return
         }
         guard CurrentAppContext().shouldProcessIncomingMessages else {
+            return
+        }
+        guard SSKEnvironment.shared.messagePipelineSupervisor.isMessageProcessingPermitted else {
             return
         }
         guard tsAccountManager.isRegisteredAndReady else {

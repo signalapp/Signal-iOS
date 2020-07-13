@@ -8,11 +8,11 @@ extension UnfairLock {
 
     /// Acquires and releases the lock around the provided closure. Blocks the current thread until the lock can be
     /// acquired.
-    func withLock(_ criticalSection: () throws -> Void) rethrows {
+    func withLock<T>(_ criticalSection: () throws -> T) rethrows -> T {
         lock()
         defer { unlock() }
 
-        try criticalSection()
+        return try criticalSection()
     }
 
     /// Acquires and releases the lock around the provided closure. Returns without performing the closure if the lock
@@ -25,6 +25,17 @@ extension UnfairLock {
 
         try criticalSection()
         return true
+    }
+
+    /// Acquires and releases the lock around the provided closure. Returns without performing the closure if the lock
+    /// can not be acquired.
+    /// - Returns: nil if the lock could not be acquired. Otherwise, returns the returns the result of the provided
+    ///   closure
+    @discardableResult func tryWithLock<T>(_ criticalSection: () throws -> T) rethrows -> T? {
+        guard tryLock() else { return nil }
+        defer { unlock() }
+
+        return try criticalSection()
     }
 
 }
