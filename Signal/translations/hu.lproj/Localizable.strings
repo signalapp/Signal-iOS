@@ -2706,7 +2706,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PIN letiltása";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Ha letiltod a PIN kódot, a Signal újraregisztrálásakor minden adatot elvesztesz, hacsak nem közvetlenül az adatátvitel funkcióval költöztetted át adataidat régi telefonodról. A Regisztrációs zár funkciót csak bekapcsolt PIN funkcióval használhatod. A PIN használata az üzenetek megőrzését nem biztosítja (csak kontaktlistádat, beállításaidat), azokat régi telefonodról viheted csak át újraregisztráláskor.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Figyelmeztetés";
@@ -2721,7 +2721,7 @@
 "PIN_CREATION_EXPLANATION" = "A PIN-nek köszönhetően a Signal által tárolt információk titkosítva lesznek, így csak te férhetsz hozzájuk. Újratelepítés esetén profilod, beállításaid és kontaktjaid visszaállításra kerülnek. Az alkalmazás megnyitásához nincs szükség a PIN kódra.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Bővebben a PIN kódokról";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kódok nem egyeznek. Próbáld újra.";
@@ -2745,7 +2745,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Kikapcsolás";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "A PIN letiltásához először ki kell kapcsolnod a Regisztrációs zár funkciót.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Kikapcsolod a regisztrációs zárat?";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Válassz egy erősebb PIN kódot";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "PIN kódod letiltása nem sikerült. Később újra felajánljuk a lehetőséget.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "PIN letiltása sikertelen";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "A PIN megjegyzéséhez segítségül időnként be kell majd gépelned. Egyre kevesebbszer az idő haladtával.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN kód létrehozva. Megváltoztathatod a Beállításokban.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN letiltva.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Média lejátszása";
@@ -3459,10 +3459,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Debug Log engedélyezés";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "További PIN beállítások";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "További PIN beállítások";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PIN letiltása";
@@ -3639,7 +3639,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Erősítsd meg Signal PIN kódodat";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Az emlékeztetők a PIN kód megjegyzését segítik, ugyanis a PIN-t nem lehet visszaállítani. Az idő múlásával egyre kevesebbszer fogunk megkérni a megadására.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Az emlékeztetők a PIN kód megjegyzését segítik, ugyanis a PIN-t nem lehet visszaállítani. Az idő múlásával egyre kevesebbszer fogunk kérni a megadására.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN emlékeztetők";
@@ -4014,7 +4014,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PIN létrehozása";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Bővebben a PIN kódokról";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "A PIN-nek köszönhetően a Signal által tárolt információk titkosítva lesznek, így csak te férhetsz hozzájuk. Újratelepítés esetén profilod, beállításaid és kontaktjaid visszaállításra kerülnek. Az alkalmazás megnyitásához nincs szükség a PIN kódra.";

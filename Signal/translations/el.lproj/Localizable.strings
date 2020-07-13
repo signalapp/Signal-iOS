@@ -69,28 +69,28 @@
 "ADD_TO_CONTACTS_OFFER" = "Θέλεις να προσθέσεις αυτόν τον/την χρήστη/τρια στις επαφές σου;";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "Προσθήκη σε Άλλη Ομάδα";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Προσθήκη σε Ομάδα";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Προσθήκη %@ σε αυτή την ομάδα;";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Προσθήκη σε %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Ο/Η %@ είναι ήδη μέλος της ομάδας %@";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+"ADD_TO_GROUP_RECENTS_TITLE" = "Πρόσφατα";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Ο/Η %@ προστέθηκε στην ομάδα %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "Προσθήκη σε Άλλη Ομάδα";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Θέλεις να κοινοποιήσεις το προφίλ σου με αυτόν τον/την χρήστη;";
@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Σίγαση";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "Ο/Η %@ θα λάβει ένα αίτημα μηνύματος από σένα. Θα μπορέσεις να τον/την καλέσεις όταν αποδεχτεί αυτό το αίτημα.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Αλλαγή κατεύθυνσης κάμερας";
@@ -672,16 +672,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Oργανισμός";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Για να εμφανίζονται τα ονόματα και οι φωτογραφίες των επαφών στις συνομιλίες σου:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Πάτησε \"Πήγαινε στις Ρυθμίσεις\" παρακάτω";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Ενεργοποίησε τις \"Επαφές\"";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Ενεργοποίησε τις Επαφές";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Όχι τώρα";
@@ -690,10 +690,10 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Ενεργοποίηση";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Για να εμφανίζονται τα ονόματα και οι φωτογραφίες των επαφών στις συνομιλίες σου.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Ενεργοποίηση Επαφών;";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Τηλέφωνο";
@@ -801,7 +801,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Όλοι/ες";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Διάλεξε ποιος θα μπορεί να επεξεργάζεται το όνομα της ομάδας, τη φωτογραφία, και το χρόνο εξαφάνισης μηνυμάτων.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις από αυτόν τον/την χρήστη.";
@@ -828,7 +828,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Μόνο οι διαχειριστές/τριες";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Διάλεξε ποιος θα μπορεί να αλλάξει το όνομα της ομάδας, τη φωτογραφία, και το χρόνο εξαφάνισης μηνυμάτων.";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Όλα τα μέλη";
@@ -1182,7 +1182,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Το Signal χρειάζεται πρόσβαση στις επαφές για να επεξεργαστεί πληροφορίες επαφών";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "Αφαίρεση Φωτογραφίας";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Επεξεργασία ομάδας";
@@ -1194,7 +1194,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Φτάσατε το μέγιστο όριο 100 μελών στην ομάδα.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Μη έγκυρη φωτογραφία.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Όνομα ομάδας";
@@ -1422,7 +1422,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Γράψε την αναζήτησή σου";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Πήγαινε στις Ρυθμίσεις";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Αυτή η έκδοση του Signal περιλαμβάνει βελτιστοποιήσεις στη βάση δεδομένων και στην απόδοση της εφαρμογής. Ενδέχεται να χρειαστεί να ξανανοίξεις την εφαρμογή για την ολοκλήρωση της διαδικασίας.";
@@ -1656,22 +1656,22 @@
 "GROUP_UPDATED" = "Η ομάδα ενημερώθηκε.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Η φωτογραφία της ομάδας αφαιρέθηκε.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Αφαίρεσες τη φωτογραφία της ομάδας.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "Ο/Η %@ αφαίρεσε τη φωτογραφία.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Η φωτογραφία της ομάδας ενημερώθηκε.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ενημέρωσες τη φωτογραφία.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "Ο/Η %@ ενημέρωσε τη φωτογραφία.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Ενημέρωσες την ομάδα";
@@ -2130,7 +2130,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Φραγή";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Να επιτραπεί στον/στην %@ να σου στείλει μηνύματα, και να μοιραστεί το όνομα και η φωτογραφία σου μαζί του/της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τη φραγή του/της.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Θέλεις να καταργηθεί η φραγή αυτής της ομάδας και να μοιραστεί το όνομα και η φωτογραφία σου με τα μέλη της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τη φραγή της.";
@@ -2142,16 +2142,16 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Πρέπει να κοινοποιήσεις το προφίλ σου για να συνεχίσεις τη συνομιλία με τον/την %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Πρέπει να κοινοποιήσεις το προφίλ σου για να συνεχίσεις τη συνομιλία με αυτή την ομάδα.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Ο/Η %@ σε προσκάλεσε στην ομάδα. Θες να επιτρέψεις στα μέλη αυτής της ομάδας να σου στέλνουν μηνύματα;";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Να επιτραπεί στον/στην %@ να σου στείλει μηνύματα, και να μοιραστεί το όνομα και η φωτογραφία σου μαζί του/της; Δεν θα γνωρίζει ότι έχεις δει τα μηνύματα που έστειλε μέχρι να δεχτείς.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Θέλεις να μπεις στην ομάδα και να μοιραστείς το όνομα και τη φωτογραφία σου με τα μέλη της; Δεν θα ξέρουν ότι έχεις δει τα μηνύματά τους μέχρι να δεχτείς.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Κοινοποίηση προφίλ";
@@ -2340,19 +2340,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Ίσως να έχεις λάβει μηνύματα κατά την επανεκκίνηση του %@ σου.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Για να λαμβάνεις ειδοποιήσεις για νέα μηνύματα:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Πάτησε \"Πήγαινε στις Ρυθμίσεις\" παρακάτω";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Ενεργοποίησε \"Επίτρεψε τις Ειδοποιήσεις\"";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Πάτησε τις Ειδοποιήσεις";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Ενεργοποίησε τις Ειδοποιήσεις";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Όχι τώρα";
@@ -2361,10 +2361,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Ενεργοποίηση";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Μην χάνεις ποτέ μήνυμα από τις επαφές και τις ομάδες σου.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Ενεργοποίηση Ειδοποιήσεων;";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Οι ενέργειες περιλαμβάνουν \"Σημείωση ως αναγνωσμένο\", \"Απάντηση\", και \"Επιστροφή Κλήσης\".";
@@ -2706,7 +2706,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Απενεργοποίηση PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Αν απενεργοποιήσεις το PIN, θα χάσεις όλα τα δεδομένα σου όταν επανεγγραφείς στο Signal, εκτός αν τα μεταφέρεις από άλλη iOS συσκευή. Δεν θα μπορείς να ενεργοποιήσεις το Κλείδωμα Εγγραφής όσο το PIN είναι απενεργοποιημένο. ";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Προσοχή";
@@ -2721,7 +2721,7 @@
 "PIN_CREATION_EXPLANATION" = "Τα PIN κρατούν τις πληροφορίες που αποθηκεύονται στο Signal κρυπτογραφημένες, οπότε μόνο εσύ έχεις πρόσβαση σε αυτές. Το προφίλ σου, οι ρυθμίσεις και οι επαφές να επαναφερθούν όταν επανεγκαταστήσεις το Signal. Δεν θα χρειάζεται να γράψεις το PIN για να ανοίξεις την εφαρμογή.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Μάθε Περισσότερα για τα PIN";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Τα PIN δεν ταιριάζουν. Ξαναδοκίμασε.";
@@ -2745,7 +2745,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Απενεργοποίηση";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Για να απενεργοποιήσεις το PIN, θα πρέπει πρώτα να απενεργοποιήσεις το Κλείδωμα Εγγραφής.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Απενεργοποίηση του κλειδώματος εγγραφής;";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Διάλεξε ενα δυνατότερο PIN";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Δεν ήταν δυνατή η απενεργοποίηση του PIN σου. Θα σου το ζητήσουμε ξανά αργότερα.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "Απέτυχε η απενεργοποίηση PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Για να σε βοηθήσουμε να θυμάσαι το PIN, θα σε προτρέπουμε να το γράφεις κάθε τόσο. Θα σε ρωτάμε ολοένα και πιο σπάνια.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "Το PIN δημιουργήθηκε. Μπορείς να το αλλάξεις στις ρυθμίσεις.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "Το PIN Απενεργοποιήθηκε.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Αναπαραγωγή πολυμέσων";
@@ -2871,10 +2871,10 @@
 "PROCEED_BUTTON" = "Συνέχεια";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Επιλογή Φωτογραφίας Προφίλ";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Αφαίρεση Φωτογραφίας";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Δημιουργία ονόματος χρήστη";
@@ -3129,7 +3129,7 @@
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Τα παρακάτω άτομα ίσως επανεγκατεστησαν το Signal ή άλλαξαν συσκευή. Επαλήθευσε τους αριθμούς ασφαλείας με αυτά, για να διασφαλίσεις την ιδιωτικότητα.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Προηγουμένως Eπαληθευμένοι";
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Αλλαγές αριθμού ασφαλείας";
@@ -3336,10 +3336,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Αδυναμία ανάκτησης κωδικού σύνδεσης";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Αναβάθμισε το Signal σε αυτή τη συσκευή για να το συνδέσεις με το τηλέφωνό σου.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Μη υποστηριζόμενη Έκδοση";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Η συσκευή σου τρέχει μια παλιά έκδοση του Signal, που δεν υποστηρίζει το σκανάρισμα κωδικών QR από iPad. Παρακαλώ εγκατάστησε την τελευταία έκδοση και ξαναδοκίμασε.";
@@ -3459,10 +3459,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Ενεργοποίηση καταγραφής αποσφαλμάτωσης";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Ρυθμίσεις PIN για Προχωρημένους";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Ρυθμίσεις PIN για Προχωρημένους";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Απενεργοποίηση PIN";
@@ -3609,10 +3609,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Ρυθμίσεις";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Καταμέτρηση Συνομιλιών σε Σίγαση";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Καταμέτρηση Εμβλημάτων";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Οι ειδοποιήσεις κλήσεων και μηνυμάτων μπορούν να εμφανίζονται ενώ το τηλέφωνό σου είναι κλειδωμένο. Ίσως να θέλεις να περιορίσεις τι εμφανίζεται στις ειδοποιήσεις αυτές.";
@@ -4008,13 +4008,13 @@
 "UPDATE_GROUP_FAILED" = "Η ομάδα δεν μπόρεσε να ενημερωθεί.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Δεν μπορέσαμε να ενημερώσουμε την ομάδα. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και ξαναδοκίμασε.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Δημιουργία του PIN σου";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Μάθε Περισσότερα για τα PIN";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Τα PIN κρατούν τις πληροφορίες που αποθηκεύονται στο Signal κρυπτογραφημένες, οπότε μόνο εσύ έχεις πρόσβαση σε αυτές. Το προφίλ σου, οι ρυθμίσεις και οι επαφές να επαναφερθούν όταν επανεγκαταστήσεις το Signal. Δεν θα χρειάζεται να γράψεις το PIN για να ανοίξεις την εφαρμογή.";
