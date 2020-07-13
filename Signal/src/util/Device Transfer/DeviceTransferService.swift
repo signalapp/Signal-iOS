@@ -68,6 +68,7 @@ class DeviceTransferService: NSObject {
     var tsAccountManager: TSAccountManager { .sharedInstance() }
     var databaseStorage: SDSDatabaseStorage { .shared }
     var sleepManager: DeviceSleepManager { .sharedInstance }
+    var modelReadCaches: ModelReadCaches { .shared }
 
     @objc
     static var shared: DeviceTransferService {

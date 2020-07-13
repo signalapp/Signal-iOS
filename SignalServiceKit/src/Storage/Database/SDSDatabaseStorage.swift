@@ -128,6 +128,9 @@ public class SDSDatabaseStorage: SDSTransactable {
         return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir())
     }
 
+    @objc
+    public static let storageDidReload = Notification.Name("storageDidReload")
+
     public func reload() {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
@@ -141,6 +144,9 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         GRDBSchemaMigrator().runSchemaMigrations()
         grdbStorage.forceUpdateSnapshot()
+
+        // We need to do this _before_ warmCaches().
+        NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
 
         SSKEnvironment.shared.warmCaches()
         OWSIdentityManager.shared().recreateDatabaseQueue()
