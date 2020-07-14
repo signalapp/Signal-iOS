@@ -1478,8 +1478,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                          transaction:transaction];
 
         // If we've just delivered a message to a user, we know they
-        // have a valid Signal account.
-        [SignalRecipient markRecipientAsRegisteredAndGet:recipient.address transaction:transaction];
+        // have a valid Signal account. This is low trust, because we
+        // don't actually know for sure the fully qualified address is
+        // valid.
+        [SignalRecipient markRecipientAsRegisteredAndGet:recipient.address
+                                              trustLevel:SignalRecipientTrustLevelLow
+                                             transaction:transaction];
 
         [self.profileManager didSendOrReceiveMessageFromAddress:recipient.address transaction:transaction];
     });
@@ -1723,7 +1727,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         messageThread = [self threadForMessage:message transaction:transaction];
 
-        recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress transaction:transaction];
+        recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress
+                                                          trustLevel:SignalRecipientTrustLevelLow
+                                                         transaction:transaction];
     });
     if (localThread == nil) {
         return failure(OWSErrorMakeAssertionError(@"Missing local thread"));

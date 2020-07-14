@@ -250,6 +250,9 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     private func process(contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws {
         Logger.debug("contactDetails: \(contactDetails)")
 
+        // Mark as registered, since we trust the contact information sent from our other devices.
+        SignalRecipient.mark(asRegisteredAndGet: contactDetails.address, trustLevel: .high, transaction: transaction)
+
         let contactAvatarHash: Data?
         let contactAvatarJpegData: Data?
         if let avatarData = contactDetails.avatarData {

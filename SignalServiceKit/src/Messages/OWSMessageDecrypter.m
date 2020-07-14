@@ -194,6 +194,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         // make note of the fact that they have a valid Signal account.
         [SignalRecipient markRecipientAsRegistered:result.sourceAddress
                                           deviceId:result.sourceDevice
+                                        trustLevel:SignalRecipientTrustLevelHigh
                                        transaction:transaction];
 
         successBlockParameter(result, transaction);

@@ -126,7 +126,7 @@ extension StorageServiceProtoContactRecord {
         // For now, we'd like to avoid that as it adds its own set of problems.
 
         // Mark the user as registered, only registered contacts should exist in the sync'd data.
-        let recipient = SignalRecipient.mark(asRegisteredAndGet: address, transaction: transaction)
+        let recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
 
         var mergeState: MergeState = .resolved(recipient.accountId)
 

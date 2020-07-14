@@ -110,8 +110,10 @@ NS_ASSUME_NONNULL_BEGIN
             for (NSString *phoneNumber in phoneNumbersToLookup) {
                 SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
                 if ([registeredPhoneNumbers containsObject:phoneNumber]) {
-                    SignalRecipient *recipient = [SignalRecipient markRecipientAsRegisteredAndGet:address
-                                                                                      transaction:transaction];
+                    SignalRecipient *recipient =
+                        [SignalRecipient markRecipientAsRegisteredAndGet:address
+                                                              trustLevel:SignalRecipientTrustLevelHigh
+                                                             transaction:transaction];
                     [registeredRecipients addObject:recipient];
                 } else {
                     [SignalRecipient markRecipientAsUnregistered:address transaction:transaction];
