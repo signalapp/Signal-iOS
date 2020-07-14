@@ -2706,7 +2706,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Vypnúť PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Ak vypnete PIN, opätovnou registráciou Signalu prídete o všetky vaše dáta, ak ich neprenesiete z iného iOS zariadenia. Kým bude PIN vypnutý, nebudete môcť zapnúť registračný zámok.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Varovanie";

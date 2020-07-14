@@ -835,8 +835,10 @@ public class OnboardingController: NSObject {
                     owsFailDebug("unexpected response from KBS")
                     completion(.invalid2FAPin)
                 case .invalidPin(let remainingAttempts):
+                    Logger.warn("Invalid V2 PIN, \(remainingAttempts) attempt(s) remaining")
                     completion(.invalidV2RegistrationLockPin(remainingAttempts: remainingAttempts))
                 case .backupMissing:
+                    Logger.error("Invalid V2 PIN, attempts exhausted")
                     // We don't have a backup for this person, it probably
                     // was deleted due to too many failed attempts. They'll
                     // have to retry after the registration lock window expires.

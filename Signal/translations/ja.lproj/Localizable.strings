@@ -2706,10 +2706,10 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PINを無効化";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "PINを無効にすると他のiOSデバイスから転送しない限りSignalを再登録するときにすべてのデータが失われます。PINを無効にしている間は登録ロックを使用することができません。";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "警告";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "ご注意ください";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "PINを保存できませんでした。もう一度作成できるようになるまでしばらくお待ちください。";

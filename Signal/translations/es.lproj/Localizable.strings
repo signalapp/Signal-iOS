@@ -2706,7 +2706,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Desactivar PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Si desactivas el PIN, perderás todos los datos de tu cuenta al volver a instalar Signal. Sólo podrás conservar los datos si los transfieres a otro dispositivo iOS durante el registro del nuevo dispositivo. No puedes activar el bloqueo de registro con el PIN desactivado.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Advertencia";
@@ -2718,7 +2718,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Fallo al crear el PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "El PIN protege y almacena tu cuenta en Signal de forma cifrada y sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso. Tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
+"PIN_CREATION_EXPLANATION" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso. Tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Saber más sobre el PIN";
@@ -2745,7 +2745,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Desactivar";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "El PIN es necesario para el bloqueo de registro. Desactiva primero el bloqueo de registro y después el PIN.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "El bloqueo de registro necesita el PIN. Desactiva primero el bloqueo de registro y después el PIN.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "¿Desactivar el bloqueo de registro?";
@@ -2805,7 +2805,7 @@
 "PINS_MEGAPHONE_ACTION" = "Crear PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "El PIN protege y almacena tu cuenta en Signal de manera cifrada. Sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso.";
+"PINS_MEGAPHONE_BODY" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Te lo recordaremos más tarde. Crear tu PIN será obligatorio en %ld días.";
@@ -3645,7 +3645,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Recordatorios de PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "El PIN protege y almacena tu cuenta en Signal de forma cifrada y sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso. Tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal.";
+"SETTINGS_PINS_FOOTER" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso. Tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Cambiar PIN";
@@ -3726,7 +3726,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueo de registro";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Para una mayor seguridad, activa el bloqueo de registro para que solicitemos tu PIN de Signal al volver a registrar tu cuenta.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Para una mayor seguridad, activa el bloqueo de registro y usa tu PIN de Signal para que sólo tú puedas registrar tu número al volver a instalar Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicador de tecleo";
@@ -4017,7 +4017,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Saber más sobre el PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "El PIN protege y almacena tu cuenta en Signal de forma cifrada y sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso. Tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que sólo tú puedes acceder a ella. Ni siquiera l*s creador*s de Signal tienen acceso. Tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "¡El PIN ha llegado!";

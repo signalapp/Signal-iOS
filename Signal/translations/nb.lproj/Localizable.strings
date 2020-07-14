@@ -69,28 +69,28 @@
 "ADD_TO_CONTACTS_OFFER" = "Vil du legge til denne brukeren i kontaktlisten?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "Legg til en annen gruppe";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Legg til gruppen";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Legg %@ til denne gruppen?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Legg til %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ er allerede medlem av %@";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+"ADD_TO_GROUP_RECENTS_TITLE" = "Nylige";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ble lagt til %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "Legg til en annen gruppe";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Vil du dele profilen din med denne brukeren?";
@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Demp";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ vil motta en meldingsforespørsel fra deg. Du kan ringe når forespørselen din er akseptert.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Endre kameraretning";
@@ -1665,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ fjernet bildet.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Gruppebildet ble oppdatert.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Du oppdaterte bildet.";
@@ -2703,10 +2703,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Lag numerisk PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Deaktiver PIN-kode";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Hvis du deaktiverer PIN-koden vil du miste all informasjon når du gjennomfører Signal-registrering på nytt, med mindre du manuelt tar en sikkerhetskopi og gjenoppretter innholdet. Du kan ikke skru på registreringslås mens PIN-koden er deaktivert.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Advarsel";
@@ -2718,10 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "Oppretting av PIN-kode mislyktes";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN-koder holder informasjon lagret i Signal kryptert slik at bare du kan få tilgang til den. Profilen, innstillingene og kontaktene dine vil gjenopprettes når du installerer Signal på nytt. Du vil ikke trenge PIN-koden for å åpne appen.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Lær mer om PIN-koder";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koder stemmer ikke overens. Prøv igjen.";
@@ -2745,13 +2745,13 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Deaktiver";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "For å deaktivere PIN-koden din må du først deaktivere registreringslås.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Deaktiver registreringslås?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "Deaktiver PIN-kode";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Opprett PIN-koden";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Velg en sterkere PIN-kode";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "PIN-koden din kunne ikke deaktiveres. Vi vil spørre deg igjen senere.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "Deaktivering av PIN-kode mislyktes";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "For å hjelpe deg med å huske PIN-koden din, ber vi deg om å oppgi den med jevne mellomrom. Vi vil spørre mindre etter hvert.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN laget. Du kan endre den i innstillinger.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN-kode deaktivert.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spill av media";
@@ -3129,7 +3129,7 @@
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Følgende personer kan ha reinstallert eller byttet enhet. Bekreft sikkerhetsnummeret ditt med dem for å sikre personvernet.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Tidligere bekreftet";
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Endringer av sikkerhetsnummer";
@@ -3336,10 +3336,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kan ikke hente lenkkode";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Oppdater Signal på denne enheten for å koble den til din telefon.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Ustøttet versjon";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Den andre enheten din kjører en gammel versjon av Signal som ikke støtter skanning av iPad QR-koder. Installer den siste utgaven av Signal og prøv igjen.";
@@ -3459,16 +3459,16 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Skru på feilsøkingslogging";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Avanserte PIN-kode instillinger";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Avanserte PIN-kode instillinger";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Deaktiver PIN-kode";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktiver PIN-kode";
 
 /* Table header for the 'pins' section. */
 "SETTINGS_ADVANCED_PINS_HEADER" = "Signal-PIN";
@@ -3609,10 +3609,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Innstillinger";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Tell dempede samtaler";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Antall skilt";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Varsler om meldinger og innkommende samtaler kan mottas mens telefonen er låst. Du kan begrense hva som vises i disse varslene på låst skjerm.";
@@ -4008,22 +4008,22 @@
 "UPDATE_GROUP_FAILED" = "Gruppen lot seg ikke oppdatere.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Gruppen kunne ikke oppdateres. Sjekk internetforbindelsen din og forsøk igjen.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Opprett PIN-koden";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lær mer om PIN-koder";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koder holder informasjon lagret i Signal kryptert slik at bare du kan få tilgang til den. Profilen, innstillingene og kontaktene dine vil gjenopprettes når du installerer Signal på nytt. Du vil ikke trenge PIN-koden for å åpne appen.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Vi introduserer PIN-koder";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktiver PIN-kode";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal vil snart kreve iOS 11 eller nyere. Oppgrader i Innstillinger-appen >> Generelt >> Programvareoppdatering.";

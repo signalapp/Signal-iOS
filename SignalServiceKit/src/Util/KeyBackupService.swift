@@ -385,7 +385,7 @@ public class KeyBackupService: NSObject {
             initializationVectorLength: kAESGCM256_DefaultIVLength,
             key: key
         ) else {
-            owsFailDebug("failed to decrypt data")
+//            owsFailDebug("failed to decrypt data")
             throw KBSError.assertion
         }
 
@@ -644,13 +644,6 @@ public class KeyBackupService: NSObject {
         keyValueStore.setBool(
             false,
             key: hasBackupKeyRequestFailedIdentifier,
-            transaction: transaction
-        )
-
-        // Clear pending restore status
-        keyValueStore.setBool(
-            false,
-            key: hasPendingRestorationIdentifier,
             transaction: transaction
         )
 
