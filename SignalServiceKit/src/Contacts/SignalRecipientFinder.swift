@@ -49,6 +49,19 @@ extension AnySignalRecipientFinder {
             fatalError("yap not supported")
         }
     }
+
+    /// Fetches and returns all registered SignalRecipients that do not have a UUID
+    /// Note: The registered device set is currently represented in an archive blob. So the schema doesn't currently
+    /// allow us to filter on registered recipients. So the underlying query fetches *all* recipients without a UUID,
+    /// then filters where devices.count > 0.
+    public func registeredRecipientsWithoutUUID(transaction: SDSAnyReadTransaction) -> [SignalRecipient] {
+        switch transaction.readTransaction {
+        case .grdbRead(let transaction):
+            return grdbAdapter.registeredRecipientsWithoutUUID(transaction: transaction)
+        case .yapRead:
+            fatalError("yap not supported")
+        }
+    }
 }
 
 @objc
@@ -99,5 +112,17 @@ class GRDBSignalRecipientFinder: NSObject {
         }
 
         return Array(recipients)
+    }
+
+    fileprivate func registeredRecipientsWithoutUUID(transaction: GRDBReadTransaction) -> [SignalRecipient] {
+        let sql = """
+        SELECT * FROM \(SignalRecipientRecord.databaseTableName) WHERE
+        \(signalRecipientColumn: .recipientUUID) IS NULL OR
+        \(signalRecipientColumn: .recipientUUID) IS ""
+        """
+        let cursor = SignalRecipient.grdbFetchCursor(sql: sql, transaction: transaction)
+
+        let allLegacyRecipients = (try? cursor.all()) ?? []
+        return allLegacyRecipients.filter { $0.devices.count > 0 }
     }
 }

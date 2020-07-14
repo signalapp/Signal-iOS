@@ -41,6 +41,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
+@property (nonatomic) SignalServiceAddressCache *signalServiceAddressCache;
 @property (nonatomic) StickerManager *stickerManager;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic) StorageCoordinator *storageCoordinator;
