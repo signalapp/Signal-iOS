@@ -603,7 +603,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (groupThread) {
             // Loki: Ignore closed group message if needed
-            if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupMessage:dataMessage inThread:groupThread wrappedIn:envelope]) { return; }
+            if (groupThread.groupModel.groupType == closedGroup) {
+                if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupMessage:dataMessage inThread:groupThread wrappedIn:envelope]) { return; }
+            }
 
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
                 if (![groupThread isCurrentUserInGroupWithTransaction:transaction]) {
@@ -1370,7 +1372,8 @@ NS_ASSUME_NONNULL_BEGIN
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Loki: Ignore updates from non-admins (deprecated)
-                if (oldGroupThread != nil && [LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope]) {
+                if (oldGroupThread != nil && oldGroupThread.groupModel.groupType == closedGroup
+                    && [LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope]) {
                     return nil;
                 }
                 // Ensures that the thread exists but don't update it.

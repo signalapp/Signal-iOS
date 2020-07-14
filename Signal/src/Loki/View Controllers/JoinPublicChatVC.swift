@@ -144,7 +144,6 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         }
         LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
         .done(on: .main) { [weak self] _ in
-            let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
             let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
             let _ = LokiPublicChatAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
             let _ = LokiPublicChatAPI.join(channelID, on: urlAsString)
