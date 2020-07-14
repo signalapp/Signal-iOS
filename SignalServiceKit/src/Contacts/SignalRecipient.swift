@@ -96,5 +96,12 @@ extension SignalRecipient {
         }
 
         // TODO: we probably need to some kind of cache purge / update..
+
+        // Update SignalServiceAddressCache with the new uuid <-> phone number mapping
+        guard let uuidString = recipientUUID, let uuid = UUID(uuidString: uuidString) else {
+            return owsFailDebug("Failed to update SignalServiceAddress mapping due to missing UUID")
+        }
+
+        SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: phoneNumber)
     }
 }

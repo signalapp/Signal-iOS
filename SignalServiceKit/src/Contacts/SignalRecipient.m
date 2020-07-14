@@ -392,6 +392,10 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                                                    transaction:transaction];
                     shouldUpdate = YES;
 
+                    // Update the SignalServiceAddressCache mappings with the now fully-qualified recipient.
+                    [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:address.uuid
+                                                                               phoneNumber:address.phoneNumber];
+
                 // The UUID differs between the two records, we need to migrate the phone
                 // number to the UUID instance.
                 } else {
@@ -427,6 +431,10 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
                         shouldUpdate = YES;
                         phoneNumberInstance.recipientUUID = address.uuidString;
+
+                        // Update the SignalServiceAddressCache mappings with the now fully-qualified recipient.
+                        [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:address.uuid
+                                                                                   phoneNumber:address.phoneNumber];
                     }
 
                     existingInstance = phoneNumberInstance;
@@ -456,6 +464,12 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
                 SignalRecipient *newInstance = [[self alloc] initWithAddress:address];
                 [newInstance anyInsertWithTransaction:transaction];
+
+                // Update the SignalServiceAddressCache mappings with the new recipient.
+                if (address.uuid) {
+                    [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:address.uuid
+                                                                               phoneNumber:address.phoneNumber];
+                }
 
                 // Record with the new contact in the social graph
                 [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ newInstance.accountId ]];

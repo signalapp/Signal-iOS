@@ -87,13 +87,41 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             backingUuid = uuid
         }
 
-        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid, phoneNumber: backingPhoneNumber)
+        // If we have a backing UUID, we don't want to cache its mapping to the phone number.
+        // Instead, just lookup the hash based on the UUID alone.
+        // Only SignalRecipient ever updates the UUID <-> phone number mapping.
+        if let backingUuid = backingUuid {
+            backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid)
+        } else {
+            backingHashValue = SignalServiceAddress.cache.hashAndCache(phoneNumber: backingPhoneNumber)
+        }
 
         super.init()
 
         if !isValid {
             owsFailDebug("Unexpectedly initialized address with no identifier")
         }
+
+        registerForMappingChangeNotification()
+    }
+
+    private func registerForMappingChangeNotification() {
+        NotificationCenter.default.addObserver(
+            self, selector:
+            #selector(mappingDidChange),
+            name: SignalServiceAddressCache.mappingDidChangeNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    func mappingDidChange(notification: Notification) {
+        guard let backingUuid = backingUuid,
+            let updatedUuid = notification.userInfo?[SignalServiceAddressCache.mappingDidChangeNotificationUUIDKey] as? UUID,
+            backingUuid == updatedUuid
+            else { return }
+
+        backingPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid)
     }
 
     @objc
@@ -116,12 +144,21 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(backingUuid, forKey: "backingUuid")
-        aCoder.encode(backingPhoneNumber, forKey: "backingPhoneNumber")
+
+        // Only encode the backingPhoneNumber if we don't know the UUID
+        aCoder.encode(backingUuid == nil ? backingPhoneNumber : nil, forKey: "backingPhoneNumber")
     }
 
     public required init?(coder aDecoder: NSCoder) {
         backingUuid = (aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?)
-        backingPhoneNumber = (aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
+
+        // Only decode the backingPhoneNumber if we don't know the UUID, otherwise
+        // pull the phone number from the cache.
+        if let backingUuid = backingUuid {
+            backingPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid)
+        } else {
+            backingPhoneNumber = (aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
+        }
 
         backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid, phoneNumber: backingPhoneNumber)
     }
@@ -256,7 +293,7 @@ public class SignalServiceAddressCache: NSObject {
     /// and returns a constant hash value that can be used to represent
     /// either of these values going forward for the lifetime of the cache.
     @discardableResult
-    func hashAndCache(uuid: UUID?, phoneNumber: String?) -> Int {
+    func hashAndCache(uuid: UUID? = nil, phoneNumber: String? = nil) -> Int {
         return serialQueue.sync {
             // If we have a UUID and a phone number, cache the mapping.
             if let uuid = uuid, let phoneNumber = phoneNumber {
@@ -301,5 +338,55 @@ public class SignalServiceAddressCache: NSObject {
 
     func phoneNumber(forUuid uuid: UUID) -> String? {
         return serialQueue.sync { uuidToPhoneNumberCache[uuid] }
+    }
+
+    static let mappingDidChangeNotification = Notification.Name("SignalServiceAddressCacheMappingDidChange")
+    static let mappingDidChangeNotificationUUIDKey = "mappingDidChangeNotificationUUIDKey"
+
+    @objc
+    func updateMapping(uuid: UUID, phoneNumber: String?) {
+        serialQueue.sync {
+            // Maintain the existing hash value for the given UUID, or create
+            // a new hash if one is yet to exist.
+            let hashValue: Int = {
+                if let oldUUIDHashValue = uuidToHashValueCache[uuid] {
+                    return oldUUIDHashValue
+                } else if let oldPhoneNumber = uuidToPhoneNumberCache[uuid],
+                    phoneNumberToUUIDCache[oldPhoneNumber] == nil,
+                    let oldPhoneNumberHashValue = phoneNumberToHashValueCache[oldPhoneNumber] {
+                    return oldPhoneNumberHashValue
+                } else {
+                    return UUID().hashValue
+                }
+            }()
+
+            // If we previously had a phone number, disassociate it from the UUID
+            if let oldPhoneNumber = uuidToPhoneNumberCache[uuid] {
+                phoneNumberToHashValueCache[oldPhoneNumber] = nil
+                phoneNumberToUUIDCache[oldPhoneNumber] = nil
+            }
+
+            // Map the uuid to the new phone number
+            uuidToPhoneNumberCache[uuid] = phoneNumber
+            uuidToHashValueCache[uuid] = hashValue
+
+            if let phoneNumber = phoneNumber {
+                // Unmap the previous UUID from this phone number
+                if let oldUuid = phoneNumberToUUIDCache[phoneNumber] {
+                    uuidToPhoneNumberCache[oldUuid] = nil
+                }
+
+                // Map the phone number to the new UUID
+                phoneNumberToUUIDCache[phoneNumber] = uuid
+                phoneNumberToHashValueCache[phoneNumber] = hashValue
+            }
+        }
+
+        // Notify any existing address objects to update their backing phone number
+        NotificationCenter.default.post(
+            name: SignalServiceAddressCache.mappingDidChangeNotification,
+            object: nil,
+            userInfo: [SignalServiceAddressCache.mappingDidChangeNotificationUUIDKey: uuid]
+        )
     }
 }
