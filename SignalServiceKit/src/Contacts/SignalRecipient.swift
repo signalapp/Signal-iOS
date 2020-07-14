@@ -95,7 +95,14 @@ extension SignalRecipient {
             )
         }
 
-        // TODO: we probably need to some kind of cache purge / update..
+        // TODO: we may need to do more here, this is just bear bones to make sure we
+        // don't hold onto stale data with the old mapping.
+
+        ModelReadCaches.shared.evacuateAllCaches()
+
+        if let contactThread = AnyContactThreadFinder().contactThread(for: address, transaction: transaction.asAnyRead) {
+            SDSDatabaseStorage.shared.touch(thread: contactThread, transaction: transaction.asAnyWrite)
+        }
 
         // Update SignalServiceAddressCache with the new uuid <-> phone number mapping
         guard let uuidString = recipientUUID, let uuid = UUID(uuidString: uuidString) else {
