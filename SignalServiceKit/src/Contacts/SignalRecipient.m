@@ -411,6 +411,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
                     OWSAssertDebug(phoneNumberInstance.recipientUUID != nil);
                     [phoneNumberInstance changePhoneNumber:nil transaction:transaction.unwrapGrdbWrite];
+                    [phoneNumberInstance anyOverwritingUpdateWithTransaction:transaction];
                     [uuidInstance changePhoneNumber:address.phoneNumber transaction:transaction.unwrapGrdbWrite];
 
                     existingInstance = uuidInstance;
@@ -423,6 +424,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                     // The UUID associated with this phone number has changed, we must
                     // clear the phone number from this instance and create a new instance.
                     [phoneNumberInstance changePhoneNumber:nil transaction:transaction.unwrapGrdbWrite];
+                    [phoneNumberInstance anyOverwritingUpdateWithTransaction:transaction];
                 } else {
                     if (address.uuidString) {
                         OWSLogWarn(@"Learned uuid (%@) is associated with phoneNumber (%@).",
