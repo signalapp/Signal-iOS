@@ -1386,8 +1386,9 @@ static NSTimeInterval launchStartedAt;
 {
     if (self.poller == nil) {
         NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        if (userPublicKey == nil) { return; }
-        self.poller = [[LKPoller alloc] init];
+        if (userPublicKey != nil) {
+            self.poller = [[LKPoller alloc] init];
+        }
     }
     [self.poller startIfNeeded];
 }
@@ -1398,8 +1399,9 @@ static NSTimeInterval launchStartedAt;
 {
     if (self.closedGroupPoller == nil) {
         NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        if (userPublicKey == nil) { return; }
-        self.closedGroupPoller = [[LKClosedGroupPoller alloc] init];
+        if (userPublicKey != nil) {
+            self.closedGroupPoller = [[LKClosedGroupPoller alloc] init];
+        }
     }
     [self.closedGroupPoller startIfNeeded];
 }
