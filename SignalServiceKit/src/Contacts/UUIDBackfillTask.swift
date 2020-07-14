@@ -16,7 +16,6 @@ public class UUIDBackfillTask: NSObject {
 
     private var didStart: Bool = false
     private var attemptCount = 0
-    private var hardFailureCount = 0
 
     // MARK: - Properies (External Dependencies)
     private let readiness: ReadinessProvider
@@ -114,7 +113,7 @@ public class UUIDBackfillTask: NSObject {
             .compactMap { $0.recipientPhoneNumber }
             .map { (persisted: $0, e164: PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: $0)?.toE164()) }
 
-        if FeatureFlags.isUsingProductionService && !testing_skipProductionCheck {
+        if FeatureFlags.useOnlyModernContactDiscovery && !testing_skipProductionCheck {
             Logger.info("Modern CDS is not available in production. Completing early.")
             self.onqueue_complete()
 
@@ -154,22 +153,8 @@ public class UUIDBackfillTask: NSObject {
 
     func onqueue_handleError(error: Error) {
         assertOnQueue(queue)
-
-        if IsNetworkConnectivityFailure(error) {
-            Logger.info("UUID Backfill failed due to network failure")
-        } else {
-            Logger.error("UUID Backfill failed: \(error)")
-            hardFailureCount += 1
-        }
-
-        // After a certain number of unexpected errors we'll just give up
-        if hardFailureCount < 5 {
-            Logger.info("UUID backfill will retry")
-            self.onqueue_schedule()
-        } else {
-            Logger.info("UUID backfill failed too many times. Giving up.")
-            self.onqueue_complete()
-        }
+        Logger.error("UUID Backfill failed: \(error). Scheduling retry...")
+        onqueue_schedule()
     }
 
     func onqueue_handleResults(results: Set<CDSRegisteredContact>) {

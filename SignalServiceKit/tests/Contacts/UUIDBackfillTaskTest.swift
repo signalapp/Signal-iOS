@@ -238,9 +238,6 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
                             NSError(domain: "TestDomain", code: 4, userInfo: nil),
                             NSError(domain: "TestDomain", code: 5, userInfo: nil),
                             NSError(domain: "TestDomain", code: 6, userInfo: nil),
-                            NSError(domain: "TestDomain", code: 7, userInfo: nil),
-                            NSError(domain: "TestDomain", code: 8, userInfo: nil),
-                            NSError(domain: "TestDomain", code: 9, userInfo: nil)
         ])
 
         // Test
@@ -250,8 +247,8 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
 
         // Verify
         waitForExpectations(timeout: 10)
-        persistence.verifyFailure()
-        network.verify(requestCount: 5)
+        persistence.verifySuccess()
+        network.verify(requestCount: 7)
     }
 
     func testMixedFailures() {
@@ -262,11 +259,11 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
                        forcedFailures: [
                             NSError(domain: "TestDomain", code: 1, userInfo: nil),
                             NSError(domain: "TestDomain", code: 2, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil)
+                            NSError(domain: TSNetworkManagerErrorDomain, code: 3, userInfo: nil),
+                            NSError(domain: TSNetworkManagerErrorDomain, code: 4, userInfo: nil),
+                            NSError(domain: TSNetworkManagerErrorDomain, code: 5, userInfo: nil),
+                            NSError(domain: TSNetworkManagerErrorDomain, code: 6, userInfo: nil),
+                            NSError(domain: TSNetworkManagerErrorDomain, code: 7, userInfo: nil)
         ])
 
         // Test
