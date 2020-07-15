@@ -301,6 +301,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.profileManager;
 }
 
+- (BulkProfileFetch *)bulkProfileFetch
+{
+    return SSKEnvironment.shared.bulkProfileFetch;
+}
+
 - (ContactsUpdater *)contactsUpdater
 {
     return SSKEnvironment.shared.contactsUpdater;
@@ -356,11 +361,6 @@ typedef enum : NSUInteger {
 - (id<SyncManagerProtocol>)syncManager
 {
     return SSKEnvironment.shared.syncManager;
-}
-
-- (BulkProfileFetch *)bulkProfileFetch
-{
-    return SSKEnvironment.shared.bulkProfileFetch;
 }
 
 #pragma mark -
@@ -1965,6 +1965,24 @@ typedef enum : NSUInteger {
     [self presentActionSheet:alert];
 }
 
+- (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
+                 withNewNameComponents:(NSPersonNameComponents *)newNameComponents
+{
+    if (!self.contactsManager.supportsContactEditing) {
+        OWSFailDebug(@"Contact editing unexpectedly unsupported");
+        return;
+    }
+
+    CNContactViewController *contactViewController =
+        [self.contactsViewHelper contactViewControllerForAddress:address
+                                                 editImmediately:YES
+                                          addToExistingCnContact:nil
+                                           updatedNameComponents:newNameComponents];
+    contactViewController.delegate = self;
+
+    [self.navigationController pushViewController:contactViewController animated:YES];
+}
+
 #pragma mark - MessageDetailViewDelegate
 
 - (void)detailViewMessageWasDeleted:(MessageDetailViewController *)messageDetailViewController
@@ -2748,7 +2766,8 @@ typedef enum : NSUInteger {
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    // no-op
+    [self updateNavigationTitle];
+    [self reloadData];
 }
 
 #pragma mark - Scroll Down Button

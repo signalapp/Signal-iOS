@@ -36,6 +36,24 @@ public extension TSInfoMessage {
                                       newGroupModel: newGroupModel,
                                       transaction: transaction)
     }
+
+    func profileChangeDescription(transaction: SDSAnyReadTransaction) -> String {
+        guard let profileChanges = profileChanges,
+            let updateDescription = profileChanges.descriptionForUpdate(transaction: transaction) else {
+                owsFailDebug("Unexpectedly missing update description for profile change")
+            return ""
+        }
+
+        return updateDescription
+    }
+
+    var profileChangeAddress: SignalServiceAddress? {
+        return profileChanges?.address
+    }
+
+    var profileChangeNewNameComponents: PersonNameComponents? {
+        return profileChanges?.newNameComponents
+    }
 }
 
 // MARK: -
@@ -133,5 +151,9 @@ extension TSInfoMessage {
 
     fileprivate var groupUpdateSourceAddress: SignalServiceAddress? {
         return infoMessageValue(forKey: .groupUpdateSourceAddress)
+    }
+
+    fileprivate var profileChanges: ProfileChanges? {
+        return infoMessageValue(forKey: .profileChanges)
     }
 }
