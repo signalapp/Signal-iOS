@@ -80,6 +80,14 @@ public extension OWSProfileManager {
             .filter { $0.devices.count > 0 }
             .map { $0.address }
     }
+
+    // This should be used for urgent profile updates.
+    @objc
+    public func fetchProfiles(thread: TSThread) {
+        for address in thread.recipientAddresses {
+            fetchProfile(for: address)
+        }
+    }
 }
 
 // MARK: -

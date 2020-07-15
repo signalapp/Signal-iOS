@@ -86,6 +86,11 @@ typedef void (^SystemMessageActionBlock)(void);
     return self;
 }
 
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
 - (void)commontInit
 {
     OWSAssertDebug(!self.iconView);
@@ -383,6 +388,9 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageSyncedThread:
                 result = [Theme iconImage:ThemeIconInfo];
                 break;
+            case TSInfoMessageProfileUpdate:
+                result = [Theme iconImage:ThemeIconProfileChangeMessage];
+                break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         result = [Theme iconImage:ThemeIconPhone];
@@ -622,6 +630,33 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         case TSInfoMessageSyncedThread:
             return nil;
+        case TSInfoMessageProfileUpdate:
+            if ([self.contactsManager isSystemContactWithAddress:infoMessage.profileChangeAddress]) {
+                NSString *_Nullable systemContactName =
+                    [self.contactsManager nameFromSystemContactsForAddress:infoMessage.profileChangeAddress];
+                NSString *newFullName = [NSPersonNameComponentsFormatter
+                    localizedStringFromPersonNameComponents:infoMessage.profileChangeNewNameComponents
+                                                      style:0
+                                                    options:0];
+
+                // Don't show the update contact button if the system contact name
+                // is already equivalent to the new profile name.
+                if ([NSObject isNullableObject:systemContactName equalTo:newFullName]) {
+                    return nil;
+                }
+
+                return [SystemMessageAction
+                            actionWithTitle:NSLocalizedString(@"UPDATE_CONTACT_ACTION", @"Action sheet item")
+                                      block:^{
+                                          [weakSelf.delegate
+                                              updateSystemContactWithAddress:infoMessage.profileChangeAddress
+                                                       withNewNameComponents:infoMessage
+                                                                                 .profileChangeNewNameComponents];
+                                      }
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"update_contact")];
+            } else {
+                return nil;
+            }
     }
 
     OWSLogInfo(@"Unhandled tap for info message: %@", infoMessage);

@@ -494,7 +494,8 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
         }
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
-        if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
+        if (infoMessage.messageType == TSInfoMessageVerificationStateChange
+            || infoMessage.messageType == TSInfoMessageProfileUpdate) {
             return NO;
         }
     }
@@ -535,7 +536,20 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
 
+    BOOL needsToClearLastVisibleSortId = self.lastVisibleSortId > 0 && wasMessageInserted;
+
     if (![self.class shouldInteractionAppearInInbox:message]) {
+
+        // We want to clear the last visible sort ID on any new message,
+        // even if the message doesn't appear in the inbox view.
+        if (needsToClearLastVisibleSortId) {
+            [self anyUpdateWithTransaction:transaction
+                                     block:^(TSThread *thread) {
+                                         thread.lastVisibleSortId = 0;
+                                         thread.lastVisibleSortIdOnScreenPercentage = 0;
+                                     }];
+        }
+
         return;
     }
 
@@ -556,8 +570,6 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     }
 
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
-
-    BOOL needsToClearLastVisibleSortId = self.lastVisibleSortId > 0 && wasMessageInserted;
 
     BOOL needsToClearIsMarkedUnread = self.isMarkedUnread && wasMessageInserted;
 

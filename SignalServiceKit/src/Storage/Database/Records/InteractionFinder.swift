@@ -1044,12 +1044,14 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .errorType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
+                AND \(interactionColumn: .messageType) IS NOT ?
                 ORDER BY \(interactionColumn: .id) DESC
                 LIMIT 1
                 """
         let arguments: StatementArguments = [threadUniqueId,
                                              TSErrorMessageType.nonBlockingIdentityChange.rawValue,
-                                             TSInfoMessageType.verificationStateChange.rawValue]
+                                             TSInfoMessageType.verificationStateChange.rawValue,
+                                             TSInfoMessageType.profileUpdate.rawValue]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 

@@ -358,11 +358,6 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.syncManager;
 }
 
-- (BulkProfileFetch *)bulkProfileFetch
-{
-    return SSKEnvironment.shared.bulkProfileFetch;
-}
-
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -1140,7 +1135,7 @@ typedef enum : NSUInteger {
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
 
-    [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
+    [self.profileManager fetchProfilesWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
@@ -1963,6 +1958,24 @@ typedef enum : NSUInteger {
     [self.inputToolbar clearDesiredKeyboard];
     [self dismissKeyBoard];
     [self presentActionSheet:alert];
+}
+
+- (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
+                 withNewNameComponents:(NSPersonNameComponents *)newNameComponents
+{
+    if (!self.contactsManager.supportsContactEditing) {
+        OWSFailDebug(@"Contact editing unexpectedly unsupported");
+        return;
+    }
+
+    CNContactViewController *contactViewController =
+        [self.contactsViewHelper contactViewControllerForAddress:address
+                                                 editImmediately:YES
+                                          addToExistingCnContact:nil
+                                           updatedNameComponents:newNameComponents];
+    contactViewController.delegate = self;
+
+    [self.navigationController pushViewController:contactViewController animated:YES];
 }
 
 #pragma mark - MessageDetailViewDelegate

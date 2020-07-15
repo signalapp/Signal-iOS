@@ -70,7 +70,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This method can be used to edit existing contacts.
 - (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
                                                       editImmediately:(BOOL)shouldEditImmediately
-                                               addToExistingCnContact:(CNContact *_Nullable)existingContact;
+                                               addToExistingCnContact:(CNContact *_Nullable)existingContact
+                                                updatedNameComponents:
+                                                    (nullable NSPersonNameComponents *)updatedNameComponents;
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 

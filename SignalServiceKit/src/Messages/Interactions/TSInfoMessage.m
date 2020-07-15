@@ -18,6 +18,7 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewDisappearingMessageToken
     = @"InfoMessageUserInfoKeyNewDisappearingMessageToken";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
     = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyProfileChanges = @"InfoMessageUserInfoKeyProfileChanges";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -264,6 +265,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         }
         case TSInfoMessageSyncedThread:
             return @"";
+        case TSInfoMessageProfileUpdate:
+            return [self profileChangeDescriptionWithTransaction:transaction];
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -287,6 +290,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
         case TSInfoMessageUnknownProtocolVersion:
         case TSInfoMessageSyncedThread:
+        case TSInfoMessageProfileUpdate:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to
