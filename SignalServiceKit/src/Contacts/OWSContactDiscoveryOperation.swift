@@ -95,8 +95,7 @@ public class LegacyContactDiscoveryOperation: OWSOperation {
 
         // Compare against new CDS service
         let modernContactDiscoveryOperation = ContactDiscoveryOperation(phoneNumbersToLookup: self.phoneNumbersToLookup)
-        let operations = modernContactDiscoveryOperation.dependencies + [modernContactDiscoveryOperation]
-        ContactDiscoveryOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
+        modernContactDiscoveryOperation.perform()
 
         guard let legacyRegisteredPhoneNumbers = self.registeredPhoneNumbers else {
             owsFailDebug("legacyRegisteredPhoneNumbers was unexpectedly nil")
@@ -185,6 +184,12 @@ public class ContactDiscoveryOperation: OWSOperation {
             let batchOperation = CDSBatchOperation(phoneNumbersToLookup: phoneNumberBatch)
             self.addDependency(batchOperation)
         }
+    }
+
+    /// Asynchronously start the operation and its dependencies
+    @objc public func perform() {
+        let operationSet = self.dependencies + [self]
+        Self.operationQueue.addOperations(operationSet, waitUntilFinished: false)
     }
 
     // MARK: Mandatory overrides

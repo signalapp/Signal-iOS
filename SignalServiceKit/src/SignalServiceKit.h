@@ -28,6 +28,7 @@
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
+#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSReaction.h>

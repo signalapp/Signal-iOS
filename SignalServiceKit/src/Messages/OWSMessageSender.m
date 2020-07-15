@@ -683,22 +683,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return recipientAddresses.allObjects;
 }
 
-- (NSArray<SignalRecipient *> *)recipientsForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(addresses.count > 0);
-
-    NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        for (SignalServiceAddress *address in addresses) {
-            SignalRecipient *recipient = [SignalRecipient getOrBuildUnsavedRecipientForAddress:address
-                                                                                   transaction:transaction];
-            [recipients addObject:recipient];
-        }
-    }];
-    return [recipients copy];
-}
-
 - (AnyPromise *)unlockPreKeyUpdateFailuresPromise
 {
     OWSAssertDebug(!NSThread.isMainThread);
@@ -742,11 +726,23 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(thread);
 
+    BOOL disallowUuidlessRecipients = SSKFeatureFlags.useOnlyModernContactDiscovery;
+    NSMutableArray *validRecipients = [[NSMutableArray alloc] init];
+    NSMutableArray *invalidRecipients = [[NSMutableArray alloc] init];
+
+    for (SignalRecipient *recipient in recipients) {
+        if (recipient.address.uuid == nil && disallowUuidlessRecipients) {
+            [invalidRecipients addObject:recipient];
+        } else {
+            [validRecipients addObject:recipient];
+        }
+    }
+
     // 1. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
-    if (senderCertificate != nil) {
+    if (senderCertificate != nil && validRecipients.count > 0) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            for (SignalRecipient *recipient in recipients) {
+            for (SignalRecipient *recipient in validRecipients) {
                 if (!recipient.address.isLocalAddress) {
                     sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
                                                                                   requireSyncAccess:YES
@@ -759,7 +755,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // 2. Build a "OWSMessageSend" for each recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
-    for (SignalRecipient *recipient in recipients) {
+    for (SignalRecipient *recipient in validRecipients) {
         OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[recipient.address];
         OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
                                                                        thread:thread
@@ -777,17 +773,28 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return
         [MessageSending ensureSessionsforMessageSendsObjc:messageSends ignoreErrors:YES].thenInBackground(^(id value) {
             // 4. Perform the per-recipient message sends.
-            NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
+            NSMutableArray<AnyPromise *> *allPromises = [NSMutableArray array];
             for (OWSMessageSend *messageSend in messageSends) {
                 [self sendMessageToRecipient:messageSend];
-                [sendPromises addObject:messageSend.asAnyPromise];
+                [allPromises addObject:messageSend.asAnyPromise];
+            }
+
+            // 5. Fail any message sends to invalid recipients
+            for (SignalRecipient *invalidRecipient in invalidRecipients) {
+                NSError *invalidRecipientError = OWSErrorMakeNoSuchSignalRecipientError();
+                // Retryable because we can refetch from CDS
+                [invalidRecipientError setIsRetryable:YES];
+                sendErrorBlock(invalidRecipient, invalidRecipientError);
+
+                AnyPromise *failedPromise = [AnyPromise promiseWithValue:invalidRecipientError];
+                [allPromises addObject:failedPromise];
             }
 
             // We use PMKJoin(), not PMKWhen(), because we don't want the
             // completion promise to execute until _all_ send promises
             // have either succeeded or failed. PMKWhen() executes as
             // soon as any of its input promises fail.
-            return PMKJoin(sendPromises);
+            return PMKJoin(allPromises);
         });
 }
 
@@ -897,14 +904,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return;
     }
 
-    NSArray<SignalRecipient *> *recipients = [self recipientsForAddresses:recipientAddresses];
-
     BOOL isGroupSend = thread.isGroupThread;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
     NSMutableDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
 
     [self unlockPreKeyUpdateFailuresPromise]
         .thenInBackground(^(id value) {
+            return [self recipientPromiseForAddressesObjcWithAddressList:recipientAddresses];
+        })
+        .thenInBackground(^(NSArray<SignalRecipient *> *recipients) {
             return [self
                 sendPromiseForRecipients:recipients
                                  message:message
