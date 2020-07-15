@@ -158,6 +158,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
 @synthesize senderUsername = _senderUsername;
+@synthesize senderProfileName = _senderProfileName;
 @synthesize accessibilityAuthorName = _accessibilityAuthorName;
 @synthesize shouldHideFooter = _shouldHideFooter;
 @synthesize audioPlaybackState = _audioPlaybackState;
@@ -230,6 +231,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     self.linkPreviewAttachment = nil;
     self.senderName = nil;
     self.senderUsername = nil;
+    self.senderProfileName = nil;
     self.accessibilityAuthorName = nil;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];

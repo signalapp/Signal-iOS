@@ -72,7 +72,7 @@ public class ProfileChanges: MTLModel {
         return SSKEnvironment.shared.contactsManager
     }
 
-    func updateDescription(transaction: SDSAnyReadTransaction) -> String? {
+    func descriptionForUpdate(transaction: SDSAnyReadTransaction) -> String? {
         guard let address = address else {
             owsFailDebug("Unexpectedly missing address for profile change")
             return nil

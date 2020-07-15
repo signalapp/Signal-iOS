@@ -634,14 +634,21 @@ typedef void (^SystemMessageActionBlock)(void);
             if ([self.contactsManager isSystemContactWithAddress:infoMessage.profileChangeAddress]) {
                 NSString *_Nullable systemContactName =
                     [self.contactsManager nameFromSystemContactsForAddress:infoMessage.profileChangeAddress];
-                NSString *newFullName = [NSPersonNameComponentsFormatter
+                NSString *newProfileName = [NSPersonNameComponentsFormatter
                     localizedStringFromPersonNameComponents:infoMessage.profileChangeNewNameComponents
                                                       style:0
                                                     options:0];
+                NSString *_Nullable currentProfileName = self.viewItem.senderProfileName;
 
                 // Don't show the update contact button if the system contact name
                 // is already equivalent to the new profile name.
-                if ([NSObject isNullableObject:systemContactName equalTo:newFullName]) {
+                if ([NSObject isNullableObject:systemContactName equalTo:newProfileName]) {
+                    return nil;
+                }
+
+                // If the new profile name is not the current profile name, it's no
+                // longer relevant to ask you to update your contact.
+                if (![NSObject isNullableObject:currentProfileName equalTo:newProfileName]) {
                     return nil;
                 }
 

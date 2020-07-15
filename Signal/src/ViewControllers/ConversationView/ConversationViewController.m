@@ -301,6 +301,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.profileManager;
 }
 
+- (BulkProfileFetch *)bulkProfileFetch
+{
+    return SSKEnvironment.shared.bulkProfileFetch;
+}
+
 - (ContactsUpdater *)contactsUpdater
 {
     return SSKEnvironment.shared.contactsUpdater;
@@ -1135,7 +1140,7 @@ typedef enum : NSUInteger {
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
 
-    [self.profileManager fetchProfilesWithThread:self.thread];
+    [self.bulkProfileFetch fetchProfilesWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
@@ -2761,7 +2766,8 @@ typedef enum : NSUInteger {
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    // no-op
+    [self updateNavigationTitle];
+    [self reloadData];
 }
 
 #pragma mark - Scroll Down Button

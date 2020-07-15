@@ -1222,6 +1222,12 @@ NS_ASSUME_NONNULL_BEGIN
                         || ![incomingSenderAddress isEqualToAddress:nextIncomingSenderAddress]);
                 }
             }
+        } else if (interactionType == OWSInteractionType_Info) {
+            TSInfoMessage *infoMessage = (TSInfoMessage *)viewItem.interaction;
+            if (infoMessage.messageType == TSInfoMessageProfileUpdate) {
+                viewItem.senderProfileName = [self.profileManager fullNameForAddress:infoMessage.profileChangeAddress
+                                                                         transaction:transaction];
+            }
         }
 
         uint64_t collapseCutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:self.collapseCutoffDate];
