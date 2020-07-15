@@ -423,12 +423,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [self contactViewControllerForAddress:address
                                  editImmediately:shouldEditImmediately
-                          addToExistingCnContact:nil];
+                          addToExistingCnContact:nil
+                           updatedNameComponents:nil];
 }
 
 - (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
                                                       editImmediately:(BOOL)shouldEditImmediately
-                                               addToExistingCnContact:(CNContact *_Nullable)existingContact
+                                               addToExistingCnContact:(nullable CNContact *)existingContact
+                                                updatedNameComponents:
+                                                    (nullable NSPersonNameComponents *)updatedNameComponents
 {
     OWSAssertIsOnMainThread();
 
@@ -483,6 +486,13 @@ NS_ASSUME_NONNULL_BEGIN
         cnContact = [self.contactsManager cnContactWithId:signalAccount.contact.cnContactId];
     }
     if (cnContact) {
+        if (updatedNameComponents) {
+            CNMutableContact *updatedContact = [cnContact mutableCopy];
+            updatedContact.givenName = updatedNameComponents.givenName;
+            updatedContact.familyName = updatedNameComponents.familyName;
+            cnContact = updatedContact;
+        }
+
         if (shouldEditImmediately) {
             // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
             // saving our users a tap in some cases when we already know they want to edit.
@@ -505,10 +515,15 @@ NS_ASSUME_NONNULL_BEGIN
             newContact.phoneNumbers = @[ labeledPhoneNumber ];
         }
 
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            newContact.givenName = [self.profileManager givenNameForAddress:address transaction:transaction];
-            newContact.familyName = [self.profileManager familyNameForAddress:address transaction:transaction];
-        }];
+        if (updatedNameComponents) {
+            newContact.givenName = updatedNameComponents.givenName;
+            newContact.familyName = updatedNameComponents.familyName;
+        } else {
+            [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                newContact.givenName = [self.profileManager givenNameForAddress:address transaction:transaction];
+                newContact.familyName = [self.profileManager familyNameForAddress:address transaction:transaction];
+            }];
+        }
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }

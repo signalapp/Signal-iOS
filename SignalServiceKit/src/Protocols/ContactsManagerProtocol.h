@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(isSystemContact(address:));
 
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
+- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
                                                     transaction:(SDSAnyReadTransaction *)transaction;

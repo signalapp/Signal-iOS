@@ -80,7 +80,7 @@ public class OWSAddToContactViewController: OWSViewController {
         }
 
         let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
-        guard let contactViewController = contactsViewHelper.contactViewController(for: address, editImmediately: true, addToExisting: cnContact) else {
+        guard let contactViewController = contactsViewHelper.contactViewController(for: address, editImmediately: true, addToExisting: cnContact, updatedNameComponents: nil) else {
             return
         }
 

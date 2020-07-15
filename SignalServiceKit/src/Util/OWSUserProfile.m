@@ -372,6 +372,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     OWSUserProfile *_Nullable latestInstance =
         [OWSUserProfile anyFetchWithUniqueId:self.uniqueId transaction:transaction];
+    __block OWSUserProfile *_Nullable updatedInstance;
     if (latestInstance != nil) {
         [self
             anyUpdateWithTransaction:transaction
@@ -397,6 +398,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                    if (didChange && [beforeSnapshotWithoutAvatar isEqual:afterSnapshotWithoutAvatar]) {
                                        onlyAvatarChanged = YES;
                                    }
+
+                                   updatedInstance = profile;
                                }];
     } else {
         changeBlock(self);
@@ -415,6 +418,13 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     if (isLocalUserProfile) {
         [self.profileManager localProfileWasUpdated:self];
+    }
+
+    // Insert a profile change update in conversations, if necessary
+    if (latestInstance && updatedInstance) {
+        [TSInfoMessage insertProfileChangeMessagesIfNecessaryWithOldProfile:latestInstance
+                                                                 newProfile:updatedInstance
+                                                                transaction:transaction];
     }
 
     // Profile changes, record updates with storage service. We don't store avatar information on the service except for

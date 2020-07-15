@@ -25,7 +25,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageAddGroupToProfileWhitelistOffer,
     TSInfoMessageUnknownProtocolVersion,
     TSInfoMessageUserJoinedSignal,
-    TSInfoMessageSyncedThread
+    TSInfoMessageSyncedThread,
+    TSInfoMessageProfileUpdate
 };
 
 
@@ -36,6 +37,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewGroupModel;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldDisappearingMessageToken;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewDisappearingMessageToken;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateSourceAddress;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyProfileChanges;
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 

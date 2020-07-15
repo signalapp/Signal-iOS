@@ -274,3 +274,13 @@ extension DisappearingMessageToken: DeepCopyable {
         return try DeepCopies.shallowCopy(self)
     }
 }
+
+// MARK: -
+
+@objc
+extension ProfileChanges: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
