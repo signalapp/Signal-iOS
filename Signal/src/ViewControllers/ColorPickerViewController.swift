@@ -340,6 +340,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var shouldShowSenderAvatar: Bool = false
     var senderName: NSAttributedString?
     var senderUsername: String?
+    var senderProfileName: String?
     var accessibilityAuthorName: String?
     var shouldHideFooter: Bool = false
     var isFirstInCluster: Bool = true

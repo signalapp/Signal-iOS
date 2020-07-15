@@ -277,7 +277,7 @@ public class ProfileFetcherJob: NSObject {
                 //
                 // Throttle less in debug to make it easier to test problems
                 // with our fetching logic.
-                let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? 60 : 60.0 * 5.0
+                let kGetProfileMaxFrequencySeconds = _isDebugAssertConfiguration() ? kMinuteInterval : kMinuteInterval * 2.0
                 guard lastTimeInterval > kGetProfileMaxFrequencySeconds else {
                     return Promise(error: ProfileFetchError.throttled)
                 }

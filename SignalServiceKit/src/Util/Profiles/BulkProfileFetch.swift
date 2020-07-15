@@ -266,13 +266,13 @@ public class BulkProfileFetch: NSObject {
         case .retryLimit:
             minElapsedSeconds = 5 * kMinuteInterval
         case .throttled:
-            minElapsedSeconds = 5 * kMinuteInterval
+            minElapsedSeconds = 2 * kMinuteInterval
         case .noProfile:
             minElapsedSeconds = 6 * kHourInterval
         case .serviceError:
             minElapsedSeconds = 30 * kMinuteInterval
         case .success:
-            minElapsedSeconds = 15 * kMinuteInterval
+            minElapsedSeconds = 2 * kMinuteInterval
         case .invalid:
             minElapsedSeconds = 6 * kHourInterval
         }

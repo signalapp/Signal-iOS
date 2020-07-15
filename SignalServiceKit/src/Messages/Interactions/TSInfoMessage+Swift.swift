@@ -39,7 +39,7 @@ public extension TSInfoMessage {
 
     func profileChangeDescription(transaction: SDSAnyReadTransaction) -> String {
         guard let profileChanges = profileChanges,
-            let updateDescription = profileChanges.updateDescription(transaction: transaction) else {
+            let updateDescription = profileChanges.descriptionForUpdate(transaction: transaction) else {
                 owsFailDebug("Unexpectedly missing update description for profile change")
             return ""
         }
