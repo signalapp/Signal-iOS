@@ -2361,7 +2361,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Ενεργοποίηση";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Μην χάνεις ποτέ μήνυμα από τις επαφές και τις ομάδες σου.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Μην χάσεις κανένα μήνυμα από τις επαφές και τις ομάδες σου.";
 
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Ενεργοποίηση Ειδοποιήσεων;";
