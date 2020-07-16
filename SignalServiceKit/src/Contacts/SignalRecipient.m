@@ -52,6 +52,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return SSKEnvironment.shared.socketManager;
 }
 
+- (id<StorageServiceManagerProtocol>)storageServiceManager
+{
+    return SSKEnvironment.shared.storageServiceManager;
+}
+
 + (id<StorageServiceManagerProtocol>)storageServiceManager
 {
     return SSKEnvironment.shared.storageServiceManager;
@@ -484,6 +489,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
+    [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ self.accountId ]];
 }
 
 + (BOOL)shouldBeIndexedForFTS

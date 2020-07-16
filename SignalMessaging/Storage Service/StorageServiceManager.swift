@@ -34,6 +34,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             self.cleanUpUnknownIdentifiers()
+            self.cleanUpOrphanedAccounts()
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
@@ -184,6 +185,11 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
         StorageServiceOperation.operationQueue.addOperation(operation)
     }
 
+    private func cleanUpOrphanedAccounts() {
+        let operation = StorageServiceOperation(mode: .cleanUpOrphanedAccounts)
+        StorageServiceOperation.operationQueue.addOperation(operation)
+    }
+
     // MARK: - Backup Scheduling
 
     private static var backupDebounceInterval: TimeInterval = 0.2
@@ -270,6 +276,7 @@ class StorageServiceOperation: OWSOperation {
         case backup
         case restoreOrCreate
         case cleanUpUnknownIdentifiers
+        case cleanUpOrphanedAccounts
     }
     private let mode: Mode
 
@@ -312,6 +319,8 @@ class StorageServiceOperation: OWSOperation {
             restoreOrCreateManifestIfNecessary()
         case .cleanUpUnknownIdentifiers:
             cleanUpUnknownIdentifiers()
+        case .cleanUpOrphanedAccounts:
+            cleanUpOrphanedAccounts()
         }
     }
 
@@ -1178,7 +1187,7 @@ class StorageServiceOperation: OWSOperation {
         }
     }
 
-    // MARK: - Clean Up Unknown Identifiers
+    // MARK: - Clean Up
 
     private func cleanUpUnknownIdentifiers() {
         databaseStorage.write { transaction in
@@ -1208,6 +1217,43 @@ class StorageServiceOperation: OWSOperation {
         }
 
         return self.reportSuccess()
+    }
+
+    private func cleanUpOrphanedAccounts() {
+        // We don't keep unregistered accounts in storage service. We may also
+        // have storage records that we created for accounts that no longer exist,
+        // e.g. that SignalRecipient was merged with another recipient. We try to
+        // proactively delete these records from storage service, but there was a
+        // period of time we didn't and we need to cleanup after ourselves.
+        let orphanedAccountIds: [AccountId] = databaseStorage.read { transaction in
+            return State.current(transaction: transaction)
+                .accountIdToIdentifierMap
+                .forwardKeys
+                .filter { accountId in
+                    guard let address = OWSAccountIdFinder().address(
+                        forAccountId: accountId,
+                        transaction: transaction
+                    ) else { return true }
+
+                    guard SignalRecipient.isRegisteredRecipient(
+                        address,
+                        transaction: transaction
+                    ) else { return true }
+
+                    return false
+            }
+        }
+
+        guard !orphanedAccountIds.isEmpty else { return }
+
+        Logger.info("Marking \(orphanedAccountIds.count) orphaned account(s) for deletion.")
+
+        databaseStorage.write { transaction in
+            StorageServiceOperation.recordPendingDeletions(
+                deletedAccountIds: orphanedAccountIds,
+                transaction: transaction
+            )
+        }
     }
 
     // MARK: - State
