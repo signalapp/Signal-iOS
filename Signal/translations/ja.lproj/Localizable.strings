@@ -96,7 +96,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "このユーザにプロフィールを公開しますか?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "わかりました";
+"ALERT_ACTION_ACKNOWLEDGE" = "了解";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "破棄";
@@ -132,7 +132,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "データベースのバージョンが不明です。";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "旧端末のデータを復元できませんでした。原因を調査しますので、デバッグログを support@signal.org にお送りください。Signalの再インストールをすると、メッセージ履歴は消えるかもしれません。";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "古いほうのデバイスから転送したデータを復元できませんでした。原因を調査しますので、デバッグログを support@signal.org にお送りください。Signalを再インストールすると、メッセージ履歴が消えてしまうかもしれません。";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "移動できませんでした";
@@ -477,7 +477,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "通話";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "%@に発信しますか?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "%@に電話をかけますか?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "発信しますか?";
@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "進む";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "プロフィール写真を設定";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "プロフィールの更新にはインターネット接続が必要です。";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "あなたのプロフィールはエンドツーエンドで暗号化されていますが、会話をする相手、グループ内の人から閲覧可能です。";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "あなたのプロフィールとその更新情報はエンドツーエンドで暗号化されています。こちらから会話を開始したときや初めて相手からのメッセージを受け取ったとき、またはグループに参加したときに表示されます。";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "保存";
@@ -4003,6 +4009,9 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "この端末では対応されていない機能です。";
+
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Update Contact";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "グループが更新できませんでした。";

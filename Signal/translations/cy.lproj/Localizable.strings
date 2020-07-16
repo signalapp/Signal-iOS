@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Ymlaen";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Gosod Llun Proffil";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Gall proffil ond ei ddiweddaru pan wedi cysylltu â'r rhyngrwyd.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Mae eich proffil wedi ei amgryptio o ben-i-ben. Bydd yn weladwy i'ch cysylltiadau, pan fyddwch yn cychwyn neu dderbyn sgwrs newydd a phan fyddwch yn ymuno â grwpiau newydd.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Mae eich proffil wedi'i amgryptio o ben-i-ben. Bydd eich proffil a'ch newidiadau iddo yn weladwy i'ch cysylltiadau, pan fyddwch chi'n cychwyn neu'n derbyn sgyrsiau newydd, a phan fyddwch yn ymuno â grwpiau newydd.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Cadw";
@@ -4003,6 +4009,9 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Nid yw eich dyfais yn cefnogi y weithred hon.";
+
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Update Contact";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Group could not be updated.";
