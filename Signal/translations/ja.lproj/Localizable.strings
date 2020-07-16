@@ -75,19 +75,19 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "グループに追加";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@ をこのグループに追加しますか?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@をこのグループに追加しますか?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@ に追加";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@に追加";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ はすでに %@ のメンバーです。";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@はすでに%@のメンバーです。";
 
 /* The title for the 'add to group' view's recents section */
 "ADD_TO_GROUP_RECENTS_TITLE" = "最近のグループ";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ は %@ に追加されました。";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@は%@に追加されました。";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "別のグループに追加";
@@ -96,7 +96,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "このユーザにプロフィールを公開しますか?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "分かりました";
+"ALERT_ACTION_ACKNOWLEDGE" = "わかりました";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "破棄";
@@ -132,7 +132,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "データベースのバージョンが不明です。";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "旧端末のデータを復元できませんでした。原因を調査しますので、デバッグログをsupport@signal.orgにお送りください。Signalの再インストールをすると、メッセージ履歴は消えるかもしれません。";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "旧端末のデータを復元できませんでした。原因を調査しますので、デバッグログを support@signal.org にお送りください。Signalの再インストールをすると、メッセージ履歴は消えるかもしれません。";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "移動できませんでした";
@@ -192,7 +192,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "保存済み";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ へのメッセージ";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@へのメッセージ";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "送信";
@@ -477,7 +477,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "通話";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "%@ に発信しますか?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "%@に発信しますか?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "発信しますか?";
@@ -594,7 +594,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "メッセージとサーバ登録を消去し、アプリケーションをリセットします。処理が完了するとアプリを閉じます。";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "本当にアカウントを削除しますか?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "アカウントを削除してよろしいですか?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "この端末上のメッセージをすべて消去し、アプリケーションをリセットします。電話番号を使ってリンクし直すことができますが、削除されたメッセージは復元できません。処理が済むとアプリが終了します。";
@@ -822,7 +822,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "会話の色";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "グループ情報を編集できるユーザー";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "グループ情報を編集できるユーザ";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "管理者のみ";
@@ -858,7 +858,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "メンバー";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@メンバー";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@人のメンバー";
 
 /* Footer for the 'membership access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "グループメンバーシップを編集できるメンバーを選択します。";
@@ -2718,7 +2718,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PINの作成に失敗しました";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINは Signal 上に保管されている情報を暗号化するのに使われます。これによって、あなた以外の誰もその情報にアクセスできないようにしています。PINを使うことで、Signal を再インストールしたときにあなたのプロフィール、設定、連絡先の情報が復元されます。アプリを利用するときにPINを入力する必要はありません。";
+"PIN_CREATION_EXPLANATION" = "PINはSignal上に保管されている情報を暗号化するのに使われます。これによって、あなた以外の誰もその情報にアクセスできないようにしています。PINを使うことで、Signalを再インストールしたときにあなたのプロフィール、設定、連絡先の情報が復元されます。アプリを利用するときにPINを入力する必要はありません。";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "PINに関する詳細情報";
@@ -4017,7 +4017,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PINに関する詳細情報";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINは Signal 上に保管されている情報を暗号化するのに使われます。これによって、あなた以外の誰もその情報にアクセスできないようにしています。PINを使うことで、Signal を再インストールしたときにあなたのプロフィール、設定、連絡先の情報が復元されます。アプリを利用するときにPINを入力する必要はありません。";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINはSignal上に保管されている情報を暗号化するのに使われます。これによって、あなた以外の誰もその情報にアクセスできないようにしています。PINを使うことで、Signalを再インストールしたときにあなたのプロフィール、設定、連絡先の情報が復元されます。アプリを利用するときにPINを入力する必要はありません。";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PINの紹介";

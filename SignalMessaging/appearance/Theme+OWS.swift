@@ -110,7 +110,7 @@ public extension Theme {
     class func iconName(_ icon: ThemeIcon) -> String {
         switch icon {
         case .settingsUserInContacts:
-            return isDarkThemeEnabled ? "contact-solid-24" : "contact-outline-24"
+            return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
         case .settingsAddToContacts:
             return "plus-24"
         case .settingsAllMedia:
@@ -122,7 +122,7 @@ public extension Theme {
         case .settingsViewSafetyNumber:
             return isDarkThemeEnabled ? "safety-number-solid-24" : "safety-number-outline-24"
         case .settingsProfile:
-            return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
+            return isDarkThemeEnabled ? "profile-solid-24" : "profile-outline-24"
         case .settingsShowGroup:
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .settingsEditGroupAccess:
@@ -214,7 +214,7 @@ public extension Theme {
         case .groupMessage:
             return "group-outline-20"
         case .profileChangeMessage:
-            return "profile-outline-20"
+            return isDarkThemeEnabled ? "profile-solid-20" : "profile-outline-20"
         case .profilePhotoChangeMessage:
             return isDarkThemeEnabled ? "photo-solid-24" : "photo-outline-24"
 

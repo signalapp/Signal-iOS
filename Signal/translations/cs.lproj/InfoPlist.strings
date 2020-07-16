@@ -1,7 +1,7 @@
 NSAppleMusicUsageDescription = "Signal musí použít Apple Music pro přehrání mediálních příloh. ";
 NSCameraUsageDescription = "Signal používá váš fotoaparát pro pořizování snímků a pro videohovory. ";
 NSContactsUsageDescription = "Signal používá vaše kontakty, aby našel uživatele, které znáte. Vaše kontakty na našich serverech neuchováváme. ";
-NSFaceIDUsageDescription = "Signal's Screen Lock uses Face ID.";
+NSFaceIDUsageDescription = "Uzamčení obrazovky přes aplikaci Signal funguje přes FaceID.";
 NSLocationWhenInUseUsageDescription = "Signal potřebuje přístup k vaší pozici, aby ji mohl sdílet. ";
 NSMicrophoneUsageDescription = "Signal potřebuje přístup k vašemu mikrofonu pro hovory a nahrávání hlasových zpráv. ";
 NSPhotoLibraryAddUsageDescription = "Signal uloží fotografie do vaší knihovny. ";

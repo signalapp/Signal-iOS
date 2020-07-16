@@ -3609,10 +3609,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "設定";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "計算靜音會話";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "靜音會話時對話數顯示";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "徽章計算";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "圖示訊息數顯示";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "電話與訊息通知可以在你的手機鎖定時顯示。你可以限制那些內容可以顯示在通知欄。";
