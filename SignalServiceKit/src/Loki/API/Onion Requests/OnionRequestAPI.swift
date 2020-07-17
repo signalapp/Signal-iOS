@@ -44,15 +44,6 @@ public enum OnionRequestAPI {
 
     // MARK: Onion Building Result
     private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
-    
-    // MARK: File Server
-    private static let fileServerPublicKey: Data = {
-        let base64EncodedPublicKey = "BWJQnVm97sQE3Q1InB4Vuo+U/T1hmwHBv0ipkiv8tzEc"
-        let publicKeyWithPrefix = Data(base64Encoded: base64EncodedPublicKey)!
-        let hexEncodedPublicKeyWithPrefix = publicKeyWithPrefix.toHexString()
-        let hexEncodedPublicKey = hexEncodedPublicKeyWithPrefix.removing05PrefixIfNeeded()
-        return Data(hex: hexEncodedPublicKey)
-    }()
 
     // MARK: Private API
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.

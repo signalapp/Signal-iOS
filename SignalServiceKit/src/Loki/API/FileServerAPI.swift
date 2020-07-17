@@ -11,6 +11,13 @@ public final class FileServerAPI : DotNetAPI {
     @objc public static let server = "https://file.getsession.org"
     
     internal static var useOnionRequests = true
+    
+    private static let fileServerPublicKey: String = {
+        let base64EncodedPublicKey = "BWJQnVm97sQE3Q1InB4Vuo+U/T1hmwHBv0ipkiv8tzEc"
+        let publicKeyWithPrefix = Data(base64Encoded: base64EncodedPublicKey)!
+        let hexEncodedPublicKeyWithPrefix = publicKeyWithPrefix.toHexString()
+        return hexEncodedPublicKeyWithPrefix.removing05PrefixIfNeeded()
+    }()
 
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
