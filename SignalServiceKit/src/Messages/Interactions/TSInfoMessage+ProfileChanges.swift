@@ -41,7 +41,7 @@ public class ProfileChanges: MTLModel {
     var newNameComponents: PersonNameComponents?
 
     var hasRenderableChanges: Bool {
-        return oldNameComponents != nil && oldNameComponents != newNameComponents
+        return oldNameComponents != nil && newNameComponents != nil && oldNameComponents != newNameComponents
     }
 
     init(oldProfile: OWSUserProfile, newProfile: OWSUserProfile) {
