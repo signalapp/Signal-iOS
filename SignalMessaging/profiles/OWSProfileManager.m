@@ -259,6 +259,30 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return [localUserProfile shallowCopy];
 }
 
+- (nullable OWSUserProfile *)getLocalUserProfileWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    @synchronized(self) {
+        if (_localUserProfile) {
+            OWSAssertDebug(_localUserProfile.profileKey);
+
+            return [_localUserProfile shallowCopy];
+        }
+    }
+
+    OWSUserProfile *_Nullable localUserProfile =
+        [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
+
+    if (localUserProfile != nil) {
+        @synchronized(self) {
+            _localUserProfile = localUserProfile;
+        }
+        return [localUserProfile shallowCopy];
+    }
+
+    OWSFailDebug(@"We're trying to fetch the local user profile before it exists. This shouldn't happen.");
+    return nil;
+}
+
 - (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile
 {
     @synchronized(self) {
@@ -1608,7 +1632,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     // For "local reads", use the local user profile.
     if ([OWSUserProfile isLocalProfileAddress:address]) {
-        return self.localUserProfile;
+        return [self getLocalUserProfileWithTransaction:transaction];
     }
 
     return [self.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
