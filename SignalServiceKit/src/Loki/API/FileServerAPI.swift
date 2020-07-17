@@ -9,6 +9,8 @@ public final class FileServerAPI : DotNetAPI {
 
     public static let maxFileSize = 10_000_000 // 10 MB
     @objc public static let server = "https://file.getsession.org"
+    
+    internal static var useOnionRequests = true
 
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
