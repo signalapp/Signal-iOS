@@ -1431,10 +1431,10 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Datenbank wird optimiert";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Bearbeitungsberechtigten für Gruppendetails auf »%@« geändert.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Bearbeitungsberechtigten für Gruppendetails zu »%@« geändert.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Bearbeitungsberechtigten für Gruppendetails auf »%2$@« geändert.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Bearbeitungsberechtigten für Gruppendetails zu »%2$@« geändert.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Gruppendetails können von »%@« geändert werden.";
@@ -1452,10 +1452,10 @@
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Unbekannt";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Bearbeitungsberechtigten für die Gruppenmitgliedschaft auf »%@« geändert.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Bearbeitungsberechtigten für die Gruppenmitgliedschaft zu »%@« geändert.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Bearbeitungsberechtigten für die Gruppenmitgliedschaft auf »%2$@« geändert.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Bearbeitungsberechtigten für die Gruppenmitgliedschaft zu »%2$@« geändert.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Die Gruppenmitgliedschaft kann von »%@« geändert werden.";
@@ -1689,10 +1689,10 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ hat den Gruppennamen entfernt.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast den Gruppennamen in »%@« geändert.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast den Gruppennamen zu »%@« geändert.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat den Gruppennamen in »%2$@« geändert.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat den Gruppennamen zu »%2$@« geändert.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Gruppenname lautet jetzt »%@«.";
@@ -2871,10 +2871,10 @@
 "PROCEED_BUTTON" = "Fortfahren";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ hat den Profilnamen von %@ zu %@ geändert.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ hat den Profilnamen zu %@ geändert.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profilfoto festlegen";
@@ -4011,7 +4011,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Dein Gerät unterstützt diese Funktion nicht.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Kontakt aktualisieren";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Gruppe konnte nicht aktualisiert werden.";

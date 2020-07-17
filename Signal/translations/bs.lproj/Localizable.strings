@@ -2910,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Vaš profil šifriran je od pošiljaoca do primaoca. Bit će vidljiv Vašim kontaktima, kao i sve promjene na profilu, kada pokrenete ili prihvatite novu konverzaciju i kada se pridružite novim grupama.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Spremi";

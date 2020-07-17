@@ -2871,10 +2871,10 @@
 "PROCEED_BUTTON" = "進む";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@はプロフィールの名前を%@から%@に変更しました。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@はプロフィールの名前を%@に変更しました。";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "プロフィール写真を設定";
@@ -4011,7 +4011,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "この端末では対応されていない機能です。";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "連絡先を更新";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "グループが更新できませんでした。";

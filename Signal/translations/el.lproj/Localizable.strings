@@ -2910,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Το προφίλ μπορεί να ενημερωθεί μόνο όταν υπάρχει σύνδεση στο διαδίκτυο.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Το προφίλ σου είναι κρυπτογραφημένο από άκρο σε άκρο. Το προφίλ σου και οι αλλαγές του θα είναι ορατά στις επαφές σου, όταν ξεκινάς ή αποδέχεσαι νέες συνομιλίες, και όταν μπαίνεις σε νέες ομάδες.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Αποθήκευση";

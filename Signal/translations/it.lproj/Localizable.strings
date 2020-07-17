@@ -2871,10 +2871,10 @@
 "PROCEED_BUTTON" = "Procedi";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ha cambiato il suo nome profilo da %@ a %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ha cambiato il suo nome profilo in %@.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Imposta foto profilo";
@@ -4011,7 +4011,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Il tuo device non supporta questa funzione.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Aggiorna contatto";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Il gruppo non può essere aggiornato.";
