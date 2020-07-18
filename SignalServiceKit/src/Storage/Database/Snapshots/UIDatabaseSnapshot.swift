@@ -403,7 +403,11 @@ extension UIDatabaseObserver: TransactionObserver {
 
     private var targetUpdateInterval: Double {
         AssertIsOnMainThread()
-
+        #if TESTABLE_BUILD
+        // Don't wait before updating snapshots in tests
+        // because some tests checks snapshots immediately
+        return 0.0
+        #endif
         // We want the UI to feel snappy and responsive, which means
         // low latency in view updates.
         //
@@ -484,7 +488,12 @@ extension UIDatabaseObserver: TransactionObserver {
         NotificationCenter.default.post(name: Self.didUpdateUIDatabaseSnapshotNotification, object: nil)
 
         defer {
-            self.committedChanges.reset()
+            // This line used to call `self.committedChanges.reset()` but it was harmful
+            // because the instance can still be referred to by observers by passing its reference
+            // below in the delegate callbacks.
+            // Create a new instance instead of reusing and resetting it to give the new call a clear start
+            // while the observers can still keep the previous instance if they have to.
+            committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
         }
 
         Logger.verbose("databaseSnapshotDidUpdate")
