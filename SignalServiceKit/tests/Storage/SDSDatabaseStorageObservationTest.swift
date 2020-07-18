@@ -253,7 +253,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         XCTAssertNotNil(mockObserver.lastChange)
         if let lastChange = mockObserver.lastChange {
             XCTAssertTrue(lastChange.didUpdateInteractions)
-            XCTAssertFalse(lastChange.didUpdateThreads)
+            XCTAssertTrue(lastChange.didUpdateThreads)
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
@@ -431,7 +431,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         XCTAssertNotNil(mockObserver.lastChange)
         if let lastChange = mockObserver.lastChange {
             XCTAssertTrue(lastChange.didUpdateInteractions)
-            XCTAssertFalse(lastChange.didUpdateThreads)
+            XCTAssertTrue(lastChange.didUpdateThreads)
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
