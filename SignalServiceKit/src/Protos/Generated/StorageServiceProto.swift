@@ -14,7 +14,7 @@ public enum StorageServiceProtoError: Error {
 
 // MARK: - StorageServiceProtoStorageItem
 
-public class StorageServiceProtoStorageItem: NSObject {
+public class StorageServiceProtoStorageItem: NSObject, Codable {
 
     // MARK: - StorageServiceProtoStorageItemBuilder
 
@@ -69,11 +69,11 @@ public class StorageServiceProtoStorageItem: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoStorageItem {
-            return try StorageServiceProtoStorageItem.parseProto(proto)
+            return try StorageServiceProtoStorageItem(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoStorageItem.parseProto(proto).serializedData()
+            return try StorageServiceProtoStorageItem(proto).serializedData()
         }
     }
 
@@ -104,12 +104,12 @@ public class StorageServiceProtoStorageItem: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageItem {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_StorageItem(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageItem) throws -> StorageServiceProtoStorageItem {
+    fileprivate convenience init(_ proto: StorageServiceProtos_StorageItem) throws {
         let key = proto.key
 
         let value = proto.value
@@ -118,10 +118,19 @@ public class StorageServiceProtoStorageItem: NSObject {
 
         // MARK: - End Validation Logic for StorageServiceProtoStorageItem -
 
-        let result = StorageServiceProtoStorageItem(proto: proto,
-                                                    key: key,
-                                                    value: value)
-        return result
+        self.init(proto: proto,
+                  key: key,
+                  value: value)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -147,7 +156,7 @@ extension StorageServiceProtoStorageItem.StorageServiceProtoStorageItemBuilder {
 
 // MARK: - StorageServiceProtoStorageItems
 
-public class StorageServiceProtoStorageItems: NSObject {
+public class StorageServiceProtoStorageItems: NSObject, Codable {
 
     // MARK: - StorageServiceProtoStorageItemsBuilder
 
@@ -186,11 +195,11 @@ public class StorageServiceProtoStorageItems: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoStorageItems {
-            return try StorageServiceProtoStorageItems.parseProto(proto)
+            return try StorageServiceProtoStorageItems(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoStorageItems.parseProto(proto).serializedData()
+            return try StorageServiceProtoStorageItems(proto).serializedData()
         }
     }
 
@@ -217,22 +226,31 @@ public class StorageServiceProtoStorageItems: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageItems {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_StorageItems(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageItems) throws -> StorageServiceProtoStorageItems {
+    fileprivate convenience init(_ proto: StorageServiceProtos_StorageItems) throws {
         var items: [StorageServiceProtoStorageItem] = []
-        items = try proto.items.map { try StorageServiceProtoStorageItem.parseProto($0) }
+        items = try proto.items.map { try StorageServiceProtoStorageItem($0) }
 
         // MARK: - Begin Validation Logic for StorageServiceProtoStorageItems -
 
         // MARK: - End Validation Logic for StorageServiceProtoStorageItems -
 
-        let result = StorageServiceProtoStorageItems(proto: proto,
-                                                     items: items)
-        return result
+        self.init(proto: proto,
+                  items: items)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -258,7 +276,7 @@ extension StorageServiceProtoStorageItems.StorageServiceProtoStorageItemsBuilder
 
 // MARK: - StorageServiceProtoStorageManifest
 
-public class StorageServiceProtoStorageManifest: NSObject {
+public class StorageServiceProtoStorageManifest: NSObject, Codable {
 
     // MARK: - StorageServiceProtoStorageManifestBuilder
 
@@ -307,11 +325,11 @@ public class StorageServiceProtoStorageManifest: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoStorageManifest {
-            return try StorageServiceProtoStorageManifest.parseProto(proto)
+            return try StorageServiceProtoStorageManifest(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoStorageManifest.parseProto(proto).serializedData()
+            return try StorageServiceProtoStorageManifest(proto).serializedData()
         }
     }
 
@@ -342,12 +360,12 @@ public class StorageServiceProtoStorageManifest: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageManifest {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_StorageManifest(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageManifest) throws -> StorageServiceProtoStorageManifest {
+    fileprivate convenience init(_ proto: StorageServiceProtos_StorageManifest) throws {
         let version = proto.version
 
         let value = proto.value
@@ -356,10 +374,19 @@ public class StorageServiceProtoStorageManifest: NSObject {
 
         // MARK: - End Validation Logic for StorageServiceProtoStorageManifest -
 
-        let result = StorageServiceProtoStorageManifest(proto: proto,
-                                                        version: version,
-                                                        value: value)
-        return result
+        self.init(proto: proto,
+                  version: version,
+                  value: value)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -385,7 +412,7 @@ extension StorageServiceProtoStorageManifest.StorageServiceProtoStorageManifestB
 
 // MARK: - StorageServiceProtoReadOperation
 
-public class StorageServiceProtoReadOperation: NSObject {
+public class StorageServiceProtoReadOperation: NSObject, Codable {
 
     // MARK: - StorageServiceProtoReadOperationBuilder
 
@@ -424,11 +451,11 @@ public class StorageServiceProtoReadOperation: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoReadOperation {
-            return try StorageServiceProtoReadOperation.parseProto(proto)
+            return try StorageServiceProtoReadOperation(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoReadOperation.parseProto(proto).serializedData()
+            return try StorageServiceProtoReadOperation(proto).serializedData()
         }
     }
 
@@ -455,18 +482,27 @@ public class StorageServiceProtoReadOperation: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoReadOperation {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_ReadOperation(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_ReadOperation) throws -> StorageServiceProtoReadOperation {
+    fileprivate convenience init(_ proto: StorageServiceProtos_ReadOperation) throws {
         // MARK: - Begin Validation Logic for StorageServiceProtoReadOperation -
 
         // MARK: - End Validation Logic for StorageServiceProtoReadOperation -
 
-        let result = StorageServiceProtoReadOperation(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -492,7 +528,7 @@ extension StorageServiceProtoReadOperation.StorageServiceProtoReadOperationBuild
 
 // MARK: - StorageServiceProtoWriteOperation
 
-public class StorageServiceProtoWriteOperation: NSObject {
+public class StorageServiceProtoWriteOperation: NSObject, Codable {
 
     // MARK: - StorageServiceProtoWriteOperationBuilder
 
@@ -562,11 +598,11 @@ public class StorageServiceProtoWriteOperation: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoWriteOperation {
-            return try StorageServiceProtoWriteOperation.parseProto(proto)
+            return try StorageServiceProtoWriteOperation(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoWriteOperation.parseProto(proto).serializedData()
+            return try StorageServiceProtoWriteOperation(proto).serializedData()
         }
     }
 
@@ -608,28 +644,37 @@ public class StorageServiceProtoWriteOperation: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoWriteOperation {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_WriteOperation(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_WriteOperation) throws -> StorageServiceProtoWriteOperation {
+    fileprivate convenience init(_ proto: StorageServiceProtos_WriteOperation) throws {
         var manifest: StorageServiceProtoStorageManifest?
         if proto.hasManifest {
-            manifest = try StorageServiceProtoStorageManifest.parseProto(proto.manifest)
+            manifest = try StorageServiceProtoStorageManifest(proto.manifest)
         }
 
         var insertItem: [StorageServiceProtoStorageItem] = []
-        insertItem = try proto.insertItem.map { try StorageServiceProtoStorageItem.parseProto($0) }
+        insertItem = try proto.insertItem.map { try StorageServiceProtoStorageItem($0) }
 
         // MARK: - Begin Validation Logic for StorageServiceProtoWriteOperation -
 
         // MARK: - End Validation Logic for StorageServiceProtoWriteOperation -
 
-        let result = StorageServiceProtoWriteOperation(proto: proto,
-                                                       manifest: manifest,
-                                                       insertItem: insertItem)
-        return result
+        self.init(proto: proto,
+                  manifest: manifest,
+                  insertItem: insertItem)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -715,7 +760,7 @@ private func StorageServiceProtoManifestRecordKeyTypeUnwrap(_ value: StorageServ
 
 // MARK: - StorageServiceProtoManifestRecordKey
 
-public class StorageServiceProtoManifestRecordKey: NSObject {
+public class StorageServiceProtoManifestRecordKey: NSObject, Codable {
 
     // MARK: - StorageServiceProtoManifestRecordKeyBuilder
 
@@ -764,11 +809,11 @@ public class StorageServiceProtoManifestRecordKey: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoManifestRecordKey {
-            return try StorageServiceProtoManifestRecordKey.parseProto(proto)
+            return try StorageServiceProtoManifestRecordKey(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoManifestRecordKey.parseProto(proto).serializedData()
+            return try StorageServiceProtoManifestRecordKey(proto).serializedData()
         }
     }
 
@@ -799,12 +844,12 @@ public class StorageServiceProtoManifestRecordKey: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoManifestRecordKey {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_ManifestRecord.Key(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_ManifestRecord.Key) throws -> StorageServiceProtoManifestRecordKey {
+    fileprivate convenience init(_ proto: StorageServiceProtos_ManifestRecord.Key) throws {
         let data = proto.data
 
         let type = StorageServiceProtoManifestRecordKeyTypeWrap(proto.type)
@@ -813,10 +858,19 @@ public class StorageServiceProtoManifestRecordKey: NSObject {
 
         // MARK: - End Validation Logic for StorageServiceProtoManifestRecordKey -
 
-        let result = StorageServiceProtoManifestRecordKey(proto: proto,
-                                                          data: data,
-                                                          type: type)
-        return result
+        self.init(proto: proto,
+                  data: data,
+                  type: type)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -842,7 +896,7 @@ extension StorageServiceProtoManifestRecordKey.StorageServiceProtoManifestRecord
 
 // MARK: - StorageServiceProtoManifestRecord
 
-public class StorageServiceProtoManifestRecord: NSObject {
+public class StorageServiceProtoManifestRecord: NSObject, Codable {
 
     // MARK: - StorageServiceProtoManifestRecordBuilder
 
@@ -891,11 +945,11 @@ public class StorageServiceProtoManifestRecord: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoManifestRecord {
-            return try StorageServiceProtoManifestRecord.parseProto(proto)
+            return try StorageServiceProtoManifestRecord(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoManifestRecord.parseProto(proto).serializedData()
+            return try StorageServiceProtoManifestRecord(proto).serializedData()
         }
     }
 
@@ -926,25 +980,34 @@ public class StorageServiceProtoManifestRecord: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoManifestRecord {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_ManifestRecord(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_ManifestRecord) throws -> StorageServiceProtoManifestRecord {
+    fileprivate convenience init(_ proto: StorageServiceProtos_ManifestRecord) throws {
         let version = proto.version
 
         var keys: [StorageServiceProtoManifestRecordKey] = []
-        keys = try proto.keys.map { try StorageServiceProtoManifestRecordKey.parseProto($0) }
+        keys = try proto.keys.map { try StorageServiceProtoManifestRecordKey($0) }
 
         // MARK: - Begin Validation Logic for StorageServiceProtoManifestRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoManifestRecord -
 
-        let result = StorageServiceProtoManifestRecord(proto: proto,
-                                                       version: version,
-                                                       keys: keys)
-        return result
+        self.init(proto: proto,
+                  version: version,
+                  keys: keys)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -979,10 +1042,10 @@ public enum StorageServiceProtoStorageRecordOneOfRecord: Equatable {
 
 private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageServiceProtos_StorageRecord.OneOf_Record) throws -> StorageServiceProtoStorageRecordOneOfRecord {
     switch value {
-    case .contact(let value): return .contact(try StorageServiceProtoContactRecord.parseProto(value))
-    case .groupV1(let value): return .groupV1(try StorageServiceProtoGroupV1Record.parseProto(value))
-    case .groupV2(let value): return .groupV2(try StorageServiceProtoGroupV2Record.parseProto(value))
-    case .account(let value): return .account(try StorageServiceProtoAccountRecord.parseProto(value))
+    case .contact(let value): return .contact(try StorageServiceProtoContactRecord(value))
+    case .groupV1(let value): return .groupV1(try StorageServiceProtoGroupV1Record(value))
+    case .groupV2(let value): return .groupV2(try StorageServiceProtoGroupV2Record(value))
+    case .account(let value): return .account(try StorageServiceProtoAccountRecord(value))
     }
 }
 
@@ -997,7 +1060,7 @@ private func StorageServiceProtoStorageRecordOneOfRecordUnwrap(_ value: StorageS
 
 // MARK: - StorageServiceProtoStorageRecord
 
-public class StorageServiceProtoStorageRecord: NSObject {
+public class StorageServiceProtoStorageRecord: NSObject, Codable {
 
     // MARK: - StorageServiceProtoStorageRecordBuilder
 
@@ -1038,11 +1101,11 @@ public class StorageServiceProtoStorageRecord: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoStorageRecord {
-            return try StorageServiceProtoStorageRecord.parseProto(proto)
+            return try StorageServiceProtoStorageRecord(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoStorageRecord.parseProto(proto).serializedData()
+            return try StorageServiceProtoStorageRecord(proto).serializedData()
         }
     }
 
@@ -1083,18 +1146,27 @@ public class StorageServiceProtoStorageRecord: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoStorageRecord {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_StorageRecord(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_StorageRecord) throws -> StorageServiceProtoStorageRecord {
+    fileprivate convenience init(_ proto: StorageServiceProtos_StorageRecord) throws {
         // MARK: - Begin Validation Logic for StorageServiceProtoStorageRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoStorageRecord -
 
-        let result = StorageServiceProtoStorageRecord(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1170,7 +1242,7 @@ private func StorageServiceProtoContactRecordIdentityStateUnwrap(_ value: Storag
 
 // MARK: - StorageServiceProtoContactRecord
 
-public class StorageServiceProtoContactRecord: NSObject {
+public class StorageServiceProtoContactRecord: NSObject, Codable {
 
     // MARK: - StorageServiceProtoContactRecordBuilder
 
@@ -1324,11 +1396,11 @@ public class StorageServiceProtoContactRecord: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoContactRecord {
-            return try StorageServiceProtoContactRecord.parseProto(proto)
+            return try StorageServiceProtoContactRecord(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoContactRecord.parseProto(proto).serializedData()
+            return try StorageServiceProtoContactRecord(proto).serializedData()
         }
     }
 
@@ -1513,18 +1585,27 @@ public class StorageServiceProtoContactRecord: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoContactRecord {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_ContactRecord(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_ContactRecord) throws -> StorageServiceProtoContactRecord {
+    fileprivate convenience init(_ proto: StorageServiceProtos_ContactRecord) throws {
         // MARK: - Begin Validation Logic for StorageServiceProtoContactRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoContactRecord -
 
-        let result = StorageServiceProtoContactRecord(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1550,7 +1631,7 @@ extension StorageServiceProtoContactRecord.StorageServiceProtoContactRecordBuild
 
 // MARK: - StorageServiceProtoGroupV1Record
 
-public class StorageServiceProtoGroupV1Record: NSObject {
+public class StorageServiceProtoGroupV1Record: NSObject, Codable {
 
     // MARK: - StorageServiceProtoGroupV1RecordBuilder
 
@@ -1622,11 +1703,11 @@ public class StorageServiceProtoGroupV1Record: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoGroupV1Record {
-            return try StorageServiceProtoGroupV1Record.parseProto(proto)
+            return try StorageServiceProtoGroupV1Record(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoGroupV1Record.parseProto(proto).serializedData()
+            return try StorageServiceProtoGroupV1Record(proto).serializedData()
         }
     }
 
@@ -1681,21 +1762,30 @@ public class StorageServiceProtoGroupV1Record: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoGroupV1Record {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_GroupV1Record(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_GroupV1Record) throws -> StorageServiceProtoGroupV1Record {
+    fileprivate convenience init(_ proto: StorageServiceProtos_GroupV1Record) throws {
         let id = proto.id
 
         // MARK: - Begin Validation Logic for StorageServiceProtoGroupV1Record -
 
         // MARK: - End Validation Logic for StorageServiceProtoGroupV1Record -
 
-        let result = StorageServiceProtoGroupV1Record(proto: proto,
-                                                      id: id)
-        return result
+        self.init(proto: proto,
+                  id: id)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1721,7 +1811,7 @@ extension StorageServiceProtoGroupV1Record.StorageServiceProtoGroupV1RecordBuild
 
 // MARK: - StorageServiceProtoGroupV2Record
 
-public class StorageServiceProtoGroupV2Record: NSObject {
+public class StorageServiceProtoGroupV2Record: NSObject, Codable {
 
     // MARK: - StorageServiceProtoGroupV2RecordBuilder
 
@@ -1793,11 +1883,11 @@ public class StorageServiceProtoGroupV2Record: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoGroupV2Record {
-            return try StorageServiceProtoGroupV2Record.parseProto(proto)
+            return try StorageServiceProtoGroupV2Record(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoGroupV2Record.parseProto(proto).serializedData()
+            return try StorageServiceProtoGroupV2Record(proto).serializedData()
         }
     }
 
@@ -1852,21 +1942,30 @@ public class StorageServiceProtoGroupV2Record: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoGroupV2Record {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_GroupV2Record(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_GroupV2Record) throws -> StorageServiceProtoGroupV2Record {
+    fileprivate convenience init(_ proto: StorageServiceProtos_GroupV2Record) throws {
         let masterKey = proto.masterKey
 
         // MARK: - Begin Validation Logic for StorageServiceProtoGroupV2Record -
 
         // MARK: - End Validation Logic for StorageServiceProtoGroupV2Record -
 
-        let result = StorageServiceProtoGroupV2Record(proto: proto,
-                                                      masterKey: masterKey)
-        return result
+        self.init(proto: proto,
+                  masterKey: masterKey)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1892,7 +1991,7 @@ extension StorageServiceProtoGroupV2Record.StorageServiceProtoGroupV2RecordBuild
 
 // MARK: - StorageServiceProtoAccountRecord
 
-public class StorageServiceProtoAccountRecord: NSObject {
+public class StorageServiceProtoAccountRecord: NSObject, Codable {
 
     // MARK: - StorageServiceProtoAccountRecordBuilder
 
@@ -2014,11 +2113,11 @@ public class StorageServiceProtoAccountRecord: NSObject {
         }
 
         public func build() throws -> StorageServiceProtoAccountRecord {
-            return try StorageServiceProtoAccountRecord.parseProto(proto)
+            return try StorageServiceProtoAccountRecord(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try StorageServiceProtoAccountRecord.parseProto(proto).serializedData()
+            return try StorageServiceProtoAccountRecord(proto).serializedData()
         }
     }
 
@@ -2123,18 +2222,27 @@ public class StorageServiceProtoAccountRecord: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> StorageServiceProtoAccountRecord {
+    public convenience init(serializedData: Data) throws {
         let proto = try StorageServiceProtos_AccountRecord(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: StorageServiceProtos_AccountRecord) throws -> StorageServiceProtoAccountRecord {
+    fileprivate convenience init(_ proto: StorageServiceProtos_AccountRecord) throws {
         // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoAccountRecord -
 
-        let result = StorageServiceProtoAccountRecord(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {

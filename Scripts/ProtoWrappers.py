@@ -479,7 +479,7 @@ class MessageContext(BaseContext):
         writer.newline()
 
         writer.add_objc()
-        writer.add('public class %s: NSObject {' % self.swift_name)
+        writer.add('public class %s: NSObject, Codable {' % self.swift_name)
         writer.newline()
 
         writer.push_context(self.proto_name, self.swift_name)
@@ -767,18 +767,18 @@ public func serializedData() throws -> Data {
 ''').strip())
         writer.newline()
 
-        # parseData() func
+        # init(serializedData:) func
         writer.add_objc()
-        writer.add('public class func parseData(_ serializedData: Data) throws -> %s {' % self.swift_name)
+        writer.add('public convenience init(serializedData: Data) throws {')
         writer.push_indent()
         writer.add('let proto = try %s(serializedData: serializedData)' % ( wrapped_swift_name, ) )
-        writer.add('return try parseProto(proto)')
+        writer.add('try self.init(proto)')
         writer.pop_indent()
         writer.add('}')
         writer.newline()
 
-        # parseData() func
-        writer.add('fileprivate class func parseProto(_ proto: %s) throws -> %s {' % ( wrapped_swift_name, self.swift_name, ) )
+        # init(proto:) func
+        writer.add('fileprivate convenience init(_ proto: %s) throws {' % ( wrapped_swift_name, ) )
         writer.push_indent()
 
         for field in explict_fields:
@@ -787,7 +787,7 @@ public func serializedData() throws -> Data {
                 if proto_syntax == 'proto2':
                     writer.add('guard proto.%s else {' % field.has_accessor_name() )
                     writer.push_indent()
-                    writer.add('throw %s.invalidProtobuf(description: "\(logTag) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
+                    writer.add('throw %s.invalidProtobuf(description: "\(Self.logTag) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
                     writer.pop_indent()
                     writer.add('}')
 
@@ -796,7 +796,7 @@ public func serializedData() throws -> Data {
                     enum_context = self.context_for_proto_type(field)
                     writer.add('let %s = %s(proto.%s)' % ( field.name_swift, enum_context.wrap_func_name(), field.name_swift, ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('let %s = try %s.parseProto(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
+                    writer.add('let %s = try %s(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
                 else:
                     writer.add('let %s = proto.%s' % ( field.name_swift, field.name_swift, ) )
                 writer.newline()
@@ -813,7 +813,7 @@ public func serializedData() throws -> Data {
                     enum_context = self.context_for_proto_type(field)
                     writer.add('%s = proto.%s.map { %s($0) }' % ( field.name_swift, field.name_swift, enum_context.wrap_func_name(), ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('%s = try proto.%s.map { try %s.parseProto($0) }' % ( field.name_swift, field.name_swift, self.base_swift_type_for_field(field), ) )
+                    writer.add('%s = try proto.%s.map { try %s($0) }' % ( field.name_swift, field.name_swift, self.base_swift_type_for_field(field), ) )
                 else:
                     writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
             else:
@@ -825,7 +825,7 @@ public func serializedData() throws -> Data {
                     enum_context = self.context_for_proto_type(field)
                     writer.add('%s = %s(proto.%s)' % ( field.name_swift, enum_context.wrap_func_name(), field.name_swift, ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('%s = try %s.parseProto(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
+                    writer.add('%s = try %s(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
                 else:
                     writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
 
@@ -846,7 +846,7 @@ public func serializedData() throws -> Data {
         writer.add('// MARK: - End Validation Logic for %s -' % self.swift_name)
         writer.newline()
 
-        initializer_prefix = 'let result = %s(' % self.swift_name
+        initializer_prefix = 'self.init('
         initializer_arguments = []
         initializer_arguments.append('proto: proto')
         for field in explict_fields:
@@ -855,7 +855,24 @@ public func serializedData() throws -> Data {
             initializer_arguments.append(argument)
         initializer_arguments = ', '.join(initializer_arguments)
         writer.extend('%s%s)' % ( initializer_prefix, initializer_arguments, ) )
-        writer.add('return result')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
+        # codable
+
+        writer.add('public required convenience init(from decoder: Swift.Decoder) throws {')
+        writer.push_indent()
+        writer.add('let singleValueContainer = try decoder.singleValueContainer()')
+        writer.add('let serializedData = try singleValueContainer.decode(Data.self)')
+        writer.add('try self.init(serializedData: serializedData)')
+        writer.pop_indent()
+        writer.add('}')
+
+        writer.add('public func encode(to encoder: Swift.Encoder) throws {')
+        writer.push_indent()
+        writer.add('var singleValueContainer = encoder.singleValueContainer()')
+        writer.add('try singleValueContainer.encode(try serializedData())')
         writer.pop_indent()
         writer.add('}')
         writer.newline()
@@ -1097,7 +1114,7 @@ public func serializedData() throws -> Data {
         writer.add_objc()
         writer.add('public func build() throws -> %s {' % self.swift_name)
         writer.push_indent()
-        writer.add('return try %s.parseProto(proto)' % self.swift_name)
+        writer.add('return try %s(proto)' % self.swift_name)
         writer.pop_indent()
         writer.add('}')
         writer.newline()
@@ -1106,7 +1123,7 @@ public func serializedData() throws -> Data {
         writer.add_objc()
         writer.add('public func buildSerializedData() throws -> Data {')
         writer.push_indent()
-        writer.add('return try %s.parseProto(proto).serializedData()' % self.swift_name)
+        writer.add('return try %s(proto).serializedData()' % self.swift_name)
         writer.pop_indent()
         writer.add('}')
         writer.newline()
@@ -1404,7 +1421,7 @@ class OneOfContext(BaseContext):
             if is_swift_primitive_type(case_type):
                 writer.add('case .%s(let value): return .%s(value)' % (case_name, case_name, ) )
             else:
-                writer.add('case .%s(let value): return .%s(try %s.parseProto(value))' % (case_name, case_name, case_type, ) )
+                writer.add('case .%s(let value): return .%s(try %s(value))' % (case_name, case_name, case_type, ) )
             
         writer.add('}')
         writer.pop_indent()

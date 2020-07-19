@@ -147,7 +147,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
                 return
             }
 
-            let envelope = try SSKProtoEnvelope.parseData(envelopeData)
+            let envelope = try SSKProtoEnvelope(serializedData: envelopeData)
             let wasReceivedByUD = self.wasReceivedByUD(envelope: envelope)
             messageDecrypter.decryptEnvelope(envelope,
                                              envelopeData: envelopeData,

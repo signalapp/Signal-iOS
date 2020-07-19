@@ -84,7 +84,8 @@ NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue
 - (nullable SSKProtoEnvelope *)envelopeProto
 {
     NSError *error;
-    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
+    SSKProtoEnvelope *_Nullable envelope = [[SSKProtoEnvelope alloc] initWithSerializedData:self.envelopeData
+                                                                                      error:&error];
     if (error || envelope == nil) {
         OWSFailDebug(@"failed to parse envelope with error: %@", error);
         return nil;

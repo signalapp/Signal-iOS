@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,7 +35,7 @@ public class ContactsInputStream {
         var contactData: Data = Data()
         try inputStream.decodeData(value: &contactData, count: Int(contactDataLength))
 
-        let contactDetails = try SSKProtoContactDetails.parseData(contactData)
+        let contactDetails = try SSKProtoContactDetails(serializedData: contactData)
 
         var avatarData: Data?
         if let avatar = contactDetails.avatar {

@@ -80,7 +80,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
 
         let manifestProto: SSKProtoPack
         do {
-            manifestProto = try SSKProtoPack.parseData(manifestData)
+            manifestProto = try SSKProtoPack(serializedData: manifestData)
         } catch let error as NSError {
             owsFailDebug("Couldn't parse protos: \(error)")
             throw StickerError.invalidInput

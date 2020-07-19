@@ -150,7 +150,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 {
     if (!_envelope) {
         NSError *error;
-        SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
+        SSKProtoEnvelope *_Nullable envelope = [[SSKProtoEnvelope alloc] initWithSerializedData:self.envelopeData
+                                                                                          error:&error];
         if (error || envelope == nil) {
             OWSFailDebug(@"Could not parse proto: %@", error);
         } else {

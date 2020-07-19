@@ -187,7 +187,7 @@ public class GroupsV2Protos {
     // This method throws if verification fails.
     public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                                        ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
-        let changeProto = try GroupsProtoGroupChange.parseData(changeProtoData)
+        let changeProto = try GroupsProtoGroupChange(serializedData: changeProtoData)
         guard changeProto.hasChangeEpoch,
             changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
             throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
@@ -211,7 +211,7 @@ public class GroupsV2Protos {
             try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData),
                                                    notarySignature: serverSignature)
         }
-        let changeActionsProto = try GroupsProtoGroupChangeActions.parseData(changeActionsProtoData)
+        let changeActionsProto = try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
         return changeActionsProto
     }
 
