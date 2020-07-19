@@ -298,8 +298,13 @@ public class DebugFlags: BaseFlags {
         }
     }
 
+    #if TESTABLE_BUILD
+    // FIXME: For now the tests do not work with GroupV2.
+    static let groupsV2ForceEnable = false
+    #else
     // This flag auto-enables the groupv2 flags in RemoteConfig.
     static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.qa)
+    #endif
 
     // If set, client will invite instead of adding other users.
     private static let _groupsV2forceInvites = AtomicBool(false)
