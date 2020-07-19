@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -35,6 +36,9 @@ public class KeyBackupProtoRequest: NSObject {
         }
         if let _value = delete {
             builder.setDelete(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -80,6 +84,10 @@ public class KeyBackupProtoRequest: NSObject {
             proto.delete = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoRequest {
             return try KeyBackupProtoRequest.parseProto(proto)
@@ -101,6 +109,14 @@ public class KeyBackupProtoRequest: NSObject {
 
     @objc
     public let delete: KeyBackupProtoDeleteRequest?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: KeyBackupProtos_Request,
                  backup: KeyBackupProtoBackupRequest?,
@@ -124,17 +140,17 @@ public class KeyBackupProtoRequest: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: KeyBackupProtos_Request) throws -> KeyBackupProtoRequest {
-        var backup: KeyBackupProtoBackupRequest? = nil
+        var backup: KeyBackupProtoBackupRequest?
         if proto.hasBackup {
             backup = try KeyBackupProtoBackupRequest.parseProto(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreRequest? = nil
+        var restore: KeyBackupProtoRestoreRequest?
         if proto.hasRestore {
             restore = try KeyBackupProtoRestoreRequest.parseProto(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteRequest? = nil
+        var delete: KeyBackupProtoDeleteRequest?
         if proto.hasDelete {
             delete = try KeyBackupProtoDeleteRequest.parseProto(proto.delete)
         }
@@ -199,6 +215,9 @@ public class KeyBackupProtoResponse: NSObject {
         if let _value = delete {
             builder.setDelete(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -243,6 +262,10 @@ public class KeyBackupProtoResponse: NSObject {
             proto.delete = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoResponse {
             return try KeyBackupProtoResponse.parseProto(proto)
@@ -264,6 +287,14 @@ public class KeyBackupProtoResponse: NSObject {
 
     @objc
     public let delete: KeyBackupProtoDeleteResponse?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: KeyBackupProtos_Response,
                  backup: KeyBackupProtoBackupResponse?,
@@ -287,17 +318,17 @@ public class KeyBackupProtoResponse: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: KeyBackupProtos_Response) throws -> KeyBackupProtoResponse {
-        var backup: KeyBackupProtoBackupResponse? = nil
+        var backup: KeyBackupProtoBackupResponse?
         if proto.hasBackup {
             backup = try KeyBackupProtoBackupResponse.parseProto(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreResponse? = nil
+        var restore: KeyBackupProtoRestoreResponse?
         if proto.hasRestore {
             restore = try KeyBackupProtoRestoreResponse.parseProto(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteResponse? = nil
+        var delete: KeyBackupProtoDeleteResponse?
         if proto.hasDelete {
             delete = try KeyBackupProtoDeleteResponse.parseProto(proto.delete)
         }
@@ -374,6 +405,9 @@ public class KeyBackupProtoBackupRequest: NSObject {
         if hasTries {
             builder.setTries(tries)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -448,6 +482,10 @@ public class KeyBackupProtoBackupRequest: NSObject {
         @objc
         public func setTries(_ valueParam: UInt32) {
             proto.tries = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -539,6 +577,14 @@ public class KeyBackupProtoBackupRequest: NSObject {
     @objc
     public var hasTries: Bool {
         return proto.hasTries
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: KeyBackupProtos_BackupRequest) {
@@ -636,6 +682,9 @@ public class KeyBackupProtoBackupResponse: NSObject {
         if let _value = token {
             builder.setToken(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -661,6 +710,10 @@ public class KeyBackupProtoBackupResponse: NSObject {
 
         public func setToken(_ valueParam: Data) {
             proto.token = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -706,6 +759,14 @@ public class KeyBackupProtoBackupResponse: NSObject {
     @objc
     public var hasToken: Bool {
         return proto.hasToken
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: KeyBackupProtos_BackupResponse) {
@@ -787,6 +848,9 @@ public class KeyBackupProtoRestoreRequest: NSObject {
         if let _value = pin {
             builder.setPin(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -845,6 +909,10 @@ public class KeyBackupProtoRestoreRequest: NSObject {
 
         public func setPin(_ valueParam: Data) {
             proto.pin = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -915,6 +983,14 @@ public class KeyBackupProtoRestoreRequest: NSObject {
     @objc
     public var hasPin: Bool {
         return proto.hasPin
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: KeyBackupProtos_RestoreRequest) {
@@ -1024,6 +1100,9 @@ public class KeyBackupProtoRestoreResponse: NSObject {
         if hasTries {
             builder.setTries(tries)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1065,6 +1144,10 @@ public class KeyBackupProtoRestoreResponse: NSObject {
         @objc
         public func setTries(_ valueParam: UInt32) {
             proto.tries = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -1131,6 +1214,14 @@ public class KeyBackupProtoRestoreResponse: NSObject {
     @objc
     public var hasTries: Bool {
         return proto.hasTries
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: KeyBackupProtos_RestoreResponse) {
@@ -1203,6 +1294,9 @@ public class KeyBackupProtoDeleteRequest: NSObject {
         if let _value = backupID {
             builder.setBackupID(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1234,6 +1328,10 @@ public class KeyBackupProtoDeleteRequest: NSObject {
 
         public func setBackupID(_ valueParam: Data) {
             proto.backupID = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -1271,6 +1369,14 @@ public class KeyBackupProtoDeleteRequest: NSObject {
     @objc
     public var hasBackupID: Bool {
         return proto.hasBackupID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: KeyBackupProtos_DeleteRequest) {
@@ -1337,6 +1443,9 @@ public class KeyBackupProtoDeleteResponse: NSObject {
     @objc
     public func asBuilder() -> KeyBackupProtoDeleteResponseBuilder {
         let builder = KeyBackupProtoDeleteResponseBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1347,6 +1456,10 @@ public class KeyBackupProtoDeleteResponse: NSObject {
 
         @objc
         fileprivate override init() {}
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
 
         @objc
         public func build() throws -> KeyBackupProtoDeleteResponse {
@@ -1360,6 +1473,14 @@ public class KeyBackupProtoDeleteResponse: NSObject {
     }
 
     fileprivate let proto: KeyBackupProtos_DeleteResponse
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: KeyBackupProtos_DeleteResponse) {
         self.proto = proto

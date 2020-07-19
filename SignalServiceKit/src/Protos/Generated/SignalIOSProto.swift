@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -64,6 +65,9 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
         if let _value = type {
             builder.setType(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -122,6 +126,10 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
             proto.key = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SignalIOSProtoBackupSnapshotBackupEntity {
             return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto)
@@ -162,6 +170,14 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
     @objc
     public var hasType: Bool {
         return proto.hasType
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: IOSProtos_BackupSnapshot.BackupEntity,
@@ -253,6 +269,9 @@ public class SignalIOSProtoBackupSnapshot: NSObject {
     public func asBuilder() -> SignalIOSProtoBackupSnapshotBuilder {
         let builder = SignalIOSProtoBackupSnapshotBuilder()
         builder.setEntity(entity)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -276,6 +295,10 @@ public class SignalIOSProtoBackupSnapshot: NSObject {
             proto.entity = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SignalIOSProtoBackupSnapshot {
             return try SignalIOSProtoBackupSnapshot.parseProto(proto)
@@ -291,6 +314,14 @@ public class SignalIOSProtoBackupSnapshot: NSObject {
 
     @objc
     public let entity: [SignalIOSProtoBackupSnapshotBackupEntity]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: IOSProtos_BackupSnapshot,
                  entity: [SignalIOSProtoBackupSnapshotBackupEntity]) {
@@ -362,6 +393,9 @@ public class SignalIOSProtoDeviceName: NSObject {
     @objc
     public func asBuilder() -> SignalIOSProtoDeviceNameBuilder {
         let builder = SignalIOSProtoDeviceNameBuilder(ephemeralPublic: ephemeralPublic, syntheticIv: syntheticIv, ciphertext: ciphertext)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -415,6 +449,10 @@ public class SignalIOSProtoDeviceName: NSObject {
             proto.ciphertext = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SignalIOSProtoDeviceName {
             return try SignalIOSProtoDeviceName.parseProto(proto)
@@ -436,6 +474,14 @@ public class SignalIOSProtoDeviceName: NSObject {
 
     @objc
     public let ciphertext: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: IOSProtos_DeviceName,
                  ephemeralPublic: Data,

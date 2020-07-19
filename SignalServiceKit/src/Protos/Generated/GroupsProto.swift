@@ -46,6 +46,9 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         if let _value = signature {
             builder.setSignature(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -123,6 +126,10 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
 
         public func setSignature(_ valueParam: String) {
             proto.signature = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoAvatarUploadAttributes {
@@ -204,6 +211,14 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
     }
     public var hasSignature: Bool {
         return !proto.signature.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_AvatarUploadAttributes) {
@@ -328,6 +343,9 @@ public class GroupsProtoMember: NSObject {
         if hasJoinedAtRevision {
             builder.setJoinedAtRevision(joinedAtRevision)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -373,6 +391,10 @@ public class GroupsProtoMember: NSObject {
 
         public func setJoinedAtRevision(_ valueParam: UInt32) {
             proto.joinedAtRevision = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoMember {
@@ -441,6 +463,14 @@ public class GroupsProtoMember: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_Member) {
         self.proto = proto
     }
@@ -507,6 +537,9 @@ public class GroupsProtoPendingMember: NSObject {
         if hasTimestamp {
             builder.setTimestamp(timestamp)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -540,6 +573,10 @@ public class GroupsProtoPendingMember: NSObject {
             proto.timestamp = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoPendingMember {
             return try GroupsProtoPendingMember.parseProto(proto)
         }
@@ -568,6 +605,14 @@ public class GroupsProtoPendingMember: NSObject {
     }
     public var hasTimestamp: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_PendingMember,
@@ -696,6 +741,9 @@ public class GroupsProtoAccessControl: NSObject {
         if let _value = members {
             builder.setMembers(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -711,6 +759,10 @@ public class GroupsProtoAccessControl: NSObject {
 
         public func setMembers(_ valueParam: GroupsProtoAccessControlAccessRequired) {
             proto.members = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoAccessControl {
@@ -758,6 +810,14 @@ public class GroupsProtoAccessControl: NSObject {
     }
     public var hasMembers: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_AccessControl) {
@@ -837,6 +897,9 @@ public class GroupsProtoGroup: NSObject {
         }
         builder.setMembers(members)
         builder.setPendingMembers(pendingMembers)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -920,6 +983,10 @@ public class GroupsProtoGroup: NSObject {
             proto.pendingMembers = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroup {
             return try GroupsProtoGroup.parseProto(proto)
         }
@@ -982,6 +1049,14 @@ public class GroupsProtoGroup: NSObject {
     }
     public var hasRevision: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_Group,
@@ -1064,6 +1139,9 @@ public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
         if let _value = added {
             builder.setAdded(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1083,6 +1161,10 @@ public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
             proto.added = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
             return try GroupsProtoGroupChangeActionsAddMemberAction.parseProto(proto)
         }
@@ -1095,6 +1177,14 @@ public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddMemberAction
 
     public let added: GroupsProtoMember?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChange.Actions.AddMemberAction,
                  added: GroupsProtoMember?) {
@@ -1164,6 +1254,9 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
         if let _value = deletedUserID {
             builder.setDeletedUserID(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1181,6 +1274,10 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
 
         public func setDeletedUserID(_ valueParam: Data) {
             proto.deletedUserID = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
@@ -1202,6 +1299,14 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
     }
     public var hasDeletedUserID: Bool {
         return !proto.deletedUserID.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) {
@@ -1267,6 +1372,9 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
         if let _value = role {
             builder.setRole(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1288,6 +1396,10 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
 
         public func setRole(_ valueParam: GroupsProtoMemberRole) {
             proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
@@ -1327,6 +1439,14 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
     }
     public var hasRole: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction) {
@@ -1389,6 +1509,9 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
         if let _value = presentation {
             builder.setPresentation(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1406,6 +1529,10 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
 
         public func setPresentation(_ valueParam: Data) {
             proto.presentation = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
@@ -1427,6 +1554,14 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
     }
     public var hasPresentation: Bool {
         return !proto.presentation.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) {
@@ -1489,6 +1624,9 @@ public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
         if let _value = added {
             builder.setAdded(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1508,6 +1646,10 @@ public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
             proto.added = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
             return try GroupsProtoGroupChangeActionsAddPendingMemberAction.parseProto(proto)
         }
@@ -1520,6 +1662,14 @@ public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction
 
     public let added: GroupsProtoPendingMember?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction,
                  added: GroupsProtoPendingMember?) {
@@ -1589,6 +1739,9 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
         if let _value = deletedUserID {
             builder.setDeletedUserID(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1606,6 +1759,10 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
 
         public func setDeletedUserID(_ valueParam: Data) {
             proto.deletedUserID = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
@@ -1627,6 +1784,14 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
     }
     public var hasDeletedUserID: Bool {
         return !proto.deletedUserID.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) {
@@ -1689,6 +1854,9 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
         if let _value = presentation {
             builder.setPresentation(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1706,6 +1874,10 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
 
         public func setPresentation(_ valueParam: Data) {
             proto.presentation = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
@@ -1727,6 +1899,14 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
     }
     public var hasPresentation: Bool {
         return !proto.presentation.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) {
@@ -1789,6 +1969,9 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
         if let _value = title {
             builder.setTitle(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1806,6 +1989,10 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
 
         public func setTitle(_ valueParam: Data) {
             proto.title = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
@@ -1827,6 +2014,14 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
     }
     public var hasTitle: Bool {
         return !proto.title.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) {
@@ -1889,6 +2084,9 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1906,6 +2104,10 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
 
         public func setAvatar(_ valueParam: String) {
             proto.avatar = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
@@ -1927,6 +2129,14 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
     }
     public var hasAvatar: Bool {
         return !proto.avatar.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) {
@@ -1989,6 +2199,9 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
         if let _value = timer {
             builder.setTimer(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2006,6 +2219,10 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
 
         public func setTimer(_ valueParam: Data) {
             proto.timer = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
@@ -2027,6 +2244,14 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
     }
     public var hasTimer: Bool {
         return !proto.timer.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) {
@@ -2089,6 +2314,9 @@ public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: N
         if let _value = attributesAccess {
             builder.setAttributesAccess(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2100,6 +2328,10 @@ public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: N
 
         public func setAttributesAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
             proto.attributesAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
@@ -2129,6 +2361,14 @@ public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: N
     }
     public var hasAttributesAccess: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) {
@@ -2191,6 +2431,9 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObj
         if let _value = avatarAccess {
             builder.setAvatarAccess(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2202,6 +2445,10 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObj
 
         public func setAvatarAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
             proto.avatarAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
@@ -2231,6 +2478,14 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObj
     }
     public var hasAvatarAccess: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction) {
@@ -2293,6 +2548,9 @@ public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSOb
         if let _value = membersAccess {
             builder.setMembersAccess(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2304,6 +2562,10 @@ public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSOb
 
         public func setMembersAccess(_ valueParam: GroupsProtoAccessControlAccessRequired) {
             proto.membersAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
@@ -2333,6 +2595,14 @@ public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSOb
     }
     public var hasMembersAccess: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction) {
@@ -2419,6 +2689,9 @@ public class GroupsProtoGroupChangeActions: NSObject {
         }
         if let _value = modifyMemberAccess {
             builder.setModifyMemberAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2563,6 +2836,10 @@ public class GroupsProtoGroupChangeActions: NSObject {
             proto.modifyMemberAccess = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActions {
             return try GroupsProtoGroupChangeActions.parseProto(proto)
         }
@@ -2613,6 +2890,14 @@ public class GroupsProtoGroupChangeActions: NSObject {
     }
     public var hasRevision: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions,
@@ -2763,6 +3048,9 @@ public class GroupsProtoGroupChange: NSObject {
         if hasChangeEpoch {
             builder.setChangeEpoch(changeEpoch)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2794,6 +3082,10 @@ public class GroupsProtoGroupChange: NSObject {
 
         public func setChangeEpoch(_ valueParam: UInt32) {
             proto.changeEpoch = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupChange {
@@ -2832,6 +3124,14 @@ public class GroupsProtoGroupChange: NSObject {
     }
     public var hasChangeEpoch: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupChange) {
@@ -2897,6 +3197,9 @@ public class GroupsProtoGroupChangesGroupChangeState: NSObject {
         if let _value = groupState {
             builder.setGroupState(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2926,6 +3229,10 @@ public class GroupsProtoGroupChangesGroupChangeState: NSObject {
             proto.groupState = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangesGroupChangeState {
             return try GroupsProtoGroupChangesGroupChangeState.parseProto(proto)
         }
@@ -2940,6 +3247,14 @@ public class GroupsProtoGroupChangesGroupChangeState: NSObject {
     public let groupChange: GroupsProtoGroupChange?
 
     public let groupState: GroupsProtoGroup?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChanges.GroupChangeState,
                  groupChange: GroupsProtoGroupChange?,
@@ -3015,6 +3330,9 @@ public class GroupsProtoGroupChanges: NSObject {
     public func asBuilder() -> GroupsProtoGroupChangesBuilder {
         let builder = GroupsProtoGroupChangesBuilder()
         builder.setGroupChanges(groupChanges)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3034,6 +3352,10 @@ public class GroupsProtoGroupChanges: NSObject {
             proto.groupChanges = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChanges {
             return try GroupsProtoGroupChanges.parseProto(proto)
         }
@@ -3046,6 +3368,14 @@ public class GroupsProtoGroupChanges: NSObject {
     fileprivate let proto: GroupsProtos_GroupChanges
 
     public let groupChanges: [GroupsProtoGroupChangesGroupChangeState]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChanges,
                  groupChanges: [GroupsProtoGroupChangesGroupChangeState]) {
@@ -3137,6 +3467,9 @@ public class GroupsProtoGroupAttributeBlob: NSObject {
         if let _value = content {
             builder.setContent(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3154,6 +3487,10 @@ public class GroupsProtoGroupAttributeBlob: NSObject {
 
         public func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent) {
             proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> GroupsProtoGroupAttributeBlob {
@@ -3183,6 +3520,14 @@ public class GroupsProtoGroupAttributeBlob: NSObject {
     }
     public var hasContent: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: GroupsProtos_GroupAttributeBlob) {

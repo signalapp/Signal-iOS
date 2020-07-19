@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -31,6 +32,9 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject {
             builder.setBody(_value)
         }
         builder.setHeaders(headers)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -101,6 +105,10 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject {
             proto.requestID = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> WebSocketProtoWebSocketRequestMessage {
             return try WebSocketProtoWebSocketRequestMessage.parseProto(proto)
@@ -138,6 +146,14 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject {
     @objc
     public var headers: [String] {
         return proto.headers
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: WebSocketProtos_WebSocketRequestMessage,
@@ -235,6 +251,9 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject {
         if let _value = body {
             builder.setBody(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -298,6 +317,10 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject {
             proto.body = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> WebSocketProtoWebSocketResponseMessage {
             return try WebSocketProtoWebSocketResponseMessage.parseProto(proto)
@@ -344,6 +367,14 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject {
     @objc
     public var hasBody: Bool {
         return proto.hasBody
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: WebSocketProtos_WebSocketResponseMessage,
@@ -460,6 +491,9 @@ public class WebSocketProtoWebSocketMessage: NSObject {
         if let _value = response {
             builder.setResponse(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -496,6 +530,10 @@ public class WebSocketProtoWebSocketMessage: NSObject {
 
         public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage) {
             proto.response = valueParam.proto
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -537,6 +575,14 @@ public class WebSocketProtoWebSocketMessage: NSObject {
         return proto.hasType
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: WebSocketProtos_WebSocketMessage,
                  request: WebSocketProtoWebSocketRequestMessage?,
                  response: WebSocketProtoWebSocketResponseMessage?) {
@@ -557,12 +603,12 @@ public class WebSocketProtoWebSocketMessage: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: WebSocketProtos_WebSocketMessage) throws -> WebSocketProtoWebSocketMessage {
-        var request: WebSocketProtoWebSocketRequestMessage? = nil
+        var request: WebSocketProtoWebSocketRequestMessage?
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
         }
 
-        var response: WebSocketProtoWebSocketResponseMessage? = nil
+        var response: WebSocketProtoWebSocketResponseMessage?
         if proto.hasResponse {
             response = try WebSocketProtoWebSocketResponseMessage.parseProto(proto.response)
         }

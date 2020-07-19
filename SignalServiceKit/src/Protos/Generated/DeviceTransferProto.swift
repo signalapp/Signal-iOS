@@ -25,6 +25,9 @@ public class DeviceTransferProtoFile: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> DeviceTransferProtoFileBuilder {
         let builder = DeviceTransferProtoFileBuilder(identifier: identifier, relativePath: relativePath, estimatedSize: estimatedSize)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -66,6 +69,10 @@ public class DeviceTransferProtoFile: NSObject {
             proto.estimatedSize = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> DeviceTransferProtoFile {
             return try DeviceTransferProtoFile.parseProto(proto)
         }
@@ -82,6 +89,14 @@ public class DeviceTransferProtoFile: NSObject {
     public let relativePath: String
 
     public let estimatedSize: UInt64
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: DeviceTransferProtos_File,
                  identifier: String,
@@ -155,6 +170,9 @@ public class DeviceTransferProtoDefault: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> DeviceTransferProtoDefaultBuilder {
         let builder = DeviceTransferProtoDefaultBuilder(key: key, encodedValue: encodedValue)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -191,6 +209,10 @@ public class DeviceTransferProtoDefault: NSObject {
             proto.encodedValue = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> DeviceTransferProtoDefault {
             return try DeviceTransferProtoDefault.parseProto(proto)
         }
@@ -205,6 +227,14 @@ public class DeviceTransferProtoDefault: NSObject {
     public let key: String
 
     public let encodedValue: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: DeviceTransferProtos_Default,
                  key: String,
@@ -273,6 +303,9 @@ public class DeviceTransferProtoDatabase: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> DeviceTransferProtoDatabaseBuilder {
         let builder = DeviceTransferProtoDatabaseBuilder(key: key, database: database, wal: wal)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -320,6 +353,10 @@ public class DeviceTransferProtoDatabase: NSObject {
             proto.wal = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> DeviceTransferProtoDatabase {
             return try DeviceTransferProtoDatabase.parseProto(proto)
         }
@@ -336,6 +373,14 @@ public class DeviceTransferProtoDatabase: NSObject {
     public let database: DeviceTransferProtoFile
 
     public let wal: DeviceTransferProtoFile
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: DeviceTransferProtos_Database,
                  key: Data,
@@ -418,6 +463,9 @@ public class DeviceTransferProtoManifest: NSObject {
         if hasEstimatedTotalSize {
             builder.setEstimatedTotalSize(estimatedTotalSize)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -481,6 +529,10 @@ public class DeviceTransferProtoManifest: NSObject {
             proto.estimatedTotalSize = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> DeviceTransferProtoManifest {
             return try DeviceTransferProtoManifest.parseProto(proto)
         }
@@ -507,6 +559,14 @@ public class DeviceTransferProtoManifest: NSObject {
     }
     public var hasEstimatedTotalSize: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: DeviceTransferProtos_Manifest,

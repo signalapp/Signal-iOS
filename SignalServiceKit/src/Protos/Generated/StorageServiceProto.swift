@@ -25,6 +25,9 @@ public class StorageServiceProtoStorageItem: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoStorageItemBuilder {
         let builder = StorageServiceProtoStorageItemBuilder(key: key, value: value)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -61,6 +64,10 @@ public class StorageServiceProtoStorageItem: NSObject {
             proto.value = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoStorageItem {
             return try StorageServiceProtoStorageItem.parseProto(proto)
         }
@@ -75,6 +82,14 @@ public class StorageServiceProtoStorageItem: NSObject {
     public let key: Data
 
     public let value: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: StorageServiceProtos_StorageItem,
                  key: Data,
@@ -144,6 +159,9 @@ public class StorageServiceProtoStorageItems: NSObject {
     public func asBuilder() -> StorageServiceProtoStorageItemsBuilder {
         let builder = StorageServiceProtoStorageItemsBuilder()
         builder.setItems(items)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -163,6 +181,10 @@ public class StorageServiceProtoStorageItems: NSObject {
             proto.items = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoStorageItems {
             return try StorageServiceProtoStorageItems.parseProto(proto)
         }
@@ -175,6 +197,14 @@ public class StorageServiceProtoStorageItems: NSObject {
     fileprivate let proto: StorageServiceProtos_StorageItems
 
     public let items: [StorageServiceProtoStorageItem]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: StorageServiceProtos_StorageItems,
                  items: [StorageServiceProtoStorageItem]) {
@@ -239,6 +269,9 @@ public class StorageServiceProtoStorageManifest: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoStorageManifestBuilder {
         let builder = StorageServiceProtoStorageManifestBuilder(version: version, value: value)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -269,6 +302,10 @@ public class StorageServiceProtoStorageManifest: NSObject {
             proto.value = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoStorageManifest {
             return try StorageServiceProtoStorageManifest.parseProto(proto)
         }
@@ -283,6 +320,14 @@ public class StorageServiceProtoStorageManifest: NSObject {
     public let version: UInt64
 
     public let value: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: StorageServiceProtos_StorageManifest,
                  version: UInt64,
@@ -352,6 +397,9 @@ public class StorageServiceProtoReadOperation: NSObject {
     public func asBuilder() -> StorageServiceProtoReadOperationBuilder {
         let builder = StorageServiceProtoReadOperationBuilder()
         builder.setReadKey(readKey)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -371,6 +419,10 @@ public class StorageServiceProtoReadOperation: NSObject {
             proto.readKey = wrappedItems
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoReadOperation {
             return try StorageServiceProtoReadOperation.parseProto(proto)
         }
@@ -384,6 +436,14 @@ public class StorageServiceProtoReadOperation: NSObject {
 
     public var readKey: [Data] {
         return proto.readKey
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: StorageServiceProtos_ReadOperation) {
@@ -451,6 +511,9 @@ public class StorageServiceProtoWriteOperation: NSObject {
         if hasDeleteAll {
             builder.setDeleteAll(deleteAll)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -494,6 +557,10 @@ public class StorageServiceProtoWriteOperation: NSObject {
             proto.deleteAll = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoWriteOperation {
             return try StorageServiceProtoWriteOperation.parseProto(proto)
         }
@@ -518,6 +585,14 @@ public class StorageServiceProtoWriteOperation: NSObject {
     }
     public var hasDeleteAll: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: StorageServiceProtos_WriteOperation,
@@ -651,6 +726,9 @@ public class StorageServiceProtoManifestRecordKey: NSObject {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoManifestRecordKeyBuilder {
         let builder = StorageServiceProtoManifestRecordKeyBuilder(data: data, type: type)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -681,6 +759,10 @@ public class StorageServiceProtoManifestRecordKey: NSObject {
             proto.type = StorageServiceProtoManifestRecordKeyTypeUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoManifestRecordKey {
             return try StorageServiceProtoManifestRecordKey.parseProto(proto)
         }
@@ -695,6 +777,14 @@ public class StorageServiceProtoManifestRecordKey: NSObject {
     public let data: Data
 
     public let type: StorageServiceProtoManifestRecordKeyType
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: StorageServiceProtos_ManifestRecord.Key,
                  data: Data,
@@ -764,6 +854,9 @@ public class StorageServiceProtoManifestRecord: NSObject {
     public func asBuilder() -> StorageServiceProtoManifestRecordBuilder {
         let builder = StorageServiceProtoManifestRecordBuilder(version: version)
         builder.setKeys(keys)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -793,6 +886,10 @@ public class StorageServiceProtoManifestRecord: NSObject {
             proto.keys = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoManifestRecord {
             return try StorageServiceProtoManifestRecord.parseProto(proto)
         }
@@ -807,6 +904,14 @@ public class StorageServiceProtoManifestRecord: NSObject {
     public let version: UInt64
 
     public let keys: [StorageServiceProtoManifestRecordKey]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: StorageServiceProtos_ManifestRecord,
                  version: UInt64,
@@ -906,6 +1011,9 @@ public class StorageServiceProtoStorageRecord: NSObject {
         if let _value = record {
             builder.setRecord(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -923,6 +1031,10 @@ public class StorageServiceProtoStorageRecord: NSObject {
 
         public func setRecord(_ valueParam: StorageServiceProtoStorageRecordOneOfRecord) {
             proto.record = StorageServiceProtoStorageRecordOneOfRecordUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> StorageServiceProtoStorageRecord {
@@ -952,6 +1064,14 @@ public class StorageServiceProtoStorageRecord: NSObject {
     }
     public var hasRecord: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: StorageServiceProtos_StorageRecord) {
@@ -1097,6 +1217,9 @@ public class StorageServiceProtoContactRecord: NSObject {
         if hasMarkedUnread {
             builder.setMarkedUnread(markedUnread)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1194,6 +1317,10 @@ public class StorageServiceProtoContactRecord: NSObject {
 
         public func setMarkedUnread(_ valueParam: Bool) {
             proto.markedUnread = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> StorageServiceProtoContactRecord {
@@ -1369,6 +1496,14 @@ public class StorageServiceProtoContactRecord: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: StorageServiceProtos_ContactRecord) {
         self.proto = proto
     }
@@ -1438,6 +1573,9 @@ public class StorageServiceProtoGroupV1Record: NSObject {
         if hasMarkedUnread {
             builder.setMarkedUnread(markedUnread)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1479,6 +1617,10 @@ public class StorageServiceProtoGroupV1Record: NSObject {
             proto.markedUnread = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoGroupV1Record {
             return try StorageServiceProtoGroupV1Record.parseProto(proto)
         }
@@ -1518,6 +1660,14 @@ public class StorageServiceProtoGroupV1Record: NSObject {
     }
     public var hasMarkedUnread: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: StorageServiceProtos_GroupV1Record,
@@ -1594,6 +1744,9 @@ public class StorageServiceProtoGroupV2Record: NSObject {
         if hasMarkedUnread {
             builder.setMarkedUnread(markedUnread)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1635,6 +1788,10 @@ public class StorageServiceProtoGroupV2Record: NSObject {
             proto.markedUnread = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> StorageServiceProtoGroupV2Record {
             return try StorageServiceProtoGroupV2Record.parseProto(proto)
         }
@@ -1674,6 +1831,14 @@ public class StorageServiceProtoGroupV2Record: NSObject {
     }
     public var hasMarkedUnread: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: StorageServiceProtos_GroupV2Record,
@@ -1768,6 +1933,9 @@ public class StorageServiceProtoAccountRecord: NSObject {
         if hasLinkPreviews {
             builder.setLinkPreviews(linkPreviews)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1839,6 +2007,10 @@ public class StorageServiceProtoAccountRecord: NSObject {
 
         public func setLinkPreviews(_ valueParam: Bool) {
             proto.linkPreviews = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         public func build() throws -> StorageServiceProtoAccountRecord {
@@ -1932,6 +2104,14 @@ public class StorageServiceProtoAccountRecord: NSObject {
     }
     public var hasLinkPreviews: Bool {
         return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: StorageServiceProtos_AccountRecord) {

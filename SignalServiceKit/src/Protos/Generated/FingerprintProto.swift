@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -27,6 +28,9 @@ public class FingerprintProtoLogicalFingerprint: NSObject {
     @objc
     public func asBuilder() -> FingerprintProtoLogicalFingerprintBuilder {
         let builder = FingerprintProtoLogicalFingerprintBuilder(identityData: identityData)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -56,6 +60,10 @@ public class FingerprintProtoLogicalFingerprint: NSObject {
             proto.identityData = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> FingerprintProtoLogicalFingerprint {
             return try FingerprintProtoLogicalFingerprint.parseProto(proto)
@@ -71,6 +79,14 @@ public class FingerprintProtoLogicalFingerprint: NSObject {
 
     @objc
     public let identityData: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: FingerprintProtos_LogicalFingerprint,
                  identityData: Data) {
@@ -144,6 +160,9 @@ public class FingerprintProtoLogicalFingerprints: NSObject {
     @objc
     public func asBuilder() -> FingerprintProtoLogicalFingerprintsBuilder {
         let builder = FingerprintProtoLogicalFingerprintsBuilder(version: version, localFingerprint: localFingerprint, remoteFingerprint: remoteFingerprint)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -191,6 +210,10 @@ public class FingerprintProtoLogicalFingerprints: NSObject {
             proto.remoteFingerprint = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> FingerprintProtoLogicalFingerprints {
             return try FingerprintProtoLogicalFingerprints.parseProto(proto)
@@ -212,6 +235,14 @@ public class FingerprintProtoLogicalFingerprints: NSObject {
 
     @objc
     public let remoteFingerprint: FingerprintProtoLogicalFingerprint
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: FingerprintProtos_LogicalFingerprints,
                  version: UInt32,

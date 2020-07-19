@@ -386,9 +386,8 @@ class FileContext(BaseContext):
 //
 
 import Foundation
-import SignalCoreKit''')
-        if proto_syntax == 'proto3':
-            writer.add('import SwiftProtobuf')
+import SignalCoreKit
+import SwiftProtobuf''')
 
         writer.newline()
         writer.extend('''
@@ -725,6 +724,21 @@ class MessageContext(BaseContext):
             writer.add('}')
             writer.newline()
 
+        # Unknown fields
+        writer.add('public var hasUnknownFields: Bool {')
+        writer.push_indent()
+        writer.add('return !proto.unknownFields.data.isEmpty')
+        writer.pop_indent()
+        writer.add('}')
+
+        writer.add('public var unknownFields: SwiftProtobuf.UnknownStorage? {')
+        writer.push_indent()
+        writer.add('guard hasUnknownFields else { return nil }')
+        writer.add('return proto.unknownFields')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
         # Initializer
         initializer_parameters = []
         initializer_parameters.append('proto: %s' % wrapped_swift_name)
@@ -941,6 +955,12 @@ public func serializedData() throws -> Data {
                     writer.pop_indent()
                     writer.add('}')
 
+            writer.add('if let _value = unknownFields {')
+            writer.push_indent()
+            writer.add('builder.setUnknownFields(_value)')
+            writer.pop_indent()
+            writer.add('}')
+
             writer.add('return builder')
         writer.newline()
 
@@ -1064,6 +1084,14 @@ public func serializedData() throws -> Data {
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
+
+        # Unknown fields setter
+        writer.add('public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {')
+        writer.push_indent()
+        writer.add('proto.unknownFields = unknownFields')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
 
         # build() func
         writer.add_objc()

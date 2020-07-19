@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -27,6 +28,9 @@ public class ProvisioningProtoProvisioningUuid: NSObject {
     @objc
     public func asBuilder() -> ProvisioningProtoProvisioningUuidBuilder {
         let builder = ProvisioningProtoProvisioningUuidBuilder(uuid: uuid)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -56,6 +60,10 @@ public class ProvisioningProtoProvisioningUuid: NSObject {
             proto.uuid = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> ProvisioningProtoProvisioningUuid {
             return try ProvisioningProtoProvisioningUuid.parseProto(proto)
@@ -71,6 +79,14 @@ public class ProvisioningProtoProvisioningUuid: NSObject {
 
     @objc
     public let uuid: String
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: ProvisioningProtos_ProvisioningUuid,
                  uuid: String) {
@@ -144,6 +160,9 @@ public class ProvisioningProtoProvisionEnvelope: NSObject {
     @objc
     public func asBuilder() -> ProvisioningProtoProvisionEnvelopeBuilder {
         let builder = ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -185,6 +204,10 @@ public class ProvisioningProtoProvisionEnvelope: NSObject {
             proto.body = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> ProvisioningProtoProvisionEnvelope {
             return try ProvisioningProtoProvisionEnvelope.parseProto(proto)
@@ -203,6 +226,14 @@ public class ProvisioningProtoProvisionEnvelope: NSObject {
 
     @objc
     public let body: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: ProvisioningProtos_ProvisionEnvelope,
                  publicKey: Data,
@@ -298,6 +329,9 @@ public class ProvisioningProtoProvisionMessage: NSObject {
         }
         if hasProvisioningVersion {
             builder.setProvisioningVersion(provisioningVersion)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -407,6 +441,10 @@ public class ProvisioningProtoProvisionMessage: NSObject {
             proto.provisioningVersion = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> ProvisioningProtoProvisionMessage {
             return try ProvisioningProtoProvisionMessage.parseProto(proto)
@@ -484,6 +522,14 @@ public class ProvisioningProtoProvisionMessage: NSObject {
     @objc
     public var hasProvisioningVersion: Bool {
         return proto.hasProvisioningVersion
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: ProvisioningProtos_ProvisionMessage,

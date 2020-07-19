@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -87,6 +88,9 @@ public class SSKProtoEnvelope: NSObject {
         }
         if let _value = sourceUuid {
             builder.setSourceUuid(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -190,6 +194,10 @@ public class SSKProtoEnvelope: NSObject {
 
         public func setSourceUuid(_ valueParam: String) {
             proto.sourceUuid = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -366,6 +374,14 @@ public class SSKProtoEnvelope: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_Envelope,
                  timestamp: UInt64) {
         self.proto = proto
@@ -466,6 +482,9 @@ public class SSKProtoTypingMessage: NSObject {
         if let _value = groupID {
             builder.setGroupID(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -503,6 +522,10 @@ public class SSKProtoTypingMessage: NSObject {
 
         public func setGroupID(_ valueParam: Data) {
             proto.groupID = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -551,6 +574,14 @@ public class SSKProtoTypingMessage: NSObject {
     @objc
     public var hasGroupID: Bool {
         return proto.hasGroupID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_TypingMessage,
@@ -643,6 +674,9 @@ public class SSKProtoContent: NSObject {
         if let _value = typingMessage {
             builder.setTypingMessage(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -720,6 +754,10 @@ public class SSKProtoContent: NSObject {
             proto.typingMessage = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoContent {
             return try SSKProtoContent.parseProto(proto)
@@ -750,6 +788,14 @@ public class SSKProtoContent: NSObject {
 
     @objc
     public let typingMessage: SSKProtoTypingMessage?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: SignalServiceProtos_Content,
                  dataMessage: SSKProtoDataMessage?,
@@ -888,6 +934,9 @@ public class SSKProtoCallMessageOffer: NSObject {
         if let _value = type {
             builder.setType(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -928,6 +977,10 @@ public class SSKProtoCallMessageOffer: NSObject {
             proto.type = SSKProtoCallMessageOfferTypeUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoCallMessageOffer {
             return try SSKProtoCallMessageOffer.parseProto(proto)
@@ -965,6 +1018,14 @@ public class SSKProtoCallMessageOffer: NSObject {
     @objc
     public var hasType: Bool {
         return proto.hasType
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_CallMessage.Offer,
@@ -1047,6 +1108,9 @@ public class SSKProtoCallMessageAnswer: NSObject {
     @objc
     public func asBuilder() -> SSKProtoCallMessageAnswerBuilder {
         let builder = SSKProtoCallMessageAnswerBuilder(id: id, sdp: sdp)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1082,6 +1146,10 @@ public class SSKProtoCallMessageAnswer: NSObject {
             proto.sdp = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoCallMessageAnswer {
             return try SSKProtoCallMessageAnswer.parseProto(proto)
@@ -1100,6 +1168,14 @@ public class SSKProtoCallMessageAnswer: NSObject {
 
     @objc
     public let sdp: String
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: SignalServiceProtos_CallMessage.Answer,
                  id: UInt64,
@@ -1181,6 +1257,9 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
     @objc
     public func asBuilder() -> SSKProtoCallMessageIceUpdateBuilder {
         let builder = SSKProtoCallMessageIceUpdateBuilder(id: id, sdpMid: sdpMid, sdpMlineIndex: sdpMlineIndex, sdp: sdp)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1234,6 +1313,10 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
             proto.sdp = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoCallMessageIceUpdate {
             return try SSKProtoCallMessageIceUpdate.parseProto(proto)
@@ -1258,6 +1341,14 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
 
     @objc
     public let sdp: String
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: SignalServiceProtos_CallMessage.IceUpdate,
                  id: UInt64,
@@ -1355,6 +1446,9 @@ public class SSKProtoCallMessageBusy: NSObject {
     @objc
     public func asBuilder() -> SSKProtoCallMessageBusyBuilder {
         let builder = SSKProtoCallMessageBusyBuilder(id: id)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1378,6 +1472,10 @@ public class SSKProtoCallMessageBusy: NSObject {
             proto.id = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoCallMessageBusy {
             return try SSKProtoCallMessageBusy.parseProto(proto)
@@ -1393,6 +1491,14 @@ public class SSKProtoCallMessageBusy: NSObject {
 
     @objc
     public let id: UInt64
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: SignalServiceProtos_CallMessage.Busy,
                  id: UInt64) {
@@ -1503,6 +1609,9 @@ public class SSKProtoCallMessageHangup: NSObject {
         if hasDeviceID {
             builder.setDeviceID(deviceID)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1534,6 +1643,10 @@ public class SSKProtoCallMessageHangup: NSObject {
         @objc
         public func setDeviceID(_ valueParam: UInt32) {
             proto.deviceID = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -1579,6 +1692,14 @@ public class SSKProtoCallMessageHangup: NSObject {
     @objc
     public var hasDeviceID: Bool {
         return proto.hasDeviceID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_CallMessage.Hangup,
@@ -1677,6 +1798,9 @@ public class SSKProtoCallMessage: NSObject {
         }
         if hasDestinationDeviceID {
             builder.setDestinationDeviceID(destinationDeviceID)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1777,6 +1901,10 @@ public class SSKProtoCallMessage: NSObject {
             proto.destinationDeviceID = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoCallMessage {
             return try SSKProtoCallMessage.parseProto(proto)
@@ -1836,6 +1964,14 @@ public class SSKProtoCallMessage: NSObject {
     @objc
     public var hasDestinationDeviceID: Bool {
         return proto.hasDestinationDeviceID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_CallMessage,
@@ -1979,6 +2115,9 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject {
         if hasFlags {
             builder.setFlags(flags)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2028,6 +2167,10 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject {
             proto.flags = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoDataMessageQuoteQuotedAttachment {
             return try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto)
@@ -2075,6 +2218,14 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject {
     @objc
     public var hasFlags: Bool {
         return proto.hasFlags
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment,
@@ -2159,6 +2310,9 @@ public class SSKProtoDataMessageQuote: NSObject {
             builder.setText(_value)
         }
         builder.setAttachments(attachments)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2225,6 +2379,10 @@ public class SSKProtoDataMessageQuote: NSObject {
         @objc
         public func setAttachments(_ wrappedItems: [SSKProtoDataMessageQuoteQuotedAttachment]) {
             proto.attachments = wrappedItems.map { $0.proto }
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -2330,6 +2488,14 @@ public class SSKProtoDataMessageQuote: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_DataMessage.Quote,
                  id: UInt64,
                  attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
@@ -2426,6 +2592,9 @@ public class SSKProtoDataMessageContactName: NSObject {
         if let _value = displayName {
             builder.setDisplayName(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2501,6 +2670,10 @@ public class SSKProtoDataMessageContactName: NSObject {
 
         public func setDisplayName(_ valueParam: String) {
             proto.displayName = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -2586,6 +2759,14 @@ public class SSKProtoDataMessageContactName: NSObject {
     @objc
     public var hasDisplayName: Bool {
         return proto.hasDisplayName
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Contact.Name) {
@@ -2689,6 +2870,9 @@ public class SSKProtoDataMessageContactPhone: NSObject {
         if let _value = label {
             builder.setLabel(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2725,6 +2909,10 @@ public class SSKProtoDataMessageContactPhone: NSObject {
 
         public func setLabel(_ valueParam: String) {
             proto.label = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -2782,6 +2970,14 @@ public class SSKProtoDataMessageContactPhone: NSObject {
     @objc
     public var hasLabel: Bool {
         return proto.hasLabel
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Contact.Phone) {
@@ -2885,6 +3081,9 @@ public class SSKProtoDataMessageContactEmail: NSObject {
         if let _value = label {
             builder.setLabel(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -2921,6 +3120,10 @@ public class SSKProtoDataMessageContactEmail: NSObject {
 
         public func setLabel(_ valueParam: String) {
             proto.label = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -2978,6 +3181,14 @@ public class SSKProtoDataMessageContactEmail: NSObject {
     @objc
     public var hasLabel: Bool {
         return proto.hasLabel
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Contact.Email) {
@@ -3096,6 +3307,9 @@ public class SSKProtoDataMessageContactPostalAddress: NSObject {
         if let _value = country {
             builder.setCountry(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3198,6 +3412,10 @@ public class SSKProtoDataMessageContactPostalAddress: NSObject {
 
         public func setCountry(_ valueParam: String) {
             proto.country = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -3329,6 +3547,14 @@ public class SSKProtoDataMessageContactPostalAddress: NSObject {
         return proto.hasCountry
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_DataMessage.Contact.PostalAddress) {
         self.proto = proto
     }
@@ -3399,6 +3625,9 @@ public class SSKProtoDataMessageContactAvatar: NSObject {
         if hasIsProfile {
             builder.setIsProfile(isProfile)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3426,6 +3655,10 @@ public class SSKProtoDataMessageContactAvatar: NSObject {
             proto.isProfile = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoDataMessageContactAvatar {
             return try SSKProtoDataMessageContactAvatar.parseProto(proto)
@@ -3449,6 +3682,14 @@ public class SSKProtoDataMessageContactAvatar: NSObject {
     @objc
     public var hasIsProfile: Bool {
         return proto.hasIsProfile
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Contact.Avatar,
@@ -3535,6 +3776,9 @@ public class SSKProtoDataMessageContact: NSObject {
         if let _value = organization {
             builder.setOrganization(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3615,6 +3859,10 @@ public class SSKProtoDataMessageContact: NSObject {
             proto.organization = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoDataMessageContact {
             return try SSKProtoDataMessageContact.parseProto(proto)
@@ -3653,6 +3901,14 @@ public class SSKProtoDataMessageContact: NSObject {
     @objc
     public var hasOrganization: Bool {
         return proto.hasOrganization
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Contact,
@@ -3759,6 +4015,9 @@ public class SSKProtoDataMessagePreview: NSObject {
         if let _value = image {
             builder.setImage(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3810,6 +4069,10 @@ public class SSKProtoDataMessagePreview: NSObject {
             proto.image = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoDataMessagePreview {
             return try SSKProtoDataMessagePreview.parseProto(proto)
@@ -3839,6 +4102,14 @@ public class SSKProtoDataMessagePreview: NSObject {
     @objc
     public var hasTitle: Bool {
         return proto.hasTitle
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage.Preview,
@@ -3921,6 +4192,9 @@ public class SSKProtoDataMessageSticker: NSObject {
     @objc
     public func asBuilder() -> SSKProtoDataMessageStickerBuilder {
         let builder = SSKProtoDataMessageStickerBuilder(packID: packID, packKey: packKey, stickerID: stickerID, data: data)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3980,6 +4254,10 @@ public class SSKProtoDataMessageSticker: NSObject {
             proto.data = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoDataMessageSticker {
             return try SSKProtoDataMessageSticker.parseProto(proto)
@@ -4004,6 +4282,14 @@ public class SSKProtoDataMessageSticker: NSObject {
 
     @objc
     public let data: SSKProtoAttachmentPointer
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: SignalServiceProtos_DataMessage.Sticker,
                  packID: Data,
@@ -4107,6 +4393,9 @@ public class SSKProtoDataMessageReaction: NSObject {
         if let _value = authorUuid {
             builder.setAuthorUuid(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -4168,6 +4457,10 @@ public class SSKProtoDataMessageReaction: NSObject {
         @objc
         public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -4264,6 +4557,14 @@ public class SSKProtoDataMessageReaction: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_DataMessage.Reaction,
                  emoji: String,
                  remove: Bool,
@@ -4352,6 +4653,9 @@ public class SSKProtoDataMessageDelete: NSObject {
     @objc
     public func asBuilder() -> SSKProtoDataMessageDeleteBuilder {
         let builder = SSKProtoDataMessageDeleteBuilder(targetSentTimestamp: targetSentTimestamp)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -4375,6 +4679,10 @@ public class SSKProtoDataMessageDelete: NSObject {
             proto.targetSentTimestamp = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoDataMessageDelete {
             return try SSKProtoDataMessageDelete.parseProto(proto)
@@ -4390,6 +4698,14 @@ public class SSKProtoDataMessageDelete: NSObject {
 
     @objc
     public let targetSentTimestamp: UInt64
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: SignalServiceProtos_DataMessage.Delete,
                  targetSentTimestamp: UInt64) {
@@ -4564,6 +4880,9 @@ public class SSKProtoDataMessage: NSObject {
         if let _value = delete {
             builder.setDelete(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -4724,6 +5043,10 @@ public class SSKProtoDataMessage: NSObject {
             proto.delete = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
@@ -4831,6 +5154,14 @@ public class SSKProtoDataMessage: NSObject {
     @objc
     public var hasIsViewOnce: Bool {
         return proto.hasIsViewOnce
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_DataMessage,
@@ -4966,6 +5297,9 @@ public class SSKProtoNullMessage: NSObject {
         if let _value = padding {
             builder.setPadding(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -4986,6 +5320,10 @@ public class SSKProtoNullMessage: NSObject {
 
         public func setPadding(_ valueParam: Data) {
             proto.padding = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -5011,6 +5349,14 @@ public class SSKProtoNullMessage: NSObject {
     @objc
     public var hasPadding: Bool {
         return proto.hasPadding
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_NullMessage) {
@@ -5103,6 +5449,9 @@ public class SSKProtoReceiptMessage: NSObject {
             builder.setType(_value)
         }
         builder.setTimestamp(timestamp)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -5129,6 +5478,10 @@ public class SSKProtoReceiptMessage: NSObject {
         @objc
         public func setTimestamp(_ wrappedItems: [UInt64]) {
             proto.timestamp = wrappedItems
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -5167,6 +5520,14 @@ public class SSKProtoReceiptMessage: NSObject {
     @objc
     public var timestamp: [UInt64] {
         return proto.timestamp
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_ReceiptMessage) {
@@ -5273,6 +5634,9 @@ public class SSKProtoVerified: NSObject {
         if let _value = nullMessage {
             builder.setNullMessage(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -5331,6 +5695,10 @@ public class SSKProtoVerified: NSObject {
 
         public func setNullMessage(_ valueParam: Data) {
             proto.nullMessage = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -5462,6 +5830,14 @@ public class SSKProtoVerified: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_Verified) {
         self.proto = proto
     }
@@ -5535,6 +5911,9 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject {
         if hasUnidentified {
             builder.setUnidentified(unidentified)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -5571,6 +5950,10 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject {
         @objc
         public func setUnidentified(_ valueParam: Bool) {
             proto.unidentified = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -5667,6 +6050,14 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) {
         self.proto = proto
     }
@@ -5750,6 +6141,9 @@ public class SSKProtoSyncMessageSent: NSObject {
         if hasIsRecipientUpdate {
             builder.setIsRecipientUpdate(isRecipientUpdate)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -5819,6 +6213,10 @@ public class SSKProtoSyncMessageSent: NSObject {
         @objc
         public func setIsRecipientUpdate(_ valueParam: Bool) {
             proto.isRecipientUpdate = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -5939,6 +6337,14 @@ public class SSKProtoSyncMessageSent: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_SyncMessage.Sent,
                  message: SSKProtoDataMessage?,
                  unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus]) {
@@ -6020,6 +6426,9 @@ public class SSKProtoSyncMessageContacts: NSObject {
         if hasIsComplete {
             builder.setIsComplete(isComplete)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -6054,6 +6463,10 @@ public class SSKProtoSyncMessageContacts: NSObject {
             proto.isComplete = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoSyncMessageContacts {
             return try SSKProtoSyncMessageContacts.parseProto(proto)
@@ -6077,6 +6490,14 @@ public class SSKProtoSyncMessageContacts: NSObject {
     @objc
     public var hasIsComplete: Bool {
         return proto.hasIsComplete
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Contacts,
@@ -6154,6 +6575,9 @@ public class SSKProtoSyncMessageGroups: NSObject {
         if let _value = blob {
             builder.setBlob(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -6176,6 +6600,10 @@ public class SSKProtoSyncMessageGroups: NSObject {
             proto.blob = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoSyncMessageGroups {
             return try SSKProtoSyncMessageGroups.parseProto(proto)
@@ -6191,6 +6619,14 @@ public class SSKProtoSyncMessageGroups: NSObject {
 
     @objc
     public let blob: SSKProtoAttachmentPointer?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: SignalServiceProtos_SyncMessage.Groups,
                  blob: SSKProtoAttachmentPointer?) {
@@ -6267,6 +6703,9 @@ public class SSKProtoSyncMessageBlocked: NSObject {
         builder.setNumbers(numbers)
         builder.setGroupIds(groupIds)
         builder.setUuids(uuids)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -6314,6 +6753,10 @@ public class SSKProtoSyncMessageBlocked: NSObject {
             proto.uuids = wrappedItems
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoSyncMessageBlocked {
             return try SSKProtoSyncMessageBlocked.parseProto(proto)
@@ -6340,6 +6783,14 @@ public class SSKProtoSyncMessageBlocked: NSObject {
     @objc
     public var uuids: [String] {
         return proto.uuids
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Blocked) {
@@ -6443,6 +6894,9 @@ public class SSKProtoSyncMessageRequest: NSObject {
         if let _value = type {
             builder.setType(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -6457,6 +6911,10 @@ public class SSKProtoSyncMessageRequest: NSObject {
         @objc
         public func setType(_ valueParam: SSKProtoSyncMessageRequestType) {
             proto.type = SSKProtoSyncMessageRequestTypeUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -6490,6 +6948,14 @@ public class SSKProtoSyncMessageRequest: NSObject {
     @objc
     public var hasType: Bool {
         return proto.hasType
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Request) {
@@ -6562,6 +7028,9 @@ public class SSKProtoSyncMessageRead: NSObject {
         if let _value = senderUuid {
             builder.setSenderUuid(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -6605,6 +7074,10 @@ public class SSKProtoSyncMessageRead: NSObject {
         @objc
         public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -6695,6 +7168,14 @@ public class SSKProtoSyncMessageRead: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_SyncMessage.Read,
                  timestamp: UInt64) {
         self.proto = proto
@@ -6782,6 +7263,9 @@ public class SSKProtoSyncMessageConfiguration: NSObject {
         if hasProvisioningVersion {
             builder.setProvisioningVersion(provisioningVersion)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -6816,6 +7300,10 @@ public class SSKProtoSyncMessageConfiguration: NSObject {
         @objc
         public func setProvisioningVersion(_ valueParam: UInt32) {
             proto.provisioningVersion = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -6874,6 +7362,14 @@ public class SSKProtoSyncMessageConfiguration: NSObject {
     @objc
     public var hasProvisioningVersion: Bool {
         return proto.hasProvisioningVersion
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Configuration) {
@@ -6965,6 +7461,9 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject {
         if let _value = type {
             builder.setType(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -7011,6 +7510,10 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject {
             proto.type = SSKProtoSyncMessageStickerPackOperationTypeUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoSyncMessageStickerPackOperation {
             return try SSKProtoSyncMessageStickerPackOperation.parseProto(proto)
@@ -7048,6 +7551,14 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject {
     @objc
     public var hasType: Bool {
         return proto.hasType
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.StickerPackOperation,
@@ -7136,6 +7647,9 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject {
         if let _value = senderUuid {
             builder.setSenderUuid(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -7179,6 +7693,10 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject {
         @objc
         public func setTimestamp(_ valueParam: UInt64) {
             proto.timestamp = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -7267,6 +7785,14 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject {
         }
 
         return address
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.ViewOnceOpen,
@@ -7369,6 +7895,9 @@ public class SSKProtoSyncMessageFetchLatest: NSObject {
         if let _value = type {
             builder.setType(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -7383,6 +7912,10 @@ public class SSKProtoSyncMessageFetchLatest: NSObject {
         @objc
         public func setType(_ valueParam: SSKProtoSyncMessageFetchLatestType) {
             proto.type = SSKProtoSyncMessageFetchLatestTypeUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -7416,6 +7949,14 @@ public class SSKProtoSyncMessageFetchLatest: NSObject {
     @objc
     public var hasType: Bool {
         return proto.hasType
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.FetchLatest) {
@@ -7485,6 +8026,9 @@ public class SSKProtoSyncMessageKeys: NSObject {
         if let _value = storageService {
             builder.setStorageService(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -7505,6 +8049,10 @@ public class SSKProtoSyncMessageKeys: NSObject {
 
         public func setStorageService(_ valueParam: Data) {
             proto.storageService = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -7530,6 +8078,14 @@ public class SSKProtoSyncMessageKeys: NSObject {
     @objc
     public var hasStorageService: Bool {
         return proto.hasStorageService
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Keys) {
@@ -7639,6 +8195,9 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject {
         if let _value = type {
             builder.setType(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -7686,6 +8245,10 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject {
         @objc
         public func setType(_ valueParam: SSKProtoSyncMessageMessageRequestResponseType) {
             proto.type = SSKProtoSyncMessageMessageRequestResponseTypeUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -7805,6 +8368,14 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject {
         return address
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_SyncMessage.MessageRequestResponse) {
         self.proto = proto
     }
@@ -7906,6 +8477,9 @@ public class SSKProtoSyncMessage: NSObject {
         }
         if let _value = messageRequestResponse {
             builder.setMessageRequestResponse(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -8074,6 +8648,10 @@ public class SSKProtoSyncMessage: NSObject {
             proto.messageRequestResponse = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoSyncMessage {
             return try SSKProtoSyncMessage.parseProto(proto)
@@ -8136,6 +8714,14 @@ public class SSKProtoSyncMessage: NSObject {
     @objc
     public var hasPadding: Bool {
         return proto.hasPadding
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_SyncMessage,
@@ -8369,6 +8955,9 @@ public class SSKProtoAttachmentPointer: NSObject {
         if hasCdnNumber {
             builder.setCdnNumber(cdnNumber)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -8501,6 +9090,10 @@ public class SSKProtoAttachmentPointer: NSObject {
         @objc
         public func setCdnNumber(_ valueParam: UInt32) {
             proto.cdnNumber = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -8675,6 +9268,14 @@ public class SSKProtoAttachmentPointer: NSObject {
         return proto.hasCdnNumber
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_AttachmentPointer) {
         self.proto = proto
     }
@@ -8745,6 +9346,9 @@ public class SSKProtoGroupContextMember: NSObject {
         if let _value = e164 {
             builder.setE164(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -8776,6 +9380,10 @@ public class SSKProtoGroupContextMember: NSObject {
 
         public func setE164(_ valueParam: String) {
             proto.e164 = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -8813,6 +9421,14 @@ public class SSKProtoGroupContextMember: NSObject {
     @objc
     public var hasE164: Bool {
         return proto.hasE164
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_GroupContext.Member) {
@@ -8921,6 +9537,9 @@ public class SSKProtoGroupContext: NSObject {
             builder.setAvatar(_value)
         }
         builder.setMembers(members)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -9001,6 +9620,10 @@ public class SSKProtoGroupContext: NSObject {
             proto.members = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoGroupContext {
             return try SSKProtoGroupContext.parseProto(proto)
@@ -9058,6 +9681,14 @@ public class SSKProtoGroupContext: NSObject {
     @objc
     public var membersE164: [String] {
         return proto.membersE164
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_GroupContext,
@@ -9155,6 +9786,9 @@ public class SSKProtoGroupContextV2: NSObject {
         if let _value = groupChange {
             builder.setGroupChange(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -9191,6 +9825,10 @@ public class SSKProtoGroupContextV2: NSObject {
 
         public func setGroupChange(_ valueParam: Data) {
             proto.groupChange = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -9237,6 +9875,14 @@ public class SSKProtoGroupContextV2: NSObject {
     @objc
     public var hasGroupChange: Bool {
         return proto.hasGroupChange
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_GroupContextV2) {
@@ -9309,6 +9955,9 @@ public class SSKProtoContactDetailsAvatar: NSObject {
         if hasLength {
             builder.setLength(length)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -9334,6 +9983,10 @@ public class SSKProtoContactDetailsAvatar: NSObject {
         @objc
         public func setLength(_ valueParam: UInt32) {
             proto.length = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -9368,6 +10021,14 @@ public class SSKProtoContactDetailsAvatar: NSObject {
     @objc
     public var hasLength: Bool {
         return proto.hasLength
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_ContactDetails.Avatar) {
@@ -9466,6 +10127,9 @@ public class SSKProtoContactDetails: NSObject {
         }
         if hasArchived {
             builder.setArchived(archived)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -9573,6 +10237,10 @@ public class SSKProtoContactDetails: NSObject {
         @objc
         public func setArchived(_ valueParam: Bool) {
             proto.archived = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -9690,6 +10358,14 @@ public class SSKProtoContactDetails: NSObject {
         return proto.hasArchived
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_ContactDetails,
                  avatar: SSKProtoContactDetailsAvatar?,
                  verified: SSKProtoVerified?) {
@@ -9776,6 +10452,9 @@ public class SSKProtoGroupDetailsAvatar: NSObject {
         if hasLength {
             builder.setLength(length)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -9801,6 +10480,10 @@ public class SSKProtoGroupDetailsAvatar: NSObject {
         @objc
         public func setLength(_ valueParam: UInt32) {
             proto.length = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -9835,6 +10518,14 @@ public class SSKProtoGroupDetailsAvatar: NSObject {
     @objc
     public var hasLength: Bool {
         return proto.hasLength
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_GroupDetails.Avatar) {
@@ -9907,6 +10598,9 @@ public class SSKProtoGroupDetailsMember: NSObject {
         if let _value = e164 {
             builder.setE164(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -9938,6 +10632,10 @@ public class SSKProtoGroupDetailsMember: NSObject {
 
         public func setE164(_ valueParam: String) {
             proto.e164 = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
         }
 
         @objc
@@ -9975,6 +10673,14 @@ public class SSKProtoGroupDetailsMember: NSObject {
     @objc
     public var hasE164: Bool {
         return proto.hasE164
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_GroupDetails.Member) {
@@ -10066,6 +10772,9 @@ public class SSKProtoGroupDetails: NSObject {
         }
         if hasArchived {
             builder.setArchived(archived)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -10178,6 +10887,10 @@ public class SSKProtoGroupDetails: NSObject {
             proto.archived = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoGroupDetails {
             return try SSKProtoGroupDetails.parseProto(proto)
@@ -10274,6 +10987,14 @@ public class SSKProtoGroupDetails: NSObject {
         return proto.hasArchived
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: SignalServiceProtos_GroupDetails,
                  id: Data,
                  avatar: SSKProtoGroupDetailsAvatar?,
@@ -10363,6 +11084,9 @@ public class SSKProtoPackSticker: NSObject {
         if let _value = emoji {
             builder.setEmoji(_value)
         }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -10397,6 +11121,10 @@ public class SSKProtoPackSticker: NSObject {
             proto.emoji = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoPackSticker {
             return try SSKProtoPackSticker.parseProto(proto)
@@ -10423,6 +11151,14 @@ public class SSKProtoPackSticker: NSObject {
     @objc
     public var hasEmoji: Bool {
         return proto.hasEmoji
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_Pack.Sticker,
@@ -10507,6 +11243,9 @@ public class SSKProtoPack: NSObject {
             builder.setCover(_value)
         }
         builder.setStickers(stickers)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -10563,6 +11302,10 @@ public class SSKProtoPack: NSObject {
             proto.stickers = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SSKProtoPack {
             return try SSKProtoPack.parseProto(proto)
@@ -10604,6 +11347,14 @@ public class SSKProtoPack: NSObject {
     @objc
     public var hasAuthor: Bool {
         return proto.hasAuthor
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
     }
 
     private init(proto: SignalServiceProtos_Pack,
