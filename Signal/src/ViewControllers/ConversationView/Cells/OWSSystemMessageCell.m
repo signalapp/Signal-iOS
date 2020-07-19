@@ -631,7 +631,8 @@ typedef void (^SystemMessageActionBlock)(void);
         case TSInfoMessageSyncedThread:
             return nil;
         case TSInfoMessageProfileUpdate:
-            if ([self.contactsManager isSystemContactWithAddress:infoMessage.profileChangeAddress]) {
+            if ([self.contactsManager isSystemContactWithAddress:infoMessage.profileChangeAddress]
+                && infoMessage.profileChangeNewNameComponents) {
                 NSString *_Nullable systemContactName =
                     [self.contactsManager nameFromSystemContactsForAddress:infoMessage.profileChangeAddress];
                 NSString *newProfileName = [NSPersonNameComponentsFormatter

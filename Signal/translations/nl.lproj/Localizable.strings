@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Doorgaan";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profielfoto instellen";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Je profiel kan alleen worden bijgewerkt als je bent verbonden met het internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profielen zijn alleen zichtbaar voor je contactpersonen, voor personen naar wie je zelf een nieuwe gesprek initieert, en voor personen en groepen voor wie je expliciet toestemming hebt gegeven.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profielen worden eind-tot-eind-versleuteld. Deze gegevens zijn alleen zichtbaar voor personen wie zijn opgeslagen in jouw contactenlijst, personen naar wie je zelf een nieuwe gesprek initieert, alle leden van een groep waarvan jij een uitnodiging aanvaard.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Opslaan";
@@ -4003,6 +4009,9 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Je apparaat ondersteunt deze functie niet.";
+
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Update Contact";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "De groep kan niet worden bijgewerkt.";

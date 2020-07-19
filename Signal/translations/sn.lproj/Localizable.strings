@@ -588,7 +588,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Tsvaga ne zita";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Unogona kubatidza mvumo kumakontakt muma Seting eiOS kuti uone makontakt ako anoshandisa Signal.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
@@ -675,7 +675,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Kuti uone mazita ne mifananidzo munhaurwa dzako:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Bata \"Go to Settings\" pasi";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Vhura ma \"Kontakt\"";
@@ -1074,7 +1074,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Enderera mberi usina kutumira homwe yako ne tsamba";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Wedzera iPad ino se mudziyo mutsva wakabatanidzwa usina kutumira nhoroondo ye tsamba";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Wedzera se Mudziyo Mutsva";
@@ -1086,7 +1086,7 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Tumira Homwe ne Tsamba";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Tumira nhoroondo ye homwe yako ne tsamba kubva kumudziyo we iOS mutsaru";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
@@ -1098,7 +1098,7 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Tumira kubva mudziyo we iOS";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Kuenderera kuchavhara Signal pane mimwe midziyo yakanyoreswa ne nhamba ye runhare ino.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
@@ -1116,10 +1116,10 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Hakuna nzvimbo yekupedzesa kutumira";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Wedzera kuenda ku vhezheni itsva ye Signal woedzazve.";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Endesa homwe yako ye Signal kumudziyo mutsva we iOS.Ita mudziyo mutsva uve pedyo uye wakabaka.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Tumira Homwe";
@@ -1317,7 +1317,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Svumbunuro yemugamuchiri haisi iyo chaiyo. ";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Tsamba yagamuchirwa haina kuenzaniswa.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Yagamuchira tsamba isinga enderane ne vhezheni ino.";
@@ -1341,7 +1341,7 @@
 "ERROR_NETWORK_FAILURE" = "Network Error";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "Mudziyo wako hauna kubatanidzwa.Tapota batanidzazve kuti utumire dzimwe tsamba.";
 
 /* Error indicating a send failure due to a deregistered application. */
 "ERROR_SENDING_DEREGISTERED" = "Mudziyo wako hauna kunyoreswa.Nyoresazve kuti utumirezve tsamba.";
@@ -1665,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ abvisa mufananidzo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Mufananidzo we boka washandurwa.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Washandura mufananidzo.";
@@ -2100,7 +2100,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Vharira %@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Uchasiya boka rino uye hauzogamuchire tsamba.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Dzima kana kusiya %@?";
@@ -2118,7 +2118,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Dzima kana kusiya";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Uchasiya boka rino,uye richadzimwa pamudziyo yako yese.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Dzima kana kusiya Boka?";
@@ -2238,13 +2238,13 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal inoda kuwana hupindwa pacamera yako.";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Unogona kuvhura mvumo muma iOS Seting.";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal inoda mvumo yenzvimbo kuti ushandise izvi.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Unogona kuvhura mvumo muma iOS Seting.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal inoda mvumo kumifananidzo yako kuti ushandise ficha iyi.";
@@ -2280,7 +2280,7 @@
 "NEW_GROUP_CREATION_FAILED" = "Boka ritsva ratadza kugadzirwa.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Boka itsva ratadza kugadzirwa.Tarisa kubata ku Dandadzi woedzazve.";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Zita reboka riri kudiwa.";
@@ -2343,7 +2343,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Kuti uwane ziviso ye tsamba itsva:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Bata \"Go to Settings\" pasi";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
@@ -2367,7 +2367,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Vhura zviZiviso?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Zviito zvinosanganisira \"Ita seyaverengwa,\" ne \"Ndichairezve.\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Hapana Zita kana zvemukati";
@@ -2427,7 +2427,7 @@
 "ONBOARDING_CAPTCHA_TITLE" = "Wedzera kubata kwe munhu kutsamba dzako";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Nyoresa iPad";
 
 /* button indicating that the user will link their phone */
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Batanidza iPhone";
@@ -2493,7 +2493,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Famba nekuchengetedza.Iva zvauri mutsamba dzese.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Haisiriyo nhamba?";
@@ -2571,13 +2571,13 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Hapana kukokwa kuripo.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Tumirazve kuKokwa";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Tumirazve kuKokwa";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revoke Invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Dzora kuKokwa";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Dzora kukokwa kuboka kwatumirwa na \"%@\"?";
@@ -2586,7 +2586,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Dzora kukokwa %1$@ kwaita na \"%2$@\"?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revoke Invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Dzora kuKokwa";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Dzora kukokwa kuboka kuna \"%@\"?";
@@ -2691,7 +2691,7 @@
 "PIN_CREATION_CHANGING_TITLE" = "Shandura PIN yako";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+"PIN_CREATION_CONFIRM_TITLE" = "Tsinhira PIN yako";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Isa PIN yawagadzira.";
@@ -2703,7 +2703,7 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Gadzira PIN yenhamba";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Dzima PIN";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
@@ -2718,10 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "Kugadzirwa kwe PIN kwakona";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN inochengetedza zviri mu Signal kuti ugone kuishandisa.Homwe yako,maseting, ne makontakt achadzoreredzwa paunoisazve Signal.Hauzode PIN kuti upinde.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Dzidza zvema PIN";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "MaPIN ako akasiyana.Edza zvakare.";
@@ -2751,7 +2751,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Turn Off Registration Lock?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "Dzima PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Gadzira PIN yako";
@@ -2763,7 +2763,7 @@
 "PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "Kudzima PIN kwaramba";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN yagadzirwa.Unokwanisa kuishandura muma Seting.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN yadzimwa.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Ridza Media";
@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Yenderera";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Ita mufananidzo we Homwe";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Homwe inogona kushandurwa kana uri pa dandadzi.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Chengeta";
@@ -3015,16 +3021,16 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Ukuda rubatsiro?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN yako ine 4+ awaita anogona kuve manhamba kana mavara.Kana usisa rangarire PIN yako,unofanirwa kumira mazuva 7 kuti unyoresezve homwe yako.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "PIN yako ine 4+ awaita anogona kuve manhamba kana mavara.Kana usisa rangarire PIN yako,unogona kuita PIN itsva.Unogona kunyoresa ne kushandisa homwe yako asi ucharasikirwa nema seting awakachengeta se zviri muhomwe yako.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN inoita mavara 4+ aunogadzira.Kana  usinga tondere PIN yako,unofanhirwa kumira mazuva 7 kunyoresazve homwe yako.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Wasarwa ne mikana %lu.Kana wapererwa nemikana,unogona kuita PIN itsva.Unogona kunyoresa nekushandisa asi ucharasikirwa nema seting se zviri muhomwe.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
@@ -3465,7 +3471,7 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Dzima PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
@@ -3807,7 +3813,7 @@
 "STICKER_MESSAGE_PREVIEW" = "Tsamba ye Stika";
 
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Svinga rema Stika raiswa";
 
 /* Label for a sticker that failed to download. */
 "STICKERS_FAILED_DOWNLOAD" = "Stika";
@@ -3843,7 +3849,7 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "Svinga rema Stika";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Gova svinga rema Stika";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Svinga rema Stika";
@@ -4004,6 +4010,9 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Muchina wako hautsigire chimiro ichi.";
 
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Update Contact";
+
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Boka ratadza kushandurwa.";
 
@@ -4014,16 +4023,16 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Gadzira PIN yako";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Dzidza zvema PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN inochengetedza zviri mu Signal kuti ugone kuishandisa.Homwe yako,maseting, ne makontakt achadzoreredzwa paunoisazve Signal.Hauzode PIN kuti upinde.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Kuchingamidza ma PIN";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Dzima PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal ichange yave kuda iOS 11 kana mberi.Tapota wedzera ku Seting >> General >> Software Update.";

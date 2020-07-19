@@ -1665,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ عکس را حذف کرد.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "تصویر گروه به‌روز شد.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "شما عکس را به‌روزرسانی کردید.";
@@ -2721,7 +2721,7 @@
 "PIN_CREATION_EXPLANATION" = "پین‌ها اطلاعات ذخیره شده نزد Signal را رمزگذاری شده نگاه می‌دارند تا فقط شما بتوانید به آن‌ها دسترسی داشته باشید. پروفایل شما، تنظیمات و مخاطبان هنگام نصب مجدد بازگردانی خواهند شد. برای باز کردن برنامه به پین احتیاج نخواهید داشت.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "درباره پین‌ها ​​اطلاعات بیشتری کسب کنید";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "پین ها مطابقت ندارند. دوباره امتحان کنید";
@@ -2763,7 +2763,7 @@
 "PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "غیرفعال‌سازی پین ناموفق بود";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "برای کمک به شما در به خاطر سپردن پین خود ، از شما می خواهیم که به صورت دوره ای آن را وارد کنید. با گذشت زمان کمتر سؤال خواهیم کرد.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "رمز ایجاد شد. می توانید در تنظیمات آن را تغییر دهید.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "پین غیرفعال شد.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "پخش رسانه";
@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "ادامه دادن";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "تنظیم عکس پروفایل";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "نمایه فقط می‌تواند هنگام اتصال به اینترنت به‌روز شود.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "پروفایل شما به صورت سرتاسر رمزنگاری شده است و برای مخاطبان شما، هنگامی که شما مکالمهٔ جدیدی را پذیرفته یا آغاز می‌کنید و زمانی که به گروه‌های جدید می‌پیوندید قابل مشاهده خواهد بود.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "نمایه شما رمزگذاری سرتاسری شده است. نمایه شما و تغییرات آن، هنگامی که شما مکالمه جدیدی را پذیرفته یا آغاز می‌کنید و زمانی که به گروه‌های جدید می‌پیوندید  برای مخاطبان شما قابل مشاهده خواهد بود.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "ذخیره";
@@ -3129,7 +3135,7 @@
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "افراد زیر ممکن است دستگاه خود را تغییر داده یا نصب مجدد انجام داده باشند. برای اطمینان حاصل کردن از حریم خصوصی شمارهٔ امنیتی خود را با آنان تأیید کنید.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "قبلا تایید شده است";
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "تغییرات شمارهٔ امنیتی";
@@ -3459,10 +3465,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "فعال‌سازی گزارش‌گیری برای رفع عیب";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "تنظیمات پیشرفته پین";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "تنظیمات پیشرفته پین";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "غیرفعال کردن پین";
@@ -4004,6 +4010,9 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "دستگاه شما این قابلیت را پشتیبانی نمی‌کند.";
 
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "به‌روز‌رسانی مخاطب";
+
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "گروه قابل بروز رسانی نیست.";
 
@@ -4014,7 +4023,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "پین خود را ایجاد کنید";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "درباره پین‌ها ​​اطلاعات بیشتری کسب کنید";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "پین‌ها اطلاعات ذخیره شده نزد Signal را رمزگذاری شده نگاه می‌دارند تا فقط شما بتوانید به آن‌ها دسترسی داشته باشید. پروفایل شما، تنظیمات و مخاطبان هنگام نصب مجدد بازگردانی خواهند شد. برای باز کردن برنامه به پین احتیاج نخواهید داشت.";

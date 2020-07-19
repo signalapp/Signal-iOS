@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Kryeje";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ndryshoi emrin e tij të profilit nga %@ në %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ndryshoi emrin e tij të profilit në %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Caktoni Foto Profili";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profili mund të përditësohet vetëm kur jeni të lidhur në internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profili juaj është i fshehtëzuar skaj-më-skaj. Do të jetë i dukshëm për kontaktet tuaj, kur filloni ose pranoni biseda të reja, dhe kur bëheni anëtar grupesh të rinj.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profili juaj është i fshehtëzuar skaj-më-skaj. Profili juaj dhe ndryshime në të do të jenë të dukshme për kontaktet tuaj, kur nisni ose pranoni biseda të reja, dhe kur merrni pjesë në grupe të rinj.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Ruaje";
@@ -4003,6 +4009,9 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Kjo pajisje s’e mbulon këtë veçori.";
+
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Përditësoni Kontaktin";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Grupi s’u përditësua dot.";

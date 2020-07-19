@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Продолжить";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ изменил(-а) своё имя профиля с %@ на %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ изменил(-а) своё имя профиля на %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Установить фото профиля";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Профиль может быть обновлён только когда есть подключение к интернету.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профиль защищён сквозным шифрованием. Он становится виден вашим контактам, когда вы начинаете или принимаете новые разговоры и когда вы присоединяетесь к новым группам.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профиль защищён сквозным шифрованием. Ваш профиль и его изменения становятся видны вашим контактам, когда вы начинаете или принимаете новые разговоры и когда вы присоединяетесь к новым группам.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Сохранить";
@@ -4003,6 +4009,9 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Ваше устройство не поддерживает эту функцию.";
+
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Обновить контакт";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Не удалось обновить группу.";

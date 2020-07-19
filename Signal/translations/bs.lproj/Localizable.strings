@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Nastavljanje";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Vaš profil šifriran je od pošiljaoca do primaoca. Bit će vidljiv Vašim kontaktima, kada pokrenete ili prihvatite novu konverzaciju i kada se pridružite novim grupama.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Vaš profil šifriran je od pošiljaoca do primaoca. Bit će vidljiv Vašim kontaktima, kao i sve promjene na profilu, kada pokrenete ili prihvatite novu konverzaciju i kada se pridružite novim grupama.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Spremi";
@@ -4003,6 +4009,9 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Vaš uređaj ne podržava ovu mogućnost.";
+
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Update Contact";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Group could not be updated.";

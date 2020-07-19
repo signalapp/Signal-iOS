@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Isildu";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ erabiltzaileak zure izenean bidalitako eskaera mezu bat jasoko du. Deitu dezakezu behin zure eskaera mezua onartuta egonez gero.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Aldatu kameraren norabidea";
@@ -1341,10 +1341,10 @@
 "ERROR_NETWORK_FAILURE" = "Sare errorea";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Zure gailua ez dago lotuta jada. Mesedez, birlotu mezuak bidali ahal izateko.";
+"ERROR_SENDING_DELINKED" = "Zure gailua jada ez dago lotuta. Mesedez, birlotu ezazu mezuak bidali ahal izateko.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Zure gailua ez dago erregistratuta jada. Mesedez, birerregistratu hemendik aurrera mezuak bidali ahal izateko.";
+"ERROR_SENDING_DEREGISTERED" = "Zure gailua jada ez dago erregistratuta. Mesedez, birerregistratu ezazu aurrerantzean mezuak bidali ahal izateko.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Zure Signal bertsioa iraungi da. Mesedez, eguneratu mezu gehiago jaso ahal izateko.";
@@ -1665,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ erabiltzaileak argazkia ezabatu du.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Taldeko argazkia eguneratu da.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Argazkia eguneratu duzu.";
@@ -1809,7 +1809,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Solasaldi hauek artxibatuta daude eta bakarrik mezu berriak jasotakoan agertuko dira sarrera erretiluan.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Jarri zerbait zure sarrerako ontzian lagun bati zerbait idatziz.";
+"INBOX_VIEW_EMPTY_INBOX" = "Emaiozu zure sarrera erretiluari gogoangarria den zerbait. Hasi zaitez lagun bati mezu bat bidaliz.";
 
 /* info message text in conversation view */
 "INCOMING_CALL_ANSWERED" = "Erantzundako Deia";
@@ -1926,7 +1926,7 @@
 "LEAVE_GROUP_FAILED" = "Taldea uztean errorea gertatu da.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "QR kode hau baliogabea da. Mesedez, egiaztat ezazu lotu nahi duzun gailuan agertzen den QR kodea eskaneatzen ari zarela.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "QR kode hau baliogabea da. Mesedez, egiazta ezazu lotu nahi duzun gailuan agertzen den QR kodea eskaneatzen ari zarela.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Gailua lotzeak huts egin du.";
@@ -2703,13 +2703,13 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Sortu zenbakizko PINa";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Desaktibatu PINa";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "PINa desaktibatutakoan, Signal berriro erregistratuz gero, datu guztiak galduko dituzu berauek beste iOS gailu batera transferitu ezik. Ezin duzu erregistratzeko blokeoa aktibatu PINa desaktibatuta dagoen bitartean.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Markatutako zenbakia ez dago Signal-era erregistratuta. SMS bidez gonbidatu nahiko zenuke?";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Markatutako zenbakia ez dago Signalen erregistratuta. SMS bidez gonbidatu nahiko zenuke?";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Zure PIN-a ez da gorde. PIN bat sortzeko eskatuko dizugu beranduago.";
@@ -2718,10 +2718,10 @@
 "PIN_CREATION_ERROR_TITLE" = "PINa sortzeak huts egin du";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN-ek zure Signal kontuarekin batera gordetako informazioa enkriptatuta mantentzen dute, zuk bakarrik eskuratu ahal izateko. Zure profila, ezarpenak eta kontaktuak berreskuratuko dira Signal berrinstalatzen duzunean. Ez duzu PIN-ik behar aplikazioa irekitzeko.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Gehiago ikasi PINei buruz";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINak ez datoz bat. Saiatu berriro.";
@@ -2745,13 +2745,13 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Desaktibatu";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Zure PINa desaktibatzeko, lehenago erregistratzeko blokeoa desaktibatu behar duzu.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Erregistratzeko Blokeoa Desaktibatu?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "PINa desaktibatu";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Sortu zure PINa";
@@ -2760,10 +2760,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Aukeratu PIN hobea";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Zure PINa ezin izan da desaktibatu. Beranduago gogoraraziko dizugu.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "PINa desaktibatzeak huts egin du.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Zure PINa gogoratzen laguntzeko, sartzeko eskatuko dizugu noizbehinka. Gero eta gutxiago eskatuko dizugu denbora igaro ahala.";
@@ -2817,7 +2817,7 @@
 "PINS_MEGAPHONE_TOAST" = "PINa sortu da. Ezarpenetan aldatu dezakezu.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PINa desaktibatuta";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Erreproduzitu Medioa";
@@ -2870,6 +2870,12 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Jarraitu";
 
+/* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ erabiltzaileak bere profilaren izena aldatu du. Lehen %@ zen eta orain %@ da.";
+
+/* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@erabiltzailea bere profilaren izena aldatu du. Orain %@ da.";
+
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Ezarri profil argazkia";
 
@@ -2904,7 +2910,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profila egiaztatu daiteke bakarrik internetera konektatuta bazaude.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Zure profila muturretik-muturrera enkriptatuta dago. Ikusgarri egongo da bakarri zure kontaktuentzat, solasaldi berria sortu edo onartzen duzunean eta talde berrietan sartzen zarenean.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Zure profila muturretik-muturrera enkriptatuta dago. Ikusgarri egongo da bakarrik zure kontaktuentzat, solasaldi berria sortu edo onartzen duzunean eta talde berrietan sartzen zarenean.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Gorde";
@@ -3459,16 +3465,16 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Aktibatu Arazteko Informazioa";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "PINarekin loturiko ezarpen aurreratuak";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "PINarekin loturiko ezarpen aurreratuak";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Desaktibatu PINa";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktibatu PINa";
 
 /* Table header for the 'pins' section. */
 "SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
@@ -4004,26 +4010,29 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Zure gailuak ez du ezaugarri hau onartzen.";
 
+/* Action sheet item */
+"UPDATE_CONTACT_ACTION" = "Eguneratu Kontaktua";
+
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Taldea ezin izan da eguneratu.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Taldea ezin izan da eguneratu. Egiaztatu zure interneterako konexioa eta saia zaitez berriro.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Sortu zure PINa";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Gehiago ikasi PINei buruz";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-ek zure Signal kontuarekin batera gordetako informazioa enkriptatuta mantentzen dute, zuk bakarrik eskuratu ahal izateko. Zure profila, ezarpenak eta kontaktuak berreskuratuko dira Signal berrinstalatzen duzunean. Ez duzu PIN-ik behar aplikazioa irekitzeko.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN-ak sartzen";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Desaktibatu PINa";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal-ek laster iOS 11 edo gehiago beharko du. Mesedez ezarpenak aplikazioan eguneratu  >>  Orokorra  >> Software Eguneratu.";
