@@ -301,7 +301,6 @@ public class DebugFlags: BaseFlags {
         }
     }
 
-    // This flag auto-enables the groupv2 flags in RemoteConfig.
     static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     // If set, client will invite instead of adding other users.
