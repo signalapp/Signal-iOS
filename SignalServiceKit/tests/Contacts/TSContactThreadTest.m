@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super setUp];
 
     self.contactThread = [TSContactThread
-        getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-contact-id"]];
+        getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]];
 }
 
 - (void)testHasSafetyNumbersWithoutRemoteIdentity
