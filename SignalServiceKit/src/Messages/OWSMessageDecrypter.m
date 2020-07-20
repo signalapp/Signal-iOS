@@ -609,9 +609,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
         [envelopeBuilder setSource:source];
         [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
-        if (decryptResult.messageType == SMKMessageTypeLokiFriendRequest) {
+        if (decryptResult.messageType == SMKMessageTypeFallback) {
             [envelopeBuilder setType:SSKProtoEnvelopeTypeFallbackMessage];
-            OWSLogInfo(@"SMKMessageTypeLokiFriendRequest");
+            OWSLogInfo(@"SMKMessageTypeFallback");
         }
         NSError *envelopeBuilderError;
         NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];

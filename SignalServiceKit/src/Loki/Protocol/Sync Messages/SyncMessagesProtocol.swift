@@ -65,8 +65,8 @@ public final class SyncMessagesProtocol : NSObject {
         }
         let accounts = Set(publicKeys).map { SignalAccount(recipientId: $0) }
         let syncManager = SSKEnvironment.shared.syncManager
-        let promises = accounts.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
-            return Promise(syncManager.syncContacts(for: friends)).map2 { _ in }
+        let promises = accounts.chunked(by: 3).map { accounts -> Promise<Void> in // TODO: Does this always fit?
+            return Promise(syncManager.syncContacts(for: accounts)).map2 { _ in }
         }
         return AnyPromise.from(when(fulfilled: promises))
     }

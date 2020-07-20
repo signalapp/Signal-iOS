@@ -12,7 +12,7 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
         case preKeyIDsDontMatch
     }
 
-    public func validatePreKeyForFriendRequestAcceptance(for recipientID: String, whisperMessage: CipherMessage, protocolContext: Any?) throws {
+    public func validatePreKeyWhisperMessage(for recipientID: String, whisperMessage: CipherMessage, protocolContext: Any?) throws {
          guard let transaction = protocolContext as? YapDatabaseReadTransaction else {
             print("[Loki] Invalid transaction.")
             return
