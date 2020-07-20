@@ -112,7 +112,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 9
+    public static let grdbSchemaVersionLatest: UInt = 10
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".

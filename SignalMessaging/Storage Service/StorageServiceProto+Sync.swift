@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SwiftProtobuf
 
 // MARK: - Contact Record
 
@@ -38,6 +39,7 @@ extension StorageServiceProtoContactRecord {
 
     static func build(
         for accountId: AccountId,
+        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoContactRecord {
         guard let address = OWSAccountIdFinder().address(forAccountId: accountId, transaction: transaction) else {
@@ -88,6 +90,10 @@ extension StorageServiceProtoContactRecord {
         if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
             builder.setArchived(thread.isArchived)
             builder.setMarkedUnread(thread.isMarkedUnread)
+        }
+
+        if let unknownFields = unknownFields {
+            builder.setUnknownFields(unknownFields)
         }
 
         return try builder.build()
@@ -272,6 +278,7 @@ extension StorageServiceProtoGroupV1Record {
 
     static func build(
         for groupId: Data,
+        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoGroupV1Record {
 
@@ -283,6 +290,10 @@ extension StorageServiceProtoGroupV1Record {
         if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             builder.setArchived(thread.isArchived)
             builder.setMarkedUnread(thread.isMarkedUnread)
+        }
+
+        if let unknownFields = unknownFields {
+            builder.setUnknownFields(unknownFields)
         }
 
         return try builder.build()
@@ -388,6 +399,7 @@ extension StorageServiceProtoGroupV2Record {
 
     static func build(
         for masterKeyData: Data,
+        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoGroupV2Record {
 
@@ -406,6 +418,10 @@ extension StorageServiceProtoGroupV2Record {
         if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             builder.setArchived(thread.isArchived)
             builder.setMarkedUnread(thread.isMarkedUnread)
+        }
+
+        if let unknownFields = unknownFields {
+            builder.setUnknownFields(unknownFields)
         }
 
         return try builder.build()
@@ -554,7 +570,10 @@ extension StorageServiceProtoAccountRecord {
 
     // MARK: -
 
-    static func build(transaction: SDSAnyReadTransaction) throws -> StorageServiceProtoAccountRecord {
+    static func build(
+        unknownFields: SwiftProtobuf.UnknownStorage? = nil,
+        transaction: SDSAnyReadTransaction
+    ) throws -> StorageServiceProtoAccountRecord {
         guard let localAddress = TSAccountManager.localAddress else {
             throw OWSAssertionError("Missing local address")
         }
@@ -592,6 +611,10 @@ extension StorageServiceProtoAccountRecord {
 
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         builder.setLinkPreviews(linkPreviewsEnabled)
+
+        if let unknownFields = unknownFields {
+            builder.setUnknownFields(unknownFields)
+        }
 
         return try builder.build()
     }
