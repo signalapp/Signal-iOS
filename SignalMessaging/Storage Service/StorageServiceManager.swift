@@ -790,7 +790,16 @@ class StorageServiceOperation: OWSOperation {
     private func restoreOrCreateManifestIfNecessary() {
         let state: State = databaseStorage.read { State.current(transaction: $0) }
 
-        StorageService.fetchLatestManifest(greaterThanVersion: state.manifestVersion).done(on: .global()) { response in
+        let greaterThanVersion: UInt64? = {
+            // If we've been flagged to refetch the latest manifest,
+            // don't specify our current manifest version otherwise
+            // the server may return nothing because we've said we
+            // already parsed it.
+            if state.refetchLatestManifest { return nil }
+            return state.manifestVersion
+        }()
+
+        StorageService.fetchLatestManifest(greaterThanVersion: greaterThanVersion).done(on: .global()) { response in
             switch response {
             case .noExistingManifest:
                 // There is no existing manifest, lets create one.
@@ -1047,6 +1056,9 @@ class StorageServiceOperation: OWSOperation {
             // Update the manifest version to reflect the remote version
             state.manifestVersion = manifest.version
 
+            // We just did a manifest fetch, so we no longer need to refetch it
+            state.refetchLatestManifest = false
+
             // Cleanup our unknown identifiers type map to only reflect
             // identifiers that still exist in the manifest.
             state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap.mapValues { Array(allManifestItems.intersection($0)) }
@@ -1185,6 +1197,11 @@ class StorageServiceOperation: OWSOperation {
         }
 
         state.unknownIdentifiersTypeMap = newUnknownIdentifiersTypeMap
+
+        // If we cleaned up some unknown identifers, we want to re-fetch
+        // the latest manifest even if we've already fetched it, so we
+        // can parse the unknown values.
+        state.refetchLatestManifest = true
 
         state.save(transaction: transaction)
     }
@@ -1504,6 +1521,11 @@ class StorageServiceOperation: OWSOperation {
 
     private struct State: Codable {
         var manifestVersion: UInt64 = 0
+        private var _refetchLatestManifest: Bool?
+        var refetchLatestManifest: Bool {
+            set { _refetchLatestManifest = newValue }
+            get { _refetchLatestManifest ?? false }
+        }
 
         var consecutiveConflicts: Int = 0
 
