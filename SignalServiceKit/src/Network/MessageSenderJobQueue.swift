@@ -203,7 +203,16 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didReportError(_ error: Error) {
+        let message = self.message
+        var isFailedSessionRequest = false
+        if message is SessionRequestMessage, let publicKey = message.thread.contactIdentifier() {
+            isFailedSessionRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) == message.timestamp)
+        }
         try! Storage.writeSync { transaction in
+            if isFailedSessionRequest, let publicKey = message.thread.contactIdentifier() {
+                Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
+            }
+
             self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
@@ -225,7 +234,16 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didFail(error: Error) {
+        let message = self.message
+        var isFailedSessionRequest = false
+        if message is SessionRequestMessage, let publicKey = message.thread.contactIdentifier() {
+            isFailedSessionRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) == message.timestamp)
+        }
         try! Storage.writeSync { transaction in
+            if isFailedSessionRequest, let publicKey = message.thread.contactIdentifier() {
+                Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
+            }
+
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             self.message.update(sendingError: error, transaction: transaction)

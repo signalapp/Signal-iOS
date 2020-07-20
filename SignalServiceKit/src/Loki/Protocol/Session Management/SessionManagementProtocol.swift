@@ -60,9 +60,11 @@ public final class SessionManagementProtocol : NSObject {
 
     // MARK: - Sending
 
-    @objc(shouldUseFallbackEncryptionForMessage:)
-    public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage) -> Bool {
-        return true
+    @objc(shouldUseFallbackEncryptionForMessage:recipientID:transaction:)
+    public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage, recipientID: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
+        if message is SessionRequestMessage { return true }
+        else if let message = message as? DeviceLinkMessage, message.kind == .request { return true }
+        return !storage.containsSession(recipientID, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
     }
 
     private static func hasSentSessionRequestExpired(for publicKey: String) -> Bool {
@@ -71,6 +73,7 @@ public final class SessionManagementProtocol : NSObject {
         return NSDate.ows_millisecondTimeStamp() > expiration
     }
 
+    @objc(sendSessionRequestIfNeededToPublicKey:transaction:)
     public static func sendSessionRequestIfNeeded(to publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // It's never necessary to establish a session with self
         guard publicKey != getUserHexEncodedPublicKey() else { return }
@@ -93,9 +96,6 @@ public final class SessionManagementProtocol : NSObject {
         let sessionRequestMessage = SessionRequestMessage(thread: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
-
-//        aushfiuasfhiujoasf
-        // TODO: Handle failure
     }
 
     @objc(sendNullMessageToPublicKey:transaction:)

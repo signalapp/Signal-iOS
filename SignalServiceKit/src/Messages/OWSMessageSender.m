@@ -1433,7 +1433,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         messageSend.isUDSend);
 
     @try {
-        BOOL isSessionRequired = ![LKSessionManagementProtocol shouldUseFallbackEncryptionForMessage:messageSend.message];
+        __block BOOL isSessionRequired;
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            isSessionRequired = ![LKSessionManagementProtocol shouldUseFallbackEncryptionForMessage:messageSend.message recipientID:recipientID transaction:transaction];
+        } error:nil];
         if (isSessionRequired) {
             BOOL hasSession = [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
 
@@ -1634,7 +1637,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // • Alice receives this, sets up her Signal cipher session locally, and sends any subsequent messages
         //   using Signal encryption.
 
-        BOOL shouldUseFallbackEncryption = [LKSessionManagementProtocol shouldUseFallbackEncryptionForMessage:message];
+        BOOL shouldUseFallbackEncryption = [LKSessionManagementProtocol shouldUseFallbackEncryptionForMessage:message recipientID:recipientID transaction:transaction];
 
         serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientPublicKey:recipientID
                                                                                     deviceID:@(OWSDevicePrimaryDeviceId).intValue

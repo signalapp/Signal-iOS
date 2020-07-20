@@ -3922,6 +3922,12 @@ typedef enum : NSUInteger {
 
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
+        if ([self.thread isKindOfClass:TSContactThread.class]) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
+            } error:nil];
+        }
+
         __block TSOutgoingMessage *message;
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:messageText
@@ -4505,6 +4511,12 @@ typedef enum : NSUInteger {
 
     if (text.length < 1) {
         return;
+    }
+
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
+        } error:nil];
     }
 
     // Limit outgoing text messages to 16kb.
