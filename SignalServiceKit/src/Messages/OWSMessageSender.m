@@ -1545,52 +1545,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-- (nullable NSDictionary *)throws_fallbackEncryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                                                deviceId:(NSNumber *)deviceId
-                                                               plainText:(NSData *)plainText
-{
-    OWSAssertDebug(messageSend);
-    OWSAssertDebug(deviceId);
-    OWSAssertDebug(plainText);
-    
-    SignalRecipient *recipient = messageSend.recipient;
-    NSString *recipientId = recipient.recipientId;
-    TSOutgoingMessage *message = messageSend.message;
-    
-    ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientPublicKey:recipientId privateKey:identityKeyPair.privateKey];
-
-    [LKLogger print:@"[Loki] Using fallback encryption."];
-
-    // This will return nil if encryption failed
-    NSData *_Nullable serializedMessage = [cipher encrypt:[plainText paddedMessageBody]];
-    if (!serializedMessage) {
-        OWSFailDebug(@"Failed to encrypt message for: %@ using fallback encryption.", recipientId);
-        return nil;
-    }
-
-    OWSMessageServiceParams *messageParams =
-        [[OWSMessageServiceParams alloc] initWithType:TSFallbackMessageType
-                                          recipientId:recipientId
-                                               device:[deviceId intValue]
-                                              content:serializedMessage
-                                             isSilent:false
-                                             isOnline:false
-                                       registrationId:0
-                                                  ttl:message.ttl
-                                               isPing:false];
-    
-    NSError *error;
-    NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
-    
-    if (error) {
-        OWSProdError([OWSAnalyticsEvents messageSendErrorCouldNotSerializeMessageJson]);
-        return nil;
-    }
-    
-    return jsonDict;
-}
-
 - (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
                                                      recipientID:(NSString *)recipientID
                                                        plainText:(NSData *)plainText
