@@ -1111,9 +1111,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         NSDictionary *signalMessageInfo = deviceMessages.firstObject;
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
-        if ([message isKindOfClass:OWSEndSessionMessage.class]) {
-            type = SSKProtoEnvelopeTypeFriendRequest;
-        } else if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
+        if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
             type = SSKProtoEnvelopeTypeClosedGroupCiphertext;
         }
         uint64_t timestamp = message.timestamp;

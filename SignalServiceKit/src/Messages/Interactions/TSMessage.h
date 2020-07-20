@@ -17,16 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSQuotedMessage;
 @class YapDatabaseReadWriteTransaction;
 
-typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
-    LKMessageFriendRequestStatusNone,
-    LKMessageFriendRequestStatusSendingOrFailed,
-    /// Either sent or received.
-    LKMessageFriendRequestStatusPending,
-    LKMessageFriendRequestStatusAccepted,
-    LKMessageFriendRequestStatusDeclined,
-    LKMessageFriendRequestStatusExpired
-} __deprecated_enum_msg("no longer used as of version 1.1.2");
-
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
@@ -84,10 +74,6 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-#pragma mark - Loki Friend Request Handling
-
-- (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 #pragma mark - Open Groups
 

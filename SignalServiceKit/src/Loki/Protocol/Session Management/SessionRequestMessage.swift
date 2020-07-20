@@ -21,12 +21,6 @@ internal final class SessionRequestMessage : TSOutgoingMessage {
         try super.init(dictionary: dictionary)
     }
 
-    @objc internal override func dataMessageBuilder() -> Any? {
-        guard let builder = super.dataMessageBuilder() as? SSKProtoDataMessage.SSKProtoDataMessageBuilder else { return nil }
-        builder.setFlags(UInt32(SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRequest.rawValue))
-        return builder
-    }
-
     override func prepareCustomContentBuilder(_ recipient: SignalRecipient) -> Any? {
         guard let contentBuilder = super.prepareCustomContentBuilder(recipient) as? SSKProtoContent.SSKProtoContentBuilder else { return nil }
         // Attach a null message

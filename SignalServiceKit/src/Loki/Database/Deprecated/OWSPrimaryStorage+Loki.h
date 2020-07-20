@@ -8,21 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, LKFriendRequestStatus) {
-    /// New conversation; no messages sent or received.
-    LKFriendRequestStatusNone,
-    /// This state is used to lock the input early while sending.
-    LKFriendRequestStatusRequestSending,
-    /// Friend request sent; awaiting response.
-    LKFriendRequestStatusRequestSent,
-    /// Friend request received; awaiting user input.
-    LKFriendRequestStatusRequestReceived,
-    /// We're friends with the other user.
-    LKFriendRequestStatusFriends,
-    /// A friend request was sent, but it timed out (i.e. the other user didn't accept within the allocated time).
-    LKFriendRequestStatusRequestExpired
-};
-
 @interface OWSPrimaryStorage (Loki)
 
 # pragma mark - Pre Key Record Management

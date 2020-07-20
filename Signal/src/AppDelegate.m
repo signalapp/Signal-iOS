@@ -162,11 +162,6 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.legacyNotificationActionHandler;
 }
 
-- (LKFriendRequestExpirationJob *)lokiFriendRequestExpirationJob
-{
-    return SSKEnvironment.shared.lokiFriendRequestExpirationJob;
-}
-
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application

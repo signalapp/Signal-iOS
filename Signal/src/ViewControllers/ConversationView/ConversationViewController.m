@@ -4736,7 +4736,6 @@ typedef enum : NSUInteger {
     if ([cell isKindOfClass:[OWSMessageCell class]]) {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
-        messageCell.friendRequestViewDelegate = self;
     }
     cell.conversationStyle = self.conversationStyle;
 

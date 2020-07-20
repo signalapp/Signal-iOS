@@ -271,7 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
     switch (envelope.type) {
-        case SSKProtoEnvelopeTypeFriendRequest:
+        case SSKProtoEnvelopeTypeFallbackMessage:
         case SSKProtoEnvelopeTypeCiphertext:
         case SSKProtoEnvelopeTypePrekeyBundle:
         case SSKProtoEnvelopeTypeClosedGroupCiphertext:
