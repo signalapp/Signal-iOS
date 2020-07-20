@@ -1284,10 +1284,8 @@ NS_ASSUME_NONNULL_BEGIN
             // ========
         }
 
-        // Loki: Handle profile key update if needed
         [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:senderMasterPublicKey using:dataMessage];
 
-        // Loki: Handle display name update if needed
         [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:senderMasterPublicKey using:dataMessage transaction:transaction];
 
         switch (dataMessage.group.type) {

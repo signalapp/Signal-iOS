@@ -15,6 +15,7 @@ public final class PublicChatAPI : DotNetAPI {
     private static let maxRetryCount: UInt = 4
 
     public static let profilePictureType = "network.loki.messenger.avatar"
+    
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
 
     // MARK: Convenience

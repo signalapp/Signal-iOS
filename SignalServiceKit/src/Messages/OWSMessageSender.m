@@ -790,31 +790,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [sendPromise retainUntilComplete];
 }
 
-- (void)unregisteredRecipient:(SignalRecipient *)recipient
-                      message:(TSOutgoingMessage *)message
-                       thread:(TSThread *)thread
-{
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        if (thread.isGroupThread) {
-            // Mark as "skipped" group members who no longer have signal accounts.
-            [message updateWithSkippedRecipient:recipient.recipientId transaction:transaction];
-        }
-
-        if (![SignalRecipient isRegisteredRecipient:recipient.recipientId transaction:transaction]) {
-            return;
-        }
-
-        [SignalRecipient markRecipientAsUnregistered:recipient.recipientId transaction:transaction];
-
-        [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.recipientId]
-            saveWithTransaction:transaction];
-
-        // TODO: Should we deleteAllSessionsForContact here?
-        //       If so, we'll need to avoid doing a prekey fetch every
-        //       time we try to send a message to an unregistered user.
-    } error:nil];
-}
-
 - (nullable NSArray<NSDictionary *> *)deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
                                                              error:(NSError **)errorHandle
 {
@@ -1243,27 +1218,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         });
     };
 
-    void (^handle404)(void) = ^{
-        OWSLogWarn(@"Unregistered recipient: %@.", recipient.uniqueId);
-
-        dispatch_async(OWSDispatch.sendingQueue, ^{
-            if (![messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-                TSThread *_Nullable thread = messageSend.thread;
-                OWSAssertDebug(thread);
-                [self unregisteredRecipient:recipient message:message thread:thread];
-            }
-
-            NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
-            // No need to retry if the recipient is not registered.
-            [error setIsRetryable:NO];
-            // If one member of a group deletes their account,
-            // the group should ignore errors when trying to send
-            // messages to this ex-member.
-            [error setShouldBeIgnoredForGroups:YES];
-            messageSend.failure(error);
-        });
-    };
-
     switch (statusCode) {
         case 0: { // Loki
             NSError *error;
@@ -1284,10 +1238,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // No need to retry if we've been de-authed.
             [error setIsRetryable:NO];
             return messageSend.failure(error);
-        }
-        case 404: {
-            handle404();
-            return;
         }
         default:
             retrySend();
