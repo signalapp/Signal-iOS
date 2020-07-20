@@ -566,8 +566,6 @@
 		B80C6B572384A56D00FDBC8B /* DeviceLinksVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */; };
 		B80C6B592384C4E700FDBC8B /* DeviceNameModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */; };
 		B80C6B5B2384C7F900FDBC8B /* DeviceNameModalDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */; };
-		B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0222891AD600D46544 /* FriendRequestView.swift */; };
-		B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */; };
 		B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */; };
 		B82B40882399EB0E00A248E7 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40872399EB0E00A248E7 /* LandingVC.swift */; };
 		B82B408A2399EC0600A248E7 /* FakeChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40892399EC0600A248E7 /* FakeChatView.swift */; };
@@ -1443,8 +1441,6 @@
 		B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinksVC.swift; sourceTree = "<group>"; };
 		B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceNameModal.swift; sourceTree = "<group>"; };
 		B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceNameModalDelegate.swift; sourceTree = "<group>"; };
-		B8162F0222891AD600D46544 /* FriendRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestView.swift; sourceTree = "<group>"; };
-		B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestViewDelegate.swift; sourceTree = "<group>"; };
 		B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiRSSFeedPoller.swift; sourceTree = "<group>"; };
 		B82B40872399EB0E00A248E7 /* LandingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		B82B40892399EC0600A248E7 /* FakeChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatView.swift; sourceTree = "<group>"; };
@@ -2880,8 +2876,6 @@
 				B8BB82AA238F669C00BA5194 /* ConversationCell.swift */,
 				B82B4093239DF15900A248E7 /* ConversationTitleView.swift */,
 				B82B40892399EC0600A248E7 /* FakeChatView.swift */,
-				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
-				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				B8B26C8E234D629C004ED98C /* MentionCandidateSelectionView.swift */,
 				B8B26C90234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift */,
 				B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */,
@@ -4164,12 +4158,10 @@
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
-				B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				B8CCF639239721E20091D419 /* TabBar.swift in Sources */,
-				B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */,

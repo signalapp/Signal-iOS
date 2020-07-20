@@ -29,6 +29,18 @@ internal final class SessionRequestMessage : TSOutgoingMessage {
 
     override func prepareCustomContentBuilder(_ recipient: SignalRecipient) -> Any? {
         guard let contentBuilder = super.prepareCustomContentBuilder(recipient) as? SSKProtoContent.SSKProtoContentBuilder else { return nil }
+        // Attach a null message
+        let nullMessageBuilder = SSKProtoNullMessage.builder()
+        let paddingSize = UInt.random(in: 0..<512) // random(in:) uses the system's default random generator, which is cryptographically secure
+        let padding = Cryptography.generateRandomBytes(paddingSize)
+        nullMessageBuilder.setPadding(padding)
+        do {
+            let nullMessage = try nullMessageBuilder.build()
+            contentBuilder.setNullMessage(nullMessage)
+        } catch {
+            owsFailDebug("Failed to build session request message for: \(recipient.recipientId()) due to error: \(error).")
+            return nil
+        }
         // Generate a pre key bundle for the recipient and attach it
         let preKeyBundle = OWSPrimaryStorage.shared().generatePreKeyBundle(forContact: recipient.recipientId())
         let preKeyBundleMessageBuilder = SSKProtoPrekeyBundleMessage.builder(from: preKeyBundle)

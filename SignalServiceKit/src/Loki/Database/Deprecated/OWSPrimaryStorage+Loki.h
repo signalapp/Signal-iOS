@@ -60,12 +60,6 @@ typedef NS_ENUM(NSInteger, LKFriendRequestStatus) {
 - (void)setRestorationTime:(NSTimeInterval)time;
 - (NSTimeInterval)getRestorationTime;
 
-# pragma mark - Friend Requests
-
-- (NSSet<NSString *> *)getAllFriendsWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(getAllFriends(using:));
-- (LKFriendRequestStatus)getFriendRequestStatusForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(getFriendRequestStatus(for:transaction:));
-- (void)setFriendRequestStatus:(LKFriendRequestStatus)friendRequestStatus forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(setFriendRequestStatus(_:for:transaction:));
-
 @end
 
 NS_ASSUME_NONNULL_END

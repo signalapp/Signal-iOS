@@ -1,6 +1,4 @@
 
-// MARK: - User Display Name Utilities
-
 @objc(LKUserDisplayNameUtilities)
 public final class UserDisplayNameUtilities : NSObject {
     
@@ -41,8 +39,6 @@ public final class UserDisplayNameUtilities : NSObject {
         }
     }
 }
-
-// MARK: - Group Display Name Utilities
 
 @objc(LKGroupDisplayNameUtilities)
 public final class GroupDisplayNameUtilities : NSObject {
