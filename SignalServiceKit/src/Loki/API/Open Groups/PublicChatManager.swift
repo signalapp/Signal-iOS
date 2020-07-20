@@ -3,10 +3,10 @@ import PromiseKit
 // TODO: Clean
 
 @objc(LKPublicChatManager)
-public final class LokiPublicChatManager : NSObject {
+public final class PublicChatManager : NSObject {
     private let storage = OWSPrimaryStorage.shared()
-    @objc public var chats: [String:LokiPublicChat] = [:]
-    private var pollers: [String:LokiPublicChatPoller] = [:]
+    @objc public var chats: [String:PublicChat] = [:]
+    private var pollers: [String:PublicChatPoller] = [:]
     private var isPolling = false
     
     private var userHexEncodedPublicKey: String? {
@@ -18,7 +18,7 @@ public final class LokiPublicChatManager : NSObject {
         case userPublicKeyNotFound
     }
     
-    @objc public static let shared = LokiPublicChatManager()
+    @objc public static let shared = PublicChatManager()
     
     private override init() {
         super.init()
@@ -35,7 +35,7 @@ public final class LokiPublicChatManager : NSObject {
             if let poller = pollers[threadID] {
                 poller.startIfNeeded()
             } else {
-                let poller = LokiPublicChatPoller(for: publicChat)
+                let poller = PublicChatPoller(for: publicChat)
                 poller.startIfNeeded()
                 pollers[threadID] = poller
             }
@@ -48,7 +48,7 @@ public final class LokiPublicChatManager : NSObject {
         isPolling = false
     }
     
-    public func addChat(server: String, channel: UInt64) -> Promise<LokiPublicChat> {
+    public func addChat(server: String, channel: UInt64) -> Promise<PublicChat> {
         if let existingChat = getChat(server: server, channel: channel) {
             if let newChat = self.addChat(server: server, channel: channel, name: existingChat.displayName) {
                 return Promise.value(newChat)
@@ -56,9 +56,9 @@ public final class LokiPublicChatManager : NSObject {
                 return Promise(error: Error.chatCreationFailed)
             }
         }
-        return LokiPublicChatAPI.getAuthToken(for: server).then2 { token in
-            return LokiPublicChatAPI.getInfo(for: channel, on: server)
-        }.map2 { channelInfo -> LokiPublicChat in
+        return PublicChatAPI.getAuthToken(for: server).then2 { token in
+            return PublicChatAPI.getInfo(for: channel, on: server)
+        }.map2 { channelInfo -> PublicChat in
             guard let chat = self.addChat(server: server, channel: channel, name: channelInfo.displayName) else { throw Error.chatCreationFailed }
             return chat
         }
@@ -66,8 +66,8 @@ public final class LokiPublicChatManager : NSObject {
     
     @discardableResult
     @objc(addChatWithServer:channel:name:)
-    public func addChat(server: String, channel: UInt64, name: String) -> LokiPublicChat? {
-        guard let chat = LokiPublicChat(channel: channel, server: server, displayName: name, isDeletable: true) else { return nil }
+    public func addChat(server: String, channel: UInt64, name: String) -> PublicChat? {
+        guard let chat = PublicChat(channel: channel, server: server, displayName: name, isDeletable: true) else { return nil }
         let model = TSGroupModel(title: chat.displayName, memberIds: [userHexEncodedPublicKey!, chat.server], image: nil, groupId: LKGroupUtilities.getEncodedOpenGroupIDAsData(chat.id), groupType: .openGroup, adminIds: [])
         
         // Store the group chat mapping
@@ -114,7 +114,7 @@ public final class LokiPublicChatManager : NSObject {
         
         // Reset the last message cache
         if let chat = self.chats[threadId] {
-            LokiPublicChatAPI.clearCaches(for: chat.channel, on: chat.server)
+            PublicChatAPI.clearCaches(for: chat.channel, on: chat.server)
         }
         
         // Remove the chat from the db
@@ -125,7 +125,7 @@ public final class LokiPublicChatManager : NSObject {
         refreshChatsAndPollers()
     }
     
-    public func getChat(server: String, channel: UInt64) -> LokiPublicChat? {
+    public func getChat(server: String, channel: UInt64) -> PublicChat? {
         return chats.values.first { chat in
             return chat.server == server && chat.channel == channel
         }

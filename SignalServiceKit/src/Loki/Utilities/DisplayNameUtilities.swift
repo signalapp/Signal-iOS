@@ -6,7 +6,7 @@ public final class UserDisplayNameUtilities : NSObject {
     
     override private init() { }
     
-    private static var userHexEncodedPublicKey: String {
+    private static var userPublicKey: String {
         return getUserHexEncodedPublicKey()
     }
     
@@ -15,29 +15,29 @@ public final class UserDisplayNameUtilities : NSObject {
     }
     
     // MARK: Sessions
-    @objc public static func getPrivateChatDisplayName(for hexEncodedPublicKey: String) -> String? {
-        if hexEncodedPublicKey == userHexEncodedPublicKey {
+    @objc public static func getPrivateChatDisplayName(for publicKey: String) -> String? {
+        if publicKey == userPublicKey {
             return userDisplayName
         } else {
-            return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: hexEncodedPublicKey)
+            return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: publicKey)
         }
     }
     
     // MARK: Open Groups
-    @objc public static func getPublicChatDisplayName(for hexEncodedPublicKey: String, in channel: UInt64, on server: String) -> String? {
+    @objc public static func getPublicChatDisplayName(for publicKey: String, in channel: UInt64, on server: String) -> String? {
         var result: String?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            result = getPublicChatDisplayName(for: hexEncodedPublicKey, in: channel, on: server, using: transaction)
+            result = getPublicChatDisplayName(for: publicKey, in: channel, on: server, using: transaction)
         }
         return result
     }
     
-    @objc public static func getPublicChatDisplayName(for hexEncodedPublicKey: String, in channel: UInt64, on server: String, using transaction: YapDatabaseReadTransaction) -> String? {
-        if hexEncodedPublicKey == userHexEncodedPublicKey {
+    @objc public static func getPublicChatDisplayName(for publicKey: String, in channel: UInt64, on server: String, using transaction: YapDatabaseReadTransaction) -> String? {
+        if publicKey == userPublicKey {
             return userDisplayName
         } else {
             let collection = "\(server).\(channel)"
-            return transaction.object(forKey: hexEncodedPublicKey, inCollection: collection) as! String?
+            return transaction.object(forKey: publicKey, inCollection: collection) as! String?
         }
     }
 }

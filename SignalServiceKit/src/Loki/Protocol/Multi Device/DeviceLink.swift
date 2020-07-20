@@ -7,51 +7,51 @@ public final class DeviceLink : NSObject, NSCoding {
     @objc public var isAuthorized: Bool { return master.signature != nil }
     
     @objc public var other: Device {
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        return (userHexEncodedPublicKey == master.hexEncodedPublicKey) ? slave : master
+        let userPublicKey = getUserHexEncodedPublicKey()
+        return (userPublicKey == master.publicKey) ? slave : master
     }
     
     // MARK: Device
     @objc(LKDevice)
     public final class Device : NSObject, NSCoding {
-        @objc public let hexEncodedPublicKey: String
+        @objc public let publicKey: String
         @objc public let signature: Data?
         
         @objc public var displayName: String {
-            if let customDisplayName = UserDefaults.standard[.slaveDeviceName(hexEncodedPublicKey)] {
+            if let customDisplayName = UserDefaults.standard[.slaveDeviceName(publicKey)] {
                 return customDisplayName
             } else {
                 return NSLocalizedString("Unnamed Device", comment: "")
             }
         }
         
-        @objc public init(hexEncodedPublicKey: String, signature: Data? = nil) {
-            self.hexEncodedPublicKey = hexEncodedPublicKey
+        @objc public init(publicKey: String, signature: Data? = nil) {
+            self.publicKey = publicKey
             self.signature = signature
         }
         
         @objc public init?(coder: NSCoder) {
-            hexEncodedPublicKey = coder.decodeObject(forKey: "hexEncodedPublicKey") as! String
+            publicKey = coder.decodeObject(forKey: "hexEncodedPublicKey") as! String
             signature = coder.decodeObject(forKey: "signature") as! Data?
         }
         
         @objc public func encode(with coder: NSCoder) {
-            coder.encode(hexEncodedPublicKey, forKey: "hexEncodedPublicKey")
+            coder.encode(publicKey, forKey: "hexEncodedPublicKey")
             if let signature = signature { coder.encode(signature, forKey: "signature") }
         }
         
         @objc public override func isEqual(_ other: Any?) -> Bool {
             guard let other = other as? Device else { return false }
-            return hexEncodedPublicKey == other.hexEncodedPublicKey && signature == other.signature
+            return publicKey == other.publicKey && signature == other.signature
         }
         
         @objc override public var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
-            var result = hexEncodedPublicKey.hashValue
+            var result = publicKey.hashValue
             if let signature = signature { result = result ^ signature.hashValue }
             return result
         }
         
-        @objc override public var description: String { return hexEncodedPublicKey }
+        @objc override public var description: String { return publicKey }
     }
     
     // MARK: Lifecycle
@@ -74,7 +74,7 @@ public final class DeviceLink : NSObject, NSCoding {
 
     // MARK: JSON
     public func toJSON() -> JSON {
-        var result = [ "primaryDevicePubKey" : master.hexEncodedPublicKey, "secondaryDevicePubKey" : slave.hexEncodedPublicKey ]
+        var result = [ "primaryDevicePubKey" : master.publicKey, "secondaryDevicePubKey" : slave.publicKey ]
         if let masterSignature = master.signature { result["grantSignature"] = masterSignature.base64EncodedString() }
         if let slaveSignature = slave.signature { result["requestSignature"] = slaveSignature.base64EncodedString() }
         return result

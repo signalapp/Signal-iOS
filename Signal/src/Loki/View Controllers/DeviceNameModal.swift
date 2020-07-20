@@ -92,7 +92,7 @@ final class DeviceNameModal : Modal {
     @objc private func changeName() {
         let name = nameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         if !name.isEmpty {
-            UserDefaults.standard[.slaveDeviceName(device.hexEncodedPublicKey)] = name
+            UserDefaults.standard[.slaveDeviceName(device.publicKey)] = name
             delegate?.handleDeviceNameChanged(to: name, for: device)
         } else {
             let alert = UIAlertController(title: NSLocalizedString("Error", comment: ""), message: NSLocalizedString("Please pick a name", comment: ""), preferredStyle: .alert)

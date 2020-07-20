@@ -247,7 +247,7 @@ public final class MultiDeviceProtocol : NSObject {
         // Ignore the request if we don't know about the device link in question
         let masterDeviceLinks = storage.getDeviceLinks(for: userMasterPublicKey, in: transaction)
         if !masterDeviceLinks.contains(where: {
-            $0.master.hexEncodedPublicKey == userMasterPublicKey && $0.slave.hexEncodedPublicKey == userPublicKey
+            $0.master.publicKey == userMasterPublicKey && $0.slave.publicKey == userPublicKey
         }) {
             return
         }
@@ -256,7 +256,7 @@ public final class MultiDeviceProtocol : NSObject {
             // Note that the device link as seen from the master device's perspective has been deleted at this point, but the
             // device link as seen from the slave perspective hasn't.
             if slaveDeviceLinks.contains(where: {
-                $0.master.hexEncodedPublicKey == userMasterPublicKey && $0.slave.hexEncodedPublicKey == userPublicKey
+                $0.master.publicKey == userMasterPublicKey && $0.slave.publicKey == userPublicKey
             }) {
                 for deviceLink in slaveDeviceLinks { // In theory there should only be one
                     FileServerAPI.removeDeviceLink(deviceLink) // Attempt to clean up on the file server
@@ -284,7 +284,7 @@ public extension MultiDeviceProtocol {
                 let masterDestination = MultiDeviceDestination(publicKey: masterPublicKey, isMaster: true)
                 destinations.insert(masterDestination)
                 let deviceLinks = storage.getDeviceLinks(for: masterPublicKey, in: transaction)
-                let slaveDestinations = deviceLinks.map { MultiDeviceDestination(publicKey: $0.slave.hexEncodedPublicKey, isMaster: false) }
+                let slaveDestinations = deviceLinks.map { MultiDeviceDestination(publicKey: $0.slave.publicKey, isMaster: false) }
                 destinations.formUnion(slaveDestinations)
                 seal.fulfill(destinations)
             }

@@ -679,7 +679,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         case let incomingMessage as TSIncomingMessage:
             let hexEncodedPublicKey = incomingMessage.authorId
             if incomingMessage.thread.isGroupThread() {
-                var publicChat: LokiPublicChat?
+                var publicChat: PublicChat?
                 OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
                     publicChat = LokiDatabaseUtilities.getPublicChat(for: incomingMessage.thread.uniqueId!, in: transaction)
                 }

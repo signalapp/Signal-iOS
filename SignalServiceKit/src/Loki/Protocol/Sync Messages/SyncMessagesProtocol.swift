@@ -84,7 +84,7 @@ public final class SyncMessagesProtocol : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         let masterPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey
         let deviceLinks = storage.getDeviceLinks(for: masterPublicKey, in: transaction)
-        let linkedDevices = deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] }.filter { $0 != userPublicKey }
+        let linkedDevices = deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] }.filter { $0 != userPublicKey }
         let senderKeys: [ClosedGroupSenderKey] = linkedDevices.map { publicKey in
             let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
             return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: Data(hex: publicKey))
@@ -291,13 +291,13 @@ public final class SyncMessagesProtocol : NSObject {
         let openGroups = syncMessage.openGroups
         guard !openGroups.isEmpty else { return }
         print("[Loki] Open group sync message received.")
-        let openGroupManager = LokiPublicChatManager.shared
+        let openGroupManager = PublicChatManager.shared
         let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
         let userDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey, transaction: transaction)
         for openGroup in openGroups {
             guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channelID) == nil else { return }
             openGroupManager.addChat(server: openGroup.url, channel: openGroup.channelID)
-            LokiPublicChatAPI.setDisplayName(to: userDisplayName, on: openGroup.url)
+            PublicChatAPI.setDisplayName(to: userDisplayName, on: openGroup.url)
             // TODO: Should we also set the profile picture here?
         }
     }

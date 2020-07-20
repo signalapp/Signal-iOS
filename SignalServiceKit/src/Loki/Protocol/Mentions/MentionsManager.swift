@@ -17,11 +17,11 @@ public final class MentionsManager : NSObject {
     private override init() { }
 
     // MARK: Implementation
-    @objc public static func cache(_ hexEncodedPublicKey: String, for threadID: String) {
+    @objc public static func cache(_ publicKey: String, for threadID: String) {
         if let cache = userPublicKeyCache[threadID] {
-            userPublicKeyCache[threadID] = cache.union([ hexEncodedPublicKey ])
+            userPublicKeyCache[threadID] = cache.union([ publicKey ])
         } else {
-            userPublicKeyCache[threadID] = [ hexEncodedPublicKey ]
+            userPublicKeyCache[threadID] = [ publicKey ]
         }
     }
 
@@ -30,24 +30,24 @@ public final class MentionsManager : NSObject {
         guard let cache = userPublicKeyCache[threadID] else { return [] }
         var candidates: [Mention] = []
         // Gather candidates
-        var publicChat: LokiPublicChat?
+        var publicChat: PublicChat?
         storage.dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
         }
         storage.dbReadConnection.read { transaction in
-            candidates = cache.flatMap { hexEncodedPublicKey in
+            candidates = cache.flatMap { publicKey in
                 let uncheckedDisplayName: String?
                 if let publicChat = publicChat {
-                    uncheckedDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
+                    uncheckedDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: publicChat.channel, on: publicChat.server)
                 } else {
-                    uncheckedDisplayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
+                    uncheckedDisplayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey)
                 }
                 guard let displayName = uncheckedDisplayName else { return nil }
                 guard !displayName.hasPrefix("Anonymous") else { return nil }
-                return Mention(hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName)
+                return Mention(publicKey: publicKey, displayName: displayName)
             }
         }
-        candidates = candidates.filter { $0.hexEncodedPublicKey != getUserHexEncodedPublicKey() }
+        candidates = candidates.filter { $0.publicKey != getUserHexEncodedPublicKey() }
         // Sort alphabetically first
         candidates.sort { $0.displayName < $1.displayName }
         if query.count >= 2 {

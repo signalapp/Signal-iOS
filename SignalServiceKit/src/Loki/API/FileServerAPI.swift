@@ -65,8 +65,8 @@ public final class FileServerAPI : DotNetAPI {
                             masterSignature = nil
                         }
                         let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
-                        let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
-                        let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+                        let master = DeviceLink.Device(publicKey: masterHexEncodedPublicKey, signature: masterSignature)
+                        let slave = DeviceLink.Device(publicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
                         let deviceLink = DeviceLink(between: master, and: slave)
                         if let masterSignature = masterSignature {
                             guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
@@ -91,7 +91,7 @@ public final class FileServerAPI : DotNetAPI {
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
         print("[Loki] Updating device links.")
         return getAuthToken(for: server).then2 { token -> Promise<Void> in
-            let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == getUserHexEncodedPublicKey() }
+            let isMaster = deviceLinks.contains { $0.master.publicKey == getUserHexEncodedPublicKey() }
             let deviceLinksAsJSON = deviceLinks.map { $0.toJSON() }
             let value = !deviceLinksAsJSON.isEmpty ? [ "isPrimary" : isMaster ? 1 : 0, "authorisations" : deviceLinksAsJSON ] : nil
             let annotation: JSON = [ "type" : deviceLinkType, "value" : value ]

@@ -30,10 +30,10 @@ public final class DeviceLinkingSession : NSObject {
         return session
     }
     
-    @objc public func processLinkingRequest(from slaveHexEncodedPublicKey: String, to masterHexEncodedPublicKey: String, with slaveSignature: Data) {
-        guard isListeningForLinkingRequests, !isProcessingLinkingRequest, masterHexEncodedPublicKey == getUserHexEncodedPublicKey() else { return }
-        let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey)
-        let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+    @objc public func processLinkingRequest(from slavePublicKey: String, to masterPublicKey: String, with slaveSignature: Data) {
+        guard isListeningForLinkingRequests, !isProcessingLinkingRequest, masterPublicKey == getUserHexEncodedPublicKey() else { return }
+        let master = DeviceLink.Device(publicKey: masterPublicKey)
+        let slave = DeviceLink.Device(publicKey: slavePublicKey, signature: slaveSignature)
         let deviceLink = DeviceLink(between: master, and: slave)
         guard DeviceLinkingUtilities.hasValidSlaveSignature(deviceLink) else { return }
         isProcessingLinkingRequest = true
@@ -42,10 +42,10 @@ public final class DeviceLinkingSession : NSObject {
         }
     }
     
-    @objc public func processLinkingAuthorization(from masterHexEncodedPublicKey: String, for slaveHexEncodedPublicKey: String, masterSignature: Data, slaveSignature: Data) {
-        guard isListeningForLinkingAuthorization, slaveHexEncodedPublicKey == getUserHexEncodedPublicKey() else { return }
-        let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
-        let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+    @objc public func processLinkingAuthorization(from masterPublicKey: String, for slavePublicKey: String, masterSignature: Data, slaveSignature: Data) {
+        guard isListeningForLinkingAuthorization, slavePublicKey == getUserHexEncodedPublicKey() else { return }
+        let master = DeviceLink.Device(publicKey: masterPublicKey, signature: masterSignature)
+        let slave = DeviceLink.Device(publicKey: slavePublicKey, signature: slaveSignature)
         let deviceLink = DeviceLink(between: master, and: slave)
         guard DeviceLinkingUtilities.hasValidSlaveSignature(deviceLink) && DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else { return }
         DispatchQueue.main.async {

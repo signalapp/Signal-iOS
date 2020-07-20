@@ -1078,8 +1078,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }];
         }
         NSString *body = (message.body != nil && message.body.length > 0) ? message.body : [NSString stringWithFormat:@"%@", @(message.timestamp)]; // Workaround for the fact that the back-end doesn't accept messages without a body
-        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userPublicKey displayName:displayName body:body type:LKPublicChatAPI.publicChatMessageType
-         timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteePublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
+        LKPublicChatMessage *groupMessage = [[LKPublicChatMessage alloc] initWithSenderPublicKey:userPublicKey displayName:displayName body:body type:LKPublicChatAPI.publicChatMessageType
+         timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteePublicKey:quoteePublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
         OWSLinkPreview *linkPreview = message.linkPreview;
         if (linkPreview != nil) {
             TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:linkPreview.imageAttachmentId];
@@ -1096,7 +1096,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         message.actualSenderHexEncodedPublicKey = userPublicKey;
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
-        .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
+        .thenOn(OWSDispatch.sendingQueue, ^(LKPublicChatMessage *groupMessage) {
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [message saveOpenGroupServerMessageID:groupMessage.serverID in:transaction];
                 [self.primaryStorage setIDForMessageWithServerID:groupMessage.serverID to:message.uniqueId in:transaction];

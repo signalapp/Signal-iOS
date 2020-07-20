@@ -3893,7 +3893,7 @@ typedef enum : NSUInteger {
     NSString *result = self.inputToolbar.messageText;
     for (LKMention *mention in self.mentions) {
         NSRange range = [result rangeOfString:[NSString stringWithFormat:@"@%@", mention.displayName]];
-        result = [result stringByReplacingCharactersInRange:range withString:[[NSString alloc] initWithFormat:@"@%@", mention.hexEncodedPublicKey]];
+        result = [result stringByReplacingCharactersInRange:range withString:[[NSString alloc] initWithFormat:@"@%@", mention.publicKey]];
     }
     return result;
 }

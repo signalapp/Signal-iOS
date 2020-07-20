@@ -21,12 +21,12 @@
 }
 
 #pragma mark Initialization
-- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData * _Nullable)masterSignature slaveSignature:(NSData *)slaveSignature {
+- (instancetype)initInThread:(TSThread *)thread masterPublicKey:(NSString *)masterHexEncodedPublicKey slavePublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData * _Nullable)masterSignature slaveSignature:(NSData *)slaveSignature {
     self = [self initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
     if (self) {
-        _masterHexEncodedPublicKey = masterHexEncodedPublicKey;
-        _slaveHexEncodedPublicKey = slaveHexEncodedPublicKey;
+        _masterPublicKey = masterHexEncodedPublicKey;
+        _slavePublicKey = slaveHexEncodedPublicKey;
         _masterSignature = masterSignature;
         _slaveSignature = slaveSignature;
     }
@@ -66,8 +66,8 @@
     }
     // Build the device link message
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
-    [deviceLinkMessageBuilder setMasterPublicKey:self.masterHexEncodedPublicKey];
-    [deviceLinkMessageBuilder setSlavePublicKey:self.slaveHexEncodedPublicKey];
+    [deviceLinkMessageBuilder setMasterPublicKey:self.masterPublicKey];
+    [deviceLinkMessageBuilder setSlavePublicKey:self.slavePublicKey];
     if (self.masterSignature != nil) { [deviceLinkMessageBuilder setMasterSignature:self.masterSignature]; }
     [deviceLinkMessageBuilder setSlaveSignature:self.slaveSignature];
     SSKProtoLokiDeviceLinkMessage *deviceLinkMessage = [deviceLinkMessageBuilder buildAndReturnError:&error];

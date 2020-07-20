@@ -211,7 +211,7 @@ internal extension Promise {
     internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
         return recover2 { error -> Promise<T> in
             if let error = error as? NetworkManagerError, (error.statusCode == 401 || error.statusCode == 403) {
-                print("[Loki] Group chat auth token for: \(server) expired; dropping it.")
+                print("[Loki] Auth token for: \(server) expired; dropping it.")
                 DotNetAPI.clearAuthToken(for: server)
             }
             throw error
