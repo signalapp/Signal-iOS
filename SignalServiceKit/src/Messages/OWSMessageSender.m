@@ -45,8 +45,6 @@
 #import "TSSocketManager.h"
 #import "TSThread.h"
 #import "TSContactThread.h"
-#import "LKFriendRequestMessage.h"
-#import "LKSessionRestoreMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "LKUnlinkDeviceMessage.h"
 #import <SessionAxolotlKit/AxolotlExceptions.h>
@@ -1571,7 +1569,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     OWSMessageServiceParams *messageParams =
-        [[OWSMessageServiceParams alloc] initWithType:TSFriendRequestMessageType
+        [[OWSMessageServiceParams alloc] initWithType:TSFallbackMessageType
                                           recipientId:recipientId
                                                device:[deviceId intValue]
                                               content:serializedMessage
@@ -1616,7 +1614,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSWhisperMessageType messageType;
     if (messageSend.isUDSend) {
         NSError *error;
-        LKSessionResetImplementation *sessionResetImplementation = [[LKSessionResetImplementation alloc] initWithStorage:self.primaryStorage];
+        LKSessionResetImplementation *sessionResetImplementation = [LKSessionResetImplementation new];
 
         SMKSecretSessionCipher *_Nullable secretCipher =
             [[SMKSecretSessionCipher alloc] initWithSessionResetImplementation:sessionResetImplementation

@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSThread *thread = [[transaction extension:TSThreadDatabaseViewExtensionName]
                     objectAtIndexPath:[NSIndexPath indexPathForItem:(NSInteger)item inSection:(NSInteger)section]
                          withMappings:self.threadMappings];
-                if (!thread.shouldThreadBeVisible || !thread.isContactFriend) { continue; }
+                if (!thread.shouldThreadBeVisible) { continue; }
                 if ([thread isKindOfClass:TSContactThread.class]) {
                     NSString *publicKey = thread.contactIdentifier;
                     if ([LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:publicKey] == nil) { continue; }

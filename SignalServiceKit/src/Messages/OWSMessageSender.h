@@ -4,7 +4,6 @@
 
 #import "DataSource.h"
 #import "TSContactThread.h"
-#import "LKFriendRequestMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

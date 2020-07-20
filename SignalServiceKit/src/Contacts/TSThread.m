@@ -708,13 +708,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                              }];
 }
 
-#pragma mark - Loki Friend Request Handling
-
-- (BOOL)isContactFriend
-{
-    return [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self] == LKFriendRequestUIStatusFriends;
-}
-
 - (BOOL)isSlaveThread
 {
     return [LKMultiDeviceProtocol isSlaveThread:self];

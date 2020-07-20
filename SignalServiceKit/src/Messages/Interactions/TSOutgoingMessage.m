@@ -1096,22 +1096,18 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
-    // Loki: Set display name & profile picture (exclude the profile picture if this is a friend request
-    // to prevent unsolicited content from being sent)
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     NSString *displayName;
-    NSString *masterHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
-    if (masterHexEncodedPublicKey != nil) {
-        displayName = [profileManager profileNameForRecipientWithID:masterHexEncodedPublicKey];
+    NSString *masterPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    if (masterPublicKey != nil) {
+        displayName = [profileManager profileNameForRecipientWithID:masterPublicKey];
     } else {
         displayName = profileManager.localProfileName;
     }
     NSString *profilePictureURL = profileManager.profilePictureURL;
     SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
     [profileBuilder setDisplayName:displayName];
-    if (![self isKindOfClass:LKFriendRequestMessage.class]) {
-        [profileBuilder setProfilePicture:profilePictureURL ?: @""];
-    }
+    [profileBuilder setProfilePicture:profilePictureURL ?: @""];
     SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
     [builder setProfile:profile];
     

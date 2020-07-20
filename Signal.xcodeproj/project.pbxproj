@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2400888D239F30A600305217 /* SessionRestorationView.swift */; };
-		241C1192245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C1191245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift */; };
 		241C6314231F64C000B4198E /* JazzIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C630E231F5AAC00B4198E /* JazzIcon.swift */; };
 		241C6315231F64CE00B4198E /* CGFloat+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */; };
 		241C6316231F64CE00B4198E /* UIColor+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6310231F5C4400B4198E /* UIColor+Helper.swift */; };
@@ -744,7 +743,6 @@
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		2400888D239F30A600305217 /* SessionRestorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationView.swift; sourceTree = "<group>"; };
-		241C1191245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK001UpdateFriendRequestStatusStorage.swift; sourceTree = "<group>"; };
 		241C630E231F5AAC00B4198E /* JazzIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JazzIcon.swift; sourceTree = "<group>"; };
 		241C6310231F5C4400B4198E /* UIColor+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Helper.swift"; sourceTree = "<group>"; };
 		241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Rounding.swift"; sourceTree = "<group>"; };
@@ -1632,14 +1630,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		241C1190245F8765005CB2F4 /* Migrations */ = {
-			isa = PBXGroup;
-			children = (
-				241C1191245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift */,
-			);
-			path = Migrations;
-			sourceTree = "<group>";
-		};
 		34074F54203D0722004596AE /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
@@ -2796,7 +2786,6 @@
 		B846365922B7417900AF1514 /* Loki */ = {
 			isa = PBXGroup;
 			children = (
-				241C1190245F8765005CB2F4 /* Migrations */,
 				B8C9689223FA1B05005F64E0 /* Redesign */,
 				B8544E3623D520F600299F14 /* Jazz Icon */,
 			);
@@ -3989,7 +3978,6 @@
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
-				241C1192245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift in Sources */,
 				340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */,
 				34ABB2C42090C59700C727A6 /* OWSResaveCollectionDBMigration.m in Sources */,
 				4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */,

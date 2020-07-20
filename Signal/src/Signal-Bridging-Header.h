@@ -94,7 +94,6 @@
 #import <SessionServiceKit/LKDeviceLinkMessage.h>
 #import <SessionServiceKit/OWSError.h>
 #import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/LKFriendRequestMessage.h>
 #import <SessionServiceKit/OWSIdentityManager.h>
 #import <SessionServiceKit/OWSMediaGalleryFinder.h>
 #import <SessionServiceKit/OWSMessageManager.h>

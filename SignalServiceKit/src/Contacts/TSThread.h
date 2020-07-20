@@ -38,11 +38,6 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
-// Loki friend request handling
-// ========
-@property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendRequestStatusForContact:transaction: instead");
-@property (nonatomic, readonly) BOOL isContactFriend;
-// ========
 @property (nonatomic, readonly) BOOL isSlaveThread;
 
 /**

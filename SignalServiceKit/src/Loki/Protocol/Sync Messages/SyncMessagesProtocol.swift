@@ -49,19 +49,23 @@ public final class SyncMessagesProtocol : NSObject {
         return syncManager.syncContacts(for: [ SignalAccount(recipientId: publicKey) ])
     }
 
+    private static func getContactsToSync(using transaction: YapDatabaseReadTransaction) -> Set<String> {
+        return Set(TSContactThread.allObjectsInCollection().compactMap { $0 as? TSContactThread }
+            .filter { $0.shouldThreadBeVisible }
+            .map { $0.contactIdentifier() }
+            .filter { ECKeyPair.isValidHexEncodedPublicKey(candidate: $0) }
+            .filter { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) == nil } // Exclude secondary devices
+            .filter { !LokiDatabaseUtilities.isUserLinkedDevice($0, transaction: transaction) })
+    }
+
     @objc public static func syncAllContacts() -> AnyPromise {
-        // We need to sync over all contacts whom we are friends with, even if
-        // we don't have a thread for them.
         var publicKeys: [String] = []
         storage.dbReadConnection.read { transaction in
-            publicKeys = self.storage
-                .getAllFriends(using: transaction)
-                .filter { ECKeyPair.isValidHexEncodedPublicKey(candidate: $0) }
-                .map { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) ?? $0 }
+            publicKeys = [String](getContactsToSync(using: transaction))
         }
-        let friends = Set(publicKeys).map { SignalAccount(recipientId: $0) }
+        let accounts = Set(publicKeys).map { SignalAccount(recipientId: $0) }
         let syncManager = SSKEnvironment.shared.syncManager
-        let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
+        let promises = accounts.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
             return Promise(syncManager.syncContacts(for: friends)).map2 { _ in }
         }
         return AnyPromise.from(when(fulfilled: promises))

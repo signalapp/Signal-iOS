@@ -216,7 +216,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [SSKJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
 
     // Loki
-    [LKExpiringFriendRequestFinder asyncRegisterDatabaseExtensions:self];
     [LKDeviceLinkIndex asyncRegisterDatabaseExtensions:self];
 
     [self.database

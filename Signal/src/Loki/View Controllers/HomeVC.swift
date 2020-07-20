@@ -161,7 +161,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let storage = OWSPrimaryStorage.shared()
         storage.dbReadConnection.read { transaction in
             TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
-                guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible && thread.isContactFriend else { return }
+                guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible else { return }
                 let publicKey = thread.contactIdentifier()
                 guard UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) != nil,
                     storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) == nil else { return }

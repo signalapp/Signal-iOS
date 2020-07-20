@@ -124,7 +124,6 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
-    LKFriendRequestViewDelegate,
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
@@ -421,10 +420,6 @@ typedef enum : NSUInteger {
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleUserFriendRequestStatusChangedNotification:)
-                                                 name:NSNotification.userFriendRequestStatusChanged
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleThreadSessionRestoreDevicesChangedNotifiaction:)
                                                  name:NSNotification.threadSessionRestoreDevicesChanged
                                                object:nil];
@@ -525,28 +520,6 @@ typedef enum : NSUInteger {
     [self.thread reload];
     // Update UI
     [self hideInputIfNeeded];
-    [self.collectionView.collectionViewLayout invalidateLayout];
-    for (id<ConversationViewItem> item in self.viewItems) {
-        [item clearCachedLayoutState];
-    }
-    [self.conversationViewModel reloadViewItems];
-    [self.collectionView reloadData];
-}
-
-- (void)handleUserFriendRequestStatusChangedNotification:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    // Friend request status doesn't apply to group threads
-    if (self.thread.isGroupThread) { return; }
-    NSString *hexEncodedPublicKey = (NSString *)notification.object;
-    // Check if we should update the UI
-    __block NSSet<NSString *> *linkedDevices;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
-    }];
-    if (![linkedDevices containsObject:hexEncodedPublicKey]) { return; }
-    // Update the UI
-    [self updateInputBar];
     [self.collectionView.collectionViewLayout invalidateLayout];
     for (id<ConversationViewItem> item in self.viewItems) {
         [item clearCachedLayoutState];
@@ -791,7 +764,6 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
-    [self updateInputBar];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES", @"Indicates that the app is loading more messages in this conversation.");
@@ -1674,17 +1646,6 @@ typedef enum : NSUInteger {
     }
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
-}
-
-#pragma mark - Updating
-
-- (void)updateInputBar {
-    BOOL shouldInputBarBeEnabled = [LKFriendRequestProtocol shouldInputBarBeEnabledForThread:self.thread];
-    [self.inputToolbar setUserInteractionEnabled:shouldInputBarBeEnabled];
-    NSString *placeholderText = shouldInputBarBeEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending session request", "");
-    [self.inputToolbar setPlaceholderText:placeholderText];
-    BOOL shouldAttachmentButtonBeEnabled = [LKFriendRequestProtocol shouldAttachmentButtonBeEnabledForThread:self.thread];
-    [self.inputToolbar setAttachmentButtonHidden:!shouldAttachmentButtonBeEnabled];
 }
 
 #pragma mark - Identity
@@ -2895,15 +2856,6 @@ typedef enum : NSUInteger {
         AudioServicesPlaySystemSound(soundId);
     }
     [self.typingIndicators didSendOutgoingMessageInThread:self.thread];
-
-    // Loki: Lock the input bar early
-    if ([self.thread isKindOfClass:TSContactThread.class] && [message isKindOfClass:LKFriendRequestMessage.class]) {
-        NSString *recipientID = self.thread.contactIdentifier;
-        OWSAssertIsOnMainThread();
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
-        } error:nil];
-    }
 }
 
 #pragma mark UIDocumentMenuDelegate
@@ -4497,24 +4449,6 @@ typedef enum : NSUInteger {
                                         animated:YES];
 }
 
-#pragma mark - FriendRequestViewDelegate
-
-- (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
-{
-    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol acceptFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
-    } error:nil];
-}
-
-- (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
-{
-    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol declineFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
-    } error:nil];
-}
-
 #pragma mark - ConversationViewLayoutDelegate
 
 - (NSArray<id<ConversationViewLayoutItem>> *)layoutItems
@@ -5107,7 +5041,6 @@ typedef enum : NSUInteger {
     }
 
     [self dismissMenuActionsIfNecessary];
-    [self updateInputBar];
 
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

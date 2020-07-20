@@ -101,7 +101,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
 
     _primaryStorage = primaryStorage;
-    _sessionResetImplementation = [[LKSessionResetImplementation alloc] initWithStorage:primaryStorage];
+    _sessionResetImplementation = [LKSessionResetImplementation new];
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();

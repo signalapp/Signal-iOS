@@ -78,23 +78,13 @@ public final class SessionMetaProtocol : NSObject {
     /// to avoid sending them if certain conditions are met.
     @objc(shouldSendTypingIndicatorInThread:)
     public static func shouldSendTypingIndicator(in thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let publicKey = thread.contactIdentifier() else { return false }
-        var isContactFriend = false
-        storage.dbReadConnection.read { transaction in
-            isContactFriend = (storage.getFriendRequestStatus(for: publicKey, transaction: transaction) == .friends)
-        }
-        return isContactFriend
+        return !thread.isGroupThread()
     }
 
     // MARK: Receipts
     @objc(shouldSendReceiptInThread:)
     public static func shouldSendReceipt(in thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let publicKey = thread.contactIdentifier() else { return false }
-        var isContactFriend = false
-        storage.dbReadConnection.read { transaction in
-            isContactFriend = (storage.getFriendRequestStatus(for: publicKey, transaction: transaction) == .friends)
-        }
-        return isContactFriend
+        return !thread.isGroupThread()
     }
 
     // MARK: - Receiving

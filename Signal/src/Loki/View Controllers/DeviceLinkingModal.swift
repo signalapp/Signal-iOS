@@ -196,9 +196,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                     let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
                 }
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
-                try! Storage.writeSync { transaction in
-                    storage.setFriendRequestStatus(.friends, for: slaveHexEncodedPublicKey, transaction: transaction)
-                }
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)
                     self?.delegate?.handleDeviceLinkAuthorized(signedDeviceLink)

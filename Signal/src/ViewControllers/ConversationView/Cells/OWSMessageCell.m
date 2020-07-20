@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSLayoutConstraint *messageBubbleViewBottomConstraint;
 @property (nonatomic) LKProfilePictureView *avatarView;
 @property (nonatomic) UIImageView *moderatorIconImageView;
-@property (nonatomic, nullable) LKFriendRequestView *friendRequestView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
@@ -212,24 +211,6 @@ NS_ASSUME_NONNULL_BEGIN
             ]];
         }
     }
-    
-    // Loki: Attach the friend request view if needed
-    if ([self shouldShowFriendRequestUIForMessage:self.message]) {
-        self.friendRequestView = [[LKFriendRequestView alloc] initWithMessage:self.message];
-        self.friendRequestView.delegate = self.friendRequestViewDelegate;
-        [self.contentView addSubview:self.friendRequestView];
-        [self.messageBubbleViewBottomConstraint setActive:NO];
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
-            [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
-            [self.friendRequestView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView],
-            [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeBottom]
-        ]];
-    } else {
-        [self.friendRequestView removeFromSuperview];
-        self.friendRequestView = nil;
-        [self.messageBubbleViewBottomConstraint setActive:YES];
-    }
 
     if ([self updateAvatarView]) {
         [self.viewConstraints addObjectsFromArray:@[
@@ -384,11 +365,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldHaveSendFailureBadge) {
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
     }
-
-    // Loki: Include the friend request view if needed
-    if ([self shouldShowFriendRequestUIForMessage:self.message]) {
-        cellSize.height += [LKFriendRequestView calculateHeightWithMessage:self.message conversationStyle:self.conversationStyle];
-    }
     
     cellSize = CGSizeCeil(cellSize);
 
@@ -408,9 +384,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageBubbleView unloadContent];
 
     [self.headerView removeFromSuperview];
-
-    [self.friendRequestView removeFromSuperview];
-    self.friendRequestView = nil;
     
     [self.avatarView removeFromSuperview];
 
@@ -469,10 +442,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
-
-    if ([self shouldShowFriendRequestUIForMessage:self.message]) {
-        return;
-    }
     
     if (sender.state != UIGestureRecognizerStateBegan) {
         return;
@@ -530,13 +499,6 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint location = [sender locationInView:self];
     CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
     return location.y <= headerBottom.y;
-}
-
-#pragma mark - Convenience
-
-- (BOOL)shouldShowFriendRequestUIForMessage:(TSMessage *)message
-{
-    return message.isFriendRequest;
 }
 
 @end

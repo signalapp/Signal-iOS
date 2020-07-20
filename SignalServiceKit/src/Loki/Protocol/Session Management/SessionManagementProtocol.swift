@@ -60,7 +60,8 @@ public final class SessionManagementProtocol : NSObject {
 
     // MARK: - Sending
 
-    @objc public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage) -> Bool {
+    @objc(shouldUseFallbackEncryptionForMessage:)
+    public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage) -> Bool {
         return true
     }
 
@@ -77,10 +78,10 @@ public final class SessionManagementProtocol : NSObject {
         let hasSession = storage.containsSession(publicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
         guard !hasSession else { return }
         // Check that we didn't already send a session request
-        let hasSentRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) > 0)
-        let hasSentSessionRequestExpired = hasSentSessionRequestExpired(for: publicKey)
+        let hasSentSessionRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) > 0)
+        let hasSentSessionRequestExpired = SessionManagementProtocol.hasSentSessionRequestExpired(for: publicKey)
         if hasSentSessionRequestExpired {
-            Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0)
+            Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
         }
         guard !hasSentSessionRequest || hasSentSessionRequestExpired else { return }
         // Create the thread if needed
@@ -88,12 +89,12 @@ public final class SessionManagementProtocol : NSObject {
         thread.save(with: transaction)
         // Send the session request
         print("[Loki] Sending session request to: \(publicKey).")
-        Storage.setSessionRequestSentTimestamp(for: publicKey, to: Date(), using: transaction)
+        Storage.setSessionRequestSentTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
         let sessionRequestMessage = SessionRequestMessage(thread: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
 
-        aushfiuasfhiujoasf
+//        aushfiuasfhiujoasf
         // TODO: Handle failure
     }
 
@@ -181,7 +182,7 @@ public final class SessionManagementProtocol : NSObject {
             return print("[Loki] Ignoring session request from: \(publicKey).")
         }
         storage.setPreKeyBundle(preKeyBundle, forContact: publicKey, transaction: transaction)
-        Storage.setSessionRequestSentTimestamp(for: publicKey, to: Date(), using: transaction)
+        Storage.setSessionRequestProcessedTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
         sendNullMessage(to: publicKey, in: transaction)
     }
 

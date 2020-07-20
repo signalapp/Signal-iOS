@@ -190,7 +190,7 @@ public final class ClosedGroupsProtocol : NSObject {
 
     public static func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Establish session if needed
-        SessionManagementProtocol.establishSessionIfNeeded(with: senderPublicKey, using: transaction)
+        SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction)
         // Send the request
         let thread = TSContactThread.getOrCreateThread(withContactId: senderPublicKey, transaction: transaction)
         thread.save(with: transaction)
@@ -329,7 +329,7 @@ public final class ClosedGroupsProtocol : NSObject {
             return print("[Loki] Ignoring closed group sender key request from non-member.")
         }
         // Respond to the request
-        SessionManagementProtocol.establishSessionIfNeeded(with: senderPublicKey, using: transaction) // This internally takes care of multi device
+        SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction) // This internally takes care of multi device
         let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
         let thread = TSContactThread.getOrCreateThread(withContactId: senderPublicKey, transaction: transaction)
@@ -370,7 +370,7 @@ public final class ClosedGroupsProtocol : NSObject {
     @objc(establishSessionsIfNeededWithClosedGroupMembers:transaction:)
     public static func establishSessionsIfNeeded(with closedGroupMembers: [String], using transaction: YapDatabaseReadWriteTransaction) {
         closedGroupMembers.forEach { publicKey in
-            SessionManagementProtocol.establishSessionIfNeeded(with: publicKey, using: transaction)
+            SessionManagementProtocol.sendSessionRequestIfNeeded(to: publicKey, using: transaction)
         }
     }
 
