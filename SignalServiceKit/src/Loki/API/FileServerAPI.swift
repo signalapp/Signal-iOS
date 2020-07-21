@@ -90,7 +90,7 @@ public final class FileServerAPI : DotNetAPI {
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
             if (useOnionRequests) {
-                return OnionRequestAPI.sendOnionRequestFileServerDest(request, server: server, using: fileServerPublicKey).map2 { rawResponse -> Set<DeviceLink> in
+                return OnionRequestAPI.sendOnionRequestLsrpcDest(request, server: server, using: fileServerPublicKey).map2 { rawResponse -> Set<DeviceLink> in
                     guard let data = rawResponse["data"] as? [JSON] else {
                         print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                         throw DotNetAPIError.parsingFailed
@@ -127,7 +127,7 @@ public final class FileServerAPI : DotNetAPI {
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             return attempt(maxRetryCount: 8, recoveringOn: SnodeAPI.workQueue) {
                 if (useOnionRequests) {
-                    return OnionRequestAPI.sendOnionRequestFileServerDest(request, server: server, using: fileServerPublicKey).map2 { _ in }
+                    return OnionRequestAPI.sendOnionRequestLsrpcDest(request, server: server, using: fileServerPublicKey).map2 { _ in }
                 }
                 return LokiFileServerProxy(for: server).perform(request).map2 { _ in }
             }.handlingInvalidAuthTokenIfNeeded(for: server).recover2 { error in
@@ -182,7 +182,7 @@ public final class FileServerAPI : DotNetAPI {
             return Promise(error: error)
         }
         if (useOnionRequests) {
-            return OnionRequestAPI.sendOnionRequestFileServerDest(request, server: server, using: fileServerPublicKey).map2 { json in
+            return OnionRequestAPI.sendOnionRequestLsrpcDest(request, server: server, using: fileServerPublicKey).map2 { json in
                 guard let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
                     print("[Loki] Couldn't parse profile picture from: \(json).")
                     throw DotNetAPIError.parsingFailed

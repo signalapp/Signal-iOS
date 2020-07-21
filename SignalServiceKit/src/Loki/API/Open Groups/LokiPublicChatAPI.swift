@@ -8,6 +8,8 @@ public final class LokiPublicChatAPI : DotNetAPI {
 
     public static var displayNameUpdatees: [String:Set<String>] = [:]
     
+    internal static var useOnionRequests = true
+    
     // MARK: Settings
     private static let attachmentType = "net.app.core.oembed"
     private static let channelInfoType = "net.patter-app.settings"

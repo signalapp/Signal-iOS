@@ -241,7 +241,7 @@ public enum OnionRequestAPI {
     }
     
     /// Sends an onion request to `file server`. Builds new paths as needed.
-    internal static func sendOnionRequestFileServerDest(_ request: NSURLRequest, server: String, using x25519Key: String) -> Promise<JSON> {
+    internal static func sendOnionRequestLsrpcDest(_ request: NSURLRequest, server: String, using x25519Key: String) -> Promise<JSON> {
         var headers = getCanonicalHeaders(for: request)
         let urlAsString = request.url!.absoluteString
         let serverURLEndIndex = urlAsString.range(of: server)!.upperBound
