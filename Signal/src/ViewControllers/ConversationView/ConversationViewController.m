@@ -1100,13 +1100,16 @@ typedef enum : NSUInteger {
     NSString *blockStateMessage = nil;
     if ([self isBlockedConversation]) {
         if (self.isGroupConversation) {
+            /*
             blockStateMessage = NSLocalizedString(
                 @"MESSAGES_VIEW_GROUP_BLOCKED", @"Indicates that this group conversation has been blocked.");
+             */
         } else {
             blockStateMessage = NSLocalizedString(
                 @"MESSAGES_VIEW_CONTACT_BLOCKED", @"Indicates that this 1:1 conversation has been blocked.");
         }
     } else if (self.isGroupConversation) {
+        /*
         int blockedGroupMemberCount = [self blockedGroupMemberCount];
         if (blockedGroupMemberCount == 1) {
             blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
@@ -1118,6 +1121,7 @@ typedef enum : NSUInteger {
                                                @"{{the number of blocked users in this group}}."),
                           [OWSFormat formatInt:blockedGroupMemberCount]];
         }
+         */
     }
 
     if (blockStateMessage) {
