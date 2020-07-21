@@ -194,9 +194,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                     // to the AFR mechanism
                     let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
                 }
-                let blockedContacts = SSKEnvironment.shared.blockingManager.blockedPhoneNumbers()
-                let blockedContactsSyncMessage = OWSBlockedPhoneNumbersMessage(phoneNumbers: blockedContacts, groupIds: [])
-                SSKEnvironment.shared.messageSender.send(blockedContactsSyncMessage, success: { }) { _ in }
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)

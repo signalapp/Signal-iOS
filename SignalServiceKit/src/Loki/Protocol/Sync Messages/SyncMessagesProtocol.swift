@@ -233,16 +233,24 @@ public final class SyncMessagesProtocol : NSObject {
 
     public static func handleContactSyncMessageData(_ data: Data, using transaction: YapDatabaseReadWriteTransaction) {
         let parser = ContactParser(data: data)
-        let publicKeys = parser.parseHexEncodedPublicKeys()
+        let tuples = parser.parse()
+        let blockedPublicKeys = tuples.filter { $0.isBlocked }.map { $0.publicKey }
         let userPublicKey = getUserHexEncodedPublicKey()
         let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
         // Try to establish sessions
-        for publicKey in publicKeys {
+        for (publicKey, isBlocked) in tuples {
             guard !userLinkedDevices.contains(publicKey) else { continue } // Skip self and linked devices
             let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
             thread.shouldThreadBeVisible = true
             thread.save(with: transaction)
-            SessionManagementProtocol.sendSessionRequestIfNeeded(to: publicKey, using: transaction)
+            if !isBlocked {
+                SessionManagementProtocol.sendSessionRequestIfNeeded(to: publicKey, using: transaction)
+            }
+        }
+        // Update the blocked contacts list
+        transaction.addCompletionQueue(DispatchQueue.main) {
+            SSKEnvironment.shared.blockingManager.setBlockedPhoneNumbers(blockedPublicKeys, sendSyncMessage: false)
+            NotificationCenter.default.post(name: .blockedContactsUpdated, object: nil)
         }
     }
 
