@@ -712,12 +712,6 @@ typedef enum : NSUInteger {
             [SSKEnvironment.shared.profileManager ensureProfileCachedForContactWithID:self.thread.contactIdentifier with:transaction];
         }];
     }
-
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
-        } error:nil];
-    }
 }
 
 - (void)createContents
@@ -3924,12 +3918,6 @@ typedef enum : NSUInteger {
 
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
-        if ([self.thread isKindOfClass:TSContactThread.class]) {
-            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
-            } error:nil];
-        }
-
         __block TSOutgoingMessage *message;
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:messageText
@@ -3944,6 +3932,12 @@ typedef enum : NSUInteger {
 
         if (didAddToProfileWhitelist) {
             [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+        }
+
+        if ([self.thread isKindOfClass:TSContactThread.class]) {
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
+            }];
         }
     });
 }
@@ -4515,12 +4509,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
-        } error:nil];
-    }
-
     // Limit outgoing text messages to 16kb.
     //
     // We convert large text messages to attachments
@@ -4565,6 +4553,12 @@ typedef enum : NSUInteger {
 
     if (didAddToProfileWhitelist) {
         [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    }
+
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
+        }];
     }
 }
 

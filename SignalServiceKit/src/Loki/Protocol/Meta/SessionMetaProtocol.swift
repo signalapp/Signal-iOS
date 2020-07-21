@@ -78,7 +78,7 @@ public final class SessionMetaProtocol : NSObject {
     /// to avoid sending them if certain conditions are met.
     @objc(shouldSendTypingIndicatorInThread:)
     public static func shouldSendTypingIndicator(in thread: TSThread) -> Bool {
-        return !thread.isGroupThread()
+        return !thread.isGroupThread() && thread.numberOfInteractions() > 0
     }
 
     // MARK: Receipts
