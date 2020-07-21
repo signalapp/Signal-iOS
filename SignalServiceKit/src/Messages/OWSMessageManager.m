@@ -266,7 +266,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
+    if ([self isEnvelopeSenderBlocked:envelope]) {
+        return;
+    }
     
     [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
