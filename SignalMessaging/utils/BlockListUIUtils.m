@@ -291,7 +291,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                           contactsManager:(OWSContactsManager *)contactsManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:phoneNumber];
+    NSString *displayName = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:phoneNumber] ?: phoneNumber;
     [self showUnblockPhoneNumbersActionSheet:@[ phoneNumber ]
                                  displayName:displayName
                           fromViewController:fromViewController
