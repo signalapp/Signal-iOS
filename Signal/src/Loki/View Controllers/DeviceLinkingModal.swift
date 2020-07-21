@@ -184,10 +184,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
         FileServerAPI.addDeviceLink(signedDeviceLink).done(on: DispatchQueue.main) { [weak self] in
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
-                let storage = OWSPrimaryStorage.shared()
-                let slaveHexEncodedPublicKey = deviceLink.slave.publicKey
+                let slavePublicKey = deviceLink.slave.publicKey
                 try! Storage.writeSync { transaction in
-                    let thread = TSContactThread.getOrCreateThread(withContactId: slaveHexEncodedPublicKey, transaction: transaction)
+                    let thread = TSContactThread.getOrCreateThread(withContactId: slavePublicKey, transaction: transaction)
                     thread.save(with: transaction)
                 }
                 let _ = SSKEnvironment.shared.syncManager.syncAllGroups().ensure {
@@ -195,6 +194,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                     // to the AFR mechanism
                     let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
                 }
+                let blockedContacts = SSKEnvironment.shared.blockingManager.blockedPhoneNumbers()
+                let blockedContactsSyncMessage = OWSBlockedPhoneNumbersMessage(phoneNumbers: blockedContacts, groupIds: [])
+                SSKEnvironment.shared.messageSender.send(blockedContactsSyncMessage, success: { }) { _ in }
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)

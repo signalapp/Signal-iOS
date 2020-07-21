@@ -975,6 +975,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self.blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.blockedContactsUpdated object:nil];
+            });
         });
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);

@@ -2,6 +2,7 @@
 public extension Notification.Name {
 
     // State changes
+    public static let blockedContactsUpdated = Notification.Name("blockedContactsUpdated")
     public static let contactOnlineStatusChanged = Notification.Name("contactOnlineStatusChanged")
     public static let groupThreadUpdated = Notification.Name("groupThreadUpdated")
     public static let threadDeleted = Notification.Name("threadDeleted")
@@ -27,6 +28,7 @@ public extension Notification.Name {
 @objc public extension NSNotification {
 
     // State changes
+    @objc public static let blockedContactsUpdated = Notification.Name.blockedContactsUpdated.rawValue as NSString
     @objc public static let contactOnlineStatusChanged = Notification.Name.contactOnlineStatusChanged.rawValue as NSString
     @objc public static let groupThreadUpdated = Notification.Name.groupThreadUpdated.rawValue as NSString
     @objc public static let threadDeleted = Notification.Name.threadDeleted.rawValue as NSString

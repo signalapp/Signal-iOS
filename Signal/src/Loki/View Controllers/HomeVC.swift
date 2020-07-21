@@ -145,6 +145,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleSeedViewedNotification(_:)), name: .seedViewed, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleBlockedContactsUpdatedNotification(_:)), name: .blockedContactsUpdated, object: nil)
         // Set up public chats and RSS feeds if needed
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -279,6 +280,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
         seedReminderView.removeFromSuperview()
     }
+
+    @objc private func handleBlockedContactsUpdatedNotification(_ notification: Notification) {
+        self.tableView.reloadData() // TODO: Just reload the affected cell
+    }
     
     private func updateNavigationBarButtons() {
         let profilePictureSize = Values.verySmallProfilePictureSize
@@ -402,10 +407,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                 blockingManager.addBlockedPhoneNumber(publicKey)
                 tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
             }
+            block.backgroundColor = Colors.unimportant
             let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
                 blockingManager.removeBlockedPhoneNumber(publicKey)
                 tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
             }
+            unblock.backgroundColor = Colors.unimportant
             return [ delete, (isBlocked ? unblock : block) ]
         } else {
             return [ delete ]
