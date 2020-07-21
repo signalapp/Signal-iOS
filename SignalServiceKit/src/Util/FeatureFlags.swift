@@ -188,9 +188,6 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2processProtosInGroupUpdates = true
 
     @objc
-    public static let groupsV2reapplyCurrentRevision = false
-
-    @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
