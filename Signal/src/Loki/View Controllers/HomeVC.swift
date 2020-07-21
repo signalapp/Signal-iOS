@@ -358,16 +358,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        guard let threadID = self.thread(at: indexPath.row)?.uniqueId else { return false }
-        var publicChat: PublicChat?
-        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
-        }
-        if let publicChat = publicChat {
-            return publicChat.isDeletable
-        } else {
-            return true
-        }
+        return true
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -376,7 +367,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction)
         }
-        let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("Delete", comment: "")) { [weak self] action, indexPath in
+        let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("Delete", comment: "")) { [weak self] _, _ in
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
                 try! Storage.writeSync { transaction in
@@ -400,8 +391,22 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             self.present(alert, animated: true, completion: nil)
         }
         delete.backgroundColor = Colors.destructive
-        if let publicChat = publicChat {
-            return publicChat.isDeletable ? [ delete ] : []
+        if thread is TSContactThread {
+            var publicKey: String!
+            Storage.read { transaction in
+                publicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: thread.contactIdentifier()!, in: transaction) ?? thread.contactIdentifier()!
+            }
+            let blockingManager = SSKEnvironment.shared.blockingManager
+            let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
+            let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in
+                blockingManager.addBlockedPhoneNumber(publicKey)
+                tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+            }
+            let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
+                blockingManager.removeBlockedPhoneNumber(publicKey)
+                tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+            }
+            return [ delete, (isBlocked ? unblock : block) ]
         } else {
             return [ delete ]
         }

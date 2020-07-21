@@ -1128,7 +1128,7 @@ typedef enum : NSUInteger {
 
     if (blockStateMessage) {
         [self createBannerWithTitle:blockStateMessage
-                        bannerColor:[UIColor ows_destructiveRedColor]
+                        bannerColor:LKColors.destructive
                         tapSelector:@selector(blockBannerViewWasTapped:)];
         return;
     }
@@ -1315,19 +1315,15 @@ typedef enum : NSUInteger {
 {
     self.userHasScrolled = NO;
 
-    // To avoid "noisy" animations (hiding the keyboard before showing
-    // the action sheet, re-showing it after), hide the keyboard before
-    // showing the "unblock" action sheet.
-    //
-    // Unblocking is a rare interaction, so it's okay to leave the keyboard
-    // hidden.
-    [self dismissKeyBoard];
+    [UIView setAnimationsEnabled:NO];
 
     [BlockListUIUtils showUnblockThreadActionSheet:self.thread
                                 fromViewController:self
                                    blockingManager:self.blockingManager
                                    contactsManager:self.contactsManager
                                    completionBlock:completionBlock];
+
+    [UIView setAnimationsEnabled:YES];
 }
 
 - (BOOL)isBlockedConversation
