@@ -44,52 +44,69 @@ public final class FileServerAPI : DotNetAPI {
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
+        
+        func handleRawResponseForDeviceLinks(rawResponse: JSON, data: [JSON]) -> Set<DeviceLink> {
+            return Set(data.flatMap { data -> [DeviceLink] in
+                guard let annotations = data["annotations"] as? [JSON], !annotations.isEmpty else { return [] }
+                guard let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
+                    let value = annotation["value"] as? JSON, let rawDeviceLinks = value["authorisations"] as? [JSON],
+                    let hexEncodedPublicKey = data["username"] as? String else {
+                    print("[Loki] Couldn't parse device links from: \(rawResponse).")
+                    return []
+                }
+                return rawDeviceLinks.compactMap { rawDeviceLink in
+                    guard let masterHexEncodedPublicKey = rawDeviceLink["primaryDevicePubKey"] as? String, let slaveHexEncodedPublicKey = rawDeviceLink["secondaryDevicePubKey"] as? String,
+                        let base64EncodedSlaveSignature = rawDeviceLink["requestSignature"] as? String else {
+                        print("[Loki] Couldn't parse device link for user: \(hexEncodedPublicKey) from: \(rawResponse).")
+                        return nil
+                    }
+                    let masterSignature: Data?
+                    if let base64EncodedMasterSignature = rawDeviceLink["grantSignature"] as? String {
+                        masterSignature = Data(base64Encoded: base64EncodedMasterSignature)
+                    } else {
+                        masterSignature = nil
+                    }
+                    let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
+                    let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
+                    let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+                    let deviceLink = DeviceLink(between: master, and: slave)
+                    if let masterSignature = masterSignature {
+                        guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
+                            print("[Loki] Received a device link with an invalid master signature.")
+                            return nil
+                        }
+                    }
+                    guard DeviceLinkingUtilities.hasValidSlaveSignature(deviceLink) else {
+                        print("[Loki] Received a device link with an invalid slave signature.")
+                        return nil
+                    }
+                    return deviceLink
+                }
+            })
+        }
+        
         return getAuthToken(for: server).then2 { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
+            if (useOnionRequests) {
+                return OnionRequestAPI.sendOnionRequestFileServerDest(request, server: server, using: fileServerPublicKey).map2 { rawResponse -> Set<DeviceLink> in
+                    guard let data = rawResponse["data"] as? [JSON] else {
+                        print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
+                        throw DotNetAPIError.parsingFailed
+                    }
+                    return handleRawResponseForDeviceLinks(rawResponse: rawResponse, data: data)
+                }.map2 { deviceLinks in
+                    storage.setDeviceLinks(deviceLinks)
+                    return deviceLinks
+                }
+            }
             return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw DotNetAPIError.parsingFailed
                 }
-                return Set(data.flatMap { data -> [DeviceLink] in
-                    guard let annotations = data["annotations"] as? [JSON], !annotations.isEmpty else { return [] }
-                    guard let annotation = annotations.first(where: { $0["type"] as? String == deviceLinkType }),
-                        let value = annotation["value"] as? JSON, let rawDeviceLinks = value["authorisations"] as? [JSON],
-                        let hexEncodedPublicKey = data["username"] as? String else {
-                        print("[Loki] Couldn't parse device links from: \(rawResponse).")
-                        return []
-                    }
-                    return rawDeviceLinks.compactMap { rawDeviceLink in
-                        guard let masterHexEncodedPublicKey = rawDeviceLink["primaryDevicePubKey"] as? String, let slaveHexEncodedPublicKey = rawDeviceLink["secondaryDevicePubKey"] as? String,
-                            let base64EncodedSlaveSignature = rawDeviceLink["requestSignature"] as? String else {
-                            print("[Loki] Couldn't parse device link for user: \(hexEncodedPublicKey) from: \(rawResponse).")
-                            return nil
-                        }
-                        let masterSignature: Data?
-                        if let base64EncodedMasterSignature = rawDeviceLink["grantSignature"] as? String {
-                            masterSignature = Data(base64Encoded: base64EncodedMasterSignature)
-                        } else {
-                            masterSignature = nil
-                        }
-                        let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
-                        let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
-                        let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
-                        let deviceLink = DeviceLink(between: master, and: slave)
-                        if let masterSignature = masterSignature {
-                            guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
-                                print("[Loki] Received a device link with an invalid master signature.")
-                                return nil
-                            }
-                        }
-                        guard DeviceLinkingUtilities.hasValidSlaveSignature(deviceLink) else {
-                            print("[Loki] Received a device link with an invalid slave signature.")
-                            return nil
-                        }
-                        return deviceLink
-                    }
-                })
+                return handleRawResponseForDeviceLinks(rawResponse: json, data: data)
             }.map2 { deviceLinks in
                 storage.setDeviceLinks(deviceLinks)
                 return deviceLinks
@@ -109,7 +126,10 @@ public final class FileServerAPI : DotNetAPI {
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             return attempt(maxRetryCount: 8, recoveringOn: SnodeAPI.workQueue) {
-                LokiFileServerProxy(for: server).perform(request).map2 { _ in }
+                if (useOnionRequests) {
+                    return OnionRequestAPI.sendOnionRequestFileServerDest(request, server: server, using: fileServerPublicKey).map2 { _ in }
+                }
+                return LokiFileServerProxy(for: server).perform(request).map2 { _ in }
             }.handlingInvalidAuthTokenIfNeeded(for: server).recover2 { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
@@ -160,6 +180,16 @@ public final class FileServerAPI : DotNetAPI {
         if let error = error {
             print("[Loki] Couldn't upload profile picture due to error: \(error).")
             return Promise(error: error)
+        }
+        if (useOnionRequests) {
+            return OnionRequestAPI.sendOnionRequestFileServerDest(request, server: server, using: fileServerPublicKey).map2 { json in
+                guard let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
+                    print("[Loki] Couldn't parse profile picture from: \(json).")
+                    throw DotNetAPIError.parsingFailed
+                }
+                UserDefaults.standard[.lastProfilePictureUpload] = Date()
+                return downloadURL
+            }
         }
         return LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).map2 { responseObject in
             guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {

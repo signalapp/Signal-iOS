@@ -198,7 +198,7 @@ public enum OnionRequestAPI {
                 // Recursively encrypt the layers of the onion (again in reverse order)
                 encryptionResult = r
                 var path = path
-                var destination: JSON = [:]
+                var destination = dest
                 func addLayer() -> Promise<EncryptionResult> {
                     if path.isEmpty {
                         return Promise<EncryptionResult> { $0.fulfill(encryptionResult) }
@@ -218,6 +218,17 @@ public enum OnionRequestAPI {
     }
 
     // MARK: Internal API
+    internal static func getCanonicalHeaders(for request: NSURLRequest) -> [String:Any] {
+        guard let headers = request.allHTTPHeaderFields else { return [:] }
+        return headers.mapValues { value in
+            switch value.lowercased() {
+            case "true": return true
+            case "false": return false
+            default: return value
+            }
+        }
+    }
+    
     /// Sends an onion request to `snode`. Builds new paths as needed.
     internal static func sendOnionRequestSnodeDest(invoking method: Snode.Method, on snode: Snode, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
@@ -230,11 +241,39 @@ public enum OnionRequestAPI {
     }
     
     /// Sends an onion request to `file server`. Builds new paths as needed.
-    internal static func sendOnionRequestLsrpcDest(to host: String, with payload: JSON, using x25519Key: String, associatedWith publicKey: String) -> Promise<JSON> {
-        let destination: JSON = [ "host"    : host,
+    internal static func sendOnionRequestFileServerDest(_ request: NSURLRequest, server: String, using x25519Key: String) -> Promise<JSON> {
+        var headers = getCanonicalHeaders(for: request)
+        let urlAsString = request.url!.absoluteString
+        let serverURLEndIndex = urlAsString.range(of: server)!.upperBound
+        let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
+        let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
+        let parametersAsString: String
+        if let tsRequest = request as? TSRequest {
+            headers["Content-Type"] = "application/json"
+            let parametersAsData = try! JSONSerialization.data(withJSONObject: tsRequest.parameters, options: [ .fragmentsAllowed ])
+            parametersAsString = !tsRequest.parameters.isEmpty ? String(bytes: parametersAsData, encoding: .utf8)! : "null"
+        } else {
+            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
+            if let parametersAsInputStream = request.httpBodyStream, let parametersAsData = try? Data(from: parametersAsInputStream) {
+                parametersAsString = "{ \"fileUpload\" : \"\(String(data: parametersAsData.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
+            } else {
+                parametersAsString = "null"
+            }
+        }
+        let payload: JSON = [
+            "body" : parametersAsString,
+            "endpoint": endpoint,
+            "method" : request.httpMethod,
+            "headers" : headers
+        ]
+        let destination: JSON = [ "host"    : request.url?.host,
                                   "target"  : "/loki/v1/lsrpc",
                                   "method"  : "POST"]
-        let promise = sendOnionRequest(on: nil, with: payload, to: destination, using: x25519Key, associatedWith: publicKey)
+        let promise = sendOnionRequest(on: nil, with: payload, to: destination, using: x25519Key, associatedWith: getUserHexEncodedPublicKey())
+        promise.recover2{ error -> Promise<JSON> in
+            // TODO: File Server API handle Error
+            throw error
+        }
         return promise
     }
     

@@ -35,14 +35,21 @@ extension OnionRequestAPI {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         DispatchQueue.global(qos: .userInitiated).async {
             do {
+                // The wrapper is not needed when it is a file server onion request
                 guard JSONSerialization.isValidJSONObject(payload) else { return seal.reject(HTTP.Error.invalidJSON) }
-                let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
-                let payloadAsString = String(data: payloadAsData, encoding: .utf8)! // Snodes only accept this as a string
-                let wrapper: JSON = [ "body" : payloadAsString, "headers" : "" ]
-                guard JSONSerialization.isValidJSONObject(wrapper) else { return seal.reject(HTTP.Error.invalidJSON) }
-                let plaintext = try JSONSerialization.data(withJSONObject: wrapper, options: [ .fragmentsAllowed ])
-                let result = try encrypt(plaintext, using: x25519Key)
-                seal.fulfill(result)
+                if let destination = destination["destination"] {
+                    let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
+                    let payloadAsString = String(data: payloadAsData, encoding: .utf8)! // Snodes only accept this as a string
+                    let wrapper: JSON = [ "body" : payloadAsString, "headers" : "" ]
+                    guard JSONSerialization.isValidJSONObject(wrapper) else { return seal.reject(HTTP.Error.invalidJSON) }
+                    let plaintext = try JSONSerialization.data(withJSONObject: wrapper, options: [ .fragmentsAllowed ])
+                    let result = try encrypt(plaintext, using: x25519Key)
+                    seal.fulfill(result)
+                } else {
+                    let plaintext = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
+                    let result = try encrypt(plaintext, using: x25519Key)
+                    seal.fulfill(result)
+                }
             } catch (let error) {
                 seal.reject(error)
             }
