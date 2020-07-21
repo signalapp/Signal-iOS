@@ -1543,6 +1543,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         BOOL shouldUseFallbackEncryption = [LKSessionManagementProtocol shouldUseFallbackEncryptionForMessage:message recipientID:recipientID transaction:transaction];
 
+        if (shouldUseFallbackEncryption) {
+            [LKLogger print:@"[Loki] Using fallback encryption"];
+        } else {
+            [LKLogger print:@"[Loki] Using Signal Encryption"];
+        }
+
         serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientPublicKey:recipientID
                                                                                     deviceID:@(OWSDevicePrimaryDeviceId).intValue
                                                                              paddedPlaintext:plainText.paddedMessageBody

@@ -712,6 +712,12 @@ typedef enum : NSUInteger {
             [SSKEnvironment.shared.profileManager ensureProfileCachedForContactWithID:self.thread.contactIdentifier with:transaction];
         }];
     }
+
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
+        } error:nil];
+    }
 }
 
 - (void)createContents

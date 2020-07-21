@@ -64,6 +64,7 @@ public final class SessionManagementProtocol : NSObject {
     public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage, recipientID: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
         if message is SessionRequestMessage { return true }
         else if let message = message as? DeviceLinkMessage, message.kind == .request { return true }
+        else if message is OWSOutgoingNullMessage { return false }
         return !storage.containsSession(recipientID, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
     }
 
