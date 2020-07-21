@@ -3,6 +3,9 @@
 //
 
 private protocol TSConstantsProtocol: class {
+    var signalWebsiteURL: String { get }
+    var signalSupportURL: String { get }
+
     var textSecureWebSocketAPI: String { get }
     var textSecureServerURL: String { get }
     var textSecureCDN0ServerURL: String { get }
@@ -43,6 +46,11 @@ public class TSConstants: NSObject {
 
     // Never instantiate this class.
     private override init() {}
+
+    @objc
+    public static var signalWebsiteURL: String { return shared.signalWebsiteURL }
+    @objc
+    public static var signalSupportURL: String { return shared.signalSupportURL }
 
     @objc
     public static var textSecureWebSocketAPI: String { return shared.textSecureWebSocketAPI }
@@ -150,6 +158,9 @@ public class TSConstants: NSObject {
 
 private class TSConstantsProduction: TSConstantsProtocol {
 
+    public let signalWebsiteURL = "https://signal.org/"
+    public let signalSupportURL = "https://support.signal.org/"
+
     public let textSecureWebSocketAPI = "wss://textsecure-service.whispersystems.org/v1/websocket/"
     public let textSecureServerURL = "https://textsecure-service.whispersystems.org/"
     public let textSecureCDN0ServerURL = "https://cdn.signal.org"
@@ -189,6 +200,9 @@ private class TSConstantsProduction: TSConstantsProtocol {
 // MARK: -
 
 private class TSConstantsStaging: TSConstantsProtocol {
+
+    public let signalWebsiteURL = "https://signal.org/"
+    public let signalSupportURL = "https://support.signal.org/"
 
     public let textSecureWebSocketAPI = "wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
     public let textSecureServerURL = "https://textsecure-service-staging.whispersystems.org/"

@@ -1727,6 +1727,12 @@
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
 
+/* Help item allowing the user to file a support request */
+"HELP_CONTACT_US" = "Contact Us";
+
+/* Help item that takes the user to the Signal support website */
+"HELP_SUPPORT_CENTER" = "Support Center";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
 
@@ -3581,8 +3587,8 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
 
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Help";
+/* Title for support page in app settings. */
+"SETTINGS_HELP" = "Help";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
@@ -3725,9 +3731,6 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Screen Security";
 
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "Support";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registration Lock";
 
@@ -3865,6 +3868,24 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+
+/* Header of support description field */
+"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+
+/* Title of the support request view controller */
+"SUPPORT_CONTACT_US_TITLE" = "SUPPORT_CONTACT_US_TITLE";
+
+/* Placeholder string for support description */
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+
+/* Header for emoji mood selection */
+"SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";
+
+/* Label in support request informing user about Signal FAQ */
+"SUPPORT_FAQ_PROMPT" = "Have you read our FAQ yet?";
+
+/* Label describing support switch to attach debug logs */
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";

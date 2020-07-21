@@ -311,6 +311,14 @@ public extension CGSize {
         return CGSize(width: Swift.abs(width), height: Swift.abs(height))
     }
 
+    var largerAxis: CGFloat {
+        return max(width, height)
+    }
+
+    var smallerAxis: CGFloat {
+        return min(width, height)
+    }
+
     init(square: CGFloat) {
         self.init(width: square, height: square)
     }
