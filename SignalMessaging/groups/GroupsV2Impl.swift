@@ -964,13 +964,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
 
-        guard RemoteConfig.groupsV2GoodCitizen else {
+        guard RemoteConfig.groupsV2GoodCitizen,
+            RemoteConfig.versionedProfileFetches else {
             return Promise(error: GroupsV2Error.gv2NotEnabled)
-        }
-
-        guard FeatureFlags.groupsV2,
-                RemoteConfig.versionedProfileFetches else {
-                    return Promise(error: GroupsV2Error.gv2NotEnabled)
         }
 
         // 1. Use known credentials, where possible.

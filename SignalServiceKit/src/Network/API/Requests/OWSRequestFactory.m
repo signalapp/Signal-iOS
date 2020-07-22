@@ -505,7 +505,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (SSKFeatureFlags.uuidCapabilities) {
         capabilities[@"uuid"] = @(YES);
     }
-    if (SSKFeatureFlags.groupsV2SetCapability) {
+    if (RemoteConfig.groupsV2SetCapability) {
         capabilities[@"gv2"] = @(YES);
     }
     if (OWSKeyBackupService.hasBackedUpMasterKey) {

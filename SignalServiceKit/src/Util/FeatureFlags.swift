@@ -179,33 +179,16 @@ public class FeatureFlags: BaseFlags {
     public static let answerCallsOnSecondaryDevice: Bool = true
 
     @objc
-    public static let groupsV2 = build.includes(.qa)
-
-    // Don't consult this feature flag directly; instead
-    // consult RemoteConfig.groupsV2CreateGroups.
-    @objc
-    public static let groupsV2CreateGroups = groupsV2
-
-    // Don't consult this feature flag directly; instead
-    // consult RemoteConfig.groupsV2GoodCitizen.
-    @objc
-    public static let groupsV2GoodCitizen = groupsV2
+    static let groupsV2 = build.includes(.qa)
 
     // The other clients don't consider this MVP, but we already implemented it.
     // It enables an optimization where other clients can usually update without
     // interacting with the service.
-    //
-    // GroupsV2 TODO: Decide whether or not to set this flag.
     @objc
-    public static let groupsV2embedProtosInGroupUpdates = false
+    public static let groupsV2embedProtosInGroupUpdates = true
 
     @objc
-    public static let groupsV2processProtosInGroupUpdates = false
-
-    // Don't consult this feature flag directly; instead
-    // consult RemoteConfig.groupsV2SetCapability.
-    @objc
-    public static let groupsV2SetCapability = groupsV2
+    public static let groupsV2processProtosInGroupUpdates = true
 
     @objc
     public static let groupsV2reapplyCurrentRevision = false
@@ -316,7 +299,7 @@ public class DebugFlags: BaseFlags {
 
     // This flag auto-enables the groupv2 flags in RemoteConfig.
     @objc
-    public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2ForceEnableRemoteConfig = FeatureFlags.groupsV2 && build.includes(.qa)
 
     // If set, client will invite instead of adding other users.
     private static let _groupsV2forceInvites = AtomicBool(false)

@@ -29,8 +29,8 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2CreateGroups: Bool {
-        guard FeatureFlags.groupsV2CreateGroups else { return false }
-        if DebugFlags.groupsV2IgnoreServerFlags { return true }
+        guard FeatureFlags.groupsV2 else { return false }
+        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
@@ -39,15 +39,15 @@ public class RemoteConfig: BaseFlags {
         if groupsV2CreateGroups {
             return true
         }
-        guard FeatureFlags.groupsV2GoodCitizen else { return false }
-        if DebugFlags.groupsV2IgnoreServerFlags { return true }
+        guard FeatureFlags.groupsV2 else { return false }
+        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
     @objc
     public static var groupsV2SetCapability: Bool {
-        guard FeatureFlags.groupsV2SetCapability else { return false }
-        if DebugFlags.groupsV2IgnoreServerFlags { return true }
+        guard groupsV2GoodCitizen else { return false }
+        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
@@ -167,6 +167,7 @@ private struct Flags {
     enum StickyIsEnabledFlags: String, FlagType {
         case groupsV2GoodCitizen
         case versionedProfiles
+        case modernCDS
     }
 
     // We filter the received config down to just the supported flags.
@@ -180,6 +181,7 @@ private struct Flags {
         case groupsV2GoodCitizen
         case deleteForEveryone
         case versionedProfiles
+        case modernCDS
     }
 
     // Values defined in this array remain set once they are
