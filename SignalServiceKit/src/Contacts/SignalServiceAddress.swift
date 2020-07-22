@@ -12,16 +12,16 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SSKEnvironment.shared.signalServiceAddressCache
     }
 
-    private(set) var backingPhoneNumber: String?
+    private let backingPhoneNumber: AtomicValue<String?>
     @objc public var phoneNumber: String? {
-        guard let phoneNumber = backingPhoneNumber else {
+        guard let phoneNumber = backingPhoneNumber.get() else {
             // If we weren't initialized with a phone number, but the phone number exists in the cache, use it
-            guard let uuid = backingUuid,
+            guard let uuid = backingUuid.get(),
                 let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid)
             else {
                 return nil
             }
-            backingPhoneNumber = cachedPhoneNumber
+            backingPhoneNumber.set(cachedPhoneNumber)
             return cachedPhoneNumber
         }
 
@@ -29,16 +29,16 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     // TODO UUID: eventually this can be not optional
-    private(set) var backingUuid: UUID?
+    private let backingUuid: AtomicValue<UUID?>
     @objc public var uuid: UUID? {
-        guard let uuid = backingUuid else {
+        guard let uuid = backingUuid.get() else {
             // If we weren't initialized with a uuid, but the uuid exists in the cache, use it
-            guard let phoneNumber = backingPhoneNumber,
+            guard let phoneNumber = backingPhoneNumber.get(),
                 let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber)
             else {
                 return nil
             }
-            backingUuid = cachedUuid
+            backingUuid.set(cachedUuid)
             return cachedUuid
         }
 
@@ -71,29 +71,29 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     public init(uuid: UUID?, phoneNumber: String?) {
         if phoneNumber == nil, let uuid = uuid,
             let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
-            backingPhoneNumber = cachedPhoneNumber
+            backingPhoneNumber = AtomicValue(cachedPhoneNumber)
         } else {
             if let phoneNumber = phoneNumber, phoneNumber.isEmpty {
                 owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
             }
 
-            backingPhoneNumber = phoneNumber
+            backingPhoneNumber = AtomicValue(phoneNumber)
         }
 
         if uuid == nil, let phoneNumber = phoneNumber,
             let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
-            backingUuid = cachedUuid
+            backingUuid = AtomicValue(cachedUuid)
         } else {
-            backingUuid = uuid
+            backingUuid = AtomicValue(uuid)
         }
 
         // If we have a backing UUID, we don't want to cache its mapping to the phone number.
         // Instead, just lookup the hash based on the UUID alone.
         // Only SignalRecipient ever updates the UUID <-> phone number mapping.
-        if let backingUuid = backingUuid {
+        if let backingUuid = backingUuid.get() {
             backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid)
         } else {
-            backingHashValue = SignalServiceAddress.cache.hashAndCache(phoneNumber: backingPhoneNumber)
+            backingHashValue = SignalServiceAddress.cache.hashAndCache(phoneNumber: backingPhoneNumber.get())
         }
 
         super.init()
@@ -116,12 +116,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     func mappingDidChange(notification: Notification) {
-        guard let backingUuid = backingUuid,
+        guard let backingUuid = backingUuid.get(),
             let updatedUuid = notification.userInfo?[SignalServiceAddressCache.mappingDidChangeNotificationUUIDKey] as? UUID,
             backingUuid == updatedUuid
             else { return }
 
-        backingPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid)
+        backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid))
     }
 
     @objc
@@ -143,24 +143,24 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     // MARK: -
 
     public func encode(with aCoder: NSCoder) {
-        aCoder.encode(backingUuid, forKey: "backingUuid")
+        aCoder.encode(backingUuid.get(), forKey: "backingUuid")
 
         // Only encode the backingPhoneNumber if we don't know the UUID
-        aCoder.encode(backingUuid == nil ? backingPhoneNumber : nil, forKey: "backingPhoneNumber")
+        aCoder.encode(backingUuid.get() == nil ? backingPhoneNumber.get() : nil, forKey: "backingPhoneNumber")
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        backingUuid = (aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?)
+        backingUuid = AtomicValue(aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?)
 
         // Only decode the backingPhoneNumber if we don't know the UUID, otherwise
         // pull the phone number from the cache.
-        if let backingUuid = backingUuid {
-            backingPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid)
+        if let backingUuid = backingUuid.get() {
+            backingPhoneNumber = AtomicValue(SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid))
         } else {
-            backingPhoneNumber = (aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
+            backingPhoneNumber = AtomicValue(aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
         }
 
-        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid, phoneNumber: backingPhoneNumber)
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get())
     }
 
     // MARK: -

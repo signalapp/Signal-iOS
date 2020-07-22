@@ -12,6 +12,9 @@ import Contacts
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
+    func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
+        return true
+    }
 
     private var mockDisplayNameMap = [SignalServiceAddress: String]()
 

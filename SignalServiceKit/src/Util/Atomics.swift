@@ -95,7 +95,7 @@ public class AtomicUInt: NSObject {
 
 // MARK: -
 
-public class AtomicValue<T> {
+public final class AtomicValue<T> {
     private var value: T
 
     public required init(_ value: T) {
@@ -126,6 +126,20 @@ public class AtomicValue<T> {
             self.value = newValue
             return newValue
         }
+    }
+}
+
+// MARK: - 
+
+extension AtomicValue: Codable where T: Codable {
+    public convenience init(from decoder: Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        self.init(try singleValueContainer.decode(T.self))
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(value)
     }
 }
 

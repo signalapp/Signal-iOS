@@ -110,5 +110,8 @@ extension SignalRecipient {
         }
 
         SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: phoneNumber)
+
+        // Verify the mapping change worked as expected.
+        owsAssertDebug(SignalServiceAddress(uuid: uuid).phoneNumber == phoneNumber)
     }
 }

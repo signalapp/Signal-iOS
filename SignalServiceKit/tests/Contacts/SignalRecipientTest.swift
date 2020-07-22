@@ -40,12 +40,12 @@ class SignalRecipientTest: SSKBaseTestSwift {
     // MARK: - Low Trust
 
     func testLowTrustPhoneNumberOnly() {
-        // Phone number only recipients aren't recorded
+        // Phone number only recipients are recorded
         let recipient = CommonGenerator.address(hasUUID: false)
         write { transaction in
             SignalRecipient.mark(asRegisteredAndGet: recipient, trustLevel: .low, transaction: transaction)
 
-            XCTAssertFalse(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
+            XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
         }
     }
 

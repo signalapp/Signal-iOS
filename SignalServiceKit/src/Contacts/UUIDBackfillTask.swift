@@ -227,7 +227,7 @@ extension UUIDBackfillTask {
                                     unregistering addressesToUnregister: [SignalServiceAddress]) {
             SDSDatabaseStorage.shared.write { (writeTx) in
                 addressesToRegister.forEach { (toRegister) in
-                    SignalRecipient.mark(asRegisteredAndGet: toRegister, transaction: writeTx)
+                    SignalRecipient.mark(asRegisteredAndGet: toRegister, trustLevel: .high, transaction: writeTx)
                 }
                 addressesToUnregister.forEach { (toUnregister) in
                     SignalRecipient.mark(asUnregistered: toUnregister, transaction: writeTx)

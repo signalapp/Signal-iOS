@@ -8,6 +8,10 @@ import XCTest
 
 class SignalServiceAddressTest: SSKBaseTestSwift {
 
+    var cache: SignalServiceAddressCache {
+        return SSKEnvironment.shared.signalServiceAddressCache
+    }
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -31,6 +35,8 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // Single match works, ignores single missing.
         //
         // SignalServiceAddress's getters use a cache to fill in the blanks.
+        cache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
+
         XCTAssertEqual(SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1),
                        SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1))
         XCTAssertEqual(SignalServiceAddress(uuid: uuid1),

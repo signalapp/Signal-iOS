@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *data = [NSData new];
     NSError *error;
-    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:data error:&error];
+    SSKProtoEnvelope *_Nullable envelope = [[SSKProtoEnvelope alloc] initWithSerializedData:data error:&error];
     XCTAssertNil(envelope);
     XCTAssertNotNil(error);
 }
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *data = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error;
-    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:data error:&error];
+    SSKProtoEnvelope *_Nullable envelope = [[SSKProtoEnvelope alloc] initWithSerializedData:data error:&error];
     XCTAssertNil(envelope);
     XCTAssertNotNil(error);
 }

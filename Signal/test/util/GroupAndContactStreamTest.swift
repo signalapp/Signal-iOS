@@ -321,6 +321,9 @@ class GroupAndContactStreamTest: SignalBaseTest {
 }
 
 class TestContactsManager: NSObject, ContactsManagerProtocol {
+    func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
+        return true
+    }
 
     func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
         return signalAccount.recipientAddress.stringForDisplay
