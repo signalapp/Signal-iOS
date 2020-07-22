@@ -4,7 +4,7 @@ public class LK002RemoveFriendRequests : OWSDatabaseMigration {
 
     @objc
     class func migrationId() -> String {
-        return "971284781"
+        return "002"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
