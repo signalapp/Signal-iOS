@@ -630,6 +630,7 @@
 		C35E8AA82485C85800ACB629 /* GeoLite2-Country-Locations-English.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */; };
 		C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */; };
 		C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAD2485E51D00ACB629 /* IP2Country.swift */; };
+		C3638C0524C7F0B500AF29BC /* LK002RemoveFriendRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */; };
 		C36B8707243C50C60049991D /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
@@ -1508,6 +1509,7 @@
 		C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Locations-English.csv"; sourceTree = "<group>"; };
 		C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Blocks-IPv4.csv"; sourceTree = "<group>"; };
 		C35E8AAD2485E51D00ACB629 /* IP2Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP2Country.swift; sourceTree = "<group>"; };
+		C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK002RemoveFriendRequests.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupSuggestionSheet.swift; sourceTree = "<group>"; };
@@ -2786,6 +2788,7 @@
 		B846365922B7417900AF1514 /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				C3638C0324C7F09F00AF29BC /* Migrations */,
 				B8C9689223FA1B05005F64E0 /* Redesign */,
 				B8544E3623D520F600299F14 /* Jazz Icon */,
 			);
@@ -2948,6 +2951,14 @@
 				C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */,
 			);
 			path = CSV;
+			sourceTree = "<group>";
+		};
+		C3638C0324C7F09F00AF29BC /* Migrations */ = {
+			isa = PBXGroup;
+			children = (
+				C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */,
+			);
+			path = Migrations;
 			sourceTree = "<group>";
 		};
 		D221A07E169C9E5E00537ABF = {
@@ -3940,6 +3951,7 @@
 				346129FF1FD5F31400532771 /* OWS103EnableVideoCalling.m in Sources */,
 				346129E31FD5C0BE00532771 /* VersionMigrations.m in Sources */,
 				4C7537892193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift in Sources */,
+				C3638C0524C7F0B500AF29BC /* LK002RemoveFriendRequests.swift in Sources */,
 				340872CB2239563500CB25B0 /* AttachmentPrepViewController.swift in Sources */,
 				34AC0A16211B39EA00997B47 /* OWSNavigationBar.swift in Sources */,
 				34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */,
