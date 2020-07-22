@@ -38,7 +38,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButtonBottomOffsetSpacer = UIView()
-        registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
+        registerButtonBottomOffsetSpacer.set(.height, to: isIPhone5OrSmaller ? CGFloat(16) : Values.onboardingButtonBottomOffset)
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
         registerButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
