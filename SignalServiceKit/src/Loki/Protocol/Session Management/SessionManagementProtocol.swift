@@ -58,69 +58,59 @@ public final class SessionManagementProtocol : NSObject {
         print("[Loki] Signed pre key rotated successfully.")
     }
 
-    @objc(isSessionRequiredForMessage:)
-    public static func isSessionRequired(for message: TSOutgoingMessage) -> Bool {
-        if message is FriendRequestMessage { return false }
-        else if message is SessionRequestMessage { return false }
-        else if let message = message as? DeviceLinkMessage, message.kind == .request { return false }
-        else if (message.thread as? TSGroupThread)?.usesSharedSenderKeys == true { return false }
-        return true
-    }
-
-    @objc(shouldUseFallbackEncryptionForMessage:)
-    public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage) -> Bool {
-        return !isSessionRequired(for: message)
-    }
-
-    @objc(isSessionRestorationRequest:)
-    public static func isSessionRestorationRequest(_ dataMessage: SSKProtoDataMessage?) -> Bool {
-        guard let dataMessage = dataMessage else { return false }
-        let sessionRestoreFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRestore
-        return dataMessage.hasFlags && (dataMessage.flags & UInt32(sessionRestoreFlag.rawValue) != 0)
-    }
-
-    @objc(isSessionRequestMessage:)
-    public static func isSessionRequestMessage(_ dataMessage: SSKProtoDataMessage?) -> Bool {
-        guard let dataMessage = dataMessage else { return false }
-        let sessionRequestFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRequest
-        return dataMessage.hasFlags && (dataMessage.flags & UInt32(sessionRequestFlag.rawValue) != 0)
-    }
-
     // MARK: - Sending
 
-    public static func establishSessionIfNeeded(with publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(shouldUseFallbackEncryptionForMessage:recipientID:transaction:)
+    public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage, recipientID: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
+        if message is SessionRequestMessage { return true }
+        else if let message = message as? DeviceLinkMessage, message.kind == .request { return true }
+        else if message is OWSOutgoingNullMessage { return false }
+        return !storage.containsSession(recipientID, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
+    }
+
+    private static func hasSentSessionRequestExpired(for publicKey: String) -> Bool {
+        let timestamp = Storage.getSessionRequestSentTimestamp(for: publicKey)
+        let expiration = timestamp + TTLUtilities.getTTL(for: .sessionRequest)
+        return NSDate.ows_millisecondTimeStamp() > expiration
+    }
+
+    @objc(sendSessionRequestIfNeededToPublicKey:transaction:)
+    public static func sendSessionRequestIfNeeded(to publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // It's never necessary to establish a session with self
         guard publicKey != getUserHexEncodedPublicKey() else { return }
         // Check that we don't already have a session
         let hasSession = storage.containsSession(publicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
         guard !hasSession else { return }
-        // Check that we didn't already send or process a session request
-        var hasSentOrProcessedSessionRequest = false
-        storage.dbReadConnection.read { transaction in
-            hasSentOrProcessedSessionRequest = storage.getSessionRequestTimestamp(for: publicKey, in: transaction) != nil
+        // Check that we didn't already send a session request
+        let hasSentSessionRequest = (Storage.getSessionRequestSentTimestamp(for: publicKey) > 0)
+        let hasSentSessionRequestExpired = SessionManagementProtocol.hasSentSessionRequestExpired(for: publicKey)
+        if hasSentSessionRequestExpired {
+            Storage.setSessionRequestSentTimestamp(for: publicKey, to: 0, using: transaction)
         }
-        guard !hasSentOrProcessedSessionRequest else { return }
+        guard !hasSentSessionRequest || hasSentSessionRequestExpired else { return }
         // Create the thread if needed
         let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         thread.save(with: transaction)
         // Send the session request
         print("[Loki] Sending session request to: \(publicKey).")
-        storage.setSessionRequestTimestamp(for: publicKey, to: Date(), in: transaction)
+        Storage.setSessionRequestSentTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
         let sessionRequestMessage = SessionRequestMessage(thread: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
     }
 
-    @objc(sendSessionEstablishedMessageToPublicKey:transaction:)
-    public static func sendSessionEstablishedMessage(to publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
+    @objc(sendNullMessageToPublicKey:transaction:)
+    public static func sendNullMessage(to publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
         let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         thread.save(with: transaction)
-        let ephemeralMessage = EphemeralMessage(thread: thread)
+        let nullMessage = OWSOutgoingNullMessage(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageBody: nil,
+            attachmentIds: [], expiresInSeconds: 0, expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .unspecified, quotedMessage: nil,
+            contactShare: nil, linkPreview: nil)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-        messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
+        messageSenderJobQueue.add(message: nullMessage, transaction: transaction)
     }
 
-    /// DEPRECATED.
+    /// - Note: Deprecated.
     ///
     /// Only relevant for closed groups that don't use shared sender keys.
     @objc(shouldIgnoreMissingPreKeyBundleExceptionForMessage:to:)
@@ -140,15 +130,15 @@ public final class SessionManagementProtocol : NSObject {
         guard let thread = thread as? TSContactThread else {
             return print("[Loki] Can't restore session for non contact thread.")
         }
-        // Send session restoration request messages to the devices requiring session restoration
+        // Send end session messages to the devices requiring session restoration
         let devices = thread.sessionRestoreDevices // TODO: Rename this to something that reads better
         for device in devices {
             guard ECKeyPair.isValidHexEncodedPublicKey(candidate: device) else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: device, transaction: transaction)
             thread.save(with: transaction)
-            let sessionRestorationRequestMessage = SessionRestoreMessage(thread: thread)
+            let endSessionMessage = EndSessionMessage(in: thread, messageBody: "TERMINATE", attachmentId: nil)
             let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-            messageSenderJobQueue.add(message: sessionRestorationRequestMessage, transaction: transaction)
+            messageSenderJobQueue.add(message: endSessionMessage, transaction: transaction)
         }
         thread.removeAllSessionRestoreDevices(with: transaction)
         // Notify the user
@@ -175,6 +165,12 @@ public final class SessionManagementProtocol : NSObject {
         }
     }
 
+    private static func shouldProcessSessionRequest(from publicKey: String, at timestamp: UInt64) -> Bool {
+        let sentTimestamp = Storage.getSessionRequestSentTimestamp(for: publicKey)
+        let processedTimestamp = Storage.getSessionRequestProcessedTimestamp(for: publicKey)
+        return timestamp > sentTimestamp && timestamp > processedTimestamp
+    }
+
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:transaction:)
     public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         let publicKey = envelope.source! // Set during UD decryption
@@ -183,29 +179,12 @@ public final class SessionManagementProtocol : NSObject {
         guard let preKeyBundle = preKeyBundleMessage.getPreKeyBundle(with: transaction) else {
             return print("[Loki] Couldn't parse pre key bundle received from: \(publicKey).")
         }
-        if isSessionRequestMessage(protoContent.dataMessage),
-            let sessionRequestTimestamp = storage.getSessionRequestTimestamp(for: publicKey, in: transaction),
-            envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sessionRequestTimestamp) {
-            // We sent or processed a session request after this one was sent
+        if !shouldProcessSessionRequest(from: publicKey, at: envelope.timestamp) {
             return print("[Loki] Ignoring session request from: \(publicKey).")
         }
         storage.setPreKeyBundle(preKeyBundle, forContact: publicKey, transaction: transaction)
-    }
-
-    /// - Note: Must be invoked after `handlePreKeyBundleMessageIfNeeded(_:wrappedIn:using:)`.
-    @objc(handleSessionRequestMessageIfNeeded:wrappedIn:transaction:)
-    public static func handleSessionRequestMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) -> Bool {
-        guard isSessionRequestMessage(protoContent.dataMessage) else { return false }
-        let publicKey = envelope.source! // Set during UD decryption
-        if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: publicKey, in: transaction),
-            envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
-            // We sent or processed a session request after this one was sent
-            print("[Loki] Ignoring session request from: \(publicKey).")
-            return false
-        }
-        storage.setSessionRequestTimestamp(for: publicKey, to: Date(), in: transaction)
-        sendSessionEstablishedMessage(to: publicKey, in: transaction)
-        return true
+        Storage.setSessionRequestProcessedTimestamp(for: publicKey, to: NSDate.ows_millisecondTimeStamp(), using: transaction)
+        sendNullMessage(to: publicKey, in: transaction)
     }
 
     @objc(handleEndSessionMessageReceivedInThread:using:)
@@ -220,9 +199,7 @@ public final class SessionManagementProtocol : NSObject {
         // Update the session reset status
         thread.sessionResetStatus = .requestReceived
         thread.save(with: transaction)
-        // Send an ephemeral message
-        let ephemeralMessage = EphemeralMessage(thread: thread)
-        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-        messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
+        // Send a null message
+        sendNullMessage(to: publicKey, in: transaction)
     }
 }

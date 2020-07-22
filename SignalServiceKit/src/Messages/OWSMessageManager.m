@@ -266,12 +266,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
+    if ([self isEnvelopeSenderBlocked:envelope]) {
+        return;
+    }
     
     [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
     switch (envelope.type) {
-        case SSKProtoEnvelopeTypeFriendRequest:
+        case SSKProtoEnvelopeTypeFallbackMessage:
         case SSKProtoEnvelopeTypeCiphertext:
         case SSKProtoEnvelopeTypePrekeyBundle:
         case SSKProtoEnvelopeTypeClosedGroupCiphertext:
@@ -435,35 +437,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"Handling content: <Content: %@>.", [self descriptionForContent:contentProto]);
 
-        // Loki: Ignore friend requests from before restoration (deprecated)
-        if ([LKFriendRequestProtocol isFriendRequestFromBeforeRestoration:envelope]) {
-            [LKLogger print:@"[Loki] Ignoring friend request from before restoration."];
-            return;
-        }
-
-        // Loki: Ignore duplicate sync transcripts
         if ([LKSyncMessagesProtocol isDuplicateSyncMessage:contentProto fromPublicKey:envelope.source]) {
             [LKLogger print:@"[Loki] Ignoring duplicate sync transcript."];
             return;
         }
 
-        // Loki: Handle pre key bundle message if needed
         [LKSessionManagementProtocol handlePreKeyBundleMessageIfNeeded:contentProto wrappedIn:envelope transaction:transaction];
 
-        // Loki: Handle session request if needed
-        if ([LKSessionManagementProtocol handleSessionRequestMessageIfNeeded:contentProto wrappedIn:envelope transaction:transaction]) {
-            return;
-        }
-
-        // Loki: Handle session restoration request if needed (deprecated)
-        if ([LKSessionManagementProtocol isSessionRestorationRequest:contentProto.dataMessage]) {
-            return;
-        }
-
-        // Loki: Handle friend request acceptance if needed (deprecated)
-        [LKFriendRequestProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
-
-        // Loki: Handle device linking message if needed
         if (contentProto.lokiDeviceLinkMessage != nil) {
             [LKMultiDeviceProtocol handleDeviceLinkMessageIfNeeded:contentProto wrappedIn:envelope transaction:transaction];
         } else if (contentProto.syncMessage) {
@@ -482,54 +462,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage];
         } else if (contentProto.typingMessage) {
             [self handleIncomingEnvelope:envelope withTypingMessage:contentProto.typingMessage transaction:transaction];
-        } else if (contentProto.nullMessage) {
-            // Loki: This is needed for compatibility with refactored desktop clients
-            // ========
-            NSString *publicKey = envelope.source;
-            if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
-                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:publicKey transaction:transaction];
-                [thread saveWithTransaction:transaction];
-                OWSOutgoingNullMessage *sessionEstablishedMessage = [[OWSOutgoingNullMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                                                            inThread:thread
-                                                                                                                         messageBody:nil
-                                                                                                                       attachmentIds:[NSMutableArray new]
-                                                                                                                    expiresInSeconds:0
-                                                                                                                     expireStartedAt:0
-                                                                                                                      isVoiceMessage:NO
-                                                                                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                                                                                       quotedMessage:nil
-                                                                                                                        contactShare:nil
-                                                                                                                         linkPreview:nil];
-                SSKMessageSenderJobQueue *messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue;
-                [messageSenderJobQueue addMessage:sessionEstablishedMessage transaction:transaction];
-            } else {
-                OWSLogWarn(@"Ignoring null message from: %@.", publicKey);
-            }
-            LKFriendRequestStatus friendRequestStatus = [self.primaryStorage getFriendRequestStatusForContact:publicKey transaction:transaction];
-            if (friendRequestStatus == LKFriendRequestStatusNone || friendRequestStatus == LKFriendRequestStatusRequestExpired) {
-                [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusRequestReceived forContact:publicKey transaction:transaction];
-            } else if (friendRequestStatus == LKFriendRequestStatusRequestSent) {
-                // Loki: Update device links in a blocking way
-                // FIXME: This is horrible for performance
-                // FIXME: ========
-                // The envelope source is set during UD decryption
-                if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:publicKey]) {
-                    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-                    [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForPublicKey:envelope.source transaction:transaction].ensureOn(queue, ^() {
-                        dispatch_semaphore_signal(semaphore);
-                    }).catchOn(queue, ^(NSError *error) {
-                        dispatch_semaphore_signal(semaphore);
-                    }) retainUntilComplete];
-                    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
-                }
-                // FIXME: ========
-                [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusFriends forContact:publicKey transaction:transaction];
-                [LKFriendRequestProtocol sendFriendRequestAcceptedMessageToPublicKey:publicKey using:transaction];
-                NSString *masterPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:publicKey in:transaction] ?: publicKey);
-                [LKSyncMessagesProtocol syncContactWithPublicKey:masterPublicKey];
-            }
-            // ========
         } else if (contentProto.receiptMessage) {
             [self handleIncomingEnvelope:envelope
                       withReceiptMessage:contentProto.receiptMessage
@@ -594,7 +526,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    // Loki: Handle SSK logic if needed
     [LKClosedGroupsProtocol handleSharedSenderKeysUpdateIfNeeded:dataMessage from:envelope.source transaction:transaction];
 
     if (dataMessage.group) {
@@ -602,7 +533,6 @@ NS_ASSUME_NONNULL_BEGIN
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
         if (groupThread) {
-            // Loki: Ignore closed group message if needed
             if (groupThread.groupModel.groupType == closedGroup) {
                 if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupMessage:dataMessage inThread:groupThread wrappedIn:envelope]) { return; }
             }
@@ -952,7 +882,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // Loki: Take into account multi device when checking sync message validity
     if (![LKSyncMessagesProtocol isValidSyncMessage:envelope transaction:transaction]) {
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
@@ -1007,10 +936,8 @@ NS_ASSUME_NONNULL_BEGIN
              ];
         } else {
             if (transcript.isGroupUpdate) {
-                // Loki: Handle closed group updated sync message (deprecated)
                 [LKSyncMessagesProtocol handleClosedGroupUpdateSyncMessageIfNeeded:transcript wrappedIn:envelope transaction:transaction];
             } else if (transcript.isGroupQuit) {
-                // Loki: Handle closed group quit sync message (deprecated)
                 [LKSyncMessagesProtocol handleClosedGroupQuitSyncMessageIfNeeded:transcript wrappedIn:envelope transaction:transaction];
             } else {
                 [OWSRecordTranscriptJob
@@ -1050,6 +977,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self.blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.blockedContactsUpdated object:nil];
+            });
         });
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
@@ -1060,13 +990,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.contacts != nil) {
-        // Loki: Handle contact sync message
         [LKSyncMessagesProtocol handleContactSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else if (syncMessage.groups != nil) {
-        // Loki: Handle closed groups sync message (deprecated)
         [LKSyncMessagesProtocol handleClosedGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else if (syncMessage.openGroups != nil) {
-        // Loki: Handle open group sync message
         [LKSyncMessagesProtocol handleOpenGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
@@ -1090,7 +1017,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // Loki: Handle session reset
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     [LKSessionManagementProtocol handleEndSessionMessageReceivedInThread:thread using:transaction];
 }
@@ -1363,15 +1289,12 @@ NS_ASSUME_NONNULL_BEGIN
             // ========
         }
 
-        // Loki: Handle profile key update if needed
         [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:senderMasterPublicKey using:dataMessage];
 
-        // Loki: Handle display name update if needed
         [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:senderMasterPublicKey using:dataMessage transaction:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
-                // Loki: Ignore updates from non-admins (deprecated)
                 if (oldGroupThread != nil && oldGroupThread.groupModel.groupType == closedGroup
                     && [LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope]) {
                     return nil;
@@ -1394,7 +1317,6 @@ NS_ASSUME_NONNULL_BEGIN
 
                 BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
-                    // Loki: Try to establish sessions with all members involved when a group is created or updated
                     [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects transaction:transaction];
                 }
 
@@ -1587,10 +1509,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
-        // Loki: Handle display name update if needed
         [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:incomingMessage.authorId using:dataMessage transaction:transaction];
 
-        // Loki: Handle profile key update if needed
         [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:thread.contactIdentifier using:dataMessage];
 
         NSArray<TSAttachmentPointer *> *attachmentPointers =
@@ -1600,10 +1520,6 @@ NS_ASSUME_NONNULL_BEGIN
             [incomingMessage.attachmentIds addObject:pointer.uniqueId];
         }
 
-        // Loki: Handle friend request if needed (deprecated)
-        [LKFriendRequestProtocol handleFriendRequestMessageIfNeededFromEnvelope:envelope using:transaction];
-
-        // Loki: Ignore empty data messages
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) { return nil; }
 
         [self finalizeIncomingMessage:incomingMessage

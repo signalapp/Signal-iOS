@@ -17,16 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSQuotedMessage;
 @class YapDatabaseReadWriteTransaction;
 
-typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
-    LKMessageFriendRequestStatusNone,
-    LKMessageFriendRequestStatusSendingOrFailed,
-    /// Either sent or received.
-    LKMessageFriendRequestStatusPending,
-    LKMessageFriendRequestStatusAccepted,
-    LKMessageFriendRequestStatusDeclined,
-    LKMessageFriendRequestStatusExpired
-} __deprecated_enum_msg("no longer used as of version 1.1.2");
-
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
@@ -38,12 +28,6 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
-// Loki friend request handling
-@property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus __deprecated_msg("no longer used as of version 1.1.2");
-/// Only relevant to outgoing messages.
-@property (nonatomic) uint64_t friendRequestExpiresAt;
-@property (nonatomic, readonly) BOOL isFriendRequest;
-@property (nonatomic, readonly) BOOL hasFriendRequestStatusMessage;
 @property BOOL skipSave;
 // P2P
 @property (nonatomic) BOOL isP2P;
@@ -90,10 +74,6 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-#pragma mark - Loki Friend Request Handling
-
-- (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 #pragma mark - Open Groups
 

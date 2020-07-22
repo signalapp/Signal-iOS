@@ -124,7 +124,6 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
-    LKFriendRequestViewDelegate,
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,
@@ -421,10 +420,6 @@ typedef enum : NSUInteger {
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleUserFriendRequestStatusChangedNotification:)
-                                                 name:NSNotification.userFriendRequestStatusChanged
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleThreadSessionRestoreDevicesChangedNotifiaction:)
                                                  name:NSNotification.threadSessionRestoreDevicesChanged
                                                object:nil];
@@ -525,28 +520,6 @@ typedef enum : NSUInteger {
     [self.thread reload];
     // Update UI
     [self hideInputIfNeeded];
-    [self.collectionView.collectionViewLayout invalidateLayout];
-    for (id<ConversationViewItem> item in self.viewItems) {
-        [item clearCachedLayoutState];
-    }
-    [self.conversationViewModel reloadViewItems];
-    [self.collectionView reloadData];
-}
-
-- (void)handleUserFriendRequestStatusChangedNotification:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    // Friend request status doesn't apply to group threads
-    if (self.thread.isGroupThread) { return; }
-    NSString *hexEncodedPublicKey = (NSString *)notification.object;
-    // Check if we should update the UI
-    __block NSSet<NSString *> *linkedDevices;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
-    }];
-    if (![linkedDevices containsObject:hexEncodedPublicKey]) { return; }
-    // Update the UI
-    [self updateInputBar];
     [self.collectionView.collectionViewLayout invalidateLayout];
     for (id<ConversationViewItem> item in self.viewItems) {
         [item clearCachedLayoutState];
@@ -791,7 +764,6 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
-    [self updateInputBar];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES", @"Indicates that the app is loading more messages in this conversation.");
@@ -1128,13 +1100,16 @@ typedef enum : NSUInteger {
     NSString *blockStateMessage = nil;
     if ([self isBlockedConversation]) {
         if (self.isGroupConversation) {
+            /*
             blockStateMessage = NSLocalizedString(
                 @"MESSAGES_VIEW_GROUP_BLOCKED", @"Indicates that this group conversation has been blocked.");
+             */
         } else {
             blockStateMessage = NSLocalizedString(
                 @"MESSAGES_VIEW_CONTACT_BLOCKED", @"Indicates that this 1:1 conversation has been blocked.");
         }
     } else if (self.isGroupConversation) {
+        /*
         int blockedGroupMemberCount = [self blockedGroupMemberCount];
         if (blockedGroupMemberCount == 1) {
             blockStateMessage = NSLocalizedString(@"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
@@ -1146,11 +1121,12 @@ typedef enum : NSUInteger {
                                                @"{{the number of blocked users in this group}}."),
                           [OWSFormat formatInt:blockedGroupMemberCount]];
         }
+         */
     }
 
     if (blockStateMessage) {
         [self createBannerWithTitle:blockStateMessage
-                        bannerColor:[UIColor ows_destructiveRedColor]
+                        bannerColor:LKColors.destructive
                         tapSelector:@selector(blockBannerViewWasTapped:)];
         return;
     }
@@ -1337,19 +1313,15 @@ typedef enum : NSUInteger {
 {
     self.userHasScrolled = NO;
 
-    // To avoid "noisy" animations (hiding the keyboard before showing
-    // the action sheet, re-showing it after), hide the keyboard before
-    // showing the "unblock" action sheet.
-    //
-    // Unblocking is a rare interaction, so it's okay to leave the keyboard
-    // hidden.
-    [self dismissKeyBoard];
+    [UIView setAnimationsEnabled:NO];
 
     [BlockListUIUtils showUnblockThreadActionSheet:self.thread
                                 fromViewController:self
                                    blockingManager:self.blockingManager
                                    contactsManager:self.contactsManager
                                    completionBlock:completionBlock];
+
+    [UIView setAnimationsEnabled:YES];
 }
 
 - (BOOL)isBlockedConversation
@@ -1674,17 +1646,6 @@ typedef enum : NSUInteger {
     }
 
     self.navigationItem.rightBarButtonItems = [barButtons copy];
-}
-
-#pragma mark - Updating
-
-- (void)updateInputBar {
-    BOOL shouldInputBarBeEnabled = [LKFriendRequestProtocol shouldInputBarBeEnabledForThread:self.thread];
-    [self.inputToolbar setUserInteractionEnabled:shouldInputBarBeEnabled];
-    NSString *placeholderText = shouldInputBarBeEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending session request", "");
-    [self.inputToolbar setPlaceholderText:placeholderText];
-    BOOL shouldAttachmentButtonBeEnabled = [LKFriendRequestProtocol shouldAttachmentButtonBeEnabledForThread:self.thread];
-    [self.inputToolbar setAttachmentButtonHidden:!shouldAttachmentButtonBeEnabled];
 }
 
 #pragma mark - Identity
@@ -2895,15 +2856,6 @@ typedef enum : NSUInteger {
         AudioServicesPlaySystemSound(soundId);
     }
     [self.typingIndicators didSendOutgoingMessageInThread:self.thread];
-
-    // Loki: Lock the input bar early
-    if ([self.thread isKindOfClass:TSContactThread.class] && [message isKindOfClass:LKFriendRequestMessage.class]) {
-        NSString *recipientID = self.thread.contactIdentifier;
-        OWSAssertIsOnMainThread();
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
-        } error:nil];
-    }
 }
 
 #pragma mark UIDocumentMenuDelegate
@@ -3893,7 +3845,7 @@ typedef enum : NSUInteger {
     NSString *result = self.inputToolbar.messageText;
     for (LKMention *mention in self.mentions) {
         NSRange range = [result rangeOfString:[NSString stringWithFormat:@"@%@", mention.displayName]];
-        result = [result stringByReplacingCharactersInRange:range withString:[[NSString alloc] initWithFormat:@"@%@", mention.hexEncodedPublicKey]];
+        result = [result stringByReplacingCharactersInRange:range withString:[[NSString alloc] initWithFormat:@"@%@", mention.publicKey]];
     }
     return result;
 }
@@ -3984,6 +3936,12 @@ typedef enum : NSUInteger {
 
         if (didAddToProfileWhitelist) {
             [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+        }
+
+        if ([self.thread isKindOfClass:TSContactThread.class]) {
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
+            }];
         }
     });
 }
@@ -4497,24 +4455,6 @@ typedef enum : NSUInteger {
                                         animated:YES];
 }
 
-#pragma mark - FriendRequestViewDelegate
-
-- (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
-{
-    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol acceptFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
-    } error:nil];
-}
-
-- (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
-{
-    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol declineFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
-    } error:nil];
-}
-
 #pragma mark - ConversationViewLayoutDelegate
 
 - (NSArray<id<ConversationViewLayoutItem>> *)layoutItems
@@ -4617,6 +4557,12 @@ typedef enum : NSUInteger {
 
     if (didAddToProfileWhitelist) {
         [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    }
+
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKSessionManagementProtocol sendSessionRequestIfNeededToPublicKey:self.thread.contactIdentifier transaction:transaction];
+        }];
     }
 }
 
@@ -4802,7 +4748,6 @@ typedef enum : NSUInteger {
     if ([cell isKindOfClass:[OWSMessageCell class]]) {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
-        messageCell.friendRequestViewDelegate = self;
     }
     cell.conversationStyle = self.conversationStyle;
 
@@ -5107,7 +5052,6 @@ typedef enum : NSUInteger {
     }
 
     [self dismissMenuActionsIfNecessary];
-    [self updateInputBar];
 
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

@@ -8,12 +8,14 @@ public final class FileServerAPI : DotNetAPI {
     private static let attachmentType = "net.app.core.oembed"
 
     public static let maxFileSize = 10_000_000 // 10 MB
+
     @objc public static let server = "https://file.getsession.org"
 
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
     
     // MARK: Device Links
+    /// - Note: Deprecated.
     @objc(getDeviceLinksAssociatedWithHexEncodedPublicKey:)
     public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> AnyPromise {
         return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKey))
@@ -21,10 +23,13 @@ public final class FileServerAPI : DotNetAPI {
 
     /// Gets the device links associated with the given hex encoded public key from the
     /// server and stores and returns the valid ones.
+    ///
+    /// - Note: Deprecated.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
         return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ])
     }
 
+    /// - Note: Deprecated.
     @objc(getDeviceLinksAssociatedWithHexEncodedPublicKeys:)
     public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> AnyPromise {
         return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKeys))
@@ -32,6 +37,8 @@ public final class FileServerAPI : DotNetAPI {
     
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
+    ///
+    /// - Note: Deprecated.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
@@ -65,8 +72,8 @@ public final class FileServerAPI : DotNetAPI {
                             masterSignature = nil
                         }
                         let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
-                        let master = DeviceLink.Device(hexEncodedPublicKey: masterHexEncodedPublicKey, signature: masterSignature)
-                        let slave = DeviceLink.Device(hexEncodedPublicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+                        let master = DeviceLink.Device(publicKey: masterHexEncodedPublicKey, signature: masterSignature)
+                        let slave = DeviceLink.Device(publicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
                         let deviceLink = DeviceLink(between: master, and: slave)
                         if let masterSignature = masterSignature {
                             guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
@@ -87,11 +94,12 @@ public final class FileServerAPI : DotNetAPI {
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
     }
-    
+
+    /// - Note: Deprecated.
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
         print("[Loki] Updating device links.")
         return getAuthToken(for: server).then2 { token -> Promise<Void> in
-            let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == getUserHexEncodedPublicKey() }
+            let isMaster = deviceLinks.contains { $0.master.publicKey == getUserHexEncodedPublicKey() }
             let deviceLinksAsJSON = deviceLinks.map { $0.toJSON() }
             let value = !deviceLinksAsJSON.isEmpty ? [ "isPrimary" : isMaster ? 1 : 0, "authorisations" : deviceLinksAsJSON ] : nil
             let annotation: JSON = [ "type" : deviceLinkType, "value" : value ]
@@ -109,6 +117,8 @@ public final class FileServerAPI : DotNetAPI {
     }
     
     /// Adds the given device link to the user's device mapping on the server.
+    ///
+    /// - Note: Deprecated.
     public static func addDeviceLink(_ deviceLink: DeviceLink) -> Promise<Void> {
         var deviceLinks: Set<DeviceLink> = []
         storage.dbReadConnection.read { transaction in
@@ -121,6 +131,8 @@ public final class FileServerAPI : DotNetAPI {
     }
 
     /// Removes the given device link from the user's device mapping on the server.
+    ///
+    /// - Note: Deprecated.
     public static func removeDeviceLink(_ deviceLink: DeviceLink) -> Promise<Void> {
         var deviceLinks: Set<DeviceLink> = []
         storage.dbReadConnection.read { transaction in

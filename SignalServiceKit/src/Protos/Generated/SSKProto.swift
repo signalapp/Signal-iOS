@@ -24,7 +24,7 @@ public enum SSKProtoError: Error {
         case receipt = 5
         case unidentifiedSender = 6
         case closedGroupCiphertext = 7
-        case friendRequest = 101
+        case fallbackMessage = 101
     }
 
     private class func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelopeType {
@@ -36,7 +36,7 @@ public enum SSKProtoError: Error {
         case .receipt: return .receipt
         case .unidentifiedSender: return .unidentifiedSender
         case .closedGroupCiphertext: return .closedGroupCiphertext
-        case .friendRequest: return .friendRequest
+        case .fallbackMessage: return .fallbackMessage
         }
     }
 
@@ -49,7 +49,7 @@ public enum SSKProtoError: Error {
         case .receipt: return .receipt
         case .unidentifiedSender: return .unidentifiedSender
         case .closedGroupCiphertext: return .closedGroupCiphertext
-        case .friendRequest: return .friendRequest
+        case .fallbackMessage: return .fallbackMessage
         }
     }
 
@@ -3646,9 +3646,7 @@ extension SSKProtoDataMessageClosedGroupUpdate.SSKProtoDataMessageClosedGroupUpd
         case endSession = 1
         case expirationTimerUpdate = 2
         case profileKeyUpdate = 4
-        case sessionRestore = 64
         case unlinkDevice = 128
-        case sessionRequest = 256
     }
 
     private class func SSKProtoDataMessageFlagsWrap(_ value: SignalServiceProtos_DataMessage.Flags) -> SSKProtoDataMessageFlags {
@@ -3656,9 +3654,7 @@ extension SSKProtoDataMessageClosedGroupUpdate.SSKProtoDataMessageClosedGroupUpd
         case .endSession: return .endSession
         case .expirationTimerUpdate: return .expirationTimerUpdate
         case .profileKeyUpdate: return .profileKeyUpdate
-        case .sessionRestore: return .sessionRestore
         case .unlinkDevice: return .unlinkDevice
-        case .sessionRequest: return .sessionRequest
         }
     }
 
@@ -3667,9 +3663,7 @@ extension SSKProtoDataMessageClosedGroupUpdate.SSKProtoDataMessageClosedGroupUpd
         case .endSession: return .endSession
         case .expirationTimerUpdate: return .expirationTimerUpdate
         case .profileKeyUpdate: return .profileKeyUpdate
-        case .sessionRestore: return .sessionRestore
         case .unlinkDevice: return .unlinkDevice
-        case .sessionRequest: return .sessionRequest
         }
     }
 

@@ -810,34 +810,19 @@ const CGFloat kIconViewLength = 24;
     }
     // Block Conversation section.
 
-    /**
-     * Loki: Original code
-     * ========
-    if (!isNoteToSelf) {
-        OWSTableSection *section = [OWSTableSection new];
-        if (self.thread.isGroupThread) {
-            section.footerTitle = NSLocalizedString(
-                @"BLOCK_GROUP_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking a group.");
-        } else {
-            section.footerTitle = NSLocalizedString(
-                @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
-        }
+    if (!isNoteToSelf && [self.thread isKindOfClass:TSContactThread.class]) {
+        mainSection.footerTitle = NSLocalizedString(
+            @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
 
-        [section addItem:[OWSTableItem
+        [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  OWSConversationSettingsViewController *strongSelf = weakSelf;
                                  if (!strongSelf) {
                                      return [UITableViewCell new];
                                  }
 
-                                 NSString *cellTitle;
-                                 if (strongSelf.thread.isGroupThread) {
-                                     cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP",
-                                         @"table cell label in conversation settings");
-                                 } else {
-                                     cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
-                                         @"table cell label in conversation settings");
-                                 }
+                                 NSString *cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
+                                                                         @"table cell label in conversation settings");
                                  UITableViewCell *cell = [strongSelf
                                       disclosureCellWithName:cellTitle
                                                     iconName:@"table_ic_block"
@@ -857,10 +842,7 @@ const CGFloat kIconViewLength = 24;
                                  return cell;
                              }
                                          actionBlock:nil]];
-        [contents addSection:section];
     }
-     * ========
-     */
 
     self.contents = contents;
 }

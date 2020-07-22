@@ -181,13 +181,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     BOOL isVoiceMessage = (attachments.count == 1 && attachments.lastObject.isVoiceMessage);
     
-    // Loki: If we're not friends then always set the message to a friend request message.
-    // If we're friends then the assumption is that we have the other user's pre key bundle.
-    NSString *messageClassAsString = (thread.isContactFriend || thread.isGroupThread) ? @"TSOutgoingMessage" : @"LKFriendRequestMessage";
-    Class messageClass = NSClassFromString(messageClassAsString);
-    
     TSOutgoingMessage *message =
-        [[messageClass alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                       inThread:thread
                                                    messageBody:truncatedText
                                                  attachmentIds:[NSMutableArray new]

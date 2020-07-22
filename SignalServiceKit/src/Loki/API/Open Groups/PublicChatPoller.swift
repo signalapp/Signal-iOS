@@ -1,8 +1,8 @@
 import PromiseKit
 
 @objc(LKPublicChatPoller)
-public final class LokiPublicChatPoller : NSObject {
-    private let publicChat: LokiPublicChat
+public final class PublicChatPoller : NSObject {
+    private let publicChat: PublicChat
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
     private var pollForModeratorsTimer: Timer? = nil
@@ -17,7 +17,7 @@ public final class LokiPublicChatPoller : NSObject {
     
     // MARK: Lifecycle
     @objc(initForPublicChat:)
-    public init(for publicChat: LokiPublicChat) {
+    public init(for publicChat: PublicChat) {
         self.publicChat = publicChat
         super.init()
     }
@@ -55,38 +55,38 @@ public final class LokiPublicChatPoller : NSObject {
     
     public func pollForNewMessages() -> Promise<Void> {
         let publicChat = self.publicChat
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        return LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { messages in
-            let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
+        let userPublicKey = getUserHexEncodedPublicKey()
+        return PublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { messages in
+            let uniquePublicKeys = Set(messages.map { $0.senderPublicKey })
             func proceed() {
                 let storage = OWSPrimaryStorage.shared()
                 var newDisplayNameUpdatees: Set<String> = []
                 storage.dbReadConnection.read { transaction in
-                    newDisplayNameUpdatees = Set(uniqueHexEncodedPublicKeys.filter { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) != $0 }.compactMap { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) })
+                    newDisplayNameUpdatees = Set(uniquePublicKeys.filter { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) != $0 }.compactMap { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) })
                 }
                 if !newDisplayNameUpdatees.isEmpty {
-                    let displayNameUpdatees = LokiPublicChatAPI.displayNameUpdatees[publicChat.id] ?? []
-                    LokiPublicChatAPI.displayNameUpdatees[publicChat.id] = displayNameUpdatees.union(newDisplayNameUpdatees)
+                    let displayNameUpdatees = PublicChatAPI.displayNameUpdatees[publicChat.id] ?? []
+                    PublicChatAPI.displayNameUpdatees[publicChat.id] = displayNameUpdatees.union(newDisplayNameUpdatees)
                 }
                 // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
                 messages.sorted { $0.timestamp < $1.timestamp }.forEach { message in
                     var wasSentByCurrentUser = false
                     OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                        wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.hexEncodedPublicKey, transaction: transaction)
+                        wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.senderPublicKey, transaction: transaction)
                     }
-                    var masterHexEncodedPublicKey: String? = nil
+                    var masterPublicKey: String? = nil
                     storage.dbReadConnection.read { transaction in
-                        masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: message.hexEncodedPublicKey, in: transaction)
+                        masterPublicKey = storage.getMasterHexEncodedPublicKey(for: message.senderPublicKey, in: transaction)
                     }
-                    let senderHexEncodedPublicKey = masterHexEncodedPublicKey ?? message.hexEncodedPublicKey
+                    let senderPublicKey = masterPublicKey ?? message.senderPublicKey
                     func generateDisplayName(from rawDisplayName: String) -> String {
-                        let endIndex = senderHexEncodedPublicKey.endIndex
-                        let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
-                        return "\(rawDisplayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
+                        let endIndex = senderPublicKey.endIndex
+                        let cutoffIndex = senderPublicKey.index(endIndex, offsetBy: -8)
+                        return "\(rawDisplayName) (...\(senderPublicKey[cutoffIndex..<endIndex]))"
                     }
                     var senderDisplayName = ""
-                    if let masterHexEncodedPublicKey = masterHexEncodedPublicKey {
-                        senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderHexEncodedPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
+                    if let masterHexEncodedPublicKey = masterPublicKey {
+                        senderDisplayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: senderPublicKey, in: publicChat.channel, on: publicChat.server) ?? generateDisplayName(from: NSLocalizedString("Anonymous", comment: ""))
                     } else {
                         senderDisplayName = generateDisplayName(from: message.displayName)
                     }
@@ -137,7 +137,7 @@ public final class LokiPublicChatPoller : NSObject {
                     dataMessage.setTimestamp(message.timestamp)
                     dataMessage.setGroup(try! groupContext.build())
                     if let quote = message.quote {
-                        let signalQuote = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteeHexEncodedPublicKey)
+                        let signalQuote = SSKProtoDataMessageQuote.builder(id: quote.quotedMessageTimestamp, author: quote.quoteePublicKey)
                         signalQuote.setText(quote.quotedMessageBody)
                         dataMessage.setQuote(try! signalQuote.build())
                     }
@@ -154,10 +154,10 @@ public final class LokiPublicChatPoller : NSObject {
                     } else {
                         // The line below is necessary to make it so that when a user sends a message in an open group and then
                         // deletes and re-joins the open group without closing the app in between, the message isn't ignored.
-                        SyncMessagesProtocol.dropFromSyncMessageTimestampCache(message.timestamp, for: senderHexEncodedPublicKey)
+                        SyncMessagesProtocol.dropFromSyncMessageTimestampCache(message.timestamp, for: senderPublicKey)
                         let syncMessageSentBuilder = SSKProtoSyncMessageSent.builder()
                         syncMessageSentBuilder.setMessage(try! dataMessage.build())
-                        syncMessageSentBuilder.setDestination(userHexEncodedPublicKey)
+                        syncMessageSentBuilder.setDestination(userPublicKey)
                         syncMessageSentBuilder.setTimestamp(message.timestamp)
                         let syncMessageSent = try! syncMessageSentBuilder.build()
                         let syncMessageBuilder = SSKProtoSyncMessage.builder()
@@ -165,25 +165,25 @@ public final class LokiPublicChatPoller : NSObject {
                         content.setSyncMessage(try! syncMessageBuilder.build())
                     }
                     let envelope = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
-                    envelope.setSource(senderHexEncodedPublicKey)
+                    envelope.setSource(senderPublicKey)
                     envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
                     envelope.setContent(try! content.build().serializedData())
                     try! Storage.writeSync { transaction in
-                        transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
+                        transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
                         // If we got a message from our master device then we should use its profile picture
-                        if let profilePicture = message.profilePicture, masterHexEncodedPublicKey == message.hexEncodedPublicKey {
+                        if let profilePicture = message.profilePicture, masterPublicKey == message.senderPublicKey {
                             if (message.displayName.count > 0) {
-                                SSKEnvironment.shared.profileManager.updateProfileForContact(withID: masterHexEncodedPublicKey!, displayName: message.displayName, with: transaction)
+                                SSKEnvironment.shared.profileManager.updateProfileForContact(withID: masterPublicKey!, displayName: message.displayName, with: transaction)
                             }
                             SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarURL: profilePicture.url)
-                            SSKEnvironment.shared.profileManager.setProfileKeyData(profilePicture.profileKey, forRecipientId: masterHexEncodedPublicKey!, avatarURL: profilePicture.url)
+                            SSKEnvironment.shared.profileManager.setProfileKeyData(profilePicture.profileKey, forRecipientId: masterPublicKey!, avatarURL: profilePicture.url)
                         }
                     }
                 }
             }
-            let hexEncodedPublicKeysToUpdate = uniqueHexEncodedPublicKeys.filter { hexEncodedPublicKey in
+            let hexEncodedPublicKeysToUpdate = uniquePublicKeys.filter { hexEncodedPublicKey in
                 let timeSinceLastUpdate: TimeInterval
                 if let lastDeviceLinkUpdate = MultiDeviceProtocol.lastDeviceLinkUpdate[hexEncodedPublicKey] {
                     timeSinceLastUpdate = Date().timeIntervalSince(lastDeviceLinkUpdate)
@@ -217,7 +217,7 @@ public final class LokiPublicChatPoller : NSObject {
     
     private func pollForDeletedMessages() {
         let publicChat = self.publicChat
-        let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
+        let _ = PublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
             try! Storage.writeSync { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt($0), in: transaction) }
                 deletedMessageIDs.forEach { messageID in
@@ -228,10 +228,10 @@ public final class LokiPublicChatPoller : NSObject {
     }
     
     private func pollForModerators() {
-        let _ = LokiPublicChatAPI.getModerators(for: publicChat.channel, on: publicChat.server)
+        let _ = PublicChatAPI.getModerators(for: publicChat.channel, on: publicChat.server)
     }
     
     private func pollForDisplayNames() {
-        let _ = LokiPublicChatAPI.getDisplayNames(for: publicChat.channel, on: publicChat.server)
+        let _ = PublicChatAPI.getDisplayNames(for: publicChat.channel, on: publicChat.server)
     }
 }

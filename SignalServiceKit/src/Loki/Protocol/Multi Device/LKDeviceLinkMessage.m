@@ -21,12 +21,12 @@
 }
 
 #pragma mark Initialization
-- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData * _Nullable)masterSignature slaveSignature:(NSData *)slaveSignature {
+- (instancetype)initInThread:(TSThread *)thread masterPublicKey:(NSString *)masterHexEncodedPublicKey slavePublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData * _Nullable)masterSignature slaveSignature:(NSData *)slaveSignature {
     self = [self initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
     if (self) {
-        _masterHexEncodedPublicKey = masterHexEncodedPublicKey;
-        _slaveHexEncodedPublicKey = slaveHexEncodedPublicKey;
+        _masterPublicKey = masterHexEncodedPublicKey;
+        _slavePublicKey = slaveHexEncodedPublicKey;
         _masterSignature = masterSignature;
         _slaveSignature = slaveSignature;
     }
@@ -38,7 +38,7 @@
     SSKProtoContentBuilder *contentBuilder = [super prepareCustomContentBuilder:recipient];
     NSError *error;
     if (self.kind == LKDeviceLinkMessageKindRequest) {
-        // The slave device attaches a pre key bundle with the request it sends, so that a
+        // The slave device attaches a pre key bundle with the request it sends so that a
         // session can be established with the master device.
         PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
         SSKProtoPrekeyBundleMessageBuilder *preKeyBundleMessageBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:preKeyBundle];
@@ -51,7 +51,7 @@
         }
     } else {
         // The master device attaches its display name and profile picture URL to the device link
-        // authorization message, so that the slave device is in sync with these things as soon
+        // authorization message so that the slave device is in sync with these things as soon
         // as possible.
         id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
         NSString *displayName = profileManager.localProfileName;
@@ -66,8 +66,8 @@
     }
     // Build the device link message
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
-    [deviceLinkMessageBuilder setMasterPublicKey:self.masterHexEncodedPublicKey];
-    [deviceLinkMessageBuilder setSlavePublicKey:self.slaveHexEncodedPublicKey];
+    [deviceLinkMessageBuilder setMasterPublicKey:self.masterPublicKey];
+    [deviceLinkMessageBuilder setSlavePublicKey:self.slavePublicKey];
     if (self.masterSignature != nil) { [deviceLinkMessageBuilder setMasterSignature:self.masterSignature]; }
     [deviceLinkMessageBuilder setSlaveSignature:self.slaveSignature];
     SSKProtoLokiDeviceLinkMessage *deviceLinkMessage = [deviceLinkMessageBuilder buildAndReturnError:&error];

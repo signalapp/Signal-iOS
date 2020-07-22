@@ -1,9 +1,9 @@
 import PromiseKit
 
-@objc(LKGroupMessage)
-public final class LokiPublicChatMessage : NSObject {
+@objc(LKPublicChatMessage)
+public final class PublicChatMessage : NSObject {
     public let serverID: UInt64?
-    public let hexEncodedPublicKey: String
+    public let senderPublicKey: String
     public let displayName: String
     public let profilePicture: ProfilePicture?
     public let body: String
@@ -29,7 +29,7 @@ public final class LokiPublicChatMessage : NSObject {
     
     public struct Quote {
         public let quotedMessageTimestamp: UInt64
-        public let quoteeHexEncodedPublicKey: String
+        public let quoteePublicKey: String
         public let quotedMessageBody: String
         public let quotedMessageServerID: UInt64?
     }
@@ -72,9 +72,9 @@ public final class LokiPublicChatMessage : NSObject {
     }
     
     // MARK: Initialization
-    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, profilePicture: ProfilePicture?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
+    public init(serverID: UInt64?, senderPublicKey: String, displayName: String, profilePicture: ProfilePicture?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?) {
         self.serverID = serverID
-        self.hexEncodedPublicKey = hexEncodedPublicKey
+        self.senderPublicKey = senderPublicKey
         self.displayName = displayName
         self.profilePicture = profilePicture
         self.body = body
@@ -86,11 +86,11 @@ public final class LokiPublicChatMessage : NSObject {
         super.init()
     }
     
-    @objc public convenience init(hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteeHexEncodedPublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64) {
+    @objc public convenience init(senderPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64) {
         let quote: Quote?
-        if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteeHexEncodedPublicKey, let quotedMessageBody = quotedMessageBody {
+        if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteePublicKey, let quotedMessageBody = quotedMessageBody {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
-            quote = Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteeHexEncodedPublicKey: quoteeHexEncodedPublicKey, quotedMessageBody: quotedMessageBody, quotedMessageServerID: quotedMessageServerID)
+            quote = Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteeHexEncodedPublicKey, quotedMessageBody: quotedMessageBody, quotedMessageServerID: quotedMessageServerID)
         } else {
             quote = nil
         }
@@ -100,11 +100,11 @@ public final class LokiPublicChatMessage : NSObject {
         } else {
             signature = nil
         }
-        self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: nil, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
+        self.init(serverID: nil, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: nil, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature)
     }
     
     // MARK: Crypto
-    internal func sign(with privateKey: Data) -> LokiPublicChatMessage? {
+    internal func sign(with privateKey: Data) -> PublicChatMessage? {
         guard let data = getValidationData(for: signatureVersion) else {
             print("[Loki] Failed to sign public chat message.")
             return nil
@@ -115,13 +115,13 @@ public final class LokiPublicChatMessage : NSObject {
             return nil
         }
         let signature = Signature(data: signatureData, version: signatureVersion)
-        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: profilePicture, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+        return PublicChatMessage(serverID: serverID, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: profilePicture, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
     }
     
     internal func hasValidSignature() -> Bool {
         guard let signature = signature else { return false }
         guard let data = getValidationData(for: signature.version) else { return false }
-        let publicKey = Data(hex: hexEncodedPublicKey.removing05PrefixIfNeeded())
+        let publicKey = Data(hex: self.senderPublicKey.removing05PrefixIfNeeded())
         return (try? Ed25519.verifySignature(signature.data, publicKey: publicKey, data: data)) ?? false
     }
     
@@ -129,7 +129,7 @@ public final class LokiPublicChatMessage : NSObject {
     internal func toJSON() -> JSON {
         var value: JSON = [ "timestamp" : timestamp ]
         if let quote = quote {
-            value["quote"] = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteeHexEncodedPublicKey, "text" : quote.quotedMessageBody ]
+            value["quote"] = [ "id" : quote.quotedMessageTimestamp, "author" : quote.quoteePublicKey, "text" : quote.quotedMessageBody ]
         }
         if let signature = signature {
             value["sig"] = signature.data.toHexString()
@@ -175,7 +175,7 @@ public final class LokiPublicChatMessage : NSObject {
     private func getValidationData(for signatureVersion: UInt64) -> Data? {
         var string = "\(body.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))\(timestamp)"
         if let quote = quote {
-            string += "\(quote.quotedMessageTimestamp)\(quote.quoteeHexEncodedPublicKey)\(quote.quotedMessageBody.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))"
+            string += "\(quote.quotedMessageTimestamp)\(quote.quoteePublicKey)\(quote.quotedMessageBody.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))"
             if let quotedMessageServerID = quote.quotedMessageServerID {
                 string += "\(quotedMessageServerID)"
             }

@@ -2,30 +2,29 @@ import SessionMetadataKit
 
 @objc(LKSessionResetImplementation)
 public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
-    private let storage: OWSPrimaryStorage
 
-    @objc public init(storage: OWSPrimaryStorage) {
-        self.storage = storage
+    private var storage: OWSPrimaryStorage {
+        return OWSPrimaryStorage.shared()
     }
 
-    enum Errors : Error {
+    enum Error : Swift.Error {
         case invalidPreKey
         case preKeyIDsDontMatch
     }
 
-    public func validatePreKeyForFriendRequestAcceptance(for recipientID: String, whisperMessage: CipherMessage, protocolContext: Any?) throws {
+    public func validatePreKeyWhisperMessage(for recipientID: String, whisperMessage: CipherMessage, protocolContext: Any?) throws {
          guard let transaction = protocolContext as? YapDatabaseReadTransaction else {
-            print("[Loki] Couldn't verify friend request accepted message because an invalid transaction was provided.")
+            print("[Loki] Invalid transaction.")
             return
         }
         guard let preKeyMessage = whisperMessage as? PreKeyWhisperMessage else { return }
         guard let storedPreKey = storage.getPreKeyRecord(forContact: recipientID, transaction: transaction) else {
-            print("[Loki] Received a friend request accepted message from a public key for which no pre key bundle was created.")
+            print("[Loki] Missing pre key bundle.")
             return
         }
         guard storedPreKey.id == preKeyMessage.prekeyID else {
-            print("[Loki] Received a `PreKeyWhisperMessage` (friend request accepted message) from an unknown source.")
-            throw Errors.preKeyIDsDontMatch
+            print("[Loki] Received a `PreKeyWhisperMessage` from an unknown source.")
+            throw Error.preKeyIDsDontMatch
         }
     }
 
@@ -48,9 +47,9 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
             Logger.debug("[Loki] A new session was adopted but the thread couldn't be found for: \(recipientID).")
             return
         }
-        // If the current user initiated the reset then send back an ephemeral message to acknowledge the completion of the session reset
+        // If the current user initiated the reset then send back a null message to acknowledge the completion of the session reset
         if thread.sessionResetStatus == .initiated {
-            SessionManagementProtocol.sendSessionEstablishedMessage(to: recipientID, in: transaction)
+            SessionManagementProtocol.sendNullMessage(to: recipientID, in: transaction)
         }
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetDone)

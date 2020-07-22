@@ -13,6 +13,7 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "YapDatabaseConnection+OWS.h"
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -181,7 +182,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId
 {
-    return [self.blockedPhoneNumbers containsObject:recipientId];
+    __block NSString *masterPublicKey;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        masterPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:recipientId in:transaction] ?: recipientId;
+    }];
+    return [self.blockedPhoneNumbers containsObject:masterPublicKey];
 }
 
 #pragma mark - Group Blocking

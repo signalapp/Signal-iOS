@@ -162,11 +162,6 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.legacyNotificationActionHandler;
 }
 
-- (LKFriendRequestExpirationJob *)lokiFriendRequestExpirationJob
-{
-    return SSKEnvironment.shared.lokiFriendRequestExpirationJob;
-}
-
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -713,9 +708,6 @@ static NSTimeInterval launchStartedAt;
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [self.disappearingMessagesJob startIfNecessary];
-                
-                // Loki: Start friend request expiration job
-                [self.lokiFriendRequestExpirationJob startIfNecessary];
 
                 [self enableBackgroundRefreshIfNecessary];
 
@@ -1258,9 +1250,6 @@ static NSTimeInterval launchStartedAt;
 
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
-
-        // Loki: Start friend request expiration job
-        [self.lokiFriendRequestExpirationJob startIfNecessary];
         
         // Loki: Start pollers
         [self startPollerIfNeeded];

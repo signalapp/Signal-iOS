@@ -23,7 +23,7 @@ message Envelope {
     RECEIPT                 = 5;
     UNIDENTIFIED_SENDER     = 6;
     CLOSED_GROUP_CIPHERTEXT = 7; // Loki
-    FRIEND_REQUEST          = 101; // Loki: Contains pre keys and a message; uses simple encryption
+    FALLBACK_MESSAGE        = 101; // Loki: Encrypted using the fallback session cipher. Contains a pre key bundle if it's a session request.
   }
 
   // @required
@@ -137,9 +137,7 @@ message DataMessage {
     END_SESSION             = 1;
     EXPIRATION_TIMER_UPDATE = 2;
     PROFILE_KEY_UPDATE      = 4;
-    SESSION_RESTORE         = 64;
     UNLINK_DEVICE           = 128;
-    SESSION_REQUEST         = 256;
   }
 
   message Quote {
@@ -247,7 +245,7 @@ message DataMessage {
       INFO               = 1; // groupPublicKey, name, senderKeys, members, admins
       SENDER_KEY_REQUEST = 2; // groupPublicKey
       SENDER_KEY         = 3; // groupPublicKey, senderKeys
-      
+
     }
 
     message SenderKey {

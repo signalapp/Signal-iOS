@@ -18,13 +18,12 @@ public final class SessionMetaProtocol : NSObject {
     // MARK: - Sending
 
     // MARK: Message Destination(s)
-    @objc(getDestinationsForOutgoingSyncMessage)
-    public static func objc_getDestinationsForOutgoingSyncMessage() -> NSMutableSet {
+    @objc public static func getDestinationsForOutgoingSyncMessage() -> NSMutableSet {
         return NSMutableSet(set: MultiDeviceProtocol.getUserLinkedDevices())
     }
 
     @objc(getDestinationsForOutgoingGroupMessage:inThread:)
-    public static func objc_getDestinations(for outgoingGroupMessage: TSOutgoingMessage, in thread: TSThread) -> NSMutableSet {
+    public static func getDestinations(for outgoingGroupMessage: TSOutgoingMessage, in thread: TSThread) -> NSMutableSet {
         guard let thread = thread as? TSGroupThread else { preconditionFailure("Can't get destinations for group message in non-group thread.") }
         var result: Set<String> = []
         if thread.isPublicChat {
@@ -79,23 +78,13 @@ public final class SessionMetaProtocol : NSObject {
     /// to avoid sending them if certain conditions are met.
     @objc(shouldSendTypingIndicatorInThread:)
     public static func shouldSendTypingIndicator(in thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let publicKey = thread.contactIdentifier() else { return false }
-        var isContactFriend = false
-        storage.dbReadConnection.read { transaction in
-            isContactFriend = (storage.getFriendRequestStatus(for: publicKey, transaction: transaction) == .friends)
-        }
-        return isContactFriend
+        return !thread.isGroupThread() && thread.numberOfInteractions() > 0
     }
 
     // MARK: Receipts
     @objc(shouldSendReceiptInThread:)
     public static func shouldSendReceipt(in thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let publicKey = thread.contactIdentifier() else { return false }
-        var isContactFriend = false
-        storage.dbReadConnection.read { transaction in
-            isContactFriend = (storage.getFriendRequestStatus(for: publicKey, transaction: transaction) == .friends)
-        }
-        return isContactFriend
+        return !thread.isGroupThread()
     }
 
     // MARK: - Receiving

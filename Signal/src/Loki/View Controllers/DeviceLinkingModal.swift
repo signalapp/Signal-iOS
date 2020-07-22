@@ -159,7 +159,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         qrCodeImageViewContainer.isHidden = true
         titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
         subtitleLabel.text = NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
-        let hexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey.removing05PrefixIfNeeded()
+        let hexEncodedPublicKey = deviceLink.slave.publicKey.removing05PrefixIfNeeded()
         mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         mnemonicLabel.isHidden = false
         authorizeButton.isHidden = false
@@ -180,14 +180,13 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         DeviceLinkingSession.current!.markLinkingRequestAsProcessed()
         DeviceLinkingSession.current!.stopListeningForLinkingRequests()
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
-        let master = DeviceLink.Device(hexEncodedPublicKey: deviceLink.master.hexEncodedPublicKey, signature: linkingAuthorizationMessage.masterSignature)
+        let master = DeviceLink.Device(publicKey: deviceLink.master.publicKey, signature: linkingAuthorizationMessage.masterSignature)
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
         FileServerAPI.addDeviceLink(signedDeviceLink).done(on: DispatchQueue.main) { [weak self] in
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
-                let storage = OWSPrimaryStorage.shared()
-                let slaveHexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey
+                let slavePublicKey = deviceLink.slave.publicKey
                 try! Storage.writeSync { transaction in
-                    let thread = TSContactThread.getOrCreateThread(withContactId: slaveHexEncodedPublicKey, transaction: transaction)
+                    let thread = TSContactThread.getOrCreateThread(withContactId: slavePublicKey, transaction: transaction)
                     thread.save(with: transaction)
                 }
                 let _ = SSKEnvironment.shared.syncManager.syncAllGroups().ensure {
@@ -196,9 +195,6 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                     let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
                 }
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
-                try! Storage.writeSync { transaction in
-                    storage.setFriendRequestStatus(.friends, for: slaveHexEncodedPublicKey, transaction: transaction)
-                }
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)
                     self?.delegate?.handleDeviceLinkAuthorized(signedDeviceLink)
@@ -252,7 +248,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         delegate?.handleDeviceLinkingModalDismissed() // Only relevant in slave mode
         if let deviceLink = deviceLink {
             try! Storage.writeSync { transaction in
-                OWSPrimaryStorage.shared().removePreKeyBundle(forContact: deviceLink.slave.hexEncodedPublicKey, transaction: transaction)
+                OWSPrimaryStorage.shared().removePreKeyBundle(forContact: deviceLink.slave.publicKey, transaction: transaction)
             }
         }
         dismiss(animated: true, completion: nil)

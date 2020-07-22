@@ -83,7 +83,7 @@ final class MentionCandidateSelectionView : UIView, UITableViewDataSource, UITab
 private extension MentionCandidateSelectionView {
     
     final class Cell : UITableViewCell {
-        var mentionCandidate = Mention(hexEncodedPublicKey: "", displayName: "") { didSet { update() } }
+        var mentionCandidate = Mention(publicKey: "", displayName: "") { didSet { update() } }
         var publicChatServer: String?
         var publicChatChannel: UInt64?
         
@@ -161,10 +161,10 @@ private extension MentionCandidateSelectionView {
         // MARK: Updating
         private func update() {
             displayNameLabel.text = mentionCandidate.displayName
-            profilePictureView.hexEncodedPublicKey = mentionCandidate.hexEncodedPublicKey
+            profilePictureView.hexEncodedPublicKey = mentionCandidate.publicKey
             profilePictureView.update()
             if let server = publicChatServer, let channel = publicChatChannel {
-                let isUserModerator = LokiPublicChatAPI.isUserModerator(mentionCandidate.hexEncodedPublicKey, for: channel, on: server)
+                let isUserModerator = PublicChatAPI.isUserModerator(mentionCandidate.publicKey, for: channel, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator
             } else {
                 moderatorIconImageView.isHidden = true

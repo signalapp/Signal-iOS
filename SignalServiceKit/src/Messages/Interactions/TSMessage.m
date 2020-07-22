@@ -82,8 +82,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
-    _friendRequestStatus = LKMessageFriendRequestStatusNone;
-    _friendRequestExpiresAt = 0;
     _openGroupServerMessageID = -1;
 
     return self;
@@ -444,31 +442,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                              changeBlock:^(TSMessage *message) {
                                  [message setLinkPreview:linkPreview];
                              }];
-}
-
-#pragma mark - Loki Friend Request Handling
-
-- (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
-{
-    self.friendRequestExpiresAt = expiresAt;
-    if (transaction == nil) {
-        [self save];
-    } else {
-        [self saveWithTransaction:transaction];
-    }
-}
-
-- (BOOL)isFriendRequest
-{
-    if (![self.thread isKindOfClass:TSContactThread.class] || self.thread.isContactFriend) { return NO; }
-    return [self.uniqueId isEqual:self.thread.lastInteraction.uniqueId];
-}
-
-- (BOOL)hasFriendRequestStatusMessage
-{
-    LKFriendRequestUIStatus friendRequestStatus = [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self.thread];
-    if (friendRequestStatus == LKFriendRequestUIStatusNone || friendRequestStatus == LKFriendRequestUIStatusFriends) { return NO; };
-    return [self.uniqueId isEqual:self.thread.lastInteraction.uniqueId];
 }
 
 #pragma mark - Open Groups

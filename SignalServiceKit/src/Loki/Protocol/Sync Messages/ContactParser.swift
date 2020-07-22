@@ -1,14 +1,14 @@
 
-@objc public final class ContactParser : NSObject {
+public final class ContactParser {
     private let data: Data
     
-    @objc public init(data: Data) {
+    public init(data: Data) {
         self.data = data
     }
     
-    @objc public func parseHexEncodedPublicKeys() -> [String] {
+    public func parse() -> [(publicKey: String, isBlocked: Bool)] {
         var index = 0
-        var result: [String] = []
+        var result: [(String, Bool)] = []
         while index < data.endIndex {
             var uncheckedSize: UInt32? = try? data[index..<(index+4)].withUnsafeBytes { $0.pointee }
             if let size = uncheckedSize, size >= data.count, let intermediate = try? data[index..<(index+4)].reversed() {
@@ -21,7 +21,7 @@
             let protoAsData = data[index..<(index+sizeAsInt)]
             guard let proto = try? SSKProtoContactDetails.parseData(protoAsData) else { break }
             index += sizeAsInt
-            result.append(proto.number)
+            result.append((publicKey: proto.number, isBlocked: proto.blocked))
         }
         return result
     }

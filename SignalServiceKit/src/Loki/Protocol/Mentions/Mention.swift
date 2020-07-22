@@ -1,11 +1,11 @@
 
 @objc(LKMention)
 public final class Mention : NSObject {
-    @objc public let hexEncodedPublicKey: String
+    @objc public let publicKey: String
     @objc public let displayName: String
     
-    @objc public init(hexEncodedPublicKey: String, displayName: String) {
-        self.hexEncodedPublicKey = hexEncodedPublicKey
+    @objc public init(publicKey: String, displayName: String) {
+        self.publicKey = publicKey
         self.displayName = displayName
     }
     

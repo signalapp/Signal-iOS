@@ -14,11 +14,11 @@ public final class SnodeAPI : NSObject {
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
     
     // MARK: Settings
-    internal static let snodeFailureThreshold = 2
     private static let maxRetryCount: UInt = 4
     private static let minimumSnodePoolCount = 32
     private static let minimumSwarmSnodeCount = 2
     private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
+    private static let snodeFailureThreshold = 2
     private static let targetSwarmSnodeCount = 2
 
     internal static var powDifficulty: UInt = 1

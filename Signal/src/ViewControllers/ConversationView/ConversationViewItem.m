@@ -413,12 +413,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
         TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
-        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId] && !previousIncomingMessage.isFriendRequest) {
+        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId]) {
             return 2.f;
         }
     } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage
-        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage
-        && !((TSOutgoingMessage *)previousLayoutItem.interaction).hasFriendRequestStatusMessage) {
+        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         return 2.f;
     }
 
