@@ -590,25 +590,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     __block NSError *uuidError = nil;
 
     dispatch_group_enter(group);
-    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive success:^(SMKSenderCertificate *retrievedCert) {
-        certificate = retrievedCert;
-        dispatch_group_leave(group);
-
-    } failure:^(NSError *error) {
-        OWSLogError(@"Could not obtain UD sender certificate: %@", error);
-        // The existing behavior was to only care about connectivity errors
-        // Only persist the error if it's connectivity related
-        certError = IsNetworkConnectivityFailure(error) ? error : nil;
-        dispatch_group_leave(group);
-    }];
+    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive
+        success:^(SMKSenderCertificate *retrievedCert) {
+            certificate = retrievedCert;
+            dispatch_group_leave(group);
+        }
+        failure:^(NSError *error) {
+            OWSLogError(@"Could not obtain UD sender certificate: %@", error);
+            // The existing behavior was to only care about connectivity errors
+            // Only persist the error if it's connectivity related
+            certError = IsNetworkConnectivityFailure(error) ? error : nil;
+            dispatch_group_leave(group);
+        }];
 
     if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
         dispatch_group_enter(group);
-        [self populateUUIDsForLegacyRecipientsOf:message completion:^(NSError *error) {
-            OWSLogError(@"Failed CDS lookup with error: %@", error);
-            uuidError = error;
-            dispatch_group_leave(group);
-        }];
+        [self populateUUIDsForLegacyRecipientsOf:message
+                                      completion:^(NSError *error) {
+                                          OWSLogError(@"Failed CDS lookup with error: %@", error);
+                                          uuidError = error;
+                                          dispatch_group_leave(group);
+                                      }];
     }
 
     dispatch_group_notify(group, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
@@ -631,9 +633,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssertDebug(!NSThread.isMainThread);
 
-    [self prepareMessage:message success:^(SMKSenderCertificate *senderCertificate) {
-        [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
-    } failure:failure];
+    [self prepareMessage:message
+                 success:^(SMKSenderCertificate *senderCertificate) {
+                     [self sendMessageToService:message
+                              senderCertificate:senderCertificate
+                                        success:success
+                                        failure:failure];
+                 }
+                 failure:failure];
 }
 
 - (nullable NSArray<SignalServiceAddress *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
@@ -1513,9 +1520,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self sendMessageToRecipient:messageSend];
     };
 
-    void (^handle404)(void) = ^{
-        [self failSendForUnregisteredRecipient:messageSend];
-    };
+    void (^handle404)(void) = ^{ [self failSendForUnregisteredRecipient:messageSend]; };
 
     switch (statusCode) {
         case 401: {
