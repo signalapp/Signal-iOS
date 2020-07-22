@@ -340,8 +340,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                              *stop = YES;
                                              return;
                                          }
-                                         if (![interaction respondsToSelector:@selector(uniqueThreadId)]
-                                             || interaction.uniqueThreadId.length < 1
+                                         if (interaction.uniqueThreadId.length < 1
                                              || ![threadIds containsObject:interaction.uniqueThreadId]) {
                                              [orphanInteractionIds addObject:interaction.uniqueId];
                                          }
@@ -630,13 +629,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 continue;
             }
             // Don't delete interactions which were created in the last N minutes.
-            BOOL hasTimestamp = [interaction respondsToSelector:@selector(timestamp)];
-            if (hasTimestamp) {
-                NSDate *creationDate = [NSDate ows_dateWithMillisecondsSince1970:interaction.timestamp];
-                if ([creationDate isAfterDate:thresholdDate]) {
-                    OWSLogInfo(@"Skipping orphan interaction due to age: %f", fabs(creationDate.timeIntervalSinceNow));
-                    continue;
-                }
+            NSDate *creationDate = [NSDate ows_dateWithMillisecondsSince1970:interaction.timestamp];
+            if ([creationDate isAfterDate:thresholdDate]) {
+                OWSLogInfo(@"Skipping orphan interaction due to age: %f", fabs(creationDate.timeIntervalSinceNow));
+                continue;
             }
             OWSLogInfo(@"Removing orphan message: %@", interaction.uniqueId);
             interactionsRemoved++;
