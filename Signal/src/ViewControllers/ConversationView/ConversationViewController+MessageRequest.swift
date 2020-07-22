@@ -46,9 +46,9 @@ extension ConversationViewController: MessageRequestDelegate {
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
-        case .contactOrGroupV1:
+        case .contactOrGroupV1MessageRequest, .groupV2MessageRequest:
             showBlockContactOrGroupV1ActionSheet()
-        case .groupV2:
+        case .groupV2Invite:
             showBlockInviteActionSheet()
         }
     }
@@ -75,19 +75,14 @@ extension ConversationViewController: MessageRequestDelegate {
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
 
         let blockAction = ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_BLOCK_ACTION",
-                                                                     comment: "Action sheet action to confirm blocking a thread via a message request.")) { _ in
-                                                                        self.blockingManager.addBlockedThread(self.thread, wasLocallyInitiated: true)
-                                                                        self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                                                                                               responseType: .block)
+                                                                     comment: "Action sheet action to confirm blocking a thread via a message request.")) { [weak self] _ in
+                                                                        self?.blockThread()
         }
         actionSheet.addAction(blockAction)
 
         let blockAndDeleteAction = ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
-                                                                              comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")) { _ in
-                                                                                self.blockingManager.addBlockedThread(self.thread, wasLocallyInitiated: true)
-                                                                                self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                                                                                                       responseType: .blockAndDelete)
-                                                                                self.leaveAndSoftDeleteThread()
+                                                                              comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")) { [weak self] _ in
+                                                                                self?.blockThreadAndDelete()
         }
         actionSheet.addAction(blockAndDeleteAction)
 
@@ -124,7 +119,7 @@ extension ConversationViewController: MessageRequestDelegate {
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUPS_INVITE_BLOCK_GROUP",
                                                                          comment: "Label for 'block group' button in group invite view."),
                                                 style: .default) { [weak self] _ in
-                                                    self?.blockThreadAndDelete()
+                                                    self?.blockThread()
         })
         let blockInviterTitle = String(format: NSLocalizedString("GROUPS_INVITE_BLOCK_INVITER_FORMAT",
                                                                  comment: "Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}."),
@@ -143,6 +138,12 @@ extension ConversationViewController: MessageRequestDelegate {
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)
+    }
+
+    func blockThread() {
+        blockingManager.addBlockedThread(thread, wasLocallyInitiated: true)
+        syncManager.sendMessageRequestResponseSyncMessage(thread: thread,
+                                                          responseType: .block)
     }
 
     func blockThreadAndDelete() {
@@ -266,9 +267,9 @@ extension ConversationViewController: MessageRequestDelegate {
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
-        case .contactOrGroupV1:
+        case .contactOrGroupV1MessageRequest, .groupV2MessageRequest:
             completion()
-        case .groupV2:
+        case .groupV2Invite:
             guard let groupThread = thread as? TSGroupThread else {
                 owsFailDebug("Invalid thread.")
                 return

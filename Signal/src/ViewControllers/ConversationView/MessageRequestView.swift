@@ -18,8 +18,9 @@ protocol MessageRequestDelegate: class {
 @objc
 public enum MessageRequestMode: UInt {
     case none
-    case contactOrGroupV1
-    case groupV2
+    case contactOrGroupV1MessageRequest
+    case groupV2MessageRequest
+    case groupV2Invite
 }
 
 // MARK: -
@@ -55,11 +56,12 @@ class MessageRequestView: UIStackView {
         self.thread = thread
 
         if let groupThread = thread as? TSGroupThread,
-            groupThread.isGroupV2Thread,
-            groupThread.isLocalUserPendingMember {
-            self.mode = .groupV2
+            groupThread.isGroupV2Thread {
+            self.mode = (groupThread.isLocalUserPendingMember
+                ? .groupV2Invite
+                : .groupV2MessageRequest)
         } else {
-            self.mode = .contactOrGroupV1
+            self.mode = .contactOrGroupV1MessageRequest
         }
 
         super.init(frame: .zero)
@@ -87,7 +89,7 @@ class MessageRequestView: UIStackView {
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
-        case .contactOrGroupV1:
+        case .contactOrGroupV1MessageRequest, .groupV2MessageRequest:
             var hasSentMessages = false
             databaseStorage.uiRead { transaction in
         hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
@@ -97,13 +99,13 @@ class MessageRequestView: UIStackView {
         // the thread has been blocked.
         assert(!hasSentMessages || isThreadBlocked || FeatureFlags.phoneNumberPrivacy)
 
-            addArrangedSubview(prepareContactOrGroupV1Prompt(hasSentMessages: hasSentMessages,
+            addArrangedSubview(prepareMessageRequestPrompt(hasSentMessages: hasSentMessages,
         isThreadBlocked: isThreadBlocked))
-            addArrangedSubview(prepareContactOrGroupV1Buttons(hasSentMessages: hasSentMessages,
+            addArrangedSubview(prepareMessageRequestButtons(hasSentMessages: hasSentMessages,
         isThreadBlocked: isThreadBlocked))
-        case .groupV2:
-            addArrangedSubview(prepareGroupV2Prompt())
-            addArrangedSubview(prepareGroupV2Buttons())
+        case .groupV2Invite:
+            addArrangedSubview(prepareGroupV2InvitePrompt())
+            addArrangedSubview(prepareGroupV2InviteButtons())
         }
     }
 
@@ -115,26 +117,47 @@ class MessageRequestView: UIStackView {
         return .zero
     }
 
-    // MARK: - Contact or Group V1
+    // MARK: - Message Request
 
-    func prepareContactOrGroupV1Prompt(hasSentMessages: Bool, isThreadBlocked: Bool) -> UILabel {
+    // This is used for:
+    //
+    // * Contact threads
+    // * v1 groups
+    // * v2 groups if user does not have a pending invite.
+    func prepareMessageRequestPrompt(hasSentMessages: Bool, isThreadBlocked: Bool) -> UILabel {
         if thread.isGroupThread {
             let string: String
-            if isThreadBlocked {
-                string = NSLocalizedString(
-                    "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT",
-                    comment: "A prompt notifying that the user must unblock this group to continue."
-                )
-            } else if hasSentMessages {
-                string = NSLocalizedString(
-                    "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT",
-                    comment: "A prompt notifying that the user must share their profile with this group."
-                )
+            if thread.isGroupV1Thread {
+                if isThreadBlocked {
+                    string = NSLocalizedString(
+                        "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT",
+                        comment: "A prompt notifying that the user must unblock this group to continue."
+                    )
+                } else if hasSentMessages {
+                    string = NSLocalizedString(
+                        "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT",
+                        comment: "A prompt notifying that the user must share their profile with this group."
+                    )
+                } else {
+                    string = NSLocalizedString(
+                        "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
+                        comment: "A prompt asking if the user wants to accept a group invite."
+                    )
+                }
             } else {
-                string = NSLocalizedString(
-                    "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
-                    comment: "A prompt asking if the user wants to accept a group invite."
-                )
+                owsAssertDebug(thread.isGroupV2Thread)
+
+                if isThreadBlocked {
+                    string = NSLocalizedString(
+                        "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2",
+                        comment: "A prompt notifying that the user must unblock this group to continue."
+                    )
+                } else {
+                    string = NSLocalizedString(
+                        "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2",
+                        comment: "A prompt asking if the user wants to accept a group invite."
+                    )
+                }
             }
 
             return prepareLabel(attributedString: NSAttributedString(string: string, attributes: [
@@ -172,7 +195,12 @@ class MessageRequestView: UIStackView {
         }
     }
 
-    func prepareContactOrGroupV1Buttons(hasSentMessages: Bool, isThreadBlocked: Bool) -> UIStackView {
+    // This is used for:
+    //
+    // * Contact threads
+    // * v1 groups
+    // * v2 groups if user does not have a pending invite.
+    func prepareMessageRequestButtons(hasSentMessages: Bool, isThreadBlocked: Bool) -> UIStackView {
         let mode = self.mode
         var buttons = [UIView]()
 
@@ -224,9 +252,9 @@ class MessageRequestView: UIStackView {
         return prepareButtonStack(buttons)
     }
 
-    // MARK: - Group V2
+    // MARK: - Group V2 Invites
 
-    func prepareGroupV2Prompt() -> UILabel {
+    func prepareGroupV2InvitePrompt() -> UILabel {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("missing local address")
             return UILabel()
@@ -250,7 +278,7 @@ class MessageRequestView: UIStackView {
         return preparePromptLabel(formatString: formatString, embeddedString: addedByName)
     }
 
-    func prepareGroupV2Buttons() -> UIStackView {
+    func prepareGroupV2InviteButtons() -> UIStackView {
         let mode = self.mode
         let buttons = [
             prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
