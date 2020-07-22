@@ -83,7 +83,7 @@ public class GroupsV2Changes {
         var newMembersAccess = oldGroupAccess.members
         var newAttributesAccess = oldGroupAccess.attributes
 
-        if !oldGroupMembership.isNonPendingMember(changeAuthorUuid) {
+        if !oldGroupMembership.isPendingOrNonPendingMember(changeAuthorUuid) {
             owsFailDebug("changeAuthorUuid not a full member of the group.")
         }
         let isChangeAuthorMember = oldGroupMembership.isNonPendingMember(changeAuthorUuid)
