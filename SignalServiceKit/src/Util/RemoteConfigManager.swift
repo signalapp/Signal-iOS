@@ -29,6 +29,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2CreateGroups: Bool {
+        guard modernCDS else { return false }
         guard FeatureFlags.groupsV2 else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
@@ -39,6 +40,7 @@ public class RemoteConfig: BaseFlags {
         if groupsV2CreateGroups {
             return true
         }
+        guard modernCDS else { return false }
         guard FeatureFlags.groupsV2 else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
@@ -49,6 +51,20 @@ public class RemoteConfig: BaseFlags {
         guard groupsV2GoodCitizen else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
+    }
+
+    // TODO: There's more work to be done around feature flags and
+    //       remote configuration for modern CDS:
+    //
+    // * Modify most usage of FeatureFlags.useOnlyModernContactDiscovery
+    //   and FeatureFlags.compareLegacyContactDiscoveryAgainstModern to
+    //   consult this remote config flag.
+    @objc
+    public static var modernCDS: Bool {
+        let isModernCDSAvailable = (FeatureFlags.useOnlyModernContactDiscovery ||
+            FeatureFlags.compareLegacyContactDiscoveryAgainstModern)
+        guard isModernCDSAvailable else { return false }
+        return isEnabled(.modernCDS)
     }
 
     @objc

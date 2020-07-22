@@ -179,7 +179,7 @@ public class FeatureFlags: BaseFlags {
     public static let answerCallsOnSecondaryDevice: Bool = true
 
     @objc
-    static let groupsV2 = build.includes(.qa)
+    public static let groupsV2 = build.includes(.qa)
 
     // The other clients don't consider this MVP, but we already implemented it.
     // It enables an optimization where other clients can usually update without
