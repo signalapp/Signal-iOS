@@ -29,7 +29,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2CreateGroups: Bool {
-        guard modernCDS else { return false }
+        guard modernCDS || DebugFlags.groupsV2assumeModernCDS else { return false }
         guard FeatureFlags.groupsV2 else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
@@ -40,7 +40,7 @@ public class RemoteConfig: BaseFlags {
         if groupsV2CreateGroups {
             return true
         }
-        guard modernCDS else { return false }
+        guard modernCDS || DebugFlags.groupsV2assumeModernCDS else { return false }
         guard FeatureFlags.groupsV2 else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)

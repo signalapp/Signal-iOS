@@ -300,6 +300,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static var groupsV2forceInvites: Bool {
         get {
+            return true
             guard build.includes(.qa) else {
                 return false
             }
@@ -333,6 +334,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let groupsV2editMemberAccess = build.includes(.qa)
+
+    @objc
+    public static let groupsV2assumeModernCDS = build.includes(.qa)
 
     @objc
     public static let isMessageProcessingVerbose = false
