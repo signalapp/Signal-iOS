@@ -200,4 +200,23 @@ public final class FileServerAPI : DotNetAPI {
             return downloadURL
         }
     }
+    
+    // MARK: Open Group Server Public Key
+    public static func getOpenGroupKey(for openGroupServer: String) -> Promise<String> {
+        let serverURL = URL(string: openGroupServer)!
+        let url = URL(string: "\(server)/loki/v1/getOpenGroupKey/\(serverURL.host!)")!
+        let request = TSRequest(url: url)
+        let token = "loki" // tokenless request, using a dummy token
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+        return OnionRequestAPI.sendOnionRequestLsrpcDest(request, server: server, using: fileServerPublicKey).map2 { rawResponse in
+            guard let bodyAsString = rawResponse["data"] as? String, let bodyAsData = bodyAsString.data(using: .utf8), let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { throw HTTP.Error.invalidJSON }
+            guard let base64EncodedPublicKey = body["data"] as? String else {
+                print("[Loki] Couldn't parse open group public key from: \(body).")
+                throw DotNetAPIError.parsingFailed
+            }
+            let publicKeyWithPrefix = Data(base64Encoded: base64EncodedPublicKey)!
+            let hexEncodedPublicKeyWithPrefix = publicKeyWithPrefix.toHexString()
+            return hexEncodedPublicKeyWithPrefix.removing05PrefixIfNeeded()
+        }
+    }
 }

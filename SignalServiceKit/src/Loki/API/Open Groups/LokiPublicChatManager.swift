@@ -56,6 +56,17 @@ public final class LokiPublicChatManager : NSObject {
                 return Promise(error: Error.chatCreationFailed)
             }
         }
+        if (LokiPublicChatAPI.useOnionRequests) {
+            return LokiPublicChatAPI.getOpenGroupServerPublicKey(on: server).then2 { publicKey in
+                return LokiPublicChatAPI.getAuthToken(for: server).then2 { token in
+                    return LokiPublicChatAPI.getInfo(for: channel, on: server)
+                }.map2 { channelInfo -> LokiPublicChat in
+                    guard let chat = self.addChat(server: server, channel: channel, name: channelInfo.displayName) else { throw Error.chatCreationFailed }
+                    return chat
+                }
+            }
+        }
+        // TODO: Remove this when we use onion request totally
         return LokiPublicChatAPI.getAuthToken(for: server).then2 { token in
             return LokiPublicChatAPI.getInfo(for: channel, on: server)
         }.map2 { channelInfo -> LokiPublicChat in

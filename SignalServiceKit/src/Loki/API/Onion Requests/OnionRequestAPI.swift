@@ -241,12 +241,15 @@ public enum OnionRequestAPI {
     }
     
     /// Sends an onion request to `file server`. Builds new paths as needed.
-    internal static func sendOnionRequestLsrpcDest(_ request: NSURLRequest, server: String, using x25519Key: String) -> Promise<JSON> {
+    internal static func sendOnionRequestLsrpcDest(_ request: NSURLRequest, server: String, using x25519Key: String, noJSON: Bool = false) -> Promise<JSON> {
         var headers = getCanonicalHeaders(for: request)
         let urlAsString = request.url!.absoluteString
         let serverURLEndIndex = urlAsString.range(of: server)!.upperBound
-        let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
-        let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
+        var endpoint = ""
+        if server.count < urlAsString.count {
+            let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
+            endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
+        }
         let parametersAsString: String
         if let tsRequest = request as? TSRequest {
             headers["Content-Type"] = "application/json"
@@ -269,7 +272,7 @@ public enum OnionRequestAPI {
         let destination: JSON = [ "host"    : request.url?.host,
                                   "target"  : "/loki/v1/lsrpc",
                                   "method"  : "POST"]
-        let promise = sendOnionRequest(on: nil, with: payload, to: destination, using: x25519Key, associatedWith: getUserHexEncodedPublicKey())
+        let promise = sendOnionRequest(on: nil, with: payload, to: destination, using: x25519Key, associatedWith: getUserHexEncodedPublicKey(), noJSON: noJSON)
         promise.recover2{ error -> Promise<JSON> in
             // TODO: File Server API handle Error
             throw error
@@ -277,7 +280,7 @@ public enum OnionRequestAPI {
         return promise
     }
     
-    internal static func sendOnionRequest(on snode: Snode?, with payload: JSON, to destination: JSON, using x25519Key: String?, associatedWith publicKey: String) -> Promise<JSON> {
+    internal static func sendOnionRequest(on snode: Snode?, with payload: JSON, to destination: JSON, using x25519Key: String?, associatedWith publicKey: String, noJSON: Bool = false) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode!
         DispatchQueue.global(qos: .userInitiated).async {
@@ -306,10 +309,18 @@ public enum OnionRequestAPI {
                             print("[Loki] The user's clock is out of sync with the service node network.")
                             seal.reject(SnodeAPI.SnodeAPIError.clockOutOfSync)
                         } else {
-                            guard let bodyAsData = bodyAsString.data(using: .utf8),
+                            
+                            if noJSON {
+                                let body = ["body": bodyAsString]
+                                guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
+                                seal.fulfill(body)
+                                
+                            } else {
+                                guard let bodyAsData = bodyAsString.data(using: .utf8),
                                 let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
-                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
-                            seal.fulfill(body)
+                                guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
+                                seal.fulfill(body)
+                            }
                         }
                     } catch (let error) {
                         seal.reject(error)
