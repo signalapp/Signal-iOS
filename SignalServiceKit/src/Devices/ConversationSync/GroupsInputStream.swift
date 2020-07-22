@@ -34,7 +34,7 @@ public class GroupsInputStream {
         var groupData: Data = Data()
         try inputStream.decodeData(value: &groupData, count: Int(groupDataLength))
 
-        let groupDetails = try SSKProtoGroupDetails.parseData(groupData)
+        let groupDetails = try SSKProtoGroupDetails(serializedData: groupData)
 
         var avatarData: Data?
         if let avatar = groupDetails.avatar {

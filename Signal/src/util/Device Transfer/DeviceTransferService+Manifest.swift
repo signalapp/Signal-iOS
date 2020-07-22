@@ -169,7 +169,7 @@ extension DeviceTransferService {
             stopTransfer()
             return owsFailDebug("Failed to read manifest data")
         }
-        guard let manifest = try? DeviceTransferProtoManifest.parseData(data) else {
+        guard let manifest = try? DeviceTransferProtoManifest(serializedData: data) else {
             stopTransfer()
             return owsFailDebug("Failed to parse manifest proto")
         }
@@ -273,6 +273,6 @@ extension DeviceTransferService {
         ).path
         guard OWSFileSystem.fileOrFolderExists(atPath: manifestPath) else { return nil }
         guard let manifestData = try? Data(contentsOf: URL(fileURLWithPath: manifestPath)) else { return nil }
-        return try? DeviceTransferProtoManifest.parseData(manifestData)
+        return try? DeviceTransferProtoManifest(serializedData: manifestData)
     }
 }

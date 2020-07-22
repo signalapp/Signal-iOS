@@ -816,7 +816,7 @@ public class GroupsV2MessageProcessor: NSObject {
 
         let contentProto: SSKProtoContent
         do {
-            contentProto = try SSKProtoContent.parseData(plaintextData)
+            contentProto = try SSKProtoContent(serializedData: plaintextData)
         } catch {
             owsFailDebug("could not parse proto: \(error)")
             return nil

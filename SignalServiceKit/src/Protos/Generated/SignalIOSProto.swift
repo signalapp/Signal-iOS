@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -48,7 +49,7 @@ private func SignalIOSProtoBackupSnapshotBackupEntityTypeUnwrap(_ value: SignalI
 // MARK: - SignalIOSProtoBackupSnapshotBackupEntity
 
 @objc
-public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
+public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject, Codable {
 
     // MARK: - SignalIOSProtoBackupSnapshotBackupEntityBuilder
 
@@ -63,6 +64,9 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
         let builder = SignalIOSProtoBackupSnapshotBackupEntityBuilder(entityData: entityData, collection: collection, key: key)
         if let _value = type {
             builder.setType(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -122,14 +126,18 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
             proto.key = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SignalIOSProtoBackupSnapshotBackupEntity {
-            return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto)
+            return try SignalIOSProtoBackupSnapshotBackupEntity(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto).serializedData()
+            return try SignalIOSProtoBackupSnapshotBackupEntity(proto).serializedData()
         }
     }
 
@@ -164,6 +172,14 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
         return proto.hasType
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: IOSProtos_BackupSnapshot.BackupEntity,
                  entityData: Data,
                  collection: String,
@@ -180,24 +196,24 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoBackupSnapshotBackupEntity {
+    public convenience init(serializedData: Data) throws {
         let proto = try IOSProtos_BackupSnapshot.BackupEntity(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: IOSProtos_BackupSnapshot.BackupEntity) throws -> SignalIOSProtoBackupSnapshotBackupEntity {
+    fileprivate convenience init(_ proto: IOSProtos_BackupSnapshot.BackupEntity) throws {
         guard proto.hasEntityData else {
-            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: entityData")
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: entityData")
         }
         let entityData = proto.entityData
 
         guard proto.hasCollection else {
-            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: collection")
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: collection")
         }
         let collection = proto.collection
 
         guard proto.hasKey else {
-            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: key")
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: key")
         }
         let key = proto.key
 
@@ -205,11 +221,20 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject {
 
         // MARK: - End Validation Logic for SignalIOSProtoBackupSnapshotBackupEntity -
 
-        let result = SignalIOSProtoBackupSnapshotBackupEntity(proto: proto,
-                                                              entityData: entityData,
-                                                              collection: collection,
-                                                              key: key)
-        return result
+        self.init(proto: proto,
+                  entityData: entityData,
+                  collection: collection,
+                  key: key)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -239,7 +264,7 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
 // MARK: - SignalIOSProtoBackupSnapshot
 
 @objc
-public class SignalIOSProtoBackupSnapshot: NSObject {
+public class SignalIOSProtoBackupSnapshot: NSObject, Codable {
 
     // MARK: - SignalIOSProtoBackupSnapshotBuilder
 
@@ -253,6 +278,9 @@ public class SignalIOSProtoBackupSnapshot: NSObject {
     public func asBuilder() -> SignalIOSProtoBackupSnapshotBuilder {
         let builder = SignalIOSProtoBackupSnapshotBuilder()
         builder.setEntity(entity)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -276,14 +304,18 @@ public class SignalIOSProtoBackupSnapshot: NSObject {
             proto.entity = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SignalIOSProtoBackupSnapshot {
-            return try SignalIOSProtoBackupSnapshot.parseProto(proto)
+            return try SignalIOSProtoBackupSnapshot(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try SignalIOSProtoBackupSnapshot.parseProto(proto).serializedData()
+            return try SignalIOSProtoBackupSnapshot(proto).serializedData()
         }
     }
 
@@ -291,6 +323,14 @@ public class SignalIOSProtoBackupSnapshot: NSObject {
 
     @objc
     public let entity: [SignalIOSProtoBackupSnapshotBackupEntity]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: IOSProtos_BackupSnapshot,
                  entity: [SignalIOSProtoBackupSnapshotBackupEntity]) {
@@ -304,22 +344,31 @@ public class SignalIOSProtoBackupSnapshot: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoBackupSnapshot {
+    public convenience init(serializedData: Data) throws {
         let proto = try IOSProtos_BackupSnapshot(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: IOSProtos_BackupSnapshot) throws -> SignalIOSProtoBackupSnapshot {
+    fileprivate convenience init(_ proto: IOSProtos_BackupSnapshot) throws {
         var entity: [SignalIOSProtoBackupSnapshotBackupEntity] = []
-        entity = try proto.entity.map { try SignalIOSProtoBackupSnapshotBackupEntity.parseProto($0) }
+        entity = try proto.entity.map { try SignalIOSProtoBackupSnapshotBackupEntity($0) }
 
         // MARK: - Begin Validation Logic for SignalIOSProtoBackupSnapshot -
 
         // MARK: - End Validation Logic for SignalIOSProtoBackupSnapshot -
 
-        let result = SignalIOSProtoBackupSnapshot(proto: proto,
-                                                  entity: entity)
-        return result
+        self.init(proto: proto,
+                  entity: entity)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -349,7 +398,7 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
 // MARK: - SignalIOSProtoDeviceName
 
 @objc
-public class SignalIOSProtoDeviceName: NSObject {
+public class SignalIOSProtoDeviceName: NSObject, Codable {
 
     // MARK: - SignalIOSProtoDeviceNameBuilder
 
@@ -362,6 +411,9 @@ public class SignalIOSProtoDeviceName: NSObject {
     @objc
     public func asBuilder() -> SignalIOSProtoDeviceNameBuilder {
         let builder = SignalIOSProtoDeviceNameBuilder(ephemeralPublic: ephemeralPublic, syntheticIv: syntheticIv, ciphertext: ciphertext)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -415,14 +467,18 @@ public class SignalIOSProtoDeviceName: NSObject {
             proto.ciphertext = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> SignalIOSProtoDeviceName {
-            return try SignalIOSProtoDeviceName.parseProto(proto)
+            return try SignalIOSProtoDeviceName(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try SignalIOSProtoDeviceName.parseProto(proto).serializedData()
+            return try SignalIOSProtoDeviceName(proto).serializedData()
         }
     }
 
@@ -436,6 +492,14 @@ public class SignalIOSProtoDeviceName: NSObject {
 
     @objc
     public let ciphertext: Data
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: IOSProtos_DeviceName,
                  ephemeralPublic: Data,
@@ -453,24 +517,24 @@ public class SignalIOSProtoDeviceName: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> SignalIOSProtoDeviceName {
+    public convenience init(serializedData: Data) throws {
         let proto = try IOSProtos_DeviceName(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: IOSProtos_DeviceName) throws -> SignalIOSProtoDeviceName {
+    fileprivate convenience init(_ proto: IOSProtos_DeviceName) throws {
         guard proto.hasEphemeralPublic else {
-            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: ephemeralPublic")
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: ephemeralPublic")
         }
         let ephemeralPublic = proto.ephemeralPublic
 
         guard proto.hasSyntheticIv else {
-            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: syntheticIv")
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: syntheticIv")
         }
         let syntheticIv = proto.syntheticIv
 
         guard proto.hasCiphertext else {
-            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: ciphertext")
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(Self.logTag) missing required field: ciphertext")
         }
         let ciphertext = proto.ciphertext
 
@@ -478,11 +542,20 @@ public class SignalIOSProtoDeviceName: NSObject {
 
         // MARK: - End Validation Logic for SignalIOSProtoDeviceName -
 
-        let result = SignalIOSProtoDeviceName(proto: proto,
-                                              ephemeralPublic: ephemeralPublic,
-                                              syntheticIv: syntheticIv,
-                                              ciphertext: ciphertext)
-        return result
+        self.init(proto: proto,
+                  ephemeralPublic: ephemeralPublic,
+                  syntheticIv: syntheticIv,
+                  ciphertext: ciphertext)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc

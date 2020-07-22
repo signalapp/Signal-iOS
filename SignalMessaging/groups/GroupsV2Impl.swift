@@ -425,7 +425,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             guard let protoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            return try GroupsProtoAvatarUploadAttributes.parseData(protoData)
+            return try GroupsProtoAvatarUploadAttributes(serializedData: protoData)
         }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadForm in
             try OWSUploadForm.parse(proto: avatarUploadAttributes)
         }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadForm) -> Promise<String> in
@@ -484,7 +484,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             guard let groupProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            return try GroupsProtoGroup.parseData(groupProtoData)
+            return try GroupsProtoGroup(serializedData: groupProtoData)
         }.then(on: DispatchQueue.global()) { (groupProto: GroupsProtoGroup) -> Promise<(GroupsProtoGroup, GroupV2DownloadedAvatars)> in
             return firstly {
                 // We can ignoreSignature; these protos came from the service.
@@ -569,7 +569,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             guard let groupChangesProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            return try GroupsProtoGroupChanges.parseData(groupChangesProtoData)
+            return try GroupsProtoGroupChanges(serializedData: groupChangesProtoData)
         }.then(on: DispatchQueue.global()) { (groupChangesProto: GroupsProtoGroupChanges) -> Promise<[GroupV2Change]> in
             return firstly {
                 // We can ignoreSignature; these protos came from the service.

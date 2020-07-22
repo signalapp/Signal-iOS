@@ -201,7 +201,7 @@ public struct StorageService {
         return storageRequest(withMethod: "GET", endpoint: endpoint).map(on: .global()) { response in
             switch response.status {
             case .success:
-                let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
+                let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
                 let manifestData: Data
                 do {
                     manifestData = try KeyBackupService.decrypt(
@@ -211,7 +211,7 @@ public struct StorageService {
                 } catch {
                     throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
-                return .latestManifest(try StorageServiceProtoManifestRecord.parseData(manifestData))
+                return .latestManifest(try StorageServiceProtoManifestRecord(serializedData: manifestData))
             case .notFound:
                 return .noExistingManifest
             case .noContent:
@@ -279,7 +279,7 @@ public struct StorageService {
                 return nil
             case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
-                let encryptedManifestContainer = try StorageServiceProtoStorageManifest.parseData(response.data)
+                let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
                 let manifestData: Data
                 do {
                     manifestData = try KeyBackupService.decrypt(
@@ -289,7 +289,7 @@ public struct StorageService {
                 } catch {
                     throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
                 }
-                return try StorageServiceProtoManifestRecord.parseData(manifestData)
+                return try StorageServiceProtoManifestRecord(serializedData: manifestData)
             default:
                 owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.retryableAssertion
@@ -326,7 +326,7 @@ public struct StorageService {
                 throw StorageError.retryableAssertion
             }
 
-            let itemsProto = try StorageServiceProtoStorageItems.parseData(response.data)
+            let itemsProto = try StorageServiceProtoStorageItems(serializedData: response.data)
 
             let keyToIdentifier = Dictionary(uniqueKeysWithValues: keys.map { ($0.data, $0) })
 
@@ -345,7 +345,7 @@ public struct StorageService {
                 } catch {
                     throw StorageError.itemDecryptionFailed(identifier: itemIdentifier)
                 }
-                let record = try StorageServiceProtoStorageRecord.parseData(itemData)
+                let record = try StorageServiceProtoStorageRecord(serializedData: itemData)
                 return StorageItem(identifier: itemIdentifier, record: record)
             }
         }

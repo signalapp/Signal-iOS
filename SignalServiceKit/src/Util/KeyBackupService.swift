@@ -795,7 +795,7 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            let kbResponse = try KeyBackupProtoResponse.parseData(encryptionResult)
+            let kbResponse = try KeyBackupProtoResponse(serializedData: encryptionResult)
 
             guard let typedResponse = RequestType.responseOption(from: kbResponse) else {
                 owsFailDebug("missing KBS response object")

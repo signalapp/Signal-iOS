@@ -14,7 +14,7 @@ public enum GroupsProtoError: Error {
 
 // MARK: - GroupsProtoAvatarUploadAttributes
 
-public class GroupsProtoAvatarUploadAttributes: NSObject {
+public class GroupsProtoAvatarUploadAttributes: NSObject, Codable {
 
     // MARK: - GroupsProtoAvatarUploadAttributesBuilder
 
@@ -45,6 +45,9 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         }
         if let _value = signature {
             builder.setSignature(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -125,12 +128,16 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
             proto.signature = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoAvatarUploadAttributes {
-            return try GroupsProtoAvatarUploadAttributes.parseProto(proto)
+            return try GroupsProtoAvatarUploadAttributes(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoAvatarUploadAttributes.parseProto(proto).serializedData()
+            return try GroupsProtoAvatarUploadAttributes(proto).serializedData()
         }
     }
 
@@ -206,6 +213,14 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return !proto.signature.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_AvatarUploadAttributes) {
         self.proto = proto
     }
@@ -215,18 +230,27 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoAvatarUploadAttributes {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_AvatarUploadAttributes(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_AvatarUploadAttributes) throws -> GroupsProtoAvatarUploadAttributes {
+    fileprivate convenience init(_ proto: GroupsProtos_AvatarUploadAttributes) throws {
         // MARK: - Begin Validation Logic for GroupsProtoAvatarUploadAttributes -
 
         // MARK: - End Validation Logic for GroupsProtoAvatarUploadAttributes -
 
-        let result = GroupsProtoAvatarUploadAttributes(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -302,7 +326,7 @@ private func GroupsProtoMemberRoleUnwrap(_ value: GroupsProtoMemberRole) -> Grou
 
 // MARK: - GroupsProtoMember
 
-public class GroupsProtoMember: NSObject {
+public class GroupsProtoMember: NSObject, Codable {
 
     // MARK: - GroupsProtoMemberBuilder
 
@@ -327,6 +351,9 @@ public class GroupsProtoMember: NSObject {
         }
         if hasJoinedAtRevision {
             builder.setJoinedAtRevision(joinedAtRevision)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -375,12 +402,16 @@ public class GroupsProtoMember: NSObject {
             proto.joinedAtRevision = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoMember {
-            return try GroupsProtoMember.parseProto(proto)
+            return try GroupsProtoMember(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoMember.parseProto(proto).serializedData()
+            return try GroupsProtoMember(proto).serializedData()
         }
     }
 
@@ -441,6 +472,14 @@ public class GroupsProtoMember: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_Member) {
         self.proto = proto
     }
@@ -450,18 +489,27 @@ public class GroupsProtoMember: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoMember {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_Member(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_Member) throws -> GroupsProtoMember {
+    fileprivate convenience init(_ proto: GroupsProtos_Member) throws {
         // MARK: - Begin Validation Logic for GroupsProtoMember -
 
         // MARK: - End Validation Logic for GroupsProtoMember -
 
-        let result = GroupsProtoMember(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -487,7 +535,7 @@ extension GroupsProtoMember.GroupsProtoMemberBuilder {
 
 // MARK: - GroupsProtoPendingMember
 
-public class GroupsProtoPendingMember: NSObject {
+public class GroupsProtoPendingMember: NSObject, Codable {
 
     // MARK: - GroupsProtoPendingMemberBuilder
 
@@ -506,6 +554,9 @@ public class GroupsProtoPendingMember: NSObject {
         }
         if hasTimestamp {
             builder.setTimestamp(timestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -540,12 +591,16 @@ public class GroupsProtoPendingMember: NSObject {
             proto.timestamp = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoPendingMember {
-            return try GroupsProtoPendingMember.parseProto(proto)
+            return try GroupsProtoPendingMember(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoPendingMember.parseProto(proto).serializedData()
+            return try GroupsProtoPendingMember(proto).serializedData()
         }
     }
 
@@ -570,6 +625,14 @@ public class GroupsProtoPendingMember: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_PendingMember,
                  member: GroupsProtoMember?) {
         self.proto = proto
@@ -581,24 +644,33 @@ public class GroupsProtoPendingMember: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoPendingMember {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_PendingMember(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_PendingMember) throws -> GroupsProtoPendingMember {
+    fileprivate convenience init(_ proto: GroupsProtos_PendingMember) throws {
         var member: GroupsProtoMember?
         if proto.hasMember {
-            member = try GroupsProtoMember.parseProto(proto.member)
+            member = try GroupsProtoMember(proto.member)
         }
 
         // MARK: - Begin Validation Logic for GroupsProtoPendingMember -
 
         // MARK: - End Validation Logic for GroupsProtoPendingMember -
 
-        let result = GroupsProtoPendingMember(proto: proto,
-                                              member: member)
-        return result
+        self.init(proto: proto,
+                  member: member)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -679,7 +751,7 @@ private func GroupsProtoAccessControlAccessRequiredUnwrap(_ value: GroupsProtoAc
 
 // MARK: - GroupsProtoAccessControl
 
-public class GroupsProtoAccessControl: NSObject {
+public class GroupsProtoAccessControl: NSObject, Codable {
 
     // MARK: - GroupsProtoAccessControlBuilder
 
@@ -695,6 +767,9 @@ public class GroupsProtoAccessControl: NSObject {
         }
         if let _value = members {
             builder.setMembers(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -713,12 +788,16 @@ public class GroupsProtoAccessControl: NSObject {
             proto.members = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoAccessControl {
-            return try GroupsProtoAccessControl.parseProto(proto)
+            return try GroupsProtoAccessControl(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoAccessControl.parseProto(proto).serializedData()
+            return try GroupsProtoAccessControl(proto).serializedData()
         }
     }
 
@@ -760,6 +839,14 @@ public class GroupsProtoAccessControl: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_AccessControl) {
         self.proto = proto
     }
@@ -769,18 +856,27 @@ public class GroupsProtoAccessControl: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoAccessControl {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_AccessControl(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_AccessControl) throws -> GroupsProtoAccessControl {
+    fileprivate convenience init(_ proto: GroupsProtos_AccessControl) throws {
         // MARK: - Begin Validation Logic for GroupsProtoAccessControl -
 
         // MARK: - End Validation Logic for GroupsProtoAccessControl -
 
-        let result = GroupsProtoAccessControl(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -806,7 +902,7 @@ extension GroupsProtoAccessControl.GroupsProtoAccessControlBuilder {
 
 // MARK: - GroupsProtoGroup
 
-public class GroupsProtoGroup: NSObject {
+public class GroupsProtoGroup: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupBuilder
 
@@ -837,6 +933,9 @@ public class GroupsProtoGroup: NSObject {
         }
         builder.setMembers(members)
         builder.setPendingMembers(pendingMembers)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -920,12 +1019,16 @@ public class GroupsProtoGroup: NSObject {
             proto.pendingMembers = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroup {
-            return try GroupsProtoGroup.parseProto(proto)
+            return try GroupsProtoGroup(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroup.parseProto(proto).serializedData()
+            return try GroupsProtoGroup(proto).serializedData()
         }
     }
 
@@ -984,6 +1087,14 @@ public class GroupsProtoGroup: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_Group,
                  accessControl: GroupsProtoAccessControl?,
                  members: [GroupsProtoMember],
@@ -999,32 +1110,41 @@ public class GroupsProtoGroup: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroup {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_Group(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_Group) throws -> GroupsProtoGroup {
+    fileprivate convenience init(_ proto: GroupsProtos_Group) throws {
         var accessControl: GroupsProtoAccessControl?
         if proto.hasAccessControl {
-            accessControl = try GroupsProtoAccessControl.parseProto(proto.accessControl)
+            accessControl = try GroupsProtoAccessControl(proto.accessControl)
         }
 
         var members: [GroupsProtoMember] = []
-        members = try proto.members.map { try GroupsProtoMember.parseProto($0) }
+        members = try proto.members.map { try GroupsProtoMember($0) }
 
         var pendingMembers: [GroupsProtoPendingMember] = []
-        pendingMembers = try proto.pendingMembers.map { try GroupsProtoPendingMember.parseProto($0) }
+        pendingMembers = try proto.pendingMembers.map { try GroupsProtoPendingMember($0) }
 
         // MARK: - Begin Validation Logic for GroupsProtoGroup -
 
         // MARK: - End Validation Logic for GroupsProtoGroup -
 
-        let result = GroupsProtoGroup(proto: proto,
-                                      accessControl: accessControl,
-                                      members: members,
-                                      pendingMembers: pendingMembers)
-        return result
+        self.init(proto: proto,
+                  accessControl: accessControl,
+                  members: members,
+                  pendingMembers: pendingMembers)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1050,7 +1170,7 @@ extension GroupsProtoGroup.GroupsProtoGroupBuilder {
 
 // MARK: - GroupsProtoGroupChangeActionsAddMemberAction
 
-public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
+public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsAddMemberActionBuilder
 
@@ -1063,6 +1183,9 @@ public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
         let builder = GroupsProtoGroupChangeActionsAddMemberActionBuilder()
         if let _value = added {
             builder.setAdded(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1083,18 +1206,30 @@ public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
             proto.added = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
-            return try GroupsProtoGroupChangeActionsAddMemberAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsAddMemberAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsAddMemberAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsAddMemberAction(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddMemberAction
 
     public let added: GroupsProtoMember?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChange.Actions.AddMemberAction,
                  added: GroupsProtoMember?) {
@@ -1107,24 +1242,33 @@ public class GroupsProtoGroupChangeActionsAddMemberAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsAddMemberAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.AddMemberAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.AddMemberAction) throws -> GroupsProtoGroupChangeActionsAddMemberAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.AddMemberAction) throws {
         var added: GroupsProtoMember?
         if proto.hasAdded {
-            added = try GroupsProtoMember.parseProto(proto.added)
+            added = try GroupsProtoMember(proto.added)
         }
 
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddMemberAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddMemberAction -
 
-        let result = GroupsProtoGroupChangeActionsAddMemberAction(proto: proto,
-                                                                  added: added)
-        return result
+        self.init(proto: proto,
+                  added: added)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1150,7 +1294,7 @@ extension GroupsProtoGroupChangeActionsAddMemberAction.GroupsProtoGroupChangeAct
 
 // MARK: - GroupsProtoGroupChangeActionsDeleteMemberAction
 
-public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
+public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsDeleteMemberActionBuilder
 
@@ -1163,6 +1307,9 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
         let builder = GroupsProtoGroupChangeActionsDeleteMemberActionBuilder()
         if let _value = deletedUserID {
             builder.setDeletedUserID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1183,12 +1330,16 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
             proto.deletedUserID = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
-            return try GroupsProtoGroupChangeActionsDeleteMemberAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsDeleteMemberAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsDeleteMemberAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsDeleteMemberAction(proto).serializedData()
         }
     }
 
@@ -1204,6 +1355,14 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
         return !proto.deletedUserID.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) {
         self.proto = proto
     }
@@ -1213,18 +1372,27 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.DeleteMemberAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeleteMemberAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeleteMemberAction -
 
-        let result = GroupsProtoGroupChangeActionsDeleteMemberAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1250,7 +1418,7 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction.GroupsProtoGroupChange
 
 // MARK: - GroupsProtoGroupChangeActionsModifyMemberRoleAction
 
-public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder
 
@@ -1266,6 +1434,9 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
         }
         if let _value = role {
             builder.setRole(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1290,12 +1461,16 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
             proto.role = GroupsProtoMemberRoleUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
-            return try GroupsProtoGroupChangeActionsModifyMemberRoleAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyMemberRoleAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto).serializedData()
         }
     }
 
@@ -1329,6 +1504,14 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction) {
         self.proto = proto
     }
@@ -1338,18 +1521,27 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction) throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyMemberRoleAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyMemberRoleAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1375,7 +1567,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction.GroupsProtoGroupCh
 
 // MARK: - GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction
 
-public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder
 
@@ -1388,6 +1580,9 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
         let builder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder()
         if let _value = presentation {
             builder.setPresentation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1408,12 +1603,16 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
             proto.presentation = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
-            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto).serializedData()
         }
     }
 
@@ -1429,6 +1628,14 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
         return !proto.presentation.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) {
         self.proto = proto
     }
@@ -1438,18 +1645,27 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1475,7 +1691,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.GroupsProtoG
 
 // MARK: - GroupsProtoGroupChangeActionsAddPendingMemberAction
 
-public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
+public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder
 
@@ -1488,6 +1704,9 @@ public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
         let builder = GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder()
         if let _value = added {
             builder.setAdded(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1508,18 +1727,30 @@ public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
             proto.added = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
-            return try GroupsProtoGroupChangeActionsAddPendingMemberAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsAddPendingMemberAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsAddPendingMemberAction(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction
 
     public let added: GroupsProtoPendingMember?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction,
                  added: GroupsProtoPendingMember?) {
@@ -1532,24 +1763,33 @@ public class GroupsProtoGroupChangeActionsAddPendingMemberAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.AddPendingMemberAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction) throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction) throws {
         var added: GroupsProtoPendingMember?
         if proto.hasAdded {
-            added = try GroupsProtoPendingMember.parseProto(proto.added)
+            added = try GroupsProtoPendingMember(proto.added)
         }
 
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddPendingMemberAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddPendingMemberAction -
 
-        let result = GroupsProtoGroupChangeActionsAddPendingMemberAction(proto: proto,
-                                                                         added: added)
-        return result
+        self.init(proto: proto,
+                  added: added)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1575,7 +1815,7 @@ extension GroupsProtoGroupChangeActionsAddPendingMemberAction.GroupsProtoGroupCh
 
 // MARK: - GroupsProtoGroupChangeActionsDeletePendingMemberAction
 
-public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
+public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder
 
@@ -1588,6 +1828,9 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
         let builder = GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder()
         if let _value = deletedUserID {
             builder.setDeletedUserID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1608,12 +1851,16 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
             proto.deletedUserID = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
-            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto).serializedData()
         }
     }
 
@@ -1629,6 +1876,14 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
         return !proto.deletedUserID.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) {
         self.proto = proto
     }
@@ -1638,18 +1893,27 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.DeletePendingMemberAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeletePendingMemberAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeletePendingMemberAction -
 
-        let result = GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1675,7 +1939,7 @@ extension GroupsProtoGroupChangeActionsDeletePendingMemberAction.GroupsProtoGrou
 
 // MARK: - GroupsProtoGroupChangeActionsPromotePendingMemberAction
 
-public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
+public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder
 
@@ -1688,6 +1952,9 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
         let builder = GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder()
         if let _value = presentation {
             builder.setPresentation(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1708,12 +1975,16 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
             proto.presentation = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
-            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto).serializedData()
         }
     }
 
@@ -1729,6 +2000,14 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
         return !proto.presentation.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) {
         self.proto = proto
     }
@@ -1738,18 +2017,27 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.PromotePendingMemberAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsPromotePendingMemberAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsPromotePendingMemberAction -
 
-        let result = GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1775,7 +2063,7 @@ extension GroupsProtoGroupChangeActionsPromotePendingMemberAction.GroupsProtoGro
 
 // MARK: - GroupsProtoGroupChangeActionsModifyTitleAction
 
-public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyTitleActionBuilder
 
@@ -1788,6 +2076,9 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
         let builder = GroupsProtoGroupChangeActionsModifyTitleActionBuilder()
         if let _value = title {
             builder.setTitle(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1808,12 +2099,16 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
             proto.title = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
-            return try GroupsProtoGroupChangeActionsModifyTitleAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyTitleAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyTitleAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyTitleAction(proto).serializedData()
         }
     }
 
@@ -1829,6 +2124,14 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
         return !proto.title.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) {
         self.proto = proto
     }
@@ -1838,18 +2141,27 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyTitleAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyTitleAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyTitleAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyTitleAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1875,7 +2187,7 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction.GroupsProtoGroupChangeA
 
 // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAction
 
-public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyAvatarActionBuilder
 
@@ -1888,6 +2200,9 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
         let builder = GroupsProtoGroupChangeActionsModifyAvatarActionBuilder()
         if let _value = avatar {
             builder.setAvatar(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1908,12 +2223,16 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
             proto.avatar = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyAvatarAction(proto).serializedData()
         }
     }
 
@@ -1929,6 +2248,14 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
         return !proto.avatar.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) {
         self.proto = proto
     }
@@ -1938,18 +2265,27 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyAvatarAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -1975,7 +2311,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction.GroupsProtoGroupChange
 
 // MARK: - GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
 
-public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder
 
@@ -1988,6 +2324,9 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
         let builder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder()
         if let _value = timer {
             builder.setTimer(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2008,12 +2347,16 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
             proto.timer = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
-            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto).serializedData()
         }
     }
 
@@ -2029,6 +2372,14 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
         return !proto.timer.isEmpty
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) {
         self.proto = proto
     }
@@ -2038,18 +2389,27 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -2075,7 +2435,7 @@ extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.Gro
 
 // MARK: - GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction
 
-public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder
 
@@ -2088,6 +2448,9 @@ public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: N
         let builder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
         if let _value = attributesAccess {
             builder.setAttributesAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2102,12 +2465,16 @@ public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: N
             proto.attributesAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto).serializedData()
         }
     }
 
@@ -2131,6 +2498,14 @@ public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: N
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) {
         self.proto = proto
     }
@@ -2140,18 +2515,27 @@ public class GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: N
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -2177,7 +2561,7 @@ extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.Group
 
 // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction
 
-public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder
 
@@ -2190,6 +2574,9 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObj
         let builder = GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
         if let _value = avatarAccess {
             builder.setAvatarAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2204,12 +2591,16 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObj
             proto.avatarAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto).serializedData()
         }
     }
 
@@ -2233,6 +2624,14 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObj
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction) {
         self.proto = proto
     }
@@ -2242,18 +2641,27 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: NSObj
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction) throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -2279,7 +2687,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction.GroupsPro
 
 // MARK: - GroupsProtoGroupChangeActionsModifyMembersAccessControlAction
 
-public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSObject {
+public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder
 
@@ -2292,6 +2700,9 @@ public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSOb
         let builder = GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
         if let _value = membersAccess {
             builder.setMembersAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2306,12 +2717,16 @@ public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSOb
             proto.membersAccess = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
-            return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.parseProto(proto)
+            return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto).serializedData()
         }
     }
 
@@ -2335,6 +2750,14 @@ public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSOb
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction) {
         self.proto = proto
     }
@@ -2344,18 +2767,27 @@ public class GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: NSOb
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction) throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyMembersAccessControlAction -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyMembersAccessControlAction -
 
-        let result = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -2381,7 +2813,7 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.GroupsPr
 
 // MARK: - GroupsProtoGroupChangeActions
 
-public class GroupsProtoGroupChangeActions: NSObject {
+public class GroupsProtoGroupChangeActions: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeActionsBuilder
 
@@ -2419,6 +2851,9 @@ public class GroupsProtoGroupChangeActions: NSObject {
         }
         if let _value = modifyMemberAccess {
             builder.setModifyMemberAccess(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2563,12 +2998,16 @@ public class GroupsProtoGroupChangeActions: NSObject {
             proto.modifyMemberAccess = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangeActions {
-            return try GroupsProtoGroupChangeActions.parseProto(proto)
+            return try GroupsProtoGroupChangeActions(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangeActions.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangeActions(proto).serializedData()
         }
     }
 
@@ -2615,6 +3054,14 @@ public class GroupsProtoGroupChangeActions: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange.Actions,
                  addMembers: [GroupsProtoGroupChangeActionsAddMemberAction],
                  deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction],
@@ -2648,76 +3095,85 @@ public class GroupsProtoGroupChangeActions: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangeActions {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange.Actions) throws -> GroupsProtoGroupChangeActions {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange.Actions) throws {
         var addMembers: [GroupsProtoGroupChangeActionsAddMemberAction] = []
-        addMembers = try proto.addMembers.map { try GroupsProtoGroupChangeActionsAddMemberAction.parseProto($0) }
+        addMembers = try proto.addMembers.map { try GroupsProtoGroupChangeActionsAddMemberAction($0) }
 
         var deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction] = []
-        deleteMembers = try proto.deleteMembers.map { try GroupsProtoGroupChangeActionsDeleteMemberAction.parseProto($0) }
+        deleteMembers = try proto.deleteMembers.map { try GroupsProtoGroupChangeActionsDeleteMemberAction($0) }
 
         var modifyMemberRoles: [GroupsProtoGroupChangeActionsModifyMemberRoleAction] = []
-        modifyMemberRoles = try proto.modifyMemberRoles.map { try GroupsProtoGroupChangeActionsModifyMemberRoleAction.parseProto($0) }
+        modifyMemberRoles = try proto.modifyMemberRoles.map { try GroupsProtoGroupChangeActionsModifyMemberRoleAction($0) }
 
         var modifyMemberProfileKeys: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction] = []
-        modifyMemberProfileKeys = try proto.modifyMemberProfileKeys.map { try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.parseProto($0) }
+        modifyMemberProfileKeys = try proto.modifyMemberProfileKeys.map { try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction($0) }
 
         var addPendingMembers: [GroupsProtoGroupChangeActionsAddPendingMemberAction] = []
-        addPendingMembers = try proto.addPendingMembers.map { try GroupsProtoGroupChangeActionsAddPendingMemberAction.parseProto($0) }
+        addPendingMembers = try proto.addPendingMembers.map { try GroupsProtoGroupChangeActionsAddPendingMemberAction($0) }
 
         var deletePendingMembers: [GroupsProtoGroupChangeActionsDeletePendingMemberAction] = []
-        deletePendingMembers = try proto.deletePendingMembers.map { try GroupsProtoGroupChangeActionsDeletePendingMemberAction.parseProto($0) }
+        deletePendingMembers = try proto.deletePendingMembers.map { try GroupsProtoGroupChangeActionsDeletePendingMemberAction($0) }
 
         var promotePendingMembers: [GroupsProtoGroupChangeActionsPromotePendingMemberAction] = []
-        promotePendingMembers = try proto.promotePendingMembers.map { try GroupsProtoGroupChangeActionsPromotePendingMemberAction.parseProto($0) }
+        promotePendingMembers = try proto.promotePendingMembers.map { try GroupsProtoGroupChangeActionsPromotePendingMemberAction($0) }
 
         var modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction?
         if proto.hasModifyTitle {
-            modifyTitle = try GroupsProtoGroupChangeActionsModifyTitleAction.parseProto(proto.modifyTitle)
+            modifyTitle = try GroupsProtoGroupChangeActionsModifyTitleAction(proto.modifyTitle)
         }
 
         var modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction?
         if proto.hasModifyAvatar {
-            modifyAvatar = try GroupsProtoGroupChangeActionsModifyAvatarAction.parseProto(proto.modifyAvatar)
+            modifyAvatar = try GroupsProtoGroupChangeActionsModifyAvatarAction(proto.modifyAvatar)
         }
 
         var modifyDisappearingMessagesTimer: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?
         if proto.hasModifyDisappearingMessagesTimer {
-            modifyDisappearingMessagesTimer = try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.parseProto(proto.modifyDisappearingMessagesTimer)
+            modifyDisappearingMessagesTimer = try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto.modifyDisappearingMessagesTimer)
         }
 
         var modifyAttributesAccess: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?
         if proto.hasModifyAttributesAccess {
-            modifyAttributesAccess = try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.parseProto(proto.modifyAttributesAccess)
+            modifyAttributesAccess = try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto.modifyAttributesAccess)
         }
 
         var modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?
         if proto.hasModifyMemberAccess {
-            modifyMemberAccess = try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.parseProto(proto.modifyMemberAccess)
+            modifyMemberAccess = try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto.modifyMemberAccess)
         }
 
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActions -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActions -
 
-        let result = GroupsProtoGroupChangeActions(proto: proto,
-                                                   addMembers: addMembers,
-                                                   deleteMembers: deleteMembers,
-                                                   modifyMemberRoles: modifyMemberRoles,
-                                                   modifyMemberProfileKeys: modifyMemberProfileKeys,
-                                                   addPendingMembers: addPendingMembers,
-                                                   deletePendingMembers: deletePendingMembers,
-                                                   promotePendingMembers: promotePendingMembers,
-                                                   modifyTitle: modifyTitle,
-                                                   modifyAvatar: modifyAvatar,
-                                                   modifyDisappearingMessagesTimer: modifyDisappearingMessagesTimer,
-                                                   modifyAttributesAccess: modifyAttributesAccess,
-                                                   modifyMemberAccess: modifyMemberAccess)
-        return result
+        self.init(proto: proto,
+                  addMembers: addMembers,
+                  deleteMembers: deleteMembers,
+                  modifyMemberRoles: modifyMemberRoles,
+                  modifyMemberProfileKeys: modifyMemberProfileKeys,
+                  addPendingMembers: addPendingMembers,
+                  deletePendingMembers: deletePendingMembers,
+                  promotePendingMembers: promotePendingMembers,
+                  modifyTitle: modifyTitle,
+                  modifyAvatar: modifyAvatar,
+                  modifyDisappearingMessagesTimer: modifyDisappearingMessagesTimer,
+                  modifyAttributesAccess: modifyAttributesAccess,
+                  modifyMemberAccess: modifyMemberAccess)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -2743,7 +3199,7 @@ extension GroupsProtoGroupChangeActions.GroupsProtoGroupChangeActionsBuilder {
 
 // MARK: - GroupsProtoGroupChange
 
-public class GroupsProtoGroupChange: NSObject {
+public class GroupsProtoGroupChange: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangeBuilder
 
@@ -2762,6 +3218,9 @@ public class GroupsProtoGroupChange: NSObject {
         }
         if hasChangeEpoch {
             builder.setChangeEpoch(changeEpoch)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2796,12 +3255,16 @@ public class GroupsProtoGroupChange: NSObject {
             proto.changeEpoch = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChange {
-            return try GroupsProtoGroupChange.parseProto(proto)
+            return try GroupsProtoGroupChange(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChange.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChange(proto).serializedData()
         }
     }
 
@@ -2834,6 +3297,14 @@ public class GroupsProtoGroupChange: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupChange) {
         self.proto = proto
     }
@@ -2843,18 +3314,27 @@ public class GroupsProtoGroupChange: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChange {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChange) throws -> GroupsProtoGroupChange {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChange) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupChange -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChange -
 
-        let result = GroupsProtoGroupChange(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -2880,7 +3360,7 @@ extension GroupsProtoGroupChange.GroupsProtoGroupChangeBuilder {
 
 // MARK: - GroupsProtoGroupChangesGroupChangeState
 
-public class GroupsProtoGroupChangesGroupChangeState: NSObject {
+public class GroupsProtoGroupChangesGroupChangeState: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangesGroupChangeStateBuilder
 
@@ -2896,6 +3376,9 @@ public class GroupsProtoGroupChangesGroupChangeState: NSObject {
         }
         if let _value = groupState {
             builder.setGroupState(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -2926,12 +3409,16 @@ public class GroupsProtoGroupChangesGroupChangeState: NSObject {
             proto.groupState = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChangesGroupChangeState {
-            return try GroupsProtoGroupChangesGroupChangeState.parseProto(proto)
+            return try GroupsProtoGroupChangesGroupChangeState(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChangesGroupChangeState.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChangesGroupChangeState(proto).serializedData()
         }
     }
 
@@ -2940,6 +3427,14 @@ public class GroupsProtoGroupChangesGroupChangeState: NSObject {
     public let groupChange: GroupsProtoGroupChange?
 
     public let groupState: GroupsProtoGroup?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChanges.GroupChangeState,
                  groupChange: GroupsProtoGroupChange?,
@@ -2954,30 +3449,39 @@ public class GroupsProtoGroupChangesGroupChangeState: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChangesGroupChangeState {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChanges.GroupChangeState(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChanges.GroupChangeState) throws -> GroupsProtoGroupChangesGroupChangeState {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChanges.GroupChangeState) throws {
         var groupChange: GroupsProtoGroupChange?
         if proto.hasGroupChange {
-            groupChange = try GroupsProtoGroupChange.parseProto(proto.groupChange)
+            groupChange = try GroupsProtoGroupChange(proto.groupChange)
         }
 
         var groupState: GroupsProtoGroup?
         if proto.hasGroupState {
-            groupState = try GroupsProtoGroup.parseProto(proto.groupState)
+            groupState = try GroupsProtoGroup(proto.groupState)
         }
 
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangesGroupChangeState -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangesGroupChangeState -
 
-        let result = GroupsProtoGroupChangesGroupChangeState(proto: proto,
-                                                             groupChange: groupChange,
-                                                             groupState: groupState)
-        return result
+        self.init(proto: proto,
+                  groupChange: groupChange,
+                  groupState: groupState)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -3003,7 +3507,7 @@ extension GroupsProtoGroupChangesGroupChangeState.GroupsProtoGroupChangesGroupCh
 
 // MARK: - GroupsProtoGroupChanges
 
-public class GroupsProtoGroupChanges: NSObject {
+public class GroupsProtoGroupChanges: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupChangesBuilder
 
@@ -3015,6 +3519,9 @@ public class GroupsProtoGroupChanges: NSObject {
     public func asBuilder() -> GroupsProtoGroupChangesBuilder {
         let builder = GroupsProtoGroupChangesBuilder()
         builder.setGroupChanges(groupChanges)
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -3034,18 +3541,30 @@ public class GroupsProtoGroupChanges: NSObject {
             proto.groupChanges = wrappedItems.map { $0.proto }
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupChanges {
-            return try GroupsProtoGroupChanges.parseProto(proto)
+            return try GroupsProtoGroupChanges(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupChanges.parseProto(proto).serializedData()
+            return try GroupsProtoGroupChanges(proto).serializedData()
         }
     }
 
     fileprivate let proto: GroupsProtos_GroupChanges
 
     public let groupChanges: [GroupsProtoGroupChangesGroupChangeState]
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: GroupsProtos_GroupChanges,
                  groupChanges: [GroupsProtoGroupChangesGroupChangeState]) {
@@ -3058,22 +3577,31 @@ public class GroupsProtoGroupChanges: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupChanges {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChanges(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupChanges) throws -> GroupsProtoGroupChanges {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupChanges) throws {
         var groupChanges: [GroupsProtoGroupChangesGroupChangeState] = []
-        groupChanges = try proto.groupChanges.map { try GroupsProtoGroupChangesGroupChangeState.parseProto($0) }
+        groupChanges = try proto.groupChanges.map { try GroupsProtoGroupChangesGroupChangeState($0) }
 
         // MARK: - Begin Validation Logic for GroupsProtoGroupChanges -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChanges -
 
-        let result = GroupsProtoGroupChanges(proto: proto,
-                                             groupChanges: groupChanges)
-        return result
+        self.init(proto: proto,
+                  groupChanges: groupChanges)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {
@@ -3123,7 +3651,7 @@ private func GroupsProtoGroupAttributeBlobOneOfContentUnwrap(_ value: GroupsProt
 
 // MARK: - GroupsProtoGroupAttributeBlob
 
-public class GroupsProtoGroupAttributeBlob: NSObject {
+public class GroupsProtoGroupAttributeBlob: NSObject, Codable {
 
     // MARK: - GroupsProtoGroupAttributeBlobBuilder
 
@@ -3136,6 +3664,9 @@ public class GroupsProtoGroupAttributeBlob: NSObject {
         let builder = GroupsProtoGroupAttributeBlobBuilder()
         if let _value = content {
             builder.setContent(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -3156,12 +3687,16 @@ public class GroupsProtoGroupAttributeBlob: NSObject {
             proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         public func build() throws -> GroupsProtoGroupAttributeBlob {
-            return try GroupsProtoGroupAttributeBlob.parseProto(proto)
+            return try GroupsProtoGroupAttributeBlob(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoGroupAttributeBlob.parseProto(proto).serializedData()
+            return try GroupsProtoGroupAttributeBlob(proto).serializedData()
         }
     }
 
@@ -3185,6 +3720,14 @@ public class GroupsProtoGroupAttributeBlob: NSObject {
         return true
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: GroupsProtos_GroupAttributeBlob) {
         self.proto = proto
     }
@@ -3194,18 +3737,27 @@ public class GroupsProtoGroupAttributeBlob: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupAttributeBlob {
+    public convenience init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupAttributeBlob(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_GroupAttributeBlob) throws -> GroupsProtoGroupAttributeBlob {
+    fileprivate convenience init(_ proto: GroupsProtos_GroupAttributeBlob) throws {
         // MARK: - Begin Validation Logic for GroupsProtoGroupAttributeBlob -
 
         // MARK: - End Validation Logic for GroupsProtoGroupAttributeBlob -
 
-        let result = GroupsProtoGroupAttributeBlob(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     public override var debugDescription: String {

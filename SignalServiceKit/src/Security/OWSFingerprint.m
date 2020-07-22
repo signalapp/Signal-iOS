@@ -129,7 +129,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
     *error = nil;
     FingerprintProtoLogicalFingerprints *_Nullable logicalFingerprints;
-    logicalFingerprints = [FingerprintProtoLogicalFingerprints parseData:data error:error];
+    logicalFingerprints = [[FingerprintProtoLogicalFingerprints alloc] initWithSerializedData:data error:error];
     if (!logicalFingerprints || *error) {
         OWSFailDebug(@"fingerprint failure: %@", *error);
 

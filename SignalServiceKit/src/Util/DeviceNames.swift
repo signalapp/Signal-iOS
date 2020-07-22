@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -122,7 +122,7 @@ public class DeviceNames: NSObject {
 
         let proto: SignalIOSProtoDeviceName
         do {
-            proto = try SignalIOSProtoDeviceName.parseData(protoData)
+            proto = try SignalIOSProtoDeviceName(serializedData: protoData)
         } catch {
             // Not necessarily an error; might be a legacy device name.
             Logger.error("failed to parse proto")

@@ -103,7 +103,7 @@ public extension GroupV2Params {
         }
         do {
             let blobProtoData = try decryptBlob(ciphertext)
-            let blobProto = try GroupsProtoGroupAttributeBlob.parseData(blobProtoData)
+            let blobProto = try GroupsProtoGroupAttributeBlob(serializedData: blobProtoData)
             if let blobContent = blobProto.content {
                 switch blobContent {
                 case .disappearingMessagesDuration(let value):
@@ -136,7 +136,7 @@ public extension GroupV2Params {
         }
         do {
             let blobProtoData = try decryptBlob(ciphertext)
-            let blobProto = try GroupsProtoGroupAttributeBlob.parseData(blobProtoData)
+            let blobProto = try GroupsProtoGroupAttributeBlob(serializedData: blobProtoData)
             if let blobContent = blobProto.content {
                 switch blobContent {
                 case .title(let value):
@@ -161,7 +161,7 @@ public extension GroupV2Params {
 
     func decryptGroupAvatar(_ ciphertext: Data) throws -> Data? {
         let blobProtoData = try decryptBlob(ciphertext)
-        let blobProto = try GroupsProtoGroupAttributeBlob.parseData(blobProtoData)
+        let blobProto = try GroupsProtoGroupAttributeBlob(serializedData: blobProtoData)
         if let blobContent = blobProto.content {
             switch blobContent {
             case .avatar(let value):

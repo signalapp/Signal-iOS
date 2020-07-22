@@ -504,7 +504,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (envelope.content != nil) {
         NSError *error;
-        SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
+        SSKProtoContent *_Nullable contentProto = [[SSKProtoContent alloc] initWithSerializedData:plaintextData
+                                                                                            error:&error];
         if (error || !contentProto) {
             OWSFailDebug(@"could not parse proto: %@", error);
             return;
@@ -540,7 +541,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.
         NSError *error;
-        SSKProtoDataMessage *_Nullable dataMessageProto = [SSKProtoDataMessage parseData:plaintextData error:&error];
+        SSKProtoDataMessage *_Nullable dataMessageProto =
+            [[SSKProtoDataMessage alloc] initWithSerializedData:plaintextData error:&error];
         if (error || !dataMessageProto) {
             OWSFailDebug(@"could not parse proto: %@", error);
             return;

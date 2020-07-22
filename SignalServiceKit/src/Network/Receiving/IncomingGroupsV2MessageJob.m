@@ -78,7 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoEnvelope *)envelope
 {
     NSError *error;
-    SSKProtoEnvelope *_Nullable result = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
+    SSKProtoEnvelope *_Nullable result = [[SSKProtoEnvelope alloc] initWithSerializedData:self.envelopeData
+                                                                                    error:&error];
 
     if (error) {
         OWSFailDebug(@"paring SSKProtoEnvelope failed with error: %@", error);

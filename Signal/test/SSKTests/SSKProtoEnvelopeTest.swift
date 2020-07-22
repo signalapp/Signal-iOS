@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -21,12 +21,12 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
     func testParse_EmptyData() {
         let data = Data()
-        XCTAssertThrowsError(try SSKProtoEnvelope.parseData(data))
+        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data))
     }
 
     func testParse_UnparseableData() {
         let data = "asdf".data(using: .utf8)!
-        XCTAssertThrowsError(try SSKProtoEnvelope.parseData(data)) { error in
+        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data)) { error in
             XCTAssert(error is SwiftProtobuf.BinaryDecodingError)
         }
     }
@@ -42,7 +42,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
         let encodedData = "CAESDCsxNTU1MTIzMTIzNCjKm4WazSw4AQ=="
         let data = Data(base64Encoded: encodedData)!
 
-        XCTAssertNoThrow(try SSKProtoEnvelope.parseData(data))
+        XCTAssertNoThrow(try SSKProtoEnvelope(serializedData: data))
     }
 
     func testParse_invalidData() {
@@ -56,7 +56,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
         let encodedData = "EgwrMTU1NTEyMzEyMzQ4AQ=="
         let data = Data(base64Encoded: encodedData)!
 
-        XCTAssertThrowsError(try SSKProtoEnvelope.parseData(data)) { (error) -> Void in
+        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data)) { (error) -> Void in
             switch error {
             case SSKProtoError.invalidProtobuf:
                 break
@@ -86,7 +86,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
         var envelope: SSKProtoEnvelope
         do {
-            envelope = try SSKProtoEnvelope.parseData(envelopeData)
+            envelope = try SSKProtoEnvelope(serializedData: envelopeData)
         } catch {
             XCTFail("Couldn't serialize data.")
             return

@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalCoreKit
+import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -14,7 +15,7 @@ public enum KeyBackupProtoError: Error {
 // MARK: - KeyBackupProtoRequest
 
 @objc
-public class KeyBackupProtoRequest: NSObject {
+public class KeyBackupProtoRequest: NSObject, Codable {
 
     // MARK: - KeyBackupProtoRequestBuilder
 
@@ -35,6 +36,9 @@ public class KeyBackupProtoRequest: NSObject {
         }
         if let _value = delete {
             builder.setDelete(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -80,14 +84,18 @@ public class KeyBackupProtoRequest: NSObject {
             proto.delete = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoRequest {
-            return try KeyBackupProtoRequest.parseProto(proto)
+            return try KeyBackupProtoRequest(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoRequest.parseProto(proto).serializedData()
+            return try KeyBackupProtoRequest(proto).serializedData()
         }
     }
 
@@ -101,6 +109,14 @@ public class KeyBackupProtoRequest: NSObject {
 
     @objc
     public let delete: KeyBackupProtoDeleteRequest?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: KeyBackupProtos_Request,
                  backup: KeyBackupProtoBackupRequest?,
@@ -118,36 +134,45 @@ public class KeyBackupProtoRequest: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRequest {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_Request(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_Request) throws -> KeyBackupProtoRequest {
-        var backup: KeyBackupProtoBackupRequest? = nil
+    fileprivate convenience init(_ proto: KeyBackupProtos_Request) throws {
+        var backup: KeyBackupProtoBackupRequest?
         if proto.hasBackup {
-            backup = try KeyBackupProtoBackupRequest.parseProto(proto.backup)
+            backup = try KeyBackupProtoBackupRequest(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreRequest? = nil
+        var restore: KeyBackupProtoRestoreRequest?
         if proto.hasRestore {
-            restore = try KeyBackupProtoRestoreRequest.parseProto(proto.restore)
+            restore = try KeyBackupProtoRestoreRequest(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteRequest? = nil
+        var delete: KeyBackupProtoDeleteRequest?
         if proto.hasDelete {
-            delete = try KeyBackupProtoDeleteRequest.parseProto(proto.delete)
+            delete = try KeyBackupProtoDeleteRequest(proto.delete)
         }
 
         // MARK: - Begin Validation Logic for KeyBackupProtoRequest -
 
         // MARK: - End Validation Logic for KeyBackupProtoRequest -
 
-        let result = KeyBackupProtoRequest(proto: proto,
-                                           backup: backup,
-                                           restore: restore,
-                                           delete: delete)
-        return result
+        self.init(proto: proto,
+                  backup: backup,
+                  restore: restore,
+                  delete: delete)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -177,7 +202,7 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
 // MARK: - KeyBackupProtoResponse
 
 @objc
-public class KeyBackupProtoResponse: NSObject {
+public class KeyBackupProtoResponse: NSObject, Codable {
 
     // MARK: - KeyBackupProtoResponseBuilder
 
@@ -198,6 +223,9 @@ public class KeyBackupProtoResponse: NSObject {
         }
         if let _value = delete {
             builder.setDelete(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -243,14 +271,18 @@ public class KeyBackupProtoResponse: NSObject {
             proto.delete = valueParam.proto
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoResponse {
-            return try KeyBackupProtoResponse.parseProto(proto)
+            return try KeyBackupProtoResponse(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoResponse.parseProto(proto).serializedData()
+            return try KeyBackupProtoResponse(proto).serializedData()
         }
     }
 
@@ -264,6 +296,14 @@ public class KeyBackupProtoResponse: NSObject {
 
     @objc
     public let delete: KeyBackupProtoDeleteResponse?
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: KeyBackupProtos_Response,
                  backup: KeyBackupProtoBackupResponse?,
@@ -281,36 +321,45 @@ public class KeyBackupProtoResponse: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoResponse {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_Response(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_Response) throws -> KeyBackupProtoResponse {
-        var backup: KeyBackupProtoBackupResponse? = nil
+    fileprivate convenience init(_ proto: KeyBackupProtos_Response) throws {
+        var backup: KeyBackupProtoBackupResponse?
         if proto.hasBackup {
-            backup = try KeyBackupProtoBackupResponse.parseProto(proto.backup)
+            backup = try KeyBackupProtoBackupResponse(proto.backup)
         }
 
-        var restore: KeyBackupProtoRestoreResponse? = nil
+        var restore: KeyBackupProtoRestoreResponse?
         if proto.hasRestore {
-            restore = try KeyBackupProtoRestoreResponse.parseProto(proto.restore)
+            restore = try KeyBackupProtoRestoreResponse(proto.restore)
         }
 
-        var delete: KeyBackupProtoDeleteResponse? = nil
+        var delete: KeyBackupProtoDeleteResponse?
         if proto.hasDelete {
-            delete = try KeyBackupProtoDeleteResponse.parseProto(proto.delete)
+            delete = try KeyBackupProtoDeleteResponse(proto.delete)
         }
 
         // MARK: - Begin Validation Logic for KeyBackupProtoResponse -
 
         // MARK: - End Validation Logic for KeyBackupProtoResponse -
 
-        let result = KeyBackupProtoResponse(proto: proto,
-                                            backup: backup,
-                                            restore: restore,
-                                            delete: delete)
-        return result
+        self.init(proto: proto,
+                  backup: backup,
+                  restore: restore,
+                  delete: delete)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -340,7 +389,7 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 // MARK: - KeyBackupProtoBackupRequest
 
 @objc
-public class KeyBackupProtoBackupRequest: NSObject {
+public class KeyBackupProtoBackupRequest: NSObject, Codable {
 
     // MARK: - KeyBackupProtoBackupRequestBuilder
 
@@ -373,6 +422,9 @@ public class KeyBackupProtoBackupRequest: NSObject {
         }
         if hasTries {
             builder.setTries(tries)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -450,14 +502,18 @@ public class KeyBackupProtoBackupRequest: NSObject {
             proto.tries = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoBackupRequest {
-            return try KeyBackupProtoBackupRequest.parseProto(proto)
+            return try KeyBackupProtoBackupRequest(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoBackupRequest.parseProto(proto).serializedData()
+            return try KeyBackupProtoBackupRequest(proto).serializedData()
         }
     }
 
@@ -541,6 +597,14 @@ public class KeyBackupProtoBackupRequest: NSObject {
         return proto.hasTries
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: KeyBackupProtos_BackupRequest) {
         self.proto = proto
     }
@@ -551,18 +615,27 @@ public class KeyBackupProtoBackupRequest: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoBackupRequest {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_BackupRequest(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_BackupRequest) throws -> KeyBackupProtoBackupRequest {
+    fileprivate convenience init(_ proto: KeyBackupProtos_BackupRequest) throws {
         // MARK: - Begin Validation Logic for KeyBackupProtoBackupRequest -
 
         // MARK: - End Validation Logic for KeyBackupProtoBackupRequest -
 
-        let result = KeyBackupProtoBackupRequest(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -617,7 +690,7 @@ private func KeyBackupProtoBackupResponseStatusUnwrap(_ value: KeyBackupProtoBac
 // MARK: - KeyBackupProtoBackupResponse
 
 @objc
-public class KeyBackupProtoBackupResponse: NSObject {
+public class KeyBackupProtoBackupResponse: NSObject, Codable {
 
     // MARK: - KeyBackupProtoBackupResponseBuilder
 
@@ -635,6 +708,9 @@ public class KeyBackupProtoBackupResponse: NSObject {
         }
         if let _value = token {
             builder.setToken(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -663,14 +739,18 @@ public class KeyBackupProtoBackupResponse: NSObject {
             proto.token = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoBackupResponse {
-            return try KeyBackupProtoBackupResponse.parseProto(proto)
+            return try KeyBackupProtoBackupResponse(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoBackupResponse.parseProto(proto).serializedData()
+            return try KeyBackupProtoBackupResponse(proto).serializedData()
         }
     }
 
@@ -708,6 +788,14 @@ public class KeyBackupProtoBackupResponse: NSObject {
         return proto.hasToken
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: KeyBackupProtos_BackupResponse) {
         self.proto = proto
     }
@@ -718,18 +806,27 @@ public class KeyBackupProtoBackupResponse: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoBackupResponse {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_BackupResponse(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_BackupResponse) throws -> KeyBackupProtoBackupResponse {
+    fileprivate convenience init(_ proto: KeyBackupProtos_BackupResponse) throws {
         // MARK: - Begin Validation Logic for KeyBackupProtoBackupResponse -
 
         // MARK: - End Validation Logic for KeyBackupProtoBackupResponse -
 
-        let result = KeyBackupProtoBackupResponse(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -759,7 +856,7 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 // MARK: - KeyBackupProtoRestoreRequest
 
 @objc
-public class KeyBackupProtoRestoreRequest: NSObject {
+public class KeyBackupProtoRestoreRequest: NSObject, Codable {
 
     // MARK: - KeyBackupProtoRestoreRequestBuilder
 
@@ -786,6 +883,9 @@ public class KeyBackupProtoRestoreRequest: NSObject {
         }
         if let _value = pin {
             builder.setPin(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -847,14 +947,18 @@ public class KeyBackupProtoRestoreRequest: NSObject {
             proto.pin = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoRestoreRequest {
-            return try KeyBackupProtoRestoreRequest.parseProto(proto)
+            return try KeyBackupProtoRestoreRequest(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoRestoreRequest.parseProto(proto).serializedData()
+            return try KeyBackupProtoRestoreRequest(proto).serializedData()
         }
     }
 
@@ -917,6 +1021,14 @@ public class KeyBackupProtoRestoreRequest: NSObject {
         return proto.hasPin
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: KeyBackupProtos_RestoreRequest) {
         self.proto = proto
     }
@@ -927,18 +1039,27 @@ public class KeyBackupProtoRestoreRequest: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRestoreRequest {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_RestoreRequest(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_RestoreRequest) throws -> KeyBackupProtoRestoreRequest {
+    fileprivate convenience init(_ proto: KeyBackupProtos_RestoreRequest) throws {
         // MARK: - Begin Validation Logic for KeyBackupProtoRestoreRequest -
 
         // MARK: - End Validation Logic for KeyBackupProtoRestoreRequest -
 
-        let result = KeyBackupProtoRestoreRequest(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -999,7 +1120,7 @@ private func KeyBackupProtoRestoreResponseStatusUnwrap(_ value: KeyBackupProtoRe
 // MARK: - KeyBackupProtoRestoreResponse
 
 @objc
-public class KeyBackupProtoRestoreResponse: NSObject {
+public class KeyBackupProtoRestoreResponse: NSObject, Codable {
 
     // MARK: - KeyBackupProtoRestoreResponseBuilder
 
@@ -1023,6 +1144,9 @@ public class KeyBackupProtoRestoreResponse: NSObject {
         }
         if hasTries {
             builder.setTries(tries)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1067,14 +1191,18 @@ public class KeyBackupProtoRestoreResponse: NSObject {
             proto.tries = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoRestoreResponse {
-            return try KeyBackupProtoRestoreResponse.parseProto(proto)
+            return try KeyBackupProtoRestoreResponse(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoRestoreResponse.parseProto(proto).serializedData()
+            return try KeyBackupProtoRestoreResponse(proto).serializedData()
         }
     }
 
@@ -1133,6 +1261,14 @@ public class KeyBackupProtoRestoreResponse: NSObject {
         return proto.hasTries
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: KeyBackupProtos_RestoreResponse) {
         self.proto = proto
     }
@@ -1143,18 +1279,27 @@ public class KeyBackupProtoRestoreResponse: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoRestoreResponse {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_RestoreResponse(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_RestoreResponse) throws -> KeyBackupProtoRestoreResponse {
+    fileprivate convenience init(_ proto: KeyBackupProtos_RestoreResponse) throws {
         // MARK: - Begin Validation Logic for KeyBackupProtoRestoreResponse -
 
         // MARK: - End Validation Logic for KeyBackupProtoRestoreResponse -
 
-        let result = KeyBackupProtoRestoreResponse(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -1184,7 +1329,7 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
 // MARK: - KeyBackupProtoDeleteRequest
 
 @objc
-public class KeyBackupProtoDeleteRequest: NSObject {
+public class KeyBackupProtoDeleteRequest: NSObject, Codable {
 
     // MARK: - KeyBackupProtoDeleteRequestBuilder
 
@@ -1202,6 +1347,9 @@ public class KeyBackupProtoDeleteRequest: NSObject {
         }
         if let _value = backupID {
             builder.setBackupID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
         }
         return builder
     }
@@ -1236,14 +1384,18 @@ public class KeyBackupProtoDeleteRequest: NSObject {
             proto.backupID = valueParam
         }
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoDeleteRequest {
-            return try KeyBackupProtoDeleteRequest.parseProto(proto)
+            return try KeyBackupProtoDeleteRequest(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoDeleteRequest.parseProto(proto).serializedData()
+            return try KeyBackupProtoDeleteRequest(proto).serializedData()
         }
     }
 
@@ -1273,6 +1425,14 @@ public class KeyBackupProtoDeleteRequest: NSObject {
         return proto.hasBackupID
     }
 
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
     private init(proto: KeyBackupProtos_DeleteRequest) {
         self.proto = proto
     }
@@ -1283,18 +1443,27 @@ public class KeyBackupProtoDeleteRequest: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoDeleteRequest {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_DeleteRequest(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_DeleteRequest) throws -> KeyBackupProtoDeleteRequest {
+    fileprivate convenience init(_ proto: KeyBackupProtos_DeleteRequest) throws {
         // MARK: - Begin Validation Logic for KeyBackupProtoDeleteRequest -
 
         // MARK: - End Validation Logic for KeyBackupProtoDeleteRequest -
 
-        let result = KeyBackupProtoDeleteRequest(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc
@@ -1324,7 +1493,7 @@ extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
 // MARK: - KeyBackupProtoDeleteResponse
 
 @objc
-public class KeyBackupProtoDeleteResponse: NSObject {
+public class KeyBackupProtoDeleteResponse: NSObject, Codable {
 
     // MARK: - KeyBackupProtoDeleteResponseBuilder
 
@@ -1337,6 +1506,9 @@ public class KeyBackupProtoDeleteResponse: NSObject {
     @objc
     public func asBuilder() -> KeyBackupProtoDeleteResponseBuilder {
         let builder = KeyBackupProtoDeleteResponseBuilder()
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
         return builder
     }
 
@@ -1348,18 +1520,30 @@ public class KeyBackupProtoDeleteResponse: NSObject {
         @objc
         fileprivate override init() {}
 
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
         @objc
         public func build() throws -> KeyBackupProtoDeleteResponse {
-            return try KeyBackupProtoDeleteResponse.parseProto(proto)
+            return try KeyBackupProtoDeleteResponse(proto)
         }
 
         @objc
         public func buildSerializedData() throws -> Data {
-            return try KeyBackupProtoDeleteResponse.parseProto(proto).serializedData()
+            return try KeyBackupProtoDeleteResponse(proto).serializedData()
         }
     }
 
     fileprivate let proto: KeyBackupProtos_DeleteResponse
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
 
     private init(proto: KeyBackupProtos_DeleteResponse) {
         self.proto = proto
@@ -1371,18 +1555,27 @@ public class KeyBackupProtoDeleteResponse: NSObject {
     }
 
     @objc
-    public class func parseData(_ serializedData: Data) throws -> KeyBackupProtoDeleteResponse {
+    public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_DeleteResponse(serializedData: serializedData)
-        return try parseProto(proto)
+        try self.init(proto)
     }
 
-    fileprivate class func parseProto(_ proto: KeyBackupProtos_DeleteResponse) throws -> KeyBackupProtoDeleteResponse {
+    fileprivate convenience init(_ proto: KeyBackupProtos_DeleteResponse) throws {
         // MARK: - Begin Validation Logic for KeyBackupProtoDeleteResponse -
 
         // MARK: - End Validation Logic for KeyBackupProtoDeleteResponse -
 
-        let result = KeyBackupProtoDeleteResponse(proto: proto)
-        return result
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
     }
 
     @objc

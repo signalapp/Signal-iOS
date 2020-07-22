@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -99,7 +99,7 @@ public class ProvisioningCipher {
         }
 
         let plaintext = Data(plaintextBuffer.prefix(upTo: bytesDecrypted))
-        let proto = try ProvisioningProtoProvisionMessage.parseData(plaintext)
+        let proto = try ProvisioningProtoProvisionMessage(serializedData: plaintext)
 
         let identityKeyPair = try ECKeyPair(serializedPublicKeyData: proto.identityKeyPublic, privateKeyData: proto.identityKeyPrivate)
         guard let profileKey = OWSAES256Key(data: proto.profileKey) else {
