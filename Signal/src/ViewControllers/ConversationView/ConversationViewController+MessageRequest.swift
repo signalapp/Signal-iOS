@@ -141,20 +141,27 @@ extension ConversationViewController: MessageRequestDelegate {
     }
 
     func blockThread() {
-        blockingManager.addBlockedThread(thread, wasLocallyInitiated: true)
+        // Leave the group while blocking the thread.
+        blockingManager.addBlockedThread(thread, blockMode: .localShouldLeaveGroups)
         syncManager.sendMessageRequestResponseSyncMessage(thread: thread,
                                                           responseType: .block)
     }
 
     func blockThreadAndDelete() {
-        blockingManager.addBlockedThread(thread, wasLocallyInitiated: true)
+        // Do not leave the group while blocking the thread; we'll
+        // that below so that we can surface an error to the user
+        // if leaving the group fails.
+        blockingManager.addBlockedThread(thread, blockMode: .localShouldNotLeaveGroups)
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
                                                           responseType: .blockAndDelete)
         leaveAndSoftDeleteThread()
     }
 
     func blockUserAndDelete(_ address: SignalServiceAddress) {
-        blockingManager.addBlockedAddress(address, wasLocallyInitiated: true)
+        // Do not leave the group while blocking the thread; we'll
+        // that below so that we can surface an error to the user
+        // if leaving the group fails.
+        blockingManager.addBlockedAddress(address, blockMode: .localShouldNotLeaveGroups)
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
                                                           responseType: .delete)
         leaveAndSoftDeleteThread()
@@ -163,11 +170,14 @@ extension ConversationViewController: MessageRequestDelegate {
     func blockUserAndGroupAndDelete(_ address: SignalServiceAddress) {
         ConversationViewController.databaseStorage.write { transaction in
             if let groupThread = self.thread as? TSGroupThread {
-                self.blockingManager.addBlockedGroup(groupThread.groupModel, wasLocallyInitiated: true, transaction: transaction)
+                // Do not leave the group while blocking the thread; we'll
+                // that below so that we can surface an error to the user
+                // if leaving the group fails.
+                self.blockingManager.addBlockedGroup(groupThread.groupModel, blockMode: .localShouldNotLeaveGroups, transaction: transaction)
             } else {
                 owsFailDebug("Invalid thread.")
             }
-            self.blockingManager.addBlockedAddress(address, wasLocallyInitiated: true, transaction: transaction)
+            self.blockingManager.addBlockedAddress(address, blockMode: .localShouldNotLeaveGroups, transaction: transaction)
         }
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
                                                           responseType: .blockAndDelete)

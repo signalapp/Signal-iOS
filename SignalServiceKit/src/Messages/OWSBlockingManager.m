@@ -131,6 +131,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 }
 
+- (BOOL)wasLocallyInitiatedWithBlockMode:(BlockMode)blockMode
+{
+    return blockMode != BlockMode_Remote;
+}
+
 #pragma mark -
 
 - (BOOL)isThreadBlocked:(TSThread *)thread
@@ -163,7 +168,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return blockedAddresses;
 }
 
-- (BOOL)addBlockedAddressLocally:(SignalServiceAddress *)address wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+- (BOOL)addBlockedAddressLocally:(SignalServiceAddress *)address blockMode:(BlockMode)blockMode;
 {
     OWSAssertDebug(address.isValid);
 
@@ -187,6 +192,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         }
     }
 
+    BOOL wasLocallyInitiated = [self wasLocallyInitiatedWithBlockMode:blockMode];
     if (wasLocallyInitiated && wasBlocked != [self isAddressBlocked:address]) {
         [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ address ]];
     }
@@ -194,20 +200,22 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return didChange;
 }
 
-- (void)addBlockedAddress:(SignalServiceAddress *)address wasLocallyInitiated:(BOOL)wasLocallyInitiated;
+- (void)addBlockedAddress:(SignalServiceAddress *)address blockMode:(BlockMode)blockMode;
 {
-    if ([self addBlockedAddressLocally:address wasLocallyInitiated:wasLocallyInitiated]) {
+    if ([self addBlockedAddressLocally:address blockMode:blockMode]) {
+        BOOL wasLocallyInitiated = [self wasLocallyInitiatedWithBlockMode:blockMode];
         [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
     }
 }
 
 - (void)addBlockedAddress:(SignalServiceAddress *)address
-      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                blockMode:(BlockMode)blockMode
               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    if ([self addBlockedAddressLocally:address wasLocallyInitiated:wasLocallyInitiated]) {
+    if ([self addBlockedAddressLocally:address blockMode:blockMode]) {
+        BOOL wasLocallyInitiated = [self wasLocallyInitiatedWithBlockMode:blockMode];
         [self handleUpdateAndSendSyncMessage:wasLocallyInitiated transaction:transaction];
     }
 }
@@ -417,7 +425,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 }
 
-- (void)addBlockedGroup:(TSGroupModel *)groupModel wasLocallyInitiated:(BOOL)wasLocallyInitiated
+- (void)addBlockedGroup:(TSGroupModel *)groupModel blockMode:(BlockMode)blockMode
 {
     NSData *groupId = groupModel.groupId;
     OWSAssertDebug(groupId.length > 0);
@@ -445,24 +453,27 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         });
     }
 
+    BOOL wasLocallyInitiated = [self wasLocallyInitiatedWithBlockMode:blockMode];
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
 }
 
 - (void)addBlockedGroup:(TSGroupModel *)groupModel
-    wasLocallyInitiated:(BOOL)wasLocallyInitiated
+              blockMode:(BlockMode)blockMode
             transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupModel);
-    [self addBlockedGroupId:groupModel.groupId wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
+    [self addBlockedGroupId:groupModel.groupId blockMode:blockMode transaction:transaction];
 }
 
 - (void)addBlockedGroupId:(NSData *)groupId
-      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                blockMode:(BlockMode)blockMode
               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
 
     OWSLogInfo(@"groupId: %@", groupId);
+
+    BOOL wasLocallyInitiated = [self wasLocallyInitiatedWithBlockMode:blockMode];
 
     @synchronized(self) {
         [self ensureLazyInitialization];
@@ -475,7 +486,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
 
         // Quit the group if we're a member
-        if (groupThread.isLocalUserPendingOrNonPendingMember) {
+        if (blockMode == BlockMode_LocalShouldLeaveGroups && groupThread.isLocalUserPendingOrNonPendingMember) {
             [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
                                                                      transaction:transaction
                                                                          success:nil];
@@ -547,29 +558,27 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 #pragma mark - Thread Blocking
 
 - (void)addBlockedThread:(TSThread *)thread
-     wasLocallyInitiated:(BOOL)wasLocallyInitiated
+               blockMode:(BlockMode)blockMode
              transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (thread.isGroupThread) {
         OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [self addBlockedGroup:groupThread.groupModel wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
+        [self addBlockedGroup:groupThread.groupModel blockMode:blockMode transaction:transaction];
     } else {
         OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addBlockedAddress:contactThread.contactAddress
-            wasLocallyInitiated:wasLocallyInitiated
-                    transaction:transaction];
+        [self addBlockedAddress:contactThread.contactAddress blockMode:blockMode transaction:transaction];
     }
 }
 
-- (void)addBlockedThread:(TSThread *)thread wasLocallyInitiated:(BOOL)wasLocallyInitiated
+- (void)addBlockedThread:(TSThread *)thread blockMode:(BlockMode)blockMode
 {
     if ([self isThreadBlocked:thread]) {
         return;
     }
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self addBlockedThread:thread wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
+        [self addBlockedThread:thread blockMode:blockMode transaction:transaction];
     });
 }
 

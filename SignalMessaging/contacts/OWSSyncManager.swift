@@ -121,10 +121,10 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         case .delete:
             thread.softDelete(with: transaction)
         case .block:
-            blockingManager.addBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
+            blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
         case .blockAndDelete:
             thread.softDelete(with: transaction)
-            blockingManager.addBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
+            blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
         case .unknown:
             owsFailDebug("unexpected message request response type")
         }
