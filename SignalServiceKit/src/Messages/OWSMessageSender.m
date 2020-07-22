@@ -1120,10 +1120,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         [SignalRecipient markRecipientAsUnregistered:recipient.address transaction:transaction];
-
-        [[TSInfoMessage userNotRegisteredMessageInThread:thread
-                                                 address:recipient.address] anyInsertWithTransaction:transaction];
-
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.

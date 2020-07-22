@@ -501,15 +501,19 @@ extension MessageSender {
                 builder[contact.e164PhoneNumber] = contact.signalUuid
             })
 
-            let updatedAddresses: [SignalServiceAddress] = phoneNumbersToFetch.compactMap { rawNumber in
+            let fetchedAddresses: [SignalServiceAddress] = phoneNumbersToFetch.compactMap { rawNumber in
                 guard let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: rawNumber)?.toE164() else { return nil }
-                guard let uuid = discoveredContactMap[e164] else { return nil }
-                return SignalServiceAddress(uuid: uuid, phoneNumber: rawNumber)
+                return SignalServiceAddress(uuid: discoveredContactMap[e164], phoneNumber: rawNumber)
             }
 
             SDSDatabaseStorage.shared.write { (writeTx) in
-                updatedAddresses.forEach { (toRegister) in
-                    SignalRecipient.mark(asRegisteredAndGet: toRegister, transaction: writeTx)
+                fetchedAddresses.forEach { (address) in
+                    // This should be encapsulated somewhere else: IOS-668
+                    if address.uuid != nil {
+                        SignalRecipient.mark(asRegisteredAndGet: address, transaction: writeTx)
+                    } else {
+                        SignalRecipient.mark(asUnregistered: address, transaction: writeTx)
+                    }
                 }
             }
             completion(nil)
