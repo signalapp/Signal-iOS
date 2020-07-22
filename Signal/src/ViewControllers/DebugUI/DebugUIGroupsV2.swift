@@ -106,7 +106,7 @@ class DebugUIGroupsV2: DebugUIPage {
                                                        prefix: "V1 Group, Anon Updater:",
                                                        transaction: transaction)
 
-                if FeatureFlags.groupsV2CreateGroups {
+                if FeatureFlags.groupsV2 {
                     try self.insertGroupUpdateInfoMessages(groupThread: groupThread,
                                                            groupsVersion: .V2,
                                                            isLocalUpdate: true,
