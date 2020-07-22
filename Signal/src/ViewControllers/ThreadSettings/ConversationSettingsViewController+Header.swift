@@ -86,6 +86,38 @@ extension ConversationSettingsViewController {
             subviews.append(buildHeaderSubtitleLabel(attributedText: attributedText, font: font))
         }
 
+        mutating func addLegacyGroupView() -> UIView {
+            subviews.append(UIView.spacer(withHeight: 12))
+
+            let bubbleView = UIView()
+            bubbleView.backgroundColor = Theme.secondaryBackgroundColor
+            bubbleView.layer.cornerRadius = 4
+            bubbleView.layoutMargins = UIEdgeInsets(top: 10, leading: 12, bottom: 10, trailing: 12)
+            subviews.append(bubbleView)
+
+            let label = UILabel()
+            let format = NSLocalizedString("GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT",
+                                           comment: "Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}.")
+            let learnMoreText = NSLocalizedString("GROUPS_LEGACY_GROUP_LEARN_MORE_LINK",
+                                           comment: "A \"learn more\" link with more information about legacy groups.")
+            let text = String(format: format, learnMoreText)
+            let attributedString = NSMutableAttributedString(string: text)
+            attributedString.setAttributes([
+                .foregroundColor: Theme.accentBlueColor
+            ],
+                                           forSubstring: learnMoreText)
+            label.textColor = Theme.secondaryTextAndIconColor
+            label.font = .ows_dynamicTypeFootnote
+            label.attributedText = attributedString
+            label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
+            label.setCompressionResistanceHigh()
+            bubbleView.addSubview(label)
+            label.autoPinEdgesToSuperviewMargins()
+
+            return bubbleView
+        }
+
         func buildHeaderSubtitleLabel(attributedText: NSAttributedString,
                                       font: UIFont?) -> UILabel {
             let label = UILabel()
@@ -142,16 +174,33 @@ extension ConversationSettingsViewController {
         var builder = HeaderBuilder(viewController: self)
 
         let memberCount = groupThread.groupModel.groupMembership.nonPendingMembers.count
-        let groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
+        var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
+        if RemoteConfig.groupsV2GoodCitizen,
+            groupThread.isGroupV1Thread {
+            groupMembersText.append(" ")
+            groupMembersText.append("•")
+            groupMembersText.append(" ")
+            groupMembersText.append(NSLocalizedString("GROUPS_LEGACY_GROUP_INDICATOR",
+                                                      comment: "Label indicating a legacy group."))
+        }
         builder.addSubtitleLabel(text: groupMembersText,
                                  font: .ows_dynamicTypeSubheadline)
+
+        if RemoteConfig.groupsV2GoodCitizen,
+            groupThread.isGroupV1Thread {
+            let legacyGroupView = builder.addLegacyGroupView()
+            legacyGroupView.isUserInteractionEnabled = true
+            legacyGroupView.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                                        action: #selector(didTapLegacyGroupView)))
+        }
 
         builder.addLastSubviews()
 
         let header = builder.build()
 
         // This will not appear in public builds.
-        if DebugFlags.groupsV2showV2Indicator {
+        if DebugFlags.groupsV2showV2Indicator,
+            thread.isGroupV2Thread {
             let indicatorLabel = UILabel()
             indicatorLabel.text = thread.isGroupV2Thread ? "v2" : "v1"
             indicatorLabel.textColor = Theme.secondaryTextAndIconColor
@@ -229,5 +278,81 @@ extension ConversationSettingsViewController {
             owsFailDebug("Invalid thread.")
             return UIView()
         }
+    }
+
+    // MARK: - Events
+
+    @objc
+    func didTapLegacyGroupView(sender: UIGestureRecognizer) {
+        LegacyGroupView().present(fromViewController: self)
+    }
+}
+
+// MARK: -
+
+class LegacyGroupView: NSObject {
+
+    weak var actionSheetController: ActionSheetController?
+
+    override init() {}
+
+    func present(fromViewController: UIViewController) {
+        let buildLabel = { () -> UILabel in
+            let label = UILabel()
+            label.textColor = Theme.primaryTextColor
+            label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
+            return label
+        }
+
+        let titleLabel = buildLabel()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold()
+        titleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_TITLE",
+                                            comment: "Title for the 'legacy group' alert view.")
+
+        let section1TitleLabel = buildLabel()
+        section1TitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        section1TitleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE",
+                                                    comment: "Title for the first section of the 'legacy group' alert view.")
+
+        let section1BodyLabel = buildLabel()
+        section1BodyLabel.font = .ows_dynamicTypeBody
+        section1BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY",
+                                                    comment: "Body text for the first section of the 'legacy group' alert view.")
+
+        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
+        let okayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
+                                              font: buttonFont,
+                                              titleColor: .white,
+                                              backgroundColor: .ows_accentBlue,
+                                              target: self,
+                                              selector: #selector(dismissAlert))
+        okayButton.autoSetDimension(.height, toSize: buttonHeight)
+
+        let stackView = UIStackView(arrangedSubviews: [
+            titleLabel,
+            UIView.spacer(withHeight: 28),
+            section1TitleLabel,
+            UIView.spacer(withHeight: 4),
+            section1BodyLabel,
+            UIView.spacer(withHeight: 28),
+            okayButton
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.layoutMargins = UIEdgeInsets(top: 48, leading: 20, bottom: 38, trailing: 24)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+
+        let actionSheetController = ActionSheetController()
+        actionSheetController.customHeader = stackView
+        actionSheetController.isCancelable = true
+        fromViewController.presentActionSheet(actionSheetController)
+    }
+
+    @objc
+    func dismissAlert() {
+        actionSheetController?.dismiss(animated: true)
     }
 }

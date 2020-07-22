@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSString+SSK.h"
@@ -28,6 +28,26 @@ NS_ASSUME_NONNULL_BEGIN
             exception.userInfo);
         return nil;
     }
+}
+
+@end
+
+#pragma mark -
+
+@implementation NSMutableAttributedString (SSK)
+
+- (void)setAttributes:(NSDictionary<NSAttributedStringKey, id> *)attributes forSubstring:(NSString *)substring
+{
+    if (substring.length < 1) {
+        OWSFailDebug(@"Invalid substring.");
+        return;
+    }
+    NSRange range = [self.string rangeOfString:substring];
+    if (range.location == NSNotFound) {
+        OWSFailDebug(@"Substring not found.");
+        return;
+    }
+    [self setAttributes:attributes range:range];
 }
 
 @end
