@@ -16,7 +16,7 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.setup()
         }
     }

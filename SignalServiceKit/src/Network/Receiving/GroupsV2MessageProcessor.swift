@@ -157,7 +157,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.drainQueue()
         }
     }
@@ -165,9 +165,6 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
     private func drainQueue(retryDelayAfterFailure: TimeInterval = 1.0) {
         guard AppReadiness.isAppReady || CurrentAppContext().isRunningTests else {
             owsFailDebug("App is not ready.")
-            return
-        }
-        guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
         guard self.pipelineSupervisor.isMessageProcessingPermitted else {

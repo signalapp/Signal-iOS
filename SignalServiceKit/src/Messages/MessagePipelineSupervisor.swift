@@ -39,7 +39,11 @@ public class MessagePipelineSupervisor: NSObject {
 
     /// Returns whether or not the message processing pipeline is/should be suspended. Thread-safe.
     @objc public var isMessageProcessingPermitted: Bool {
-        return lock.withLock { (suspensionCount == 0) }
+        if CurrentAppContext().shouldProcessIncomingMessages {
+            return lock.withLock { (suspensionCount == 0) }
+        } else {
+            return false
+        }
     }
 
     /// Invoking this method will ensure that all registered message processing stages are notified that they should
@@ -72,7 +76,7 @@ public class MessagePipelineSupervisor: NSObject {
     // MARK: - Private
 
     private func incrementSuspensionCount(for reason: String) {
-        Logger.info("Incrementing suspension refcount for reason: \(reason)")
+        Logger.verbose("Incrementing suspension refcount for reason: \(reason)")
         let updatedCount: Int = lock.withLock {
             suspensionCount += 1
             return suspensionCount
@@ -87,7 +91,7 @@ public class MessagePipelineSupervisor: NSObject {
             suspensionCount -= 1
             return suspensionCount
         }
-        Logger.info("Decremented suspension refcount for reason: \(reason)")
+        Logger.verbose("Decremented suspension refcount for reason: \(reason)")
         assert(updatedCount >= 0, "Suspension refcount dipped below zero")
 
         if updatedCount == 0 {
@@ -100,7 +104,7 @@ public class MessagePipelineSupervisor: NSObject {
 
         // Make a copy so we don't need to hold the lock while we call out
         let toNotify = lock.withLock { return Array(pipelineStages.allObjects) }
-        Logger.info("\(isSuspended ? "Suspending" : "Resuming") message processing...")
+        Logger.debug("\(isSuspended ? "Suspending" : "Resuming") message processing...")
 
         toNotify.forEach { (stage) in
             if isSuspended {
