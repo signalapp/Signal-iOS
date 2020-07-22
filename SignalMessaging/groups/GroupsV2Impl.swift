@@ -503,6 +503,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Fetch Group Change Actions
 
     public func fetchGroupChangeActions(groupSecretParamsData: Data,
+                                        includeCurrentRevision: Bool,
                                         firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
 
         guard let localUuid = tsAccountManager.localUuid else {
@@ -516,6 +517,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return self.fetchGroupChangeActions(groupId: groupId,
                                                 groupV2Params: groupV2Params,
                                                 localUuid: localUuid,
+                                                includeCurrentRevision: includeCurrentRevision,
                                                 firstKnownRevision: firstKnownRevision)
         }
     }
@@ -523,6 +525,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private func fetchGroupChangeActions(groupId: Data,
                                          groupV2Params: GroupV2Params,
                                          localUuid: UUID,
+                                         includeCurrentRevision: Bool,
                                          firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
 
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
@@ -540,7 +543,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                             throw OWSAssertionError("Invalid group model.")
                         }
-                        if FeatureFlags.groupsV2reapplyCurrentRevision {
+                        if includeCurrentRevision {
                             return (groupModel.revision, true)
                         } else {
                             return (groupModel.revision + 1, false)

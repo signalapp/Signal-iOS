@@ -415,9 +415,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func addGroupChangesToCache(groupChanges: [GroupV2Change],
                                         cacheKey: NSString) {
         guard !groupChanges.isEmpty else {
-            if FeatureFlags.groupsV2reapplyCurrentRevision {
-                owsFailDebug("Invalid group changes.")
-            }
+            Logger.verbose("No group changes.")
             changeCache.removeObject(forKey: cacheKey)
             return
         }
@@ -464,11 +462,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard revision <= upToRevision else {
                 return false
             }
-            if FeatureFlags.groupsV2reapplyCurrentRevision {
-                return revision >= dbRevision
-            } else {
-                return revision > dbRevision
-            }
+            return revision >= dbRevision
         }
         let revisions = cachedChanges.map { $0.revision }
         guard Set(revisions).contains(upToRevision) else {
@@ -490,22 +484,30 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 return nil
             }
         }()
+        let includeCurrentRevision: Bool = {
+            switch groupUpdateMode {
+            case .upToSpecificRevisionImmediately:
+                return false
+            case .upToCurrentRevisionAfterMessageProcessWithThrottling,
+                 .upToCurrentRevisionImmediately:
+                return true
+            }
+        }()
 
         let cacheKey = groupSecretParamsData.hexadecimalString as NSString
 
         return DispatchQueue.global().async(.promise) { () -> [GroupV2Change]? in
-            guard let groupChanges = self.cachedGroupChanges(forCacheKey: cacheKey,
-                                                             groupSecretParamsData: groupSecretParamsData,
-                                                             upToRevision: upToRevision) else {
-                                                                return nil
-            }
-            return groupChanges
+            // Try to use group changes from the cache.
+            return self.cachedGroupChanges(forCacheKey: cacheKey,
+                                           groupSecretParamsData: groupSecretParamsData,
+                                           upToRevision: upToRevision)
         }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]?) -> Promise<[GroupV2Change]> in
             if let groupChanges = groupChanges {
                 return Promise.value(groupChanges)
             }
             return firstly {
                 return self.groupsV2.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
+                                                             includeCurrentRevision: includeCurrentRevision,
                                                              firstKnownRevision: upToRevision)
             }.map(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) -> [GroupV2Change] in
                 self.addGroupChangesToCache(groupChanges: groupChanges, cacheKey: cacheKey)
@@ -559,9 +561,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             var groupThread = oldGroupThread
 
             if groupChanges.count < 1 {
-                if FeatureFlags.groupsV2reapplyCurrentRevision {
-                    owsFailDebug("No group changes.")
-                }
+                Logger.verbose("No group changes.")
                 return groupThread
             }
 
