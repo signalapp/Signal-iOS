@@ -46,13 +46,6 @@ public class RemoteConfig: BaseFlags {
         return isEnabled(.groupsV2GoodCitizen)
     }
 
-    @objc
-    public static var groupsV2SetCapability: Bool {
-        guard groupsV2GoodCitizen else { return false }
-        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
-        return isEnabled(.groupsV2GoodCitizen)
-    }
-
     // TODO: There's more work to be done around feature flags and
     //       remote configuration for modern CDS:
     //

@@ -181,9 +181,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupsV2 = build.includes(.qa)
 
-    // The other clients don't consider this MVP, but we already implemented it.
-    // It enables an optimization where other clients can usually update without
-    // interacting with the service.
     @objc
     public static let groupsV2embedProtosInGroupUpdates = true
 
