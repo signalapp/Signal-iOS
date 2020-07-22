@@ -580,30 +580,60 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendMessage:outgoingMessagePreparer success:success failure:failure];
 }
 
+- (void)prepareMessage:(TSOutgoingMessage *)message
+               success:(void (^)(SMKSenderCertificate *))success
+               failure:(RetryableFailureHandler)failure
+{
+    dispatch_group_t group = dispatch_group_create();
+    __block NSError *certError = nil;
+    __block SMKSenderCertificate *certificate = nil;
+    __block NSError *uuidError = nil;
+
+    dispatch_group_enter(group);
+    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive success:^(SMKSenderCertificate *retrievedCert) {
+        certificate = retrievedCert;
+        dispatch_group_leave(group);
+
+    } failure:^(NSError *error) {
+        OWSLogError(@"Could not obtain UD sender certificate: %@", error);
+        // The existing behavior was to only care about connectivity errors
+        // Only persist the error if it's connectivity related
+        certError = IsNetworkConnectivityFailure(error) ? error : nil;
+        dispatch_group_leave(group);
+    }];
+
+    if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+        dispatch_group_enter(group);
+        [self populateUUIDsForLegacyRecipientsOf:message completion:^(NSError *error) {
+            OWSLogError(@"Failed CDS lookup with error: %@", error);
+            uuidError = error;
+            dispatch_group_leave(group);
+        }];
+    }
+
+    dispatch_group_notify(group, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+        // We should only expect retryable errors here
+        OWSAssertDebug(certError == nil || certError.isRetryable);
+        OWSAssertDebug(uuidError == nil || uuidError.isRetryable);
+
+        if (certError || uuidError) {
+            // Pick one, it really doesn't matter
+            failure(certError ?: uuidError);
+        } else {
+            success(certificate);
+        }
+    });
+}
+
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                      success:(void (^)(void))success
                      failure:(RetryableFailureHandler)failure
 {
     OWSAssertDebug(!NSThread.isMainThread);
 
-    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive
-        success:^(SMKSenderCertificate *senderCertificate) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
-            });
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Could not obtain UD sender certificate: %@", error);
-
-            if (IsNetworkConnectivityFailure(error)) {
-                return failure(error);
-            } else {
-                // Proceed using non-UD message sends.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [self sendMessageToService:message senderCertificate:nil success:success failure:failure];
-                });
-            }
-        }];
+    [self prepareMessage:message success:^(SMKSenderCertificate *senderCertificate) {
+        [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
+    } failure:failure];
 }
 
 - (nullable NSArray<SignalServiceAddress *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
@@ -683,6 +713,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return recipientAddresses.allObjects;
 }
 
+- (NSArray<SignalRecipient *> *)recipientsForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+{
+    OWSAssertDebug(!NSThread.isMainThread);
+    OWSAssertDebug(addresses.count > 0);
+
+    NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        for (SignalServiceAddress *address in addresses) {
+            SignalRecipient *recipient = [SignalRecipient getOrBuildUnsavedRecipientForAddress:address
+                                                                                   transaction:transaction];
+            [recipients addObject:recipient];
+        }
+    }];
+    return [recipients copy];
+}
+
 - (AnyPromise *)unlockPreKeyUpdateFailuresPromise
 {
     OWSAssertDebug(!NSThread.isMainThread);
@@ -726,23 +772,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(thread);
 
-    BOOL disallowUuidlessRecipients = SSKFeatureFlags.useOnlyModernContactDiscovery;
-    NSMutableArray *validRecipients = [[NSMutableArray alloc] init];
-    NSMutableArray *invalidRecipients = [[NSMutableArray alloc] init];
-
-    for (SignalRecipient *recipient in recipients) {
-        if (recipient.address.uuid == nil && disallowUuidlessRecipients) {
-            [invalidRecipients addObject:recipient];
-        } else {
-            [validRecipients addObject:recipient];
-        }
-    }
-
     // 1. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
-    if (senderCertificate != nil && validRecipients.count > 0) {
+    if (senderCertificate != nil) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            for (SignalRecipient *recipient in validRecipients) {
+            for (SignalRecipient *recipient in recipients) {
                 if (!recipient.address.isLocalAddress) {
                     sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
                                                                                   requireSyncAccess:YES
@@ -755,7 +789,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // 2. Build a "OWSMessageSend" for each recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
-    for (SignalRecipient *recipient in validRecipients) {
+    for (SignalRecipient *recipient in recipients) {
         OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[recipient.address];
         OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
                                                                        thread:thread
@@ -773,28 +807,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return
         [MessageSending ensureSessionsforMessageSendsObjc:messageSends ignoreErrors:YES].thenInBackground(^(id value) {
             // 4. Perform the per-recipient message sends.
-            NSMutableArray<AnyPromise *> *allPromises = [NSMutableArray array];
+            NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
             for (OWSMessageSend *messageSend in messageSends) {
                 [self sendMessageToRecipient:messageSend];
-                [allPromises addObject:messageSend.asAnyPromise];
-            }
-
-            // 5. Fail any message sends to invalid recipients
-            for (SignalRecipient *invalidRecipient in invalidRecipients) {
-                NSError *invalidRecipientError = OWSErrorMakeNoSuchSignalRecipientError();
-                // Retryable because we can refetch from CDS
-                [invalidRecipientError setIsRetryable:YES];
-                sendErrorBlock(invalidRecipient, invalidRecipientError);
-
-                AnyPromise *failedPromise = [AnyPromise promiseWithValue:invalidRecipientError];
-                [allPromises addObject:failedPromise];
+                [sendPromises addObject:messageSend.asAnyPromise];
             }
 
             // We use PMKJoin(), not PMKWhen(), because we don't want the
             // completion promise to execute until _all_ send promises
             // have either succeeded or failed. PMKWhen() executes as
             // soon as any of its input promises fail.
-            return PMKJoin(allPromises);
+            return PMKJoin(sendPromises);
         });
 }
 
@@ -904,15 +927,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return;
     }
 
+    NSArray<SignalRecipient *> *recipients = [self recipientsForAddresses:recipientAddresses];
+
     BOOL isGroupSend = thread.isGroupThread;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
     NSMutableDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
 
     [self unlockPreKeyUpdateFailuresPromise]
         .thenInBackground(^(id value) {
-            return [self recipientPromiseForAddressesObjcWithAddressList:recipientAddresses];
-        })
-        .thenInBackground(^(NSArray<SignalRecipient *> *recipients) {
             return [self
                 sendPromiseForRecipients:recipients
                                  message:message
@@ -1047,6 +1069,31 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
     return thread;
+}
+
+- (void)failSendForUnregisteredRecipient:(OWSMessageSend *)messageSend
+{
+    OWSAssertDebug(!NSThread.isMainThread);
+    OWSAssertDebug(messageSend);
+    TSOutgoingMessage *message = messageSend.message;
+    SignalRecipient *recipient = messageSend.recipient;
+
+    OWSLogWarn(@"Unregistered recipient: %@", recipient.address);
+
+    if (![message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        TSThread *thread = messageSend.thread;
+        OWSAssertDebug(thread);
+        [self unregisteredRecipient:recipient message:message thread:thread];
+    }
+
+    NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
+    // No need to retry if the recipient is not registered.
+    [error setIsRetryable:NO];
+    // If one member of a group deletes their account,
+    // the group should ignore errors when trying to send
+    // messages to this ex-member.
+    [error setShouldBeIgnoredForGroups:YES];
+    messageSend.failure(error);
 }
 
 - (void)unregisteredRecipient:(SignalRecipient *)recipient
@@ -1191,6 +1238,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:YES];
         return messageSend.failure(error);
+    }
+
+    if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+        // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
+        // If we have no UUID, consider the recipient unregistered.
+        BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);
+        if (isInvalidRecipient) {
+            [self failSendForUnregisteredRecipient:messageSend];
+            return;
+        }
     }
 
     // Consume an attempt.
@@ -1457,24 +1514,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     };
 
     void (^handle404)(void) = ^{
-        OWSLogWarn(@"Unregistered recipient: %@", recipient.address);
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (![messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-                TSThread *thread = messageSend.thread;
-                OWSAssertDebug(thread);
-                [self unregisteredRecipient:recipient message:message thread:thread];
-            }
-
-            NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
-            // No need to retry if the recipient is not registered.
-            [error setIsRetryable:NO];
-            // If one member of a group deletes their account,
-            // the group should ignore errors when trying to send
-            // messages to this ex-member.
-            [error setShouldBeIgnoredForGroups:YES];
-            messageSend.failure(error);
-        });
+        [self failSendForUnregisteredRecipient:messageSend];
     };
 
     switch (statusCode) {

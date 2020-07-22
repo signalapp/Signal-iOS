@@ -479,54 +479,41 @@ fileprivate extension MessageSending {
 
 extension MessageSender {
 
-    @objc func recipientPromiseForAddressesObjc(addressList: [SignalServiceAddress]) -> AnyPromise {
-        return AnyPromise(recipientPromiseForAddresses(addressList: addressList))
-    }
+    @objc func populateUUIDsForLegacyRecipients(of message: TSOutgoingMessage, completion: @escaping (Error?) -> Void) {
+        let sendingRecipients = message.sendingRecipientAddresses()
+        let invalidRecipients = sendingRecipients.filter { $0.uuid == nil }
 
-    func recipientPromiseForAddresses(addressList: [SignalServiceAddress]) -> Promise<[SignalRecipient]> {
-        return firstly { () -> Promise<[SignalServiceAddress]> in
-            Promise { resolver in
-                let invalidAddresses = addressList.filter { $0.uuid == nil }
-
-                if invalidAddresses.count > 0 && FeatureFlags.useOnlyModernContactDiscovery {
-                    // If we have any invalid addresses, block on a one-shot CDS fetch to get their UUIDs
-                    // We'll fail the send later for any UUID-less addresses
-                    let phoneNumbersToFetch = invalidAddresses.compactMap { $0.phoneNumber }
-                    let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbersToFetch)
-
-                    operation.completionBlock = {
-                        let discoveredContactMap = operation.registeredContacts.reduce(into: [:], { (builder, contact) in
-                            builder[contact.e164PhoneNumber] = contact.signalUuid
-                        })
-                        let rawNumberToUUIDMap: [String: UUID] = operation.phoneNumbersToLookup.reduce(into: [:], { (builder, rawNumber) in
-                            if let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: rawNumber)?.toE164() {
-                                builder[rawNumber] = discoveredContactMap[e164]
-                            }
-                        })
-
-                        let updatedAddressList = addressList.map { (address: SignalServiceAddress) -> SignalServiceAddress in
-                            guard address.uuid == nil,
-                                let phoneNumber = address.phoneNumber,
-                                let uuid = rawNumberToUUIDMap[phoneNumber]
-                                else { return address }
-
-                            return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
-                        }
-                        resolver.fulfill(updatedAddressList)
-                    }
-                    operation.perform()
-
-                } else {
-                    resolver.fulfill(addressList)
-                }
-            }
-
-        }.map { (addresses: [SignalServiceAddress]) -> [SignalRecipient] in
-            return SDSDatabaseStorage.shared.read { (readTx) in
-                addresses.map {
-                    SignalRecipient.getOrBuildUnsavedRecipient(for: $0, transaction: readTx)
-                }
-            }
+        guard invalidRecipients.count > 0 && FeatureFlags.useOnlyModernContactDiscovery else {
+            completion(nil)
+            return
         }
+
+        let phoneNumbersToFetch = invalidRecipients.compactMap { $0.phoneNumber }
+        let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbersToFetch)
+        operation.completionBlock = {
+            if let error = (operation.failingError as NSError?) {
+                error.isRetryable = true
+                completion(error)
+                return
+            }
+
+            let discoveredContactMap = operation.registeredContacts.reduce(into: [:], { (builder, contact) in
+                builder[contact.e164PhoneNumber] = contact.signalUuid
+            })
+
+            let updatedAddresses: [SignalServiceAddress] = phoneNumbersToFetch.compactMap { rawNumber in
+                guard let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: rawNumber)?.toE164() else { return nil }
+                guard let uuid = discoveredContactMap[e164] else { return nil }
+                return SignalServiceAddress(uuid: uuid, phoneNumber: rawNumber)
+            }
+
+            SDSDatabaseStorage.shared.write { (writeTx) in
+                updatedAddresses.forEach { (toRegister) in
+                    SignalRecipient.mark(asRegisteredAndGet: toRegister, transaction: writeTx)
+                }
+            }
+            completion(nil)
+        }
+        operation.perform()
     }
 }
