@@ -5101,7 +5101,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
+    self.messageRequestView = [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
     self.messageRequestView.delegate = self;
     [self reloadBottomBar];
 }

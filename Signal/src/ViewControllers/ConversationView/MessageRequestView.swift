@@ -50,9 +50,17 @@ class MessageRequestView: UIStackView {
     weak var delegate: MessageRequestDelegate?
 
     @objc
-    init(thread: TSThread) {
+    init(threadViewModel: ThreadViewModel) {
+        let thread = threadViewModel.threadRecord
         self.thread = thread
-        self.mode = thread.isGroupV2Thread ? .groupV2 : .contactOrGroupV1
+
+        if let groupThread = thread as? TSGroupThread,
+            groupThread.isGroupV2Thread,
+            groupThread.isLocalUserPendingMember {
+            self.mode = .groupV2
+        } else {
+            self.mode = .contactOrGroupV1
+        }
 
         super.init(frame: .zero)
 

@@ -1577,6 +1577,10 @@ public class GroupManager: NSObject {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
 
+        updateProfileWhitelist(withGroupThread: groupThread,
+                               groupUpdateSourceAddress: groupUpdateSourceAddress,
+                               transaction: transaction)
+
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
 
         switch infoMessagePolicy {
@@ -1833,8 +1837,26 @@ public class GroupManager: NSObject {
 
     // MARK: - Profiles
 
-    @objc
-    public static func updateProfileWhitelist(withGroupThread groupThread: TSGroupThread) {
+    private static func updateProfileWhitelist(withGroupThread groupThread: TSGroupThread,
+                                               groupUpdateSourceAddress: SignalServiceAddress?,
+                                               transaction: SDSAnyWriteTransaction) {
+        guard let groupUpdateSourceAddress = groupUpdateSourceAddress else {
+            Logger.verbose("No groupUpdateSourceAddress.")
+            return
+        }
+        let isUpdaterInContactsOrWhitelisted: Bool = {
+            if self.contactsManager.isSystemContact(address: groupUpdateSourceAddress) {
+                return true
+            }
+            if self.profileManager.isUser(inProfileWhitelist: groupUpdateSourceAddress, transaction: transaction) {
+                return true
+            }
+            return false
+        }()
+        guard isUpdaterInContactsOrWhitelisted else {
+            Logger.verbose("Updater is not in contact or whitelisted.")
+            return
+        }
         guard let localAddress = self.tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
             return
@@ -1847,7 +1869,7 @@ public class GroupManager: NSObject {
         guard groupMembership.isNonPendingMember(localAddress) else {
             return
         }
-        profileManager.addThread(toProfileWhitelist: groupThread)
+        profileManager.addThread(toProfileWhitelist: groupThread, transaction: transaction)
     }
 
     @objc

@@ -336,9 +336,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
                                                                                groupUpdateMode: groupUpdateMode)
             }
-        }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> TSGroupThread in
-            GroupManager.updateProfileWhitelist(withGroupThread: groupThread)
-            return groupThread
         }
     }
 

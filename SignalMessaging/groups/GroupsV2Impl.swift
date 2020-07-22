@@ -335,12 +335,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return UpdatedV2Group(groupThread: groupThread, changeActionsProtoData: changeActionsProtoData)
             }
         }.then(on: DispatchQueue.global()) { (updatedV2Group: UpdatedV2Group) -> Promise<TSGroupThread> in
-
-            GroupManager.updateProfileWhitelist(withGroupThread: updatedV2Group.groupThread)
-
-            return GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
-                                                       changeActionsProtoData: updatedV2Group.changeActionsProtoData)
-                .map(on: DispatchQueue.global()) { (_) -> TSGroupThread in
+            return firstly {
+                GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
+                                                    changeActionsProtoData: updatedV2Group.changeActionsProtoData)
+            }.map(on: DispatchQueue.global()) { (_) -> TSGroupThread in
                     return updatedV2Group.groupThread
             }
         }
