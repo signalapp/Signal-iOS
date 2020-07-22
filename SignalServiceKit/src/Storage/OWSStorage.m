@@ -218,21 +218,21 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFailDebug(@"Tried to save unknown object");
+    [LKLogger print:@"Tried to save unknown object"];
 
     // No-op.
 }
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFailDebug(@"Tried to touch unknown object");
+    [LKLogger print:@"Tried to touch unknown object"];
 
     // No-op.
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFailDebug(@"Tried to remove unknown object");
+    [LKLogger print:@"Tried to remove unknown object"];
 
     // No-op.
 }
