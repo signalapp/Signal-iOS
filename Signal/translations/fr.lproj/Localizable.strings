@@ -2552,208 +2552,402 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Vous avez défini l’expiration des messages éphémères à %@.";
 
-
-
 /*
 // MARK: - Loki Messenger:
+
 "Link Device" = "Relier un appareil";
+
 "Prevent Session previews from appearing in the app switcher." = "Empêcher les aperçus de Session d’apparaître dans le sélecteur d’applis.";
+
 "Require Touch ID, Face ID or your device passcode to unlock Session’s screen. You can still receive notifications when Screen Lock is enabled. Use Session’s notification settings to customise the information displayed in notifications." = "Requiert Touch ID, Face ID ou le code d'accès de votre appareil pour débloquer Session. Vous continuerez de recevoir des notifications lorsque le verrouillage de l'écran est activé. Utilisez les paramètres de notification de Session pour personnaliser les informations affichées dans les notifications.";
+
 "Cancel" = "Annuler";
+
 "You haven't linked any devices yet" = "Vous n'avez encore relié aucun appareil";
-"Link a Device (Beta)" = "Relier un appareil (Beta)";
+
+"Link a Device (Beta)" = "Relier un appareil";
+
 "Waiting for Device" = "En attente d’une demande de liaison";
+
 "Linking Request Received" = "Demande de liaison reçue";
+
 "%@ sent you a session request" = "%@ vous a envoyé une demande de session";
+
 "You've accepted %@'s session request" = "Vous avez accepté la demande de Session de %@";
+
 "You've declined %@'s session request" = "Vous avez refusé la demande de Session de %@";
+
 "%@'s session request has expired" = "La demande de Session de %@ a expiré";
+
 "You've sent %@ a session request" = "Vous avez envoyé une demande de session à %@";
+
 "%@ accepted your session request" = "%@ a accepté votre demande de Session";
+
 "Your session request to %@ has expired" = "Votre demande de Session à %@ a expiré";
+
 "Pending session request" = "Demande de session en attente";
+
 "Accept" = "Accepter";
+
 "Decline" = "Refuser";
+
 "Secure session reset in progress" = "Réinitialisation sécurisée de la session en cours";
+
 "Please check that the words below match those shown on your other device" = "Veuillez vérifier que les mots ci-dessous correspondent à ceux affichés sur votre autre appareil";
+
 "Waiting for Authorization" = "En attente d’autorisation";
+
 "Authorize" = "Autoriser";
+
 "Device Link Authorized" = "Liaison de l'appareil autorisée";
+
 "Your device has been linked successfully" = "Votre appareil a été connecté avec succès";
+
 "Your device was unlinked successfully" = "Votre appareil a été déconnecté avec succès";
+
 "Couldn't Link Device" = "Impossible de relier l'appareil.";
+
 "Couldn't Unlink Device" = "Impossible de déconnecter l'appareil";
+
 "Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters" = "Veuillez choisir un nom d'utilisateur composé uniquement de caractères a-z, A-Z, 0-9 et _";
+
 "Please pick a shorter display name" = "Veuillez choisir un nom d'utilisateur plus court";
 "Please pick a display name" = "Veuillez choisir un nom d'utilisateur";
+
 "Multi Device Limit Reached" = "Limite d'appareils atteinte";
+
 "It's currently not allowed to link more than one device." = "Il n'est actuellement pas possible de relier plus d'un appareil.";
+
 "Enter a Name" = "Saisissez un nom";
+
 "Change Name" = "Changer de nom";
+
 "Change Device Name" = "Modifier le nom de l’appareil";
+
 "Enter the new display name for your device below" = "Saisissez ci-dessous le nouveau nom pour votre appareil";
+
 "Unlink" = "Déconnecter l'appareil";
 
 
 
 // MARK: - Session
+
 "Messages" = "Messages";
+
 "Note to Self" = "Note à mon intention";
+
 "New Group" = "Nouveau groupe";
+
 "Delete" = "Supprimer";
+
 "Search" = "Recherche";
+
 "New Session" = "Nouvelle Session";
-"Enter a Session ID" = "Identifiant Session";
-"Users can share their Session ID from their account settings, or by sharing their QR code." = "Les utilisateurs peuvent partager leur identifiant Session depuis les paramètres du compte ou en utilisant le code QR.";
+
+"Enter a Session ID" = "Saisir un Session ID";
+
+"Users can share their Session ID from their account settings, or by sharing their QR code." = "Les utilisateurs peuvent partager leur Session ID depuis les paramètres du compte ou en utilisant le code QR.";
+
 "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings." = "Scannez le code QR d'un utilisateur pour démarrer une session. Les codes QR peuvent se trouver en appuyant sur l'icône du code QR dans les paramètres du compte.";
-"Your Session ID" = "Votre identifiant Session";
+
+"Your Session ID" = "Votre Session ID";
+
 "Copy" = "Copier";
+
 "Copied" = "Copié";
+
 "Share" = "Partager";
+
 "Next" = "Suivant";
+
 "Session needs camera access to scan QR codes" = "Session a besoin d'accéder à l'appareil photo pour scanner les codes QR";
-"Enable Camera Access" = "Autoriser l'accès à l'appareil photo";
+
+"Enable Camera Access" = "Autoriser l'accès";
+
 "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Session's in-app settings and tapping \"Show QR Code\"." = "Scannez le code QR de la personne avec laquelle vous souhaitez établir une conversation sécurisée. Le code QR si situe dans les paramètres de l'application en cliquant sur \"Afficher le code QR\".";
-"Enter Session ID" = "Saisir un identifiant";
+
+"Enter Session ID" = "Saisir un Session ID";
+
 "Open Group URL" = "URL du groupe public";
+
 "Scan QR Code" = "Scanner un Code QR";
+
 "Scan the QR code of the open group you'd like to join" = "Scannez le code QR du groupe public que vous souhaitez rejoindre";
-"Join Open Group" = "Rejoindre un groupe public";
+
+"Join Open Group" = "Joindre un groupe public";
+
 "Enter an open group URL" = "Saisissez une URL de groupe public";
+
 "Invalid URL" = "URL non valide";
+
 "Please check the URL you entered and try again" = "Vérifiez l'URL saisie, puis réessayez";
+
 "Couldn't Join" = "Impossible de rejoindre le groupe";
+
 "Settings" = "Paramètres";
+
 "Privacy" = "Confidentialité";
+
 "Notifications" = "Notifications";
+
 "Devices" = "Appareils reliés";
+
 "Recovery Phrase" = "Phrase de récupération";
+
 "Clear All Data" = "Effacer toutes les données";
+
 "This will permanently delete your messages, sessions, and contacts." = "Cela supprimera définitivement vos messages, vos sessions et vos contacts.";
+
 "Delete" = "Supprimer";
-"This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device." = "Ceci est votre phrase de récupération. Elle vous permet de restaurer ou migrer votre identifiant Session vers un nouvel appareil.";
+
+"This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device." = "Ceci est votre phrase de récupération. Elle vous permet de restaurer ou migrer votre Session ID vers un nouvel appareil.";
+
 "The information shown in notifications when your phone is locked." = "Les informations affichées dans les notifications quand votre appareil est verrouillé.";
+
 "Notifications" = "Notifications";
+
 "Back" = "Retour";
+
 "View My QR Code" = "Afficher mon code QR";
+
 "Scan someone's QR code to start a conversation with them" = "Scannez le code QR d'un autre utilisateur pour démarrer une session";
+
 "QR Code" = "Code QR";
+
 "Scan Me" = "Scannez moi";
+
 "This is your QR code. Other users can scan it to start a session with you." = "Ceci est votre code QR. Les autres utilisateurs peuvent le scanner pour démarrer une session avec vous.";
+
 "Privacy" = "Confidentialité";
+
 "Unlock Session's screen using Touch ID, Face ID, or your iOS device passcode. You can still receive message notifications while Screen Lock is enabled. Session's notification settings allow you to customize the information that is displayed." = "Débloquez Session à l'aide de Touch ID, Face ID, ou votre mot de passe iOS. Vous Continuerez de recevoir des notifications lorsque l'écran est verrouillé. Les paramètres de notifications de Session vous permettent de personnaliser les informations affichées.";
+
 "Sound" = "Son";
+
 "Content" = "Contenu";
+
 "Update Profile Picture" = "Mettre à jour la photo de profil";
+
 "Couldn't Update Profile Picture" = "La photo de profil n'a pas pu être mise à jour";
+
 "Clear" = "Effacer";
+
 "Enter a display name" = "Saisissez un nom d’utilisateur";
+
 "Your Session begins here..." = "Votre Session débute ici...";
+
 "What's Session?" = "Qu'est-ce que Session?";
+
 "It's a decentralized, encrypted messaging app." = "C'est une application de messagerie décentralisée et cryptée.";
+
 "So it doesn't collect my personal information or my conversation metadata? How does it work?" = "Elle ne recueille donc pas mes informations personnelles ou mes métadonnées de conversations? Comment ça marche?";
+
 "Using a combination of advanced anonymous routing and end-to-end encryption technologies." = "En utilisant une combinaison de technologies avancées de routage anonyme et de chiffrement de bout en bout.";
+
 "Friends don't let friends use compromised messengers. You're welcome." = "Les vrais amis ne laissent pas leurs amis utiliser des outils de messagerie compromis. De rien.";
-"Create Session ID" = "Créer un identifiant Session";
+
+"Create Session ID" = "Créer un Session ID";
+
 "Continue your Session" = "Continuer votre Session";
-"Say hello to your Session ID" = "Dites bonjour à votre identifiant Session";
+
+"Say hello to your Session ID" = "Dites bonjour à votre Session ID";
+
 "Continue" = "Continuer";
-"Copy Session ID" = "Copier l'identifiant Session";
+
+"Copy Session ID" = "Copier le Session ID";
+
 "Pick your display name" = "Choisissez votre nom d'utilisateur";
+
 "Enter a display name" = "Saisissez un nom d'utilisateur";
+
 "Restore your account" = "Restaurez votre compte";
+
 "Enter your recovery phrase" = "Saisissez votre phrase de récupération";
+
 "Message" = "Message";
+
 "You" = "Vous";
+
 "Encrypting message" = "Chiffrement du message";
+
 "Tracing a path" = "Traçage du chemin";
+
 "Sending message" = "Envoi du message";
+
 "Message sent securely" = "Message sécurisé envoyé";
+
 "Message failed to send" = "Échec de l'envoi du message";
+
 "Secure your account by saving your recovery phrase" = "Sécurisez votre compte en sauvegardant votre phrase de récupération";
+
 "Continue" = "Continuer";
+
 "Your Recovery Phrase" = "Votre phrase de récupération";
+
 "Meet your recovery phrase" = "Voici votre phrase de récupération";
-"Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone." = "Votre phrase de récupération est la clé principale de votre identifiant Session - vous pouvez l'utiliser pour restaurer votre identifiant Session si vous perdez l'accès à votre appareil. Conservez la dans un endroit sûr et ne la donnez à personne.";
-"Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID." = "Appuyez et maintenez les mots masqués pour révéler votre phrase de récupération, puis stockez-la en toute sécurité pour sécuriser votre identifiant Session.";
+
+"Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone." = "Votre phrase de récupération est la clé principale de votre Session ID - vous pouvez l'utiliser pour restaurer votre Session ID si vous perdez l'accès à votre appareil. Conservez la dans un endroit sûr et ne la donnez à personne.";
+
+"Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID." = "Appuyez et maintenez les mots masqués pour révéler votre phrase de récupération, puis stockez-la en toute sécurité pour sécuriser votre Session ID.";
+
 "Hold to reveal" = "Appuyer pour révéler";
+
 "Make sure to store your recovery phrase in a safe place" = "Assurez-vous de conserver votre phrase de récupération dans un endroit sûr";
+
 "Link to an existing account" = "Relier à un compte existant";
+
 "Enter your public key" = "Saisissez votre clé publique";
+
 "Link to your existing account by going into your in-app settings and clicking \"Devices\"." = "Associez à votre compte existant en accédant aux paramètres de l'application et en cliquant sur \"Appareil reliés\".";
+
 "Download Session on your other device and tap \"Link to an existing account\" at the bottom of the landing screen. If you have an existing account on your other device already you will have to delete that account first." = "Téléchargez Session sur votre autre appareil, puis cliquez sur \"Relier à un compte existant\" en bas de l'écran de d’accueil. Si vous possédez déjà un compte sur votre autre appareil, vous devez d'abord le supprimer.";
+
 "Group Settings" = "Paramètres du groupe";
-"Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design." = "Votre identifiant Session est l'adresse unique que les gens utilisent pour vous contacter dans Session. Sans lien avec votre identité réelle, votre identifiant Session est complètement anonyme et privé.";
+
+"Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design." = "Votre Session ID est l'identifiant unique que les gens utilisent pour vous contacter dans Session. Sans lien avec votre identité réelle, votre Session ID est complètement anonyme et privé.";
+
 "Enter the recovery phrase that was given to you when you signed up to restore your account." = "Pour restaurer votre compte, veuillez entrer la phrase de récupération qui vous a été fournie lors de la création de votre compte.";
-"Enter Session ID" = "Saisir un identifiant";
+
+"Enter Session ID" = "Saisir un Session ID";
+
 "Link your device" = "Reliez votre appareil";
-"Enter your Session ID to start the linking process." = "Saisissez votre identifiant Session pour démarrer le processus de liaison.";
-"Enter your Session ID" = "Saisissez votre identifiant Session";
+
+"Enter your Session ID to start the linking process." = "Saisissez votre Session ID pour démarrer le processus de liaison.";
+
+"Enter your Session ID" = "Saisissez votre Session ID";
+
 "Recent Chats" = "Conversations récentes";
+
 "Other Chats" = "Autres conversations";
+
 "See and share when messages are being typed (applies to all sessions)." = "Permet de voir et de partager quand les messages sont saisis (s'applique à toutes les sessions).";
+
 "Disable Preview in App Switcher" = "Désactiver l'aperçu dans le sélecteur d'app";
+
 "Are you sure? This cannot be undone." = "Êtes-vous sûr? Cette action est irréversible.";
+
 "When enabled, messages between you and %@ will disappear after they have been seen." = "Lorsque activé, les messages entre vous et %@ disparaîtront après avoir été vus.";
+
 "This will be your name when you use Session. It can be your real name, an alias, or anything else you like." = "Ce sera votre nom lorsque vous utiliserez Session. Il peut s'agir de votre vrai nom, d'un pseudo ou de ce que vous voulez.";
+
 "Session Out of Sync" = "La session est désynchronisée";
+
 "Would you like to restore your session? This can help resolve issues. Your messages will be preserved." = "Voulez-vous restaurer votre session? Cela peut aider à résoudre les problèmes. Vos messages seront conservés.";
+
 "Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved." = "Voulez-vous restaurer votre session avec %@? Cela peut aider à résoudre les problèmes. Vos messages seront conservés.";
+
 "Restore" = "Restaurer";
+
 "Dismiss" = "Fermer";
+
 "New Closed Group" = "Nouveau groupe privé";
+
 "Group Members" = "Membres du groupe";
+
 "You don't have any contacts yet" = "Vous n’avez pas encore de contacts.";
+
 "Start a Session" = "Démarrer une session";
+
 "Enter a group name" = "Saisissez un nom de groupe";
+
 "Please enter a group name" = "Veuillez saisir un nom de groupe";
+
 "Please enter a shorter group name" = "Veuillez saisir un nom de groupe plus court";
+
 "Please pick at least 2 group members" = "Veuillez sélectionner au moins 2 membres";
+
 "Enable Link Previews?" = "Activer les aperçus de liens?";
+
 "You will not have full metadata protection when sending or receiving link previews." = "Vous ne disposez pas d'une protection totale des métadonnées lorsque vous envoyer ou recevez des aperçus de liens.";
+
 "Open groups can be joined by anyone and do not provide full privacy protection" = "Les groupes publics peuvent être rejoints par n'importe qui et ne fournissent pas une confidentialité totale";
+
 "Search GIFs?" = "Rechercher des GIFs?";
+
 "You will not have full metadata protection when sending GIFs." = "Vous ne disposez pas d'une protection totale des métadonnées lorsque vous envoyer des GIFs.";
+
 "The ability to add members to a closed group is coming soon." = "La possibilité d'ajouter des membres à un groupe privé arrive bientôt.";
+
 "A closed group cannot have more than 10 members" = "Un groupe privé ne peut pas avoir plus de 10 membres";
+
 "A closed group cannot have more than 50 members" = "Un groupe privé ne peut pas avoir plus de 50 membres";
+
 "Closed groups support up to 10 members" = "Les groupes privés prennent en charge jusqu'à 10 membres";
+
 "Closed groups support up to 50 members" = "Les groupes privés prennent en charge jusqu'à 50 membres";
+
 "No messages yet" = "Aucun messages";
+
 "Would you like to join the Session Public Chat?" = " Voulez-vous rejoindre le chat public de Session?";
+
 "Join Public Chat" = "Rejoindre le chat public";
+
 "No, thank you" = "Non merci";
+
 "Report" = "Rapport";
+
 "Please Pick an Option" = "Veuillez choisir une option";
+
 "There are two ways Session can handle push notifications. Make sure to read the descriptions carefully before you choose." = "Session peut gérer les notifications push de deux manières. Assurez-vous de lire attentivement les détails avant de faire votre choix.";
-"Apple Push Notification Service" = "Service de Notifications Push Apple";
-"Session will use the Apple Push Notification service to receive push notifications. You'll be notified of new messages reliably and immediately. Using APNs means that your IP address and device token will be exposed to Apple. If you use push notifications for other apps, this will already be the case. Your IP address and device token will also be exposed to Loki, but your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private." = "Session utilisera le service Apple Push Notification (APNs) pour la réception de notifications push. Vous serez notifié de la réception de nouveaux messages de manière fiable et immédiate. L'utilisation d'APNs signifie que votre adresse IP et votre jeton d'appareil seront exposés à Apple. Si vous utilisez des notifications push dans d’autres applications, cela est déjà le cas. Votre adresse IP et votre jeton d’appareil seront également exposés à Loki. Vos messages seront toujours routés anonymement et chiffrés de bout en bout, ainsi leur contenu restera totalement confidentiel.";
+
+"Apple Push Notification Service" = "Service Apple Push Notification";
+
+"Session will use the Apple Push Notification service to receive push notifications. You'll be notified of new messages reliably and immediately. Using APNs means that your IP address and device token will be exposed to Apple. If you use push notifications for other apps, this will already be the case. Your IP address and device token will also be exposed to Loki, but your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private." = "Session utilisera le service Apple Push Notification (APNs) pour la réception des notifications. Vous serez notifié immédiatement des nouveaux messages. L'utilisation d'APNs signifie que votre adresse IP et votre jeton d'appareil seront exposés à Apple. Cela est déjà le cas si vous utilisez des notifications push dans d’autres applications. Ceux-ci seront également exposés à Loki. Vos messages seront toujours routés anonymement et chiffrés de bout en bout, ainsi leur contenu restera totalement confidentiel.";
+
 "Background Polling" = "Consultation d'arrière-plan";
-"Session will occasionally check for new messages in the background. This guarantees full metadata protection, but message notifications may be significantly delayed." = "Session vérifiera occasionnellement la présence de nouveaux messages en arrière-plan. Cette option garantit une confidentialité totale, mais les notifications de messages peuvent être considérablement retardées.";
+
+"Session will occasionally check for new messages in the background. This guarantees full metadata protection, but message notifications may be significantly delayed." = "Session vérifiera de temps en temps les nouveaux messages en arrière-plan. Cette option garantit une confidentialité totale, mais les notifications de messages peuvent être retardées.";
+
 "Use APNs" = "Utiliser APNs";
+
 "Recommended" = "Recommandé";
+
 "Notification Strategy" = "Stratégie de notification";
+
 "Session now features two ways to handle push notifications. Make sure to read the descriptions carefully before you choose." = "Session propose désormais deux façons de gérer les notifications push. Assurez-vous de lire attentivement les descriptions avant de choisir.";
+
 "Push Notifications" = "Notifications Push";
+
 "Confirm" = "Confirmer";
+
 "Skip" = "Ignorer";
+
 "Link Previews" = "Aperçus de liens";
-"Invalid Session ID" = "Identifiant Session non valide";
-"Please make sure the Session ID you entered is correct and try again." = "Veuillez vérifier que l'identifiant Session saisi est correct, puis réessayez.";
+
+"Invalid Session ID" = "Session ID non valide";
+
+"Please make sure the Session ID you entered is correct and try again." = "Veuillez vérifier que le Session ID saisi est correct, puis réessayez.";
+
 "Device Linking Failed" = "Échec de liaison de l’appareil";
+
 "Please check your internet connection and try again" = "Veuillez vérifiez votre connexion à Internet, puis réessayez";
+
 "Authorizing Device Link" = "Autorisation de la liaison de l'appareil";
-"Please wait while the device link is created. This can take up to a minute." = "Veuillez patienter pendant la création de la liaison. Cela peut prendre jusqu'à une minute.";
+
+"Please wait while the device link is created. This can take up to a minute."
+ = "Veuillez patienter pendant la création de la liaison. Cela peut prendre jusqu'à une minute.";
+
 "Path" = "Chemin";
+
 "Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the countries your connection is currently being bounced through:" = "Session occulte votre adresse IP en envoyant vos messages via plusieurs nœuds de service dans le réseau décentralisé de Session. Voici les pays par le biais desquels votre connexion est actuellement envoyée :";
+
 "Entry Node" = "Noeud d’entrée";
+
 "Service Node" = "Noeud de service";
+
 "You" = "Vous";
+
 "Destination" = "Destination";
+
 "Learn More" = "En savoir plus";
+
 "Please ask the open group operator to add you to the group." = "Veuillez demander à l'opérateur du groupe public de vous ajouter au groupe.";
+
 "Unauthorized" = "Non autorisé";
+
 "Closed group created" = "Groupe privé créé";
+
 "Couldn't Create Group" = "Impossible de créer le groupe";
+
 "Please check your internet connection and try again." = "Veuillez vérifiez votre connexion à Internet, puis réessayez.";
- */
+*/
