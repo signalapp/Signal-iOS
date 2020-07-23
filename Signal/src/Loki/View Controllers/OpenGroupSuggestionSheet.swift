@@ -62,10 +62,10 @@ final class OpenGroupSuggestionSheet : Sheet {
         let url = "https://chat.getsession.org"
         let displayName = OWSProfileManager.shared().localProfileName()
         // TODO: Profile picture & profile key
-        let _ = LokiPublicChatManager.shared.addChat(server: url, channel: channelID).done(on: .main) { _ in
-            let _ = LokiPublicChatAPI.getMessages(for: channelID, on: url)
-            let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: url)
-            let _ = LokiPublicChatAPI.join(channelID, on: url)
+        let _ = PublicChatManager.shared.addChat(server: url, channel: channelID).done(on: .main) { _ in
+            let _ = PublicChatAPI.getMessages(for: channelID, on: url)
+            let _ = PublicChatAPI.setDisplayName(to: displayName, on: url)
+            let _ = PublicChatAPI.join(channelID, on: url)
         }
         close()
     }

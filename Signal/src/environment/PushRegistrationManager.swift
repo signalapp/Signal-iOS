@@ -54,8 +54,6 @@ public enum PushRegistrationError: Error {
     // MARK: Public interface
 
     public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
-        Logger.info("")
-
         return firstly {
             self.registerUserNotificationSettings()
         }.then { () -> Promise<(pushToken: String, voipToken: String)> in
@@ -127,7 +125,6 @@ public enum PushRegistrationError: Error {
     // return any requested push tokens.
     public func registerUserNotificationSettings() -> Promise<Void> {
         AssertIsOnMainThread()
-        Logger.info("registering user notification settings")
         return notificationPresenter.registerNotificationSettings()
     }
 
@@ -158,16 +155,14 @@ public enum PushRegistrationError: Error {
 
     private func registerForVanillaPushToken() -> Promise<String> {
         AssertIsOnMainThread()
-        Logger.info("")
 
         guard self.vanillaTokenPromise == nil else {
             let promise = vanillaTokenPromise!
             assert(promise.isPending)
-            Logger.info("alreay pending promise for vanilla push token")
             return promise.map { $0.hexEncodedString }
         }
 
-        // No pending vanilla token yet. Create a new promise
+        // No pending vanilla token yet; create a new promise
         let (promise, resolver) = Promise<Data>.pending()
         self.vanillaTokenPromise = promise
         self.vanillaTokenResolver = resolver
@@ -196,11 +191,10 @@ public enum PushRegistrationError: Error {
             }
         }.map { (pushTokenData: Data) -> String in
             if self.isSusceptibleToFailedPushRegistration {
-                // Sentinal in case this bug is fixed.
+                // Sentinal in case this bug is fixed
                 owsFailDebug("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
             }
 
-            Logger.info("successfully registered for vanilla push notifications")
             return pushTokenData.hexEncodedString
         }.ensure {
             self.vanillaTokenPromise = nil

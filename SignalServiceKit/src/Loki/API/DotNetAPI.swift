@@ -26,16 +26,6 @@ public class DotNetAPI : NSObject {
     /// To be overridden by subclasses.
     internal class var authTokenCollection: String { preconditionFailure("authTokenCollection is abstract and must be overridden.") }
 
-    private static func getAuthTokenFromDatabase(for server: String) -> String? {
-        var result: String? = nil
-        storage.dbReadConnection.read { transaction in
-            if transaction.hasObject(forKey: server, inCollection: authTokenCollection) {
-                result = transaction.object(forKey: server, inCollection: authTokenCollection) as? String
-            }
-        }
-        return result
-    }
-    
     internal static func getAuthToken(for server: String) -> Promise<String> {
         if let token = getAuthTokenFromDatabase(for: server) {
             return Promise.value(token)
@@ -47,6 +37,16 @@ public class DotNetAPI : NSObject {
                 return token
             }
         }
+    }
+
+    private static func getAuthTokenFromDatabase(for server: String) -> String? {
+        var result: String? = nil
+        storage.dbReadConnection.read { transaction in
+            if transaction.hasObject(forKey: server, inCollection: authTokenCollection) {
+                result = transaction.object(forKey: server, inCollection: authTokenCollection) as? String
+            }
+        }
+        return result
     }
 
     private static func setAuthToken(for server: String, to newValue: String, in transaction: YapDatabaseReadWriteTransaction) {
@@ -211,7 +211,7 @@ internal extension Promise {
     internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
         return recover2 { error -> Promise<T> in
             if let error = error as? NetworkManagerError, (error.statusCode == 401 || error.statusCode == 403) {
-                print("[Loki] Group chat auth token for: \(server) expired; dropping it.")
+                print("[Loki] Auth token for: \(server) expired; dropping it.")
                 DotNetAPI.clearAuthToken(for: server)
             }
             throw error

@@ -29,7 +29,7 @@ public final class LokiDatabaseUtilities : NSObject {
         let storage = OWSPrimaryStorage.shared()
         let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
         var result = Set(storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction).flatMap { deviceLink in
-            return [ deviceLink.master.hexEncodedPublicKey, deviceLink.slave.hexEncodedPublicKey ]
+            return [ deviceLink.master.publicKey, deviceLink.slave.publicKey ]
         })
         result.insert(hexEncodedPublicKey)
         return result
@@ -63,22 +63,22 @@ public final class LokiDatabaseUtilities : NSObject {
     private static let publicChatCollection = "LokiPublicChatCollection"
     
     @objc(getAllPublicChats:)
-    public static func getAllPublicChats(in transaction: YapDatabaseReadTransaction) -> [String:LokiPublicChat] {
-        var result = [String:LokiPublicChat]()
+    public static func getAllPublicChats(in transaction: YapDatabaseReadTransaction) -> [String:PublicChat] {
+        var result = [String:PublicChat]()
         transaction.enumerateKeysAndObjects(inCollection: publicChatCollection) { threadID, object, _ in
-            guard let publicChat = object as? LokiPublicChat else { return }
+            guard let publicChat = object as? PublicChat else { return }
             result[threadID] = publicChat
         }
         return result
     }
 
     @objc(getPublicChatForThreadID:transaction:)
-    public static func getPublicChat(for threadID: String, in transaction: YapDatabaseReadTransaction) -> LokiPublicChat? {
-        return transaction.object(forKey: threadID, inCollection: publicChatCollection) as? LokiPublicChat
+    public static func getPublicChat(for threadID: String, in transaction: YapDatabaseReadTransaction) -> PublicChat? {
+        return transaction.object(forKey: threadID, inCollection: publicChatCollection) as? PublicChat
     }
 
     @objc(setPublicChat:threadID:transaction:)
-    public static func setPublicChat(_ publicChat: LokiPublicChat, for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
+    public static func setPublicChat(_ publicChat: PublicChat, for threadID: String, in transaction: YapDatabaseReadWriteTransaction) {
        transaction.setObject(publicChat, forKey: threadID, inCollection: publicChatCollection)
     }
 

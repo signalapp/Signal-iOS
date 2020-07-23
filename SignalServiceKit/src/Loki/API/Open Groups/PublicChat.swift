@@ -1,6 +1,6 @@
 
 @objc(LKPublicChat)
-public final class LokiPublicChat : NSObject, NSCoding {
+public final class PublicChat : NSObject, NSCoding {
     @objc public let id: String
     @objc public let idAsData: Data
     @objc public let channel: UInt64

@@ -110,19 +110,19 @@ public extension OWSPrimaryStorage {
     }
     
     public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
-        return OWSPrimaryStorage.deviceLinkCache.filter { $0.master.hexEncodedPublicKey == masterHexEncodedPublicKey }
+        return OWSPrimaryStorage.deviceLinkCache.filter { $0.master.publicKey == masterHexEncodedPublicKey }
     }
     
     public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> DeviceLink? {
-        return OWSPrimaryStorage.deviceLinkCache.filter { $0.slave.hexEncodedPublicKey == slaveHexEncodedPublicKey }.first
+        return OWSPrimaryStorage.deviceLinkCache.filter { $0.slave.publicKey == slaveHexEncodedPublicKey }.first
     }
     
     public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
-        return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.hexEncodedPublicKey
+        return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.publicKey
     }
 
     // MARK: Open Groups
-    public func getUserCount(for publicChat: LokiPublicChat, in transaction: YapDatabaseReadTransaction) -> Int? {
+    public func getUserCount(for publicChat: PublicChat, in transaction: YapDatabaseReadTransaction) -> Int? {
         return transaction.object(forKey: publicChat.id, inCollection: Storage.openGroupUserCountCollection) as? Int
     }
     

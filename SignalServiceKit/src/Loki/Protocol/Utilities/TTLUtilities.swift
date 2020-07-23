@@ -14,7 +14,7 @@ public final class TTLUtilities : NSObject {
         // Important control messages
         case closedGroupUpdate, disappearingMessagesConfiguration, ephemeral, profileKey, receipt, sessionRequest, sync, unlinkDevice
         // Visible messages
-        case friendRequest, regular
+        case regular
     }
 
     @objc public static func getTTL(for messageType: MessageType) -> UInt64 {
@@ -26,7 +26,7 @@ public final class TTLUtilities : NSObject {
         // Important control messages
         case .closedGroupUpdate, .disappearingMessagesConfiguration, .ephemeral, .profileKey, .receipt, .sessionRequest, .sync, .unlinkDevice: return 2 * kDayInMs - 1 * kHourInMs
         // Visible messages
-        case .friendRequest, .regular: return 2 * kDayInMs
+        case .regular: return 2 * kDayInMs
         }
     }
 }

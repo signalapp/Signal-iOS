@@ -101,7 +101,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
 
     _primaryStorage = primaryStorage;
-    _sessionResetImplementation = [[LKSessionResetImplementation alloc] initWithStorage:primaryStorage];
+    _sessionResetImplementation = [LKSessionResetImplementation new];
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
@@ -215,16 +215,16 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         }
 
         switch (envelope.type) {
-            case SSKProtoEnvelopeTypeFriendRequest: {
+            case SSKProtoEnvelopeTypeFallbackMessage: {
                 [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [self decryptFriendRequestMessage:envelope
+                    [self decryptFallbackMessage:envelope
                          envelopeData:envelopeData
                          successBlock:^(OWSMessageDecryptResult *result) {
-                             OWSLogDebug(@"Decrypted friend request message.");
+                             OWSLogDebug(@"Decrypted fallback message.");
                              successBlock(result, transaction);
                          }
                          failureBlock:^(NSError * _Nullable error) {
-                             OWSLogError(@"Decrypting friend request message from: %@ failed with error: %@.",
+                             OWSLogError(@"Decrypting fallback message from: %@ failed with error: %@.",
                                 envelopeAddress(envelope),
                                 error);
                              failureBlock();
@@ -318,18 +318,18 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     failureBlock();
 }
 
-- (void)decryptFriendRequestMessage:(SSKProtoEnvelope *)envelope
-                       envelopeData:(NSData *)envelopeData
-                       successBlock:(void (^)(OWSMessageDecryptResult *result))successBlock
-                       failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+- (void)decryptFallbackMessage:(SSKProtoEnvelope *)envelope
+                  envelopeData:(NSData *)envelopeData
+                  successBlock:(void (^)(OWSMessageDecryptResult *result))successBlock
+                  failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssertDebug(envelope);
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
     
-    NSData *encryptedData = envelope.content;
-    if (!encryptedData) {
+    NSData *ivAndCiphertext = envelope.content;
+    if (ivAndCiphertext == nil) {
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, @"Envelope has no content.");
         return failureBlock(error);
@@ -339,15 +339,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
     FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientPublicKey:recipientId privateKey:identityKeyPair.privateKey];
 
-    NSData *_Nullable plaintextData = [[cipher decrypt:encryptedData] removePadding];
-    if (!plaintextData) {
-        NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message from: %@.", recipientId];
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);
+    NSData *_Nullable plaintext = [[cipher decrypt:ivAndCiphertext] removePadding];
+    if (plaintext == nil) {
+        NSString *errorDescription = [NSString stringWithFormat:@"Failed to decrypt fallback message from: %@.", recipientId];
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
         return failureBlock(error);
     }
    
     OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
-                                                                        plaintextData:plaintextData
+                                                                        plaintextData:plaintext
                                                                                source:envelope.source
                                                                          sourceDevice:envelope.sourceDevice
                                                                           isUDMessage:NO];
@@ -609,9 +609,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
         [envelopeBuilder setSource:source];
         [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
-        if (decryptResult.messageType == SMKMessageTypeLokiFriendRequest) {
-            [envelopeBuilder setType:SSKProtoEnvelopeTypeFriendRequest];
-            OWSLogInfo(@"SMKMessageTypeLokiFriendRequest");
+        if (decryptResult.messageType == SMKMessageTypeFallback) {
+            [envelopeBuilder setType:SSKProtoEnvelopeTypeFallbackMessage];
+            OWSLogInfo(@"SMKMessageTypeFallback");
         }
         NSError *envelopeBuilderError;
         NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];

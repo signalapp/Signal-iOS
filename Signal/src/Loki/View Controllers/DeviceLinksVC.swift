@@ -78,7 +78,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
         var deviceLinks: [DeviceLink] = []
         storage.dbReadConnection.read { transaction in
             deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction).sorted { lhs, rhs in
-                return lhs.other.hexEncodedPublicKey > rhs.other.hexEncodedPublicKey
+                return lhs.other.publicKey > rhs.other.publicKey
             }
         }
         self.deviceLinks = deviceLinks
@@ -141,7 +141,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
     
     private func removeDeviceLink(_ deviceLink: DeviceLink) {
         FileServerAPI.removeDeviceLink(deviceLink).done { [weak self] in
-            let linkedDevicePublicKey = deviceLink.other.hexEncodedPublicKey
+            let linkedDevicePublicKey = deviceLink.other.publicKey
             guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadId(fromContactId: linkedDevicePublicKey)) else { return }
             let unlinkDeviceMessage = UnlinkDeviceMessage(thread: thread)
             SSKEnvironment.shared.messageSender.send(unlinkDeviceMessage, success: {
@@ -226,7 +226,7 @@ private extension DeviceLinksVC {
         // MARK: Updating
         private func update() {
             titleLabel.text = device.displayName
-            subtitleLabel.text = Mnemonic.hash(hexEncodedString: device.hexEncodedPublicKey.removing05PrefixIfNeeded())
+            subtitleLabel.text = Mnemonic.hash(hexEncodedString: device.publicKey.removing05PrefixIfNeeded())
         }
     }
 }

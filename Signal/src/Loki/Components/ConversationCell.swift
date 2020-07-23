@@ -5,11 +5,7 @@ final class ConversationCell : UITableViewCell {
     static let reuseIdentifier = "ConversationCell"
     
     // MARK: Components
-    private lazy var unreadMessagesIndicatorView: UIView = {
-        let result = UIView()
-        result.backgroundColor = Colors.accent
-        return result
-    }()
+    private let accentView = UIView()
     
     private lazy var profilePictureView = ProfilePictureView()
     
@@ -67,9 +63,9 @@ final class ConversationCell : UITableViewCell {
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = Colors.cellSelected
         self.selectedBackgroundView = selectedBackgroundView
-        // Set up the unread messages indicator view
-        unreadMessagesIndicatorView.set(.width, to: Values.accentLineThickness)
-        unreadMessagesIndicatorView.set(.height, to: cellHeight)
+        // Set up the accent view
+        accentView.set(.width, to: Values.accentLineThickness)
+        accentView.set(.height, to: cellHeight)
         // Set up the profile picture view
         let profilePictureViewSize = Values.mediumProfilePictureSize
         profilePictureView.set(.width, to: profilePictureViewSize)
@@ -93,14 +89,14 @@ final class ConversationCell : UITableViewCell {
         labelContainerView.addSubview(topLabelStackView)
         labelContainerView.addSubview(bottomLabelStackView)
         // Set up the main stack view
-        let stackView = UIStackView(arrangedSubviews: [ unreadMessagesIndicatorView, profilePictureView, labelContainerView ])
+        let stackView = UIStackView(arrangedSubviews: [ accentView, profilePictureView, labelContainerView ])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Values.mediumSpacing
         contentView.addSubview(stackView)
         // Set up the constraints
-        unreadMessagesIndicatorView.pin(.top, to: .top, of: contentView)
-        unreadMessagesIndicatorView.pin(.bottom, to: .bottom, of: contentView)
+        accentView.pin(.top, to: .top, of: contentView)
+        accentView.pin(.bottom, to: .bottom, of: contentView)
         // The three lines below are part of a workaround for a weird layout bug
         topLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
         topLabelStackView.set(.height, to: 20)
@@ -136,7 +132,19 @@ final class ConversationCell : UITableViewCell {
     private func update() {
         AssertIsOnMainThread()
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
-        unreadMessagesIndicatorView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
+        let isBlocked: Bool
+        if let thread = threadViewModel.threadRecord as? TSContactThread {
+            isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactIdentifier())
+        } else {
+            isBlocked = false
+        }
+        if isBlocked {
+            accentView.backgroundColor = Colors.destructive
+            accentView.alpha = 1
+        } else {
+            accentView.backgroundColor = Colors.accent
+            accentView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
+        }
         profilePictureView.openGroupProfilePicture = nil
         if threadViewModel.isGroupThread {
             if threadViewModel.name == "Loki Public Chat"

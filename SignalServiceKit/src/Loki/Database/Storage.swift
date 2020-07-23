@@ -20,9 +20,14 @@ public final class Storage : NSObject {
 
     @objc(readWithBlock:)
     public static func read(with block: @escaping (YapDatabaseReadTransaction) -> Void) {
+        // FIXME: For some reason the code below appears to be causing crashes even though it *should*
+        // be in line with the YapDatabase docs
+        /*
         let isMainThread = Thread.current.isMainThread
         let connection = isMainThread ? owsStorage.uiDatabaseConnection : owsStorage.dbReadConnection
         connection.read(block)
+         */
+        owsStorage.dbReadConnection.read(block)
     }
 
     // MARK: Writing

@@ -457,6 +457,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
             }
         }
     } error:nil];
+
     return processedJobs;
 }
 

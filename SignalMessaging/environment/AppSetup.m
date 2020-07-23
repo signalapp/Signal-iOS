@@ -125,10 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       syncManager:syncManager
                                                                  typingIndicators:typingIndicators
                                                               attachmentDownloads:attachmentDownloads]];
-        
-        // Loki
-        LKFriendRequestExpirationJob *lokiFriendRequestExpirationJob = [[LKFriendRequestExpirationJob alloc] initWithPrimaryStorage:primaryStorage];
-        SSKEnvironment.shared.lokiFriendRequestExpirationJob = lokiFriendRequestExpirationJob;
 
         appSpecificSingletonBlock();
 

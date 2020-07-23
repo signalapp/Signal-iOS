@@ -14,7 +14,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
     TSPreKeyWhisperMessageType = 3,
     TSUnencryptedWhisperMessageType = 4,
     TSUnidentifiedSenderMessageType = 6,
-    TSFriendRequestMessageType = 101 // Loki: Contains prekeys and a message; uses simple encryption
+    TSFallbackMessageType = 101 // Loki: Encrypted using the fallback session cipher. Contains a pre key bundle if it's a session request.
 };
 
 #pragma mark Server Address

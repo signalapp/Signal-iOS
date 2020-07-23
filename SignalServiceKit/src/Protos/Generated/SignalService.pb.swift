@@ -134,8 +134,8 @@ struct SignalServiceProtos_Envelope {
     /// Loki
     case closedGroupCiphertext // = 7
 
-    /// Loki: Contains pre keys and a message; uses simple encryption
-    case friendRequest // = 101
+    /// Loki: Encrypted using the fallback session cipher. Contains a pre key bundle if it's a session request.
+    case fallbackMessage // = 101
 
     init() {
       self = .unknown
@@ -150,7 +150,7 @@ struct SignalServiceProtos_Envelope {
       case 5: self = .receipt
       case 6: self = .unidentifiedSender
       case 7: self = .closedGroupCiphertext
-      case 101: self = .friendRequest
+      case 101: self = .fallbackMessage
       default: return nil
       }
     }
@@ -164,7 +164,7 @@ struct SignalServiceProtos_Envelope {
       case .receipt: return 5
       case .unidentifiedSender: return 6
       case .closedGroupCiphertext: return 7
-      case .friendRequest: return 101
+      case .fallbackMessage: return 101
       }
     }
 
@@ -840,9 +840,7 @@ struct SignalServiceProtos_DataMessage {
     case endSession // = 1
     case expirationTimerUpdate // = 2
     case profileKeyUpdate // = 4
-    case sessionRestore // = 64
     case unlinkDevice // = 128
-    case sessionRequest // = 256
 
     init() {
       self = .endSession
@@ -853,9 +851,7 @@ struct SignalServiceProtos_DataMessage {
       case 1: self = .endSession
       case 2: self = .expirationTimerUpdate
       case 4: self = .profileKeyUpdate
-      case 64: self = .sessionRestore
       case 128: self = .unlinkDevice
-      case 256: self = .sessionRequest
       default: return nil
       }
     }
@@ -865,9 +861,7 @@ struct SignalServiceProtos_DataMessage {
       case .endSession: return 1
       case .expirationTimerUpdate: return 2
       case .profileKeyUpdate: return 4
-      case .sessionRestore: return 64
       case .unlinkDevice: return 128
-      case .sessionRequest: return 256
       }
     }
 
@@ -2935,7 +2929,7 @@ extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     5: .same(proto: "RECEIPT"),
     6: .same(proto: "UNIDENTIFIED_SENDER"),
     7: .same(proto: "CLOSED_GROUP_CIPHERTEXT"),
-    101: .same(proto: "FRIEND_REQUEST"),
+    101: .same(proto: "FALLBACK_MESSAGE"),
   ]
 }
 
@@ -3510,9 +3504,7 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
     1: .same(proto: "END_SESSION"),
     2: .same(proto: "EXPIRATION_TIMER_UPDATE"),
     4: .same(proto: "PROFILE_KEY_UPDATE"),
-    64: .same(proto: "SESSION_RESTORE"),
     128: .same(proto: "UNLINK_DEVICE"),
-    256: .same(proto: "SESSION_REQUEST"),
   ]
 }
 

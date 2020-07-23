@@ -14,6 +14,7 @@ public enum OnionRequestAPI {
     // MARK: Settings
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
+
     public static let pathCount: UInt = 2
 
     private static var guardSnodeCount: UInt { return pathCount } // One per path

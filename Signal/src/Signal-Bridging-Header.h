@@ -19,8 +19,6 @@
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
-#import "HomeViewCell.h"
-#import "HomeViewController.h"
 #import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSAddToContactViewController.h"
@@ -94,7 +92,6 @@
 #import <SessionServiceKit/LKDeviceLinkMessage.h>
 #import <SessionServiceKit/OWSError.h>
 #import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/LKFriendRequestMessage.h>
 #import <SessionServiceKit/OWSIdentityManager.h>
 #import <SessionServiceKit/OWSMediaGalleryFinder.h>
 #import <SessionServiceKit/OWSMessageManager.h>
@@ -130,4 +127,3 @@
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>
-#import "NewGroupViewController.h"

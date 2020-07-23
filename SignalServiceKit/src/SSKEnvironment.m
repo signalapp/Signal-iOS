@@ -197,15 +197,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
-- (void)setLokiFriendRequestExpirationJob:(LKFriendRequestExpirationJob *)lokiFriendRequestExpirationJob {
-    @synchronized(self) {
-        OWSAssertDebug(lokiFriendRequestExpirationJob);
-        OWSAssertDebug(_lokiFriendRequestExpirationJob == nil);
-        
-        _lokiFriendRequestExpirationJob = lokiFriendRequestExpirationJob;
-    }
-}
-
 - (BOOL)isComplete
 {
     return self.notificationsManager != nil;

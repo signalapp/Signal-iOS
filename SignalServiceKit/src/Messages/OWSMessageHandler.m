@@ -36,8 +36,8 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             return @"PreKeyEncryptedMessage";
         case SSKProtoEnvelopeTypeUnidentifiedSender:
             return @"UnidentifiedSender";
-        case SSKProtoEnvelopeTypeFriendRequest:
-            return @"LokiFriendRequest";
+        case SSKProtoEnvelopeTypeFallbackMessage:
+            return @"FallbackMessage";
         case SSKProtoEnvelopeTypeClosedGroupCiphertext:
             return @"ClosedGroupCiphertext";
         default:

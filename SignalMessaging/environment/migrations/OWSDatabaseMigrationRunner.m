@@ -3,14 +3,6 @@
 //
 
 #import "OWSDatabaseMigrationRunner.h"
-#import "OWS100RemoveTSRecipientsMigration.h"
-#import "OWS102MoveLoggingPreferenceToUserDefaults.h"
-#import "OWS103EnableVideoCalling.h"
-#import "OWS104CreateRecipientIdentities.h"
-#import "OWS105AttachmentFilePaths.h"
-#import "OWS107LegacySounds.h"
-#import "OWS108CallLoggingPreference.h"
-#import "OWS109OutgoingMessageState.h"
 #import "OWSDatabaseMigration.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SessionServiceKit/AppContext.h>
@@ -34,21 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
     return @[
-        [[OWS100RemoveTSRecipientsMigration alloc] init],
-        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] init],
-        [[OWS103EnableVideoCalling alloc] init],
-        [[OWS104CreateRecipientIdentities alloc] init],
-        [[OWS105AttachmentFilePaths alloc] init],
-        [[OWS106EnsureProfileComplete alloc] init],
-        [[OWS107LegacySounds alloc] init],
-        [[OWS108CallLoggingPreference alloc] init],
-        [[OWS109OutgoingMessageState alloc] init],
-        [OWS110SortIdMigration new],
-        [[OWS111UDAttributesMigration alloc] init],
-        [[OWS112TypingIndicatorsMigration alloc] init],
-        [[OWS113MultiAttachmentMediaMessages alloc] init],
-        [[OWS114RemoveDynamicInteractions alloc] init],
-        [[LK001UpdateFriendRequestStatusStorage alloc] init]
+        [[LK002RemoveFriendRequests alloc] init]
     ];
 }
 

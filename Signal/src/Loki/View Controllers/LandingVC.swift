@@ -151,7 +151,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     }
     
     func handleDeviceLinkAuthorized(_ deviceLink: DeviceLink) {
-        UserDefaults.standard[.masterHexEncodedPublicKey] = deviceLink.master.hexEncodedPublicKey
+        UserDefaults.standard[.masterHexEncodedPublicKey] = deviceLink.master.publicKey
         fakeChatViewContentOffset = fakeChatView.contentOffset
         DispatchQueue.main.async {
             self.fakeChatView.contentOffset = self.fakeChatViewContentOffset

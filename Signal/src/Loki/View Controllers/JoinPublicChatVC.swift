@@ -139,14 +139,14 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         let profilePictureURL = profileManager.profilePictureURL()
         let profileKey = profileManager.localProfileKey().keyData
         try! Storage.writeSync { transaction in
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastMessageServerIDCollection)
-            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastDeletionServerIDCollection)
+            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: PublicChatAPI.lastMessageServerIDCollection)
+            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: PublicChatAPI.lastDeletionServerIDCollection)
         }
-        LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
+        PublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
         .done(on: .main) { [weak self] _ in
-            let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
-            let _ = LokiPublicChatAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
-            let _ = LokiPublicChatAPI.join(channelID, on: urlAsString)
+            let _ = PublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
+            let _ = PublicChatAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
+            let _ = PublicChatAPI.join(channelID, on: urlAsString)
             let syncManager = SSKEnvironment.shared.syncManager
             let _ = syncManager.syncAllOpenGroups()
             self?.presentingViewController!.dismiss(animated: true, completion: nil)

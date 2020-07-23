@@ -4,9 +4,7 @@
 
 #import "AppDelegate.h"
 #import "DebugLogger.h"
-#import "HomeViewController.h"
 #import "MainAppContext.h"
-#import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
@@ -162,28 +160,15 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.legacyNotificationActionHandler;
 }
 
-- (LKFriendRequestExpirationJob *)lokiFriendRequestExpirationJob
-{
-    return SSKEnvironment.shared.lokiFriendRequestExpirationJob;
-}
-
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    OWSLogInfo(@"applicationDidEnterBackground");
-
     [DDLog flushLog];
 
-    // Loki: Stop pollers
     [self stopPoller];
     [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    OWSLogInfo(@"applicationWillEnterForeground");
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
@@ -193,11 +178,8 @@ static NSTimeInterval launchStartedAt;
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    OWSLogInfo(@"applicationWillTerminate");
-
     [DDLog flushLog];
 
-    // Loki: Stop pollers
     [self stopPoller];
     [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
@@ -205,7 +187,7 @@ static NSTimeInterval launchStartedAt;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
-    // This should be the first thing we do.
+    // This should be the first thing we do
     SetCurrentAppContext([MainAppContext new]);
 
     launchStartedAt = CACurrentMediaTime();
@@ -223,7 +205,6 @@ static NSTimeInterval launchStartedAt;
         [DebugLogger.sharedLogger enableFileLogging];
     }
 
-    OWSLogWarn(@"application:didFinishLaunchingWithOptions");
     [Cryptography seedRandom];
 
     // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
@@ -238,18 +219,6 @@ static NSTimeInterval launchStartedAt;
     }
 #endif
 
-    // We need to do this _after_ we set up logging, when the keychain is unlocked,
-    // but before we access YapDatabase, files on disk, or NSUserDefaults
-    if (![self ensureIsReadyForAppExtensions]) {
-        // If this method has failed; do nothing.
-        //
-        // ensureIsReadyForAppExtensions will show a failure mode UI that
-        // lets users report this error.
-        OWSLogInfo(@"application:didFinishLaunchingWithOptions failed");
-
-        return YES;
-    }
-
     [AppVersion sharedInstance];
 
     [self startupLogging];
@@ -262,7 +231,7 @@ static NSTimeInterval launchStartedAt;
 
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
-            // Create AppEnvironment.
+            // Create AppEnvironment
             [AppEnvironment.shared setup];
             [SignalApp.sharedApp setup];
         }
@@ -333,11 +302,9 @@ static NSTimeInterval launchStartedAt;
  */
 - (void)verifyDBKeysAvailableBeforeBackgroundLaunch
 {
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-        return;
-    }
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) { return; }
 
-    if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
+    if (!OWSPrimaryStorage.isDatabasePasswordAccessible) {
         OWSLogInfo(@"Exiting because we are in the background and the database password is not accessible.");
 
         UILocalNotification *notification = [UILocalNotification new];
@@ -357,72 +324,6 @@ static NSTimeInterval launchStartedAt;
         [DDLog flushLog];
         exit(0);
     }
-}
-
-- (BOOL)ensureIsReadyForAppExtensions
-{
-    // Given how sensitive this migration is, we verbosely
-    // log the contents of all involved paths before and after.
-    //
-    // TODO: Remove this logging once we have high confidence
-    // in our migration logic.
-    NSArray<NSString *> *paths = @[
-        OWSPrimaryStorage.legacyDatabaseFilePath,
-        OWSPrimaryStorage.legacyDatabaseFilePath_SHM,
-        OWSPrimaryStorage.legacyDatabaseFilePath_WAL,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath_SHM,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath_WAL,
-    ];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    for (NSString *path in paths) {
-        if ([fileManager fileExistsAtPath:path]) {
-            OWSLogInfo(@"storage file: %@, %@", path, [OWSFileSystem fileSizeOfPath:path]);
-        }
-    }
-
-    if ([OWSPreferences isReadyForAppExtensions]) {
-        return YES;
-    }
-
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-    SUPPRESS_DEADSTORE_WARNING(backgroundTask);
-
-    if ([NSFileManager.defaultManager fileExistsAtPath:OWSPrimaryStorage.legacyDatabaseFilePath]) {
-        OWSLogInfo(
-            @"Legacy Database file size: %@", [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath]);
-        OWSLogInfo(@"\t Legacy SHM file size: %@",
-            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_SHM]);
-        OWSLogInfo(@"\t Legacy WAL file size: %@",
-            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_WAL]);
-    }
-
-    NSError *_Nullable error = [self convertDatabaseIfNecessary];
-
-    if (!error) {
-        [NSUserDefaults migrateToSharedUserDefaults];
-    }
-
-    if (!error) {
-        error = [OWSPrimaryStorage migrateToSharedData];
-    }
-    if (!error) {
-        error = [OWSUserProfile migrateToSharedData];
-    }
-    if (!error) {
-        error = [TSAttachmentStream migrateToSharedData];
-    }
-
-    if (error) {
-        OWSFailDebug(@"Database conversion failed: %@", error);
-        [self showLaunchFailureUI:error];
-        return NO;
-    }
-
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
-
-    return YES;
 }
 
 - (void)showLaunchFailureUI:(NSError *)error
@@ -458,53 +359,6 @@ static NSTimeInterval launchStartedAt;
                                             }]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
     [fromViewController presentAlert:alert];
-}
-
-- (nullable NSError *)convertDatabaseIfNecessary
-{
-    OWSLogInfo(@"");
-
-    NSString *databaseFilePath = [OWSPrimaryStorage legacyDatabaseFilePath];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
-        OWSLogVerbose(@"No legacy database file found");
-        return nil;
-    }
-
-    NSError *_Nullable error;
-    NSData *_Nullable databasePassword = [OWSStorage tryToLoadDatabaseLegacyPassphrase:&error];
-    if (!databasePassword || error) {
-        return (error
-                ?: OWSErrorWithCodeDescription(
-                       OWSErrorCodeDatabaseConversionFatalError, @"Failed to load database password"));
-    }
-
-    YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
-        OWSLogVerbose(@"saltData: %@", saltData.hexadecimalString);
-
-        // Derive and store the raw cipher key spec, to avoid the ongoing tax of future KDF
-        NSData *_Nullable keySpecData =
-            [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
-
-        if (!keySpecData) {
-            OWSLogError(@"Failed to derive key spec.");
-            return NO;
-        }
-
-        [OWSStorage storeDatabaseCipherKeySpec:keySpecData];
-
-        return YES;
-    };
-
-    YapDatabaseOptions *dbOptions = [OWSStorage defaultDatabaseOptions];
-    error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
-                                              databasePassword:databasePassword
-                                                       options:dbOptions
-                                               recordSaltBlock:recordSaltBlock];
-    if (!error) {
-        [OWSStorage removeLegacyPassphrase];
-    }
-
-    return error;
 }
 
 - (void)startupLogging
@@ -590,54 +444,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    OWSLogInfo(@"Registered legacy notification settings.");
     [self.notificationPresenter didRegisterLegacyNotificationSettings];
-}
-
-- (BOOL)application:(UIApplication *)application
-              openURL:(NSURL *)url
-    sourceApplication:(NSString *)sourceApplication
-           annotation:(id)annotation
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return NO;
-    }
-
-    if (!AppReadiness.isAppReady) {
-        OWSLogWarn(@"Ignoring openURL: app not ready.");
-        // We don't need to use [AppReadiness runNowOrWhenAppDidBecomeReady:];
-        // the only URLs we handle in Signal iOS at the moment are used
-        // for resuming the verification step of the registration flow.
-        return NO;
-    }
-
-    if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
-        if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
-            id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
-            if ([signupController isKindOfClass:[OWSNavigationController class]]) {
-                OWSNavigationController *navController = (OWSNavigationController *)signupController;
-                UIViewController *controller = [navController.childViewControllers lastObject];
-                if ([controller isKindOfClass:[OnboardingVerificationViewController class]]) {
-                    OnboardingVerificationViewController *verificationView
-                        = (OnboardingVerificationViewController *)controller;
-                    NSString *verificationCode           = [url.path substringFromIndex:1];
-                    [verificationView setVerificationCodeAndTryToVerify:verificationCode];
-                    return YES;
-                } else {
-                    OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead.",
-                        NSStringFromClass(controller.class));
-                }
-            }
-        } else {
-            OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);
-        }
-    } else {
-        OWSFailDebug(@"Application opened with an unknown URL scheme: %@", url.scheme);
-    }
-    return NO;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -648,7 +455,6 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    OWSLogWarn(@"applicationDidBecomeActive");
     if (CurrentAppContext().isRunningTests) {
         return;
     }
@@ -667,35 +473,18 @@ static NSTimeInterval launchStartedAt;
 
     // On every activation, clear old temp directories.
     ClearOldTemporaryDirectories();
-
-    OWSLogInfo(@"applicationDidBecomeActive completed");
 }
 
 - (void)enableBackgroundRefreshIfNecessary
 {
-    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    if (isUsingFullAPNs) { return; }
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-        // Loki: Original code
-        // ========
-//        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegisteredAndReady]) {
-//            // Ping server once a day to keep-alive 2FA clients.
-//            const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
-//            [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
-//        } else {
-//            [[UIApplication sharedApplication]
-//                setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
-//        }
-        // ========
     }];
 }
 
 - (void)handleActivation
 {
     OWSAssertIsOnMainThread();
-
-    OWSLogWarn(@"handleActivation");
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
@@ -713,9 +502,6 @@ static NSTimeInterval launchStartedAt;
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
                 [self.disappearingMessagesJob startIfNecessary];
-                
-                // Loki: Start friend request expiration job
-                [self.lokiFriendRequestExpirationJob startIfNecessary];
 
                 [self enableBackgroundRefreshIfNecessary];
 
@@ -752,19 +538,15 @@ static NSTimeInterval launchStartedAt;
 
             NSString *userHexEncodedPublicKey = self.tsAccountManager.localNumber;
 
-            // Loki: Start pollers
             [self startPollerIfNeeded];
             [self startClosedGroupPollerIfNeeded];
             [self startOpenGroupPollersIfNeeded];
-
-            // Loki: Get device links
-            [[LKFileServerAPI getDeviceLinksAssociatedWithHexEncodedPublicKey:userHexEncodedPublicKey] retainUntilComplete];
 
             // Loki: Update profile picture if needed
             NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
             NSDate *now = [NSDate new];
             NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
-            if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 14 * 24 * 60 * 60) {
+            if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 4 * 24 * 60 * 60) {
                 OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
                 NSString *displayName = [profileManager profileNameForRecipientWithID:userHexEncodedPublicKey];
                 UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userHexEncodedPublicKey];
@@ -785,22 +567,8 @@ static NSTimeInterval launchStartedAt;
                     [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
                                                     preferences:Environment.shared.preferences];
             }
-
-            if ([OWS2FAManager sharedManager].isDueForReminder) {
-                if (!self.hasInitialRootViewController || self.window.rootViewController == nil) {
-                    OWSLogDebug(@"Skipping 2FA reminder since there isn't yet an initial view controller.");
-                } else {
-                    UIViewController *rootViewController = self.window.rootViewController;
-                    OWSNavigationController *reminderNavController =
-                        [OWS2FAReminderViewController wrappedInNavController];
-
-                    [rootViewController presentViewController:reminderNavController animated:YES completion:nil];
-                }
-            }
         });
     }
-
-    OWSLogInfo(@"handleActivation completed");
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -811,8 +579,6 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"App launch failed");
         return;
     }
-
-    OWSLogWarn(@"applicationWillResignActive");
 
     [self clearAllNotificationsAndRestoreBadgeCount];
 
@@ -867,7 +633,6 @@ static NSTimeInterval launchStartedAt;
     }];
 }
 
-
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
@@ -876,96 +641,7 @@ static NSTimeInterval launchStartedAt;
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (BOOL)hasCall
-{
-    return self.windowManager.hasCall;
-}
-
 #pragma mark Push Notifications Delegate Methods
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
-        OWSLogInfo(@"Ignoring remote notification; app not ready.");
-        return;
-    }
-    
-    [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
-    
-    __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
-        fetchMessagesPromise = nil;
-    }).catch(^{
-        fetchMessagesPromise = nil;
-    });
-    [fetchMessagesPromise retainUntilComplete];
-    
-    __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
-    }];
-    for (LKPublicChat *publicChat in publicChats) {
-        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; }
-        LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
-        [poller stop];
-        AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
-        [fetchGroupMessagesPromise retainUntilComplete];
-    }
-}
-
-- (void)application:(UIApplication *)application
-    didReceiveRemoteNotification:(NSDictionary *)userInfo
-          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
-        OWSLogInfo(@"Ignoring remote notification; app not ready.");
-        return;
-    }
-    
-    CurrentAppContext().wasWokenUpBySilentPushNotification = true;
-
-    [LKLogger print:@"[Loki] Silent push notification received; fetching messages."];
-    
-    NSMutableArray *promises = [NSMutableArray new];
-    
-    __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
-        fetchMessagesPromise = nil;
-    }).catch(^{
-        fetchMessagesPromise = nil;
-    });
-    [promises addObject:fetchMessagesPromise];
-    [fetchMessagesPromise retainUntilComplete];
-    
-    __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
-    }];
-    for (LKPublicChat *publicChat in publicChats.allValues) {
-        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
-        LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
-        [poller stop];
-        AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
-        [promises addObject:fetchGroupMessagesPromise];
-        [fetchGroupMessagesPromise retainUntilComplete];
-    }
-    
-    PMKJoin(promises).then(^(id results) {
-        completionHandler(UIBackgroundFetchResultNewData);
-        CurrentAppContext().wasWokenUpBySilentPushNotification = false;
-    }).catch(^(id error) {
-        completionHandler(UIBackgroundFetchResultFailed);
-        CurrentAppContext().wasWokenUpBySilentPushNotification = false;
-    });
-}
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     OWSAssertIsOnMainThread();
@@ -1030,8 +706,6 @@ static NSTimeInterval launchStartedAt;
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
-    OWSLogInfo(@"Handling action with identifier: %@", identifier);
-
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
@@ -1063,8 +737,6 @@ static NSTimeInterval launchStartedAt;
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
-    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    if (isUsingFullAPNs) { return; }
     NSLog(@"[Loki] Performing background fetch.");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         NSMutableArray *promises = [NSMutableArray new];
@@ -1121,7 +793,7 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    // App isn't ready until storage is ready AND all version migrations are complete.
+    // App isn't ready until storage is ready AND all version migrations are complete
     if (!self.areVersionMigrationsComplete) {
         return;
     }
@@ -1129,11 +801,9 @@ static NSTimeInterval launchStartedAt;
         return;
     }
     if ([AppReadiness isAppReady]) {
-        // Only mark the app as ready once.
+        // Only mark the app as ready once
         return;
     }
-
-    OWSLogInfo(@"checkIfAppIsReady");
 
     // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
     [self.profileManager ensureLocalProfileCached];
@@ -1142,13 +812,9 @@ static NSTimeInterval launchStartedAt;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
 
-    if (CurrentAppContext().isRunningTests) {
-        OWSLogVerbose(@"Skipping post-launch logic in tests.");
-        return;
-    }
+    if (CurrentAppContext().isRunningTests) { return; }
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
         // This should happen at any launch, background or foreground
         __unused AnyPromise *pushTokenpromise =
@@ -1182,8 +848,8 @@ static NSTimeInterval launchStartedAt;
     //
     // TODO: Release to production once we have analytics.
     // TODO: Orphan cleanup is somewhat expensive - not least in doing a bunch
-    //       of disk access.  We might want to only run it "once per version"
-    //       or something like that in production.
+    // TODO: of disk access.  We might want to only run it "once per version"
+    // TODO: or something like that in production.
     [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
 #endif
 
@@ -1240,17 +906,9 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"registrationStateDidChange");
-
     [self enableBackgroundRefreshIfNecessary];
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [self.tsAccountManager localNumber]);
-
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
-        } error:nil];
-
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];
@@ -1259,16 +917,9 @@ static NSTimeInterval launchStartedAt;
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
 
-        // Loki: Start friend request expiration job
-        [self.lokiFriendRequestExpirationJob startIfNecessary];
-        
-        // Loki: Start pollers
         [self startPollerIfNeeded];
         [self startClosedGroupPollerIfNeeded];
         [self startOpenGroupPollersIfNeeded];
-
-        // Loki: Get device links
-        [[LKFileServerAPI getDeviceLinksAssociatedWithHexEncodedPublicKey:self.tsAccountManager.localNumber] retainUntilComplete]; // TODO: Is this even needed?
     }
 }
 
@@ -1281,15 +932,8 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"ensureRootViewController");
-
-    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
-        return;
-    }
+    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) { return; }
     self.hasInitialRootViewController = YES;
-
-    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
-    OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
 
     UIViewController *rootViewController;
     BOOL navigationBarHidden = NO;
@@ -1300,7 +944,7 @@ static NSTimeInterval launchStartedAt;
             rootViewController = [HomeVC new];
         }
     } else {
-        rootViewController = [[OnboardingController new] initialViewController];
+        rootViewController = [LandingVC new];
         navigationBarHidden = NO;
     }
     OWSAssertDebug(rootViewController);
@@ -1308,8 +952,6 @@ static NSTimeInterval launchStartedAt;
         [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
     navigationController.navigationBarHidden = navigationBarHidden;
     self.window.rootViewController = navigationController;
-
-    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 
     [UIViewController attemptRotationToDeviceOrientation];
 }
@@ -1322,7 +964,6 @@ static NSTimeInterval launchStartedAt;
     CGPoint location = [[[event allTouches] anyObject] locationInView:[self window]];
     CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
     if (CGRectContainsPoint(statusBarFrame, location)) {
-        OWSLogDebug(@"touched status bar");
         [[NSNotificationCenter defaultCenter] postNotificationName:TappedStatusBarNotification object:nil];
     }
 }
@@ -1338,7 +979,6 @@ static NSTimeInterval launchStartedAt;
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
     __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
 {
-    OWSLogInfo(@"");
     if (notification.request.content.userInfo[@"remote"]) {
         OWSLogInfo(@"[Loki] Ignoring remote notifications while the app is in the foreground.");
         return;
@@ -1363,7 +1003,6 @@ static NSTimeInterval launchStartedAt;
              withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)
                                        __OSX_AVAILABLE(10.14)__TVOS_PROHIBITED
 {
-    OWSLogInfo(@"");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
         [self.userNotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler];
     }];
@@ -1377,7 +1016,7 @@ static NSTimeInterval launchStartedAt;
     openSettingsForNotification:(nullable UNNotification *)notification __IOS_AVAILABLE(12.0)
                                     __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
 {
-    OWSLogInfo(@"");
+
 }
 
 #pragma mark - Loki
