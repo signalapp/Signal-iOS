@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+
+function untracked() {
+    echo "Git repository has untracked files."
+    exit 1
+}
+
+git diff --quiet || untracked
+
+BASE_DIR=$(git rev-parse --show-toplevel)
+
+pushd $BASE_DIR
+
+# Open the editor for entering the changelog
+"${VISUAL:-"${EDITOR:-vi}"}" "fastlane/changelog.txt"
+
+# Query the current app version
+CURRENT_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Signal/Signal-Info.plist)
+
+popd
+
+# Strip trailing 0, e.g. if our version 3.13.0 we want to use 3.13
+CURRENT_VERSION=${CURRENT_VERSION%.0}
+
+bundle exec fastlane run set_changelog version:"$CURRENT_VERSION"
+
+git add .
+git commit -m "Update changelog for $CURRENT_VERSION"
