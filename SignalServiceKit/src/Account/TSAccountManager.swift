@@ -130,9 +130,11 @@ public extension TSAccountManager {
     // * When reachability changes.
     private func updateAccountAttributesIfNecessaryAttempt() -> Promise<Void> {
         guard isRegisteredAndReady else {
+            Logger.info("Aborting; not registered and ready.")
             return Promise.value(())
         }
         guard AppReadiness.isAppReady else {
+            Logger.info("Aborting; app is not ready.")
             return Promise.value(())
         }
 
@@ -140,7 +142,7 @@ public extension TSAccountManager {
         let appVersionKey = "appVersion"
 
         let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilities()
-        let currentAppVersion = AppVersion.sharedInstance().currentAppVersion
+        let currentAppVersion = AppVersion.sharedInstance().currentAppVersionLong
 
         var lastAttributeRequest: Date?
         let shouldUpdateAttributes = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
@@ -156,11 +158,12 @@ public extension TSAccountManager {
             guard lastDeviceCapabilities == currentDeviceCapabilities else {
                 return true
             }
-            // Check if the app verion has changed.
+            // Check if the app version has changed.
             let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction)
             guard lastAppVersion == currentAppVersion else {
                 return true
             }
+            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
             return false
         }
         guard shouldUpdateAttributes else {

@@ -9,7 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 // The properties are updated immediately after launch.
 @property (atomic, readonly) NSString *firstAppVersion;
 @property (atomic, nullable, readonly) NSString *lastAppVersion;
+
+// e.g. v3.14.5
 @property (atomic, readonly) NSString *currentAppVersion;
+// e.g. v3.14.5.6
+@property (atomic, readonly) NSString *currentAppVersionLong;
 
 // There properties aren't updated until appLaunchDidComplete is called.
 @property (atomic, nullable, readonly) NSString *lastCompletedLaunchAppVersion;
