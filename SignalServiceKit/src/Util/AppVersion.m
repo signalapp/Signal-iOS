@@ -86,9 +86,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     // The long version string looks like an IPv4 address.
     // To prevent the log scrubber from scrubbing it,
     // we replace . with _.
-    NSString *longVersionString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
-        stringByReplacingOccurrencesOfString:@"."
-                                  withString:@"_"];
+    NSString *longVersionString = [self.currentAppVersionLong stringByReplacingOccurrencesOfString:@"."
+                                                                                        withString:@"_"];
 
     OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
     OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
