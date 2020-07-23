@@ -2,6 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+/*
 import UIKit
 import PromiseKit
 import Contacts
@@ -107,3 +108,4 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         onboardingController.onboardingPermissionsWasSkipped(viewController: self)
     }
 }
+ */

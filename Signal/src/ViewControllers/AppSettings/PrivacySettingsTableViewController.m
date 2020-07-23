@@ -4,7 +4,6 @@
 
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
-#import "OWS2FASettingsViewController.h"
 #import "Session-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
@@ -555,11 +554,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)show2FASettings
 {
-    OWSLogInfo(@"");
-
-    OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
-    vc.mode = OWS2FASettingsMode_Status;
-    [self.navigationController pushViewController:vc animated:YES];
+    
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender

@@ -31,40 +31,31 @@ class SyncPushTokensJob: NSObject {
     }
 
     func run() -> Promise<Void> {
-        Logger.info("Starting.")
 
         let runPromise = firstly {
             return self.pushRegistrationManager.requestPushTokens()
         }.then { (pushToken: String, voipToken: String) -> Promise<Void> in
-            Logger.info("finished: requesting push tokens")
             var shouldUploadTokens = false
 
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
-                Logger.debug("Push tokens changed.")
                 shouldUploadTokens = true
             } else if !self.uploadOnlyIfStale {
-                Logger.debug("Forced uploading, even though tokens didn't change.")
                 shouldUploadTokens = true
             }
 
             if AppVersion.sharedInstance().lastAppVersion != AppVersion.sharedInstance().currentAppVersion {
-                Logger.info("Uploading due to fresh install or app upgrade.")
                 shouldUploadTokens = true
             }
 
             guard shouldUploadTokens else {
-                Logger.info("No reason to upload pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
                 return Promise.value(())
             }
 
-            Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
             return firstly {
                 self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken, isForcedUpdate: shouldUploadTokens)
             }.done { _ in
                 self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
             }
-        }.done {
-            Logger.info("completed successfully.")
         }
 
         runPromise.retainUntilComplete()

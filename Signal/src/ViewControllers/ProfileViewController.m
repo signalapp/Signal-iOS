@@ -5,7 +5,6 @@
 #import "ProfileViewController.h"
 #import "AppDelegate.h"
 #import "AvatarViewHelper.h"
-#import "HomeViewController.h"
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import "SignalsNavigationController.h"
@@ -586,11 +585,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 + (void)presentForUpgradeOrNag:(HomeViewController *)fromViewController
 {
-    OWSAssertDebug(fromViewController);
-
-    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_UpgradeOrNag];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
-    [fromViewController presentViewController:navigationController animated:YES completion:nil];
+    
 }
 
 #pragma mark - AvatarViewHelperDelegate

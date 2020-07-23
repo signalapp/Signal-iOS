@@ -10,11 +10,9 @@
 #import "NotificationSettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSBackupSettingsViewController.h"
-#import "OWSLinkedDevicesTableViewController.h"
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "RegistrationUtils.h"
 #import "Session-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -559,7 +557,7 @@
 
 - (void)reregisterUser
 {
-    [RegistrationUtils showReregistrationUIFromViewController:self];
+
 }
 
 #pragma mark - Dark Theme

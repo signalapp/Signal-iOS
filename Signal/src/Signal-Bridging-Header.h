@@ -19,8 +19,6 @@
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
-#import "HomeViewCell.h"
-#import "HomeViewController.h"
 #import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSAddToContactViewController.h"
@@ -129,4 +127,3 @@
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>
-#import "NewGroupViewController.h"
