@@ -1894,7 +1894,7 @@ public class GroupManager: NSObject {
         // if we're a member of the group. We don't want to do this if we're just a
         // pending member or are leaving/have already left the group.
         let groupMembership = groupThread.groupModel.groupMembership
-        guard groupMembership.isNonPendingMember(localAddress) else {
+        guard groupMembership.isPendingOrNonPendingMember(localAddress) else {
             return
         }
         profileManager.addThread(toProfileWhitelist: groupThread, transaction: transaction)
