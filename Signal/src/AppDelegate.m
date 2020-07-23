@@ -61,8 +61,6 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
-
-// Loki
 @property (nonatomic) LKPoller *poller;
 @property (nonatomic) LKClosedGroupPoller *closedGroupPoller;
 
@@ -160,7 +158,7 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.legacyNotificationActionHandler;
 }
 
-#pragma mark -
+#pragma mark - Lifecycle
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
@@ -297,6 +295,94 @@ static NSTimeInterval launchStartedAt;
     return YES;
 }
 
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        OWSFailDebug(@"App launch failed");
+        return;
+    }
+
+    if (CurrentAppContext().isRunningTests) {
+        return;
+    }
+
+    [self ensureRootViewController];
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [self handleActivation];
+    }];
+
+    // Clear all notifications whenever we become active.
+    // When opening the app from a notification,
+    // AppDelegate.didReceiveLocalNotification will always
+    // be called _before_ we become active.
+    [self clearAllNotificationsAndRestoreBadgeCount];
+
+    // On every activation, clear old temp directories.
+    ClearOldTemporaryDirectories();
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        OWSFailDebug(@"App launch failed");
+        return;
+    }
+
+    [self clearAllNotificationsAndRestoreBadgeCount];
+
+    [DDLog flushLog];
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+#pragma mark - Background Fetching
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+{
+    NSLog(@"[Loki] Performing background fetch.");
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        NSMutableArray *promises = [NSMutableArray new];
+        
+        __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
+            fetchMessagesPromise = nil;
+        }).catch(^{
+            fetchMessagesPromise = nil;
+        });
+        [promises addObject:fetchMessagesPromise];
+        [fetchMessagesPromise retainUntilComplete];
+        
+        __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+        }];
+        for (LKPublicChat *publicChat in publicChats) {
+            if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; }
+            LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
+            [poller stop];
+            AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
+            [promises addObject:fetchGroupMessagesPromise];
+            [fetchGroupMessagesPromise retainUntilComplete];
+        }
+        
+        PMKJoin(promises).then(^(id results) {
+            completionHandler(UIBackgroundFetchResultNewData);
+        }).catch(^(id error) {
+            completionHandler(UIBackgroundFetchResultFailed);
+        });
+    }];
+}
+
+#pragma mark - App Readiness
+
 /**
  *  The user must unlock the device once after reboot before the database encryption key can be accessed.
  */
@@ -395,86 +481,6 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 }
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-
-    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
-
-    OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
-    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    if (isUsingFullAPNs) {
-        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
-    } else {
-        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken isForcedUpdate:NO];
-    }
-}
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-
-    OWSLogError(@"Failed to register push token with error: %@.", error);
-#ifdef DEBUG
-    OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier.");
-    [self.pushRegistrationManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
-#else
-    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
-    [self.pushRegistrationManager didFailToReceiveVanillaPushTokenWithError:error];
-#endif
-}
-
-- (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-
-    [self.notificationPresenter didRegisterLegacyNotificationSettings];
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-
-    if (CurrentAppContext().isRunningTests) {
-        return;
-    }
-
-    [self ensureRootViewController];
-
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self handleActivation];
-    }];
-
-    // Clear all notifications whenever we become active.
-    // When opening the app from a notification,
-    // AppDelegate.didReceiveLocalNotification will always
-    // be called _before_ we become active.
-    [self clearAllNotificationsAndRestoreBadgeCount];
-
-    // On every activation, clear old temp directories.
-    ClearOldTemporaryDirectories();
-}
-
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -536,7 +542,7 @@ static NSTimeInterval launchStartedAt;
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
 
-            NSString *userHexEncodedPublicKey = self.tsAccountManager.localNumber;
+            NSString *userPublicKey = self.tsAccountManager.localNumber;
 
             [self startPollerIfNeeded];
             [self startClosedGroupPollerIfNeeded];
@@ -548,15 +554,15 @@ static NSTimeInterval launchStartedAt;
             NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
             if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 4 * 24 * 60 * 60) {
                 OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
-                NSString *displayName = [profileManager profileNameForRecipientWithID:userHexEncodedPublicKey];
-                UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userHexEncodedPublicKey];
+                NSString *displayName = [profileManager profileNameForRecipientWithID:userPublicKey];
+                UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userPublicKey];
                 [profileManager updateLocalProfileName:displayName avatarImage:profilePicture success:^{
                     // Do nothing; the user defaults flag is updated in LokiFileServerAPI
                 } failure:^(NSError *error) {
                     // Do nothing
                 } requiresSync:YES];
             }
-            
+
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying remote notification registration since user hasn't registered yet.");
                 // Push tokens don't normally change while the app is launched, so checking once during launch is
@@ -571,210 +577,9 @@ static NSTimeInterval launchStartedAt;
     }
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-
-    [self clearAllNotificationsAndRestoreBadgeCount];
-
-    [DDLog flushLog];
-}
-
-- (void)clearAllNotificationsAndRestoreBadgeCount
-{
-    OWSAssertIsOnMainThread();
-
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [AppEnvironment.shared.notificationPresenter clearAllNotifications];
-        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-               completionHandler:(void (^)(BOOL succeeded))completionHandler {
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        completionHandler(NO);
-        return;
-    }
-
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            UIAlertController *controller =
-                [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
-                                                    message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
-                                             preferredStyle:UIAlertControllerStyleAlert];
-
-            [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                           style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction *_Nonnull action){
-
-                                                         }]];
-            UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-            [fromViewController presentViewController:controller
-                                             animated:YES
-                                           completion:^{
-                                               completionHandler(NO);
-                                           }];
-            return;
-        }
-
-        [SignalApp.sharedApp.homeViewController createNewPrivateChat];
-
-        completionHandler(YES);
-    }];
-}
-
-#pragma mark - Orientation
-
-- (UIInterfaceOrientationMask)application:(UIApplication *)application
-    supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
-{
-    return UIInterfaceOrientationMaskPortrait;
-}
-
-#pragma mark Push Notifications Delegate Methods
-
-- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        return;
-    }
-
-    OWSLogInfo(@"%@", notification);
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            return;
-        }
-
-        [self.legacyNotificationActionHandler
-            handleNotificationResponseWithActionIdentifier:OWSLegacyNotificationActionHandler.kDefaultActionIdentifier
-                                              notification:notification
-                                              responseInfo:@{}
-                                         completionHandler:^{
-                                         }];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    handleActionWithIdentifier:(NSString *)identifier
-          forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)())completionHandler
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        completionHandler();
-        return;
-    }
-
-    // The docs for handleActionWithIdentifier:... state:
-    // "You must call [completionHandler] at the end of your method.".
-    // Nonetheless, it is presumably safe to call the completion handler
-    // later, after this method returns.
-    //
-    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            completionHandler();
-            return;
-        }
-
-        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
-                                                                                notification:notification
-                                                                                responseInfo:@{}
-                                                                           completionHandler:completionHandler];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    handleActionWithIdentifier:(NSString *)identifier
-          forLocalNotification:(UILocalNotification *)notification
-              withResponseInfo:(NSDictionary *)responseInfo
-             completionHandler:(void (^)())completionHandler
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"App launch failed");
-        completionHandler();
-        return;
-    }
-
-    // The docs for handleActionWithIdentifier:... state:
-    // "You must call [completionHandler] at the end of your method.".
-    // Nonetheless, it is presumably safe to call the completion handler
-    // later, after this method returns.
-    //
-    // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (![self.tsAccountManager isRegisteredAndReady]) {
-            OWSLogInfo(@"Ignoring action; app not ready.");
-            completionHandler();
-            return;
-        }
-
-        [self.legacyNotificationActionHandler handleNotificationResponseWithActionIdentifier:identifier
-                                                                                notification:notification
-                                                                                responseInfo:responseInfo
-                                                                           completionHandler:completionHandler];
-    }];
-}
-
-- (void)application:(UIApplication *)application
-    performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
-{
-    NSLog(@"[Loki] Performing background fetch.");
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        NSMutableArray *promises = [NSMutableArray new];
-        
-        __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
-            fetchMessagesPromise = nil;
-        }).catch(^{
-            fetchMessagesPromise = nil;
-        });
-        [promises addObject:fetchMessagesPromise];
-        [fetchMessagesPromise retainUntilComplete];
-        
-        __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
-        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
-        }];
-        for (LKPublicChat *publicChat in publicChats) {
-            if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
-            LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
-            [poller stop];
-            AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
-            [promises addObject:fetchGroupMessagesPromise];
-            [fetchGroupMessagesPromise retainUntilComplete];
-        }
-        
-        PMKJoin(promises).then(^(id results) {
-            completionHandler(UIBackgroundFetchResultNewData);
-        }).catch(^(id error) {
-            completionHandler(UIBackgroundFetchResultFailed);
-        });
-    }];
-}
-
 - (void)versionMigrationsDidComplete
 {
     OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"versionMigrationsDidComplete");
 
     self.areVersionMigrationsComplete = YES;
 
@@ -784,7 +589,6 @@ static NSTimeInterval launchStartedAt;
 - (void)storageIsReady
 {
     OWSAssertIsOnMainThread();
-    OWSLogInfo(@"storageIsReady");
 
     [self checkIfAppIsReady];
 }
@@ -956,7 +760,7 @@ static NSTimeInterval launchStartedAt;
     [UIViewController attemptRotationToDeviceOrientation];
 }
 
-#pragma mark - status bar touches
+#pragma mark - Status Bar Interaction
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -968,16 +772,93 @@ static NSTimeInterval launchStartedAt;
     }
 }
 
-#pragma mark - UNUserNotificationsDelegate
+#pragma mark - Notifications
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        OWSFailDebug(@"App launch failed");
+        return;
+    }
+
+    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
+
+    OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
+    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
+    if (isUsingFullAPNs) {
+        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
+    } else {
+        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken isForcedUpdate:NO];
+    }
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        OWSFailDebug(@"App launch failed");
+        return;
+    }
+
+    OWSLogError(@"Failed to register push token with error: %@.", error);
+#ifdef DEBUG
+    OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier.");
+    [self.pushRegistrationManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
+#else
+    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
+    [self.pushRegistrationManager didFailToReceiveVanillaPushTokenWithError:error];
+#endif
+}
+
+- (void)application:(UIApplication *)application
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        OWSFailDebug(@"App launch failed");
+        return;
+    }
+
+    [self.notificationPresenter didRegisterLegacyNotificationSettings];
+}
+
+- (void)clearAllNotificationsAndRestoreBadgeCount
+{
+    OWSAssertIsOnMainThread();
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [AppEnvironment.shared.notificationPresenter clearAllNotifications];
+        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    }];
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL succeeded))completionHandler
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.didAppLaunchFail) {
+        OWSFailDebug(@"App launch failed");
+        completionHandler(NO);
+        return;
+    }
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (![self.tsAccountManager isRegisteredAndReady]) { return; }
+        [SignalApp.sharedApp.homeViewController createNewPrivateChat];
+        completionHandler(YES);
+    }];
+}
 
 // The method will be called on the delegate only if the application is in the foreground. If the method is not
 // implemented or the handler is not called in a timely manner then the notification will not be presented. The
 // application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
 // This decision should be based on whether the information in the notification is otherwise visible to the user.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-       willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
-    __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+        __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
 {
     if (notification.request.content.userInfo[@"remote"]) {
         OWSLogInfo(@"[Loki] Ignoring remote notifications while the app is in the foreground.");
@@ -989,8 +870,7 @@ static NSTimeInterval launchStartedAt;
         // need to handle this behavior for legacy UINotification users anyway, we "allow" all
         // notification options here, and rely on the shared logic in NotificationPresenter to
         // honor notification sound preferences for both modern and legacy users.
-        UNNotificationPresentationOptions options = UNNotificationPresentationOptionAlert
-            | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+        UNNotificationPresentationOptions options = UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
         completionHandler(options);
     }];
 }
@@ -998,10 +878,8 @@ static NSTimeInterval launchStartedAt;
 // The method will be called on the delegate when the user responded to the notification by opening the application,
 // dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application
 // returns from application:didFinishLaunchingWithOptions:.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-    didReceiveNotificationResponse:(UNNotificationResponse *)response
-             withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)
-                                       __OSX_AVAILABLE(10.14)__TVOS_PROHIBITED
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)
+        __OSX_AVAILABLE(10.14)__TVOS_PROHIBITED
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^() {
         [self.userNotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler];
@@ -1012,14 +890,13 @@ static NSTimeInterval launchStartedAt;
 // in-app notification settings. Add UNAuthorizationOptionProvidesAppNotificationSettings as an option in
 // requestAuthorizationWithOptions:completionHandler: to add a button to inline notification settings view and the
 // notification settings view in Settings. The notification will be nil when opened from Settings.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-    openSettingsForNotification:(nullable UNNotification *)notification __IOS_AVAILABLE(12.0)
-                                    __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification __IOS_AVAILABLE(12.0)
+        __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
 {
 
 }
 
-#pragma mark - Loki
+#pragma mark - Polling
 
 - (void)startPollerIfNeeded
 {
@@ -1055,7 +932,10 @@ static NSTimeInterval launchStartedAt;
 
 - (void)stopOpenGroupPollers { [LKPublicChatManager.shared stopPollers]; }
 
-- (void)handleDataNukeRequested:(NSNotification *)notification {
+# pragma mark - Other
+
+- (void)handleDataNukeRequested:(NSNotification *)notification
+{
     [ThreadUtil deleteAllContent];
     [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];
