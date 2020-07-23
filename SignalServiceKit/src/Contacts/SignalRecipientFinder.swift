@@ -122,7 +122,7 @@ class GRDBSignalRecipientFinder: NSObject {
         """
         let cursor = SignalRecipient.grdbFetchCursor(sql: sql, transaction: transaction)
 
-        let allLegacyRecipients = (try? cursor.all()) ?? []
+        let allLegacyRecipients = try! cursor.all()
         return allLegacyRecipients.filter { $0.devices.count > 0 }
     }
 }

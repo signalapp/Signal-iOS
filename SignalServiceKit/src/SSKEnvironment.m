@@ -55,6 +55,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<VersionedProfiles> versionedProfiles;
 @property (nonatomic) ModelReadCaches *modelReadCaches;
 @property (nonatomic) EarlyMessageManager *earlyMessageManager;
+@property (nonatomic) OWSMessagePipelineSupervisor *messagePipelineSupervisor;
 
 @end
 
@@ -114,6 +115,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                       versionedProfiles:(id<VersionedProfiles>)versionedProfiles
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
+              messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
 {
     self = [super init];
     if (!self) {
@@ -216,6 +218,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _bulkUUIDLookup = bulkUUIDLookup;
     _modelReadCaches = modelReadCaches;
     _earlyMessageManager = earlyMessageManager;
+    _messagePipelineSupervisor = messagePipelineSupervisor;
 
     return self;
 }

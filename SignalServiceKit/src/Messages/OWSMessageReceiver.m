@@ -261,7 +261,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - Queue Processing
 
-@interface YAPDBMessageDecryptQueue : NSObject
+@interface YAPDBMessageDecryptQueue : NSObject <OWSMessageProcessingPipelineStage>
 
 @property (nonatomic, readonly) OWSMessageDecryptJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
@@ -288,7 +288,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _finder = finder;
     _isDrainingQueue = NO;
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [self.pipelineSupervisor registerPipelineStage:self];
         [self drainQueue];
     }];
 
@@ -333,15 +334,18 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return SSKEnvironment.shared.profileManager;
 }
 
+- (OWSMessagePipelineSupervisor *)pipelineSupervisor
+{
+    return SSKEnvironment.shared.messagePipelineSupervisor;
+}
+
 #pragma mark - Notifications
 
 - (void)registrationStateDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
-        [self drainQueue];
-    }];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self drainQueue]; }];
 }
 
 #pragma mark - Instance methods
@@ -364,8 +368,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (void)drainQueue
 {
     OWSAssertDebug(AppReadiness.isAppReady || CurrentAppContext().isRunningTests);
-
-    if (!CurrentAppContext().shouldProcessIncomingMessages) {
+    if (!self.pipelineSupervisor.isMessageProcessingPermitted) {
         return;
     }
     if (!self.tsAccountManager.isRegisteredAndReady) {
@@ -488,6 +491,13 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         }];
 }
 
+#pragma mark - <OWSMessageProcessingPipelineStage>
+
+- (void)supervisorDidResumeMessageProcessing:(OWSMessagePipelineSupervisor *)supervisor
+{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self drainQueue]; }];
+}
+
 @end
 
 #pragma mark - OWSMessageReceiver
@@ -516,9 +526,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     _yapProcessingQueue = yapProcessingQueue;
 
-    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
-        [self.yapProcessingQueue drainQueue];
-    }];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{ [self.yapProcessingQueue drainQueue]; }];
 
     return self;
 }

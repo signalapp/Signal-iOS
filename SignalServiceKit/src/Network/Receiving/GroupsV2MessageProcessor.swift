@@ -14,7 +14,7 @@ private struct IncomingGroupsV2MessageJobInfo {
 
 // MARK: -
 
-class IncomingGroupsV2MessageQueue: NSObject {
+class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 
     // MARK: - Dependencies
 
@@ -44,6 +44,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
     private var notificationsManager: NotificationsProtocol {
         return SSKEnvironment.shared.notificationsManager
+    }
+
+    private var pipelineSupervisor: MessagePipelineSupervisor {
+        return SSKEnvironment.shared.messagePipelineSupervisor
     }
 
     // MARK: -
@@ -87,6 +91,10 @@ class IncomingGroupsV2MessageQueue: NSObject {
                                                selector: #selector(reachabilityChanged),
                                                name: SSKReachability.owsReachabilityDidChange,
                                                object: nil)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.pipelineSupervisor.register(pipelineStage: self)
+        }
     }
 
     // MARK: - Notifications
@@ -121,6 +129,12 @@ class IncomingGroupsV2MessageQueue: NSObject {
         drainQueueWhenReady()
     }
 
+    func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
+        DispatchQueue.main.async {
+            self.drainQueueWhenReady()
+        }
+    }
+
     // MARK: -
 
     private let serialQueue: DispatchQueue = DispatchQueue(label: "org.whispersystems.message.groupv2")
@@ -143,7 +157,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.drainQueue()
         }
     }
@@ -153,7 +167,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             owsFailDebug("App is not ready.")
             return
         }
-        guard CurrentAppContext().shouldProcessIncomingMessages else {
+        guard self.pipelineSupervisor.isMessageProcessingPermitted else {
             return
         }
         guard tsAccountManager.isRegisteredAndReady else {

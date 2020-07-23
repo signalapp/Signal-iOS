@@ -124,6 +124,47 @@ class UnfairLockTest: SSKBaseTestSwift {
         XCTAssertLessThanOrEqual(blockInvocationCount, 1000, "Invalid invocation count. Expected: [1, 1000]")
     }
 
+    func testPropagatedReturnValue() {
+        // Setup
+        let outerVal: String? = "Hello, this is an optional string"
+
+        // Test
+        let returnedVal = dut.withLock {
+            return outerVal?.appending("!")
+        }
+
+        // Expect
+        XCTAssertEqual(returnedVal, "Hello, this is an optional string!")
+    }
+
+    func testPropagatedReturnValue_tryLockSuccess() {
+        // Setup
+        let outerVal: String? = "Hello, this is an optional string"
+
+        // Test
+        let returnedVal: String?? = dut.tryWithLock {
+            return outerVal?.appending("!")
+        }
+
+        // Expect
+        XCTAssertEqual(returnedVal, "Hello, this is an optional string!")
+    }
+
+    func testPropagatedReturnValue_tryLockFailure() {
+        // Setup
+        let outerVal: String? = "Hello, this is an optional string"
+
+        // Test
+        let returnedVal: String?? = dut.tryWithLock {
+            return dut.tryWithLock {
+                return outerVal?.appending("!")
+            } ?? "oops nevermind"
+        }
+
+        // Expect
+        XCTAssertEqual(returnedVal, "oops nevermind")
+    }
+
     // MARK: - Throwing Inner Closure
 
     func testThrowingLockedClosure() {

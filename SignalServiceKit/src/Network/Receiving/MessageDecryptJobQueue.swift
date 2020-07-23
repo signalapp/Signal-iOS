@@ -16,9 +16,13 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.setup()
         }
+    }
+
+    deinit {
+        pipelineSupervisor.unregister(pipelineStage: self)
     }
 
     // MARK: 
@@ -54,6 +58,11 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return
         }
+
+        // The pipeline supervisor will post updates when we can process messages
+        // Suspend our operation queue if we should pause our work
+        pipelineSupervisor.register(pipelineStage: self)
+        defaultQueue.isSuspended = !pipelineSupervisor.isMessageProcessingPermitted
 
         // GRDB TODO: Is it really a concern to run the decrypt queue when we're unregistered?
         // If we want this behavior, we should observe registration state changes, and rerun
@@ -94,6 +103,20 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
     @objc
     public func hasPendingJobsObjc(transaction: SDSAnyReadTransaction) -> Bool {
         return hasPendingJobs(transaction: transaction)
+    }
+}
+
+extension SSKMessageDecryptJobQueue: MessageProcessingPipelineStage {
+    private var pipelineSupervisor: MessagePipelineSupervisor {
+        return SSKEnvironment.shared.messagePipelineSupervisor
+    }
+
+    public func supervisorDidSuspendMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
+        defaultQueue.isSuspended = true
+    }
+
+    public func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
+        defaultQueue.isSuspended = false
     }
 }
 

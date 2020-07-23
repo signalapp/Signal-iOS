@@ -110,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<VersionedProfiles> versionedProfiles = [MockVersionedProfiles new];
     ModelReadCaches *modelReadCaches = [ModelReadCaches new];
     EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
+    OWSMessagePipelineSupervisor *messagePipelineSupervisor = [OWSMessagePipelineSupervisor createStandardSupervisor];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -158,7 +159,8 @@ NS_ASSUME_NONNULL_BEGIN
                            bulkUUIDLookup:bulkUUIDLookup
                         versionedProfiles:versionedProfiles
                           modelReadCaches:modelReadCaches
-                      earlyMessageManager:earlyMessageManager];
+                      earlyMessageManager:earlyMessageManager
+                messagePipelineSupervisor:messagePipelineSupervisor];
 
     if (!self) {
         return nil;
