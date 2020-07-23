@@ -300,7 +300,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static var groupsV2forceInvites: Bool {
         get {
-            return true
             guard build.includes(.qa) else {
                 return false
             }
