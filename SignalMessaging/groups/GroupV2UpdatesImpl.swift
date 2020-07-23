@@ -303,38 +303,39 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
-            return self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
-                                                              groupUpdateMode: groupUpdateMode)
-                .recover { (error) throws -> Promise<TSGroupThread> in
-                    let shouldTrySnapshot = { () -> Bool in
-                        // This should not fail over in the case of networking problems.
-                        if IsNetworkConnectivityFailure(error) {
-                            Logger.warn("Error: \(error)")
-                            return false
-                        }
-
-                        switch error {
-                        case GroupsV2Error.groupNotInDatabase:
-                            // Unknown groups are handled by snapshot.
-                            return true
-                        case GroupsV2Error.unauthorized,
-                             GroupsV2Error.localUserNotInGroup:
-                            // We can recover from some auth edge cases
-                            // using a snapshot.
-                            return true
-                        default:
-                            owsFailDebug("Error: \(error)")
-                            return false
-                        }
-                    }()
-
-                    guard shouldTrySnapshot else {
-                        throw error
+            return firstly {
+                self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
+                                                           groupUpdateMode: groupUpdateMode)
+            }.recover { (error) throws -> Promise<TSGroupThread> in
+                let shouldTrySnapshot = { () -> Bool in
+                    // This should not fail over in the case of networking problems.
+                    if IsNetworkConnectivityFailure(error) {
+                        Logger.warn("Error: \(error)")
+                        return false
                     }
 
-                    // Failover to applying latest snapshot.
-                    return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
-                                                                               groupUpdateMode: groupUpdateMode)
+                    switch error {
+                    case GroupsV2Error.groupNotInDatabase:
+                        // Unknown groups are handled by snapshot.
+                        return true
+                    case GroupsV2Error.unauthorized,
+                         GroupsV2Error.localUserNotInGroup:
+                        // We can recover from some auth edge cases
+                        // using a snapshot.
+                        return true
+                    default:
+                        owsFailDebug("Error: \(error)")
+                        return false
+                    }
+                }()
+
+                guard shouldTrySnapshot else {
+                    throw error
+                }
+
+                // Failover to applying latest snapshot.
+                return self.fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: groupSecretParamsData,
+                                                                           groupUpdateMode: groupUpdateMode)
             }
         }
     }
@@ -679,10 +680,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         do {
             let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
 
-            guard let groupChange = groupChanges.first else {
+            guard let firstGroupChange = groupChanges.first else {
                 return nil
             }
-            guard let snapshot = groupChange.snapshot else {
+            guard let snapshot = firstGroupChange.snapshot else {
                 throw OWSAssertionError("Missing snapshot.")
             }
             let builder = try TSGroupModelBuilder(groupV2Snapshot: snapshot)
@@ -690,7 +691,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
             // Many change actions have author info, e.g. addedByUserID. But we can
             // safely assume that all actions in the "change actions" have the same author.
-            guard let changeAuthorUuidData = groupChange.diff.changeActionsProto.sourceUuid else {
+            guard let changeAuthorUuidData = firstGroupChange.diff.changeActionsProto.sourceUuid else {
                 throw OWSAssertionError("Missing changeAuthorUuid.")
             }
             // Some userIds/uuidCiphertexts can be validated by
@@ -698,11 +699,14 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
             let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
             let newDisappearingMessageToken = snapshot.disappearingMessageToken
+            let mightBeAddingLocalUserToGroup = self.mightBeAddingLocalUserToGroup(groupChange: firstGroupChange,
+                                                                                   groupV2Params: groupV2Params)
 
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                        newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        canInsert: true,
+                                                                                                       mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
                                                                                                        transaction: transaction)
 
             // NOTE: We don't need to worry about profile keys here.  This method is
@@ -714,6 +718,54 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             owsFailDebug("Error: \(error)")
             return nil
         }
+    }
+
+    private func mightBeAddingLocalUserToGroup(groupChange: GroupV2Change,
+                                               groupV2Params: GroupV2Params) -> Bool {
+        guard let localUuid = tsAccountManager.localUuid else {
+            return false
+        }
+        if groupChange.diff.revision == 0 {
+            // Revision 0 is a special case and won't have actions to
+            // reflect the initial membership.
+            return true
+        }
+        let changeActionsProto = groupChange.diff.changeActionsProto
+
+        for action in changeActionsProto.addMembers {
+            do {
+                guard let member = action.added else {
+                    continue
+                }
+                guard let userId = member.userID else {
+                    continue
+                }
+                // Some userIds/uuidCiphertexts can be validated by
+                // the service. This is one.
+                let uuid = try groupV2Params.uuid(forUserId: userId)
+                if uuid == localUuid {
+                    return true
+                }
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
+        for action in changeActionsProto.promotePendingMembers {
+            do {
+                guard let presentationData = action.presentation else {
+                    throw OWSAssertionError("Missing presentation.")
+                }
+                let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
+                let uuidCiphertext = try presentation.getUuidCiphertext()
+                let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
+                if uuid == localUuid {
+                    return true
+                }
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
+        return false
     }
 
     // MARK: - Current Snapshot
@@ -761,6 +813,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                                                        newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        canInsert: true,
+                                                                                                       mightBeAddingLocalUserToGroup: false,
                                                                                                        transaction: transaction)
 
             GroupManager.storeProfileKeysFromGroupProtos(groupV2Snapshot.profileKeys)
