@@ -15,30 +15,32 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         notificationContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        
-        DispatchQueue.main.sync { self.setUpIfNecessary() }
-        
-        if let notificationContent = notificationContent {
-            // Modify the notification content here...
-            let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
-            let data = Data(base64Encoded: base64EncodedData)!
-            let decrypter = SSKEnvironment.shared.messageDecrypter
-            if let envelope = try? MessageWrapper.unwrap(data: data), let data = try? envelope.serializedData() {
-                decrypter.decryptEnvelope(envelope,
-                                          envelopeData: data,
-                                          successBlock: { result, transaction in
-                                              if (try? SSKProtoEnvelope.parseData(result.envelopeData)) != nil {
-                                                  self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
-                                              } else {
-                                                  self.completeWithFailure(content: notificationContent)
-                                              }
-                                          },
-                                          failureBlock: {
-                                              self.completeWithFailure(content: notificationContent)
-                                          }
-                )
-            } else {
-                self.completeWithFailure(content: notificationContent)
+
+        DispatchQueue.main.async {
+            self.setUpIfNecessary() {
+                if let notificationContent = self.notificationContent {
+                    // Modify the notification content here...
+                    let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
+                    let data = Data(base64Encoded: base64EncodedData)!
+                    let decrypter = SSKEnvironment.shared.messageDecrypter
+                    if let envelope = try? MessageWrapper.unwrap(data: data), let data = try? envelope.serializedData() {
+                        decrypter.decryptEnvelope(envelope,
+                                                  envelopeData: data,
+                                                  successBlock: { result, transaction in
+                                                      if (try? SSKProtoEnvelope.parseData(result.envelopeData)) != nil {
+                                                          self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
+                                                      } else {
+                                                          self.completeWithFailure(content: notificationContent)
+                                                      }
+                                                  },
+                                                  failureBlock: {
+                                                      self.completeWithFailure(content: notificationContent)
+                                                  }
+                        )
+                    } else {
+                        self.completeWithFailure(content: notificationContent)
+                    }
+                }
             }
         }
     }
@@ -96,7 +98,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         }
     }
 
-    func setUpIfNecessary() {
+    func setUpIfNecessary(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
         // The NSE will often re-use the same process, so if we're
@@ -132,6 +134,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             },
             migrationCompletion: { [weak self] in
                 self?.versionMigrationsDidComplete()
+                completion()
             }
         )
 
