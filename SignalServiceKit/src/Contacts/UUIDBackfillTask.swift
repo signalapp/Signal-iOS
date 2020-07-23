@@ -210,8 +210,7 @@ extension UUIDBackfillTask {
             operation.completionBlock = {
                 completion(operation.registeredContacts, operation.failingError)
             }
-            ContactDiscoveryOperation.operationQueue.addOperations(operation.dependencies, waitUntilFinished: false)
-            ContactDiscoveryOperation.operationQueue.addOperation(operation)
+            operation.perform()
         }
     }
 

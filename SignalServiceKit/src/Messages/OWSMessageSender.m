@@ -580,30 +580,67 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendMessage:outgoingMessagePreparer success:success failure:failure];
 }
 
+- (void)prepareMessage:(TSOutgoingMessage *)message
+               success:(void (^)(SMKSenderCertificate *))success
+               failure:(RetryableFailureHandler)failure
+{
+    dispatch_group_t group = dispatch_group_create();
+    __block NSError *certError = nil;
+    __block SMKSenderCertificate *certificate = nil;
+    __block NSError *uuidError = nil;
+
+    dispatch_group_enter(group);
+    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive
+        success:^(SMKSenderCertificate *retrievedCert) {
+            certificate = retrievedCert;
+            dispatch_group_leave(group);
+        }
+        failure:^(NSError *error) {
+            OWSLogError(@"Could not obtain UD sender certificate: %@", error);
+            // The existing behavior was to only care about connectivity errors
+            // Only persist the error if it's connectivity related
+            certError = IsNetworkConnectivityFailure(error) ? error : nil;
+            dispatch_group_leave(group);
+        }];
+
+    if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+        dispatch_group_enter(group);
+        [self populateUUIDsForLegacyRecipientsOf:message
+                                      completion:^(NSError *error) {
+                                          OWSLogError(@"Failed CDS lookup with error: %@", error);
+                                          uuidError = error;
+                                          dispatch_group_leave(group);
+                                      }];
+    }
+
+    dispatch_group_notify(group, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+        // We should only expect retryable errors here
+        OWSAssertDebug(certError == nil || certError.isRetryable);
+        OWSAssertDebug(uuidError == nil || uuidError.isRetryable);
+
+        if (certError || uuidError) {
+            // Pick one, it really doesn't matter
+            failure(certError ?: uuidError);
+        } else {
+            success(certificate);
+        }
+    });
+}
+
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                      success:(void (^)(void))success
                      failure:(RetryableFailureHandler)failure
 {
     OWSAssertDebug(!NSThread.isMainThread);
 
-    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive
-        success:^(SMKSenderCertificate *senderCertificate) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
-            });
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Could not obtain UD sender certificate: %@", error);
-
-            if (IsNetworkConnectivityFailure(error)) {
-                return failure(error);
-            } else {
-                // Proceed using non-UD message sends.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [self sendMessageToService:message senderCertificate:nil success:success failure:failure];
-                });
-            }
-        }];
+    [self prepareMessage:message
+                 success:^(SMKSenderCertificate *senderCertificate) {
+                     [self sendMessageToService:message
+                              senderCertificate:senderCertificate
+                                        success:success
+                                        failure:failure];
+                 }
+                 failure:failure];
 }
 
 - (nullable NSArray<SignalServiceAddress *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
@@ -1041,6 +1078,31 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return thread;
 }
 
+- (void)failSendForUnregisteredRecipient:(OWSMessageSend *)messageSend
+{
+    OWSAssertDebug(!NSThread.isMainThread);
+    OWSAssertDebug(messageSend);
+    TSOutgoingMessage *message = messageSend.message;
+    SignalRecipient *recipient = messageSend.recipient;
+
+    OWSLogWarn(@"Unregistered recipient: %@", recipient.address);
+
+    if (![message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        TSThread *thread = messageSend.thread;
+        OWSAssertDebug(thread);
+        [self unregisteredRecipient:recipient message:message thread:thread];
+    }
+
+    NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
+    // No need to retry if the recipient is not registered.
+    [error setIsRetryable:NO];
+    // If one member of a group deletes their account,
+    // the group should ignore errors when trying to send
+    // messages to this ex-member.
+    [error setShouldBeIgnoredForGroups:YES];
+    messageSend.failure(error);
+}
+
 - (void)unregisteredRecipient:(SignalRecipient *)recipient
                       message:(TSOutgoingMessage *)message
                        thread:(TSThread *)thread
@@ -1058,10 +1120,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         [SignalRecipient markRecipientAsUnregistered:recipient.address transaction:transaction];
-
-        [[TSInfoMessage userNotRegisteredMessageInThread:thread
-                                                 address:recipient.address] anyInsertWithTransaction:transaction];
-
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.
@@ -1183,6 +1241,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:YES];
         return messageSend.failure(error);
+    }
+
+    if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+        // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
+        // If we have no UUID, consider the recipient unregistered.
+        BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);
+        if (isInvalidRecipient) {
+            [self failSendForUnregisteredRecipient:messageSend];
+            return;
+        }
     }
 
     // Consume an attempt.
@@ -1448,26 +1516,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self sendMessageToRecipient:messageSend];
     };
 
-    void (^handle404)(void) = ^{
-        OWSLogWarn(@"Unregistered recipient: %@", recipient.address);
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (![messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-                TSThread *thread = messageSend.thread;
-                OWSAssertDebug(thread);
-                [self unregisteredRecipient:recipient message:message thread:thread];
-            }
-
-            NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
-            // No need to retry if the recipient is not registered.
-            [error setIsRetryable:NO];
-            // If one member of a group deletes their account,
-            // the group should ignore errors when trying to send
-            // messages to this ex-member.
-            [error setShouldBeIgnoredForGroups:YES];
-            messageSend.failure(error);
-        });
-    };
+    void (^handle404)(void) = ^{ [self failSendForUnregisteredRecipient:messageSend]; };
 
     switch (statusCode) {
         case 401: {

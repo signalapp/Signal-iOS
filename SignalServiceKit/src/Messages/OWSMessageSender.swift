@@ -474,3 +474,50 @@ fileprivate extension MessageSending {
         }
     }
 }
+
+// MARK: - SignalServiceAddress fetching
+
+extension MessageSender {
+
+    @objc func populateUUIDsForLegacyRecipients(of message: TSOutgoingMessage, completion: @escaping (Error?) -> Void) {
+        let sendingRecipients = message.sendingRecipientAddresses()
+        let invalidRecipients = sendingRecipients.filter { $0.uuid == nil }
+
+        guard invalidRecipients.count > 0 && FeatureFlags.useOnlyModernContactDiscovery else {
+            completion(nil)
+            return
+        }
+
+        let phoneNumbersToFetch = invalidRecipients.compactMap { $0.phoneNumber }
+        let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbersToFetch)
+        operation.completionBlock = {
+            if let error = (operation.failingError as NSError?) {
+                error.isRetryable = true
+                completion(error)
+                return
+            }
+
+            let discoveredContactMap = operation.registeredContacts.reduce(into: [:], { (builder, contact) in
+                builder[contact.e164PhoneNumber] = contact.signalUuid
+            })
+
+            let fetchedAddresses: [SignalServiceAddress] = phoneNumbersToFetch.compactMap { rawNumber in
+                guard let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: rawNumber)?.toE164() else { return nil }
+                return SignalServiceAddress(uuid: discoveredContactMap[e164], phoneNumber: rawNumber)
+            }
+
+            SDSDatabaseStorage.shared.write { (writeTx) in
+                fetchedAddresses.forEach { (address) in
+                    // This should be encapsulated somewhere else: IOS-668
+                    if address.uuid != nil {
+                        SignalRecipient.mark(asRegisteredAndGet: address, transaction: writeTx)
+                    } else {
+                        SignalRecipient.mark(asUnregistered: address, transaction: writeTx)
+                    }
+                }
+            }
+            completion(nil)
+        }
+        operation.perform()
+    }
+}
