@@ -284,13 +284,13 @@ extension ConversationSettingsViewController {
 
     @objc
     func didTapLegacyGroupView(sender: UIGestureRecognizer) {
-        LegacyGroupView().present(fromViewController: self)
+        ExistingLegacyGroupView().present(fromViewController: self)
     }
 }
 
 // MARK: -
 
-class LegacyGroupView: UIView {
+class ExistingLegacyGroupView: UIView {
 
     weak var actionSheetController: ActionSheetController?
 
