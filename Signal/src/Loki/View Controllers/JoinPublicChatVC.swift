@@ -154,7 +154,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         .catch(on: .main) { [weak self] error in
             var title = NSLocalizedString("Couldn't Join", comment: "")
             var message = ""
-            if case LokiHTTPClient.HTTPError.networkError(let statusCode, _, _) = error, (statusCode == 401 || statusCode == 403) {
+            if case HTTP.Error.httpRequestFailed(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                 title = NSLocalizedString("Unauthorized", comment: "")
                 message = NSLocalizedString("Please ask the open group operator to add you to the group.", comment: "")
             }

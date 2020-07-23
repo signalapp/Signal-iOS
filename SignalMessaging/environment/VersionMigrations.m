@@ -95,11 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [self.tsAccountManager isRegistered]) {
         [self clearBloomFilterCache];
     }
-    
-    // Loki
-    if ([self isVersion:previousVersion lessThan:@"1.2.1"] && [self.tsAccountManager isRegistered]) {
-        [self updatePublicChatMapping];
-    }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:completion];
@@ -166,43 +161,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         OWSLogDebug(@"No bloom filter cache to remove.");
     }
-}
-
-# pragma mark Loki - Upgrading to Public Chat Manager
-
-// Versions less than or equal to 1.2.0 didn't store public chat mappings
-+ (void)updatePublicChatMapping
-{
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-        for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
-            TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id] transaction:transaction];
-            if (thread != nil) {
-                [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];
-            } else {
-                // Update the group type and group ID for private group chat version.
-                // If the thread is still using the old group ID, it needs to be updated.
-                thread = [TSGroupThread threadWithGroupId:chat.idAsData transaction:transaction];
-                if (thread != nil) {
-                    thread.groupModel.groupType = openGroup;
-                    [thread.groupModel updateGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id]];
-                    [thread saveWithTransaction:transaction];
-                    [LKDatabaseUtilities setPublicChat:chat threadID:thread.uniqueId transaction:transaction];
-                }
-            }
-        }
-        // Update RSS feeds here
-        LKRSSFeed *lokiNewsFeed = [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
-        LKRSSFeed *lokiMessengerUpdatesFeed = [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Session Updates", @"") isDeletable:false];
-        NSArray *feeds = @[ lokiNewsFeed, lokiMessengerUpdatesFeed ];
-        for (LKRSSFeed *feed in feeds) {
-            TSGroupThread *thread = [TSGroupThread threadWithGroupId:[feed.id dataUsingEncoding:NSUTF8StringEncoding] transaction:transaction];
-            if (thread != nil) {
-                thread.groupModel.groupType = rssFeed;
-                [thread.groupModel updateGroupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:feed.id]];
-                [thread saveWithTransaction:transaction];
-            }
-        }
-    } error:nil];
 }
 
 @end
