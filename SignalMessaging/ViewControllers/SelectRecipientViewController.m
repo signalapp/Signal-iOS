@@ -3,7 +3,6 @@
 //
 
 #import "SelectRecipientViewController.h"
-#import "CountryCodeViewController.h"
 #import "PhoneNumber.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/ContactTableViewCell.h>
@@ -26,7 +25,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark -
 
-@interface SelectRecipientViewController () <CountryCodeViewControllerDelegate,
+@interface SelectRecipientViewController () </*CountryCodeViewControllerDelegate,*/
     ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
     UITextFieldDelegate>
@@ -267,16 +266,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)showCountryCodeView:(nullable id)sender
 {
-    CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
-    countryCodeController.countryCodeDelegate = self;
-    countryCodeController.isPresentedInNavigationController = self.isPresentedInNavigationController;
-    if (self.isPresentedInNavigationController) {
-        [self.navigationController pushViewController:countryCodeController animated:YES];
-    } else {
-        OWSNavigationController *navigationController =
-            [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
-        [self presentViewController:navigationController animated:YES completion:nil];
-    }
+    
 }
 
 - (void)phoneNumberButtonPressed
@@ -401,20 +391,20 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark - CountryCodeViewControllerDelegate
 
-- (void)countryCodeViewController:(CountryCodeViewController *)vc
-             didSelectCountryCode:(NSString *)countryCode
-                      countryName:(NSString *)countryName
-                      callingCode:(NSString *)callingCode
-{
-    OWSAssertDebug(countryCode.length > 0);
-    OWSAssertDebug(countryName.length > 0);
-    OWSAssertDebug(callingCode.length > 0);
-
-    [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
-
-    // Trigger the formatting logic with a no-op edit.
-    [self textField:self.phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
-}
+//- (void)countryCodeViewController:(CountryCodeViewController *)vc
+//             didSelectCountryCode:(NSString *)countryCode
+//                      countryName:(NSString *)countryName
+//                      callingCode:(NSString *)callingCode
+//{
+//    OWSAssertDebug(countryCode.length > 0);
+//    OWSAssertDebug(countryName.length > 0);
+//    OWSAssertDebug(callingCode.length > 0);
+//
+//    [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
+//
+//    // Trigger the formatting logic with a no-op edit.
+//    [self textField:self.phoneNumberTextField shouldChangeCharactersInRange:NSMakeRange(0, 0) replacementString:@""];
+//}
 
 #pragma mark - UITextFieldDelegate
 

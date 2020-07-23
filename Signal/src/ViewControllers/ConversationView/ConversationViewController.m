@@ -19,7 +19,6 @@
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
 #import "NSAttributedString+OWS.h"
-#import "NewGroupViewController.h"
 #import "OWSAudioPlayer.h"
 #import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"

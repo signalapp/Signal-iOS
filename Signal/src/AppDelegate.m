@@ -4,9 +4,7 @@
 
 #import "AppDelegate.h"
 #import "DebugLogger.h"
-#import "HomeViewController.h"
 #import "MainAppContext.h"
-#import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
@@ -946,7 +944,7 @@ static NSTimeInterval launchStartedAt;
             rootViewController = [HomeVC new];
         }
     } else {
-        rootViewController = [[OnboardingController new] initialViewController];
+        rootViewController = [LandingVC new];
         navigationBarHidden = NO;
     }
     OWSAssertDebug(rootViewController);

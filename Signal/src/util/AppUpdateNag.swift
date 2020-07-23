@@ -115,8 +115,9 @@ class AppUpdateNag: NSObject {
             return
         }
 
+        /*
         switch frontmostViewController {
-        case is HomeViewController, is OnboardingSplashViewController:
+        case is OnboardingSplashViewController:
             self.setLastNagDate(Date())
             self.clearFirstHeardOfNewVersionDate()
             presentUpgradeNag(appStoreRecord: appStoreRecord)
@@ -124,6 +125,7 @@ class AppUpdateNag: NSObject {
             Logger.debug("not presenting alert due to frontmostViewController: \(frontmostViewController)")
             break
         }
+         */
     }
 
     func presentUpgradeNag(appStoreRecord: AppStoreRecord) {

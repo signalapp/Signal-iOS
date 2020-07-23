@@ -105,16 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
                                          }]];
     }
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Show 2FA Reminder"
-                                     actionBlock:^() {
-                                         OWSNavigationController *navController =
-                                             [OWS2FAReminderViewController wrappedInNavController];
-                                         [[[UIApplication sharedApplication] frontmostViewController]
-                                             presentViewController:navController
-                                                          animated:YES
-                                                        completion:nil];
-                                     }]];
-
     [items addObject:[OWSTableItem itemWithTitle:@"Reset 2FA Repetition Interval"
                                      actionBlock:^() {
                                          [OWS2FAManager.sharedManager setDefaultRepetitionInterval];
@@ -165,21 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)reregister
 {
-    OWSLogInfo(@"re-registering.");
-
-    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
-        OWSFailDebug(@"could not reset for re-registration.");
-        return;
-    }
-
-    [Environment.shared.preferences unsetRecordedAPNSTokens];
-
-    UIViewController *viewController = [[OnboardingController new] initialViewController];
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.navigationBarHidden = YES;
-
-    [UIApplication sharedApplication].delegate.window.rootViewController = navigationController;
+    
 }
 
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled
