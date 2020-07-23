@@ -637,12 +637,7 @@ public class GroupManager: NSObject {
                                                  groupUpdateSourceAddress: SignalServiceAddress?,
                                                  infoMessagePolicy: InfoMessagePolicy = .always,
                                                  transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
-        guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSAssertionError("Missing localAddress.")
-        }
-
-        let mightBeAddingLocalUserToGroup = (groupModel.groupsVersion == .V1 &&
-            groupModel.groupMembership.isPendingOrNonPendingMember(localAddress))
+        let mightBeAddingLocalUserToGroup = try mightBeAddingLocalUserToV1Group(groupModel: groupModel)
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
                                                                                      newDisappearingMessageToken: disappearingMessageToken,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
@@ -650,6 +645,14 @@ public class GroupManager: NSObject {
                                                                                      mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
                                                                                      infoMessagePolicy: infoMessagePolicy,
                                                                                      transaction: transaction)
+    }
+
+    private static func mightBeAddingLocalUserToV1Group(groupModel: TSGroupModel) throws -> Bool {
+        guard let localAddress = tsAccountManager.localAddress else {
+            throw OWSAssertionError("Missing localAddress.")
+        }
+        return (groupModel.groupsVersion == .V1 &&
+            groupModel.groupMembership.isPendingOrNonPendingMember(localAddress))
     }
 
     // MARK: - Update Existing Group (Remote)
@@ -679,8 +682,7 @@ public class GroupManager: NSObject {
             return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
         }
         let newGroupModel = updateInfo.newGroupModel
-        let mightBeAddingLocalUserToGroup = (newGroupModel.groupsVersion == .V1 &&
-            newGroupModel.groupMembership.isPendingOrNonPendingMember(localAddress))
+        let mightBeAddingLocalUserToGroup = try mightBeAddingLocalUserToV1Group(groupModel: newGroupModel)
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                      newDisappearingMessageToken: disappearingMessageToken,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
@@ -738,14 +740,11 @@ public class GroupManager: NSObject {
                                                    groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
 
         return self.databaseStorage.write(.promise) { (transaction) throws -> UpsertGroupResult in
-            guard let localAddress = tsAccountManager.localAddress else {
-                throw OWSAssertionError("Missing localAddress.")
-            }
             let updateInfo = try self.updateInfoV1(groupModel: proposedGroupModel,
                                                    dmConfiguration: dmConfiguration,
                                                    transaction: transaction)
             let newGroupModel = updateInfo.newGroupModel
-            let mightBeAddingLocalUserToGroup = newGroupModel.groupMembership.isPendingOrNonPendingMember(localAddress)
+            let mightBeAddingLocalUserToGroup = try mightBeAddingLocalUserToV1Group(groupModel: newGroupModel)
             let upsertGroupResult = try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                           newDisappearingMessageToken: dmConfiguration?.asToken,
                                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,

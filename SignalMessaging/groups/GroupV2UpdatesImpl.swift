@@ -303,7 +303,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
-            return firstly {
+            return firstly(on: .global()) {
                 self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                            groupUpdateMode: groupUpdateMode)
             }.recover { (error) throws -> Promise<TSGroupThread> in
