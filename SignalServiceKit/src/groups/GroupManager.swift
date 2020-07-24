@@ -1603,10 +1603,10 @@ public class GroupManager: NSObject {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
 
-        updateProfileWhitelist(withGroupThread: groupThread,
-                               groupUpdateSourceAddress: groupUpdateSourceAddress,
-                               mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
-                               transaction: transaction)
+        updateProfileWhitelistIfNecessary(withGroupThread: groupThread,
+                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                          mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
+                                          transaction: transaction)
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
 
@@ -1874,10 +1874,10 @@ public class GroupManager: NSObject {
 
     // MARK: - Profiles
 
-    private static func updateProfileWhitelist(withGroupThread groupThread: TSGroupThread,
-                                               groupUpdateSourceAddress: SignalServiceAddress?,
-                                               mightBeAddingLocalUserToGroup: Bool,
-                                               transaction: SDSAnyWriteTransaction) {
+    private static func updateProfileWhitelistIfNecessary(withGroupThread groupThread: TSGroupThread,
+                                                          groupUpdateSourceAddress: SignalServiceAddress?,
+                                                          mightBeAddingLocalUserToGroup: Bool,
+                                                          transaction: SDSAnyWriteTransaction) {
         let shouldAddToWhitelist: Bool = {
             guard let groupUpdateSourceAddress = groupUpdateSourceAddress else {
                 Logger.verbose("No groupUpdateSourceAddress.")

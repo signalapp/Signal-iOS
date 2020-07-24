@@ -46,14 +46,14 @@ extension ConversationViewController: MessageRequestDelegate {
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
-        case .contactOrGroupV1MessageRequest, .groupV2MessageRequest:
-            showBlockContactOrGroupV1ActionSheet()
-        case .groupV2Invite:
+        case .contactOrGroupRequest:
+            showBlockContactOrGroupActionSheet()
+        case .groupInviteRequest:
             showBlockInviteActionSheet()
         }
     }
 
-    func showBlockContactOrGroupV1ActionSheet() {
+    func showBlockContactOrGroupActionSheet() {
         Logger.info("")
 
         let actionSheetTitleFormat: String
@@ -277,9 +277,9 @@ extension ConversationViewController: MessageRequestDelegate {
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
-        case .contactOrGroupV1MessageRequest, .groupV2MessageRequest:
+        case .contactOrGroupRequest:
             completion()
-        case .groupV2Invite:
+        case .groupInviteRequest:
             guard let groupThread = thread as? TSGroupThread else {
                 owsFailDebug("Invalid thread.")
                 return

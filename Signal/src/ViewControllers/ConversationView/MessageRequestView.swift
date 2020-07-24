@@ -18,9 +18,8 @@ protocol MessageRequestDelegate: class {
 @objc
 public enum MessageRequestMode: UInt {
     case none
-    case contactOrGroupV1MessageRequest
-    case groupV2MessageRequest
-    case groupV2Invite
+    case contactOrGroupRequest
+    case groupInviteRequest
 }
 
 // MARK: -
@@ -58,10 +57,10 @@ class MessageRequestView: UIStackView {
         if let groupThread = thread as? TSGroupThread,
             groupThread.isGroupV2Thread {
             self.mode = (groupThread.isLocalUserPendingMember
-                ? .groupV2Invite
-                : .groupV2MessageRequest)
+                ? .groupInviteRequest
+                : .contactOrGroupRequest)
         } else {
-            self.mode = .contactOrGroupV1MessageRequest
+            self.mode = .contactOrGroupRequest
         }
 
         super.init(frame: .zero)
@@ -89,7 +88,7 @@ class MessageRequestView: UIStackView {
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
-        case .contactOrGroupV1MessageRequest, .groupV2MessageRequest:
+        case .contactOrGroupRequest:
             var hasSentMessages = false
             databaseStorage.uiRead { transaction in
         hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
@@ -103,7 +102,7 @@ class MessageRequestView: UIStackView {
         isThreadBlocked: isThreadBlocked))
             addArrangedSubview(prepareMessageRequestButtons(hasSentMessages: hasSentMessages,
         isThreadBlocked: isThreadBlocked))
-        case .groupV2Invite:
+        case .groupInviteRequest:
             addArrangedSubview(prepareGroupV2InvitePrompt())
             addArrangedSubview(prepareGroupV2InviteButtons())
         }
