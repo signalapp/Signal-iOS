@@ -510,7 +510,7 @@ extension MessageSender {
                 fetchedAddresses.forEach { (address) in
                     // This should be encapsulated somewhere else: IOS-668
                     if address.uuid != nil {
-                        SignalRecipient.mark(asRegisteredAndGet: address, transaction: writeTx)
+                        SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: writeTx)
                     } else {
                         SignalRecipient.mark(asUnregistered: address, transaction: writeTx)
                     }

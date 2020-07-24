@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
+typedef NS_ENUM(NSUInteger, SignalRecipientTrustLevel) { SignalRecipientTrustLevelLow, SignalRecipientTrustLevelHigh };
+
 /// SignalRecipient serves two purposes:
 ///
 /// a) It serves as a cache of "known" Signal accounts.  When the service indicates
@@ -69,10 +71,12 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPh
 + (BOOL)isRegisteredRecipient:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 + (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
+                                          trustLevel:(SignalRecipientTrustLevel)trustLevel
                                          transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (void)markRecipientAsRegistered:(SignalServiceAddress *)address
                          deviceId:(UInt32)deviceId
+                       trustLevel:(SignalRecipientTrustLevel)trustLevel
                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
