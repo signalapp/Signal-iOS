@@ -1094,9 +1094,17 @@ public class GroupManager: NSObject {
     // MARK: - Accept Invites
 
     public static func localAcceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return updateGroupV2(groupModel: groupModel,
-                             description: "Accept invite") { groupChangeSet in
-            groupChangeSet.setShouldAcceptInvite()
+        return firstly { () -> Promise<Void> in
+            return self.databaseStorage.write(.promise) { transaction in
+                self.profileManager.addGroupId(toProfileWhitelist: groupModel.groupId,
+                                               wasLocallyInitiated: true,
+                                               transaction: transaction)
+            }
+        }.then(on: .global()) { _ in
+            updateGroupV2(groupModel: groupModel,
+                          description: "Accept invite") { groupChangeSet in
+                            groupChangeSet.setShouldAcceptInvite()
+            }
         }
     }
 
@@ -1825,6 +1833,14 @@ public class GroupManager: NSObject {
                                         messageType: .typeGroupUpdate,
                                         infoMessageUserInfo: userInfo)
         infoMessage.anyInsert(transaction: transaction)
+
+        if let groupUpdateSourceAddress = groupUpdateSourceAddress,
+            groupUpdateSourceAddress.isLocalAddress {
+            infoMessage.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                   thread: groupThread,
+                                   circumstance: .readOnThisDevice,
+                                   transaction: transaction)
+        }
     }
 
     // MARK: - Group Database
