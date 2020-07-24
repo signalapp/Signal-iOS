@@ -85,8 +85,6 @@ class GroupsV2ProfileKeyUpdater {
 
     @objc
     public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
-        Logger.info("---- groupId: \(groupId.hexadecimalString)")
-
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             owsFailDebug("Missing groupThread.")
             return
@@ -117,14 +115,13 @@ class GroupsV2ProfileKeyUpdater {
             return
         }
 
-        let groupId = groupThread.groupModel.groupId
         let groupMembership = groupThread.groupModel.groupMembership
         // We only need to update v2 groups of which we are a full member.
         guard groupThread.isGroupV2Thread,
             groupMembership.isNonPendingMember(localAddress) else {
-                Logger.info("---- skipping: \(groupId.hexadecimalString)")
                 return
         }
+        let groupId = groupThread.groupModel.groupId
         let key = self.key(for: groupId)
         self.keyValueStore.setData(groupId, key: key, transaction: transaction)
     }
@@ -140,46 +137,37 @@ class GroupsV2ProfileKeyUpdater {
     private var isUpdating = false
 
     private func tryToUpdateNext(retryDelay: TimeInterval = 1) {
-        Logger.info("---- retryDelay: \(retryDelay)")
-
         guard CurrentAppContext().isMainAppAndActive else {
-            Logger.info("---- !isMainAppAndActive")
             return
         }
         guard reachabilityManager.isReachable else {
-            Logger.info("---- !isReachable")
             return
         }
         guard RemoteConfig.groupsV2GoodCitizen else {
-            Logger.info("---- !groupsV2GoodCitizen")
             return
         }
 
         serialQueue.async {
             guard !self.isUpdating else {
                 // Only one update should be in flight at a time.
-                Logger.info("---- isUpdating")
                 return
             }
             guard let groupId = (self.databaseStorage.read { transaction in
                 return self.keyValueStore.anyDataValue(transaction: transaction)
             }) else {
-                Logger.info("---- No updates enqueued")
                 return
             }
 
             self.isUpdating = true
 
-            Logger.info("---- trying to update: \(groupId.hexadecimalString)")
-
             firstly {
                 self.tryToUpdate(groupId: groupId)
             }.done(on: .global() ) { _ in
-                Logger.info("---- Updated profile key in group.")
+                Logger.verbose("Updated profile key in group.")
 
                 self.didSucceed(groupId: groupId)
             }.catch(on: .global() ) { error in
-                Logger.warn("---- Failed: \(error).")
+                Logger.warn("Failed: \(error).")
 
                 guard !IsNetworkConnectivityFailure(error) else {
                     // Retry later.
