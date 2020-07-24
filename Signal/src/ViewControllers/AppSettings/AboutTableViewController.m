@@ -73,7 +73,7 @@
     OWSTableSection *informationSection = [OWSTableSection new];
     informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
-                                                  accessoryText:AppVersion.sharedInstance.currentAppVersionLong];
+                                                  accessoryText:AppVersion.sharedInstance.currentAppVersionLong]];
 
     [informationSection
         addItem:[OWSTableItem
