@@ -699,7 +699,6 @@ extension GroupsProtoPendingMember.GroupsProtoPendingMemberBuilder {
 public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
     public typealias RawValue = Int
     case unknown // 0
-    case any // 1
     case member // 2
     case administrator // 3
     case UNRECOGNIZED(Int)
@@ -711,7 +710,6 @@ public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
     public init?(rawValue: Int) {
         switch rawValue {
             case 0: self = .unknown
-            case 1: self = .any
             case 2: self = .member
             case 3: self = .administrator
             default: self = .UNRECOGNIZED(rawValue)
@@ -721,7 +719,6 @@ public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
     public var rawValue: Int {
         switch self {
             case .unknown: return 0
-            case .any: return 1
             case .member: return 2
             case .administrator: return 3
             case .UNRECOGNIZED(let i): return i
@@ -732,7 +729,6 @@ public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
 private func GroupsProtoAccessControlAccessRequiredWrap(_ value: GroupsProtos_AccessControl.AccessRequired) -> GroupsProtoAccessControlAccessRequired {
     switch value {
     case .unknown: return .unknown
-    case .any: return .any
     case .member: return .member
     case .administrator: return .administrator
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
@@ -742,7 +738,6 @@ private func GroupsProtoAccessControlAccessRequiredWrap(_ value: GroupsProtos_Ac
 private func GroupsProtoAccessControlAccessRequiredUnwrap(_ value: GroupsProtoAccessControlAccessRequired) -> GroupsProtos_AccessControl.AccessRequired {
     switch value {
     case .unknown: return .unknown
-    case .any: return .any
     case .member: return .member
     case .administrator: return .administrator
     case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)

@@ -161,9 +161,6 @@ struct GroupsProtos_AccessControl {
     typealias RawValue = Int
     case unknown // = 0
 
-    /// Anyone can make the modification, even if they're not in the group
-    case any // = 1
-
     /// Any group member can make the modification
     case member // = 2
 
@@ -178,7 +175,6 @@ struct GroupsProtos_AccessControl {
     init?(rawValue: Int) {
       switch rawValue {
       case 0: self = .unknown
-      case 1: self = .any
       case 2: self = .member
       case 3: self = .administrator
       default: self = .UNRECOGNIZED(rawValue)
@@ -188,7 +184,6 @@ struct GroupsProtos_AccessControl {
     var rawValue: Int {
       switch self {
       case .unknown: return 0
-      case .any: return 1
       case .member: return 2
       case .administrator: return 3
       case .UNRECOGNIZED(let i): return i
@@ -206,7 +201,6 @@ extension GroupsProtos_AccessControl.AccessRequired: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
   static var allCases: [GroupsProtos_AccessControl.AccessRequired] = [
     .unknown,
-    .any,
     .member,
     .administrator
   ]
@@ -846,7 +840,6 @@ extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._Mess
 extension GroupsProtos_AccessControl.AccessRequired: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
-    1: .same(proto: "ANY"),
     2: .same(proto: "MEMBER"),
     3: .same(proto: "ADMINISTRATOR")
   ]

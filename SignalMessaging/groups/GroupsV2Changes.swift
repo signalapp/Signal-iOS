@@ -98,7 +98,8 @@ public class GroupsV2Changes {
         case .administrator:
             canAddMembers = isChangeAuthorAdmin
         case .any:
-            canAddMembers = true
+            // We no longer honor the "any" level.
+            canAddMembers = false
         }
         let canRemoveMembers = isChangeAuthorAdmin
         let canModifyRoles = isChangeAuthorAdmin
@@ -111,7 +112,8 @@ public class GroupsV2Changes {
         case .administrator:
             canEditAttributes = isChangeAuthorAdmin
         case .any:
-            canEditAttributes = true
+            // We no longer honor the "any" level.
+            canEditAttributes = false
         }
         let canEditAccess = isChangeAuthorAdmin
 
@@ -137,7 +139,7 @@ public class GroupsV2Changes {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
             if role == .administrator && !isChangeAuthorAdmin {
-                owsFailDebug("Only authors can add admins.")
+                owsFailDebug("Only admins can add admins.")
             }
 
             // Some userIds/uuidCiphertexts can be validated by
@@ -196,12 +198,19 @@ public class GroupsV2Changes {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
 
+            if !isChangeAuthorAdmin {
+                owsFailDebug("Only admins can add admins (or resign as admin).")
+            }
+
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
 
             guard oldGroupMembership.isNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
+            }
+            if oldGroupMembership.role(for: uuid) == role {
+                owsFailDebug("Member already has that role.")
             }
             groupMembershipBuilder.remove(uuid)
             groupMembershipBuilder.addNonPendingMember(uuid, role: role)
@@ -254,7 +263,7 @@ public class GroupsV2Changes {
             let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
 
             if role == .administrator && !isChangeAuthorAdmin {
-                owsFailDebug("Only authors can add admins.")
+                owsFailDebug("Only admins can add admins.")
             }
             if addedByUuid != changeAuthorUuid {
                 owsFailDebug("Unexpected addedByUuid.")
