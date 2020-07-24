@@ -162,7 +162,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         for uuid in oldUserUuids.intersection(newUserUuids) {
             if oldGroupMembership.isPendingMember(uuid),
                 newGroupMembership.isNonPendingMember(uuid) {
-                Logger.verbose("promotePendingMember")
                 addMember(uuid, role: .normal)
             }
         }
