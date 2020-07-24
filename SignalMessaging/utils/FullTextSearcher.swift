@@ -323,11 +323,7 @@ public class FullTextSearcher: NSObject {
 
         // Filter out contact results with pending message requests.
         var signalContacts = Array(signalContactMap.values).filter { (contactResult: ContactSearchResult) in
-            guard let thread = TSContactThread.getWithContactAddress(contactResult.recipientAddress, transaction: transaction) else {
-                // Filter out users with whom we've never had contact.
-                return false
-            }
-            return !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+            !self.shouldFilterContactResult(contactResult: contactResult, transaction: transaction)
         }
         // Order contact results by display name.
         signalContacts.sort()
@@ -337,6 +333,21 @@ public class FullTextSearcher: NSObject {
         groups.sort(by: >)
 
         return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
+    }
+
+    func shouldFilterContactResult(contactResult: ContactSearchResult, transaction: SDSAnyReadTransaction) -> Bool {
+        let address = contactResult.recipientAddress
+        if address.isLocalAddress {
+            return false
+        }
+        if self.contactsManager.isSystemContact(address: address) {
+            return false
+        }
+        guard let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {
+            // Filter out users with whom we've never had contact.
+            return true
+        }
+        return thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
     }
 
     func matchesNoteToSelf(searchText: String, transaction: SDSAnyReadTransaction) -> Bool {
