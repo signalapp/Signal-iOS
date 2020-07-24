@@ -462,9 +462,7 @@ public class GroupManager: NSObject {
                 builder.addNonPendingMember(address, role: role)
             }
         }
-        let groupMembership = builder.build()
-        assert(groupMembership.isValid)
-        return groupMembership
+        return builder.build()
     }
 
     // success and failure are invoked on the main thread.

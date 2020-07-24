@@ -430,8 +430,4 @@ public class GroupMembership: MTLModel {
         result += "]"
         return result
     }
-
-    public var isValid: Bool {
-        return true
-    }
 }
