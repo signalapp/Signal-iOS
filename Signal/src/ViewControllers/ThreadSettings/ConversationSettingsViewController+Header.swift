@@ -284,17 +284,23 @@ extension ConversationSettingsViewController {
 
     @objc
     func didTapLegacyGroupView(sender: UIGestureRecognizer) {
-        LegacyGroupView().present(fromViewController: self)
+        ExistingLegacyGroupView().present(fromViewController: self)
     }
 }
 
 // MARK: -
 
-class LegacyGroupView: NSObject {
+class ExistingLegacyGroupView: UIView {
 
     weak var actionSheetController: ActionSheetController?
 
-    override init() {}
+    init() {
+        super.init(frame: .zero)
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     func present(fromViewController: UIViewController) {
         let buildLabel = { () -> UILabel in
@@ -318,7 +324,22 @@ class LegacyGroupView: NSObject {
         let section1BodyLabel = buildLabel()
         section1BodyLabel.font = .ows_dynamicTypeBody
         section1BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY",
-                                                    comment: "Body text for the first section of the 'legacy group' alert view.")
+                                                   comment: "Body text for the first section of the 'legacy group' alert view.")
+
+        let section2TitleLabel = buildLabel()
+        section2TitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        section2TitleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE",
+                                                    comment: "Title for the second section of the 'legacy group' alert view.")
+
+        let section2BodyLabel = buildLabel()
+        section2BodyLabel.font = .ows_dynamicTypeBody
+        section2BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY",
+                                                   comment: "Body text for the second section of the 'legacy group' alert view.")
+
+        let section3BodyLabel = buildLabel()
+        section3BodyLabel.font = .ows_dynamicTypeBody
+        section3BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY",
+                                                   comment: "Body text for the third section of the 'legacy group' alert view.")
 
         let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
         let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
@@ -336,6 +357,12 @@ class LegacyGroupView: NSObject {
             section1TitleLabel,
             UIView.spacer(withHeight: 4),
             section1BodyLabel,
+            UIView.spacer(withHeight: 21),
+            section2TitleLabel,
+            UIView.spacer(withHeight: 4),
+            section2BodyLabel,
+            UIView.spacer(withHeight: 24),
+            section3BodyLabel,
             UIView.spacer(withHeight: 28),
             okayButton
         ])
@@ -345,10 +372,15 @@ class LegacyGroupView: NSObject {
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
 
+        layoutMargins = .zero
+        addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
+
         let actionSheetController = ActionSheetController()
-        actionSheetController.customHeader = stackView
+        actionSheetController.customHeader = self
         actionSheetController.isCancelable = true
         fromViewController.presentActionSheet(actionSheetController)
+        self.actionSheetController = actionSheetController
     }
 
     @objc

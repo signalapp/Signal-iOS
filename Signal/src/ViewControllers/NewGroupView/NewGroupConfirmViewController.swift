@@ -99,16 +99,81 @@ public class NewGroupConfirmViewController: OWSViewController {
         firstSection.autoPinWidthToSuperview()
         firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 8)
 
+        var lastSection: UIView = firstSection
+
+        let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
+        if membersDoNotSupportGroupsV2.count > 0 {
+            let legacyGroupSection = UIView()
+            legacyGroupSection.backgroundColor = Theme.secondaryBackgroundColor
+            legacyGroupSection.preservesSuperviewLayoutMargins = true
+            view.addSubview(legacyGroupSection)
+            legacyGroupSection.autoPinWidthToSuperview()
+            legacyGroupSection.autoPinEdge(.top, to: .bottom, of: firstSection, withOffset: 16)
+            lastSection = legacyGroupSection
+
+            let legacyGroupText: String
+            let learnMoreText = NSLocalizedString("GROUPS_LEGACY_GROUP_LEARN_MORE_LINK",
+                                                  comment: "A \"learn more\" link with more information about legacy groups.")
+            if membersDoNotSupportGroupsV2.count > 1 {
+                let memberCountText = OWSFormat.formatInt(membersDoNotSupportGroupsV2.count)
+                let legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N",
+                                                          comment: "Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
+                legacyGroupText = String(format: legacyGroupFormat, memberCountText, learnMoreText)
+            } else {
+                let legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1",
+                                                          comment: "Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}.")
+                legacyGroupText = String(format: legacyGroupFormat, learnMoreText)
+            }
+            let attributedString = NSMutableAttributedString(string: legacyGroupText)
+            attributedString.setAttributes([
+                .foregroundColor: Theme.accentBlueColor
+                ],
+                                           forSubstring: learnMoreText)
+
+            let legacyGroupLabel = UILabel()
+            legacyGroupLabel.textColor = Theme.secondaryTextAndIconColor
+            legacyGroupLabel.font = .ows_dynamicTypeFootnote
+            legacyGroupLabel.attributedText = attributedString
+            legacyGroupLabel.numberOfLines = 0
+            legacyGroupLabel.lineBreakMode = .byWordWrapping
+            legacyGroupSection.addSubview(legacyGroupLabel)
+            legacyGroupLabel.autoPinEdgesToSuperviewMargins()
+
+            legacyGroupSection.isUserInteractionEnabled = true
+            legacyGroupSection.addGestureRecognizer(UITapGestureRecognizer(target: self,
+                                                                           action: #selector(didTapLegacyGroupView)))
+        }
+
         recipientTableView.customSectionHeaderFooterBackgroundColor = Theme.backgroundColor
         addChild(recipientTableView)
         view.addSubview(recipientTableView.view)
 
         recipientTableView.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientTableView.view.autoPinEdge(toSuperviewSafeArea: .trailing)
-        recipientTableView.view.autoPinEdge(.top, to: .bottom, of: firstSection)
+        recipientTableView.view.autoPinEdge(.top, to: .bottom, of: lastSection)
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientTableView.view, avoidNotch: false)
 
         updateTableContents()
+    }
+
+    private var membersDoNotSupportGroupsV2: [PickedRecipient] {
+        return databaseStorage.read { transaction in
+            self.recipientSet.orderedMembers.filter {
+                guard let address = $0.address else {
+                    return false
+                }
+                return !GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
+            }
+        }
+    }
+
+    @objc
+    func didTapLegacyGroupView(sender: UIGestureRecognizer) {
+        let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
+        guard !membersDoNotSupportGroupsV2.isEmpty else {
+            return
+        }
+        NewLegacyGroupView(v1Members: membersDoNotSupportGroupsV2).present(fromViewController: self)
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -331,5 +396,122 @@ extension NewGroupConfirmViewController: GroupAttributesEditorHelperDelegate {
     func groupAttributesEditorContentsDidChange() {
         newGroupState.groupName = helper.groupNameCurrent
         newGroupState.avatarData = helper.avatarCurrent?.imageData
+    }
+}
+
+// MARK: -
+
+class NewLegacyGroupView: UIView {
+
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
+    private let v1Members: [PickedRecipient]
+
+    private let tableViewController = OWSTableViewController()
+
+    weak var actionSheetController: ActionSheetController?
+
+    required init(v1Members: [PickedRecipient]) {
+        self.v1Members = v1Members
+
+        super.init(frame: .zero)
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func present(fromViewController: UIViewController) {
+
+        let wrapViewWithHMargins = { (viewToWrap: UIView) -> UIView in
+            let stackView = UIStackView(arrangedSubviews: [viewToWrap])
+            stackView.axis = .vertical
+            stackView.alignment = .fill
+            stackView.layoutMargins = UIEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 24)
+            stackView.isLayoutMarginsRelativeArrangement = true
+            return stackView
+        }
+
+        let headerLabel = UILabel()
+        headerLabel.textColor = Theme.primaryTextColor
+        headerLabel.numberOfLines = 0
+        headerLabel.lineBreakMode = .byWordWrapping
+        headerLabel.font = UIFont.ows_dynamicTypeBody
+        if v1Members.count > 1 {
+            let format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT",
+                                           comment: "Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
+            let formattedCount = OWSFormat.formatInt(v1Members.count)
+            headerLabel.text = String(format: format, formattedCount)
+        } else {
+            headerLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1",
+                                                 comment: "Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups.")
+        }
+        headerLabel.textAlignment = .center
+
+        let members = databaseStorage.uiRead { transaction in
+            BaseGroupMemberViewController.orderedMembers(recipientSet: OrderedSet(self.v1Members),
+                                                         shouldSort: true,
+                                                         transaction: transaction)
+        }.compactMap { $0.address }
+
+        let section = OWSTableSection()
+        for address in members {
+            section.add(OWSTableItem(
+                customCellBlock: {
+                    let cell = ContactTableViewCell()
+                    cell.selectionStyle = .none
+                    cell.configure(withRecipientAddress: address)
+                    return cell
+            },
+                customRowHeight: UITableView.automaticDimension))
+        }
+        let contents = OWSTableContents()
+        contents.addSection(section)
+        tableViewController.contents = contents
+        tableViewController.view.autoSetDimension(.height, toSize: 200)
+
+        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
+        let okayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
+                                              font: buttonFont,
+                                              titleColor: .white,
+                                              backgroundColor: .ows_accentBlue,
+                                              target: self,
+                                              selector: #selector(dismissAlert))
+        okayButton.autoSetDimension(.height, toSize: buttonHeight)
+
+        let stackView = UIStackView(arrangedSubviews: [
+            wrapViewWithHMargins(headerLabel),
+            UIView.spacer(withHeight: 20),
+            tableViewController.view,
+            UIView.spacer(withHeight: 20),
+            wrapViewWithHMargins(okayButton)
+        ])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.layoutMargins = UIEdgeInsets(top: 20, leading: 0, bottom: 38, trailing: 0)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+
+        layoutMargins = .zero
+        addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
+
+        let actionSheetController = ActionSheetController()
+        actionSheetController.customHeader = self
+        actionSheetController.isCancelable = true
+        fromViewController.presentActionSheet(actionSheetController)
+        self.actionSheetController = actionSheetController
+    }
+
+    @objc
+    func dismissAlert() {
+        actionSheetController?.dismiss(animated: true)
     }
 }
