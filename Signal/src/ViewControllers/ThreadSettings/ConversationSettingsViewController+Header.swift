@@ -111,11 +111,6 @@ extension ConversationSettingsViewController {
             label.attributedText = attributedString
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
-            // Always reserve space for slightly more than two lines
-            // of text. We need to measure the height of the header
-            // before it is presented; there doesn't seem to be a
-            // better way to ensure the correct layout.
-            label.autoSetDimension(.height, toSize: label.font.lineHeight * 2.2, relation: .greaterThanOrEqual)
             bubbleView.addSubview(label)
             label.autoPinEdgesToSuperviewMargins()
 

@@ -50,13 +50,25 @@ extension ConversationSettingsViewController {
 
         let isNoteToSelf = thread.isNoteToSelf
 
+        // Header section.
+        let headerSection = OWSTableSection()
+        headerSection.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+            let cell = OWSTableItem.newCell()
+            let header = self.buildMainHeader()
+            cell.contentView.addSubview(header)
+            header.autoPinEdgesToSuperviewEdges()
+            return cell
+            },
+                                       customRowHeight: UITableView.automaticDimension,
+                                       actionBlock: nil))
+        contents.addSection(headerSection)
+
         // Main section.
         let mainSection = OWSTableSection()
-        let header = buildMainHeader()
-        lastContentWidth = view.width
-        let headerHeight = header.systemLayoutSizeFitting(view.frame.size).height
-        mainSection.customHeaderView = header
-        mainSection.customHeaderHeight = NSNumber(value: Float(headerHeight))
 
         addBasicItems(to: mainSection)
 
