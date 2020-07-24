@@ -56,9 +56,7 @@ public final class PublicChatManager : NSObject {
                 return Promise(error: Error.chatCreationFailed)
             }
         }
-        return PublicChatAPI.getAuthToken(for: server).then2 { token in
-            return PublicChatAPI.getInfo(for: channel, on: server)
-        }.map2 { channelInfo -> PublicChat in
+        return PublicChatAPI.getInfo(for: channel, on: server).map2 { channelInfo -> PublicChat in
             guard let chat = self.addChat(server: server, channel: channel, name: channelInfo.displayName) else { throw Error.chatCreationFailed }
             return chat
         }

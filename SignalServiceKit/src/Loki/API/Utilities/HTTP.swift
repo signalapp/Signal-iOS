@@ -1,11 +1,11 @@
 import PromiseKit
 
-internal enum HTTP {
+public enum HTTP {
     private static let urlSession = URLSession(configuration: .ephemeral, delegate: urlSessionDelegate, delegateQueue: nil)
     private static let urlSessionDelegate = URLSessionDelegateImplementation()
 
     // MARK: Settings
-    private static let timeout: TimeInterval = 20
+    public static let timeout: TimeInterval = 20
 
     // MARK: URL Session Delegate Implementation
     private final class URLSessionDelegateImplementation : NSObject, URLSessionDelegate {
@@ -17,7 +17,7 @@ internal enum HTTP {
     }
 
     // MARK: Verb
-    internal enum Verb : String {
+    public enum Verb : String {
         case get = "GET"
         case put = "PUT"
         case post = "POST"
@@ -25,12 +25,12 @@ internal enum HTTP {
     }
 
     // MARK: Error
-    internal enum Error : LocalizedError {
+    public enum Error : LocalizedError {
         case generic
         case httpRequestFailed(statusCode: UInt, json: JSON?)
         case invalidJSON
 
-        var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .generic: return "An error occurred."
             case .httpRequestFailed(let statusCode, _): return "HTTP request failed with status code: \(statusCode)."
@@ -40,7 +40,7 @@ internal enum HTTP {
     }
 
     // MARK: Main
-    internal static func execute(_ verb: Verb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = HTTP.timeout) -> Promise<JSON> {
+    public static func execute(_ verb: Verb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = HTTP.timeout) -> Promise<JSON> {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = verb.rawValue
         if let parameters = parameters {

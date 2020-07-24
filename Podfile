@@ -105,7 +105,19 @@ target 'SignalMessaging' do
 end
 
 post_install do |installer|
+  enable_whole_module_optimization_for_cryptoswift(installer)
   enable_extension_support_for_purelayout(installer)
+end
+
+def enable_whole_module_optimization_for_cryptoswift(installer)
+  installer.pods_project.targets.each do |target|
+    if target.name.end_with? "CryptoSwift"
+      target.build_configurations.each do |config|
+        config.build_settings['GCC_OPTIMIZATION_LEVEL'] = 'fast'
+        config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-O'
+      end
+    end
+  end
 end
 
 # PureLayout by default makes use of UIApplication, and must be configured to be built for an extension.

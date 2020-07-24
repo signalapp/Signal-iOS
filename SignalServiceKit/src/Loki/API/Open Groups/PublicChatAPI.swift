@@ -7,7 +7,7 @@ public final class PublicChatAPI : DotNetAPI {
     @objc public static let defaultChats: [PublicChat] = [] // Currently unused
 
     public static var displayNameUpdatees: [String:Set<String>] = [:]
-    
+
     // MARK: Settings
     private static let attachmentType = "net.app.core.oembed"
     private static let channelInfoType = "net.patter-app.settings"
@@ -73,6 +73,27 @@ public final class PublicChatAPI : DotNetAPI {
     public static func clearCaches(for channel: UInt64, on server: String) {
         removeLastMessageServerID(for: channel, on: server)
         removeLastDeletionServerID(for: channel, on: server)
+        try! Storage.writeSync { transaction in
+            Storage.removeOpenGroupPublicKey(for: server, using: transaction)
+        }
+    }
+    
+    // MARK: Open Group Public Key Validation
+    public static func getOpenGroupServerPublicKey(for server: String) -> Promise<String> {
+        if let publicKey = Storage.getOpenGroupPublicKey(for: server) {
+            return Promise.value(publicKey)
+        } else {
+            return FileServerAPI.getPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { publicKey -> Promise<String> in
+                let url = URL(string: server)!
+                let request = TSRequest(url: url)
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: publicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .default)) { _ -> String in
+                    try! Storage.writeSync { transaction in
+                        Storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
+                    }
+                    return publicKey
+                }
+            }
+        }
     }
     
     // MARK: Receiving
@@ -88,79 +109,81 @@ public final class PublicChatAPI : DotNetAPI {
         } else {
             queryParameters += "&count=\(fallbackBatchCount)&include_deleted=0"
         }
-        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[PublicChatMessage]> in
-            let url = URL(string: "\(server)/channels/\(channel)/messages?\(queryParameters)")!
-            let request = TSRequest(url: url)
-            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
-                    print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                    throw DotNetAPIError.parsingFailed
-                }
-                return rawMessages.flatMap { message in
-                    let isDeleted = (message["is_deleted"] as? Int == 1)
-                    guard !isDeleted else { return nil }
-                    guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == publicChatMessageType }), let value = annotation["value"] as? JSON,
-                        let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? UInt64,
-                        let body = message["text"] as? String, let user = message["user"] as? JSON, let senderPublicKey = user["username"] as? String,
-                        let timestamp = value["timestamp"] as? UInt64 else {
-                            print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
-                            return nil
+        return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[PublicChatMessage]> in
+                let url = URL(string: "\(server)/channels/\(channel)/messages?\(queryParameters)")!
+                let request = TSRequest(url: url)
+                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
+                    guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
+                        print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                        throw DotNetAPIError.parsingFailed
                     }
-                    var profilePicture: PublicChatMessage.ProfilePicture? = nil
-                    let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
-                    if let userAnnotations = user["annotations"] as? [JSON], let profilePictureAnnotation = userAnnotations.first(where: { $0["type"] as? String == profilePictureType }),
-                        let profilePictureValue = profilePictureAnnotation["value"] as? JSON, let profileKeyString = profilePictureValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = profilePictureValue["url"] as? String {
-                        profilePicture = PublicChatMessage.ProfilePicture(profileKey: profileKey, url: url)
-                    }
-                    let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
-                    if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
-                    let quote: PublicChatMessage.Quote?
-                    if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteePublicKey = quoteAsJSON["author"] as? String,
-                        let quotedMessageBody = quoteAsJSON["text"] as? String {
-                        let quotedMessageServerID = message["reply_to"] as? UInt64
-                        quote = PublicChatMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteePublicKey, quotedMessageBody: quotedMessageBody,
-                            quotedMessageServerID: quotedMessageServerID)
-                    } else {
-                        quote = nil
-                    }
-                    let signature = PublicChatMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: signatureVersion)
-                    let attachmentsAsJSON = annotations.filter { $0["type"] as? String == attachmentType }
-                    let attachments: [PublicChatMessage.Attachment] = attachmentsAsJSON.compactMap { attachmentAsJSON in
-                        guard let value = attachmentAsJSON["value"] as? JSON, let kindAsString = value["lokiType"] as? String, let kind = PublicChatMessage.Attachment.Kind(rawValue: kindAsString),
-                            let serverID = value["id"] as? UInt64, let contentType = value["contentType"] as? String, let size = value["size"] as? UInt, let url = value["url"] as? String else { return nil }
-                        let fileName = value["fileName"] as? String ?? UUID().description
-                        let width = value["width"] as? UInt ?? 0
-                        let height = value["height"] as? UInt ?? 0
-                        let flags = (value["flags"] as? UInt) ?? 0
-                        let caption = value["caption"] as? String
-                        let linkPreviewURL = value["linkPreviewUrl"] as? String
-                        let linkPreviewTitle = value["linkPreviewTitle"] as? String
-                        if kind == .linkPreview {
-                            guard linkPreviewURL != nil && linkPreviewTitle != nil else {
-                                print("[Loki] Ignoring public chat message with invalid link preview.")
+                    return rawMessages.flatMap { message in
+                        let isDeleted = (message["is_deleted"] as? Int == 1)
+                        guard !isDeleted else { return nil }
+                        guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == publicChatMessageType }), let value = annotation["value"] as? JSON,
+                            let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? UInt64,
+                            let body = message["text"] as? String, let user = message["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String,
+                            let timestamp = value["timestamp"] as? UInt64 else {
+                                print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                                 return nil
-                            }
                         }
-                        return PublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags,
-                            width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
-                    }
-                    let result = PublicChatMessage(serverID: serverID, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: profilePicture,
-                        body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
-                    guard result.hasValidSignature() else {
-                        print("[Loki] Ignoring public chat message with invalid signature.")
-                        return nil
-                    }
-                    var existingMessageID: String? = nil
-                    storage.dbReadConnection.read { transaction in
-                        existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
-                    }
-                    guard existingMessageID == nil else {
-                        print("[Loki] Ignoring duplicate public chat message.")
-                        return nil
-                    }
-                    return result
-                }.sorted { $0.timestamp < $1.timestamp }
+                        var profilePicture: PublicChatMessage.ProfilePicture? = nil
+                        let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
+                        if let userAnnotations = user["annotations"] as? [JSON], let profilePictureAnnotation = userAnnotations.first(where: { $0["type"] as? String == profilePictureType }),
+                            let profilePictureValue = profilePictureAnnotation["value"] as? JSON, let profileKeyString = profilePictureValue["profileKey"] as? String, let profileKey = Data(base64Encoded: profileKeyString), let url = profilePictureValue["url"] as? String {
+                            profilePicture = PublicChatMessage.ProfilePicture(profileKey: profileKey, url: url)
+                        }
+                        let lastMessageServerID = getLastMessageServerID(for: channel, on: server)
+                        if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: channel, on: server, to: serverID) }
+                        let quote: PublicChatMessage.Quote?
+                        if let quoteAsJSON = value["quote"] as? JSON, let quotedMessageTimestamp = quoteAsJSON["id"] as? UInt64, let quoteePublicKey = quoteAsJSON["author"] as? String,
+                            let quotedMessageBody = quoteAsJSON["text"] as? String {
+                            let quotedMessageServerID = message["reply_to"] as? UInt64
+                            quote = PublicChatMessage.Quote(quotedMessageTimestamp: quotedMessageTimestamp, quoteePublicKey: quoteePublicKey, quotedMessageBody: quotedMessageBody,
+                                quotedMessageServerID: quotedMessageServerID)
+                        } else {
+                            quote = nil
+                        }
+                        let signature = PublicChatMessage.Signature(data: Data(hex: hexEncodedSignatureData), version: signatureVersion)
+                        let attachmentsAsJSON = annotations.filter { $0["type"] as? String == attachmentType }
+                        let attachments: [PublicChatMessage.Attachment] = attachmentsAsJSON.compactMap { attachmentAsJSON in
+                            guard let value = attachmentAsJSON["value"] as? JSON, let kindAsString = value["lokiType"] as? String, let kind = PublicChatMessage.Attachment.Kind(rawValue: kindAsString),
+                                let serverID = value["id"] as? UInt64, let contentType = value["contentType"] as? String, let size = value["size"] as? UInt, let url = value["url"] as? String else { return nil }
+                            let fileName = value["fileName"] as? String ?? UUID().description
+                            let width = value["width"] as? UInt ?? 0
+                            let height = value["height"] as? UInt ?? 0
+                            let flags = (value["flags"] as? UInt) ?? 0
+                            let caption = value["caption"] as? String
+                            let linkPreviewURL = value["linkPreviewUrl"] as? String
+                            let linkPreviewTitle = value["linkPreviewTitle"] as? String
+                            if kind == .linkPreview {
+                                guard linkPreviewURL != nil && linkPreviewTitle != nil else {
+                                    print("[Loki] Ignoring public chat message with invalid link preview.")
+                                    return nil
+                                }
+                            }
+                            return PublicChatMessage.Attachment(kind: kind, server: server, serverID: serverID, contentType: contentType, size: size, fileName: fileName, flags: flags,
+                                width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
+                        }
+                        let result = PublicChatMessage(serverID: serverID, senderPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: profilePicture,
+                            body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+                        guard result.hasValidSignature() else {
+                            print("[Loki] Ignoring public chat message with invalid signature.")
+                            return nil
+                        }
+                        var existingMessageID: String? = nil
+                        storage.dbReadConnection.read { transaction in
+                            existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
+                        }
+                        guard existingMessageID == nil else {
+                            print("[Loki] Ignoring duplicate public chat message.")
+                            return nil
+                        }
+                        return result
+                    }.sorted { $0.timestamp < $1.timestamp }
+                }
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
     }
@@ -177,23 +200,25 @@ public final class PublicChatAPI : DotNetAPI {
         DispatchQueue.global(qos: .userInitiated).async { [privateKey = userKeyPair.privateKey] in
             guard let signedMessage = message.sign(with: privateKey) else { return seal.reject(DotNetAPIError.signingFailed) }
             attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
-                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<PublicChatMessage> in
-                    let url = URL(string: "\(server)/channels/\(channel)/messages")!
-                    let parameters = signedMessage.toJSON()
-                    let request = TSRequest(url: url, method: "POST", parameters: parameters)
-                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                    let displayName = userDisplayName
-                    return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                        // ISO8601DateFormatter doesn't support milliseconds before iOS 11
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                        guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
-                            let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
-                            print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                            throw DotNetAPIError.parsingFailed
+                getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                    getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<PublicChatMessage> in
+                        let url = URL(string: "\(server)/channels/\(channel)/messages")!
+                        let parameters = signedMessage.toJSON()
+                        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+                        request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                        let displayName = userDisplayName
+                        return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
+                            // ISO8601DateFormatter doesn't support milliseconds before iOS 11
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                            guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
+                                let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
+                                print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                                throw DotNetAPIError.parsingFailed
+                            }
+                            let timestamp = UInt64(date.timeIntervalSince1970) * 1000
+                            return PublicChatMessage(serverID: serverID, senderPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
                         }
-                        let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                        return PublicChatMessage(serverID: serverID, senderPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
                     }
                 }.handlingInvalidAuthTokenIfNeeded(for: server)
             }.done(on: DispatchQueue.global(qos: .default)) { message in
@@ -214,23 +239,25 @@ public final class PublicChatAPI : DotNetAPI {
         } else {
             queryParameters = "count=\(fallbackBatchCount)"
         }
-        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[UInt64]> in
-            let url = URL(string: "\(server)/loki/v1/channel/\(channel)/deletes?\(queryParameters)")!
-            let request = TSRequest(url: url)
-            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
-                    print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                    throw DotNetAPIError.parsingFailed
-                }
-                return deletions.flatMap { deletion in
-                    guard let serverID = deletion["id"] as? UInt64, let messageServerID = deletion["message_id"] as? UInt64 else {
-                        print("[Loki] Couldn't parse deleted message for public chat channel with ID: \(channel) on server: \(server) from: \(deletion).")
-                        return nil
+        return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[UInt64]> in
+                let url = URL(string: "\(server)/loki/v1/channel/\(channel)/deletes?\(queryParameters)")!
+                let request = TSRequest(url: url)
+                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
+                    guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
+                        print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                        throw DotNetAPIError.parsingFailed
                     }
-                    let lastDeletionServerID = getLastDeletionServerID(for: channel, on: server)
-                    if serverID > (lastDeletionServerID ?? 0) { setLastDeletionServerID(for: channel, on: server, to: serverID) }
-                    return messageServerID
+                    return deletions.flatMap { deletion in
+                        guard let serverID = deletion["id"] as? UInt64, let messageServerID = deletion["message_id"] as? UInt64 else {
+                            print("[Loki] Couldn't parse deleted message for public chat channel with ID: \(channel) on server: \(server) from: \(deletion).")
+                            return nil
+                        }
+                        let lastDeletionServerID = getLastDeletionServerID(for: channel, on: server)
+                        if serverID > (lastDeletionServerID ?? 0) { setLastDeletionServerID(for: channel, on: server, to: serverID) }
+                        return messageServerID
+                    }
                 }
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -246,12 +273,14 @@ public final class PublicChatAPI : DotNetAPI {
         print("[Loki] Deleting message with ID: \(messageID) for public chat channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
         let urlAsString = isSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
-            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
-                let url = URL(string: urlAsString)!
-                let request = TSRequest(url: url, method: "DELETE", parameters: [:])
-                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
-                    print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
+            getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
+                    let url = URL(string: urlAsString)!
+                    let request = TSRequest(url: url, method: "DELETE", parameters: [:])
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
+                        print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
+                    }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }
@@ -260,25 +289,27 @@ public final class PublicChatAPI : DotNetAPI {
     // MARK: Display Name & Profile Picture
     public static func getDisplayNames(for channel: UInt64, on server: String) -> Promise<Void> {
         let publicChatID = "\(server).\(channel)"
-        guard let hexEncodedPublicKeys = displayNameUpdatees[publicChatID] else { return Promise.value(()) }
+        guard let publicKeys = displayNameUpdatees[publicChatID] else { return Promise.value(()) }
         displayNameUpdatees[publicChatID] = []
-        print("[Loki] Getting display names for: \(hexEncodedPublicKeys).")
-        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
-            let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
-            let url = URL(string: "\(server)/users?\(queryParameters)")!
-            let request = TSRequest(url: url)
-            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
-                    print("[Loki] Couldn't parse display names for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
-                    throw DotNetAPIError.parsingFailed
-                }
-                try! Storage.writeSync { transaction in
-                    data.forEach { data in
-                        guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
-                        let endIndex = hexEncodedPublicKey.endIndex
-                        let cutoffIndex = hexEncodedPublicKey.index(endIndex, offsetBy: -8)
-                        let displayName = "\(rawDisplayName) (...\(hexEncodedPublicKey[cutoffIndex..<endIndex]))"
-                        transaction.setObject(displayName, forKey: hexEncodedPublicKey, inCollection: "\(server).\(channel)")
+        print("[Loki] Getting display names for: \(publicKeys).")
+        return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
+                let queryParameters = "ids=\(publicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
+                let url = URL(string: "\(server)/users?\(queryParameters)")!
+                let request = TSRequest(url: url)
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
+                    guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
+                        print("[Loki] Couldn't parse display names for users: \(publicKeys) from: \(rawResponse).")
+                        throw DotNetAPIError.parsingFailed
+                    }
+                    try! Storage.writeSync { transaction in
+                        data.forEach { data in
+                            guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
+                            let endIndex = hexEncodedPublicKey.endIndex
+                            let cutoffIndex = hexEncodedPublicKey.index(endIndex, offsetBy: -8)
+                            let displayName = "\(rawDisplayName) (...\(hexEncodedPublicKey[cutoffIndex..<endIndex]))"
+                            transaction.setObject(displayName, forKey: hexEncodedPublicKey, inCollection: "\(server).\(channel)")
+                        }
                     }
                 }
             }
@@ -294,13 +325,15 @@ public final class PublicChatAPI : DotNetAPI {
         print("[Loki] Updating display name on server: \(server).")
         let parameters: JSON = [ "name" : (newDisplayName ?? "") ]
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
-            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
-                let url = URL(string: "\(server)/users/me")!
-                let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
-                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { _ in }.recover(on: DispatchQueue.global(qos: .default)) { error in
-                    print("Couldn't update display name due to error: \(error).")
-                    throw error
+            getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
+                    let url = URL(string: "\(server)/users/me")!
+                    let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { _ in }.recover(on: DispatchQueue.global(qos: .default)) { error in
+                        print("Couldn't update display name due to error: \(error).")
+                        throw error
+                    }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }
@@ -319,13 +352,15 @@ public final class PublicChatAPI : DotNetAPI {
         }
         let parameters: JSON = [ "annotations" : [ annotation ] ]
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
-            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
-                let url = URL(string: "\(server)/users/me")!
-                let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
-                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { _ in }.recover(on: DispatchQueue.global(qos: .default)) { error in
-                    print("[Loki] Couldn't update profile picture due to error: \(error).")
-                    throw error
+            getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
+                    let url = URL(string: "\(server)/users/me")!
+                    let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { _ in }.recover(on: DispatchQueue.global(qos: .default)) { error in
+                        print("[Loki] Couldn't update profile picture due to error: \(error).")
+                        throw error
+                    }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }
@@ -349,10 +384,10 @@ public final class PublicChatAPI : DotNetAPI {
             let oldProfilePictureURL = storage.getProfilePictureURL(forPublicChatWithID: publicChatID, in: transaction)
             if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
                 storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
-                if let avatarURL = info.profilePictureURL {
+                if let profilePictureURL = info.profilePictureURL {
                     let configuration = URLSessionConfiguration.default
                     let manager = AFURLSessionManager.init(sessionConfiguration: configuration)
-                    let url = URL(string: "\(server)\(avatarURL)")!
+                    let url = URL(string: "\(server)\(profilePictureURL)")!
                     let request = URLRequest(url: url)
                     let task = manager.downloadTask(with: request, progress: nil,
                         destination: { (targetPath: URL, response: URLResponse) -> URL in
@@ -381,33 +416,35 @@ public final class PublicChatAPI : DotNetAPI {
     public static func objc_getInfo(for channel: UInt64, on server: String) -> AnyPromise {
         return AnyPromise.from(getInfo(for: channel, on: server))
     }
-    
+
     public static func getInfo(for channel: UInt64, on server: String) -> Promise<PublicChatInfo> {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
-            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<PublicChatInfo> in
-                let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
-                let request = TSRequest(url: url)
-                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                    guard let json = rawResponse as? JSON,
-                        let data = json["data"] as? JSON,
-                        let annotations = data["annotations"] as? [JSON],
-                        let annotation = annotations.first,
-                        let info = annotation["value"] as? JSON,
-                        let displayName = info["name"] as? String,
-                        let profilePictureURL = info["avatar"] as? String,
-                        let countInfo = data["counts"] as? JSON,
-                        let memberCount = countInfo["subscribers"] as? Int else {
-                        print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                        throw DotNetAPIError.parsingFailed
+            getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<PublicChatInfo> in
+                    let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
+                    let request = TSRequest(url: url)
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
+                        guard let json = rawResponse as? JSON,
+                            let data = json["data"] as? JSON,
+                            let annotations = data["annotations"] as? [JSON],
+                            let annotation = annotations.first,
+                            let info = annotation["value"] as? JSON,
+                            let displayName = info["name"] as? String,
+                            let profilePictureURL = info["avatar"] as? String,
+                            let countInfo = data["counts"] as? JSON,
+                            let memberCount = countInfo["subscribers"] as? Int else {
+                            print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                            throw DotNetAPIError.parsingFailed
+                        }
+                        let storage = OWSPrimaryStorage.shared()
+                        try! Storage.writeSync { transaction in
+                            storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
+                        }
+                        let publicChatInfo = PublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
+                        updateProfileIfNeeded(for: channel, on: server, from: publicChatInfo)
+                        return publicChatInfo
                     }
-                    let storage = OWSPrimaryStorage.shared()
-                    try! Storage.writeSync { transaction in
-                        storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
-                    }
-                    let publicChatInfo = PublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
-                    updateProfileIfNeeded(for: channel, on: server, from: publicChatInfo)
-                    return publicChatInfo
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }
@@ -415,12 +452,14 @@ public final class PublicChatAPI : DotNetAPI {
 
     public static func join(_ channel: UInt64, on server: String) -> Promise<Void> {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
-            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
-                let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
-                let request = TSRequest(url: url, method: "POST", parameters: [:])
-                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
-                    print("[Loki] Joined channel with ID: \(channel) on server: \(server).")
+            getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
+                    let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
+                    let request = TSRequest(url: url, method: "POST", parameters: [:])
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
+                        print("[Loki] Joined channel with ID: \(channel) on server: \(server).")
+                    }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }
@@ -428,12 +467,14 @@ public final class PublicChatAPI : DotNetAPI {
 
     public static func leave(_ channel: UInt64, on server: String) -> Promise<Void> {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
-            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
-                let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
-                let request = TSRequest(url: url, method: "DELETE", parameters: [:])
-                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
-                    print("[Loki] Left channel with ID: \(channel) on server: \(server).")
+            getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
+                    let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
+                    let request = TSRequest(url: url, method: "DELETE", parameters: [:])
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
+                        print("[Loki] Left channel with ID: \(channel) on server: \(server).")
+                    }
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }
@@ -449,27 +490,31 @@ public final class PublicChatAPI : DotNetAPI {
         let url = URL(string: "\(server)/loki/v1/channels/\(channel)/messages/\(messageID)/report")!
         let request = TSRequest(url: url, method: "POST", parameters: [:])
         // Only used for the Loki Public Chat which doesn't require authentication
-        return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { _ in }
+        return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { _ in}
+        }
     }
 
     // MARK: Moderators
     public static func getModerators(for channel: UInt64, on server: String) -> Promise<Set<String>> {
-        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Set<String>> in
-            let url = URL(string: "\(server)/loki/v1/channel/\(channel)/get_moderators")!
-            let request = TSRequest(url: url)
-            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                guard let json = rawResponse as? JSON, let moderators = json["moderators"] as? [String] else {
-                    print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                    throw DotNetAPIError.parsingFailed
+        return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Set<String>> in
+                let url = URL(string: "\(server)/loki/v1/channel/\(channel)/get_moderators")!
+                let request = TSRequest(url: url)
+                request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
+                    guard let json = rawResponse as? JSON, let moderators = json["moderators"] as? [String] else {
+                        print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                        throw DotNetAPIError.parsingFailed
+                    }
+                    let moderatorsAsSet = Set(moderators);
+                    if self.moderators.keys.contains(server) {
+                        self.moderators[server]![channel] = moderatorsAsSet
+                    } else {
+                        self.moderators[server] = [ channel : moderatorsAsSet ]
+                    }
+                    return moderatorsAsSet
                 }
-                let moderatorsAsSet = Set(moderators);
-                if self.moderators.keys.contains(server) {
-                    self.moderators[server]![channel] = moderatorsAsSet
-                } else {
-                    self.moderators[server] = [ channel : moderatorsAsSet ]
-                }
-                return moderatorsAsSet
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
     }
