@@ -82,8 +82,6 @@ public class GroupAccess: MTLModel {
 
     public class func groupV2Access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
         switch value {
-        case .any:
-            return .any
         case .member:
             return .member
         case .administrator:
@@ -96,7 +94,7 @@ public class GroupAccess: MTLModel {
     public class func protoAccess(forGroupV2Access value: GroupV2Access) -> GroupsProtoAccessControlAccessRequired {
         switch value {
         case .any:
-            return .any
+            return .unknown
         case .member:
             return .member
         case .administrator:
