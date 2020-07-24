@@ -276,8 +276,9 @@ public enum OnionRequestAPI {
         ]
         let destination = Destination.server(host: host, x25519PublicKey: x25519Key)
         let promise = sendOnionRequest(with: payload, to: destination, associatedWith: getUserHexEncodedPublicKey(), isJSONRequired: isJSONRequired)
-        promise.catch2 { error in
+        promise.recover2 { error -> Promise<JSON> in
             print("[Loki] [Onion Request API] Couldn't reach server: \(server) due to error: \(error).")
+            throw error
         }
         return promise
     }
