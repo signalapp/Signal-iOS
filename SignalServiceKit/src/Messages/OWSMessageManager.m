@@ -1613,10 +1613,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Update thread preview in inbox
     [masterThread touchWithTransaction:transaction];
-
-    [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                    inThread:masterThread
-                                                                 transaction:transaction];
+    
+    if (CurrentAppContext().isMainAppAndActive) {
+        [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage inThread:masterThread transaction:transaction];
+    }
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.typingIndicators didReceiveIncomingMessageInThread:masterThread

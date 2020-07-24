@@ -88,8 +88,6 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     OWSAssertDebug(contactIdentifier.length > 0);
     OWSAssertDebug(deviceId >= 0);
     OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    // FIXME: This needs a comment from Ryan explaining why it's necessary (it has to do with push notifications)
-    if (!CurrentAppContext().isMainApp) { return; }
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
