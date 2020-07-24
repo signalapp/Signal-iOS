@@ -523,6 +523,13 @@ class StorageServiceOperation: OWSOperation {
                             unknownFields: unknownFields,
                             transaction: transaction
                         )
+
+                        if contactRecord.hasUnknownFields {
+                            state.accountIdToRecordWithUnknownFields[accountId] = contactRecord
+                        } else {
+                            state.accountIdToRecordWithUnknownFields[accountId] = nil
+                        }
+
                         let storageItem = try StorageService.StorageItem(
                             identifier: storageIdentifier,
                             contact: contactRecord
@@ -576,6 +583,13 @@ class StorageServiceOperation: OWSOperation {
                             unknownFields: unknownFields,
                             transaction: transaction
                         )
+
+                        if groupV1Record.hasUnknownFields {
+                            state.groupV1IdToRecordWithUnknownFields[groupId] = groupV1Record
+                        } else {
+                            state.groupV1IdToRecordWithUnknownFields[groupId] = nil
+                        }
+
                         let storageItem = try StorageService.StorageItem(
                             identifier: storageIdentifier,
                             groupV1: groupV1Record
@@ -617,6 +631,13 @@ class StorageServiceOperation: OWSOperation {
                             unknownFields: unknownFields,
                             transaction: transaction
                         )
+
+                        if groupV2Record.hasUnknownFields {
+                            state.groupV2MasterKeyToRecordWithUnknownFields[groupMasterKey] = groupV2Record
+                        } else {
+                            state.groupV2MasterKeyToRecordWithUnknownFields[groupMasterKey] = nil
+                        }
+
                         let storageItem = try StorageService.StorageItem(
                             identifier: storageIdentifier,
                             groupV2: groupV2Record
@@ -655,7 +676,17 @@ class StorageServiceOperation: OWSOperation {
                             unknownFields: unknownFields,
                             transaction: transaction
                         )
-                        let accountItem = try StorageService.StorageItem(identifier: storageIdentifier, account: accountRecord)
+
+                        if accountRecord.hasUnknownFields {
+                            state.localAccountRecordWithUnknownFields = accountRecord
+                        } else {
+                            state.localAccountRecordWithUnknownFields = nil
+                        }
+
+                        let accountItem = try StorageService.StorageItem(
+                            identifier: storageIdentifier,
+                            account: accountRecord
+                        )
 
                         // Clear pending changes
                         state.localAccountChangeState = .unchanged
