@@ -1271,6 +1271,15 @@
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Failed to send message.";
 
+/* Error indicating that openURL for a mailto: URL failed. */
+"ERROR_DESCRIPTION_COULD_NOT_OPEN_EMAIL" = "Failed to open email app. Please email your support request to support@signal.org";
+
+/* Error indicating that a support mailto link could not be created. */
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create email. Please email your support request to support@signal.org";
+
+/* Generic error indicating that log upload failed */
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
 
@@ -1297,6 +1306,9 @@
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Error. Please try again later.";
+
+/* Title for alert dialog presented when a support email failed to send */
+"ERROR_DESCRIPTION_SUPPORT_EMAIL_FAILURE_TITLE" = "Support request failure";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "An unknown error occurred.";
@@ -3872,11 +3884,11 @@
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "Contact Us";
 
-/* Title of the support request view controller */
-"SUPPORT_CONTACT_US_TITLE" = "SUPPORT_CONTACT_US_TITLE";
-
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+
+/* Localized subject for support request emails */
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";

@@ -3,9 +3,11 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc(OWSContactSupportViewController)
 class ContactSupportViewController: OWSTableViewController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
         owsAssert(navigationController != nil, "Expecting to be presented in a navigation controller")
@@ -86,6 +88,14 @@ class ContactSupportViewController: OWSTableViewController {
         }, completion: nil)
     }
 
+    var showSpinnerOnNextButton = false {
+        didSet {
+            let indicator = showSpinnerOnNextButton ? UIActivityIndicatorView() : nil
+            indicator?.startAnimating()
+            navigationItem.rightBarButtonItem?.customView = indicator
+        }
+    }
+
     // MARK: - Actions
 
     @objc func didTapCancel() {
@@ -93,6 +103,36 @@ class ContactSupportViewController: OWSTableViewController {
     }
 
     @objc func didTapNext() {
+        var emailRequest = SupportEmailModel()
+        emailRequest.userDescription = descriptionField.text
+        emailRequest.emojiMood = emojiPicker.selectedMood
+        emailRequest.debugLogPolicy = debugSwitch.isOn ? .attemptUpload : .none
+        let operation = SupportEmailComposeOperation(model: emailRequest)
+        showSpinnerOnNextButton = true
+
+        firstly { () -> Promise<Void> in
+            operation.perform(workQueue: .sharedUserInitiated)
+
+        }.done(on: .main) { _ in
+            self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
+
+        }.catch(on: .main) { error in
+            let alertVC = UIAlertController(title: NSLocalizedString("ERROR_DESCRIPTION_SUPPORT_EMAIL_FAILURE_TITLE",
+                                                                     comment: "Title for alert dialog presented when a support email failed to send"),
+                                            message: error.localizedDescription,
+                                            preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OKAY",
+                                                                     comment: "Label for the 'okay' button."),
+                                            style: .default,
+                                            handler: { (_) in
+                alertVC.presentingViewController?.dismiss(animated: true, completion: nil)
+            }))
+            self.present(alertVC, animated: true, completion: nil)
+
+        }.finally(on: .main) {
+            self.showSpinnerOnNextButton = false
+
+        }
     }
 }
 
@@ -229,7 +269,7 @@ extension ContactSupportViewController {
         stackView.alignment = .center
 
         cell.contentView.addSubview(stackView)
-        cell.accessoryView = self.debugSwitch
+        cell.accessoryView = debugSwitch
 
         stackView.autoPinEdgesToSuperviewMargins()
         return cell
@@ -240,7 +280,6 @@ extension ContactSupportViewController {
         let edgeInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
         containerView.layoutMargins = UIEdgeInsets(top: 0, leading: edgeInset, bottom: 0, trailing: edgeInset)
 
-        let emojiPicker = EmojiMoodPickerView()
         containerView.addSubview(emojiPicker)
         emojiPicker.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
         return containerView

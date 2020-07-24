@@ -103,5 +103,15 @@ extension EmojiMoodPickerView {
         case inconvenienced = "😐"
         case disappointed = "🙁"
         case angry = "😠"
+
+        var rawStringVal: String {
+            switch self {
+            case .thrilled: return "emoji_5"
+            case .happy: return "emoji_4"
+            case .inconvenienced: return "emoji_3"
+            case .disappointed: return "emoji_2"
+            case .angry: return "emoji_1"
+            }
+        }
     }
 }
