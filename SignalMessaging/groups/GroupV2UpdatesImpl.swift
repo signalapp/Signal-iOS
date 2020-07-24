@@ -640,6 +640,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        transaction: transaction).groupThread
 
+                Logger.info("---- localUuid: \(localUuid)")
+                Logger.info("---- newProfileKeys: \(newProfileKeys)")
+                if let profileKey = newProfileKeys[localUuid] {
+                    Logger.info("---- profileKey: \(profileKey.hexadecimalString)")
+                }
+                Logger.info("---- localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
+
                 // If the group state includes a stale profile key for the
                 // local user, schedule an update to fix that.
                 if let profileKey = newProfileKeys[localUuid],
@@ -817,6 +824,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                                                        transaction: transaction)
 
             GroupManager.storeProfileKeysFromGroupProtos(groupV2Snapshot.profileKeys)
+
+            Logger.info("---- localUuid: \(localUuid)")
+            Logger.info("---- groupV2Snapshot.profileKeys: \(groupV2Snapshot.profileKeys)")
+            if let profileKey = groupV2Snapshot.profileKeys[localUuid] {
+                Logger.info("---- profileKey: \(profileKey.hexadecimalString)")
+            }
+            Logger.info("---- localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
 
             // If the group state includes a stale profile key for the
             // local user, schedule an update to fix that.
