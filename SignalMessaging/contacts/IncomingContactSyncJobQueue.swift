@@ -337,7 +337,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         if contactDetails.isBlocked {
             if !self.blockingManager.isAddressBlocked(contactDetails.address) {
                 self.blockingManager.addBlockedAddress(contactDetails.address,
-                                                       wasLocallyInitiated: false,
+                                                       blockMode: .remote,
                                                        transaction: transaction)
             }
         } else {

@@ -354,6 +354,7 @@ public class GroupManager: NSObject {
                 return self.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
                                                                             disappearingMessageToken: disappearingMessageToken,
                                                                             groupUpdateSourceAddress: localAddress,
+                                                                            mightBeAddingLocalUserToGroup: false,
                                                                             transaction: transaction)
             }
 
@@ -636,13 +637,22 @@ public class GroupManager: NSObject {
                                                  groupUpdateSourceAddress: SignalServiceAddress?,
                                                  infoMessagePolicy: InfoMessagePolicy = .always,
                                                  transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
-
+        let mightBeAddingLocalUserToGroup = try mightBeAddingLocalUserToV1Group(groupModel: groupModel)
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: groupModel,
                                                                                      newDisappearingMessageToken: disappearingMessageToken,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                      canInsert: true,
+                                                                                     mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
                                                                                      infoMessagePolicy: infoMessagePolicy,
                                                                                      transaction: transaction)
+    }
+
+    private static func mightBeAddingLocalUserToV1Group(groupModel: TSGroupModel) throws -> Bool {
+        guard let localAddress = tsAccountManager.localAddress else {
+            throw OWSAssertionError("Missing localAddress.")
+        }
+        return (groupModel.groupsVersion == .V1 &&
+            groupModel.groupMembership.isPendingOrNonPendingMember(localAddress))
     }
 
     // MARK: - Update Existing Group (Remote)
@@ -655,6 +665,9 @@ public class GroupManager: NSObject {
                                                      disappearingMessageToken: DisappearingMessageToken?,
                                                      groupUpdateSourceAddress: SignalServiceAddress?,
                                                      transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
+        guard let localAddress = tsAccountManager.localAddress else {
+            throw OWSAssertionError("Missing localAddress.")
+        }
 
         let groupId = proposedGroupModel.groupId
         let updateInfo: UpdateInfo
@@ -669,10 +682,12 @@ public class GroupManager: NSObject {
             return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
         }
         let newGroupModel = updateInfo.newGroupModel
+        let mightBeAddingLocalUserToGroup = try mightBeAddingLocalUserToV1Group(groupModel: newGroupModel)
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                      newDisappearingMessageToken: disappearingMessageToken,
                                                                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                      canInsert: false,
+                                                                                     mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
                                                                                      transaction: transaction)
     }
 
@@ -729,10 +744,12 @@ public class GroupManager: NSObject {
                                                    dmConfiguration: dmConfiguration,
                                                    transaction: transaction)
             let newGroupModel = updateInfo.newGroupModel
+            let mightBeAddingLocalUserToGroup = try mightBeAddingLocalUserToV1Group(groupModel: newGroupModel)
             let upsertGroupResult = try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                           newDisappearingMessageToken: dmConfiguration?.asToken,
                                                                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                           canInsert: false,
+                                                                                                          mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
                                                                                                           transaction: transaction)
 
             if let dmConfiguration = dmConfiguration {
@@ -1077,9 +1094,17 @@ public class GroupManager: NSObject {
     // MARK: - Accept Invites
 
     public static func localAcceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return updateGroupV2(groupModel: groupModel,
-                             description: "Accept invite") { groupChangeSet in
-            groupChangeSet.setShouldAcceptInvite()
+        return firstly { () -> Promise<Void> in
+            return self.databaseStorage.write(.promise) { transaction in
+                self.profileManager.addGroupId(toProfileWhitelist: groupModel.groupId,
+                                               wasLocallyInitiated: true,
+                                               transaction: transaction)
+            }
+        }.then(on: .global()) { _ in
+            updateGroupV2(groupModel: groupModel,
+                          description: "Accept invite") { groupChangeSet in
+                            groupChangeSet.setShouldAcceptInvite()
+            }
         }
     }
 
@@ -1572,10 +1597,16 @@ public class GroupManager: NSObject {
     public static func insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: TSGroupModel,
                                                                        disappearingMessageToken: DisappearingMessageToken?,
                                                                        groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                       mightBeAddingLocalUserToGroup: Bool,
                                                                        infoMessagePolicy: InfoMessagePolicy = .always,
                                                                        transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
+
+        updateProfileWhitelistIfNecessary(withGroupThread: groupThread,
+                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                          mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
+                                          transaction: transaction)
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
 
@@ -1603,6 +1634,7 @@ public class GroupManager: NSObject {
                                                                                     newDisappearingMessageToken: DisappearingMessageToken?,
                                                                                     groupUpdateSourceAddress: SignalServiceAddress?,
                                                                                     canInsert: Bool,
+                                                                                    mightBeAddingLocalUserToGroup: Bool,
                                                                                     infoMessagePolicy: InfoMessagePolicy = .always,
                                                                                     transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
 
@@ -1623,6 +1655,7 @@ public class GroupManager: NSObject {
             let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
                                                                          disappearingMessageToken: newDisappearingMessageToken,
                                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                                         mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
                                                                          infoMessagePolicy: infoMessagePolicy,
                                                                          transaction: transaction)
 
@@ -1800,6 +1833,14 @@ public class GroupManager: NSObject {
                                         messageType: .typeGroupUpdate,
                                         infoMessageUserInfo: userInfo)
         infoMessage.anyInsert(transaction: transaction)
+
+        if let groupUpdateSourceAddress = groupUpdateSourceAddress,
+            groupUpdateSourceAddress.isLocalAddress {
+            infoMessage.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                   thread: groupThread,
+                                   circumstance: .readOnThisDevice,
+                                   transaction: transaction)
+        }
     }
 
     // MARK: - Group Database
@@ -1833,8 +1874,33 @@ public class GroupManager: NSObject {
 
     // MARK: - Profiles
 
-    @objc
-    public static func updateProfileWhitelist(withGroupThread groupThread: TSGroupThread) {
+    private static func updateProfileWhitelistIfNecessary(withGroupThread groupThread: TSGroupThread,
+                                                          groupUpdateSourceAddress: SignalServiceAddress?,
+                                                          mightBeAddingLocalUserToGroup: Bool,
+                                                          transaction: SDSAnyWriteTransaction) {
+        let shouldAddToWhitelist: Bool = {
+            guard let groupUpdateSourceAddress = groupUpdateSourceAddress else {
+                Logger.verbose("No groupUpdateSourceAddress.")
+                return false
+            }
+            if groupUpdateSourceAddress.isLocalAddress {
+                return true
+            }
+            guard mightBeAddingLocalUserToGroup else {
+                return false
+            }
+            if self.contactsManager.isSystemContact(address: groupUpdateSourceAddress) {
+                return true
+            }
+            if self.profileManager.isUser(inProfileWhitelist: groupUpdateSourceAddress, transaction: transaction) {
+                return true
+            }
+            return false
+        }()
+        guard shouldAddToWhitelist else {
+            Logger.verbose("Not adding to whitelist.")
+            return
+        }
         guard let localAddress = self.tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
             return
@@ -1844,10 +1910,10 @@ public class GroupManager: NSObject {
         // if we're a member of the group. We don't want to do this if we're just a
         // pending member or are leaving/have already left the group.
         let groupMembership = groupThread.groupModel.groupMembership
-        guard groupMembership.isNonPendingMember(localAddress) else {
+        guard groupMembership.isPendingOrNonPendingMember(localAddress) else {
             return
         }
-        profileManager.addThread(toProfileWhitelist: groupThread)
+        profileManager.addThread(toProfileWhitelist: groupThread, transaction: transaction)
     }
 
     @objc

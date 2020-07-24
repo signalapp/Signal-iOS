@@ -206,7 +206,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
     for (SignalServiceAddress *address in addresses) {
         OWSAssertDebug(address.isValid);
-        [self.blockingManager addBlockedAddress:address wasLocallyInitiated:YES];
+        [self.blockingManager addBlockedAddress:address blockMode:BlockMode_LocalShouldLeaveGroups];
     }
 
     [self showOkAlertWithTitle:NSLocalizedString(
@@ -234,8 +234,9 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                                     success:^{
                                                         // block the group regardless of the ability to deliver the
                                                         // "leave group" message.
-                                                        [self.blockingManager addBlockedGroup:groupThread.groupModel
-                                                                          wasLocallyInitiated:YES];
+                                                        [self.blockingManager
+                                                            addBlockedGroup:groupThread.groupModel
+                                                                  blockMode:BlockMode_LocalShouldLeaveGroups];
 
                                                         NSString *alertTitle = NSLocalizedString(
                                                             @"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",

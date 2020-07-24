@@ -4698,10 +4698,12 @@ typedef enum : NSUInteger {
     [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
 
     if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Minor) {
+        [self showMessageRequestDialogIfRequiredAsync];
         return;
     } else if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Reload) {
         [self resetContentAndLayoutWithTransaction:transaction];
         [self updateUnreadMessageFlagWithTransaction:transaction];
+        [self showMessageRequestDialogIfRequiredAsync];
         return;
     }
 
@@ -5088,6 +5090,12 @@ typedef enum : NSUInteger {
 
 #pragma mark - Message Request
 
+- (void)showMessageRequestDialogIfRequiredAsync
+{
+    __weak ConversationViewController *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{ [weakSelf showMessageRequestDialogIfRequired]; });
+}
+
 - (void)showMessageRequestDialogIfRequired
 {
     OWSAssertIsOnMainThread();
@@ -5101,7 +5109,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
+    self.messageRequestView = [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
     self.messageRequestView.delegate = self;
     [self reloadBottomBar];
 }

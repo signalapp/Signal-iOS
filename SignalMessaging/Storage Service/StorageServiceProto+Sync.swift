@@ -186,7 +186,7 @@ extension StorageServiceProtoContactRecord {
         // If our local blocked state differs from the service state, use the service's value.
         if blocked != localIsBlocked {
             if blocked {
-                blockingManager.addBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
+                blockingManager.addBlockedAddress(address, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedAddress(address, wasLocallyInitiated: false, transaction: transaction)
             }
@@ -328,7 +328,7 @@ extension StorageServiceProtoGroupV1Record {
         // If our local blocked state differs from the service state, use the service's value.
         if blocked != localIsBlocked {
             if blocked {
-                blockingManager.addBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
+                blockingManager.addBlockedGroupId(id, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
             }
@@ -493,7 +493,7 @@ extension StorageServiceProtoGroupV2Record {
         // If our local blocked state differs from the service state, use the service's value.
         if blocked != localIsBlocked {
             if blocked {
-                blockingManager.addBlockedGroupId(groupId, wasLocallyInitiated: false, transaction: transaction)
+                blockingManager.addBlockedGroupId(groupId, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedGroupId(groupId, wasLocallyInitiated: false, transaction: transaction)
             }
