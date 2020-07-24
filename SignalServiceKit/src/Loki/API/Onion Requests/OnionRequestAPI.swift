@@ -307,11 +307,11 @@ public enum OnionRequestAPI {
                         let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
                         let data = Data(try aes.decrypt(ciphertext.bytes))
                         guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
-                            let bodyAsString = json["body"] as? String, let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
+                            let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
                         if statusCode == 406 { // Clock out of sync
                             print("[Loki] The user's clock is out of sync with the service node network.")
                             seal.reject(SnodeAPI.SnodeAPIError.clockOutOfSync)
-                        } else {
+                        } else if let bodyAsString = json["body"] as? String {
                             let body: JSON
                             if !isJSONRequired {
                                 body = [ "result" : bodyAsString ]
@@ -322,6 +322,9 @@ public enum OnionRequestAPI {
                             }
                             guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
                             seal.fulfill(body)
+                        } else {
+                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: json)) }
+                            seal.fulfill(json)
                         }
                     } catch (let error) {
                         seal.reject(error)

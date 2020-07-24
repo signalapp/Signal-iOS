@@ -68,7 +68,8 @@ public class DotNetAPI : NSObject {
         let queryParameters = "pubKey=\(getUserHexEncodedPublicKey())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(server) } : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
+        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+            : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
         return serverPublicKeyPromise.then2 { serverPublicKey in
             OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey)
         }.map2 { rawResponse in
@@ -95,7 +96,8 @@ public class DotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(server) } : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
+        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+            : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
         return serverPublicKeyPromise.then2 { serverPublicKey in
             OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey)
         }.map2 { _ in token }

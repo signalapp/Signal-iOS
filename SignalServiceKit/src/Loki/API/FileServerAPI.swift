@@ -112,7 +112,7 @@ public final class FileServerAPI : DotNetAPI {
             return attempt(maxRetryCount: 8, recoveringOn: SnodeAPI.workQueue) {
                 OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { _ in }
             }.handlingInvalidAuthTokenIfNeeded(for: server).recover2 { error in
-                print("Couldn't update device links due to error: \(error).")
+                print("[Loki] Couldn't update device links due to error: \(error).")
                 throw error
             }
         }
