@@ -297,7 +297,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         return;
     }
 
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    __block OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     __block NSArray<OWSMessageContentJob *> *processedJobs;
     __block NSUInteger jobCount;
@@ -308,9 +308,6 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         
         jobCount = [self.finder jobCountWithTransaction:transaction];
     });
-
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
 
     OWSLogVerbose(@"completed %lu/%lu jobs. %lu jobs left.",
         (unsigned long)processedJobs.count,
@@ -323,6 +320,9 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     // batching.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5f * NSEC_PER_SEC)), self.serialQueue, ^{
         [self drainQueueWorkStep];
+
+        OWSAssertDebug(backgroundTask);
+        backgroundTask = nil;
     });
 }
 
