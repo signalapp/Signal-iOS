@@ -8,7 +8,6 @@
 #import "BlockListViewController.h"
 #import "ContactsViewHelper.h"
 #import "ConversationCollectionView.h"
-#import "ConversationInputTextView.h"
 #import "ConversationInputToolbar.h"
 #import "ConversationScrollButton.h"
 #import "ConversationViewCell.h"

@@ -3,7 +3,6 @@
 //
 
 #import "ConversationInputToolbar.h"
-#import "ConversationInputTextView.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
 #import "OWSMath.h"
