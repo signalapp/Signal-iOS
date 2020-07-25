@@ -74,6 +74,10 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return true
     }
 
+    func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
+        return (mockDisplayNameMap[address] ?? "").count > 0
+    }
+
     func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         ConversationColorName.taupe.rawValue
     }
