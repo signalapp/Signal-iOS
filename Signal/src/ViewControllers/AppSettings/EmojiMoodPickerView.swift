@@ -23,8 +23,6 @@ class EmojiMoodPickerView: UIView {
         ])
         button.clipsToBounds = true
         button.setAttributedTitle(title, for: .normal)
-        button.setBackgroundImage(UIImage(color: .ows_gray05), for: .normal)
-        button.setBackgroundImage(UIImage(color: Theme.accentBlueColor), for: .selected)
         return button
     }
 
@@ -59,6 +57,16 @@ class EmojiMoodPickerView: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func applyTheme() {
+        let defaultButtonBackground = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
+        let selectedButtonBackground = Theme.isDarkThemeEnabled ? Theme.accentBlueColor : UIColor(rgbHex: 0x4490e3)
+
+        moodButtons.values.forEach { (button) in
+            button.setBackgroundImage(UIImage(color: defaultButtonBackground), for: .normal)
+            button.setBackgroundImage(UIImage(color: selectedButtonBackground), for: .selected)
+        }
     }
 
     // MARK: - Layout

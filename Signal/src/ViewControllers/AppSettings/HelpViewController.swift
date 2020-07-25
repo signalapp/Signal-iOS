@@ -48,6 +48,18 @@ class HelpViewController: OWSTableViewController {
                 }),
 
                 OWSTableItem(title: contactLabel, actionBlock: {
+                    guard SupportEmailComposeOperation.canSendEmails else {
+                        let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
+                                                                    comment: "Title for the fallback support sheet if user cannot send email")
+                        let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
+                                                                      comment: "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org")
+                        let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
+                                                                  message: localizedSheetMessage)
+                        let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                        fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
+                        self.presentActionSheet(fallbackSheet)
+                        return
+                    }
                     let supportVC = ContactSupportViewController()
                     let navVC = OWSNavigationController(rootViewController: supportVC)
                     self.presentFormSheet(navVC, animated: true)

@@ -75,12 +75,22 @@ class SupportEmailComposeOperation {
     }
 
     private var model: SupportEmailModel
+    private var isCancelled: Bool = false
 
     init(model: SupportEmailModel) {
         self.model = model
     }
 
     func perform(workQueue: DispatchQueue = .sharedUtility) -> Promise<Void> {
+        guard !isCancelled else {
+            // If we're cancelled, return an empty success
+            return Promise()
+        }
+        guard Self.canSendEmails else {
+            // If we can't send emails, fail early
+            return Promise(error: EmailError.failedToOpenURL)
+        }
+
         return firstly { () -> Promise<String?> in
             // Returns an appropriate string for the debug logs
             // If we're not uploading, returns nil
@@ -117,8 +127,15 @@ class SupportEmailComposeOperation {
             }
 
         }.then(on: .main) { (emailURL: URL) -> Promise<Void> in
-            return self.open(mailURL: emailURL)
+            (self.isCancelled == false) ? self.open(mailURL: emailURL) : Promise()
         }
+    }
+
+    /// If invoked before the operation completes, will prevent the operation from opening email
+    /// Must be called from main queue. Note: This doesn't really *stop* the operation so much as
+    /// render it invisible to the user.
+    func cancel() {
+        isCancelled = true
     }
 
     private func open(mailURL url: URL) -> Promise<Void> {

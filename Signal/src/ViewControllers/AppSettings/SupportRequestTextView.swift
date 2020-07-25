@@ -40,6 +40,8 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
         textView.textContainer.lineFragmentPadding = 0
         textView.isScrollEnabled = false
         textView.clipsToBounds = false
+        textView.backgroundColor = .clear
+        textView.adjustsFontForContentSizeCategory = true
         return textView
     }()
 
@@ -67,6 +69,10 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func applyTheme() {
+        configurePlaceholder()
     }
 
     // MARK: - Private

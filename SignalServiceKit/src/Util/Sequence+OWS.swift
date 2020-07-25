@@ -8,7 +8,7 @@ public extension Sequence {
 
     /// Builds a dicitonary mapping the elements of a sequence to the value returned from `valueBuilder`
     /// The elements of a dictionary must be unique.
-    public func dictionaryWithValues<Value>(_ valueBuilder: ((Element) -> Value)) -> [Element: Value] {
+    func dictionaryWithValues<Value>(_ valueBuilder: ((Element) -> Value)) -> [Element: Value] {
         let kvPairs = map { key in
             return (key, valueBuilder(key))
         }

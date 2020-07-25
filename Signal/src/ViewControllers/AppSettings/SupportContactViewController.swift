@@ -10,7 +10,7 @@ class ContactSupportViewController: OWSTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        owsAssert(navigationController != nil, "Expecting to be presented in a navigation controller")
+        owsAssertDebug(navigationController?.viewControllers.count == 1, "Expecting to be presented in a dedicated navigation controller")
 
         tableView.keyboardDismissMode = .interactive
         useThemeBackgroundColors = false     // TODO ask myles about background color
@@ -48,7 +48,6 @@ class ContactSupportViewController: OWSTableViewController {
         descriptionField.placeholderText = NSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
                                                              comment: "Placeholder string for support description")
         debugSwitch.onTintColor = nil       // Override +UIAppearance default
-
     }
 
     func setupNavigationBar() {
@@ -65,7 +64,27 @@ class ContactSupportViewController: OWSTableViewController {
 
     @objc override func applyTheme() {
         super.applyTheme()
+        let navigationBar = navigationController?.navigationBar as? OWSNavigationBar
+
+        // Every non-control item should be set to this background color
+        let backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : UIColor.ows_white
+
+        // Setting the styling to .clear removes any other navigationBar styling
+        // We explicitly set the backgroundColor to ensure that the entire navigation bar appears the correct color
+        navigationBar?.switchToStyle(.clear)
+
+        navigationController?.view.backgroundColor = backgroundColor
+        navigationController?.navigationBar.backgroundColor = backgroundColor
+        view.backgroundColor = backgroundColor
+        tableView.backgroundColor = backgroundColor
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
+
+        // Notify any interested subviews that our theme has changed
+        descriptionField.applyTheme()
+        emojiPicker.applyTheme()
+
+        // Rebuild the contents to force them to update their theme
+        declaredContentDefinition = constructContents()
     }
 
     // MARK: - View transitions
@@ -99,15 +118,18 @@ class ContactSupportViewController: OWSTableViewController {
     // MARK: - Actions
 
     @objc func didTapCancel() {
+        currentEmailComposeOperation?.cancel()
         navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
 
+    var currentEmailComposeOperation: SupportEmailComposeOperation?
     @objc func didTapNext() {
         var emailRequest = SupportEmailModel()
         emailRequest.userDescription = descriptionField.text
         emailRequest.emojiMood = emojiPicker.selectedMood
         emailRequest.debugLogPolicy = debugSwitch.isOn ? .attemptUpload : .none
         let operation = SupportEmailComposeOperation(model: emailRequest)
+        currentEmailComposeOperation = operation
         showSpinnerOnNextButton = true
 
         firstly { () -> Promise<Void> in
@@ -117,19 +139,12 @@ class ContactSupportViewController: OWSTableViewController {
             self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
 
         }.catch(on: .main) { error in
-            let alertVC = UIAlertController(title: NSLocalizedString("ERROR_DESCRIPTION_SUPPORT_EMAIL_FAILURE_TITLE",
-                                                                     comment: "Title for alert dialog presented when a support email failed to send"),
-                                            message: error.localizedDescription,
-                                            preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OKAY",
-                                                                     comment: "Label for the 'okay' button."),
-                                            style: .default,
-                                            handler: { (_) in
-                alertVC.presentingViewController?.dismiss(animated: true, completion: nil)
-            }))
-            self.present(alertVC, animated: true, completion: nil)
+            let alertTitle = NSLocalizedString("ERROR_DESCRIPTION_SUPPORT_EMAIL_FAILURE_TITLE",
+                                               comment: "Title for alert dialog presented when a support email failed to send")
+            self.presentBasicAlert(title: alertTitle, message: error.localizedDescription)
 
         }.finally(on: .main) {
+            self.currentEmailComposeOperation = nil
             self.showSpinnerOnNextButton = false
 
         }
@@ -197,6 +212,13 @@ extension ContactSupportViewController: SupportRequestTextViewDelegate, UIScroll
 // MARK: - Table view content builders
 
 extension ContactSupportViewController {
+
+    func newCell() -> UITableViewCell {
+        let cell = OWSTableItem.newCell()
+        cell.backgroundColor = .clear
+        return cell
+    }
+
     fileprivate func constructContents() -> OWSTableContents {
 
         let titleText = NSLocalizedString("HELP_CONTACT_US",
@@ -214,7 +236,7 @@ extension ContactSupportViewController {
 
                 // Description field
                 OWSTableItem(customCellBlock: {
-                    let cell = OWSTableItem.newCell()
+                    let cell = self.newCell()
                     cell.contentView.addSubview(self.descriptionField)
                     self.descriptionField.autoPinEdgesToSuperviewMargins()
                     self.descriptionField.autoSetDimension(.height, toSize: 125, relation: .greaterThanOrEqual)
@@ -226,10 +248,17 @@ extension ContactSupportViewController {
 
                 // FAQ prompt
                 OWSTableItem(customCellBlock: {
-                    let cell = OWSTableItem.newCell()
+                    let cell = self.newCell()
                     cell.textLabel?.text = faqPromptText
+                    cell.textLabel?.adjustsFontForContentSizeCategory = true
                     cell.textLabel?.textColor = Theme.accentBlueColor
                     return cell
+                }, actionBlock: {
+                    guard let supportURL = URL(string: TSConstants.signalSupportURL) else {
+                        owsFailDebug("Invalid URL")
+                        return
+                    }
+                    UIApplication.shared.open(supportURL, options: [:])
                 })
             ]),
 
@@ -245,33 +274,35 @@ extension ContactSupportViewController {
     }
 
     func createDebugLogCell() -> UITableViewCell {
-        let cell = OWSTableItem.newCell()
+        let cell = newCell()
 
         let label = UILabel()
         label.text = NSLocalizedString("SUPPORT_INCLUDE_DEBUG_LOG",
                                        comment: "Label describing support switch to attach debug logs")
-        label.font = OWSTableItem.primaryLabelFont
+        label.font = UIFont.ows_dynamicTypeBody
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
         label.textColor = Theme.primaryTextColor
-        label.setContentHuggingHorizontalHigh()
 
-        let infoAsset = UIImage(named: "help-outline-24")
-        let infoButton = UIButton(type: .custom)
-        infoButton.setImage(infoAsset, for: .normal)
-        infoButton.setContentHuggingHorizontalHigh()
-        infoButton.setCompressionResistanceHorizontalHigh()
+        let infoButton = OWSButton(imageName: "help-outline-24", tintColor: Theme.secondaryTextAndIconColor) {
+            guard let supportURL = URL(string: TSConstants.signalDebugLogsInfoURL) else {
+                owsFailDebug("Invalid URL")
+                return
+            }
+            UIApplication.shared.open(supportURL, options: [:])
+        }
 
-        let spacer = UIView.hStretchingSpacer()
-
-        let stackViewComponents = [label, infoButton, spacer]
-        let stackView = UIStackView(arrangedSubviews: stackViewComponents)
-        stackView.axis = .horizontal
-        stackView.spacing = UIStackView.spacingUseSystem
-        stackView.alignment = .center
-
-        cell.contentView.addSubview(stackView)
+        cell.contentView.addSubview(label)
+        cell.contentView.addSubview(infoButton)
         cell.accessoryView = debugSwitch
 
-        stackView.autoPinEdgesToSuperviewMargins()
+        label.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
+        label.setCompressionResistanceHigh()
+
+        infoButton.autoPinHeightToSuperviewMargins()
+        infoButton.autoPinLeading(toTrailingEdgeOf: label, offset: 6)
+        infoButton.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+
         return cell
     }
 
@@ -284,5 +315,16 @@ extension ContactSupportViewController {
         emojiPicker.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
         return containerView
     }
+}
 
+// MARK: - Alerting
+
+private extension ContactSupportViewController {
+    /// Presents a basic UIAlertController modal alert with a single "Okay" button to dismiss the alert
+    func presentBasicAlert(title: String, message: String?) {
+        let actionSheet = ActionSheetController(title: title, message: message)
+        let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+        actionSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
+        presentActionSheet(actionSheet)
+    }
 }
