@@ -3776,6 +3776,7 @@ typedef enum : NSUInteger {
     [self.inputToolbar setMessageText:existingDraft animated:NO];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
+    self.inputToolbar.mentionDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
     [self reloadBottomBar];
 }

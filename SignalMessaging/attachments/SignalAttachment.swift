@@ -543,6 +543,12 @@ public class SignalAttachment: NSObject {
             return false
         }
 
+        // The mention text view has a special pasteboard type, if we see it
+        // we know that the pasteboard contains text.
+        guard !pasteboardUTISet.contains(MentionTextView.pasteboardType) else {
+            return true
+        }
+
         // The pasteboard can be populated with multiple UTI types
         // with different payloads.  iMessage for example will copy
         // an animated GIF to the pasteboard with the following UTI

@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAttachment;
 @class StickerInfo;
 
+@protocol MentionTextViewDelegate;
+
 @protocol ConversationInputToolbarDelegate <NSObject>
 
 - (void)sendButtonPressed;
@@ -79,6 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isInputViewFirstResponder;
 
 - (void)setInputTextViewDelegate:(id<ConversationInputTextViewDelegate>)value;
+- (void)setMentionDelegate:(id<MentionTextViewDelegate>)value;
 
 - (NSString *)messageText;
 - (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;

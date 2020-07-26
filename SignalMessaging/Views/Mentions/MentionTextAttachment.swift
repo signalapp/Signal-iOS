@@ -5,20 +5,33 @@
 import Foundation
 
 @objc
-public class MentionTextAttachment: NSTextAttachment {
-    let mentionPadding: CGFloat = 3
+public enum MentionStyle: Int {
+    case incoming
+    case outgoing
 
+    public static var composing: MentionStyle = .incoming
+}
+
+class MentionTextAttachment: NSTextAttachment {
     let address: SignalServiceAddress
+    let text: String
+    let style: MentionStyle
 
-    let label = UILabel()
+    private let mentionPadding: CGFloat = 3
+    private let label = UILabel()
 
-    init(address: SignalServiceAddress) {
+    init(address: SignalServiceAddress, style: MentionStyle) {
         self.address = address
+        self.style = style
+
+        // TODO: Maybe don't lookup the display name here..
+        self.text = MentionTextView.mentionPrefix + Environment.shared.contactsManager.displayName(for: address)
 
         super.init(data: nil, ofType: nil)
 
         label.layer.cornerRadius = 4
         label.clipsToBounds = true
+        label.text = text
 
         label.font = .ows_dynamicTypeBody
         label.textAlignment = .center
@@ -28,39 +41,63 @@ public class MentionTextAttachment: NSTextAttachment {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var attributedString: NSAttributedString { .init(attachment: self) }
+    private var cachedBounds: CGRect?
+    private var cachedProposedWidth: CGFloat?
+    func calculateBounds(proposedWidth: CGFloat) -> CGRect {
+        if let cachedBounds = cachedBounds, cachedProposedWidth == proposedWidth { return cachedBounds }
 
-    func calculateBounds() -> CGRect {
-        label.text = MentionTextView.mentionPrefix + Environment.shared.contactsManager.displayName(for: address)
+        let maxWidth = proposedWidth - mentionPadding * 2
+
         label.sizeToFit()
-        label.frame = label.frame.insetBy(dx: -mentionPadding, dy: -mentionPadding)
 
-        return CGRect(
+        label.frame.size.width += mentionPadding * 2
+        label.frame.size.height += mentionPadding * 2
+
+        if label.width > maxWidth {
+            label.frame.size.width = maxWidth
+        }
+
+        let bounds = CGRect(
             origin: CGPoint(x: 0, y: label.font.ascender - label.font.lineHeight - mentionPadding),
             size: label.frame.size
         )
+        cachedBounds = bounds
+        cachedProposedWidth = proposedWidth
+        cachedImage = nil
+        return bounds
     }
 
-    public override func image(
+    private var cachedImage: UIImage?
+    override func image(
         forBounds imageBounds: CGRect,
         textContainer: NSTextContainer?,
         characterIndex charIndex: Int
     ) -> UIImage? {
-        label.backgroundColor = #colorLiteral(red: 0.8, green: 0.8, blue: 0.8, alpha: 1)
-        label.textColor = Theme.primaryTextColor
+        if let cachedImage = cachedImage { return cachedImage }
+
+        switch style {
+        case .incoming:
+            label.backgroundColor = Theme.isDarkThemeEnabled ? .ows_blackAlpha20 : UIColor(rgbHex: 0xCCCCCC)
+            label.textColor = ConversationStyle.bubbleTextColorIncoming
+        case .outgoing:
+            label.backgroundColor = Theme.isDarkThemeEnabled ? .ows_blackAlpha20 : .ows_signalBlueDark
+            label.textColor = ConversationStyle.bubbleTextColorOutgoing
+        }
 
         let renderer = UIGraphicsImageRenderer(size: imageBounds.size)
-        return renderer.image { ctx in
+        let image = renderer.image { ctx in
             label.layer.render(in: ctx.cgContext)
         }
+        cachedImage = image
+        return image
     }
 
-    public override func attachmentBounds(
+    override func attachmentBounds(
         for textContainer: NSTextContainer?,
         proposedLineFragment lineFrag: CGRect,
         glyphPosition position: CGPoint,
         characterIndex charIndex: Int
     ) -> CGRect {
-        return calculateBounds()
+        return calculateBounds(proposedWidth: lineFrag.width)
     }
 }

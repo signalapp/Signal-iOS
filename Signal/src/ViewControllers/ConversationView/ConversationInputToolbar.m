@@ -407,6 +407,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.inputTextView.inputTextViewDelegate = value;
 }
 
+- (void)setMentionDelegate:(id<MentionTextViewDelegate>)value
+{
+    OWSAssertDebug(self.inputTextView);
+    OWSAssertDebug(value);
+
+    self.inputTextView.mentionDelegate = value;
+}
+
 - (NSString *)messageText
 {
     OWSAssertDebug(self.inputTextView);
