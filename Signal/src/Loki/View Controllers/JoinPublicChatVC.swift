@@ -142,24 +142,27 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: PublicChatAPI.lastMessageServerIDCollection)
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: PublicChatAPI.lastDeletionServerIDCollection)
         }
-        PublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
-        .done(on: .main) { [weak self] _ in
-            let _ = PublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
-            let _ = PublicChatAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
-            let _ = PublicChatAPI.join(channelID, on: urlAsString)
-            let syncManager = SSKEnvironment.shared.syncManager
-            let _ = syncManager.syncAllOpenGroups()
-            self?.presentingViewController!.dismiss(animated: true, completion: nil)
-        }
-        .catch(on: .main) { [weak self] error in
-            var title = NSLocalizedString("Couldn't Join", comment: "")
-            var message = ""
-            if case HTTP.Error.httpRequestFailed(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
-                title = NSLocalizedString("Unauthorized", comment: "")
-                message = NSLocalizedString("Please ask the open group operator to add you to the group.", comment: "")
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+            PublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
+            .done(on: DispatchQueue.main) { [weak self] _ in
+                let _ = PublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
+                let _ = PublicChatAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
+                let _ = PublicChatAPI.join(channelID, on: urlAsString)
+                let syncManager = SSKEnvironment.shared.syncManager
+                let _ = syncManager.syncAllOpenGroups()
+                self?.presentingViewController!.dismiss(animated: true, completion: nil)
             }
-            self?.isJoining = false
-            self?.showError(title: title, message: message)
+            .catch(on: DispatchQueue.main) { [weak self] error in
+                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                var title = NSLocalizedString("Couldn't Join", comment: "")
+                var message = ""
+                if case HTTP.Error.httpRequestFailed(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
+                    title = NSLocalizedString("Unauthorized", comment: "")
+                    message = NSLocalizedString("Please ask the open group operator to add you to the group.", comment: "")
+                }
+                self?.isJoining = false
+                self?.showError(title: title, message: message)
+            }
         }
     }
     

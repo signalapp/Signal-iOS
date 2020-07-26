@@ -189,7 +189,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
                 SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
             }.catch(on: DispatchQueue.main) { _ in
-                self?.dismiss(animated: true, completion: nil) // Dismiss the modal
+                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                 let title = NSLocalizedString("Couldn't Create Group", comment: "")
                 let message = NSLocalizedString("Please check your internet connection and try again.", comment: "")
                 let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
