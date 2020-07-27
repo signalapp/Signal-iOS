@@ -56,6 +56,16 @@ class TestingViewController: OWSTableViewController {
             contents.addSection(section)
         }
 
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Client will not try to create v2 groups.")
+            section.add(OWSTableItem.switch(withText: LocalizationNotNeeded("Groups v2: Only create v1 groups"),
+                                            isOn: { DebugFlags.groupsV2onlyCreateV1Groups },
+                                            target: self,
+                                            selector: #selector(didToggleGroupsV2onlyCreateV1Groups)))
+            contents.addSection(section)
+        }
+
         self.contents = contents
     }
 
@@ -72,5 +82,10 @@ class TestingViewController: OWSTableViewController {
     @objc
     func didToggleGroupsV2corruptInvites(_ sender: UISwitch) {
         DebugFlags.groupsV2corruptInvites = sender.isOn
+    }
+
+    @objc
+    func didToggleGroupsV2onlyCreateV1Groups(_ sender: UISwitch) {
+        DebugFlags.groupsV2onlyCreateV1Groups = sender.isOn
     }
 }

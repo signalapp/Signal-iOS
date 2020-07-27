@@ -149,6 +149,9 @@ class DebugUIGroupsV2: DebugUIPage {
             // V2 group members must have a uuid.
             allAddresses = allAddresses.filter { $0.uuid != nil }
         }
+        guard allAddresses.count >= 3 else {
+            return owsFailDebug("Not enough Signal users in your contacts.")
+        }
         let updaterAddress: SignalServiceAddress?
         if isAnonymousUpdate {
             updaterAddress = nil

@@ -325,6 +325,20 @@ public class DebugFlags: BaseFlags {
         }
     }
 
+    private static let _groupsV2onlyCreateV1Groups = AtomicBool(false)
+    @objc
+    public static var groupsV2onlyCreateV1Groups: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2onlyCreateV1Groups.get()
+        }
+        set {
+            _groupsV2onlyCreateV1Groups.set(newValue)
+        }
+    }
+
     @objc
     public static let groupsV2ignoreCorruptInvites = false
 

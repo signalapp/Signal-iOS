@@ -152,6 +152,10 @@ public struct TSGroupModelBuilder {
             Logger.info("Creating v1 group due to feature flags.")
             return .V1
         }
+        if DebugFlags.groupsV2onlyCreateV1Groups {
+            Logger.info("Creating v1 group due to debug flag.")
+            return .V1
+        }
         let canUseV2 = GroupManager.canUseV2(for: members, transaction: transaction)
         if canUseV2 {
             Logger.info("Creating v2 group.")
