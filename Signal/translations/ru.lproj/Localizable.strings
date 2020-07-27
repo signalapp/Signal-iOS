@@ -2735,15 +2735,15 @@
 
 "view_friend_request_accept_button_title" = "Принять";
 "view_friend_request_reject_button_title" = "Отклонить";
-"view_friend_request_incoming_pending_message" = "%1$s отправил(а) вам запрос на сессию";
-"view_friend_request_incoming_accepted_message" = "Вы приняли запрос на сессию от %1$s";
-"view_friend_request_incoming_declined_message" = "Вы отклонили запрос на сессию от %1$s";
-"view_friend_request_incoming_expired_message" = "Время запроса на сессию от %1$s истекло";
-"view_friend_request_outgoing_pending_message" = "Вы отправили %1$s запрос на сессию";
-"view_friend_request_outgoing_accepted_message" = "%1$s принял ваш запрос на сессию";
-"view_friend_request_outgoing_expired_message" = "Время вашего запроса на сессию с %1$s истекло";
+"view_friend_request_incoming_pending_message" = "%@ отправил(а) вам запрос на сессию";
+"view_friend_request_incoming_accepted_message" = "Вы приняли запрос на сессию от %@";
+"view_friend_request_incoming_declined_message" = "Вы отклонили запрос на сессию от %@";
+"view_friend_request_incoming_expired_message" = "Время запроса на сессию от %@ истекло";
+"view_friend_request_outgoing_pending_message" = "Вы отправили %@ запрос на сессию";
+"view_friend_request_outgoing_accepted_message" = "%@ принял ваш запрос на сессию";
+"view_friend_request_outgoing_expired_message" = "Время вашего запроса на сессию с %@ истекло";
 
-"session_reset_banner_message" = "Хотите восстановить сессию с %s?";
+"session_reset_banner_message" = "Хотите восстановить сессию с %@?";
 "session_reset_banner_dismiss_button_title" = "Отклонить";
 "session_reset_banner_restore_button_title" = "Восстановить";
 
