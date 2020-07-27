@@ -255,12 +255,11 @@ extension ConversationSettingsViewController {
 
         // This will not appear in public builds.
         if DebugFlags.showProfileKeyAndUuidsIndicator {
-            let hasProfileKey = self.databaseStorage.uiRead { transaction in
-                self.profileManager.profileKeyData(for: recipientAddress, transaction: transaction) != nil
+            let profileKey = self.databaseStorage.uiRead { transaction in
+                self.profileManager.profileKeyData(for: recipientAddress, transaction: transaction)
             }
-
-            let subtitle = "Has Profile Key: \(hasProfileKey)"
-            builder.addSubtitleLabel(attributedText: subtitle.asAttributedString)
+            let text = String(format: "Profile Key: %@", profileKey?.hexadecimalString ?? "Unknown")
+            builder.addSubtitleLabel(attributedText: text.asAttributedString)
         }
 
         builder.addLastSubviews()

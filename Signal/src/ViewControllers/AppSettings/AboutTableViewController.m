@@ -27,6 +27,11 @@
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
 #pragma mark -
 
 - (void)dealloc
@@ -227,6 +232,10 @@
                                                                           withString:@""];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Audio Category: %@", audioCategory]]];
+
+    NSData *localProfileKey = [self.profileManager localProfileKey].keyData;
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Local Profile Key: %@",
+                                                                    localProfileKey.hexadecimalString]]];
 }
 
 - (void)addGroupsV2memberStatusIndicators:(OWSTableContents *)contents

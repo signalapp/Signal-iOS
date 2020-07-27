@@ -56,6 +56,36 @@ class TestingViewController: OWSTableViewController {
             contents.addSection(section)
         }
 
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Client will not try to create v2 groups.")
+            section.add(OWSTableItem.switch(withText: LocalizationNotNeeded("Groups v2: Only create v1 groups"),
+                                            isOn: { DebugFlags.groupsV2onlyCreateV1Groups },
+                                            target: self,
+                                            selector: #selector(didToggleGroupsV2onlyCreateV1Groups)))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Client will update group state with corrupt blobs.")
+            section.add(OWSTableItem.switch(withText: LocalizationNotNeeded("Groups v2: Corrupt blobs"),
+                                            isOn: { DebugFlags.groupsV2corruptBlobEncryption },
+                                            target: self,
+                                            selector: #selector(didToggleGroupsV2corruptBlobEncryption)))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Client will update group state with corrupt avatar URL paths.")
+            section.add(OWSTableItem.switch(withText: LocalizationNotNeeded("Groups v2: Corrupt avatar URL paths"),
+                                            isOn: { DebugFlags.groupsV2corruptAvatarUrlPaths },
+                                            target: self,
+                                            selector: #selector(didToggleGroupsV2corruptAvatarUrlPaths)))
+            contents.addSection(section)
+        }
+
         self.contents = contents
     }
 
@@ -72,5 +102,20 @@ class TestingViewController: OWSTableViewController {
     @objc
     func didToggleGroupsV2corruptInvites(_ sender: UISwitch) {
         DebugFlags.groupsV2corruptInvites = sender.isOn
+    }
+
+    @objc
+    func didToggleGroupsV2onlyCreateV1Groups(_ sender: UISwitch) {
+        DebugFlags.groupsV2onlyCreateV1Groups = sender.isOn
+    }
+
+    @objc
+    func didToggleGroupsV2corruptBlobEncryption(_ sender: UISwitch) {
+        DebugFlags.groupsV2corruptBlobEncryption = sender.isOn
+    }
+
+    @objc
+    func didToggleGroupsV2corruptAvatarUrlPaths(_ sender: UISwitch) {
+        DebugFlags.groupsV2corruptAvatarUrlPaths = sender.isOn
     }
 }
