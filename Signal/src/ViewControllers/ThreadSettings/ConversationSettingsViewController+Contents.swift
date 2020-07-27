@@ -55,7 +55,6 @@ extension ConversationSettingsViewController {
         let header = buildMainHeader()
         lastContentWidth = view.width
         mainSection.customHeaderView = header
-        mainSection.customHeaderHeight = NSNumber(value: Float(UITableView.automaticDimension))
         addBasicItems(to: mainSection)
 
         // TODO: We can remove this item once message requests are mandatory.
