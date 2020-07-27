@@ -2575,7 +2575,7 @@
 
 "vc_restore_title" = "Ihr Konto wiederherstellen";
 "vc_restore_explanation" = "Geben Sie den Wiederherstellungssatz ein, den Sie bei der Anmeldung zur Wiederherstellung Ihres Kontos erhalten haben.";
-"vc_restore_seed_edit_text_hint" = "Ihr Wiederherstellungssatz";
+"vc_restore_seed_text_field_hint" = "Ihr Wiederherstellungssatz";
 
 "vc_link_device_title" = "Gerät verbinden";
 "vc_link_device_enter_session_id_tab_title" = "Session ID eingeben";
@@ -2584,11 +2584,11 @@
 
 "vc_enter_session_id_title" = "Ihr Gerät verknüpfen";
 "vc_enter_session_id_explanation" = "Navigieren Sie zu \"Einstellungen\" > \"Geräte\" > \"Ihr Gerät verknüpfen\" und geben Sie Ihre Session ID hier ein, um den Verknüpfungsprozess zu starten.";
-"vc_enter_session_id_edit_text_hint" = "Geben Sie Ihre Session ID ein.";
+"vc_enter_session_id_text_field_hint" = "Geben Sie Ihre Session ID ein.";
 
 "vc_display_name_title_2" = "Wählen Sie Ihren Anzeigenamen";
 "vc_display_name_explanation" = "Dies ist Ihr Name, wenn Sie Session verwenden. Es kann Ihr richtiger Name, ein Alias oder etwas andere sein.";
-"vc_display_name_edit_text_hint" = "Geben Sie einen Anzeigenamen ein";
+"vc_display_name_text_field_hint" = "Geben Sie einen Anzeigenamen ein";
 "vc_display_name_display_name_missing_error" = "Bitte wählen Sie einen Anzeigenamen";
 "vc_display_name_display_name_invalid_error" = "Bitte wählen Sie einen Anzeigenamen, der nur aus den Zeichen a - z, A - Z, 0 - 9 und _ besteht.";
 "vc_display_name_display_name_too_long_error" = "Bitte wählen Sie einen kürzeren Anzeigenamen";
@@ -2642,14 +2642,14 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "QR-Code scannen";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scannen Sie den QR-Code eines Benutzers, um eine Session zu starten. QR-Codes finden Sie, indem Sie in den Einstellungen auf das QR-Code-Symbol tippen.";
 
-"vc_enter_public_key_edit_text_hint" = "Geben Sie eine Session ID ein.";
+"vc_enter_public_key_text_field_hint" = "Geben Sie eine Session ID ein.";
 "vc_enter_public_key_explanation" = "Benutzer können ihre Session ID freigeben, indem sie in ihren Einstellungen auf \"Session ID freigeben\" tippen oder ihren QR-Code freigeben.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session benötigt Kamerazugriff, um die QR-Codes scannen zu können.";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Kamerazugriff gewähren";
 
 "vc_create_closed_group_title" = "Neue geschlossene Gruppe";
-"vc_create_closed_group_edit_text_hint" = "Geben Sie einen Gruppennamen ein.";
+"vc_create_closed_group_text_field_hint" = "Geben Sie einen Gruppennamen ein.";
 "vc_create_closed_group_explanation" = "Geschlossene Gruppen unterstützen bis zu 10 Mitglieder und bieten den gleichen Schutz der Privatsphäre wie Einzelgespräche.";
 "vc_create_closed_group_empty_state_message" = "Sie haben noch keine Kontakte.";
 "vc_create_closed_group_empty_state_button_title" = "Session starten";
@@ -2665,11 +2665,11 @@
 "vc_join_public_chat_scan_qr_code_tab_title" = "QR-Code scannen";
 "vc_join_public_chat_scan_qr_code_explanation" = "Scannen Sie den QR-Code der offenen Gruppe, der Sie beitreten möchten.";
 
-"vc_enter_chat_url_edit_text_hint" = "Geben Sie eine offene Gruppen-URL ein.";
+"vc_enter_chat_url_text_field_hint" = "Geben Sie eine offene Gruppen-URL ein.";
 "vc_enter_chat_url_privacy_warning" = "Offenen Gruppen kann jeder beitreten und sie bieten keinen vollständigen Schutz der Privatsphäre.";
 
 "vc_settings_title" = "Einstellungen";
-"vc_settings_display_name_edit_text_hint" = "Geben Sie einen Anzeigenamen ein.";
+"vc_settings_display_name_text_field_hint" = "Geben Sie einen Anzeigenamen ein.";
 "vc_settings_display_name_missing_error" = "Bitte wählen Sie einen Anzeigenamen.";
 "vc_settings_invalid_display_name_error" = "Bitte wählen Sie einen Anzeigenamen, der nur aus den Zeichen a - z, A - Z, 0 - 9 und _ besteht.";
 "vc_settings_display_name_too_long_error" = "Bitte wählen Sie einen kürzeren Anzeigenamen.";
@@ -2717,7 +2717,7 @@
 "vc_device_list_bottom_sheet_change_name_button_title" = "Namen ändern";
 "vc_device_list_bottom_sheet_unlink_device_button_title" = "Gerät trennen";
 
-"modal_edit_device_name_edit_text_hint" = "Geben Sie einen Namen ein.";
+"modal_edit_device_name_text_field_hint" = "Geben Sie einen Namen ein.";
 
 "modal_seed_title" = "Ihr Wiederherstellungssatz";
 "modal_seed_explanation" = "Das ist Ihr Wiederherstellungssatz. Damit können Sie Ihre Session ID wiederherstellen oder auf ein neues Gerät migrieren.";

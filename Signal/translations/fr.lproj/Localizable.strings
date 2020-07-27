@@ -2585,7 +2585,7 @@
 "vc_restore_title" = "Restaurez votre compte";
 "vc_restore_explanation" = "Pour restaurer votre compte, veuillez entrer la phrase de récupération qui vous a été fournie lors de la création de votre compte.";
 
-"vc_restore_seed_edit_text_hint" = "Saisissez votre phrase de récupération";
+"vc_restore_seed_text_field_hint" = "Saisissez votre phrase de récupération";
 
 "vc_link_device_title" = "Relier un appareil";
 "vc_link_device_enter_session_id_tab_title" = "Saisir un Session ID";
@@ -2594,11 +2594,11 @@
 
 "vc_enter_session_id_title" = "Reliez votre appareil";
 "vc_enter_session_id_explanation" = "Rendez-vous dans Paramètres > Appareils reliés > Relier un appareil sur votre autre appareil, puis saisissez votre Session ID pour démarrer le processus de liaison.";
-"vc_enter_session_id_edit_text_hint" = "Saisissez votre Session ID";
+"vc_enter_session_id_text_field_hint" = "Saisissez votre Session ID";
 
 "vc_display_name_title_2" = "Choisissez votre nom d'utilisateur";
 "vc_display_name_explanation" = "Ce sera votre nom lorsque vous utiliserez Session. Il peut s'agir de votre vrai nom, d'un pseudo ou de ce que vous voulez.";
-"vc_display_name_edit_text_hint" = "Saisissez un nom d'utilisateur";
+"vc_display_name_text_field_hint" = "Saisissez un nom d'utilisateur";
 "vc_display_name_display_name_missing_error" = "Veuillez choisir un nom d'utilisateur";
 "vc_display_name_display_name_invalid_error" = "Veuillez choisir un nom d'utilisateur composé uniquement de caractères a-z, A-Z, 0-9 et _";
 "vc_display_name_display_name_too_long_error" = "Veuillez choisir un nom d'utilisateur plus court";
@@ -2652,14 +2652,14 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Scanner un Code QR";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scannez le code QR d'un utilisateur pour démarrer une session. Les codes QR peuvent se trouver en appuyant sur l'icône du code QR dans les paramètres du compte.";
 
-"vc_enter_public_key_edit_text_hint" = "Saisissez le Session ID du destinataire";
+"vc_enter_public_key_text_field_hint" = "Saisissez le Session ID du destinataire";
 "vc_enter_public_key_explanation" = "Les utilisateurs peuvent partager leur Session ID depuis les paramètres du compte ou en utilisant le code QR.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session a besoin d'accéder à l'appareil photo pour scanner les codes QR";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Autoriser l'accès";
 
 "vc_create_closed_group_title" = "Nouveau groupe privé";
-"vc_create_closed_group_edit_text_hint" = "Saisissez un nom de groupe";
+"vc_create_closed_group_text_field_hint" = "Saisissez un nom de groupe";
 "vc_create_closed_group_explanation" = "Les groupes privés prennent en charge jusqu'à 10 membres et offrent le même niveau de confidentialité que les sessions individuelles.";
 "vc_create_closed_group_empty_state_message" = "Vous n'avez pas encore de contacts";
 "vc_create_closed_group_empty_state_button_title" = "Démarrer une session";
@@ -2675,11 +2675,11 @@
 "vc_join_public_chat_scan_qr_code_tab_title" = "Scannez le code QR";
 "vc_join_public_chat_scan_qr_code_explanation" = "Scannez le code QR du groupe public que vous souhaitez rejoindre";
 
-"vc_enter_chat_url_edit_text_hint" = "Saisissez une URL de groupe public";
+"vc_enter_chat_url_text_field_hint" = "Saisissez une URL de groupe public";
 "vc_enter_chat_url_privacy_warning" = "Les groupes publics peuvent être rejoints par n'importe qui et ne fournissent pas une confidentialité totale";
 
 "vc_settings_title" = "Paramètres";
-"vc_settings_display_name_edit_text_hint" = "Saisissez un nom d'utilisateur";
+"vc_settings_display_name_text_field_hint" = "Saisissez un nom d'utilisateur";
 "vc_settings_display_name_missing_error" = "Veuillez choisir un nom d'utilisateur";
 "vc_settings_invalid_display_name_error" = "Veuillez choisir un nom d'utilisateur composé uniquement de caractères a-z, A-Z, 0-9 et _";
 "vc_settings_display_name_too_long_error" = "Veuillez choisir un nom d'utilisateur plus court";
@@ -2727,7 +2727,7 @@
 "vc_device_list_bottom_sheet_change_name_button_title" = "Modifier le nom";
 "vc_device_list_bottom_sheet_unlink_device_button_title" = "Déconnecter l'appareil";
 
-"modal_edit_device_name_edit_text_hint" = "Saisissez un nom";
+"modal_edit_device_name_text_field_hint" = "Saisissez un nom";
 
 "modal_seed_title" = "Votre phrase de récupération";
 "modal_seed_explanation" = "Ceci est votre phrase de récupération. Elle vous permet de restaurer ou migrer votre Session ID vers un nouvel appareil.";

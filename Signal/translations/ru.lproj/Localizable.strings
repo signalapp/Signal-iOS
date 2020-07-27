@@ -2575,7 +2575,7 @@
 
 "vc_restore_title" = "Восстановите свой аккаунт";
 "vc_restore_explanation" = "Для восстановления учетной записи введите секретную фразу, которая была предоставлена вам при регистрации.";
-"vc_restore_seed_edit_text_hint" = "Введите секретную фразу";
+"vc_restore_seed_text_field_hint" = "Введите секретную фразу";
 
 "vc_link_device_title" = "Привязать устройство";
 "vc_link_device_enter_session_id_tab_title" = "Введите Session ID";
@@ -2584,11 +2584,11 @@
 
 "vc_enter_session_id_title" = "Привяжите свое устройство";
 "vc_enter_session_id_explanation" = "Перейдите в «Настройки» > «Устройства» > «Привязать устройство» на другом устройстве и введите сюда свой Session ID, чтобы начать процесс привязки.";
-"vc_enter_session_id_edit_text_hint" = "Введите свой Session ID";
+"vc_enter_session_id_text_field_hint" = "Введите свой Session ID";
 
 "vc_display_name_title_2" = "Выберите ваше отображаемое имя";
 "vc_display_name_explanation" = "Это имя будет отображаться, когда вы используете Session. Это может быть ваше настоящее имя, псевдоним или что угодно по вашему выбору.";
-"vc_display_name_edit_text_hint" = "Введите отображаемое имя";
+"vc_display_name_text_field_hint" = "Введите отображаемое имя";
 "vc_display_name_display_name_missing_error" = "Пожалуйста, выберите отображаемое имя";
 "vc_display_name_display_name_invalid_error" = "Пожалуйста, выберите отображаемое имя состоящее только из символов a-z, A-Z, 0-9 и _";
 "vc_display_name_display_name_too_long_error" = "Пожалуйста, выберите более короткое отображаемое имя";
@@ -2642,14 +2642,14 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Сканировать QR-код";
 "vc_create_private_chat_scan_qr_code_explanation" = "Сканируйте QR-код пользователя, чтобы начать сессию. QR-коды можно найти, нажав значок QR-кода в настройках учетной записи.";
 
-"vc_enter_public_key_edit_text_hint" = "Введите Session ID получателя";
+"vc_enter_public_key_text_field_hint" = "Введите Session ID получателя";
 "vc_enter_public_key_explanation" = "Пользователи могут поделиться своим Session ID, зайдя в настройки своей учетной записи и нажав «Отправить Session ID», или поделившись своим QR-кодом.";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session нужен доступ к камере для сканирования QR-кодов";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Предоставить доступ к камере";
 
 "vc_create_closed_group_title" = "Новая закрытая группа";
-"vc_create_closed_group_edit_text_hint" = "Введите название группы";
+"vc_create_closed_group_text_field_hint" = "Введите название группы";
 "vc_create_closed_group_explanation" = "Закрытые группы поддерживают до 10 участников и обеспечивают те же меры защиты конфиденциальности, что и сессии один-на-один.";
 "vc_create_closed_group_empty_state_message" = "У вас еще нет контактов";
 "vc_create_closed_group_empty_state_button_title" = "Начать Сессию";
@@ -2665,11 +2665,11 @@
 "vc_join_public_chat_scan_qr_code_tab_title" = "Сканировать QR-код";
 "vc_join_public_chat_scan_qr_code_explanation" = "Отсканируйте QR-код открытой группы, в которую вы хотите вступить";
 
-"vc_enter_chat_url_edit_text_hint" = "Введите URL открытой группы";
+"vc_enter_chat_url_text_field_hint" = "Введите URL открытой группы";
 "vc_enter_chat_url_privacy_warning" = "К открытым группам может присоединиться кто угодно. Они не обеспечивают полной защиты конфиденциальности";
 
 "vc_settings_title" = "Настройки";
-"vc_settings_display_name_edit_text_hint" = "Введите отображаемое имя";
+"vc_settings_display_name_text_field_hint" = "Введите отображаемое имя";
 "vc_settings_display_name_missing_error" = "Пожалуйста, выберите отображаемое имя";
 "vc_settings_invalid_display_name_error" = "Пожалуйста, выберите отображаемое имя состоящее только из символов a-z, A-Z, 0-9 и _";
 "vc_settings_display_name_too_long_error" = "Пожалуйста, выберите более короткое отображаемое имя";
@@ -2717,7 +2717,7 @@
 "vc_device_list_bottom_sheet_change_name_button_title" = "Сменить имя";
 "vc_device_list_bottom_sheet_unlink_device_button_title" = "Отключить устройство";
 
-"modal_edit_device_name_edit_text_hint" = "Введите имя";
+"modal_edit_device_name_text_field_hint" = "Введите имя";
 
 "modal_seed_title" = "Ваша секретная фраза";
 "modal_seed_explanation" = "Это ваша секретная фраза. С ее помощью вы можете восстановить или перенести свой Session ID на новое устройство.";
