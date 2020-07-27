@@ -753,7 +753,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     if (section.customHeaderHeight) {
-        OWSAssertDebug([section.customHeaderHeight floatValue] > 0);
+        OWSAssertDebug([section.customHeaderHeight floatValue] > 0 ||
+            [section.customHeaderHeight floatValue] == UITableViewAutomaticDimension);
         return [section.customHeaderHeight floatValue];
     } else {
         UIView *_Nullable view = [self tableView:tableView viewForHeaderInSection:sectionIndex];
@@ -774,7 +775,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     if (section.customFooterHeight) {
-        OWSAssertDebug([section.customFooterHeight floatValue] > 0);
+        OWSAssertDebug([section.customFooterHeight floatValue] > 0 ||
+            [section.customFooterHeight floatValue] == UITableViewAutomaticDimension);
         return [section.customFooterHeight floatValue];
     } else {
         UIView *_Nullable view = [self tableView:tableView viewForFooterInSection:sectionIndex];

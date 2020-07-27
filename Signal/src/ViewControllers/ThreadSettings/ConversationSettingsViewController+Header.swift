@@ -111,7 +111,6 @@ extension ConversationSettingsViewController {
             label.attributedText = attributedString
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
-            label.setCompressionResistanceHigh()
             bubbleView.addSubview(label)
             label.autoPinEdgesToSuperviewMargins()
 

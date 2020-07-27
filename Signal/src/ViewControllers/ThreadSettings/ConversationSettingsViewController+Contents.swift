@@ -54,10 +54,7 @@ extension ConversationSettingsViewController {
         let mainSection = OWSTableSection()
         let header = buildMainHeader()
         lastContentWidth = view.width
-        let headerHeight = header.systemLayoutSizeFitting(view.frame.size).height
         mainSection.customHeaderView = header
-        mainSection.customHeaderHeight = NSNumber(value: Float(headerHeight))
-
         addBasicItems(to: mainSection)
 
         // TODO: We can remove this item once message requests are mandatory.
