@@ -10,7 +10,7 @@ final class DeviceNameModal : Modal {
         result.textColor = Colors.text
         result.font = .systemFont(ofSize: Values.mediumFontSize)
         result.textAlignment = .center
-        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter a Name", comment: ""))
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("modal_edit_device_name_text_field_hint", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Colors.text.withAlphaComponent(Values.unimportantElementOpacity), range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
         result.tintColor = Colors.accent
@@ -31,7 +31,7 @@ final class DeviceNameModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = NSLocalizedString("Change Device Name", comment: "")
+        titleLabel.text = "Change Device Name"
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -39,7 +39,7 @@ final class DeviceNameModal : Modal {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Enter the new display name for your device below", comment: "")
+        explanationLabel.text = "Enter the new display name for your device below"
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -95,7 +95,7 @@ final class DeviceNameModal : Modal {
             UserDefaults.standard[.slaveDeviceName(device.publicKey)] = name
             delegate?.handleDeviceNameChanged(to: name, for: device)
         } else {
-            let alert = UIAlertController(title: NSLocalizedString("Error", comment: ""), message: NSLocalizedString("Please pick a name", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: "Error", message: "Please pick a name", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
         }

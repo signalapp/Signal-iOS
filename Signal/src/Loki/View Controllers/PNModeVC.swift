@@ -11,8 +11,8 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     // MARK: Components
-    private lazy var apnsOptionView = OptionView(title: NSLocalizedString("Apple Push Notification Service", comment: ""), explanation: NSLocalizedString("Session will use the Apple Push Notification service to receive push notifications. You'll be notified of new messages reliably and immediately. Using APNs means that your IP address and device token will be exposed to Apple. If you use push notifications for other apps, this will already be the case. Your IP address and device token will also be exposed to Loki, but your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.", comment: ""), delegate: self, isRecommended: true)
-    private lazy var backgroundPollingOptionView = OptionView(title: NSLocalizedString("Background Polling", comment: ""), explanation: NSLocalizedString("Session will occasionally check for new messages in the background. This guarantees full metadata protection, but message notifications may be significantly delayed.", comment: ""), delegate: self)
+    private lazy var apnsOptionView = OptionView(title: NSLocalizedString("vc_pn_mode_apns_option_title", comment: ""), explanation: NSLocalizedString("vc_pn_mode_apns_option_explanation", comment: ""), delegate: self, isRecommended: true)
+    private lazy var backgroundPollingOptionView = OptionView(title: NSLocalizedString("vc_pn_mode_background_polling_option_title", comment: ""), explanation: NSLocalizedString("vc_pn_mode_background_polling_option_explanation", comment: ""), delegate: self)
 
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -24,24 +24,24 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Push Notifications", comment: "")
+        titleLabel.text = NSLocalizedString("vc_pn_mode_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("There are two ways Session can handle push notifications. Make sure to read the descriptions carefully before you choose.", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_pn_mode_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButtonBottomOffsetSpacer = UIView()
-        registerButtonBottomOffsetSpacer.set(.height, to: isIPhone5OrSmaller ? CGFloat(16) : Values.onboardingButtonBottomOffset)
+        registerButtonBottomOffsetSpacer.set(.height, to: Values.mediumSpacing)
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
         registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         // Set up register button container
@@ -75,7 +75,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
 
     @objc private func register() {
         guard selectedOptionView != nil else {
-            let title = NSLocalizedString("Please Pick an Option", comment: "")
+            let title = NSLocalizedString("vc_pn_mode_no_option_picked_dialog_title", comment: "")
             let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             return present(alert, animated: true, completion: nil)

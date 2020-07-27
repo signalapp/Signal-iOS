@@ -8,7 +8,7 @@ final class RestoreVC : BaseVC {
     
     // MARK: Components
     private lazy var mnemonicTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("Enter your recovery phrase", comment: ""))
+        let result = TextField(placeholder: NSLocalizedString("vc_restore_seed_text_field_hint", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
         return result
     }()
@@ -39,14 +39,14 @@ final class RestoreVC : BaseVC {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Restore your account", comment: "")
+        titleLabel.text = NSLocalizedString("vc_restore_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "Enter the recovery phrase that was given to you when you signed up to restore your account."
+        explanationLabel.text = NSLocalizedString("vc_restore_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up legal label
@@ -66,7 +66,7 @@ final class RestoreVC : BaseVC {
         restoreButtonBottomOffsetConstraint = restoreButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         // Set up restore button
         let restoreButton = Button(style: .prominentFilled, size: .large)
-        restoreButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        restoreButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
         restoreButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         restoreButton.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         // Set up restore button container
@@ -124,10 +124,10 @@ final class RestoreVC : BaseVC {
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight // Negative due to how the constraint is set up
-        restoreButtonBottomOffsetConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing
-        spacer1HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
-        spacer2HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
-        spacer3HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        restoreButtonBottomOffsetConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.largeSpacing
+        spacer1HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        spacer2HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        spacer3HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }

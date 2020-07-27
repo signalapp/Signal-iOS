@@ -76,7 +76,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         result.backgroundColor = Colors.accent
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.setTitle(NSLocalizedString("Authorize", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("modal_link_device_master_mode_authorize_button_title", comment: ""), for: UIControl.State.normal)
         return result
     }()
 
@@ -130,14 +130,14 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }
         titleLabel.text = {
             switch mode {
-            case .master: return NSLocalizedString("Waiting for Device", comment: "")
-            case .slave: return NSLocalizedString("Waiting for Authorization", comment: "")
+            case .master: return NSLocalizedString("modal_link_device_master_mode_title_1", comment: "")
+            case .slave: return NSLocalizedString("modal_link_device_slave_mode_title_1", comment: "")
             }
         }()
         subtitleLabel.text = {
             switch mode {
-            case .master: return NSLocalizedString("Download Session on your other device and tap \"Link to an existing account\" at the bottom of the landing screen. If you have an existing account on your other device already you will have to delete that account first.", comment: "")
-            case .slave: return NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
+            case .master: return NSLocalizedString("modal_link_device_master_mode_explanation_1", comment: "")
+            case .slave: return NSLocalizedString("modal_link_device_slave_mode_explanation_1", comment: "")
             }
         }()
         mnemonicLabel.isHidden = (mode == .master)
@@ -157,8 +157,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     func requestUserAuthorization(for deviceLink: DeviceLink) {
         self.deviceLink = deviceLink
         qrCodeImageViewContainer.isHidden = true
-        titleLabel.text = NSLocalizedString("Linking Request Received", comment: "")
-        subtitleLabel.text = NSLocalizedString("Please check that the words below match those shown on your other device", comment: "")
+        titleLabel.text = NSLocalizedString("modal_link_device_master_mode_title_2", comment: "")
+        subtitleLabel.text = NSLocalizedString("modal_link_device_master_mode_explanation_2", comment: "")
         let hexEncodedPublicKey = deviceLink.slave.publicKey.removing05PrefixIfNeeded()
         mnemonicLabel.text = Mnemonic.hash(hexEncodedString: hexEncodedPublicKey)
         mnemonicLabel.isHidden = false
@@ -172,8 +172,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         mainStackView.insertArrangedSubview(spinner, at: 0)
         spinner.set(.height, to: 64)
         spinner.startAnimating()
-        titleLabel.text = NSLocalizedString("Authorizing Device Link", comment: "")
-        subtitleLabel.text = NSLocalizedString("Please wait while the device link is created. This can take up to a minute.", comment: "")
+        titleLabel.text = NSLocalizedString("modal_link_device_master_mode_title_3", comment: "")
+        subtitleLabel.text = NSLocalizedString("modal_link_device_master_mode_explanation_3", comment: "")
         mnemonicLabel.isHidden = true
         buttonStackView.isHidden = true
         let deviceLink = self.deviceLink!
@@ -204,7 +204,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                 let _ = FileServerAPI.removeDeviceLink(signedDeviceLink) // Attempt to roll back
                 DispatchQueue.main.async {
                     self?.close()
-                    let alert = UIAlertController(title: NSLocalizedString("Device Linking Failed", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+                    let alert = UIAlertController(title: "Device Linking Failed", message: "Please check your internet connection and try again", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
                     self?.presentingViewController?.present(alert, animated: true, completion: nil)
                 }
@@ -213,7 +213,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             print("[Loki] Failed to add device link due to error: \(error).")
             DispatchQueue.main.async {
                 self?.close() // TODO: Show a message to the user
-                let alert = UIAlertController(title: NSLocalizedString("Device Linking Failed", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+                let alert = UIAlertController(title: "Device Linking Failed", message: "Please check your internet connection and try again", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
                 self?.presentingViewController?.present(alert, animated: true, completion: nil)
             }
@@ -225,8 +225,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         session.stopListeningForLinkingAuthorization()
         spinner.stopAnimating()
         spinner.isHidden = true
-        titleLabel.text = NSLocalizedString("Device Link Authorized", comment: "")
-        subtitleLabel.text = NSLocalizedString("Your device has been linked successfully", comment: "")
+        titleLabel.text = NSLocalizedString("modal_link_device_slave_mode_title_2", comment: "")
+        subtitleLabel.text = NSLocalizedString("modal_link_device_slave_mode_explanation_2", comment: "")
         mnemonicLabel.isHidden = true
         buttonStackView.isHidden = true
         FileServerAPI.addDeviceLink(deviceLink).catch { error in

@@ -2542,3 +2542,211 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du hast die Zeit für verschwindende Nachrichten auf %@ festgelegt.";
+
+
+
+// MARK: - Session
+"continue_2" = "Fortsetzen";
+"copy" = "Kopieren";
+"invalid_url" = "Ungültige URL";
+"copied_to_clipboard" = "In die Zwischenablage kopiert.";
+"device_linking_failed" = "Das Gerät konnte nicht verbunden werden.";
+"next" = "Weiter";
+"share" = "Teilen";
+"invalid_session_id" = "Ungültige Session ID";
+"cancel" = "Abbrechen";
+"your_session_id" = "Ihre Session ID";
+
+"vc_landing_title_2" = "Ihre Session beginnt hier...";
+"vc_landing_register_button_title" = "Session ID erstellen";
+"vc_landing_restore_button_title" = "Ihre Session fortsetzen";
+"vc_landing_link_button_title" = "Mit einem bestehenden Konto verlinken";
+"vc_landing_device_unlinked_modal_title" = "Ihr Gerät wurde erfolgreich getrennt.";
+
+"view_fake_chat_bubble_1" = "Was ist Session?";
+"view_fake_chat_bubble_2" = "Es ist eine dezentrale, verschlüsselte Messaging-App.";
+"view_fake_chat_bubble_3" = "Es werden also weder meine persönlichen Daten noch die Metadaten meiner Konversation erfasst? Wie funktioniert das?";
+"view_fake_chat_bubble_4" = "Mit einer Kombination fortschrittlicher anonyme Routing- und End-to-End-Verschlüsselungstechnologien.";
+"view_fake_chat_bubble_5" = "Freunde lassen Freunde keine kompromittierten Messenger verwenden. Herzlich Willkommen.";
+
+"vc_register_title" = "Das ist Ihre Session ID.";
+"vc_register_explanation" = "Ihre Session ID ist die eindeutige Adresse, unter der Personen Sie über Session kontaktieren können. Ihre Session ID ist nicht mit Ihrer realen Identität verbunden, völlig anonym und von Natur aus privat.";
+"vc_register_public_key_copied_message" = "In die Zwischenablage kopiert.";
+
+"vc_restore_title" = "Ihr Konto wiederherstellen";
+"vc_restore_explanation" = "Geben Sie den Wiederherstellungssatz ein, den Sie bei der Anmeldung zur Wiederherstellung Ihres Kontos erhalten haben.";
+"vc_restore_seed_text_field_hint" = "Ihr Wiederherstellungssatz";
+
+"vc_link_device_title" = "Gerät verbinden";
+"vc_link_device_enter_session_id_tab_title" = "Session ID eingeben";
+"vc_link_device_scan_qr_code_tab_title" = "QR-Code scannen";
+"vc_link_device_scan_qr_code_explanation" = "Navigieren Sie zu \"Einstellungen\" > \"Geräte\" > \"Ihr Gerät verknüpfen\" und scannen Sie den angezeigten QR-Code, um den Verknüpfungsprozess zu starten.";
+
+"vc_enter_session_id_title" = "Ihr Gerät verknüpfen";
+"vc_enter_session_id_explanation" = "Navigieren Sie zu \"Einstellungen\" > \"Geräte\" > \"Ihr Gerät verknüpfen\" und geben Sie Ihre Session ID hier ein, um den Verknüpfungsprozess zu starten.";
+"vc_enter_session_id_text_field_hint" = "Geben Sie Ihre Session ID ein.";
+
+"vc_display_name_title_2" = "Wählen Sie Ihren Anzeigenamen";
+"vc_display_name_explanation" = "Dies ist Ihr Name, wenn Sie Session verwenden. Es kann Ihr richtiger Name, ein Alias oder etwas andere sein.";
+"vc_display_name_text_field_hint" = "Geben Sie einen Anzeigenamen ein";
+"vc_display_name_display_name_missing_error" = "Bitte wählen Sie einen Anzeigenamen";
+"vc_display_name_display_name_invalid_error" = "Bitte wählen Sie einen Anzeigenamen, der nur aus den Zeichen a - z, A - Z, 0 - 9 und _ besteht.";
+"vc_display_name_display_name_too_long_error" = "Bitte wählen Sie einen kürzeren Anzeigenamen";
+
+"vc_pn_mode_title" = "Benachrichtigungen";
+"vc_pn_mode_explanation" = "Session verfügt über zwei Methoden zur Verarbeitung von Benachrichtigungen. Lesen Sie die Beschreibungen sorgfältig, bevor Sie sich entscheiden.";
+"vc_pn_mode_apns_option_title" = "Apple Push Notification Service";
+"vc_pn_mode_apns_option_explanation" = "Session verwendet den Apple Push Notification Service-Dienst, um Push-Benachrichtigungen zu empfangen. Sie werden zuverlässig und sofort über neue Nachrichten informiert. Die Verwendung von APNs bedeutet, dass Ihre IP-Adresse und Ihr Geräte-Token für Apple verfügbar sind. Wenn Sie Push-Benachrichtigungen anderer Apps verwenden, ist dies auch der Fall. Auch Loki erfährt Ihre IP-Adresse und Ihren Geräte-Token, jedoch werden Ihre Nachrichten weiterhin per Onion geroutet und durchgängig verschlüsselt, sodass der Inhalt Ihrer Nachrichten vollständig privat bleibt.";
+"vc_pn_mode_background_polling_option_title" = "Hintergrundabfrage";
+"vc_pn_mode_background_polling_option_explanation" = "Session sucht von Zeit zu Zeit im Hintergrund nach neuen Nachrichten. Das garantiert einen vollständigen Schutz der Metadaten, aber Benachrichtigungen können sich jedoch erheblich verzögern.";
+"vc_pn_mode_recommended_option_tag" = "Empfohlen";
+"vc_pn_mode_no_option_picked_modal_title" = "Bitte wählen Sie eine Option aus.";
+
+"vc_home_empty_state_message" = "Sie haben noch keine Kontakte.";
+"vc_home_empty_state_button_title" = "Session starten";
+"vc_home_leave_group_modal_message" = "Sind Sie sich sicher, dass Sie diese Gruppe verlassen möchten?";
+"vc_home_leaving_group_failed_message" = "Gruppe konnte nicht verlassen werden.";
+"vc_home_delete_conversation_modal_message" = "Möchten Sie diese Unterhaltung wirklich löschen?";
+"vc_home_conversation_deleted_message" = "Die Unterhaltung wurde gelöscht.";
+
+"sheet_pn_mode_title" = "Benachrichtigungen";
+"sheet_pn_mode_explanation" = "Session verfügt über zwei Methoden zur Verarbeitung von Benachrichtigungen. Lesen Sie die Beschreibungen sorgfältig, bevor Sie sich entscheiden.";
+"sheet_pn_mode_apns_option_title" = "Apple Push Notification Service";
+"sheet_pn_mode_apns_option_explanation" = "Session verwendet den Apple Push Notification Service-Dienst, um Push-Benachrichtigungen zu empfangen. Sie werden zuverlässig und sofort über neue Nachrichten informiert. Die Verwendung von APNs bedeutet, dass Ihre IP-Adresse und Ihr Geräte-Token für Apple verfügbar sind. Wenn Sie Push-Benachrichtigungen anderer Apps verwenden, ist dies auch der Fall. Auch Loki erfährt Ihre IP-Adresse und Ihren Geräte-Token, jedoch werden Ihre Nachrichten weiterhin per Onion geroutet und durchgängig verschlüsselt, sodass der Inhalt Ihrer Nachrichten vollständig privat bleibt.";
+"sheet_pn_mode_background_polling_option_title" = "Hintergrundabfrage";
+"sheet_pn_mode_background_polling_option_explanation" = "Session sucht von Zeit zu Zeit im Hintergrund nach neuen Nachrichten. Das garantiert einen vollständigen Schutz der Metadaten, aber Benachrichtigungen können sich jedoch erheblich verzögern.";
+"sheet_pn_mode_recommended_option_tag" = "Empfohlen";
+"sheet_pn_mode_no_option_picked_modal_title" = "Bitte wählen Sie eine Option aus.";
+"sheet_pn_mode_confirm_button_title" = "Bestätigen";
+"sheet_pn_mode_skip_button_title" = "Überspringen";
+
+"vc_seed_title" = "Ihr Wiederherstellungssatz";
+"vc_seed_title_2" = "Das ist Ihr Wiederherstellungssatz.";
+"vc_seed_explanation" = "Ihr Wiederherstellungssatz ist der Hauptschlüssel für Ihre Session ID. Mit diesem Satz können Sie Ihre Session ID wiederherstellen, wenn Sie den Zugriff auf Ihr Gerät verlieren. Bewahren Sie Ihren Wiederherstellungssatz an einem sicheren Ort auf und geben Sie ihn an niemandem weiter.";
+"vc_seed_reveal_button_title" = "Zur Anzeige gedrückt halten";
+
+"view_seed_reminder_subtitle_1" = "Sichern Sie Ihr Konto, indem Sie Ihren Wiederherstellungssatz speichern";
+"view_seed_reminder_subtitle_2" = "Tippen und halten Sie die verborgenen Wörter, um Ihren Wiederherstellungssatz anzuzeigen, und speichern Sie ihn dann sicher, um Ihre Session ID zu sichern.";
+"view_seed_reminder_subtitle_3" = "Bewahren Sie Ihren Wiederherstellungssatz an einem sicheren Ort auf.";
+
+"vc_path_title" = "Pfad";
+"vc_path_explanation" = "Session verbirgt Ihre IP-Adresse, indem Ihre Nachrichten über mehrere Dienstknoten im dezentralen Session-Netzwerk weitergeleitet werden. Dies sind die Länder, durch die Ihre Verbindung derzeit weitergeleitet wird:";
+"vc_path_device_row_title" = "Sie";
+"vc_path_guard_node_row_title" = "Eingangsknoten";
+"vc_path_service_node_row_title" = "Dienstknoten";
+"vc_path_destination_row_title" = "Ziel";
+"vc_path_learn_more_button_title" = "Mehr erfahren";
+
+"vc_create_private_chat_title" = "Neue Session";
+"vc_create_private_chat_enter_session_id_tab_title" = "Session ID eingeben";
+"vc_create_private_chat_scan_qr_code_tab_title" = "QR-Code scannen";
+"vc_create_private_chat_scan_qr_code_explanation" = "Scannen Sie den QR-Code eines Benutzers, um eine Session zu starten. QR-Codes finden Sie, indem Sie in den Einstellungen auf das QR-Code-Symbol tippen.";
+
+"vc_enter_public_key_text_field_hint" = "Geben Sie eine Session ID ein.";
+"vc_enter_public_key_explanation" = "Benutzer können ihre Session ID freigeben, indem sie in ihren Einstellungen auf \"Session ID freigeben\" tippen oder ihren QR-Code freigeben.";
+
+"vc_scan_qr_code_camera_access_explanation" = "Session benötigt Kamerazugriff, um die QR-Codes scannen zu können.";
+"vc_scan_qr_code_grant_camera_access_button_title" = "Kamerazugriff gewähren";
+
+"vc_create_closed_group_title" = "Neue geschlossene Gruppe";
+"vc_create_closed_group_text_field_hint" = "Geben Sie einen Gruppennamen ein.";
+"vc_create_closed_group_explanation" = "Geschlossene Gruppen unterstützen bis zu 10 Mitglieder und bieten den gleichen Schutz der Privatsphäre wie Einzelgespräche.";
+"vc_create_closed_group_empty_state_message" = "Sie haben noch keine Kontakte.";
+"vc_create_closed_group_empty_state_button_title" = "Session starten";
+"vc_create_closed_group_group_name_missing_error" = "Bitte geben Sie einen Gruppennamen ein.";
+"vc_create_closed_group_group_name_too_long_error" = "Bitte geben Sie einen kürzeren Gruppennamen ein.";
+"vc_create_closed_group_not_enough_group_members_error" = "Bitte wählen Sie mindestens zwei Gruppenmitglieder aus.";
+"vc_create_closed_group_too_many_group_members_error" = "Eine geschlossene Gruppe kann maximal zehn Mitglieder haben.";
+"vc_create_closed_group_invalid_session_id_error" = "Ein Mitglied Ihrer Gruppe hat eine ungültige Session ID.";
+
+"vc_join_public_chat_title" = "Offener Gruppe beitreten";
+"vc_join_public_chat_error" = "Konnte der Gruppe nicht beitreten.";
+"vc_join_public_chat_enter_group_url_tab_title" = "Gruppen-URL öffnen";
+"vc_join_public_chat_scan_qr_code_tab_title" = "QR-Code scannen";
+"vc_join_public_chat_scan_qr_code_explanation" = "Scannen Sie den QR-Code der offenen Gruppe, der Sie beitreten möchten.";
+
+"vc_enter_chat_url_text_field_hint" = "Geben Sie eine offene Gruppen-URL ein.";
+"vc_enter_chat_url_privacy_warning" = "Offenen Gruppen kann jeder beitreten und sie bieten keinen vollständigen Schutz der Privatsphäre.";
+
+"vc_settings_title" = "Einstellungen";
+"vc_settings_display_name_text_field_hint" = "Geben Sie einen Anzeigenamen ein.";
+"vc_settings_display_name_missing_error" = "Bitte wählen Sie einen Anzeigenamen.";
+"vc_settings_invalid_display_name_error" = "Bitte wählen Sie einen Anzeigenamen, der nur aus den Zeichen a - z, A - Z, 0 - 9 und _ besteht.";
+"vc_settings_display_name_too_long_error" = "Bitte wählen Sie einen kürzeren Anzeigenamen.";
+"vc_settings_privacy_button_title" = "Datenschutz";
+"vc_settings_notifications_button_title" = "Benachrichtigungen";
+"vc_settings_chats_button_title" = "Chats";
+"vc_settings_devices_button_title" = "Geräte";
+"vc_settings_recovery_phrase_button_title" = "Wiederherstellungssatz";
+"vc_settings_clear_all_data_button_title" = "Daten löschen";
+
+"vc_notification_settings_title" = "Benachrichtigungen";
+"vc_notification_settings_style_section_title" = "Stil der Benachrichtigungen";
+"vc_notification_settings_content_section_title" = "Inhalt der Benachrichtigungen";
+
+"vc_privacy_settings_title" = "Datenschutz";
+
+"vc_chat_settings_title" = "Chats";
+
+"vc_linked_devices_title" = "Geräte";
+"vc_linked_devices_multi_device_limit_reached_modal_title" = "Gerätelimit erreicht";
+"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "Es ist derzeit nicht erlaubt, mehr als ein Gerät zu verbinden.";
+"vc_linked_devices_unlinking_failed_message" = "Gerät konnte nicht getrennt werden.";
+"vc_linked_devices_unlinking_successful_message" = "Ihr Gerät wurde erfolgreich getrennt.";
+"vc_linked_devices_linking_failed_message" = "Das Gerät konnte nicht verbunden werden.";
+"vc_linked_devices_empty_state_message" = "Sie haben noch keine Geräte verlinkt.";
+"vc_linked_devices_empty_state_button_title" = "Gerät (Beta) verknüpfen";
+
+"preferences_notifications_strategy_category_title" = "Benachrichtigungsstrategie";
+"preferences_notifications_use_apns_option_title" = "APNs verwenden";
+"preferences_notifications_use_apns_option_explanation" = "Die Verwendung von Apple Push Notification Service ermöglicht zuverlässigere Push-Benachrichtigungen, Ihre IP- und Geräte-Token werden Apple und Loki jedoch bekannt.";
+
+"modal_link_device_slave_mode_title_1" = "Warten auf Autorisierung";
+"modal_link_device_slave_mode_title_2" = "Geräteverbindung autorisiert";
+"modal_link_device_slave_mode_explanation_1" = "Bitte überprüfen Sie, ob die folgenden Wörter mit denen auf Ihrem anderen Gerät übereinstimmen.";
+"modal_link_device_slave_mode_explanation_2" = "Ihr Gerät wurde erfolgreich verknüpft.";
+
+"modal_link_device_master_mode_title_1" = "Warten auf Gerät";
+"modal_link_device_master_mode_title_2" = "Verknüpfungsanfrage empfangen";
+"modal_link_device_master_mode_title_3" = "Gerätelink wird autorisiert";
+"modal_link_device_master_mode_explanation_1" = "Laden Sie Session auf Ihr anderes Gerät herunter und tippen Sie unten auf dem Startbildschirm auf \"Mit einem bestehenden Konto verlinken\". Wenn Sie bereits ein Konto auf Ihrem anderen Gerät haben, müssen Sie dieses Konto zuerst löschen.";
+"modal_link_device_master_mode_explanation_2" = "Bitte überprüfen Sie, ob die folgenden Wörter mit denen auf Ihrem anderen Gerät übereinstimmen.";
+"modal_link_device_master_mode_explanation_3" = "Bitte warten Sie, während der Gerätelink erstellt wird. Dies kann bis zu einer Minute dauern.";
+"modal_link_device_master_mode_authorize_button_title" = "Autorisieren";
+
+"vc_device_list_bottom_sheet_change_name_button_title" = "Namen ändern";
+"vc_device_list_bottom_sheet_unlink_device_button_title" = "Gerät trennen";
+
+"modal_edit_device_name_text_field_hint" = "Geben Sie einen Namen ein.";
+
+"modal_seed_title" = "Ihr Wiederherstellungssatz";
+"modal_seed_explanation" = "Das ist Ihr Wiederherstellungssatz. Damit können Sie Ihre Session ID wiederherstellen oder auf ein neues Gerät migrieren.";
+
+"modal_clear_all_data_title" = "Alle Daten löschen";
+"modal_clear_all_data_explanation" = "Dadurch werden Ihre Nachrichten, Sessions und Kontakte dauerhaft gelöscht.";
+
+"vc_qr_code_title" = "QR-Code";
+"vc_qr_code_view_my_qr_code_tab_title" = "Meinen QR-Code anzeigen";
+"vc_qr_code_view_scan_qr_code_tab_title" = "QR-Code scannen";
+"vc_qr_code_view_scan_qr_code_explanation" = "Scannen Sie den QR-Code einer Person, um ein Gespräch mit ihr zu beginnen.";
+
+"vc_view_my_qr_code_explanation" = "Das ist Ihr QR-Code. Andere Benutzer können ihn scannen, um eine Session mit Ihnen zu starten.";
+"vc_view_my_qr_code_share_title" = "QR-Code freigeben";
+
+"view_friend_request_accept_button_title" = "Akzeptieren";
+"view_friend_request_reject_button_title" = "Ablehnen";
+"view_friend_request_incoming_pending_message" = "%@ hat Ihnen eine Session-Anfrage gesendet.";
+"view_friend_request_incoming_accepted_message" = "Sie haben die Session-Anfrage von %@ akzeptiert.";
+"view_friend_request_incoming_declined_message" = "Sie haben die Session-Anfrage von %@ abgelehnt.";
+"view_friend_request_incoming_expired_message" = "Die Session-Anfragte von %@ ist abgelaufen.";
+"view_friend_request_outgoing_pending_message" = "Sie haben %@ eine Session-Anfrage gesendet.";
+"view_friend_request_outgoing_accepted_message" = "%@ hat Ihre Session-Anfrage akzeptiert.";
+"view_friend_request_outgoing_expired_message" = "Ihre Session-Anfrage an %@ ist abgelaufen.";
+
+"session_reset_banner_message" = "Möchten Sie Ihre Session mit %@ wiederherstellen?";
+"session_reset_banner_dismiss_button_title" = "Verwerfen";
+"session_reset_banner_restore_button_title" = "Wiederherstellen";
+
+"vc_contact_selection_contacts_title" = "Kontakte";
+"vc_contact_selection_closed_groups_title" = "Geschlossene Gruppen";
+"vc_contact_selection_open_groups_title" = "Gruppen öffnen";

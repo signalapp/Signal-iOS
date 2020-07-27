@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Existing threads are listed first, ordered by most recently active
     OWSTableSection *recentChatsSection = [OWSTableSection new];
-    recentChatsSection.headerTitle = NSLocalizedString(@"Recent Chats", @"");
+    recentChatsSection.headerTitle = NSLocalizedString(@"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE", @"");
     for (TSThread *thread in [self filteredThreadsWithSearchText]) {
         [recentChatsSection
             addItem:[OWSTableItem
@@ -277,7 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Contacts who don't yet have a thread are listed last
     OWSTableSection *otherContactsSection = [OWSTableSection new];
-    otherContactsSection.headerTitle = NSLocalizedString(@"Other Chats", @"");
+    otherContactsSection.headerTitle = @"Other Chats";
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccountsWithSearchText];
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [otherContactsSection

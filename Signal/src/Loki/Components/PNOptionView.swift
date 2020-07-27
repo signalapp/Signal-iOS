@@ -64,7 +64,7 @@ final class OptionView : UIView {
             let recommendedLabel = UILabel()
             recommendedLabel.textColor = Colors.accent
             recommendedLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-            recommendedLabel.text = NSLocalizedString("Recommended", comment: "")
+            recommendedLabel.text = NSLocalizedString("vc_pn_mode_recommended_option_tag", comment: "")
             stackView.addArrangedSubview(recommendedLabel)
         }
         // Set up tap gesture recognizer

@@ -43,7 +43,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     
     // Loki: Customize title
     UILabel *titleLabel = [UILabel new];
-    titleLabel.text = NSLocalizedString(@"Privacy", @"");
+    titleLabel.text = NSLocalizedString(@"vc_privacy_settings_title", @"");
     titleLabel.textColor = LKColors.text;
     titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
     self.navigationItem.titleView = titleLabel;
@@ -538,11 +538,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL isOn = sender.isOn;
     if (isOn) {
-        NSString *title = NSLocalizedString(@"Enable Link Previews?", @"");
-        NSString *message = NSLocalizedString(@"You will not have full metadata protection when sending or receiving link previews.", @"");
+        NSString *title = @"Enable Link Previews?";
+        NSString *message = @"You will not have full metadata protection when sending or receiving link previews.";
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:nil]];
-        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [sender setOn:NO animated:YES];
             SSKPreferences.areLinkPreviewsEnabled = NO;
         }]];

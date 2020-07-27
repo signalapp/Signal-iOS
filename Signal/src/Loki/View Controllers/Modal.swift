@@ -24,7 +24,7 @@ class Modal : BaseVC {
         result.backgroundColor = Colors.buttonBackground
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.setTitle(NSLocalizedString("Cancel", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("cancel", comment: ""), for: UIControl.State.normal)
         return result
     }()
     

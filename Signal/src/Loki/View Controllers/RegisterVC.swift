@@ -15,7 +15,7 @@ final class RegisterVC : BaseVC {
     
     private lazy var copyPublicKeyButton: Button = {
         let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
@@ -47,14 +47,14 @@ final class RegisterVC : BaseVC {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Say hello to your Session ID", comment: "")
+        titleLabel.text = NSLocalizedString("vc_register_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_register_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up public key label container
@@ -69,7 +69,7 @@ final class RegisterVC : BaseVC {
         let bottomSpacer = UIView.vStretchingSpacer()
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
         registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         // Set up button stack view
@@ -123,7 +123,7 @@ final class RegisterVC : BaseVC {
     @objc private func enableCopyButton() {
         copyPublicKeyButton.isUserInteractionEnabled = true
         UIView.transition(with: copyPublicKeyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyPublicKeyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+            self.copyPublicKeyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
     }
     
@@ -180,7 +180,7 @@ final class RegisterVC : BaseVC {
         UIPasteboard.general.string = keyPair.hexEncodedPublicKey
         copyPublicKeyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyPublicKeyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyPublicKeyButton.setTitle(NSLocalizedString("Copied", comment: ""), for: UIControl.State.normal)
+            self.copyPublicKeyButton.setTitle("Copied", for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }
