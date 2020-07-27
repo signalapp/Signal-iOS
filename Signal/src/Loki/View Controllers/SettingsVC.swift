@@ -38,14 +38,14 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }()
     
     private lazy var displayNameTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("Enter a display name", comment: ""), usesDefaultHeight: false)
+        let result = TextField(placeholder: NSLocalizedString("vc_settings_display_name_text_field_hint", comment: ""), usesDefaultHeight: false)
         result.textAlignment = .center
         return result
     }()
     
     private lazy var copyButton: Button = {
         let result = Button(style: .prominentOutline, size: .medium)
-        result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
     }()
@@ -55,9 +55,9 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("Settings", comment: ""))
+        setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
         // Set up navigation bar buttons
-        let backButton = UIBarButtonItem(title: NSLocalizedString("Back", comment: ""), style: .plain, target: nil, action: nil)
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
         updateNavigationBarButtons()
@@ -84,7 +84,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         headerStackView.spacing = Values.smallSpacing
         headerStackView.alignment = .center
         // Set up separator
-        let separator = Separator(title: NSLocalizedString("Your Session ID", comment: ""))
+        let separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
         // Set up public key label
         let publicKeyLabel = UILabel()
         publicKeyLabel.textColor = Colors.text
@@ -95,7 +95,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         publicKeyLabel.text = userHexEncodedPublicKey
         // Set up share button
         let shareButton = Button(style: .regular, size: .medium)
-        shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
+        shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
         // Set up button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
@@ -161,19 +161,19 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         }
         var result = [
             getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("Privacy", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
+            getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("Notifications", comment: ""), color: Colors.text, action: #selector(showNotificationSettings))
+            getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings))
         ]
         let isMasterDevice = UserDefaults.standard.isMasterDevice
         if isMasterDevice {
             result.append(getSeparator())
-            result.append(getSettingButton(withTitle: NSLocalizedString("Devices", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
+            result.append(getSettingButton(withTitle: NSLocalizedString("vc_settings_devices_button_title", comment: ""), color: Colors.text, action: #selector(showLinkedDevices)))
             result.append(getSeparator())
-            result.append(getSettingButton(withTitle: NSLocalizedString("Recovery Phrase", comment: ""), color: Colors.text, action: #selector(showSeed)))
+            result.append(getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)))
         }
         result.append(getSeparator())
-        result.append(getSettingButton(withTitle: NSLocalizedString("Clear All Data", comment: ""), color: Colors.destructive, action: #selector(clearAllData)))
+        result.append(getSettingButton(withTitle: NSLocalizedString("vc_settings_clear_all_data_button_title", comment: ""), color: Colors.destructive, action: #selector(clearAllData)))
         result.append(getSeparator())
         return result
     }
@@ -182,12 +182,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+            self.copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
     }
     
     func avatarActionSheetTitle() -> String? {
-        return NSLocalizedString("Update Profile Picture", comment: "")
+        return "Update Profile Picture"
     }
     
     func fromViewController() -> UIViewController {
@@ -199,7 +199,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     func clearAvatarActionLabel() -> String {
-        return NSLocalizedString("Clear", comment: "")
+        return "Clear"
     }
     
     // MARK: Updating
@@ -266,8 +266,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                         if let error = error as? DotNetAPI.DotNetAPIError {
                             isMaxFileSizeExceeded = (error == .maxFileSizeExceeded)
                         }
-                        let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : NSLocalizedString("Couldn't Update Profile", comment: "")
-                        let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : NSLocalizedString("Please check your internet connection and try again", comment: "")
+                        let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"
+                        let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
                         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
                         self?.present(alert, animated: true, completion: nil)
@@ -299,15 +299,15 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         }
         let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard !displayName.isEmpty else {
-            return showError(title: NSLocalizedString("Please pick a display name", comment: ""))
+            return showError(title: NSLocalizedString("vc_settings_display_name_missing_error", comment: ""))
         }
         let allowedCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ ")
         let hasInvalidCharacters = !displayName.allSatisfy { $0.unicodeScalars.allSatisfy { allowedCharacters.contains($0) } }
         guard !hasInvalidCharacters else {
-            return showError(title: NSLocalizedString("Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters", comment: ""))
+            return showError(title: NSLocalizedString("vc_settings_invalid_display_name_error", comment: ""))
         }
         guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
-            return showError(title: NSLocalizedString("Please pick a shorter display name", comment: ""))
+            return showError(title: NSLocalizedString("vc_settings_display_name_too_long_error", comment: ""))
         }
         isEditingDisplayName = false
         displayNameToBeUploaded = displayName
@@ -326,7 +326,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         UIPasteboard.general.string = userHexEncodedPublicKey
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copied", comment: ""), for: UIControl.State.normal)
+            self.copyButton.setTitle("Copied", for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }

@@ -23,9 +23,9 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
-        explanationLabel.text = NSLocalizedString("You haven't linked any devices yet", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_linked_devices_empty_state_message", comment: "")
         let linkNewDeviceButton = Button(style: .prominentOutline, size: .large)
-        linkNewDeviceButton.setTitle(NSLocalizedString("Link a Device (Beta)", comment: ""), for: UIControl.State.normal)
+        linkNewDeviceButton.setTitle(NSLocalizedString("vc_linked_devices_empty_state_button_title", comment: ""), for: UIControl.State.normal)
         linkNewDeviceButton.addTarget(self, action: #selector(linkNewDevice), for: UIControl.Event.touchUpInside)
         linkNewDeviceButton.set(.width, to: 180)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, linkNewDeviceButton ])
@@ -40,7 +40,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("Devices", comment: ""))
+        setNavBarTitle(NSLocalizedString("vc_linked_devices_title", comment: ""))
         // Set up link new device button
         let linkNewDeviceButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(linkNewDevice))
         linkNewDeviceButton.tintColor = Colors.text
@@ -108,7 +108,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
             deviceLinkingModal.modalTransitionStyle = .crossDissolve
             present(deviceLinkingModal, animated: true, completion: nil)
         } else {
-            let alert = UIAlertController(title: NSLocalizedString("Multi Device Limit Reached", comment: ""), message: NSLocalizedString("It's currently not allowed to link more than one device.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("vc_linked_devices_multi_device_limit_reached_modal_title", comment: ""), message: NSLocalizedString("It's currently not allowed to link more than one device.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
         }
@@ -118,7 +118,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
         defer { tableView.deselectRow(at: indexPath, animated: true) }
         let deviceLink = deviceLinks[indexPath.row]
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        sheet.addAction(UIAlertAction(title: NSLocalizedString("Change Name", comment: ""), style: .default) { [weak self] _ in
+        sheet.addAction(UIAlertAction(title: NSLocalizedString("vc_device_list_bottom_sheet_change_name_button_title", comment: ""), style: .default) { [weak self] _ in
             guard let self = self else { return }
             let deviceNameModal = DeviceNameModal()
             deviceNameModal.device = deviceLink.other
@@ -127,10 +127,10 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
             deviceNameModal.modalTransitionStyle = .crossDissolve
             self.present(deviceNameModal, animated: true, completion: nil)
         })
-        sheet.addAction(UIAlertAction(title: NSLocalizedString("Unlink", comment: ""), style: .destructive) { [weak self] _ in
+        sheet.addAction(UIAlertAction(title: NSLocalizedString("vc_device_list_bottom_sheet_unlink_device_button_title", comment: ""), style: .destructive) { [weak self] _ in
             self?.removeDeviceLink(deviceLink)
         })
-        sheet.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel) { _ in })
+        sheet.addAction(UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel) { _ in })
         present(sheet, animated: true, completion: nil)
     }
     
@@ -166,7 +166,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
             })
             self?.updateDeviceLinks()
         }.catch { [weak self] _ in
-            let alert = UIAlertController(title: NSLocalizedString("Couldn't Unlink Device", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: "Couldn't Unlink Device", message: "Please check your internet connection and try again", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             self?.present(alert, animated: true, completion: nil)
         }

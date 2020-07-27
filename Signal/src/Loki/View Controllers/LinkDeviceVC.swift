@@ -8,11 +8,11 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Session ID", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_link_device_enter_session_id_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
-            TabBar.Tab(title: NSLocalizedString("Scan QR Code", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_link_device_scan_qr_code_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
@@ -33,7 +33,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Navigate to \"Settings\" > \"Devices\" > \"Link a Device\" on your other device and then scan the QR code that comes up to start the linking process.", comment: "")
+        let message = NSLocalizedString("vc_link_device_scan_qr_code_explanation", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -44,7 +44,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("Link Device", comment: ""))
+        setNavBarTitle(NSLocalizedString("vc_link_device_title", comment: ""))
         let navigationBar = navigationController!.navigationBar
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
@@ -143,9 +143,9 @@ private final class EnterPublicKeyVC : UIViewController {
     // MARK: Components
     private lazy var publicKeyTextField: TextField = {
         if isIPhone6OrSmaller {
-            return TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""), customHeight: 56, customVerticalInset: 12)
+            return TextField(placeholder: NSLocalizedString("vc_enter_session_id_text_field_hint", comment: ""), customHeight: 56, customVerticalInset: 12)
         } else {
-            return TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""))
+            return TextField(placeholder: NSLocalizedString("vc_enter_session_id_text_field_hint", comment: ""))
         }
     }()
     
@@ -157,19 +157,19 @@ private final class EnterPublicKeyVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone6OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Link your device", comment: "")
+        titleLabel.text = NSLocalizedString("vc_enter_session_id_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "Navigate to \"Settings\" > \"Devices\" > \"Link a Device\" on your other device and then enter your Session ID here to start the linking process."
+        explanationLabel.text = "vc_enter_session_id_explanation"
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Link button
         let linkButton = Button(style: .prominentOutline, size: .large)
-        linkButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        linkButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
         linkButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         linkButton.addTarget(self, action: #selector(requestDeviceLink), for: UIControl.Event.touchUpInside)
         let linkButtonContainer = UIView()
@@ -270,7 +270,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Session needs camera access to scan QR codes", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -278,7 +278,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let callToActionButton = UIButton()
         callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("Enable Camera Access", comment: ""), for: UIControl.State.normal)
+        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
         callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])

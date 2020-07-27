@@ -8,11 +8,11 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Open Group URL", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_join_public_chat_enter_group_url_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
-            TabBar.Tab(title: NSLocalizedString("Scan QR Code", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_join_public_chat_scan_qr_code_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
@@ -33,7 +33,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Scan the QR code of the open group you'd like to join", comment: "")
+        let message = NSLocalizedString("vc_join_public_chat_scan_qr_code_explanation", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -44,7 +44,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("Join Open Group", comment: ""))
+        setNavBarTitle(NSLocalizedString("vc_join_public_chat_title", comment: ""))
         let navigationBar = navigationController!.navigationBar
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
@@ -128,7 +128,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     fileprivate func joinPublicChatIfPossible(with chatURL: String) {
         guard !isJoining else { return }
         guard let url = URL(string: chatURL), let scheme = url.scheme, scheme == "https", url.host != nil else {
-            return showError(title: NSLocalizedString("Invalid URL", comment: ""), message: NSLocalizedString("Please check the URL you entered and try again", comment: ""))
+            return showError(title: NSLocalizedString("invalid_url", comment: ""), message: "Please check the URL you entered and try again")
         }
         isJoining = true
         let channelID: UInt64 = 1
@@ -154,11 +154,11 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
             }
             .catch(on: DispatchQueue.main) { [weak self] error in
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                var title = NSLocalizedString("Couldn't Join", comment: "")
+                var title = "Couldn't Join"
                 var message = ""
                 if case HTTP.Error.httpRequestFailed(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
-                    title = NSLocalizedString("Unauthorized", comment: "")
-                    message = NSLocalizedString("Please ask the open group operator to add you to the group.", comment: "")
+                    title = "Unauthorized"
+                    message = "Please ask the open group operator to add you to the group."
                 }
                 self?.isJoining = false
                 self?.showError(title: title, message: message)
@@ -180,7 +180,7 @@ private final class EnterChatURLVC : UIViewController {
     
     // MARK: Components
     private lazy var chatURLTextField: TextField = {
-        let result = TextField(placeholder: "Enter an open group URL")
+        let result = TextField(placeholder: "vc_enter_chat_url_text_field_hint")
         result.keyboardType = .URL
         result.autocapitalizationType = .none
         return result
@@ -194,13 +194,13 @@ private final class EnterChatURLVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        explanationLabel.text = NSLocalizedString("Open groups can be joined by anyone and do not provide full privacy protection", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_enter_chat_url_privacy_warning", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
-        nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
+        nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(joinPublicChatIfPossible), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()
         nextButtonContainer.addSubview(nextButton)
@@ -280,7 +280,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Session needs camera access to scan QR codes", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -288,7 +288,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let callToActionButton = UIButton()
         callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("Enable Camera Access", comment: ""), for: UIControl.State.normal)
+        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
         callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])

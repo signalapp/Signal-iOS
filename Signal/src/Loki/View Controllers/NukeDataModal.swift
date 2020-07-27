@@ -8,7 +8,7 @@ final class NukeDataModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = NSLocalizedString("Clear All Data", comment: "")
+        titleLabel.text = NSLocalizedString("modal_clear_all_data_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -16,7 +16,7 @@ final class NukeDataModal : Modal {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("This will permanently delete your messages, sessions, and contacts.", comment: "")
+        explanationLabel.text = NSLocalizedString("modal_clear_all_data_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -29,7 +29,7 @@ final class NukeDataModal : Modal {
         }
         nukeDataButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         nukeDataButton.setTitleColor(isLightMode ? Colors.destructive : Colors.text, for: UIControl.State.normal)
-        nukeDataButton.setTitle(NSLocalizedString("Delete", comment: ""), for: UIControl.State.normal)
+        nukeDataButton.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: UIControl.State.normal)
         nukeDataButton.addTarget(self, action: #selector(nuke), for: UIControl.Event.touchUpInside)
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, nukeDataButton ])

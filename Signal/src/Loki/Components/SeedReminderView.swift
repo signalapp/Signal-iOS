@@ -56,7 +56,7 @@ final class SeedReminderView : UIView {
         labelStackView.spacing = 4
         // Set up button
         let button = Button(style: .prominentOutline, size: .small)
-        button.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        button.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
         button.set(.width, to: 80)
         button.addTarget(self, action: #selector(handleContinueButtonTapped), for: UIControl.Event.touchUpInside)
         // Set up content stack view

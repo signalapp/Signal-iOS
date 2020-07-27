@@ -212,7 +212,7 @@ final class ConversationCell : UITableViewCell {
             }
         } else {
             if threadViewModel.threadRecord.isNoteToSelf() {
-                return NSLocalizedString("Note to Self", comment: "")
+                return NSLocalizedString("NOTE_TO_SELF", comment: "")
             } else {
                 let hexEncodedPublicKey = threadViewModel.contactIdentifier!
                 return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey

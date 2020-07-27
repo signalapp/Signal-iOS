@@ -35,12 +35,12 @@ final class GroupMembersVC : BaseVC, UITableViewDataSource {
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("Group Members", comment: ""))
+        setNavBarTitle("Group Members")
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("The ability to add members to a closed group is coming soon.", comment: "")
+        explanationLabel.text = "The ability to add members to a closed group is coming soon."
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

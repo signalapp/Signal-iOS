@@ -7,11 +7,11 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("Enter Session ID", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_create_private_chat_enter_session_id_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
-            TabBar.Tab(title: NSLocalizedString("Scan QR Code", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_create_private_chat_scan_qr_code_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
@@ -32,7 +32,7 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.", comment: "")
+        let message = NSLocalizedString("vc_create_private_chat_scan_qr_code_explanation", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -43,7 +43,7 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("New Session", comment: ""))
+        setNavBarTitle(NSLocalizedString("vc_create_private_chat_title", comment: ""))
         let navigationBar = navigationController!.navigationBar
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
@@ -126,7 +126,7 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please check the Session ID and try again", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: NSLocalizedString("Please check the Session ID and try again", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {
@@ -149,11 +149,11 @@ private final class EnterPublicKeyVC : UIViewController {
     }()
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter a Session ID", comment: ""))
+    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
     
     private lazy var copyButton: Button = {
         let result = Button(style: .unimportant, size: .medium)
-        result.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
     }()
@@ -166,12 +166,12 @@ private final class EnterPublicKeyVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Users can share their Session ID from their account settings, or by sharing their QR code.", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_enter_public_key_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up separator
-        let separator = Separator(title: NSLocalizedString("Your Session ID", comment: ""))
+        let separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
         // Set up user public key label
         let userPublicKeyLabel = UILabel()
         userPublicKeyLabel.textColor = Colors.text
@@ -182,7 +182,7 @@ private final class EnterPublicKeyVC : UIViewController {
         userPublicKeyLabel.text = userHexEncodedPublicKey
         // Set up share button
         let shareButton = Button(style: .unimportant, size: .medium)
-        shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
+        shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
         // Set up button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
@@ -191,7 +191,7 @@ private final class EnterPublicKeyVC : UIViewController {
         buttonContainer.distribution = .fillEqually
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
-        nextButton.setTitle(NSLocalizedString("Next", comment: ""), for: UIControl.State.normal)
+        nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(startNewPrivateChatIfPossible), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView()
         nextButtonContainer.addSubview(nextButton)
@@ -226,7 +226,7 @@ private final class EnterPublicKeyVC : UIViewController {
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+            self.copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
     }
     
@@ -235,7 +235,7 @@ private final class EnterPublicKeyVC : UIViewController {
         UIPasteboard.general.string = userHexEncodedPublicKey
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("Copied", comment: ""), for: UIControl.State.normal)
+            self.copyButton.setTitle("Copied", for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }
@@ -261,7 +261,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Session needs camera access to scan QR codes", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -269,7 +269,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let callToActionButton = UIButton()
         callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("Enable Camera Access", comment: ""), for: UIControl.State.normal)
+        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
         callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])

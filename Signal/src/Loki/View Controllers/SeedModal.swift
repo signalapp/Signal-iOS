@@ -18,7 +18,7 @@ final class SeedModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = NSLocalizedString("Your Recovery Phrase", comment: "")
+        titleLabel.text = NSLocalizedString("modal_seed_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -34,7 +34,7 @@ final class SeedModal : Modal {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.", comment: "")
+        explanationLabel.text = NSLocalizedString("modal_seed_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
@@ -45,7 +45,7 @@ final class SeedModal : Modal {
         copyButton.backgroundColor = Colors.buttonBackground
         copyButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         copyButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        copyButton.setTitle(NSLocalizedString("Copy", comment: ""), for: UIControl.State.normal)
+        copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         copyButton.addTarget(self, action: #selector(copySeed), for: UIControl.Event.touchUpInside)
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, copyButton ])

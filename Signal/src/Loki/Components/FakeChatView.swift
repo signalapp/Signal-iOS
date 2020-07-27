@@ -8,11 +8,11 @@ final class FakeChatView : UIView {
     }
     
     private lazy var chatBubbles = [
-        getChatBubble(withText: NSLocalizedString("What's Session?", comment: ""), wasSentByCurrentUser: true),
-        getChatBubble(withText: NSLocalizedString("It's a decentralized, encrypted messaging app.", comment: ""), wasSentByCurrentUser: false),
-        getChatBubble(withText: NSLocalizedString("So it doesn't collect my personal information or my conversation metadata? How does it work?", comment: ""), wasSentByCurrentUser: true),
-        getChatBubble(withText: NSLocalizedString("Using a combination of advanced anonymous routing and end-to-end encryption technologies.", comment: ""), wasSentByCurrentUser: false),
-        getChatBubble(withText: NSLocalizedString("Friends don't let friends use compromised messengers. You're welcome.", comment: ""), wasSentByCurrentUser: false)
+        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_1", comment: ""), wasSentByCurrentUser: true),
+        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_2", comment: ""), wasSentByCurrentUser: false),
+        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_3", comment: ""), wasSentByCurrentUser: true),
+        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_4", comment: ""), wasSentByCurrentUser: false),
+        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_5", comment: ""), wasSentByCurrentUser: false)
     ]
     
     private lazy var scrollView: UIScrollView = {

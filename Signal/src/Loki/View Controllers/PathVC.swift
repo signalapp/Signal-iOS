@@ -19,7 +19,7 @@ final class PathVC : BaseVC {
 
     private lazy var learnMoreButton: Button = {
         let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("Learn More", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("vc_path_learn_more_button_title", comment: ""), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(learnMore), for: UIControl.Event.touchUpInside)
         return result
     }()
@@ -35,7 +35,7 @@ final class PathVC : BaseVC {
 
     private func setUpNavBar() {
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("Path", comment: ""))
+        setNavBarTitle(NSLocalizedString("vc_path_title", comment: ""))
         // Set up close button
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
@@ -47,7 +47,7 @@ final class PathVC : BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the countries your connection is currently being bounced through:", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_path_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -113,8 +113,8 @@ final class PathVC : BaseVC {
                 let isGuardSnode = (snode == pathToDisplay.first!)
                 return getPathRow(snode: snode, location: .middle, dotAnimationStartDelay: Double(index) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval, isGuardSnode: isGuardSnode)
             }
-            let youRow = getPathRow(title: NSLocalizedString("You", comment: ""), subtitle: nil, location: .top, dotAnimationStartDelay: 1, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-            let destinationRow = getPathRow(title: NSLocalizedString("Destination", comment: ""), subtitle: nil, location: .bottom, dotAnimationStartDelay: Double(pathToDisplay.count) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            let youRow = getPathRow(title: NSLocalizedString("vc_path_device_row_title", comment: ""), subtitle: nil, location: .top, dotAnimationStartDelay: 1, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            let destinationRow = getPathRow(title: NSLocalizedString("vc_path_destination_row_title", comment: ""), subtitle: nil, location: .bottom, dotAnimationStartDelay: Double(pathToDisplay.count) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
             let rows = [ youRow ] + snodeRows + [ destinationRow ]
             rows.forEach { pathStackView.addArrangedSubview($0) }
             spinner.stopAnimating()
@@ -158,7 +158,7 @@ final class PathVC : BaseVC {
 
     private func getPathRow(snode: Snode, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
         let country = IP2Country.isInitialized ? (IP2Country.shared.countryNamesCache[snode.ip] ?? "Resolving...") : "Resolving..."
-        let title = isGuardSnode ? NSLocalizedString("Entry Node", comment: "") : NSLocalizedString("Service Node", comment: "")
+        let title = isGuardSnode ? NSLocalizedString("vc_path_guard_node_row_title", comment: "") : NSLocalizedString("vc_path_service_node_row_title", comment: "")
         return getPathRow(title: title, subtitle: country, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
     }
     

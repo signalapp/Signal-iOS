@@ -30,7 +30,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let attributedTitle = NSMutableAttributedString(string: title)
         attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "80%"))
         result.title = attributedTitle
-        result.subtitle = NSLocalizedString("Secure your account by saving your recovery phrase", comment: "")
+        result.subtitle = NSLocalizedString("view_seed_reminder_subtitle_1", comment: "")
         result.setProgress(0.8, animated: false)
         result.delegate = self
         return result
@@ -70,9 +70,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
-        explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_home_empty_state_message", comment: "")
         let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
-        createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
+        createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
         createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
         createNewPrivateChatButton.set(.width, to: 180)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
@@ -91,7 +91,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             setUpNavBarStyle()
         }
         updateNavigationBarButtons()
-        setNavBarTitle(NSLocalizedString("Messages", comment: ""))
+        setNavBarTitle("Messages")
         // Set up seed reminder view if needed
         let userDefaults = UserDefaults.standard
         let hasViewedSeed = userDefaults[.hasViewedSeed]
@@ -372,7 +372,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction)
         }
-        let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("Delete", comment: "")) { [weak self] _, _ in
+        let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
                 try! Storage.writeSync { transaction in
