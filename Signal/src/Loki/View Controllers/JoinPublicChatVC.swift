@@ -180,7 +180,7 @@ private final class EnterChatURLVC : UIViewController {
     
     // MARK: Components
     private lazy var chatURLTextField: TextField = {
-        let result = TextField(placeholder: "vc_enter_chat_url_text_field_hint")
+        let result = TextField(placeholder: NSLocalizedString("vc_enter_chat_url_text_field_hint", comment: ""))
         result.keyboardType = .URL
         result.autocapitalizationType = .none
         return result

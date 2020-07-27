@@ -46,7 +46,7 @@ final class RestoreVC : BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "vc_restore_explanation"
+        explanationLabel.text = NSLocalizedString("vc_restore_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up legal label
