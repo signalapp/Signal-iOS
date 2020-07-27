@@ -91,11 +91,16 @@ class GroupsV2ProfileKeyUpdater {
         }
         self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
                                                    transaction: transaction)
+
+        transaction.addAsyncCompletion {
+            self.tryToUpdateNext()
+        }
     }
 
     public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
         TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
-            guard let groupThread = thread as? TSGroupThread else {
+            guard let groupThread = thread as? TSGroupThread,
+                groupThread.isGroupV2Thread else {
                 return
             }
             self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
