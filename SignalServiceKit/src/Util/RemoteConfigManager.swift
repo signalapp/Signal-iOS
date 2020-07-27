@@ -252,10 +252,6 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         return SDSDatabaseStorage.shared
     }
 
-    private var grdbStorage: GRDBDatabaseStorageAdapter {
-        return SDSDatabaseStorage.shared.grdbStorage
-    }
-
     private var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }
