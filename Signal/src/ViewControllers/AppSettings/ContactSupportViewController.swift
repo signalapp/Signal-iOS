@@ -109,7 +109,13 @@ class ContactSupportViewController: OWSTableViewController {
 
     var showSpinnerOnNextButton = false {
         didSet {
-            let indicator = showSpinnerOnNextButton ? UIActivityIndicatorView() : nil
+            let indicatorStyle: UIActivityIndicatorView.Style
+            if #available(iOS 13, *) {
+                indicatorStyle = .medium
+            } else {
+                indicatorStyle = Theme.isDarkThemeEnabled ? .white : .gray
+            }
+            let indicator = showSpinnerOnNextButton ? UIActivityIndicatorView(style: indicatorStyle) : nil
             indicator?.startAnimating()
             navigationItem.rightBarButtonItem?.customView = indicator
         }
@@ -133,7 +139,7 @@ class ContactSupportViewController: OWSTableViewController {
         showSpinnerOnNextButton = true
 
         firstly { () -> Promise<Void> in
-            operation.perform(workQueue: .sharedUserInitiated)
+            operation.perform(on: .sharedUserInitiated)
 
         }.done(on: .main) { _ in
             self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)

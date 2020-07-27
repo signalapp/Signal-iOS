@@ -81,7 +81,7 @@ class ComposeSupportEmailOperation {
         self.model = model
     }
 
-    func perform(workQueue: DispatchQueue = .sharedUtility) -> Promise<Void> {
+    func perform(on workQueue: DispatchQueue = .sharedUtility) -> Promise<Void> {
         guard !isCancelled else {
             // If we're cancelled, return an empty success
             return Promise()
