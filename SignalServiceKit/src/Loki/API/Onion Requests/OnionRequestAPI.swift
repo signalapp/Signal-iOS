@@ -225,14 +225,14 @@ public enum OnionRequestAPI {
     /// Sends an onion request to `snode`. Builds new paths as needed.
     internal static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
-        return sendOnionRequest(with: payload, to: Destination.snode(snode), associatedWith: publicKey).recover2 { error -> Promise<JSON> in
+        return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
             guard case OnionRequestAPI.Error.httpRequestFailedAtTargetSnode(let statusCode, let json) = error else { throw error }
             throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
         }
     }
     
     /// Sends an onion request to `server`. Builds new paths as needed.
-    internal static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519Key: String, isJSONRequired: Bool = true) -> Promise<JSON> {
+    internal static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
         let rawHeaders = request.allHTTPHeaderFields ?? [:]
         var headers: JSON = rawHeaders.mapValues { value in
             switch value.lowercased() {
@@ -274,16 +274,14 @@ public enum OnionRequestAPI {
             "method" : request.httpMethod,
             "headers" : headers
         ]
-        let destination = Destination.server(host: host, x25519PublicKey: x25519Key)
-        let promise = sendOnionRequest(with: payload, to: destination, associatedWith: getUserHexEncodedPublicKey(), isJSONRequired: isJSONRequired)
-        promise.recover2 { error -> Promise<JSON> in
+        let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
+        return sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired).recover2 { error -> Promise<JSON> in
             print("[Loki] [Onion Request API] Couldn't reach server: \(server) due to error: \(error).")
             throw error
         }
-        return promise
     }
     
-    internal static func sendOnionRequest(with payload: JSON, to destination: Destination, associatedWith publicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
+    internal static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode!
         DispatchQueue.global(qos: .userInitiated).async {
