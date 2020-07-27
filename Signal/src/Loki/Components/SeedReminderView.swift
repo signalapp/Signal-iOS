@@ -68,7 +68,8 @@ final class SeedReminderView : UIView {
         contentStackView.axis = .horizontal
         contentStackView.spacing = 4
         contentStackView.alignment = .center
-        contentStackView.layoutMargins = UIEdgeInsets(top: 0, leading: Values.mediumSpacing + Values.accentLineThickness, bottom: 0, trailing: Values.mediumSpacing)
+        let horizontalSpacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        contentStackView.layoutMargins = UIEdgeInsets(top: 0, leading: horizontalSpacing + Values.accentLineThickness, bottom: 0, trailing: horizontalSpacing)
         contentStackView.isLayoutMarginsRelativeArrangement = true
         // Set up separator
         let separator = UIView()
@@ -77,7 +78,7 @@ final class SeedReminderView : UIView {
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ progressIndicatorView, contentStackView, separator ])
         stackView.axis = .vertical
-        stackView.spacing = Values.mediumSpacing
+        stackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         addSubview(stackView)
         stackView.pin(to: self)
     }
