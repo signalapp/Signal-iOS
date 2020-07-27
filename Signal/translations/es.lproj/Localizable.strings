@@ -2580,10 +2580,10 @@
 "vc_link_device_title" = "Vincular dispositivo";
 "vc_link_device_enter_session_id_tab_title" = "Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "Escanear código QR";
-"vc_link_device_scan_qr_code_explanation" = "Ve a Ajustes &gt; Dispositivos &gt; Vincular un dispositivo en tu otro dispositivo y después escanea el código QR que aparece para iniciar el proceso de vinculación.";
+"vc_link_device_scan_qr_code_explanation" = "Ve a Ajustes > Dispositivos > Vincular un dispositivo en tu otro dispositivo y después escanea el código QR que aparece para iniciar el proceso de vinculación.";
 
 "vc_enter_session_id_title" = "Vincula tu dispositivo";
-"vc_enter_session_id_explanation" = "Ve a Ajustes &gt; Dispositivos &gt; Vincular un dispositivo en tu otro dispositivo y después ingresa tu ID de Session aquí para iniciar el proceso de vinculación.";
+"vc_enter_session_id_explanation" = "Ve a Ajustes > Dispositivos > Vincular un dispositivo en tu otro dispositivo y después ingresa tu ID de Session aquí para iniciar el proceso de vinculación.";
 "vc_enter_session_id_edit_text_hint" = "Ingresa tu ID de Session";
 
 "vc_display_name_title_2" = "Elige tu nombre";

@@ -2590,10 +2590,10 @@
 "vc_link_device_title" = "Relier un appareil";
 "vc_link_device_enter_session_id_tab_title" = "Saisir un Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "Scanner un code QR";
-"vc_link_device_scan_qr_code_explanation" = "Rendez-vous dans Paramètres &gt; Appareils reliés &gt; Relier un appareil sur votre autre appareil, puis scannez le code QR affiché pour démarrer le processus de liaison.";
+"vc_link_device_scan_qr_code_explanation" = "Rendez-vous dans Paramètres > Appareils reliés > Relier un appareil sur votre autre appareil, puis scannez le code QR affiché pour démarrer le processus de liaison.";
 
 "vc_enter_session_id_title" = "Reliez votre appareil";
-"vc_enter_session_id_explanation" = "Rendez-vous dans Paramètres &gt; Appareils reliés &gt; Relier un appareil sur votre autre appareil, puis saisissez votre Session ID pour démarrer le processus de liaison.";
+"vc_enter_session_id_explanation" = "Rendez-vous dans Paramètres > Appareils reliés > Relier un appareil sur votre autre appareil, puis saisissez votre Session ID pour démarrer le processus de liaison.";
 "vc_enter_session_id_edit_text_hint" = "Saisissez votre Session ID";
 
 "vc_display_name_title_2" = "Choisissez votre nom d'utilisateur";
