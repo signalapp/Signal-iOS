@@ -9700,9 +9700,6 @@ public class SSKProtoGroupContextMember: NSObject, Codable {
     @objc
     public func asBuilder() -> SSKProtoGroupContextMemberBuilder {
         let builder = SSKProtoGroupContextMemberBuilder()
-        if let _value = uuid {
-            builder.setUuid(_value)
-        }
         if let _value = e164 {
             builder.setE164(_value)
         }
@@ -9719,17 +9716,6 @@ public class SSKProtoGroupContextMember: NSObject, Codable {
 
         @objc
         fileprivate override init() {}
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setUuid(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.uuid = valueParam
-        }
-
-        public func setUuid(_ valueParam: String) {
-            proto.uuid = valueParam
-        }
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -9758,18 +9744,6 @@ public class SSKProtoGroupContextMember: NSObject, Codable {
     }
 
     fileprivate let proto: SignalServiceProtos_GroupContext.Member
-
-    @objc
-    public var uuid: String? {
-        guard hasUuid else {
-            return nil
-        }
-        return proto.uuid
-    }
-    @objc
-    public var hasUuid: Bool {
-        return proto.hasUuid
-    }
 
     @objc
     public var e164: String? {
@@ -11006,9 +10980,6 @@ public class SSKProtoGroupDetailsMember: NSObject, Codable {
     @objc
     public func asBuilder() -> SSKProtoGroupDetailsMemberBuilder {
         let builder = SSKProtoGroupDetailsMemberBuilder()
-        if let _value = uuid {
-            builder.setUuid(_value)
-        }
         if let _value = e164 {
             builder.setE164(_value)
         }
@@ -11025,17 +10996,6 @@ public class SSKProtoGroupDetailsMember: NSObject, Codable {
 
         @objc
         fileprivate override init() {}
-
-        @objc
-        @available(swift, obsoleted: 1.0)
-        public func setUuid(_ valueParam: String?) {
-            guard let valueParam = valueParam else { return }
-            proto.uuid = valueParam
-        }
-
-        public func setUuid(_ valueParam: String) {
-            proto.uuid = valueParam
-        }
 
         @objc
         @available(swift, obsoleted: 1.0)
@@ -11064,18 +11024,6 @@ public class SSKProtoGroupDetailsMember: NSObject, Codable {
     }
 
     fileprivate let proto: SignalServiceProtos_GroupDetails.Member
-
-    @objc
-    public var uuid: String? {
-        guard hasUuid else {
-            return nil
-        }
-        return proto.uuid
-    }
-    @objc
-    public var hasUuid: Bool {
-        return proto.hasUuid
-    }
 
     @objc
     public var e164: String? {

@@ -915,7 +915,6 @@ class DebugUIGroupsV2: DebugUIPage {
 
             let memberBuilder = SSKProtoGroupContextMember.builder()
             memberBuilder.setE164(localAddress.phoneNumber!)
-            memberBuilder.setUuid(localAddress.uuid!.uuidString)
             groupContextBuilder.addMembers(try! memberBuilder.build())
 
             let dataBuilder = SSKProtoDataMessage.builder()

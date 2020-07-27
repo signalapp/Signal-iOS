@@ -2855,9 +2855,6 @@ struct SignalServiceProtos_GroupContext {
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   mutating func clearName() {self._name = nil}
 
-  /// A list of known phone numbers in the group, only maintained
-  /// to support legacy apps that don't know about UUIDs. We may want
-  /// to eventually stop populating this.
   var membersE164: [String] = []
 
   var avatar: SignalServiceProtos_AttachmentPointer {
@@ -2913,15 +2910,7 @@ struct SignalServiceProtos_GroupContext {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var uuid: String {
-      get {return _uuid ?? String()}
-      set {_uuid = newValue}
-    }
-    /// Returns true if `uuid` has been explicitly set.
-    var hasUuid: Bool {return self._uuid != nil}
-    /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
-    mutating func clearUuid() {self._uuid = nil}
-
+    /// skip 1, formerly uuid
     var e164: String {
       get {return _e164 ?? String()}
       set {_e164 = newValue}
@@ -2935,7 +2924,6 @@ struct SignalServiceProtos_GroupContext {
 
     init() {}
 
-    fileprivate var _uuid: String?
     fileprivate var _e164: String?
   }
 
@@ -3172,9 +3160,6 @@ struct SignalServiceProtos_GroupDetails {
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   mutating func clearName() {self._name = nil}
 
-  /// A list of known phone numbers in the group, only maintained
-  /// to support legacy apps that don't know about UUIDs. We may want
-  /// to eventually stop populating this.
   var membersE164: [String] = []
 
   var avatar: SignalServiceProtos_GroupDetails.Avatar {
@@ -3280,15 +3265,7 @@ struct SignalServiceProtos_GroupDetails {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var uuid: String {
-      get {return _uuid ?? String()}
-      set {_uuid = newValue}
-    }
-    /// Returns true if `uuid` has been explicitly set.
-    var hasUuid: Bool {return self._uuid != nil}
-    /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
-    mutating func clearUuid() {self._uuid = nil}
-
+    /// skip 1, formerly uuid
     var e164: String {
       get {return _e164 ?? String()}
       set {_e164 = newValue}
@@ -3302,7 +3279,6 @@ struct SignalServiceProtos_GroupDetails {
 
     init() {}
 
-    fileprivate var _uuid: String?
     fileprivate var _e164: String?
   }
 
@@ -5626,14 +5602,12 @@ extension SignalServiceProtos_GroupContext.TypeEnum: SwiftProtobuf._ProtoNamePro
 extension SignalServiceProtos_GroupContext.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_GroupContext.protoMessageName + ".Member"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "uuid"),
     2: .same(proto: "e164")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._uuid)
       case 2: try decoder.decodeSingularStringField(value: &self._e164)
       default: break
       }
@@ -5641,9 +5615,6 @@ extension SignalServiceProtos_GroupContext.Member: SwiftProtobuf.Message, SwiftP
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._uuid {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
     if let v = self._e164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
@@ -5651,7 +5622,6 @@ extension SignalServiceProtos_GroupContext.Member: SwiftProtobuf.Message, SwiftP
   }
 
   static func ==(lhs: SignalServiceProtos_GroupContext.Member, rhs: SignalServiceProtos_GroupContext.Member) -> Bool {
-    if lhs._uuid != rhs._uuid {return false}
     if lhs._e164 != rhs._e164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -5950,14 +5920,12 @@ extension SignalServiceProtos_GroupDetails.Avatar: SwiftProtobuf.Message, SwiftP
 extension SignalServiceProtos_GroupDetails.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_GroupDetails.protoMessageName + ".Member"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "uuid"),
     2: .same(proto: "e164")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._uuid)
       case 2: try decoder.decodeSingularStringField(value: &self._e164)
       default: break
       }
@@ -5965,9 +5933,6 @@ extension SignalServiceProtos_GroupDetails.Member: SwiftProtobuf.Message, SwiftP
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._uuid {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
     if let v = self._e164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
@@ -5975,7 +5940,6 @@ extension SignalServiceProtos_GroupDetails.Member: SwiftProtobuf.Message, SwiftP
   }
 
   static func ==(lhs: SignalServiceProtos_GroupDetails.Member, rhs: SignalServiceProtos_GroupDetails.Member) -> Bool {
-    if lhs._uuid != rhs._uuid {return false}
     if lhs._e164 != rhs._e164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

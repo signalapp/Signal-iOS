@@ -469,7 +469,7 @@ message AttachmentPointer {
 
 message GroupContext {
   message Member {
-    optional string uuid = 1;
+    // skip 1, formerly uuid
     optional string e164 = 2;
   }
 
@@ -484,9 +484,6 @@ message GroupContext {
   optional bytes             id          = 1;
   optional Type              type        = 2;
   optional string            name        = 3;
-  // A list of known phone numbers in the group, only maintained
-  // to support legacy apps that don't know about UUIDs. We may want
-  // to eventually stop populating this.
   repeated string            membersE164 = 4;
   optional AttachmentPointer avatar      = 5;
   repeated Member            members     = 6;
@@ -524,16 +521,13 @@ message GroupDetails {
   }
 
   message Member {
-    optional string uuid = 1;
+    // skip 1, formerly uuid
     optional string e164 = 2;
   }
 
   // @required
   optional bytes  id          = 1;
   optional string name        = 2;
-  // A list of known phone numbers in the group, only maintained
-  // to support legacy apps that don't know about UUIDs. We may want
-  // to eventually stop populating this.
   repeated string membersE164 = 3;
   optional Avatar avatar      = 4;
   optional bool   active      = 5 [default = true];

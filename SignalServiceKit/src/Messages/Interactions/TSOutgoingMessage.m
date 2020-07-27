@@ -1268,16 +1268,34 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
 
         NSMutableArray<NSString *> *membersE164 = [NSMutableArray new];
+        NSMutableArray<SSKProtoGroupContextMember *> *members = [NSMutableArray new];
 
         for (SignalServiceAddress *address in groupModel.groupMembers) {
             if (address.phoneNumber) {
                 [membersE164 addObject:address.phoneNumber];
+
+                // Newer desktops only know how to handle the "pairing"
+                // fields that we rolled back when implementing UUID
+                // trust. We need to continue populating them with
+                // phone number only to make sure desktop can see
+                // group membership.
+                SSKProtoGroupContextMemberBuilder *memberBuilder = [SSKProtoGroupContextMember builder];
+                memberBuilder.e164 = address.phoneNumber;
+
+                NSError *error;
+                SSKProtoGroupContextMember *_Nullable member = [memberBuilder buildAndReturnError:&error];
+                if (error || !member) {
+                    OWSFailDebug(@"could not build members protobuf: %@", error);
+                } else {
+                    [members addObject:member];
+                }
             } else {
                 OWSFailDebug(@"Unexpectedly have a UUID only member in a v1 group, ignoring %@", address);
             }
         }
 
         [groupBuilder setMembersE164:membersE164];
+        [groupBuilder setMembers:members];
 
         [groupBuilder setName:groupModel.groupName];
     }
