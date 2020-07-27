@@ -18,9 +18,8 @@ extension OnionRequestAPI {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    private static func encrypt(_ plaintext: Data, using hexEncodedX25519PublicKey: String?) throws -> EncryptionResult {
+    private static func encrypt(_ plaintext: Data, using hexEncodedX25519PublicKey: String) throws -> EncryptionResult {
         guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encrypt(_:forSnode:) from the main thread.") }
-        guard let hexEncodedX25519PublicKey = hexEncodedX25519PublicKey else { throw Error.snodePublicKeySetMissing }
         let x25519PublicKey = Data(hex: hexEncodedX25519PublicKey)
         let ephemeralKeyPair = Curve25519.generateKeyPair()
         let ephemeralSharedSecret = try Curve25519.generateSharedSecret(fromPublicKey: x25519PublicKey, privateKey: ephemeralKeyPair.privateKey)
