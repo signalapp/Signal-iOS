@@ -23,6 +23,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 @property (atomic) NSString *firstAppVersion;
 @property (atomic, nullable) NSString *lastAppVersion;
 @property (atomic) NSString *currentAppVersion;
+@property (atomic) NSString *currentAppVersionLong;
 
 @property (atomic, nullable) NSString *lastCompletedLaunchAppVersion;
 @property (atomic, nullable) NSString *lastCompletedLaunchMainAppVersion;
@@ -50,7 +51,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSAssertIsOnMainThread();
 
     self.currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    
+    self.currentAppVersionLong = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+
     // The version of the app when it was first launched.
     // nil if the app has never been launched before.
     self.firstAppVersion = [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_FirstAppVersion];
@@ -84,9 +86,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     // The long version string looks like an IPv4 address.
     // To prevent the log scrubber from scrubbing it,
     // we replace . with _.
-    NSString *longVersionString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
-        stringByReplacingOccurrencesOfString:@"."
-                                  withString:@"_"];
+    NSString *longVersionString = [self.currentAppVersionLong stringByReplacingOccurrencesOfString:@"."
+                                                                                        withString:@"_"];
 
     OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
     OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
