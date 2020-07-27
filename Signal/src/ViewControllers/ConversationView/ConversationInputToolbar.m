@@ -3,7 +3,6 @@
 //
 
 #import "ConversationInputToolbar.h"
-#import "ConversationInputTextView.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
 #import "OWSMath.h"
@@ -406,6 +405,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     OWSAssertDebug(value);
 
     self.inputTextView.inputTextViewDelegate = value;
+}
+
+- (void)setMentionDelegate:(id<MentionTextViewDelegate>)value
+{
+    OWSAssertDebug(self.inputTextView);
+    OWSAssertDebug(value);
+
+    self.inputTextView.mentionDelegate = value;
 }
 
 - (NSString *)messageText
