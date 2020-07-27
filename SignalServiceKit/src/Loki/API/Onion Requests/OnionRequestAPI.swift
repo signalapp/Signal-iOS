@@ -52,7 +52,7 @@ public enum OnionRequestAPI {
     public typealias Path = [Snode]
 
     // MARK: Onion Building Result
-    private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
+    private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: EncryptionResult, destinationSymmetricKey: Data)
 
     // MARK: Private API
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
@@ -296,7 +296,7 @@ public enum OnionRequestAPI {
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
                 ]
-                let targetSnodeSymmetricKey = intermediate.targetSnodeSymmetricKey
+                let destinationSymmetricKey = intermediate.destinationSymmetricKey
                 HTTP.execute(.post, url, parameters: parameters).done2 { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(HTTP.Error.invalidJSON) }
@@ -304,7 +304,7 @@ public enum OnionRequestAPI {
                     let ciphertext = ivAndCiphertext[Int(ivSize)...]
                     do {
                         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
-                        let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
+                        let aes = try AES(key: destinationSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
                         let data = Data(try aes.decrypt(ciphertext.bytes))
                         guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
                             let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
