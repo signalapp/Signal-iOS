@@ -282,14 +282,36 @@ public class DebugFlags: BaseFlags {
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
+    private static let _groupsV2corruptAvatarUrlPaths = AtomicBool(false)
     @objc
-    public static let groupsV2corruptAvatarUrlPaths = false
+    public static var groupsV2corruptAvatarUrlPaths: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2corruptAvatarUrlPaths.get()
+        }
+        set {
+            _groupsV2corruptAvatarUrlPaths.set(newValue)
+        }
+    }
 
     // If set, v2 groups will be created and updated with
     // corrupt avatars, group names, and/or dm state
     // so that we can test clients' robustness to this case.
+    private static let _groupsV2corruptBlobEncryption = AtomicBool(false)
     @objc
-    public static let groupsV2corruptBlobEncryption = false
+    public static var groupsV2corruptBlobEncryption: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2corruptBlobEncryption.get()
+        }
+        set {
+            _groupsV2corruptBlobEncryption.set(newValue)
+        }
+    }
 
     // This flag auto-enables the groupv2 flags in RemoteConfig.
     @objc
