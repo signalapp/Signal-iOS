@@ -10,9 +10,9 @@
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		32A9E22624C11B3F00C43518 /* EmojiMoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */; };
-		32B3286524C6957B00E4F974 /* SupportEmailComposeOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B3286424C6957B00E4F974 /* SupportEmailComposeOperation.swift */; };
+		32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */; };
 		32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */; };
-		32ECD08A24BFBF9500EDDED0 /* SupportContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* SupportContactViewController.swift */; };
+		32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */; };
 		32ECD09F24C1153000EDDED0 /* SupportRequestTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */; };
 		34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D782367747300F5215A /* VideoEditorModel.swift */; };
 		34035D7B2367747400F5215A /* VideoEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D792367747300F5215A /* VideoEditorView.swift */; };
@@ -868,9 +868,9 @@
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMoodPickerView.swift; sourceTree = "<group>"; };
-		32B3286424C6957B00E4F974 /* SupportEmailComposeOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportEmailComposeOperation.swift; sourceTree = "<group>"; };
+		32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeSupportEmailOperation.swift; sourceTree = "<group>"; };
 		32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
-		32ECD08924BFBF9500EDDED0 /* SupportContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportContactViewController.swift; sourceTree = "<group>"; };
+		32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportViewController.swift; sourceTree = "<group>"; };
 		32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportRequestTextView.swift; sourceTree = "<group>"; };
 		34035D782367747300F5215A /* VideoEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
 		34035D792367747300F5215A /* VideoEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
@@ -1931,10 +1931,8 @@
 			isa = PBXGroup;
 			children = (
 				32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */,
-				32ECD08924BFBF9500EDDED0 /* SupportContactViewController.swift */,
-				32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */,
-				32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */,
-				32B3286424C6957B00E4F974 /* SupportEmailComposeOperation.swift */,
+				32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */,
+				32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */,
 			);
 			name = Help;
 			sourceTree = "<group>";
@@ -3078,6 +3076,7 @@
 				3434AE1D22AEF5A4002EE04E /* CircularProgressView.swift */,
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */,
+				32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */,
 				88905E9D229CCA96004E4234 /* ExpirationNagView.swift */,
 				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */,
@@ -3099,6 +3098,7 @@
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				450D19111F85236600970622 /* RemoteVideoView.h */,
 				450D19121F85236600970622 /* RemoteVideoView.m */,
+				32ECD09E24C1153000EDDED0 /* SupportRequestTextView.swift */,
 				4C63550122F15A6700A8ECE6 /* ThemeHeaderView.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
@@ -4976,11 +4976,11 @@
 				8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
-				32ECD08A24BFBF9500EDDED0 /* SupportContactViewController.swift in Sources */,
+				32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */,
 				3448E15E221333F5004B052E /* OnboardingController.swift in Sources */,
 				88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */,
 				3496956F21A301A100DCFE74 /* OWSBackupLazyRestore.swift in Sources */,
-				32B3286524C6957B00E4F974 /* SupportEmailComposeOperation.swift in Sources */,
+				32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */,
 				347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */,
 				4C9C510022F495F60054A33F /* BroadcastMediaMessageJob.swift in Sources */,
 				34E0127423FDA960002D0D13 /* DebugUIGroupsV2.swift in Sources */,

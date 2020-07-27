@@ -16,7 +16,7 @@ class EmojiMoodPickerView: UIView {
         }
     }
 
-    private let moodButtons: [Mood: UIButton] = Mood.allCases.dictionaryWithValues { (mood) in
+    private let moodButtons: [Mood: UIButton] = Mood.allCases.dictionaryMappingToValues { (mood) in
         let button = UIButton(type: .custom)
         let title = NSAttributedString(string: "\(mood.rawValue)", attributes: [
             .font: UIFont.boldSystemFont(ofSize: 24)
@@ -27,10 +27,8 @@ class EmojiMoodPickerView: UIView {
     }
 
     private let buttonStack: UIStackView = {
-        let stackView = UIStackView(forAutoLayout: ())
-        stackView.axis = .horizontal
+        let stackView = UIStackView()
         stackView.spacing = 8
-        stackView.alignment = .fill
         stackView.distribution = .equalSpacing
         return stackView
     }()

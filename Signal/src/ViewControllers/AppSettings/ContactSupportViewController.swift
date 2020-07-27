@@ -13,7 +13,7 @@ class ContactSupportViewController: OWSTableViewController {
         owsAssertDebug(navigationController?.viewControllers.count == 1, "Expecting to be presented in a dedicated navigation controller")
 
         tableView.keyboardDismissMode = .interactive
-        useThemeBackgroundColors = false     // TODO ask myles about background color
+        useThemeBackgroundColors = false
 
         setupNavigationBar()
         setupDataProviderViews()
@@ -47,7 +47,7 @@ class ContactSupportViewController: OWSTableViewController {
         descriptionField.delegate = self
         descriptionField.placeholderText = NSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
                                                              comment: "Placeholder string for support description")
-        debugSwitch.onTintColor = nil       // Override +UIAppearance default
+        debugSwitch.onTintColor = nil       // Overrides +UIAppearance default
     }
 
     func setupNavigationBar() {
@@ -122,13 +122,13 @@ class ContactSupportViewController: OWSTableViewController {
         navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
 
-    var currentEmailComposeOperation: SupportEmailComposeOperation?
+    var currentEmailComposeOperation: ComposeSupportEmailOperation?
     @objc func didTapNext() {
         var emailRequest = SupportEmailModel()
         emailRequest.userDescription = descriptionField.text
         emailRequest.emojiMood = emojiPicker.selectedMood
         emailRequest.debugLogPolicy = debugSwitch.isOn ? .attemptUpload : .none
-        let operation = SupportEmailComposeOperation(model: emailRequest)
+        let operation = ComposeSupportEmailOperation(model: emailRequest)
         currentEmailComposeOperation = operation
         showSpinnerOnNextButton = true
 
@@ -291,6 +291,8 @@ extension ContactSupportViewController {
             }
             UIApplication.shared.open(supportURL, options: [:])
         }
+        infoButton.accessibilityLabel = NSLocalizedString("DEBUG_LOG_INFO_BUTTON",
+                                                          comment: "Accessibility label for the ? vector asset used to get info about debug logs")
 
         cell.contentView.addSubview(label)
         cell.contentView.addSubview(infoButton)
@@ -308,6 +310,8 @@ extension ContactSupportViewController {
 
     func createEmojiFooterView() -> UIView {
         let containerView = UIView()
+
+        // These constants were pulled from OWSTableViewController to get things to line up right
         let edgeInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
         containerView.layoutMargins = UIEdgeInsets(top: 0, leading: edgeInset, bottom: 0, trailing: edgeInset)
 

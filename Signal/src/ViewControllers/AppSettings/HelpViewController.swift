@@ -27,6 +27,7 @@ class HelpViewController: OWSTableViewController {
 
         return OWSTableContents(title: helpTitle, sections: [
             OWSTableSection(header: {
+                // TODO: Replace this temporary view with design asset
                 guard let signalAsset = UIImage(named: "signal-logo-128") else { return nil }
 
                 let header = UIView()
@@ -48,11 +49,11 @@ class HelpViewController: OWSTableViewController {
                 }),
 
                 OWSTableItem(title: contactLabel, actionBlock: {
-                    guard SupportEmailComposeOperation.canSendEmails else {
+                    guard ComposeSupportEmailOperation.canSendEmails else {
                         let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
                                                                     comment: "Title for the fallback support sheet if user cannot send email")
                         let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
-                                                                      comment: "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org")
+                                                                      comment: "Description for the fallback support sheet if user cannot send email")
                         let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
                                                                   message: localizedSheetMessage)
                         let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")

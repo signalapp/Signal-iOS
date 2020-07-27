@@ -1028,6 +1028,9 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
+/* Accessibility label for the ? vector asset used to get info about debug logs */
+"DEBUG_LOG_INFO_BUTTON" = "Info abot debug logs";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
 
@@ -1216,6 +1219,12 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
+
+/* Description for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+
+/* Title for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_TITLE" = "Email unavailable";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";

@@ -43,7 +43,7 @@ struct SupportEmailModel {
     }
 }
 
-class SupportEmailComposeOperation {
+class ComposeSupportEmailOperation {
 
     enum EmailError: LocalizedError {
         case logUploadTimedOut
@@ -151,7 +151,7 @@ class SupportEmailComposeOperation {
     }
 
     private var emailURL: URL? {
-        let linkBuilder = MailtoLink(to: "michelle@signal.org",
+        let linkBuilder = MailtoLink(to: TSConstants.signalSupportEmail,
                                      subject: self.model.subject,
                                      body: self.emailBody)
         return linkBuilder.url

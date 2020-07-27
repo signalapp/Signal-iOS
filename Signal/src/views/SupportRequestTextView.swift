@@ -33,15 +33,17 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
     }
 
     // MARK: - Private Properties
+
     private let textView: UITextView = {
-        let textView = UITextView(forAutoLayout: ())
+        let textView = UITextView()
+        textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+
         textView.font = UIFont.ows_dynamicTypeBody
+        textView.adjustsFontForContentSizeCategory = true
+
         textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
-        textView.isScrollEnabled = false
-        textView.clipsToBounds = false
-        textView.backgroundColor = .clear
-        textView.adjustsFontForContentSizeCategory = true
         return textView
     }()
 
@@ -58,7 +60,6 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
 
         // Layout + Constraints
         addSubview(textView)
-        textView.translatesAutoresizingMaskIntoConstraints = false
         textView.autoPinEdgesToSuperviewEdges()
         textView.setCompressionResistanceHigh()
 
@@ -88,6 +89,8 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
 
     func textViewDidBeginEditing(_: UITextView) {
         if showPlaceholder {
+            // Only clear the text if we were showing the placeholder
+            // i.e. if a user edits, stops editing, edits again: don't clear the text
             textView.text = ""
         }
         showPlaceholder = false
