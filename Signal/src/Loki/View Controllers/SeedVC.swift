@@ -85,7 +85,7 @@ final class SeedVC : BaseVC {
         // Set up mnemonic label container
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
-        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing)
+        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing)
         mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
         mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
@@ -112,7 +112,7 @@ final class SeedVC : BaseVC {
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, mnemonicLabelContainer, callToActionLabel ])
         topStackView.axis = .vertical
-        topStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing
+        topStackView.spacing = isIPhone6OrSmaller ? Values.smallSpacing : Values.largeSpacing
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView()

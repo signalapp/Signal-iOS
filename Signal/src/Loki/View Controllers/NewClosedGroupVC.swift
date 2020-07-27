@@ -93,7 +93,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
             createNewPrivateChatButton.setTitle(NSLocalizedString("vc_create_closed_group_empty_state_button_title", comment: ""), for: UIControl.State.normal)
             createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
-            createNewPrivateChatButton.set(.width, to: 180)
+            createNewPrivateChatButton.set(.width, to: 196)
             let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
             stackView.axis = .vertical
             stackView.spacing = Values.mediumSpacing

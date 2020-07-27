@@ -74,7 +74,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
         createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
         createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
-        createNewPrivateChatButton.set(.width, to: 180)
+        createNewPrivateChatButton.set(.width, to: 196)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
         result.axis = .vertical
         result.spacing = Values.mediumSpacing

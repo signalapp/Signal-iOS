@@ -27,7 +27,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
         let linkNewDeviceButton = Button(style: .prominentOutline, size: .large)
         linkNewDeviceButton.setTitle(NSLocalizedString("vc_linked_devices_empty_state_button_title", comment: ""), for: UIControl.State.normal)
         linkNewDeviceButton.addTarget(self, action: #selector(linkNewDevice), for: UIControl.Event.touchUpInside)
-        linkNewDeviceButton.set(.width, to: 180)
+        linkNewDeviceButton.set(.width, to: 196)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, linkNewDeviceButton ])
         result.axis = .vertical
         result.spacing = Values.mediumSpacing

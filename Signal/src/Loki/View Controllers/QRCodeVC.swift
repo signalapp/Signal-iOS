@@ -154,9 +154,10 @@ private final class ViewMyQRCodeVC : UIViewController {
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? CGFloat(40) : Values.massiveFontSize)
         titleLabel.text = "Scan Me"
-        titleLabel.numberOfLines = 0
+        titleLabel.numberOfLines = 1
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.set(.height, to: isIPhone5OrSmaller ? CGFloat(40) : Values.massiveFontSize)
         // Set up QR code image view
         let qrCodeImageView = UIImageView()
         let qrCode = QRCode.generate(for: userHexEncodedPublicKey, hasBackground: true)
@@ -192,13 +193,14 @@ private final class ViewMyQRCodeVC : UIViewController {
         shareButton.pin(.leading, to: .leading, of: shareButtonContainer, withInset: 80)
         shareButton.pin(.top, to: .top, of: shareButtonContainer)
         shareButtonContainer.pin(.trailing, to: .trailing, of: shareButton, withInset: 80)
-        shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton)
+        shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton, withInset: isIPhone6OrSmaller ? Values.largeSpacing : Values.onboardingButtonBottomOffset)
+        let spacing = isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, qrCodeImageViewContainer, explanationLabel, shareButtonContainer, UIView.vStretchingSpacer() ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: spacing), qrCodeImageViewContainer, UIView.spacer(withHeight: spacing),
+            explanationLabel, UIView.spacer(withHeight: spacing), shareButtonContainer ])
         stackView.axis = .vertical
-        stackView.spacing = isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view)
