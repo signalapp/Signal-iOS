@@ -50,26 +50,12 @@ extension ConversationSettingsViewController {
 
         let isNoteToSelf = thread.isNoteToSelf
 
-        // Header section.
-        let headerSection = OWSTableSection()
-        headerSection.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-            let cell = OWSTableItem.newCell()
-            let header = self.buildMainHeader()
-            cell.contentView.addSubview(header)
-            header.autoPinEdgesToSuperviewEdges()
-            return cell
-            },
-                                       customRowHeight: UITableView.automaticDimension,
-                                       actionBlock: nil))
-        contents.addSection(headerSection)
-
         // Main section.
         let mainSection = OWSTableSection()
-
+        let header = buildMainHeader()
+        lastContentWidth = view.width
+        mainSection.customHeaderView = header
+        mainSection.customHeaderHeight = NSNumber(value: Float(UITableView.automaticDimension))
         addBasicItems(to: mainSection)
 
         // TODO: We can remove this item once message requests are mandatory.
