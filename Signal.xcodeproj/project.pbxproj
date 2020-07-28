@@ -639,11 +639,9 @@
 		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		8851DB3F24CCE9C8001EACD2 /* MentionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */; };
-		8851DB4124CCE9E5001EACD2 /* MentionTextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4024CCE9E5001EACD2 /* MentionTextAttachment.swift */; };
+		8851DB4124CCE9E5001EACD2 /* Mention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4024CCE9E5001EACD2 /* Mention.swift */; };
 		8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */; };
 		8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */; };
-		8851DB4724CDEEE6001EACD2 /* MentionRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4624CDEEE6001EACD2 /* MentionRange.swift */; };
-		8851DB4924CDEF03001EACD2 /* MentionText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4824CDEF03001EACD2 /* MentionText.swift */; };
 		88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535063240829950011D318 /* DateHeaderInteraction.swift */; };
 		8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8853506724084E470011D318 /* OWSDateHeaderCell.swift */; };
 		8853506A240852F90011D318 /* OWSMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535069240852F90011D318 /* OWSMessageCell.swift */; };
@@ -1593,11 +1591,9 @@
 		884596EF24B93E13002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/Localizable.strings; sourceTree = "<group>"; };
 		884596F024B93E32002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTextView.swift; sourceTree = "<group>"; };
-		8851DB4024CCE9E5001EACD2 /* MentionTextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTextAttachment.swift; sourceTree = "<group>"; };
+		8851DB4024CCE9E5001EACD2 /* Mention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mention.swift; sourceTree = "<group>"; };
 		8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputTextView.swift; sourceTree = "<group>"; };
 		8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Mentions.swift"; sourceTree = "<group>"; };
-		8851DB4624CDEEE6001EACD2 /* MentionRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionRange.swift; sourceTree = "<group>"; };
-		8851DB4824CDEF03001EACD2 /* MentionText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionText.swift; sourceTree = "<group>"; };
 		88535063240829950011D318 /* DateHeaderInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderInteraction.swift; sourceTree = "<group>"; };
 		8853506724084E470011D318 /* OWSDateHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDateHeaderCell.swift; sourceTree = "<group>"; };
 		88535069240852F90011D318 /* OWSMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMessageCell.swift; sourceTree = "<group>"; };
@@ -3131,9 +3127,7 @@
 			isa = PBXGroup;
 			children = (
 				8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */,
-				8851DB4624CDEEE6001EACD2 /* MentionRange.swift */,
-				8851DB4824CDEF03001EACD2 /* MentionText.swift */,
-				8851DB4024CCE9E5001EACD2 /* MentionTextAttachment.swift */,
+				8851DB4024CCE9E5001EACD2 /* Mention.swift */,
 			);
 			path = Mentions;
 			sourceTree = "<group>";
@@ -4458,8 +4452,6 @@
 				34AC09EF211B39B100997B47 /* ViewControllerUtils.m in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */,
-				8851DB4924CDEF03001EACD2 /* MentionText.swift in Sources */,
-				8851DB4724CDEEE6001EACD2 /* MentionRange.swift in Sources */,
 				34AC0A17211B39EA00997B47 /* VideoPlayerView.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestReadReceipts.swift in Sources */,
@@ -4481,7 +4473,7 @@
 				4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */,
 				8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
-				8851DB4124CCE9E5001EACD2 /* MentionTextAttachment.swift in Sources */,
+				8851DB4124CCE9E5001EACD2 /* Mention.swift in Sources */,
 				4CBBCA6321714B4500EEB37D /* OWS110SortIdMigration.swift in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
 				34BBC85D220D19D600857249 /* ImageEditorPanGestureRecognizer.swift in Sources */,

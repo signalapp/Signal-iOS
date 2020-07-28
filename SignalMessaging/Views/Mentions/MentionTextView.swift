@@ -10,18 +10,15 @@ public protocol MentionTextViewDelegate: UITextViewDelegate {
     func textViewDidEndTypingMention(_ textView: MentionTextView)
     func textView(_ textView: MentionTextView, didUpdateMentionText mentionText: String)
 
-    func textView(_ textView: MentionTextView, didTapMention: MentionRange)
-    func textView(_ textView: MentionTextView, didDeleteMention: MentionRange)
+    func textView(_ textView: MentionTextView, didTapMention: Mention)
+    func textView(_ textView: MentionTextView, didDeleteMention: Mention)
 
     func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool
-    func textViewMentionStyle(_ textView: MentionTextView) -> MentionStyle
+    func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style
 }
 
 @objc
 open class MentionTextView: OWSTextView {
-    public static let mentionPrefix = "@"
-    public static let mentionPrefixLength = 1
-
     @objc
     public weak var mentionDelegate: MentionTextViewDelegate?
 
@@ -36,6 +33,10 @@ open class MentionTextView: OWSTextView {
     public required init() {
         super.init(frame: .zero, textContainer: nil)
         delegate = self
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
+        tapGesture.delegate = self
+        addGestureRecognizer(tapGesture)
     }
 
     required public init?(coder: NSCoder) {
@@ -45,30 +46,41 @@ open class MentionTextView: OWSTextView {
     // MARK: -
 
     public func insertTypedMention(address: SignalServiceAddress) {
+        guard let mentionDelegate = mentionDelegate else {
+            return owsFailDebug("Can't replace characters without delegate")
+        }
+
         guard case .typingMention(let range) = state else {
             return owsFailDebug("Can't finish typing when no mention in progress")
         }
 
-        guard range.location >= Self.mentionPrefixLength else {
+        guard range.location >= Mention.mentionPrefixLength else {
             return owsFailDebug("Invalid mention range \(range)")
         }
 
         replaceCharacters(
-            with: MentionRange(
-                location: range.location - Self.mentionPrefixLength,
-                length: range.length + Self.mentionPrefixLength,
-                address: address
+            in: NSRange(
+                location: range.location - Mention.mentionPrefixLength,
+                length: range.length + Mention.mentionPrefixLength
+            ),
+            with: Mention(
+                address: address,
+                style: mentionDelegate.textViewMentionStyle(self)
             ),
             alwaysResolveMention: true
         )
+
+        // Add a space after the typed mention
+        replaceCharacters(in: selectedRange, with: " ")
     }
 
-    public func replaceCharacters(with mention: MentionRange, alwaysResolveMention: Bool = false) {
-        replaceCharacters(with: mention, inMutableString: textStorage, alwaysResolveMention: alwaysResolveMention)
+    public func replaceCharacters(in range: NSRange, with mention: Mention, alwaysResolveMention: Bool = false) {
+        replaceCharacters(in: range, with: mention, inMutableString: textStorage, alwaysResolveMention: alwaysResolveMention)
     }
 
     public func replaceCharacters(
-        with mention: MentionRange,
+        in range: NSRange,
+        with mention: Mention,
         inMutableString mutableString: NSMutableAttributedString,
         alwaysResolveMention: Bool = false
     ) {
@@ -78,50 +90,50 @@ open class MentionTextView: OWSTextView {
 
         let replacementString: NSAttributedString
         if alwaysResolveMention || mentionDelegate.textView(self, shouldResolveMentionForAddress: mention.address) {
-            let mentionAttachemnt = MentionTextAttachment(
-                address: mention.address,
-                style: mentionDelegate.textViewMentionStyle(self)
-            )
-
-            replacementString = NSAttributedString(attachment: mentionAttachemnt)
+            replacementString = mention.attributedString
         } else {
             // If we shouldn't resolve the mention, insert the plaintext representation.
-            let displayName = Self.mentionPrefix + Environment.shared.contactsManager.displayName(for: mention.address)
-            replacementString = NSAttributedString(string: displayName, attributes: typingAttributes)
+            replacementString = NSAttributedString(string: mention.text, attributes: defaultAttributes)
         }
 
         if mutableString === textStorage {
-            replaceCharacters(in: mention.nsRange, with: replacementString)
+            replaceCharacters(in: range, with: replacementString)
         } else {
-            mutableString.replaceCharacters(in: mention.nsRange, with: replacementString)
+            mutableString.replaceCharacters(in: range, with: replacementString)
         }
     }
 
-    public func replaceCharacters(in range: NSRange, with mentionText: MentionText) {
-        let attributedMentions = NSMutableAttributedString(string: mentionText.text, attributes: typingAttributes)
+    public func replaceCharacters(in range: NSRange, with messageBody: MessageBody) {
+        guard let mentionDelegate = mentionDelegate else {
+            return owsFailDebug("Can't replace characters without delegate")
+        }
+
+        let attributedMentions = NSMutableAttributedString(string: messageBody.text, attributes: defaultAttributes)
 
         // We must enumerate the ranges in reverse, so as we replace a ranges
         // text we do not change the previous ranges.
-        for mention in mentionText.ranges.sorted(by: { $0.location > $1.location }) {
-            replaceCharacters(with: mention, inMutableString: attributedMentions)
+        for (range, uuid) in messageBody.mentionRanges.sorted(by: { $0.key.location > $1.key.location }) {
+            replaceCharacters(
+                in: range,
+                with: Mention(
+                    address: SignalServiceAddress(uuid: uuid),
+                    style: mentionDelegate.textViewMentionStyle(self)
+                ),
+                inMutableString: attributedMentions
+            )
         }
 
         replaceCharacters(in: range, with: attributedMentions)
     }
 
     public func replaceCharacters(in range: NSRange, with string: String) {
-        replaceCharacters(in: range, with: NSAttributedString(string: string, attributes: typingAttributes))
+        replaceCharacters(in: range, with: NSAttributedString(string: string, attributes: defaultAttributes))
     }
 
     public func replaceCharacters(in range: NSRange, with attributedString: NSAttributedString) {
         let previouslySelectedRange = selectedRange
-        let previousFont = font
 
         textStorage.replaceCharacters(in: range, with: attributedString)
-
-        // There is a bug where the font gets reset after inserting an NSTextAttachment.
-        // We restore the font afterwards to work around this bug.
-        font = previousFont
 
         updateSelectedRangeAfterReplacement(
             previouslySelectedRange: previouslySelectedRange,
@@ -162,74 +174,27 @@ open class MentionTextView: OWSTextView {
         return attributedText.attributedSubstring(from: range).string
     }
 
-    override open var text: String! {
-        get {
-            textWithPlaintextMentions(in: NSRange(location: 0, length: textStorage.length))
-        }
-        set {
-            attributedText = NSAttributedString(string: newValue ?? "", attributes: typingAttributes)
-        }
-    }
-
-    public func textWithPlaintextMentions(in range: NSRange) -> String {
-        guard range.length > 0 else { return "" }
-
-        guard range.location >= 0, range.location + range.length <= textStorage.length else {
-            owsFailDebug("unexpected range \(range)")
-            return ""
-        }
-
-        var text = attributedText.attributedSubstring(from: range).string
-        // Replace all mention placeholders with their plaintext representation.
-        textStorage.enumerateAttribute(
-            .attachment,
-            in: range,
-            options: [.longestEffectiveRangeNotRequired, .reverse]
-        ) { attachment, attachmentRange, _ in
-            guard let attachment = attachment as? MentionTextAttachment else { return }
-            text = (text as NSString).replacingCharacters(
-                in: NSRange(location: attachmentRange.location - range.location, length: attachmentRange.length),
-                with: attachment.text
-            )
-        }
-        return text
+    public var defaultAttributes: [NSAttributedString.Key: Any] {
+        var defaultAttributes = [NSAttributedString.Key: Any]()
+        if let font = font { defaultAttributes[.font] = font }
+        if let textColor = textColor { defaultAttributes[.foregroundColor] = textColor }
+        return defaultAttributes
     }
 
     @objc
-    public var mentionText: MentionText? {
-        get { mentionText(in: NSRange(location: 0, length: textStorage.length)) }
+    public var messageBody: MessageBody {
+        get { messageBody(in: NSRange(location: 0, length: textStorage.length)) }
         set {
-            guard let mentionText = newValue else {
-                text = nil
-                return
-            }
             replaceCharacters(
                 in: NSRange(location: 0, length: textStorage.length),
-                with: mentionText
+                with: newValue
             )
         }
     }
 
     @objc
-    public func mentionText(in range: NSRange) -> MentionText? {
-        var ranges = [MentionRange]()
-
-        textStorage.enumerateAttribute(
-            .attachment,
-            in: range,
-            options: .longestEffectiveRangeNotRequired
-        ) { attachment, attachmentRange, _ in
-            guard let attachment = attachment as? MentionTextAttachment else { return }
-            ranges.append(.init(
-                location: attachmentRange.location - range.location,
-                length: attachmentRange.length,
-                address: attachment.address
-            ))
-        }
-
-        guard !ranges.isEmpty else { return nil }
-
-        return MentionText(text: attributedText.attributedSubstring(from: range).string, ranges: ranges)
+    public func messageBody(in range: NSRange) -> MessageBody {
+        return MessageBody(attributedString: attributedText.attributedSubstring(from: range))
     }
 
     // MARK: - Mention State
@@ -260,34 +225,65 @@ open class MentionTextView: OWSTextView {
     }
 
     private func shouldUpdateMentionText(in range: NSRange, changedText text: String) -> Bool {
-        var deletedMentions = [MentionRange]()
-        var deletedExactlyOneMention = false
+        var deletedMentions = [NSRange: Mention]()
 
-        textStorage.enumerateAttribute(
-            .attachment,
-            in: range,
-            options: .longestEffectiveRangeNotRequired
-        ) { attachment, attachmentRange, _ in
-            guard let attachment = attachment as? MentionTextAttachment else { return }
+        if range.length > 0 {
+            // Locate any mentions in the edited range.
+            textStorage.enumerateAttribute(
+                .mention,
+                in: range,
+                options: .longestEffectiveRangeNotRequired
+            ) { mention, subrange, _ in
+                guard let mention = mention as? Mention else { return }
 
-            deletedMentions.append(
-                MentionRange(nsRange: attachmentRange, address: attachment.address)
-            )
+                // Get the full range of the mention, we may only be editing a part of it.
+                var uniqueMentionRange = NSRange()
+                guard textStorage.attribute(.mention, at: subrange.location, effectiveRange: &uniqueMentionRange) != nil else {
+                    return owsFailDebug("Unexpectedly missing mention for subrange")
+                }
 
-            if attachmentRange == range { deletedExactlyOneMention = true }
+                deletedMentions[uniqueMentionRange] = mention
+            }
+        } else if range.location > 0,
+            let leftMention = textStorage.attribute(.mention, at: range.location - 1, effectiveRange: nil) as? Mention {
+            // If there is a mention to the left, the typing attributes will
+            // be the mention's attributes. We don't want that, so we need
+            // to reset them here.
+            typingAttributes = defaultAttributes
+
+            // If we're not at the start of the string, and we're not replacing
+            // any existing characters, check if we're typing in the middle of
+            // a mention. If so, we need to delete it.
+            var uniqueMentionRange = NSRange()
+            if range.location < textStorage.length - 1,
+                let rightMention = textStorage.attribute(
+                    .mention,
+                    at: range.location,
+                    effectiveRange: &uniqueMentionRange
+                ) as? Mention,
+                leftMention == rightMention {
+                deletedMentions[uniqueMentionRange] = leftMention
+            }
         }
 
-        for deletedMention in deletedMentions {
+        for (deletedMentionRange, deletedMention) in deletedMentions {
             mentionDelegate?.textView(self, didDeleteMention: deletedMention)
+
+            // Convert the mention to plain-text, in case we only deleted part of it
+            textStorage.setAttributes(defaultAttributes, range: deletedMentionRange)
         }
 
-        // If the deleted range matched exactly one mention, we'll handle the
-        // delete internally. We remove the mention and replace it with an @
-        // so the user can start typing a new mention to replace the deleted
-        // mention immediately.
-        if deletedExactlyOneMention {
-            replaceCharacters(in: range, with: Self.mentionPrefix)
-            selectedRange = NSRange(location: range.location + Self.mentionPrefixLength, length: 0)
+        // If the deleted range was the last character of a mention, we'll
+        // handle the delete internally. We remove the mention and replace it
+        // with an @ so the user can start typing a new mention to replace the
+        // deleted mention immediately.
+        if deletedMentions.count == 1,
+            let deletedMentionRange = deletedMentions.keys.first,
+            range.length == 1,
+            text.isEmpty,
+            range.location == deletedMentionRange.location + deletedMentionRange.length - 1 {
+            replaceCharacters(in: deletedMentionRange, with: Mention.mentionPrefix)
+            selectedRange = NSRange(location: deletedMentionRange.location + Mention.mentionPrefixLength, length: 0)
             return false
         }
 
@@ -303,9 +299,17 @@ open class MentionTextView: OWSTextView {
         var location = selectedRange.location
 
         while location > 0 {
-            let possiblePrefix = attributedText.attributedSubstring(
-                from: NSRange(location: location - Self.mentionPrefixLength, length: Self.mentionPrefixLength)
-            ).string
+            let possibleAttributedPrefix = attributedText.attributedSubstring(
+                from: NSRange(location: location - Mention.mentionPrefixLength, length: Mention.mentionPrefixLength)
+            )
+
+            // If the previous character is part of a mention, we're not typing a mention
+            if possibleAttributedPrefix.attribute(.mention, at: 0, effectiveRange: nil) != nil {
+                state = .notTypingMention
+                return
+            }
+
+            let possiblePrefix = possibleAttributedPrefix.string
 
             // If we find whitespace before the selected range, we're not typing a mention.
             // Mention typing breaks on whitespace.
@@ -314,13 +318,13 @@ open class MentionTextView: OWSTextView {
                 return
 
             // If we find the mention prefix before the selected range, we may be typing a mention.
-            } else if possiblePrefix == Self.mentionPrefix {
+            } else if possiblePrefix == Mention.mentionPrefix {
 
                 // If there's more text before the mention prefix, check if it's whitespace. Mentions
                 // only start at the beginning of the string OR after a whitespace character.
-                if location - Self.mentionPrefixLength > 0 {
+                if location - Mention.mentionPrefixLength > 0 {
                     let characterPrecedingPrefix = attributedText.attributedSubstring(
-                        from: NSRange(location: location - Self.mentionPrefixLength - 1, length: Self.mentionPrefixLength)
+                        from: NSRange(location: location - Mention.mentionPrefixLength - 1, length: Mention.mentionPrefixLength)
                     ).string
 
                     // If it's not whitespace, keep looking back. Mention text can contain an "@" character,
@@ -343,6 +347,28 @@ open class MentionTextView: OWSTextView {
         // We checked everything, so we're not typing
         state = .notTypingMention
     }
+
+    @objc
+    private func didTap(_ sender: UITapGestureRecognizer) {
+        var tapPoint = sender.location(in: self)
+        tapPoint.x -= textContainerInset.left
+        tapPoint.y -= textContainerInset.right
+
+        let tappedCharacterIndex = layoutManager.characterIndex(
+            for: tapPoint,
+            in: textContainer,
+            fractionOfDistanceBetweenInsertionPoints: nil
+        )
+        guard tappedCharacterIndex > 0, tappedCharacterIndex < textStorage.length else { return }
+
+        guard let tappedMention = textStorage.attribute(
+            .mention,
+            at: tappedCharacterIndex,
+            effectiveRange: nil
+        ) as? Mention else { return }
+
+        mentionDelegate?.textView(self, didTapMention: tappedMention)
+    }
 }
 
 // MARK: - Cut/Copy/Paste
@@ -355,13 +381,15 @@ extension MentionTextView {
 
     public static let pasteboardType = "private.archived-mention-text"
     open override func copy(_ sender: Any?) {
-        guard let plaintextData = textWithPlaintextMentions(in: selectedRange).data(using: .utf8) else {
+        guard let plaintextData = attributedText.attributedSubstring(from: selectedRange).string.data(using: .utf8) else {
             return owsFailDebug("Failed to calculate plaintextData on copy")
         }
 
-        if let mentionText = mentionText(in: selectedRange) {
-            let encodedMentionText = NSKeyedArchiver.archivedData(withRootObject: mentionText)
-            UIPasteboard.general.setItems([[Self.pasteboardType: encodedMentionText]], options: [.localOnly: true])
+        let messageBody = self.messageBody(in: selectedRange)
+
+        if messageBody.hasMentions {
+            let encodedMessageBody = NSKeyedArchiver.archivedData(withRootObject: messageBody)
+            UIPasteboard.general.setItems([[Self.pasteboardType: encodedMessageBody]], options: [.localOnly: true])
         } else {
             UIPasteboard.general.setItems([], options: [:])
         }
@@ -370,9 +398,9 @@ extension MentionTextView {
     }
 
     open override func paste(_ sender: Any?) {
-        if let encodedMentionText = UIPasteboard.general.data(forPasteboardType: Self.pasteboardType),
-            let mentionText = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MentionText.self, from: encodedMentionText) {
-            replaceCharacters(in: selectedRange, with: mentionText)
+        if let encodedMessageBody = UIPasteboard.general.data(forPasteboardType: Self.pasteboardType),
+            let messageBody = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MessageBody.self, from: encodedMessageBody) {
+            replaceCharacters(in: selectedRange, with: messageBody)
         } else if let string = UIPasteboard.general.strings?.first {
             replaceCharacters(in: selectedRange, with: string)
         }
@@ -397,30 +425,6 @@ extension MentionTextView: UITextViewDelegate {
         if textStorage.length == 0 { updateMentionStateAfterCursorMove() }
     }
 
-    open func textView(
-        _ textView: UITextView,
-        shouldInteractWith textAttachment: NSTextAttachment,
-        in characterRange: NSRange,
-        interaction: UITextItemInteraction
-    ) -> Bool {
-        if let mention = textAttachment as? MentionTextAttachment {
-            mentionDelegate?.textView(
-                self,
-                didTapMention: MentionRange(
-                    nsRange: characterRange,
-                    address: mention.address
-                )
-            )
-        }
-
-        return mentionDelegate?.textView?(
-            textView,
-            shouldInteractWith: textAttachment,
-            in: characterRange,
-            interaction: interaction
-        ) ?? true
-    }
-
     open func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         return mentionDelegate?.textViewShouldBeginEditing?(textView) ?? true
     }
@@ -441,11 +445,21 @@ extension MentionTextView: UITextViewDelegate {
         return mentionDelegate?.textView?(textView, shouldInteractWith: URL, in: characterRange, interaction: interaction) ?? true
     }
 
+    open func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        return mentionDelegate?.textView?(textView, shouldInteractWith: textAttachment, in: characterRange, interaction: interaction) ?? true
+    }
+
     open func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
         return mentionDelegate?.textView?(textView, shouldInteractWith: URL, in: characterRange) ?? true
     }
 
     open func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange) -> Bool {
         return mentionDelegate?.textView?(textView, shouldInteractWith: textAttachment, in: characterRange) ?? true
+    }
+}
+
+extension MentionTextView: UIGestureRecognizerDelegate {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }

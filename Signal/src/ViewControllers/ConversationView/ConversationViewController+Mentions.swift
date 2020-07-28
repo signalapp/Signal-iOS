@@ -17,11 +17,11 @@ extension ConversationViewController: MentionTextViewDelegate {
         Logger.debug("did update mention \(mentionText)")
     }
 
-    public func textView(_ textView: MentionTextView, didTapMention mention: MentionRange) {
+    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {
         Logger.debug("did tap mention \(mention.address)")
     }
 
-    public func textView(_ textView: MentionTextView, didDeleteMention mention: MentionRange) {
+    public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {
         Logger.debug("did delete mention \(mention.address)")
     }
 
@@ -29,7 +29,7 @@ extension ConversationViewController: MentionTextViewDelegate {
         return false
     }
 
-    public func textViewMentionStyle(_ textView: MentionTextView) -> MentionStyle {
+    public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
         return .composing
     }
 }
