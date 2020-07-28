@@ -132,17 +132,30 @@ NS_ASSUME_NONNULL_BEGIN
         };
     });
 
-    UIFont *font = [UIFont preferredFontForTextStyle:fontTextStyle];
+    // From the documentation of -[id<UIContentSizeCategoryAdjusting> adjustsFontForContentSizeCategory:]
+    // Dynamic sizing is only supported with fonts that are:
+    // a. Vended using +preferredFontForTextStyle... with a valid UIFontTextStyle
+    // b. Vended from -[UIFontMetrics scaledFontForFont:] or one of its variants
+    //
+    // If we clamps fonts by checking the resulting point size and then creating a new, smaller UIFont with
+    // a fallback max size, we'll lose dynamic sizing. Max sizes can be specified using UIFontMetrics though.
+    //
+    // UIFontMetrics will only operate on unscaled fonts. So we do this dance to cap the system default styles
+    // 1. Grab the standard, unscaled font by using the default trait collection
+    // 2. Use UIFontMetrics to scale it up, capped at the desired max size
+    UITraitCollection *defaultTraitCollection =
+        [UITraitCollection traitCollectionWithPreferredContentSizeCategory:UIContentSizeCategoryLarge];
+    UIFont *unscaledFont = [UIFont preferredFontForTextStyle:fontTextStyle
+                               compatibleWithTraitCollection:defaultTraitCollection];
+
+    UIFontMetrics *desiredStyleMetrics = [[UIFontMetrics alloc] initForTextStyle:fontTextStyle];
     NSNumber *_Nullable maxPointSize = maxPointSizeMap[fontTextStyle];
     if (maxPointSize) {
-        if (maxPointSize.floatValue < font.pointSize) {
-            return [font fontWithSize:maxPointSize.floatValue];
-        }
+        return [desiredStyleMetrics scaledFontForFont:unscaledFont maximumPointSize:maxPointSize.floatValue];
     } else {
         OWSFailDebug(@"Missing max point size for style: %@", fontTextStyle);
+        return [desiredStyleMetrics scaledFontForFont:unscaledFont];
     }
-
-    return font;
 }
 
 + (UIFont *)ows_dynamicTypeLargeTitle1ClampedFont
