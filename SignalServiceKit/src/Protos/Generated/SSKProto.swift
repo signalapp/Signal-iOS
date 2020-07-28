@@ -2490,6 +2490,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
             builder.setText(_value)
         }
         builder.setAttachments(attachments)
+        builder.setBodyRanges(bodyRanges)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2561,6 +2562,18 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
             proto.attachments = wrappedItems.map { $0.proto }
         }
 
+        @objc
+        public func addBodyRanges(_ valueParam: SSKProtoDataMessageBodyRange) {
+            var items = proto.bodyRanges
+            items.append(valueParam.proto)
+            proto.bodyRanges = items
+        }
+
+        @objc
+        public func setBodyRanges(_ wrappedItems: [SSKProtoDataMessageBodyRange]) {
+            proto.bodyRanges = wrappedItems.map { $0.proto }
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -2583,6 +2596,9 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
 
     @objc
     public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
+
+    @objc
+    public let bodyRanges: [SSKProtoDataMessageBodyRange]
 
     @objc
     public var authorE164: String? {
@@ -2678,10 +2694,12 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
 
     private init(proto: SignalServiceProtos_DataMessage.Quote,
                  id: UInt64,
-                 attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
+                 attachments: [SSKProtoDataMessageQuoteQuotedAttachment],
+                 bodyRanges: [SSKProtoDataMessageBodyRange]) {
         self.proto = proto
         self.id = id
         self.attachments = attachments
+        self.bodyRanges = bodyRanges
     }
 
     @objc
@@ -2704,13 +2722,17 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
         var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
         attachments = try proto.attachments.map { try SSKProtoDataMessageQuoteQuotedAttachment($0) }
 
+        var bodyRanges: [SSKProtoDataMessageBodyRange] = []
+        bodyRanges = try proto.bodyRanges.map { try SSKProtoDataMessageBodyRange($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessageQuote -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageQuote -
 
         self.init(proto: proto,
                   id: id,
-                  attachments: attachments)
+                  attachments: attachments,
+                  bodyRanges: bodyRanges)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -5042,6 +5064,178 @@ extension SSKProtoDataMessageDelete.SSKProtoDataMessageDeleteBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageBodyRange
+
+@objc
+public class SSKProtoDataMessageBodyRange: NSObject, Codable {
+
+    // MARK: - SSKProtoDataMessageBodyRangeBuilder
+
+    @objc
+    public class func builder() -> SSKProtoDataMessageBodyRangeBuilder {
+        return SSKProtoDataMessageBodyRangeBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessageBodyRangeBuilder {
+        let builder = SSKProtoDataMessageBodyRangeBuilder()
+        if hasStart {
+            builder.setStart(start)
+        }
+        if hasLength {
+            builder.setLength(length)
+        }
+        if let _value = mentionUuid {
+            builder.setMentionUuid(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessageBodyRangeBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.BodyRange()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        public func setStart(_ valueParam: UInt32) {
+            proto.start = valueParam
+        }
+
+        @objc
+        public func setLength(_ valueParam: UInt32) {
+            proto.length = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMentionUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.mentionUuid = valueParam
+        }
+
+        public func setMentionUuid(_ valueParam: String) {
+            proto.mentionUuid = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessageBodyRange {
+            return try SSKProtoDataMessageBodyRange(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageBodyRange(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.BodyRange
+
+    @objc
+    public var start: UInt32 {
+        return proto.start
+    }
+    @objc
+    public var hasStart: Bool {
+        return proto.hasStart
+    }
+
+    @objc
+    public var length: UInt32 {
+        return proto.length
+    }
+    @objc
+    public var hasLength: Bool {
+        return proto.hasLength
+    }
+
+    @objc
+    public var mentionUuid: String? {
+        guard hasMentionUuid else {
+            return nil
+        }
+        return proto.mentionUuid
+    }
+    @objc
+    public var hasMentionUuid: Bool {
+        return proto.hasMentionUuid
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.BodyRange) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.BodyRange(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.BodyRange) throws {
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageBodyRange -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageBodyRange -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageBodyRange {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageBodyRange.SSKProtoDataMessageBodyRangeBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessageBodyRange? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -5077,6 +5271,7 @@ public enum SSKProtoDataMessageProtocolVersion: Int32 {
     case viewOnceVideo = 3
     case reactions = 4
     case cdnSelectorAttachments = 5
+    case mentions = 6
 }
 
 private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
@@ -5087,6 +5282,7 @@ private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos
     case .viewOnceVideo: return .viewOnceVideo
     case .reactions: return .reactions
     case .cdnSelectorAttachments: return .cdnSelectorAttachments
+    case .mentions: return .mentions
     }
 }
 
@@ -5098,6 +5294,7 @@ private func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessa
     case .viewOnceVideo: return .viewOnceVideo
     case .reactions: return .reactions
     case .cdnSelectorAttachments: return .cdnSelectorAttachments
+    case .mentions: return .mentions
     }
 }
 
@@ -5159,6 +5356,7 @@ public class SSKProtoDataMessage: NSObject, Codable {
         if let _value = delete {
             builder.setDelete(_value)
         }
+        builder.setBodyRanges(bodyRanges)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5322,6 +5520,18 @@ public class SSKProtoDataMessage: NSObject, Codable {
             proto.delete = valueParam.proto
         }
 
+        @objc
+        public func addBodyRanges(_ valueParam: SSKProtoDataMessageBodyRange) {
+            var items = proto.bodyRanges
+            items.append(valueParam.proto)
+            proto.bodyRanges = items
+        }
+
+        @objc
+        public func setBodyRanges(_ wrappedItems: [SSKProtoDataMessageBodyRange]) {
+            proto.bodyRanges = wrappedItems.map { $0.proto }
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -5365,6 +5575,9 @@ public class SSKProtoDataMessage: NSObject, Codable {
 
     @objc
     public let delete: SSKProtoDataMessageDelete?
+
+    @objc
+    public let bodyRanges: [SSKProtoDataMessageBodyRange]
 
     @objc
     public var body: String? {
@@ -5452,7 +5665,8 @@ public class SSKProtoDataMessage: NSObject, Codable {
                  preview: [SSKProtoDataMessagePreview],
                  sticker: SSKProtoDataMessageSticker?,
                  reaction: SSKProtoDataMessageReaction?,
-                 delete: SSKProtoDataMessageDelete?) {
+                 delete: SSKProtoDataMessageDelete?,
+                 bodyRanges: [SSKProtoDataMessageBodyRange]) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -5463,6 +5677,7 @@ public class SSKProtoDataMessage: NSObject, Codable {
         self.sticker = sticker
         self.reaction = reaction
         self.delete = delete
+        self.bodyRanges = bodyRanges
     }
 
     @objc
@@ -5516,6 +5731,9 @@ public class SSKProtoDataMessage: NSObject, Codable {
             delete = try SSKProtoDataMessageDelete(proto.delete)
         }
 
+        var bodyRanges: [SSKProtoDataMessageBodyRange] = []
+        bodyRanges = try proto.bodyRanges.map { try SSKProtoDataMessageBodyRange($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -5529,7 +5747,8 @@ public class SSKProtoDataMessage: NSObject, Codable {
                   preview: preview,
                   sticker: sticker,
                   reaction: reaction,
-                  delete: delete)
+                  delete: delete,
+                  bodyRanges: bodyRanges)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
