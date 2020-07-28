@@ -30,7 +30,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 #pragma mark -
 
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-@implementation OWSUploadForm
+@implementation OWSUploadFormV2
 
 - (instancetype)initWithAcl:(NSString *)acl
                         key:(NSString *)key
@@ -58,7 +58,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     return self;
 }
 
-+ (nullable OWSUploadForm *)parseDictionary:(nullable NSDictionary *)formResponseObject
++ (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject
 {
     if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
         OWSFailDebug(@"Invalid upload form.");
@@ -117,15 +117,15 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         return nil;
     }
 
-    return [[OWSUploadForm alloc] initWithAcl:formAcl
-                                          key:formKey
-                                       policy:formPolicy
-                                    algorithm:formAlgorithm
-                                   credential:formCredential
-                                         date:formDate
-                                    signature:formSignature
-                                 attachmentId:attachmentId
-                           attachmentIdString:attachmentIdString];
+    return [[OWSUploadFormV2 alloc] initWithAcl:formAcl
+                                            key:formKey
+                                         policy:formPolicy
+                                      algorithm:formAlgorithm
+                                     credential:formCredential
+                                           date:formDate
+                                      signature:formSignature
+                                   attachmentId:attachmentId
+                             attachmentIdString:attachmentIdString];
 }
 
 - (void)appendToForm:(id<AFMultipartFormData>)formData
@@ -208,7 +208,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 - (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
 {
-    OWSUploadForm *_Nullable form = [OWSUploadForm parseDictionary:formResponseObject];
+    OWSUploadFormV2 *_Nullable form = [OWSUploadFormV2 parseDictionary:formResponseObject];
     if (!form) {
         return [AnyPromise
             promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];

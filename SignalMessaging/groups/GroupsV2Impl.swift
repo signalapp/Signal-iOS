@@ -424,9 +424,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoAvatarUploadAttributes(serializedData: protoData)
-        }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadForm in
-            try OWSUploadForm.parse(proto: avatarUploadAttributes)
-        }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadForm) -> Promise<String> in
+        }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadFormV2 in
+            try OWSUploadFormV2.parse(proto: avatarUploadAttributes)
+        }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadFormV2) -> Promise<String> in
             let encryptedData = try groupV2Params.encryptGroupAvatar(avatarData)
             return OWSUploadV2.upload(data: encryptedData, uploadForm: uploadForm, uploadUrlPath: "")
         }

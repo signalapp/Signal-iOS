@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, NSString *dataString);
 
-@interface OWSUploadForm : NSObject
+@interface OWSUploadFormV2 : NSObject
 
 // These properties will be set for all uploads.
 @property (nonatomic, readonly) NSString *acl;
@@ -41,7 +41,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                attachmentId:(nullable NSNumber *)attachmentId
          attachmentIdString:(nullable NSString *)attachmentIdString NS_DESIGNATED_INITIALIZER;
 
-+ (nullable OWSUploadForm *)parseDictionary:(nullable NSDictionary *)formResponseObject;
++ (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject;
 
 - (void)appendToForm:(id<AFMultipartFormData>)formData;
 

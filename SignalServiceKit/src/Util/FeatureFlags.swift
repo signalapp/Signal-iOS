@@ -208,6 +208,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let mentionsSend = mentionsReceive && build.includes(.dev)
 
+    @objc
+    public static let attachmentUploadV3 = build.includes(.qa)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
