@@ -19,7 +19,152 @@ public class OWSUploadV2: NSObject {
     }
 }
 
-// MARK: - 
+// MARK: -
+
+// A strong reference should be maintained to this object
+// until it completes.  If it is deallocated, the upload
+// may be cancelled.
+//
+// This class can be safely accessed and used from any thread.
+@objc
+public class OWSAttachmentUploadV2: NSObject {
+
+    // MARK: - Dependencies
+
+    private var socketManager: TSSocketManager {
+        return SSKEnvironment.shared.socketManager
+    }
+
+    private var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    // MARK: -
+
+    // These properties are set on success;
+    // They should not be accessed before.
+    @objc
+    public var encryptionKey: Data?
+    @objc
+    public var digest: Data?
+    @objc
+    public var serverId: UInt64 = 0
+    @objc
+    public var uploadTimestamp: UInt64 = 0
+
+    private let attachmentStream: TSAttachmentStream
+
+    @objc
+    public required init(attachmentStream: TSAttachmentStream) {
+        self.attachmentStream = attachmentStream
+    }
+
+    private func attachmentData() -> Promise<Data> {
+        return firstly(on: .global()) { () -> Data in
+            let attachmentData = try self.attachmentStream.readDataFromFile()
+
+            var nsEncryptionKey = NSData()
+            var nsDigest = NSData()
+            guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(attachmentData,
+                                                                                   shouldPad: true,
+                                                                                   outKey: &nsEncryptionKey,
+                                                                                   outDigest: &nsDigest) else {
+                                                                                    throw OWSAssertionError("Could not encrypt attachment data.")
+            }
+            let encryptionKey = nsEncryptionKey as Data
+            let digest = nsDigest as Data
+            guard !encryptionKey.isEmpty,
+                !digest.isEmpty else {
+                    throw OWSAssertionError("Could not encrypt attachment data.")
+            }
+
+            self.encryptionKey = encryptionKey
+            self.digest = digest
+
+            return encryptedAttachmentData
+        }
+    }
+
+    private func parseFormAndUpload(formResponseObject: Any?,
+                                    progressBlock: ((Progress) -> Void)? = nil) -> Promise<Void> {
+
+        return firstly(on: .global()) { () -> OWSUploadForm in
+            guard let formDictionary = formResponseObject as? [AnyHashable: Any] else {
+                Logger.warn("formResponseObject: \(String(describing: formResponseObject))")
+                throw OWSAssertionError("Invalid form.")
+            }
+            guard let form = OWSUploadForm.parseDictionary(formDictionary) else {
+                Logger.warn("formDictionary: \(formDictionary)")
+                throw OWSAssertionError("Invalid form dictionary.")
+            }
+            let serverId: UInt64 = form.attachmentId?.uint64Value ?? 0
+            guard serverId > 0 else {
+                Logger.warn("serverId: \(serverId)")
+                throw OWSAssertionError("Invalid serverId.")
+            }
+
+            self.serverId = serverId
+
+            return form
+        }.then(on: .global()) { (form: OWSUploadForm) -> Promise<(form: OWSUploadForm, attachmentData: Data)> in
+            return firstly {
+                return self.attachmentData()
+            }.map(on: .global()) { (attachmentData: Data) in
+                return (form, attachmentData)
+            }
+        }.then(on: .global()) { (form: OWSUploadForm, attachmentData: Data) -> Promise<String> in
+            let uploadUrlPath = "attachments/"
+            return OWSUploadV2.upload(data: attachmentData,
+                                      uploadForm: form,
+                                      uploadUrlPath: uploadUrlPath,
+                                      progressBlock: progressBlock)
+        }.map(on: .global()) { [weak self] (_) throws -> Void in
+            self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
+        }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    func upload(progressBlock: ((Progress) -> Void)? = nil) -> AnyPromise {
+        return AnyPromise(upload(progressBlock: progressBlock))
+    }
+
+    func upload(progressBlock: ((Progress) -> Void)? = nil) -> Promise<Void> {
+
+        return firstly(on: .global()) {
+            self.fetchUploadForm()
+        }.then(on: .global()) { [weak self] (formResponseObject: Any?) -> Promise<Void> in
+            guard let self = self else {
+                throw OWSAssertionError("Upload deallocated")
+            }
+            return self.parseFormAndUpload(formResponseObject: formResponseObject,
+                                           progressBlock: progressBlock).asVoid()
+        }
+    }
+
+    private func fetchUploadForm(skipWebsocket: Bool = false) -> Promise<Any?> {
+        return firstly(on: .global()) { () -> Promise<Any?> in
+            let formRequest: TSRequest = OWSRequestFactory.allocAttachmentRequest()
+            let shouldUseWebsocket = self.socketManager.canMakeRequests() && !skipWebsocket
+            if shouldUseWebsocket {
+                return firstly(on: .global()) { () -> Promise<Any?> in
+                    self.socketManager.makeRequestPromise(request: formRequest)
+                }.recover(on: .global()) { (_) -> Promise<Any?> in
+                    // Failover to REST request.
+                    self.fetchUploadForm(skipWebsocket: true)
+                }
+            } else {
+                return firstly(on: .global()) {
+                    return self.networkManager.makePromise(request: formRequest)
+                }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> Any? in
+                    return responseObject
+                }
+            }
+        }
+    }
+}
+
+// MARK: -
 
 public extension OWSUploadV2 {
 

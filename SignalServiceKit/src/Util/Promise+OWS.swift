@@ -128,3 +128,8 @@ public func firstly<U: Thenable>(on dispatchQueue: DispatchQueue,
     }
     return promise
 }
+
+public func firstly<T>(on dispatchQueue: DispatchQueue,
+                       execute body: @escaping () throws -> T) -> Promise<T> {
+    return dispatchQueue.async(.promise, execute: body)
+}
