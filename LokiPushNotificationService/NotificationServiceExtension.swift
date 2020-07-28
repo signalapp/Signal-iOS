@@ -15,31 +15,36 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         notificationContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-
-        DispatchQueue.main.async {
-            self.setUpIfNecessary() {
-                if let notificationContent = self.notificationContent {
-                    // Modify the notification content here...
-                    let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
-                    let data = Data(base64Encoded: base64EncodedData)!
-                    let decrypter = SSKEnvironment.shared.messageDecrypter
-                    if let envelope = try? MessageWrapper.unwrap(data: data), let data = try? envelope.serializedData() {
-                        decrypter.decryptEnvelope(envelope,
-                                                  envelopeData: data,
-                                                  successBlock: { result, transaction in
-                                                      if (try? SSKProtoEnvelope.parseData(result.envelopeData)) != nil {
-                                                          self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
-                                                      } else {
-                                                          self.completeWithFailure(content: notificationContent)
-                                                      }
-                                                  },
-                                                  failureBlock: {
+        
+        // The code using DispatchQueue.main.async { self.setUpIfNecessary(){ Modify the notification content } } will somehow cause a freezing when the second PN comes
+        
+        DispatchQueue.main.sync { self.setUpIfNecessary(){} }
+        
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            if let notificationContent = self.notificationContent {
+                // Modify the notification content here...
+                let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
+                let data = Data(base64Encoded: base64EncodedData)!
+                let decrypter = SSKEnvironment.shared.messageDecrypter
+                let messageManager = SSKEnvironment.shared.messageManager
+                if let envelope = try? MessageWrapper.unwrap(data: data), let data = try? envelope.serializedData() {
+                    let wasReceivedByUD = self.wasReceivedByUD(envelope: envelope)
+                    decrypter.decryptEnvelope(envelope,
+                                              envelopeData: data,
+                                              successBlock: { result, transaction in
+                                                  if let envelope = try? SSKProtoEnvelope.parseData(result.envelopeData) {
+                                                      messageManager.throws_processEnvelope(envelope, plaintextData: result.plaintextData, wasReceivedByUD: wasReceivedByUD, transaction: transaction, serverID: 0)
+                                                      self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
+                                                  } else {
                                                       self.completeWithFailure(content: notificationContent)
                                                   }
-                        )
-                    } else {
-                        self.completeWithFailure(content: notificationContent)
-                    }
+                                              },
+                                              failureBlock: {
+                                                  self.completeWithFailure(content: notificationContent)
+                                              }
+                    )
+                } else {
+                    self.completeWithFailure(content: notificationContent)
                 }
             }
         }
