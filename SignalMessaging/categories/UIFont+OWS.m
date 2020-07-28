@@ -143,8 +143,10 @@ NS_ASSUME_NONNULL_BEGIN
     // UIFontMetrics will only operate on unscaled fonts. So we do this dance to cap the system default styles
     // 1. Grab the standard, unscaled font by using the default trait collection
     // 2. Use UIFontMetrics to scale it up, capped at the desired max size
-    UITraitCollection *defaultTraitCollection = [UITraitCollection traitCollectionWithPreferredContentSizeCategory:UIContentSizeCategoryLarge];
-    UIFont *unscaledFont = [UIFont preferredFontForTextStyle:fontTextStyle compatibleWithTraitCollection:defaultTraitCollection];
+    UITraitCollection *defaultTraitCollection =
+        [UITraitCollection traitCollectionWithPreferredContentSizeCategory:UIContentSizeCategoryLarge];
+    UIFont *unscaledFont = [UIFont preferredFontForTextStyle:fontTextStyle
+                               compatibleWithTraitCollection:defaultTraitCollection];
 
     UIFontMetrics *desiredStyleMetrics = [[UIFontMetrics alloc] initForTextStyle:fontTextStyle];
     NSNumber *_Nullable maxPointSize = maxPointSizeMap[fontTextStyle];
