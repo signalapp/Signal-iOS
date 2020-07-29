@@ -12,7 +12,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SSKEnvironment.shared.signalServiceAddressCache
     }
 
-    private let backingPhoneNumber: AtomicValue<String?>
+    private let backingPhoneNumber: AtomicOptional<String>
     @objc public var phoneNumber: String? {
         guard let phoneNumber = backingPhoneNumber.get() else {
             // If we weren't initialized with a phone number, but the phone number exists in the cache, use it
@@ -29,7 +29,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     // TODO UUID: eventually this can be not optional
-    private let backingUuid: AtomicValue<UUID?>
+    private let backingUuid: AtomicOptional<UUID>
     @objc public var uuid: UUID? {
         guard let uuid = backingUuid.get() else {
             // If we weren't initialized with a uuid, but the uuid exists in the cache, use it
@@ -71,20 +71,20 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     public init(uuid: UUID?, phoneNumber: String?) {
         if phoneNumber == nil, let uuid = uuid,
             let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
-            backingPhoneNumber = AtomicValue(cachedPhoneNumber)
+            backingPhoneNumber = AtomicOptional(cachedPhoneNumber)
         } else {
             if let phoneNumber = phoneNumber, phoneNumber.isEmpty {
                 owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
             }
 
-            backingPhoneNumber = AtomicValue(phoneNumber)
+            backingPhoneNumber = AtomicOptional(phoneNumber)
         }
 
         if uuid == nil, let phoneNumber = phoneNumber,
             let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
-            backingUuid = AtomicValue(cachedUuid)
+            backingUuid = AtomicOptional(cachedUuid)
         } else {
-            backingUuid = AtomicValue(uuid)
+            backingUuid = AtomicOptional(uuid)
         }
 
         // If we have a backing UUID, we don't want to cache its mapping to the phone number.
@@ -150,14 +150,14 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        backingUuid = AtomicValue(aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?)
+        backingUuid = AtomicOptional(aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?)
 
         // Only decode the backingPhoneNumber if we don't know the UUID, otherwise
         // pull the phone number from the cache.
         if let backingUuid = backingUuid.get() {
-            backingPhoneNumber = AtomicValue(SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid))
+            backingPhoneNumber = AtomicOptional(SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid))
         } else {
-            backingPhoneNumber = AtomicValue(aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
+            backingPhoneNumber = AtomicOptional(aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
         }
 
         backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get())

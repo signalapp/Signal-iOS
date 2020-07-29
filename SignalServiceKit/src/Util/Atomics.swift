@@ -98,7 +98,12 @@ public class AtomicUInt: NSObject {
 public final class AtomicValue<T> {
     private var value: T
 
-    public required init(_ value: T) {
+    public required convenience init(_ value: T) {
+        self.init(value, allowOptionalType: false)
+    }
+
+    fileprivate init(_ value: T, allowOptionalType: Bool) {
+        owsAssertDebug(allowOptionalType || Mirror(reflecting: value).displayStyle != .optional)
         self.value = value
     }
 
@@ -155,6 +160,49 @@ extension AtomicValue where T: Equatable {
             }
             self.value = toValue
         }
+    }
+}
+
+// MARK: -
+
+public final class AtomicOptional<T> {
+    fileprivate let value = AtomicValue<T?>(nil, allowOptionalType: true)
+
+    public required init(_ value: T?) {
+        self.value.set(value)
+    }
+
+    public func get() -> T? {
+        return value.get()
+    }
+
+    public func set(_ value: T?) {
+        self.value.set(value)
+    }
+}
+
+extension AtomicOptional: Codable where T: Codable {
+    public convenience init(from decoder: Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+
+        if singleValueContainer.decodeNil() {
+            self.init(nil)
+        } else {
+            self.init(try singleValueContainer.decode(T.self))
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(value)
+    }
+}
+
+extension AtomicOptional where T: Equatable {
+    // Sets value to "toValue" IFF it currently has "fromValue",
+    // otherwise throws.
+    public func transition(from fromValue: T, to toValue: T) throws {
+        try value.transition(from: fromValue, to: toValue)
     }
 }
 

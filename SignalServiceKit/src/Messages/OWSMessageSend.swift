@@ -52,7 +52,7 @@ public class OWSMessageSend: NSObject {
         set { _hasWebsocketSendFailed.set(newValue) }
     }
 
-    private var _udSendingAccess = AtomicValue<OWSUDSendingAccess?>(nil)
+    private var _udSendingAccess = AtomicOptional<OWSUDSendingAccess>(nil)
     @objc
     public var udSendingAccess: OWSUDSendingAccess? {
         get { return _udSendingAccess.get() }
