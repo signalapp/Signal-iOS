@@ -1357,6 +1357,13 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
     }
 
+    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
+    if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
+        NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
+        NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
+        return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
+    }
+
     // Fall back to non-contact display name.
     return [self displayNameForAddress:address transaction:transaction];
 }
