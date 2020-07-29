@@ -7,6 +7,9 @@ import PromiseKit
 
 @objc
 public class OWSUploadV2: NSObject {
+
+    public typealias ProgressBlock = (Progress) -> Void
+
     @objc
     public class func uploadObjc(data: Data,
                                  uploadForm: OWSUploadFormV2,
@@ -44,6 +47,8 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     // MARK: -
+
+    public typealias ProgressBlock = (Progress) -> Void
 
     // These properties are only set for v2 uploads.
     // For other uploads we use these defaults.
@@ -107,11 +112,11 @@ public class OWSAttachmentUploadV2: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func upload(progressBlock: ((Progress) -> Void)? = nil) -> AnyPromise {
+    public func upload(progressBlock: ProgressBlock? = nil) -> AnyPromise {
         return AnyPromise(upload(progressBlock: progressBlock))
     }
 
-    public func upload(progressBlock: ((Progress) -> Void)? = nil) -> Promise<Void> {
+    public func upload(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
         return (FeatureFlags.attachmentUploadV3
             ? uploadV3(progressBlock: progressBlock)
             : uploadV2(progressBlock: progressBlock))
@@ -143,7 +148,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
     // MARK: - V2
 
-    public func uploadV2(progressBlock: ((Progress) -> Void)? = nil) -> Promise<Void> {
+    public func uploadV2(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
         return firstly(on: .global()) {
             // Fetch attachment upload form.
             return self.performRequest {
@@ -153,8 +158,7 @@ public class OWSAttachmentUploadV2: NSObject {
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
-            return self.parseUploadFormV2(formResponseObject: formResponseObject,
-                                          progressBlock: progressBlock)
+            return self.parseUploadFormV2(formResponseObject: formResponseObject)
         }.then(on: .global()) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
             return firstly {
                 return self.attachmentData()
@@ -172,8 +176,7 @@ public class OWSAttachmentUploadV2: NSObject {
         }
     }
 
-    private func parseUploadFormV2(formResponseObject: Any?,
-                                   progressBlock: ((Progress) -> Void)? = nil) -> Promise<OWSUploadFormV2> {
+    private func parseUploadFormV2(formResponseObject: Any?) -> Promise<OWSUploadFormV2> {
 
         return firstly(on: .global()) { () -> OWSUploadFormV2 in
             guard let formDictionary = formResponseObject as? [AnyHashable: Any] else {
@@ -198,7 +201,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
     // MARK: - V3
 
-    public func uploadV3(progressBlock: ((Progress) -> Void)? = nil) -> Promise<Void> {
+    public func uploadV3(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
         return firstly(on: .global()) {
             // Fetch attachment upload form.
             return self.performRequest {
@@ -232,7 +235,8 @@ public class OWSAttachmentUploadV2: NSObject {
         }.then(on: .global()) { (form: OWSUploadFormV3, attachmentData: Data, locationUrl: URL) in
             self.performResumableUploadV3(form: form,
                                           attachmentData: attachmentData,
-                                          locationUrl: locationUrl)
+                                          locationUrl: locationUrl,
+                                          progressBlock: progressBlock)
         }.map(on: .global()) { (_) throws -> Void in
             self.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -287,6 +291,7 @@ public class OWSAttachmentUploadV2: NSObject {
     private func performResumableUploadV3(form: OWSUploadFormV3,
                                           attachmentData: Data,
                                           locationUrl: URL,
+                                          progressBlock: ProgressBlock? = nil,
                                           attemptCount: Int = 0) -> Promise<Void> {
         Logger.verbose("---- attemptCount: \(attemptCount)")
 
@@ -322,11 +327,8 @@ public class OWSAttachmentUploadV2: NSObject {
                 "Content-Range": "bytes \(OWSFormat.formatInt(progress))-\(OWSFormat.formatInt(attachmentData.count - 1))/\(OWSFormat.formatInt(attachmentData.count))"
             ]
 
-            // We use a AFHTTPSessionManager so that we can use OWSHTTPSecurityPolicy.
-            // It doesn't matter which session manager we use.
-            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
-            let session = sessionManager.session
-            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload).asVoid()
+            let session = OWSURLSession()
+            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload, progressBlock: progressBlock).asVoid()
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
             guard IsNetworkConnectivityFailure(error) else {
                 throw error
@@ -347,17 +349,15 @@ public class OWSAttachmentUploadV2: NSObject {
     private func getResumableUploadProgressV3(form: OWSUploadFormV3,
                                               attachmentData: Data,
                                               locationUrl: URL) -> Promise<Int> {
-        return firstly(on: .global()) { () -> Promise<URLSession.Response> in
+        return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
             let urlString = locationUrl.absoluteString
             let headers: [String: String] = [
                 "Content-Length": OWSFormat.formatInt(0),
                 "Content-Range": "bytes */\(OWSFormat.formatInt(attachmentData.count))"
             ]
 
-            // We use a AFHTTPSessionManager so that OWSHTTPSecurityPolicy applies.
-            // It doesn't matter which session manager we use.
-            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
-            return sessionManager.uploadTaskPromise(urlString, verb: .put, headers: headers, data: Data())
+            let session = OWSURLSession()
+            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: Data())
         }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
             guard let contentLengthHeader = response.allHeaderFields["Content-Length"] as? String else {
                 throw OWSAssertionError("Missing content length header.")
@@ -385,7 +385,7 @@ public extension OWSUploadV2 {
     class func upload(data: Data,
                       uploadForm: OWSUploadFormV2,
                       uploadUrlPath: String,
-                      progressBlock: ((Progress) -> Void)? = nil) -> Promise<String> {
+                      progressBlock: ProgressBlock? = nil) -> Promise<String> {
 
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {

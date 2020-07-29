@@ -74,16 +74,5 @@ public extension AFHTTPSessionManager {
         return promise
     }
 
-    func uploadTaskPromise(_ urlString: String,
-                           verb: HTTPVerb,
-                           headers: [String: String]? = nil,
-                           data requestData: Data) -> Promise<URLSession.Response> {
-        session.uploadTaskPromise(urlString, verb: verb, headers: headers, data: requestData)
-    }
-
-    func uploadTaskPromise(request: URLRequest, data requestData: Data) -> Promise<URLSession.Response> {
-        session.uploadTaskPromise(request: request, data: requestData)
-    }
-
     // TODO: Add downloadTaskPromise().
 }
