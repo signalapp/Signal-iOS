@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(appSpecificSingletonBlock);
     OWSAssertDebug(migrationCompletion);
 
+    [self suppressUnsatisfiableConstraintLogging];
+
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
@@ -238,6 +240,13 @@ NS_ASSUME_NONNULL_BEGIN
             completionBlock();
         }
     });
+}
+
++ (void)suppressUnsatisfiableConstraintLogging
+{
+    if (!SSKDebugFlags.internalLogging) {
+        [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
+    }
 }
 
 + (BOOL)shouldTruncateGrdbWal
