@@ -85,7 +85,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
                 self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
 
                 if granted {
-                    Logger.debug("succeeded.")
+                    
                 } else if error != nil {
                     Logger.error("failed with error: \(error!)")
                 } else {

@@ -12,7 +12,7 @@ final class NotificationServiceExtensionContext : NSObject, AppContext {
     let isMainAppAndActive = false
 
     var openSystemSettingsAction: UIAlertAction?
-    var wasWokenUpBySilentPushNotification = true
+    var wasWokenUpByPushNotification = true
 
     var shouldProcessIncomingMessages: Bool { true }
 

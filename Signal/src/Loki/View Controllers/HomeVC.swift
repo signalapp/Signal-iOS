@@ -212,12 +212,16 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         isObservingDatabase = isViewVisible && CurrentAppContext().isAppForegroundAndActive()
     }
     
-    private func reload() {
-        AssertIsOnMainThread()
+    private func updateThreadMapping() {
         uiDatabaseConnection.beginLongLivedReadTransaction()
         uiDatabaseConnection.read { transaction in
             self.threads.update(with: transaction)
         }
+    }
+    
+    private func reload() {
+        AssertIsOnMainThread()
+        updateThreadMapping()
         threadViewModelCache.removeAll()
         tableView.reloadData()
         emptyStateView.isHidden = (threadCount != 0)
@@ -235,6 +239,21 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             }
             return
         }
+        // Guard for changes made in Notification Service Extension
+        // Crashes may happen if there is some modification in NSE
+        // The YapDBModificationNotification cannot cross process
+        // So the thread mapping won't update itself if DB modification happened in other process like NSE
+        // With these code we can sync the mapping before asking for changes from YapDB
+        if (notifications.count > 0) {
+            if let firstChangeset = notifications[0].userInfo {
+                let firstSnapshot = firstChangeset[YapDatabaseSnapshotKey] as! UInt64
+                if (self.threads.snapshotOfLastUpdate != firstSnapshot - 1) {
+                    reload()
+                    return
+                }
+            }
+        }
+        
         var sectionChanges = NSArray()
         var rowChanges = NSArray()
         ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)
@@ -261,6 +280,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     @objc private func handleApplicationDidBecomeActiveNotification(_ notification: Notification) {
         updateIsObservingDatabase()
+        updateThreadMapping()
     }
     
     @objc private func handleApplicationWillResignActiveNotification(_ notification: Notification) {

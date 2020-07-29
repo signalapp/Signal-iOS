@@ -16,31 +16,36 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         notificationContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        DispatchQueue.main.sync { self.setUpIfNecessary() }
+        // The code using DispatchQueue.main.async { self.setUpIfNecessary(){ Modify the notification content } } will somehow cause a freezing when the second PN comes
         
-        if let notificationContent = notificationContent {
-            // Modify the notification content here...
-            let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
-            let data = Data(base64Encoded: base64EncodedData)!
-            let envelope = try? MessageWrapper.unwrap(data: data)
-            let envelopeData = try? envelope?.serializedData()
-            let decrypter = SSKEnvironment.shared.messageDecrypter
-            if (envelope != nil && envelopeData != nil) {
-                decrypter.decryptEnvelope(envelope!,
-                                          envelopeData: envelopeData!,
-                                          successBlock: { result, transaction in
-                                              if (try? SSKProtoEnvelope.parseData(result.envelopeData)) != nil {
-                                                  self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
-                                              } else {
+        DispatchQueue.main.sync { self.setUpIfNecessary(){} }
+        
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            if let notificationContent = self.notificationContent {
+                // Modify the notification content here...
+                let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
+                let data = Data(base64Encoded: base64EncodedData)!
+                let decrypter = SSKEnvironment.shared.messageDecrypter
+                let messageManager = SSKEnvironment.shared.messageManager
+                if let envelope = try? MessageWrapper.unwrap(data: data), let data = try? envelope.serializedData() {
+                    let wasReceivedByUD = self.wasReceivedByUD(envelope: envelope)
+                    decrypter.decryptEnvelope(envelope,
+                                              envelopeData: data,
+                                              successBlock: { result, transaction in
+                                                  if let envelope = try? SSKProtoEnvelope.parseData(result.envelopeData) {
+                                                      messageManager.throws_processEnvelope(envelope, plaintextData: result.plaintextData, wasReceivedByUD: wasReceivedByUD, transaction: transaction, serverID: 0)
+                                                      self.handleDecryptionResult(result: result, notificationContent: notificationContent, transaction: transaction)
+                                                  } else {
+                                                      self.completeWithFailure(content: notificationContent)
+                                                  }
+                                              },
+                                              failureBlock: {
                                                   self.completeWithFailure(content: notificationContent)
                                               }
-                                          },
-                                          failureBlock: {
-                                              self.completeWithFailure(content: notificationContent)
-                                          }
-                )
-            } else {
-                self.completeWithFailure(content: notificationContent)
+                    )
+                } else {
+                    self.completeWithFailure(content: notificationContent)
+                }
             }
         }
     }
@@ -49,31 +54,31 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         let contentProto = try? SSKProtoContent.parseData(result.plaintextData!)
         var thread: TSThread
         var newNotificationBody = ""
-        let masterHexEncodedPublicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
-        var displayName = masterHexEncodedPublicKey
+        let masterPublicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
+        var displayName = masterPublicKey
         if let groupID = contentProto?.dataMessage?.group?.id {
-           thread = TSGroupThread.getOrCreateThread(withGroupId: groupID, groupType: .closedGroup, transaction: transaction)
+            thread = TSGroupThread.getOrCreateThread(withGroupId: groupID, groupType: .closedGroup, transaction: transaction)
             displayName = thread.name()
             if displayName.count < 1 {
                 displayName = MessageStrings.newGroupDefaultTitle
             }
-            let group: SSKProtoGroupContext = (contentProto?.dataMessage?.group!)!
+            let group: SSKProtoGroupContext = contentProto!.dataMessage!.group!
             let oldGroupModel = (thread as! TSGroupThread).groupModel
-            var removeMembers = Set(arrayLiteral: oldGroupModel.groupMemberIds)
+            var removedMembers = Set(arrayLiteral: oldGroupModel.groupMemberIds)
             let newGroupModel = TSGroupModel.init(title: group.name,
                                                   memberIds:group.members,
                                                   image: oldGroupModel.groupImage,
                                                   groupId: group.id,
                                                   groupType: oldGroupModel.groupType,
                                                   adminIds: group.admins)
-            removeMembers.subtract(Set(arrayLiteral: newGroupModel.groupMemberIds))
-            newGroupModel.removedMembers = NSMutableSet(set: removeMembers)
+            removedMembers.subtract(Set(arrayLiteral: newGroupModel.groupMemberIds))
+            newGroupModel.removedMembers = NSMutableSet(set: removedMembers)
             switch contentProto?.dataMessage?.group?.type {
             case .update:
                 newNotificationBody = oldGroupModel.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: SSKEnvironment.shared.contactsManager)
                 break
             case .quit:
-                let nameString = SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: masterHexEncodedPublicKey, transaction: transaction)
+                let nameString = SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: masterPublicKey, transaction: transaction)
                 newNotificationBody = NSLocalizedString("GROUP_MEMBER_LEFT", comment: nameString)
                 break
             default:
@@ -88,7 +93,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         notificationContent.userInfo = userInfo
         notificationContent.badge = 1
         if newNotificationBody.count < 1 {
-            newNotificationBody = contentProto?.dataMessage?.body ?? ""
+            newNotificationBody = contentProto?.dataMessage?.body ?? "You've got a new message"
         }
         notificationContent.body = newNotificationBody
         if notificationContent.body.count < 1 {
@@ -98,7 +103,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         }
     }
 
-    func setUpIfNecessary() {
+    func setUpIfNecessary(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
         // The NSE will often re-use the same process, so if we're
@@ -116,8 +121,6 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             DebugLogger.shared().enableFileLogging()
         }
 
-        Logger.info("")
-
         _ = AppVersion.sharedInstance()
 
         Cryptography.seedRandom()
@@ -131,12 +134,12 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
 
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
-                // TODO: calls..
                 SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
                 SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
             },
             migrationCompletion: { [weak self] in
                 self?.versionMigrationsDidComplete()
+                completion()
             }
         )
 
@@ -162,8 +165,6 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     func versionMigrationsDidComplete() {
         AssertIsOnMainThread()
 
-        Logger.debug("")
-
         areVersionMigrationsComplete = true
 
         checkIsAppReady()
@@ -172,8 +173,6 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     @objc
     func storageIsReady() {
         AssertIsOnMainThread()
-
-        Logger.debug("")
 
         checkIsAppReady()
     }
@@ -197,7 +196,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     }
     
     func completeWithFailure(content: UNMutableNotificationContent) {
-        content.body = "You've got a new message."
+        content.body = "You've got a new message"
         content.title = "Session"
         let userInfo: [String:Any] = [NotificationServiceExtension.isFromRemoteKey : true]
         content.userInfo = userInfo
