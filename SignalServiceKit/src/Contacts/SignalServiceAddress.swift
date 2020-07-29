@@ -184,7 +184,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             return false
         }
 
-        return otherAddress.phoneNumber == phoneNumber && otherAddress.uuid == uuid
+        if let thisUuid = uuid,
+            let otherUuid = otherAddress.uuid {
+            return thisUuid == otherUuid
+        }
+        if phoneNumber != nil ||
+            otherAddress.phoneNumber != nil {
+            return otherAddress.phoneNumber == phoneNumber
+        }
+        return false
     }
 
     // In order to maintain a consistent hash, we use a constant value generated
