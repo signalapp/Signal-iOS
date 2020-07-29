@@ -2593,12 +2593,6 @@
 "vc_display_name_display_name_invalid_error" = "Bitte wählen Sie einen Anzeigenamen, der nur aus den Zeichen a - z, A - Z, 0 - 9 und _ besteht.";
 "vc_display_name_display_name_too_long_error" = "Bitte wählen Sie einen kürzeren Anzeigenamen";
 
-"vc_pn_mode_title" = "Benachrichtigungen";
-"vc_pn_mode_explanation" = "Session verfügt über zwei Methoden zur Verarbeitung von Benachrichtigungen. Lesen Sie die Beschreibungen sorgfältig, bevor Sie sich entscheiden.";
-"vc_pn_mode_apns_option_title" = "Apple Push Notification Service";
-"vc_pn_mode_apns_option_explanation" = "Session verwendet den Apple Push Notification Service-Dienst, um Push-Benachrichtigungen zu empfangen. Sie werden zuverlässig und sofort über neue Nachrichten informiert. Die Verwendung von APNs bedeutet, dass Ihre IP-Adresse und Ihr Geräte-Token für Apple verfügbar sind. Wenn Sie Push-Benachrichtigungen anderer Apps verwenden, ist dies auch der Fall. Auch Loki erfährt Ihre IP-Adresse und Ihren Geräte-Token, jedoch werden Ihre Nachrichten weiterhin per Onion geroutet und durchgängig verschlüsselt, sodass der Inhalt Ihrer Nachrichten vollständig privat bleibt.";
-"vc_pn_mode_background_polling_option_title" = "Hintergrundabfrage";
-"vc_pn_mode_background_polling_option_explanation" = "Session sucht von Zeit zu Zeit im Hintergrund nach neuen Nachrichten. Das garantiert einen vollständigen Schutz der Metadaten, aber Benachrichtigungen können sich jedoch erheblich verzögern.";
 "vc_pn_mode_recommended_option_tag" = "Empfohlen";
 "vc_pn_mode_no_option_picked_modal_title" = "Bitte wählen Sie eine Option aus.";
 
@@ -2608,17 +2602,6 @@
 "vc_home_leaving_group_failed_message" = "Gruppe konnte nicht verlassen werden.";
 "vc_home_delete_conversation_modal_message" = "Möchten Sie diese Unterhaltung wirklich löschen?";
 "vc_home_conversation_deleted_message" = "Die Unterhaltung wurde gelöscht.";
-
-"sheet_pn_mode_title" = "Benachrichtigungen";
-"sheet_pn_mode_explanation" = "Session verfügt über zwei Methoden zur Verarbeitung von Benachrichtigungen. Lesen Sie die Beschreibungen sorgfältig, bevor Sie sich entscheiden.";
-"sheet_pn_mode_apns_option_title" = "Apple Push Notification Service";
-"sheet_pn_mode_apns_option_explanation" = "Session verwendet den Apple Push Notification Service-Dienst, um Push-Benachrichtigungen zu empfangen. Sie werden zuverlässig und sofort über neue Nachrichten informiert. Die Verwendung von APNs bedeutet, dass Ihre IP-Adresse und Ihr Geräte-Token für Apple verfügbar sind. Wenn Sie Push-Benachrichtigungen anderer Apps verwenden, ist dies auch der Fall. Auch Loki erfährt Ihre IP-Adresse und Ihren Geräte-Token, jedoch werden Ihre Nachrichten weiterhin per Onion geroutet und durchgängig verschlüsselt, sodass der Inhalt Ihrer Nachrichten vollständig privat bleibt.";
-"sheet_pn_mode_background_polling_option_title" = "Hintergrundabfrage";
-"sheet_pn_mode_background_polling_option_explanation" = "Session sucht von Zeit zu Zeit im Hintergrund nach neuen Nachrichten. Das garantiert einen vollständigen Schutz der Metadaten, aber Benachrichtigungen können sich jedoch erheblich verzögern.";
-"sheet_pn_mode_recommended_option_tag" = "Empfohlen";
-"sheet_pn_mode_no_option_picked_modal_title" = "Bitte wählen Sie eine Option aus.";
-"sheet_pn_mode_confirm_button_title" = "Bestätigen";
-"sheet_pn_mode_skip_button_title" = "Überspringen";
 
 "vc_seed_title" = "Ihr Wiederherstellungssatz";
 "vc_seed_title_2" = "Das ist Ihr Wiederherstellungssatz.";
@@ -2666,7 +2649,6 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "Scannen Sie den QR-Code der offenen Gruppe, der Sie beitreten möchten.";
 
 "vc_enter_chat_url_text_field_hint" = "Geben Sie eine offene Gruppen-URL ein.";
-"vc_enter_chat_url_privacy_warning" = "Offenen Gruppen kann jeder beitreten und sie bieten keinen vollständigen Schutz der Privatsphäre.";
 
 "vc_settings_title" = "Einstellungen";
 "vc_settings_display_name_text_field_hint" = "Geben Sie einen Anzeigenamen ein.";
@@ -2698,8 +2680,6 @@
 "vc_linked_devices_empty_state_button_title" = "Gerät (Beta) verknüpfen";
 
 "preferences_notifications_strategy_category_title" = "Benachrichtigungsstrategie";
-"preferences_notifications_use_apns_option_title" = "APNs verwenden";
-"preferences_notifications_use_apns_option_explanation" = "Die Verwendung von Apple Push Notification Service ermöglicht zuverlässigere Push-Benachrichtigungen, Ihre IP- und Geräte-Token werden Apple und Loki jedoch bekannt.";
 
 "modal_link_device_slave_mode_title_1" = "Warten auf Autorisierung";
 "modal_link_device_slave_mode_title_2" = "Geräteverbindung autorisiert";
@@ -2732,16 +2712,6 @@
 
 "vc_view_my_qr_code_explanation" = "Das ist Ihr QR-Code. Andere Benutzer können ihn scannen, um eine Session mit Ihnen zu starten.";
 "vc_view_my_qr_code_share_title" = "QR-Code freigeben";
-
-"view_friend_request_accept_button_title" = "Akzeptieren";
-"view_friend_request_reject_button_title" = "Ablehnen";
-"view_friend_request_incoming_pending_message" = "%@ hat Ihnen eine Session-Anfrage gesendet.";
-"view_friend_request_incoming_accepted_message" = "Sie haben die Session-Anfrage von %@ akzeptiert.";
-"view_friend_request_incoming_declined_message" = "Sie haben die Session-Anfrage von %@ abgelehnt.";
-"view_friend_request_incoming_expired_message" = "Die Session-Anfragte von %@ ist abgelaufen.";
-"view_friend_request_outgoing_pending_message" = "Sie haben %@ eine Session-Anfrage gesendet.";
-"view_friend_request_outgoing_accepted_message" = "%@ hat Ihre Session-Anfrage akzeptiert.";
-"view_friend_request_outgoing_expired_message" = "Ihre Session-Anfrage an %@ ist abgelaufen.";
 
 "session_reset_banner_message" = "Möchten Sie Ihre Session mit %@ wiederherstellen?";
 "session_reset_banner_dismiss_button_title" = "Verwerfen";

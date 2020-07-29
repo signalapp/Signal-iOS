@@ -11,8 +11,8 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     // MARK: Components
-    private lazy var apnsOptionView = OptionView(title: NSLocalizedString("vc_pn_mode_apns_option_title", comment: ""), explanation: NSLocalizedString("vc_pn_mode_apns_option_explanation", comment: ""), delegate: self, isRecommended: true)
-    private lazy var backgroundPollingOptionView = OptionView(title: NSLocalizedString("vc_pn_mode_background_polling_option_title", comment: ""), explanation: NSLocalizedString("vc_pn_mode_background_polling_option_explanation", comment: ""), delegate: self)
+    private lazy var apnsOptionView = OptionView(title: "Fast Mode", explanation: "You’ll be notified of new messages reliably and immediately using Apple’s notification servers. The contents of your messages, and who you’re messaging, are never exposed to Apple.", delegate: self, isRecommended: true)
+    private lazy var backgroundPollingOptionView = OptionView(title: "Slow Mode", explanation: "Session will occasionally check for new messages in the background. Full metadata protection is guaranteed, but message notifications will be unreliable.", delegate: self)
 
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -20,25 +20,28 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         setUpGradientBackground()
         setUpNavBarStyle()
         setUpNavBarSessionIcon()
+        let learnMoreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "ic_info"), style: .plain, target: self, action: #selector(learnMore))
+        learnMoreButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = learnMoreButton
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("vc_pn_mode_title", comment: "")
+        titleLabel.text = "Message Notifications"
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_pn_mode_explanation", comment: "")
+        explanationLabel.text = "There are two ways Session can notify you of new messages."
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButtonBottomOffsetSpacer = UIView()
-        registerButtonBottomOffsetSpacer.set(.height, to: Values.mediumSpacing)
+        registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
         registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
@@ -52,10 +55,9 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         optionsStackView.spacing = Values.smallSpacing
         optionsStackView.alignment = .fill
         // Set up top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, optionsStackView ])
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.mediumSpacing : Values.veryLargeSpacing),
+            explanationLabel, UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.mediumSpacing : Values.veryLargeSpacing), optionsStackView ])
         topStackView.axis = .vertical
-        let isMediumScreen = (UIScreen.main.bounds.height - 667) < 1
-        topStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : (isMediumScreen ? Values.mediumSpacing : Values.veryLargeSpacing)
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView(wrapping: topStackView, withInsets: UIEdgeInsets(top: 0, leading: Values.veryLargeSpacing, bottom: 0, trailing: Values.veryLargeSpacing))
@@ -69,6 +71,12 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     // MARK: Interaction
+    @objc private func learnMore() {
+        let urlAsString = "https://getsession.org/faq/#privacy"
+        let url = URL(string: urlAsString)!
+        UIApplication.shared.open(url)
+    }
+
     func optionViewDidActivate(_ optionView: OptionView) {
         optionViews.filter { $0 != optionView }.forEach { $0.isSelected = false }
     }
