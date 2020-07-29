@@ -66,7 +66,7 @@
 
     OWSTableSection *strategySection = [OWSTableSection new];
     strategySection.headerTitle = NSLocalizedString(@"preferences_notifications_strategy_category_title", @"");
-    [strategySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"preferences_notifications_use_apns_option_title", @"")
+    [strategySection addItem:[OWSTableItem switchItemWithText:@"Use Fast Mode"
                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"push_notification_strategy")
                               isOnBlock:^{
                                   return [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
@@ -76,7 +76,7 @@
                               }
                               target:weakSelf
                               selector:@selector(didToggleAPNsSwitch:)]];
-    strategySection.footerTitle = NSLocalizedString(@"preferences_notifications_use_apns_option_explanation", @"");
+    strategySection.footerTitle = @"You’ll be notified of new messages reliably and immediately using Apple’s notification servers. The contents of your messages, and who you’re messaging, are never exposed to Apple.";
     [contents addSection:strategySection];
 
     // Sounds section.
