@@ -286,7 +286,7 @@ public class ConversationMediaView: UIView {
                     Logger.warn("Ignoring invalid attachment.")
                     return nil
                 }
-                return attachmentStream.thumbnailImageMedium(success: { (image) in
+                return attachmentStream.thumbnailImageLarge(success: { (image) in
                     AssertIsOnMainThread()
 
                     stillImageView.image = image

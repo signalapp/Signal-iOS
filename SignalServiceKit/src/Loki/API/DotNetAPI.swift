@@ -68,7 +68,11 @@ public class DotNetAPI : NSObject {
         let queryParameters = "pubKey=\(getUserHexEncodedPublicKey())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { rawResponse in
+        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+            : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
+        return serverPublicKeyPromise.then2 { serverPublicKey in
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey)
+        }.map2 { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw DotNetAPIError.parsingFailed
@@ -92,7 +96,11 @@ public class DotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { _ in token }
+        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+            : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
+        return serverPublicKeyPromise.then2 { serverPublicKey in
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey)
+        }.map2 { _ in token }
     }
 
     // MARK: Public API
@@ -126,8 +134,7 @@ public class DotNetAPI : NSObject {
                     data = unencryptedAttachmentData
                 }
                 // Check the file size if needed
-                let isLokiFileServer = (server == FileServerAPI.server)
-                if isLokiFileServer && data.count > FileServerAPI.maxFileSize {
+                if data.count > FileServerAPI.maxFileSize {
                     return seal.reject(DotNetAPIError.maxFileSizeExceeded)
                 }
                 // Create the request
@@ -143,10 +150,16 @@ public class DotNetAPI : NSObject {
                     return seal.reject(error)
                 }
                 // Send the request
-                func parseResponse(_ responseObject: Any) {
+                let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+                    : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
+                attachment.isUploaded = false
+                attachment.save()
+                let _ = serverPublicKeyPromise.then2 { serverPublicKey in
+                    OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey)
+                }.done2 { json in
                     // Parse the server ID & download URL
-                    guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
-                        print("[Loki] Couldn't parse attachment from: \(responseObject).")
+                    guard let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
+                        print("[Loki] Couldn't parse attachment from: \(json).")
                         return seal.reject(DotNetAPIError.parsingFailed)
                     }
                     // Update the attachment
@@ -155,38 +168,8 @@ public class DotNetAPI : NSObject {
                     attachment.downloadURL = downloadURL
                     attachment.save()
                     seal.fulfill(())
-                }
-                let isProxyingRequired = (server == FileServerAPI.server) // Don't proxy open group requests for now
-                if isProxyingRequired {
-                    attachment.isUploaded = false
-                    attachment.save()
-                    let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done2 { responseObject in
-                        parseResponse(responseObject)
-                    }.catch2 { error in
-                        seal.reject(error)
-                    }
-                } else {
-                    let task = AFURLSessionManager(sessionConfiguration: .default).uploadTask(withStreamedRequest: request as URLRequest, progress: { rawProgress in
-                        // Broadcast progress updates
-                        let progress = max(0.1, rawProgress.fractionCompleted)
-                        let userInfo: [String:Any] = [ kAttachmentUploadProgressKey : progress, kAttachmentUploadAttachmentIDKey : attachmentID ]
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: .attachmentUploadProgress, object: nil, userInfo: userInfo)
-                        }
-                    }, completionHandler: { response, responseObject, error in
-                        if let error = error {
-                            print("[Loki] Couldn't upload attachment due to error: \(error).")
-                            return seal.reject(error)
-                        }
-                        let statusCode = (response as! HTTPURLResponse).statusCode
-                        let isSuccessful = (200...299) ~= statusCode
-                        guard isSuccessful else {
-                            print("[Loki] Couldn't upload attachment.")
-                            return seal.reject(DotNetAPIError.generic)
-                        }
-                        parseResponse(responseObject)
-                    })
-                    task.resume()
+                }.catch2 { error in
+                    seal.reject(error)
                 }
             }
             if server == FileServerAPI.server {
@@ -210,7 +193,7 @@ internal extension Promise {
 
     internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
         return recover2 { error -> Promise<T> in
-            if let error = error as? NetworkManagerError, (error.statusCode == 401 || error.statusCode == 403) {
+            if case HTTP.Error.httpRequestFailed(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                 print("[Loki] Auth token for: \(server) expired; dropping it.")
                 DotNetAPI.clearAuthToken(for: server)
             }

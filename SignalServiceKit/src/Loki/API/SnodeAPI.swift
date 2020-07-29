@@ -47,7 +47,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Core
     internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String, parameters: JSON) -> RawResponsePromise {
         if useOnionRequests {
-            return OnionRequestAPI.sendOnionRequest(invoking: method, on: snode, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
+            return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
         } else {
             let url = "\(snode.address):\(snode.port)/storage_rpc/v1"
             return HTTP.execute(.post, url, parameters: parameters).map2 { $0 as Any }.recover2 { error -> Promise<Any> in

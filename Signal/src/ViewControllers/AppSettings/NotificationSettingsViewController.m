@@ -36,13 +36,13 @@
     
     // Loki: Customize title
     UILabel *titleLabel = [UILabel new];
-    titleLabel.text = NSLocalizedString(@"Notifications", @"");
+    titleLabel.text = NSLocalizedString(@"vc_notification_settings_title", @"");
     titleLabel.textColor = LKColors.text;
     titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
     self.navigationItem.titleView = titleLabel;
     
     // Loki: Set up back button
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil];
     backButton.tintColor = LKColors.text;
     self.navigationItem.backBarButtonItem = backButton;
 }
@@ -65,8 +65,8 @@
     OWSPreferences *prefs = Environment.shared.preferences;
 
     OWSTableSection *strategySection = [OWSTableSection new];
-    strategySection.headerTitle = NSLocalizedString(@"Notification Strategy", @"");
-    [strategySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"Use APNs", @"")
+    strategySection.headerTitle = NSLocalizedString(@"preferences_notifications_strategy_category_title", @"");
+    [strategySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"preferences_notifications_use_apns_option_title", @"")
                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"push_notification_strategy")
                               isOnBlock:^{
                                   return [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
@@ -76,7 +76,7 @@
                               }
                               target:weakSelf
                               selector:@selector(didToggleAPNsSwitch:)]];
-    strategySection.footerTitle = NSLocalizedString(@"Session will use the Apple Push Notification service to receive push notifications. You'll be notified of new messages reliably and immediately. Using APNs means that your IP address and device token will be exposed to Apple. If you use push notifications for other apps, this will already be the case. Your IP address and device token will also be exposed to Loki, but your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.", @"");
+    strategySection.footerTitle = NSLocalizedString(@"preferences_notifications_use_apns_option_explanation", @"");
     [contents addSection:strategySection];
 
     // Sounds section.

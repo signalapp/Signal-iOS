@@ -519,7 +519,6 @@
 		B80C6B572384A56D00FDBC8B /* DeviceLinksVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */; };
 		B80C6B592384C4E700FDBC8B /* DeviceNameModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */; };
 		B80C6B5B2384C7F900FDBC8B /* DeviceNameModalDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */; };
-		B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */; };
 		B82B40882399EB0E00A248E7 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40872399EB0E00A248E7 /* LandingVC.swift */; };
 		B82B408A2399EC0600A248E7 /* FakeChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40892399EC0600A248E7 /* FakeChatView.swift */; };
 		B82B408C239A068800A248E7 /* RegisterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408B239A068800A248E7 /* RegisterVC.swift */; };
@@ -1340,7 +1339,6 @@
 		B80C6B562384A56D00FDBC8B /* DeviceLinksVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLinksVC.swift; sourceTree = "<group>"; };
 		B80C6B582384C4E700FDBC8B /* DeviceNameModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceNameModal.swift; sourceTree = "<group>"; };
 		B80C6B5A2384C7F900FDBC8B /* DeviceNameModalDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceNameModalDelegate.swift; sourceTree = "<group>"; };
-		B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiRSSFeedPoller.swift; sourceTree = "<group>"; };
 		B82B40872399EB0E00A248E7 /* LandingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		B82B40892399EC0600A248E7 /* FakeChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatView.swift; sourceTree = "<group>"; };
 		B82B408B239A068800A248E7 /* RegisterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterVC.swift; sourceTree = "<group>"; };
@@ -1410,6 +1408,7 @@
 		C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Blocks-IPv4.csv"; sourceTree = "<group>"; };
 		C35E8AAD2485E51D00ACB629 /* IP2Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP2Country.swift; sourceTree = "<group>"; };
 		C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK002RemoveFriendRequests.swift; sourceTree = "<group>"; };
+		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupSuggestionSheet.swift; sourceTree = "<group>"; };
@@ -2607,6 +2606,7 @@
 			isa = PBXGroup;
 			children = (
 				B6F509951AA53F760068F56A /* Localizable.strings */,
+				C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */,
 			);
 			name = Translations;
 			sourceTree = "<group>";
@@ -2616,7 +2616,6 @@
 			children = (
 				B8CCF63B239757C10091D419 /* Components */,
 				C32B405424A961E1001117B5 /* Dependencies */,
-				B8BFFF392355426100102A27 /* Shelved */,
 				B8CCF63C239757DB0091D419 /* Utilities */,
 				B8CCF63D2397580E0091D419 /* View Controllers */,
 			);
@@ -2662,14 +2661,6 @@
 				B8CCF6342396005F0091D419 /* SpaceMono-Regular.ttf */,
 			);
 			path = Loki;
-			sourceTree = "<group>";
-		};
-		B8BFFF392355426100102A27 /* Shelved */ = {
-			isa = PBXGroup;
-			children = (
-				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
-			);
-			path = Shelved;
 			sourceTree = "<group>";
 		};
 		B8C9689223FA1B05005F64E0 /* Redesign */ = {
@@ -3895,7 +3886,6 @@
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
-				B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */,
 				C353F8F7244808E90011121A /* PNModeSheet.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,

@@ -29,7 +29,7 @@ final class SessionRestorationView : UIView {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = NSLocalizedString("Session Out of Sync", comment: "")
+        titleLabel.text = "Session Out of Sync"
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -37,7 +37,7 @@ final class SessionRestorationView : UIView {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Would you like to restore your session? This can help resolve issues. Your messages will be preserved.", comment: "")
+        explanationLabel.text = "Would you like to restore your session? This can help resolve issues. Your messages will be preserved."
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -48,7 +48,7 @@ final class SessionRestorationView : UIView {
         restoreButton.backgroundColor = Colors.accent
         restoreButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         restoreButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        restoreButton.setTitle(NSLocalizedString("Restore", comment: ""), for: UIControl.State.normal)
+        restoreButton.setTitle(NSLocalizedString("session_reset_banner_restore_button_title", comment: ""), for: UIControl.State.normal)
         restoreButton.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         // Set up dismiss button
         let dismissButton = UIButton()
@@ -57,7 +57,7 @@ final class SessionRestorationView : UIView {
         dismissButton.backgroundColor = Colors.buttonBackground
         dismissButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         dismissButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        dismissButton.setTitle(NSLocalizedString("Dismiss", comment: ""), for: UIControl.State.normal)
+        dismissButton.setTitle(NSLocalizedString("session_reset_banner_dismiss_button_title", comment: ""), for: UIControl.State.normal)
         dismissButton.addTarget(self, action: #selector(dismiss), for: UIControl.Event.touchUpInside)
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ dismissButton, restoreButton ])
@@ -73,7 +73,7 @@ final class SessionRestorationView : UIView {
         // Update explanation label if possible
         if let contactID = thread.contactIdentifier() {
             let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
-            explanationLabel.text = String(format: NSLocalizedString("Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved.", comment: ""), displayName)
+            explanationLabel.text = String(format: "Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved.", displayName)
         }
     }
     

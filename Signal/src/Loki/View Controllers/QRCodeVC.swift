@@ -8,11 +8,11 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("View My QR Code", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_qr_code_view_my_qr_code_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
-            TabBar.Tab(title: NSLocalizedString("Scan QR Code", comment: "")) { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_qr_code_view_scan_qr_code_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
@@ -33,7 +33,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("Scan someone's QR code to start a conversation with them", comment: "")
+        let message = NSLocalizedString("vc_qr_code_view_scan_qr_code_explanation", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -44,7 +44,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("QR Code", comment: ""))
+        setNavBarTitle(NSLocalizedString("vc_qr_code_title", comment: ""))
         let navigationBar = navigationController!.navigationBar
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
@@ -122,7 +122,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please check the Session ID and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: NSLocalizedString("Please check the Session ID and try again.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {
@@ -153,10 +153,11 @@ private final class ViewMyQRCodeVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? CGFloat(40) : Values.massiveFontSize)
-        titleLabel.text = NSLocalizedString("Scan Me", comment: "")
-        titleLabel.numberOfLines = 0
+        titleLabel.text = "Scan Me"
+        titleLabel.numberOfLines = 1
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.set(.height, to: isIPhone5OrSmaller ? CGFloat(40) : Values.massiveFontSize)
         // Set up QR code image view
         let qrCodeImageView = UIImageView()
         let qrCode = QRCode.generate(for: userHexEncodedPublicKey, hasBackground: true)
@@ -178,13 +179,13 @@ private final class ViewMyQRCodeVC : UIViewController {
 //        let attributedText = NSMutableAttributedString(string: text)
 //        attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: (text as NSString).range(of: "your unique public QR code"))
 //        explanationLabel.attributedText = attributedText
-        explanationLabel.text = NSLocalizedString("This is your QR code. Other users can scan it to start a session with you.", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_view_my_qr_code_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up share button
         let shareButton = Button(style: .regular, size: .large)
-        shareButton.setTitle(NSLocalizedString("Share", comment: ""), for: UIControl.State.normal)
+        shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
         shareButton.addTarget(self, action: #selector(shareQRCode), for: UIControl.Event.touchUpInside)
         // Set up share button container
         let shareButtonContainer = UIView()
@@ -192,13 +193,14 @@ private final class ViewMyQRCodeVC : UIViewController {
         shareButton.pin(.leading, to: .leading, of: shareButtonContainer, withInset: 80)
         shareButton.pin(.top, to: .top, of: shareButtonContainer)
         shareButtonContainer.pin(.trailing, to: .trailing, of: shareButton, withInset: 80)
-        shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton)
+        shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton, withInset: isIPhone6OrSmaller ? Values.largeSpacing : Values.onboardingButtonBottomOffset)
+        let spacing = isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, qrCodeImageViewContainer, explanationLabel, shareButtonContainer, UIView.vStretchingSpacer() ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: spacing), qrCodeImageViewContainer, UIView.spacer(withHeight: spacing),
+            explanationLabel, UIView.spacer(withHeight: spacing), shareButtonContainer ])
         stackView.axis = .vertical
-        stackView.spacing = isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view)
@@ -232,7 +234,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Session needs camera access to scan QR codes", comment: "")
+        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -240,7 +242,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         let callToActionButton = UIButton()
         callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("Enable Camera Access", comment: ""), for: UIControl.State.normal)
+        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
         callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])

@@ -19,10 +19,17 @@ public enum OnionRequestAPI {
 
     private static var guardSnodeCount: UInt { return pathCount } // One per path
 
+    // MARK: Destination
+    internal enum Destination {
+        case snode(Snode)
+        case server(host: String, x25519PublicKey: String)
+    }
+
     // MARK: Error
     internal enum Error : LocalizedError {
         case httpRequestFailedAtTargetSnode(statusCode: UInt, json: JSON)
         case insufficientSnodes
+        case invalidURL
         case missingSnodeVersion
         case randomDataGenerationFailed
         case snodePublicKeySetMissing
@@ -32,6 +39,7 @@ public enum OnionRequestAPI {
             switch self {
             case .httpRequestFailedAtTargetSnode(let statusCode): return "HTTP request failed at target snode with status code: \(statusCode)."
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
+            case .invalidURL: return "Invalid URL"
             case .missingSnodeVersion: return "Missing snode version."
             case .randomDataGenerationFailed: return "Couldn't generate random data."
             case .snodePublicKeySetMissing: return "Missing snode public key set."
@@ -44,7 +52,7 @@ public enum OnionRequestAPI {
     public typealias Path = [Snode]
 
     // MARK: Onion Building Result
-    private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
+    private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: EncryptionResult, destinationSymmetricKey: Data)
 
     // MARK: Private API
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
@@ -138,7 +146,7 @@ public enum OnionRequestAPI {
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
     ///
     /// - Note: Exposed for testing purposes.
-    internal static func getPath(excluding snode: Snode) -> Promise<Path> {
+    private static func getPath(excluding snode: Snode?) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         if paths.count < pathCount {
             let storage = OWSPrimaryStorage.shared()
@@ -152,11 +160,19 @@ public enum OnionRequestAPI {
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { seal in
-                seal.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!)
+                if let snode = snode {
+                    seal.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!)
+                } else {
+                    seal.fulfill(paths.randomElement()!)
+                }
             }
         } else {
             return buildPaths().map2 { paths in
-                return paths.filter { !$0.contains(snode) }.randomElement()!
+                if let snode = snode {
+                    return paths.filter { !$0.contains(snode) }.randomElement()!
+                } else {
+                    return paths.randomElement()!
+                }
             }
         }
     }
@@ -173,24 +189,26 @@ public enum OnionRequestAPI {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: JSON, targetedAt snode: Snode) -> Promise<OnionBuildingResult> {
+    private static func buildOnion(around payload: JSON, targetedAt destination: Destination) -> Promise<OnionBuildingResult> {
         var guardSnode: Snode!
-        var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the target snode
+        var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: EncryptionResult!
-        return getPath(excluding: snode).then2 { path -> Promise<EncryptionResult> in
+        var snodeToExclude: Snode?
+        if case .snode(let snode) = destination { snodeToExclude = snode }
+        return getPath(excluding: snodeToExclude).then2 { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
-            // Encrypt in reverse order, i.e. the target snode first
-            return encrypt(payload, forTargetSnode: snode).then2 { r -> Promise<EncryptionResult> in
+            // Encrypt in reverse order, i.e. the destination first
+            return encrypt(payload, for: destination).then2 { r -> Promise<EncryptionResult> in
                 targetSnodeSymmetricKey = r.symmetricKey
                 // Recursively encrypt the layers of the onion (again in reverse order)
                 encryptionResult = r
                 var path = path
-                var rhs = snode
+                var rhs = destination
                 func addLayer() -> Promise<EncryptionResult> {
                     if path.isEmpty {
                         return Promise<EncryptionResult> { $0.fulfill(encryptionResult) }
                     } else {
-                        let lhs = path.removeLast()
+                        let lhs = Destination.snode(path.removeLast())
                         return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then2 { r -> Promise<EncryptionResult> in
                             encryptionResult = r
                             rhs = lhs
@@ -205,12 +223,69 @@ public enum OnionRequestAPI {
 
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func sendOnionRequest(invoking method: Snode.Method, on snode: Snode, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
+    internal static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
+        let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
+        return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
+            guard case OnionRequestAPI.Error.httpRequestFailedAtTargetSnode(let statusCode, let json) = error else { throw error }
+            throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
+        }
+    }
+    
+    /// Sends an onion request to `server`. Builds new paths as needed.
+    internal static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
+        let rawHeaders = request.allHTTPHeaderFields ?? [:]
+        var headers: JSON = rawHeaders.mapValues { value in
+            switch value.lowercased() {
+            case "true": return true
+            case "false": return false
+            default: return value
+            }
+        }
+        guard let url = request.url?.absoluteString, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
+        var endpoint = ""
+        if server.count < url.count {
+            guard let serverEndIndex = url.range(of: server)?.upperBound else { return Promise(error: Error.invalidURL) }
+            let endpointStartIndex = url.index(after: serverEndIndex)
+            endpoint = String(url[endpointStartIndex..<url.endIndex])
+        }
+        let parametersAsString: String
+        if let tsRequest = request as? TSRequest {
+            headers["Content-Type"] = "application/json"
+            let tsRequestParameters = tsRequest.parameters
+            if !tsRequestParameters.isEmpty {
+                guard let parameters = try? JSONSerialization.data(withJSONObject: tsRequestParameters, options: [ .fragmentsAllowed ]) else {
+                    return Promise(error: HTTP.Error.invalidJSON)
+                }
+                parametersAsString = String(bytes: parameters, encoding: .utf8) ?? "null"
+            } else {
+                parametersAsString = "null"
+            }
+        } else {
+            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
+            if let parametersAsInputStream = request.httpBodyStream, let parameters = try? Data(from: parametersAsInputStream) {
+                parametersAsString = "{ \"fileUpload\" : \"\(String(data: parameters.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
+            } else {
+                parametersAsString = "null"
+            }
+        }
+        let payload: JSON = [
+            "body" : parametersAsString,
+            "endpoint": endpoint,
+            "method" : request.httpMethod,
+            "headers" : headers
+        ]
+        let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
+        return sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired).recover2 { error -> Promise<JSON> in
+            print("[Loki] [Onion Request API] Couldn't reach server: \(server) due to error: \(error).")
+            throw error
+        }
+    }
+    
+    internal static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode!
         DispatchQueue.global(qos: .userInitiated).async {
-            let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
-            buildOnion(around: payload, targetedAt: snode).done2 { intermediate in
+            buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
@@ -219,7 +294,7 @@ public enum OnionRequestAPI {
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
                 ]
-                let targetSnodeSymmetricKey = intermediate.targetSnodeSymmetricKey
+                let destinationSymmetricKey = intermediate.destinationSymmetricKey
                 HTTP.execute(.post, url, parameters: parameters).done2 { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(HTTP.Error.invalidJSON) }
@@ -227,18 +302,27 @@ public enum OnionRequestAPI {
                     let ciphertext = ivAndCiphertext[Int(ivSize)...]
                     do {
                         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
-                        let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
+                        let aes = try AES(key: destinationSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
                         let data = Data(try aes.decrypt(ciphertext.bytes))
                         guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
-                            let bodyAsString = json["body"] as? String, let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
+                            let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
                         if statusCode == 406 { // Clock out of sync
                             print("[Loki] The user's clock is out of sync with the service node network.")
                             seal.reject(SnodeAPI.SnodeAPIError.clockOutOfSync)
-                        } else {
-                            guard let bodyAsData = bodyAsString.data(using: .utf8),
-                                let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
+                        } else if let bodyAsString = json["body"] as? String {
+                            let body: JSON
+                            if !isJSONRequired {
+                                body = [ "result" : bodyAsString ]
+                            } else {
+                                guard let bodyAsData = bodyAsString.data(using: .utf8),
+                                let b = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
+                                body = b
+                            }
                             guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
                             seal.fulfill(body)
+                        } else {
+                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: json)) }
+                            seal.fulfill(json)
                         }
                     } catch (let error) {
                         seal.reject(error)
@@ -254,10 +338,6 @@ public enum OnionRequestAPI {
             guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
             dropAllPaths() // A snode in the path is bad; retry with a different path
             dropGuardSnode(guardSnode)
-        }
-        promise.recover2 { error -> Promise<JSON> in
-            guard case OnionRequestAPI.Error.httpRequestFailedAtTargetSnode(let statusCode, let json) = error else { throw error }
-            throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
         }
         return promise
     }

@@ -30,7 +30,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     }()
     
     // MARK: Components
-    private lazy var nameTextField = TextField(placeholder: NSLocalizedString("Enter a group name", comment: ""))
+    private lazy var nameTextField = TextField(placeholder: NSLocalizedString("vc_create_closed_group_text_field_hint", comment: ""))
     
     private lazy var tableView: UITableView = {
         let result = UITableView()
@@ -49,7 +49,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         setUpGradientBackground()
         setUpNavBarStyle()
         let customTitleFontSize = Values.largeFontSize
-        setNavBarTitle(NSLocalizedString("New Closed Group", comment: ""), customFontSize: customTitleFontSize)
+        setNavBarTitle(NSLocalizedString("vc_create_closed_group_title", comment: ""), customFontSize: customTitleFontSize)
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
@@ -89,11 +89,11 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             explanationLabel.numberOfLines = 0
             explanationLabel.lineBreakMode = .byWordWrapping
             explanationLabel.textAlignment = .center
-            explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
+            explanationLabel.text = NSLocalizedString("vc_create_closed_group_empty_state_message", comment: "")
             let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
-            createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
+            createNewPrivateChatButton.setTitle(NSLocalizedString("vc_create_closed_group_empty_state_button_title", comment: ""), for: UIControl.State.normal)
             createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
-            createNewPrivateChatButton.set(.width, to: 180)
+            createNewPrivateChatButton.set(.width, to: 196)
             let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
             stackView.axis = .vertical
             stackView.spacing = Values.mediumSpacing
@@ -120,7 +120,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     
     // MARK: Interaction
     func textFieldDidEndEditing(_ textField: UITextField) {
-        crossfadeLabel.text = textField.text!.isEmpty ? NSLocalizedString("New Closed Group", comment: "") : textField.text!
+        crossfadeLabel.text = textField.text!.isEmpty ? NSLocalizedString("vc_create_closed_group_title", comment: "") : textField.text!
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -166,16 +166,16 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             presentAlert(alert)
         }
         guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
-            return showError(title: NSLocalizedString("Please enter a group name", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
         }
         guard name.count < 64 else {
-            return showError(title: NSLocalizedString("Please enter a shorter group name", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
         guard selectedContacts.count >= 2 else {
-            return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_not_enough_group_members_error", comment: ""))
         }
         guard selectedContacts.count < 50 else { // Minus one because we're going to include self later
-            return showError(title: NSLocalizedString("A closed group cannot have more than 50 members", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
         }
         let selectedContacts = self.selectedContacts
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
@@ -189,9 +189,9 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
                 SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
             }.catch(on: DispatchQueue.main) { _ in
-                self?.dismiss(animated: true, completion: nil) // Dismiss the modal
-                let title = NSLocalizedString("Couldn't Create Group", comment: "")
-                let message = NSLocalizedString("Please check your internet connection and try again.", comment: "")
+                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                let title = "Couldn't Create Group"
+                let message = "Please check your internet connection and try again."
                 let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
                 self?.presentAlert(alert)
@@ -206,16 +206,16 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             presentAlert(alert)
         }
         guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
-            return showError(title: NSLocalizedString("Please enter a group name", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
         }
         guard name.count < 64 else {
-            return showError(title: NSLocalizedString("Please enter a shorter group name", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
         guard selectedContacts.count >= 2 else {
-            return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_not_enough_group_members_error", comment: ""))
         }
         guard selectedContacts.count < 10 else { // Minus one because we're going to include self later
-            return showError(title: NSLocalizedString("A closed group cannot have more than 10 members", comment: ""))
+            return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
         }
         let userPublicKey = getUserHexEncodedPublicKey()
         let storage = OWSPrimaryStorage.shared()

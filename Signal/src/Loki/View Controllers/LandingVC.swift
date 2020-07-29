@@ -11,7 +11,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     
     private lazy var registerButton: Button = {
         let result = Button(style: .prominentFilled, size: .large)
-        result.setTitle(NSLocalizedString("Create Session ID", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("vc_landing_register_button_title", comment: ""), for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         return result
@@ -19,7 +19,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     
     private lazy var restoreButton: Button = {
         let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("Continue your Session", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("vc_landing_restore_button_title", comment: ""), for: UIControl.State.normal)
         result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         return result
@@ -27,7 +27,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     
     private lazy var linkButton: Button = {
         let result = Button(style: .regularBorderless, size: .small)
-        result.setTitle(NSLocalizedString("Link to an existing account", comment: ""), for: UIControl.State.normal)
+        result.setTitle(NSLocalizedString("vc_landing_link_button_title", comment: ""), for: UIControl.State.normal)
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.addTarget(self, action: #selector(linkDevice), for: UIControl.Event.touchUpInside)
         return result
@@ -43,7 +43,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Your Session begins here...", comment: "")
+        titleLabel.text = NSLocalizedString("vc_landing_title_2", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up title label container
@@ -72,9 +72,9 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         // Set up button stack view container
         let buttonStackViewContainer = UIView()
         buttonStackViewContainer.addSubview(buttonStackView)
-        buttonStackView.pin(.leading, to: .leading, of: buttonStackViewContainer, withInset: Values.massiveSpacing)
+        buttonStackView.pin(.leading, to: .leading, of: buttonStackViewContainer, withInset: isIPhone5OrSmaller ? CGFloat(52) : Values.massiveSpacing)
         buttonStackView.pin(.top, to: .top, of: buttonStackViewContainer)
-        buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
+        buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: isIPhone5OrSmaller ? CGFloat(52) : Values.massiveSpacing)
         buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
         // Set up main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabelContainer, UIView.spacer(withHeight: isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing), fakeChatView, bottomSpacer, buttonStackViewContainer, linkButtonContainer ])
@@ -85,7 +85,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
         // Show device unlinked alert if needed
         if UserDefaults.standard[.wasUnlinked] {
-            let alert = UIAlertController(title: NSLocalizedString("Device Unlinked", comment: ""), message: NSLocalizedString("Your device was unlinked successfully", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: "Device Unlinked", message: NSLocalizedString("vc_landing_device_unlinked_dialog_title", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
             UserDefaults.removeAll()
@@ -128,7 +128,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     // MARK: Device Linking
     func requestDeviceLink(with hexEncodedPublicKey: String) {
         guard ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) else {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please make sure the Session ID you entered is correct and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: "Please make sure the Session ID you entered is correct and try again.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             return present(alert, animated: true, completion: nil)
         }

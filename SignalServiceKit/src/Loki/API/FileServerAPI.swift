@@ -4,8 +4,10 @@ import PromiseKit
 public final class FileServerAPI : DotNetAPI {
 
     // MARK: Settings
-    private static let deviceLinkType = "network.loki.messenger.devicemapping"
     private static let attachmentType = "net.app.core.oembed"
+    private static let deviceLinkType = "network.loki.messenger.devicemapping"
+    
+    internal static let fileServerPublicKey = "62509D59BDEEC404DD0D489C1E15BA8F94FD3D619B01C1BF48A9922BFCB7311C"
 
     public static let maxFileSize = 10_000_000 // 10 MB
 
@@ -46,8 +48,8 @@ public final class FileServerAPI : DotNetAPI {
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { rawResponse -> Set<DeviceLink> in
-                guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
+            return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { rawResponse -> Set<DeviceLink> in
+                guard let data = rawResponse["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw DotNetAPIError.parsingFailed
                 }
@@ -60,7 +62,7 @@ public final class FileServerAPI : DotNetAPI {
                         return []
                     }
                     return rawDeviceLinks.compactMap { rawDeviceLink in
-                        guard let masterHexEncodedPublicKey = rawDeviceLink["primaryDevicePubKey"] as? String, let slaveHexEncodedPublicKey = rawDeviceLink["secondaryDevicePubKey"] as? String,
+                        guard let masterPublicKey = rawDeviceLink["primaryDevicePubKey"] as? String, let slavePublicKey = rawDeviceLink["secondaryDevicePubKey"] as? String,
                             let base64EncodedSlaveSignature = rawDeviceLink["requestSignature"] as? String else {
                             print("[Loki] Couldn't parse device link for user: \(hexEncodedPublicKey) from: \(rawResponse).")
                             return nil
@@ -72,8 +74,8 @@ public final class FileServerAPI : DotNetAPI {
                             masterSignature = nil
                         }
                         let slaveSignature = Data(base64Encoded: base64EncodedSlaveSignature)
-                        let master = DeviceLink.Device(publicKey: masterHexEncodedPublicKey, signature: masterSignature)
-                        let slave = DeviceLink.Device(publicKey: slaveHexEncodedPublicKey, signature: slaveSignature)
+                        let master = DeviceLink.Device(publicKey: masterPublicKey, signature: masterSignature)
+                        let slave = DeviceLink.Device(publicKey: slavePublicKey, signature: slaveSignature)
                         let deviceLink = DeviceLink(between: master, and: slave)
                         if let masterSignature = masterSignature {
                             guard DeviceLinkingUtilities.hasValidMasterSignature(deviceLink) else {
@@ -108,9 +110,9 @@ public final class FileServerAPI : DotNetAPI {
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             return attempt(maxRetryCount: 8, recoveringOn: SnodeAPI.workQueue) {
-                LokiFileServerProxy(for: server).perform(request).map2 { _ in }
+                OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { _ in }
             }.handlingInvalidAuthTokenIfNeeded(for: server).recover2 { error in
-                print("Couldn't update device links due to error: \(error).")
+                print("[Loki] Couldn't update device links due to error: \(error).")
                 throw error
             }
         }
@@ -164,13 +166,32 @@ public final class FileServerAPI : DotNetAPI {
             print("[Loki] Couldn't upload profile picture due to error: \(error).")
             return Promise(error: error)
         }
-        return LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).map2 { responseObject in
-            guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
-                print("[Loki] Couldn't parse profile picture from: \(responseObject).")
+        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { json in
+            guard let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
+                print("[Loki] Couldn't parse profile picture from: \(json).")
                 throw DotNetAPIError.parsingFailed
             }
             UserDefaults.standard[.lastProfilePictureUpload] = Date()
             return downloadURL
+        }
+    }
+    
+    // MARK: Open Group Server Public Key
+    public static func getPublicKey(for openGroupServer: String) -> Promise<String> {
+        let url = URL(string: "\(server)/loki/v1/getOpenGroupKey/\(URL(string: openGroupServer)!.host!)")!
+        let request = TSRequest(url: url)
+        let token = "loki" // Tokenless request; use a dummy token
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { json in
+            guard let bodyAsString = json["data"] as? String, let bodyAsData = bodyAsString.data(using: .utf8),
+                let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { throw HTTP.Error.invalidJSON }
+            guard let base64EncodedPublicKey = body["data"] as? String else {
+                print("[Loki] Couldn't parse open group public key from: \(body).")
+                throw DotNetAPIError.parsingFailed
+            }
+            let prefixedPublicKey = Data(base64Encoded: base64EncodedPublicKey)!
+            let hexEncodedPrefixedPublicKey = prefixedPublicKey.toHexString()
+            return hexEncodedPrefixedPublicKey.removing05PrefixIfNeeded()
         }
     }
 }

@@ -7,7 +7,7 @@ final class DisplayNameVC : BaseVC {
     
     // MARK: Components
     private lazy var displayNameTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("Enter a display name", comment: ""))
+        let result = TextField(placeholder: NSLocalizedString("vc_display_name_text_field_hint", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
         return result
     }()
@@ -22,14 +22,14 @@ final class DisplayNameVC : BaseVC {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("Pick your display name", comment: "")
+        titleLabel.text = NSLocalizedString("vc_display_name_title_2", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "This will be your name when you use Session. It can be your real name, an alias, or anything else you like."
+        explanationLabel.text = NSLocalizedString("vc_display_name_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers
@@ -43,7 +43,7 @@ final class DisplayNameVC : BaseVC {
         registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("Continue", comment: ""), for: UIControl.State.normal)
+        registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
         registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         // Set up register button container
@@ -128,15 +128,15 @@ final class DisplayNameVC : BaseVC {
         }
         let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard !displayName.isEmpty else {
-            return showError(title: NSLocalizedString("Please pick a display name", comment: ""))
+            return showError(title: NSLocalizedString("vc_display_name_display_name_missing_error", comment: ""))
         }
         let allowedCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ ")
         let hasInvalidCharacters = !displayName.allSatisfy { $0.unicodeScalars.allSatisfy { allowedCharacters.contains($0) } }
         guard !hasInvalidCharacters else {
-            return showError(title: NSLocalizedString("Please pick a display name that consists of only a-z, A-Z, 0-9 and _ characters", comment: ""))
+            return showError(title: NSLocalizedString("vc_display_name_display_name_invalid_error", comment: ""))
         }
         guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
-            return showError(title: NSLocalizedString("Please pick a shorter display name", comment: ""))
+            return showError(title: NSLocalizedString("vc_display_name_display_name_too_long_error", comment: ""))
         }
         OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { _ in }, requiresSync: false) // Try to save the user name but ignore the result
         let pnModeVC = PNModeVC()

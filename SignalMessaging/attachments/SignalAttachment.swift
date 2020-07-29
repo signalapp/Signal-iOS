@@ -551,7 +551,7 @@ public class SignalAttachment: NSObject {
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
                 // Pasted images _SHOULD _NOT_ be resized, if possible.
-                return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
+                return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
             }
         }
         for dataUTI in videoUTISet {
