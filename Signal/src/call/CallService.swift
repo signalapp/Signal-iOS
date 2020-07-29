@@ -378,7 +378,7 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Received an incoming call Offer from call initiator.
      */
-    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String, sentAtTimestamp: UInt64, callType: SSKProtoCallMessageOfferType, supportsMultiRing: Bool) {
+    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String?, opaque: Data?, sentAtTimestamp: UInt64, callType: SSKProtoCallMessageOfferType, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
@@ -492,7 +492,7 @@ extension SignalCall: CallManagerCallReference { }
         let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: callMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: callMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }
@@ -513,12 +513,12 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Called by the call initiator after receiving an Answer from the callee.
      */
-    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String, supportsMultiRing: Bool) {
+    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String?, opaque: Data?, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
         do {
-             try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing)
+            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing)
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = currentCall, currentCall.callId == callId {
@@ -535,7 +535,7 @@ extension SignalCall: CallManagerCallReference { }
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
         let iceCandidates = candidates.filter { $0.id == callId }.map { candidate in
-            CallManagerIceCandidate(sdp: candidate.sdp, sdpMLineIndex: Int32(candidate.sdpMlineIndex), sdpMid: candidate.sdpMid)
+            CallManagerIceCandidate(opaque: candidate.opaque, sdp: candidate.sdp)
         }
 
         do {
@@ -622,12 +622,6 @@ extension SignalCall: CallManagerCallReference { }
                 return
             }
 
-            Logger.debug("got ice servers: \(iceServers)")
-
-            let deviceList: [UInt32] = try self.getDeviceIds(call: call)
-
-            Logger.debug("got device list: \(deviceList)")
-
             var isUnknownCaller = false
             if call.direction == .incoming {
                 isUnknownCaller = !self.contactsManager.hasSignalAccount(for: call.thread.contactAddress)
@@ -636,7 +630,7 @@ extension SignalCall: CallManagerCallReference { }
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
             // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, remoteDeviceList: deviceList, enableForking: true)
+            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly)
         }.catch { error in
             owsFailDebug("\(error)")
             guard call === self.currentCall else {
@@ -934,12 +928,14 @@ extension SignalCall: CallManagerCallReference { }
 
     // MARK: - Call Manager Signaling
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendOffer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, sdp: String, callMediaType: CallMediaType) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendOffer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data?, sdp: String?, callMediaType: CallMediaType) {
         AssertIsOnMainThread()
         Logger.info("shouldSendOffer")
 
         firstly { () throws -> Promise<Void> in
-            let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId, sdp: sdp)
+            let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId)
+            if let opaque = opaque { offerBuilder.setOpaque(opaque) }
+            if let sdp = sdp { offerBuilder.setSdp(sdp) }
             switch callMediaType {
             case .audioCall: offerBuilder.setType(.offerAudioCall)
             case .videoCall: offerBuilder.setType(.offerVideoCall)
@@ -955,12 +951,14 @@ extension SignalCall: CallManagerCallReference { }
         }
     }
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, sdp: String) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data?, sdp: String?) {
         AssertIsOnMainThread()
         Logger.info("shouldSendAnswer")
 
         firstly { () throws -> Promise<Void> in
-            let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId, sdp: sdp)
+            let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
+            if let opaque = opaque { answerBuilder.setOpaque(opaque) }
+            if let sdp = sdp { answerBuilder.setSdp(sdp) }
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, answerMessage: try answerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {
@@ -981,10 +979,14 @@ extension SignalCall: CallManagerCallReference { }
 
             for iceCandidate in candidates {
                 let iceUpdateProto: SSKProtoCallMessageIceUpdate
-                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.builder(id: callId,
-                                                                            sdpMid: iceCandidate.sdpMid,
-                                                                            sdpMlineIndex: UInt32(iceCandidate.sdpMLineIndex),
-                                                                            sdp: iceCandidate.sdp)
+                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.builder(id: callId)
+                if let opaque = iceCandidate.opaque { iceUpdateBuilder.setOpaque(opaque) }
+                if let sdp = iceCandidate.sdp { iceUpdateBuilder.setSdp(sdp) }
+
+                // Hardcode fields for older clients; remove after appropriate time period.
+                iceUpdateBuilder.setLine(0)
+                iceUpdateBuilder.setMid("audio")
+
                 iceUpdateProto = try iceUpdateBuilder.build()
                 iceUpdateProtos.append(iceUpdateProto)
             }
@@ -1333,23 +1335,6 @@ extension SignalCall: CallManagerCallReference { }
             Logger.warn("using fallback ICE Servers")
 
             return Guarantee.value([CallService.fallbackIceServer])
-        }
-    }
-
-    private func getDeviceIds(call: SignalCall) throws -> [UInt32] {
-        return try databaseStorage.read { transaction -> [UInt32] in
-            guard let recipient = AnySignalRecipientFinder().signalRecipient(for: call.thread.contactAddress, transaction: transaction) else {
-                throw OWSAssertionError("no recipient for contact")
-            }
-
-            return recipient.devices.compactMap { val in
-                guard let deviceId = val as? UInt32 else {
-                    owsFailDebug("unexpected deviceId: \(val)")
-                    return nil
-                }
-
-                return deviceId
-            }
         }
     }
 

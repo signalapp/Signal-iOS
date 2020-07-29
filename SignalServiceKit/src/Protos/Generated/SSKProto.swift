@@ -877,16 +877,22 @@ public class SSKProtoCallMessageOffer: NSObject {
     // MARK: - SSKProtoCallMessageOfferBuilder
 
     @objc
-    public class func builder(id: UInt64, sdp: String) -> SSKProtoCallMessageOfferBuilder {
-        return SSKProtoCallMessageOfferBuilder(id: id, sdp: sdp)
+    public class func builder(id: UInt64) -> SSKProtoCallMessageOfferBuilder {
+        return SSKProtoCallMessageOfferBuilder(id: id)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoCallMessageOfferBuilder {
-        let builder = SSKProtoCallMessageOfferBuilder(id: id, sdp: sdp)
+        let builder = SSKProtoCallMessageOfferBuilder(id: id)
+        if let _value = sdp {
+            builder.setSdp(_value)
+        }
         if let _value = type {
             builder.setType(_value)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
         }
         return builder
     }
@@ -900,11 +906,10 @@ public class SSKProtoCallMessageOffer: NSObject {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(id: UInt64, sdp: String) {
+        fileprivate init(id: UInt64) {
             super.init()
 
             setId(id)
-            setSdp(sdp)
         }
 
         @objc
@@ -929,6 +934,17 @@ public class SSKProtoCallMessageOffer: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setOpaque(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.opaque = valueParam
+        }
+
+        public func setOpaque(_ valueParam: Data) {
+            proto.opaque = valueParam
+        }
+
+        @objc
         public func build() throws -> SSKProtoCallMessageOffer {
             return try SSKProtoCallMessageOffer.parseProto(proto)
         }
@@ -945,7 +961,16 @@ public class SSKProtoCallMessageOffer: NSObject {
     public let id: UInt64
 
     @objc
-    public let sdp: String
+    public var sdp: String? {
+        guard hasSdp else {
+            return nil
+        }
+        return proto.sdp
+    }
+    @objc
+    public var hasSdp: Bool {
+        return proto.hasSdp
+    }
 
     public var type: SSKProtoCallMessageOfferType? {
         guard hasType else {
@@ -967,12 +992,22 @@ public class SSKProtoCallMessageOffer: NSObject {
         return proto.hasType
     }
 
+    @objc
+    public var opaque: Data? {
+        guard hasOpaque else {
+            return nil
+        }
+        return proto.opaque
+    }
+    @objc
+    public var hasOpaque: Bool {
+        return proto.hasOpaque
+    }
+
     private init(proto: SignalServiceProtos_CallMessage.Offer,
-                 id: UInt64,
-                 sdp: String) {
+                 id: UInt64) {
         self.proto = proto
         self.id = id
-        self.sdp = sdp
     }
 
     @objc
@@ -992,18 +1027,12 @@ public class SSKProtoCallMessageOffer: NSObject {
         }
         let id = proto.id
 
-        guard proto.hasSdp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
-        }
-        let sdp = proto.sdp
-
         // MARK: - Begin Validation Logic for SSKProtoCallMessageOffer -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageOffer -
 
         let result = SSKProtoCallMessageOffer(proto: proto,
-                                              id: id,
-                                              sdp: sdp)
+                                              id: id)
         return result
     }
 
@@ -1039,14 +1068,20 @@ public class SSKProtoCallMessageAnswer: NSObject {
     // MARK: - SSKProtoCallMessageAnswerBuilder
 
     @objc
-    public class func builder(id: UInt64, sdp: String) -> SSKProtoCallMessageAnswerBuilder {
-        return SSKProtoCallMessageAnswerBuilder(id: id, sdp: sdp)
+    public class func builder(id: UInt64) -> SSKProtoCallMessageAnswerBuilder {
+        return SSKProtoCallMessageAnswerBuilder(id: id)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoCallMessageAnswerBuilder {
-        let builder = SSKProtoCallMessageAnswerBuilder(id: id, sdp: sdp)
+        let builder = SSKProtoCallMessageAnswerBuilder(id: id)
+        if let _value = sdp {
+            builder.setSdp(_value)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
+        }
         return builder
     }
 
@@ -1059,11 +1094,10 @@ public class SSKProtoCallMessageAnswer: NSObject {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(id: UInt64, sdp: String) {
+        fileprivate init(id: UInt64) {
             super.init()
 
             setId(id)
-            setSdp(sdp)
         }
 
         @objc
@@ -1083,6 +1117,17 @@ public class SSKProtoCallMessageAnswer: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setOpaque(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.opaque = valueParam
+        }
+
+        public func setOpaque(_ valueParam: Data) {
+            proto.opaque = valueParam
+        }
+
+        @objc
         public func build() throws -> SSKProtoCallMessageAnswer {
             return try SSKProtoCallMessageAnswer.parseProto(proto)
         }
@@ -1099,14 +1144,33 @@ public class SSKProtoCallMessageAnswer: NSObject {
     public let id: UInt64
 
     @objc
-    public let sdp: String
+    public var sdp: String? {
+        guard hasSdp else {
+            return nil
+        }
+        return proto.sdp
+    }
+    @objc
+    public var hasSdp: Bool {
+        return proto.hasSdp
+    }
+
+    @objc
+    public var opaque: Data? {
+        guard hasOpaque else {
+            return nil
+        }
+        return proto.opaque
+    }
+    @objc
+    public var hasOpaque: Bool {
+        return proto.hasOpaque
+    }
 
     private init(proto: SignalServiceProtos_CallMessage.Answer,
-                 id: UInt64,
-                 sdp: String) {
+                 id: UInt64) {
         self.proto = proto
         self.id = id
-        self.sdp = sdp
     }
 
     @objc
@@ -1126,18 +1190,12 @@ public class SSKProtoCallMessageAnswer: NSObject {
         }
         let id = proto.id
 
-        guard proto.hasSdp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
-        }
-        let sdp = proto.sdp
-
         // MARK: - Begin Validation Logic for SSKProtoCallMessageAnswer -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageAnswer -
 
         let result = SSKProtoCallMessageAnswer(proto: proto,
-                                               id: id,
-                                               sdp: sdp)
+                                               id: id)
         return result
     }
 
@@ -1173,14 +1231,26 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
     // MARK: - SSKProtoCallMessageIceUpdateBuilder
 
     @objc
-    public class func builder(id: UInt64, sdpMid: String, sdpMlineIndex: UInt32, sdp: String) -> SSKProtoCallMessageIceUpdateBuilder {
-        return SSKProtoCallMessageIceUpdateBuilder(id: id, sdpMid: sdpMid, sdpMlineIndex: sdpMlineIndex, sdp: sdp)
+    public class func builder(id: UInt64) -> SSKProtoCallMessageIceUpdateBuilder {
+        return SSKProtoCallMessageIceUpdateBuilder(id: id)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoCallMessageIceUpdateBuilder {
-        let builder = SSKProtoCallMessageIceUpdateBuilder(id: id, sdpMid: sdpMid, sdpMlineIndex: sdpMlineIndex, sdp: sdp)
+        let builder = SSKProtoCallMessageIceUpdateBuilder(id: id)
+        if let _value = mid {
+            builder.setMid(_value)
+        }
+        if hasLine {
+            builder.setLine(line)
+        }
+        if let _value = sdp {
+            builder.setSdp(_value)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
+        }
         return builder
     }
 
@@ -1193,13 +1263,10 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(id: UInt64, sdpMid: String, sdpMlineIndex: UInt32, sdp: String) {
+        fileprivate init(id: UInt64) {
             super.init()
 
             setId(id)
-            setSdpMid(sdpMid)
-            setSdpMlineIndex(sdpMlineIndex)
-            setSdp(sdp)
         }
 
         @objc
@@ -1209,18 +1276,18 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setSdpMid(_ valueParam: String?) {
+        public func setMid(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
-            proto.sdpMid = valueParam
+            proto.mid = valueParam
         }
 
-        public func setSdpMid(_ valueParam: String) {
-            proto.sdpMid = valueParam
+        public func setMid(_ valueParam: String) {
+            proto.mid = valueParam
         }
 
         @objc
-        public func setSdpMlineIndex(_ valueParam: UInt32) {
-            proto.sdpMlineIndex = valueParam
+        public func setLine(_ valueParam: UInt32) {
+            proto.line = valueParam
         }
 
         @objc
@@ -1232,6 +1299,17 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
 
         public func setSdp(_ valueParam: String) {
             proto.sdp = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setOpaque(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.opaque = valueParam
+        }
+
+        public func setOpaque(_ valueParam: Data) {
+            proto.opaque = valueParam
         }
 
         @objc
@@ -1251,24 +1329,54 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
     public let id: UInt64
 
     @objc
-    public let sdpMid: String
+    public var mid: String? {
+        guard hasMid else {
+            return nil
+        }
+        return proto.mid
+    }
+    @objc
+    public var hasMid: Bool {
+        return proto.hasMid
+    }
 
     @objc
-    public let sdpMlineIndex: UInt32
+    public var line: UInt32 {
+        return proto.line
+    }
+    @objc
+    public var hasLine: Bool {
+        return proto.hasLine
+    }
 
     @objc
-    public let sdp: String
+    public var sdp: String? {
+        guard hasSdp else {
+            return nil
+        }
+        return proto.sdp
+    }
+    @objc
+    public var hasSdp: Bool {
+        return proto.hasSdp
+    }
+
+    @objc
+    public var opaque: Data? {
+        guard hasOpaque else {
+            return nil
+        }
+        return proto.opaque
+    }
+    @objc
+    public var hasOpaque: Bool {
+        return proto.hasOpaque
+    }
 
     private init(proto: SignalServiceProtos_CallMessage.IceUpdate,
-                 id: UInt64,
-                 sdpMid: String,
-                 sdpMlineIndex: UInt32,
-                 sdp: String) {
+                 id: UInt64) {
         self.proto = proto
         self.id = id
-        self.sdpMid = sdpMid
-        self.sdpMlineIndex = sdpMlineIndex
-        self.sdp = sdp
     }
 
     @objc
@@ -1288,30 +1396,12 @@ public class SSKProtoCallMessageIceUpdate: NSObject {
         }
         let id = proto.id
 
-        guard proto.hasSdpMid else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdpMid")
-        }
-        let sdpMid = proto.sdpMid
-
-        guard proto.hasSdpMlineIndex else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdpMlineIndex")
-        }
-        let sdpMlineIndex = proto.sdpMlineIndex
-
-        guard proto.hasSdp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
-        }
-        let sdp = proto.sdp
-
         // MARK: - Begin Validation Logic for SSKProtoCallMessageIceUpdate -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageIceUpdate -
 
         let result = SSKProtoCallMessageIceUpdate(proto: proto,
-                                                  id: id,
-                                                  sdpMid: sdpMid,
-                                                  sdpMlineIndex: sdpMlineIndex,
-                                                  sdp: sdp)
+                                                  id: id)
         return result
     }
 
