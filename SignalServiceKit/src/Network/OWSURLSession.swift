@@ -110,6 +110,10 @@ public class OWSURLSession: NSObject {
         return promise
     }
 
+    // TODO: Add downloadTaskPromise().
+
+    // MARK: -
+
     typealias TaskIdentifier = Int
     typealias ProgressBlockMap = [TaskIdentifier: ProgressBlock]
 

@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-public class OWSUploadV2: NSObject {
+public class OWSUpload: NSObject {
 
     public typealias ProgressBlock = (Progress) -> Void
 
@@ -167,7 +167,7 @@ public class OWSAttachmentUploadV2: NSObject {
             }
         }.then(on: .global()) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
             let uploadUrlPath = "attachments/"
-            return OWSUploadV2.upload(data: attachmentData,
+            return OWSUpload.upload(data: attachmentData,
                                       uploadForm: form,
                                       uploadUrlPath: uploadUrlPath,
                                       progressBlock: progressBlock)
@@ -202,6 +202,8 @@ public class OWSAttachmentUploadV2: NSObject {
     // MARK: - V3
 
     public func uploadV3(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
+        Logger.verbose("---- ")
+
         return firstly(on: .global()) {
             // Fetch attachment upload form.
             return self.performRequest {
@@ -275,13 +277,16 @@ public class OWSAttachmentUploadV2: NSObject {
             return locationUrl
         }.recover(on: .global()) { (error: Error) -> Promise<URL> in
             guard IsNetworkConnectivityFailure(error) else {
+                Logger.verbose("---- Not a network error: \(error). ")
                 throw error
             }
             // TODO: Tune this value.
             let maxRetryCount: Int = 3
             guard attemptCount < maxRetryCount else {
+                Logger.verbose("---- No more retries: \(attemptCount). ")
                 throw error
             }
+            Logger.verbose("---- Trying to resume. ")
             return self.fetchResumableUploadLocationV3(form: form,
                                                        attachmentData: attachmentData,
                                                        attemptCount: attemptCount + 1)
@@ -331,13 +336,16 @@ public class OWSAttachmentUploadV2: NSObject {
             return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload, progressBlock: progressBlock).asVoid()
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
             guard IsNetworkConnectivityFailure(error) else {
+                Logger.verbose("---- Not a network error: \(error). ")
                 throw error
             }
             // TODO: Tune this value.
             let maxRetryCount: Int = 16
             guard attemptCount < maxRetryCount else {
+                Logger.verbose("---- No more retries: \(attemptCount). ")
                 throw error
             }
+            Logger.verbose("---- Trying to resume. ")
             return self.performResumableUploadV3(form: form,
                                                  attachmentData: attachmentData,
                                                  locationUrl: locationUrl,
@@ -372,7 +380,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
 // MARK: -
 
-public extension OWSUploadV2 {
+public extension OWSUpload {
 
     // MARK: - Dependencies
 
@@ -484,72 +492,7 @@ private class OWSUploadFormV3: NSObject {
     let cdnKey: String
     let cdnNumber: UInt32
 
-    //    let
-    //// These properties will be set for all uploads.
-    //@property (nonatomic, readonly) NSString *acl;
-    //@property (nonatomic, readonly) NSString *key;
-    //@property (nonatomic, readonly) NSString *policy;
-    //@property (nonatomic, readonly) NSString *algorithm;
-    //@property (nonatomic, readonly) NSString *credential;
-    //@property (nonatomic, readonly) NSString *date;
-    //@property (nonatomic, readonly) NSString *signature;
-    //
-    //// These properties will be set for all attachment uploads.
-    //@property (nonatomic, readonly, nullable) NSNumber *attachmentId;
-    //@property (nonatomic, readonly, nullable) NSString *attachmentIdString;
-    //
-    //+ (instancetype)new NS_UNAVAILABLE;
-    //- (instancetype)init NS_UNAVAILABLE;
-    //
-    //- (instancetype)initWithAcl:(NSString *)acl
-    //key:(NSString *)key
-    //policy:(NSString *)policy
-    //algorithm:(NSString *)algorithm
-    //credential:(NSString *)credential
-    //date:(NSString *)date
-    //signature:(NSString *)signature
-    //attachmentId:(nullable NSNumber *)attachmentId
-    //attachmentIdString:(nullable NSString *)attachmentIdString NS_DESIGNATED_INITIALIZER;
-    //
-    //+ (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject;
-    //
-    //- (void)appendToForm:(id<AFMultipartFormData>)formData;
-    //
-    //@end
-    //
-    //
-    //    // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-    //    @implementation OWSUploadFormV2
-    //
-    //    - (instancetype)initWithAcl:(NSString *)acl
-    //    key:(NSString *)key
-    //    policy:(NSString *)policy
-    //    algorithm:(NSString *)algorithm
-    //    credential:(NSString *)credential
-    //    date:(NSString *)date
-    //    signature:(NSString *)signature
-    //    attachmentId:(nullable NSNumber *)attachmentId
-    //    attachmentIdString:(nullable NSString *)attachmentIdString
-    //    {
-    //    self = [super init];
-    //
-    //    if (self) {
-    //    _acl = acl;
-    //    _key = key;
-    //    _policy = policy;
-    //    _algorithm = algorithm;
-    //    _credential = credential;
-    //    _date = date;
-    //    _signature = signature;
-    //    _attachmentId = attachmentId;
-    //    _attachmentIdString = attachmentIdString;
-    //    }
-    //    return self;
-    //    }
-
     required init(responseObject: Any?) throws {
-        Logger.verbose("responseObject: \(responseObject)")
-
         guard let parser = ParamParser(responseObject: responseObject) else {
             throw OWSAssertionError("Invalid formResponseObject.")
         }
@@ -567,23 +510,4 @@ private class OWSUploadFormV3: NSObject {
         }
         headers = try parser.required(key: "headers")
     }
-    //
-    //
-    //    - (void)appendToForm:(id<AFMultipartFormData>)formData
-    //    {
-    //    // We have to build up the form manually vs. simply passing in a paramaters dict
-    //    // because AWS is sensitive to the order of the form params (at least the "key"
-    //    // field must occur early on).
-    //    //
-    //    // For consistency, all fields are ordered here in a known working order.
-    //    AppendMultipartFormPath(formData, @"key", self.key);
-    //    AppendMultipartFormPath(formData, @"acl", self.acl);
-    //    AppendMultipartFormPath(formData, @"x-amz-algorithm", self.algorithm);
-    //    AppendMultipartFormPath(formData, @"x-amz-credential", self.credential);
-    //    AppendMultipartFormPath(formData, @"x-amz-date", self.date);
-    //    AppendMultipartFormPath(formData, @"policy", self.policy);
-    //    AppendMultipartFormPath(formData, @"x-amz-signature", self.signature);
-    //    }
-    //
-    //    @end
 }

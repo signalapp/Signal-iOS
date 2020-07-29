@@ -73,6 +73,4 @@ public extension AFHTTPSessionManager {
         }
         return promise
     }
-
-    // TODO: Add downloadTaskPromise().
 }

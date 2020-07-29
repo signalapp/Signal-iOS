@@ -25,8 +25,14 @@ BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
 {
     BOOL isObjCNetworkConnectivityFailure = ([error.domain isEqualToString:TSNetworkManagerErrorDomain]
         && error.code == TSNetworkManagerErrorFailedConnection);
+    BOOL isNetworkTimeout = ([error.domain isEqualToString:NSURLErrorDomain] && error.code == kCFURLErrorTimedOut);
+    BOOL isNetworkProtocolError = ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == 100);
 
     if (isObjCNetworkConnectivityFailure) {
+        return YES;
+    } else if (isNetworkTimeout) {
+        return YES;
+    } else if (isNetworkProtocolError) {
         return YES;
     } else if ([TSNetworkManager isSwiftNetworkConnectivityError:error]) {
         return YES;

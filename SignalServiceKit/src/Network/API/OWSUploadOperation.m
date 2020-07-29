@@ -10,7 +10,7 @@
 #import "OWSError.h"
 #import "OWSOperation.h"
 #import "OWSRequestFactory.h"
-#import "OWSUploadV2.h"
+#import "OWSUpload.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"

@@ -2,7 +2,7 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSUploadV2.h"
+#import "OWSUpload.h"
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -190,12 +190,8 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                     }
 
                     [strongSelf parseFormAndUpload:formResponseObject]
-                        .thenInBackground(^{
-                            return resolve(@(1));
-                        })
-                        .catchInBackground(^(NSError *error) {
-                            resolve(error);
-                        });
+                        .thenInBackground(^{ return resolve(@(1)); })
+                        .catchInBackground(^(NSError *error) { resolve(error); });
                 }
                 failure:^(NSURLSessionDataTask *task, NSError *error) {
                     OWSLogError(@"Failed to get profile avatar upload form: %@", error);
@@ -217,10 +213,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     self.urlPath = form.key;
 
     NSString *uploadUrlPath = @"";
-    return [OWSUploadV2 uploadObjcWithData:self.avatarData
-                                uploadForm:form
-                             uploadUrlPath:uploadUrlPath
-                             progressBlock:nil];
+    return [OWSUpload uploadObjcWithData:self.avatarData uploadForm:form uploadUrlPath:uploadUrlPath progressBlock:nil];
 }
 
 @end

@@ -40,7 +40,7 @@
 #import <SignalServiceKit/OWSSyncMessageRequestResponseMessage.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
-#import <SignalServiceKit/OWSUploadV2.h>
+#import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
