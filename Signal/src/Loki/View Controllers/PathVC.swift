@@ -67,9 +67,9 @@ final class PathVC : BaseVC {
         // Set up rebuild path button
         let learnMoreButtonContainer = UIView()
         learnMoreButtonContainer.addSubview(learnMoreButton)
-        learnMoreButton.pin(.leading, to: .leading, of: learnMoreButtonContainer, withInset: 80)
+        learnMoreButton.pin(.leading, to: .leading, of: learnMoreButtonContainer, withInset: isIPhone5OrSmaller ? 64 : 80)
         learnMoreButton.pin(.top, to: .top, of: learnMoreButtonContainer)
-        learnMoreButtonContainer.pin(.trailing, to: .trailing, of: learnMoreButton, withInset: 80)
+        learnMoreButtonContainer.pin(.trailing, to: .trailing, of: learnMoreButton, withInset: isIPhone5OrSmaller ? 64 : 80)
         learnMoreButtonContainer.pin(.bottom, to: .bottom, of: learnMoreButton)
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()

@@ -110,12 +110,13 @@ final class SeedVC : BaseVC {
         copyButtonContainer.pin(.trailing, to: .trailing, of: copyButton, withInset: Values.massiveSpacing)
         copyButtonContainer.pin(.bottom, to: .bottom, of: copyButton)
         // Set up top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, mnemonicLabelContainer ])
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.smallSpacing : Values.largeSpacing), explanationLabel,
+            UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.smallSpacing + 2 : Values.largeSpacing), mnemonicLabelContainer ])
         if !isIPhone5OrSmaller {
+            topStackView.addArrangedSubview(UIView.spacer(withHeight: Values.smallSpacing))
             topStackView.addArrangedSubview(callToActionLabel) // Not that important and it really gets in the way on small screens
         }
         topStackView.axis = .vertical
-        topStackView.spacing = isIPhone6OrSmaller ? Values.smallSpacing : Values.largeSpacing
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView()

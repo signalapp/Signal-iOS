@@ -108,7 +108,11 @@ final class RestoreVC : BaseVC {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        mnemonicTextField.becomeFirstResponder()
+        // On small screens we hide the legal label when the keyboard is up, but it's important that the user sees it so
+        // in those instances we don't make the keyboard come up automatically
+        if !isIPhone5OrSmaller {
+            mnemonicTextField.becomeFirstResponder()
+        }
     }
     
     deinit {
@@ -128,7 +132,9 @@ final class RestoreVC : BaseVC {
         spacer1HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         spacer2HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         spacer3HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        if isIPhone5OrSmaller { legalLabel.isUserInteractionEnabled = false }
         UIView.animate(withDuration: 0.25) {
+            if isIPhone5OrSmaller { self.legalLabel.alpha = 0 }
             self.view.layoutIfNeeded()
         }
     }
@@ -139,7 +145,9 @@ final class RestoreVC : BaseVC {
         spacer1HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         spacer2HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         spacer3HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
+        if isIPhone5OrSmaller { legalLabel.isUserInteractionEnabled = true }
         UIView.animate(withDuration: 0.25) {
+            if isIPhone5OrSmaller { self.legalLabel.alpha = 1 }
             self.view.layoutIfNeeded()
         }
     }

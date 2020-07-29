@@ -197,7 +197,7 @@ private final class ViewMyQRCodeVC : UIViewController {
         let spacing = isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: spacing), qrCodeImageViewContainer, UIView.spacer(withHeight: spacing),
-            explanationLabel, UIView.spacer(withHeight: spacing), shareButtonContainer ])
+            explanationLabel, UIView.vStretchingSpacer(), shareButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
