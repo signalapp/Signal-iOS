@@ -190,14 +190,6 @@ private final class EnterChatURLVC : UIViewController {
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
-        // Set up explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_enter_chat_url_privacy_warning", comment: "")
-        explanationLabel.numberOfLines = 0
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
@@ -209,11 +201,10 @@ private final class EnterChatURLVC : UIViewController {
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.vStretchingSpacer(), nextButtonContainer, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        let bottomSpacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: bottomSpacing, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view)

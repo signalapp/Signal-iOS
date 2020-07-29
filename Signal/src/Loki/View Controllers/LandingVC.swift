@@ -72,9 +72,9 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         // Set up button stack view container
         let buttonStackViewContainer = UIView()
         buttonStackViewContainer.addSubview(buttonStackView)
-        buttonStackView.pin(.leading, to: .leading, of: buttonStackViewContainer, withInset: Values.massiveSpacing)
+        buttonStackView.pin(.leading, to: .leading, of: buttonStackViewContainer, withInset: isIPhone5OrSmaller ? CGFloat(52) : Values.massiveSpacing)
         buttonStackView.pin(.top, to: .top, of: buttonStackViewContainer)
-        buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
+        buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: isIPhone5OrSmaller ? CGFloat(52) : Values.massiveSpacing)
         buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
         // Set up main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, titleLabelContainer, UIView.spacer(withHeight: isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing), fakeChatView, bottomSpacer, buttonStackViewContainer, linkButtonContainer ])

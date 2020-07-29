@@ -165,7 +165,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         explanationLabel.text = NSLocalizedString("vc_enter_public_key_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
@@ -200,7 +200,7 @@ private final class EnterPublicKeyVC : UIViewController {
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.veryLargeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.veryLargeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.largeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.largeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
