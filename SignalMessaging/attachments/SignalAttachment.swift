@@ -670,7 +670,7 @@ public class SignalAttachment: NSObject {
             }
 
             if isValidOutput {
-                Logger.verbose(" \(attachment.mimeType)")
+                Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
                 Logger.verbose("Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
