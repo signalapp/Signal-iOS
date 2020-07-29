@@ -150,19 +150,10 @@ public class FeatureFlags: BaseFlags {
     public static let phoneNumberPrivacy = false
 
     @objc
-    public static let socialGraphOnServer = false
-
-    @objc
     public static let complainAboutSlowDBWrites = true
 
     @objc
     public static let usernames = allowUUIDOnlyContacts && build.includes(.dev)
-
-    @objc
-    public static let messageRequest = build.includes(.dev) && socialGraphOnServer
-
-    @objc
-    public static let profileDisplayChanges = build.includes(.dev)
 
     @objc
     public static var calling: Bool {
