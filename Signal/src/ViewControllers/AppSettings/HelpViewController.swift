@@ -5,16 +5,10 @@
 import Foundation
 
 @objc(OWSHelpViewController)
-class HelpViewController: OWSTableViewController {
-    private lazy var declaredContentDefinition = constructContents()
-    override var contents: OWSTableContents {
-        get {
-            return declaredContentDefinition
-        }
-        set {
-            // LSP violation
-            owsFailDebug("Help contents are immutable")
-        }
+final class HelpViewController: OWSTableViewController {
+
+    override func viewDidLoad() {
+        contents = constructContents()
     }
 
     fileprivate func constructContents() -> OWSTableContents {
@@ -40,15 +34,11 @@ class HelpViewController: OWSTableViewController {
                 return header
 
             }, items: [
-                OWSTableItem(title: supportCenterLabel, actionBlock: {
-                    guard let supportURL = URL(string: TSConstants.signalSupportURL) else {
-                        owsFailDebug("Invalid URL")
-                        return
-                    }
-                    UIApplication.shared.open(supportURL, options: [:])
+                OWSTableItem.disclosureItem(withText: supportCenterLabel, actionBlock: {
+                    UIApplication.shared.open(SupportConstants.supportURL, options: [:])
                 }),
 
-                OWSTableItem(title: contactLabel, actionBlock: {
+                OWSTableItem.disclosureItem(withText: contactLabel, actionBlock: {
                     guard ComposeSupportEmailOperation.canSendEmails else {
                         let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
                                                                     comment: "Title for the fallback support sheet if user cannot send email")

@@ -23,9 +23,10 @@ struct SupportEmailModel {
         case link(URL)
     }
 
+    /// Should be the unlocalized English string localizedSubject
+    var subject: String = "Signal iOS Support Request"
     var localizedSubject: String = NSLocalizedString("SUPPORT_EMAIL_SUBJECT",
                                                      comment: "Localized subject for support request emails")
-    var subject: String = "Signal iOS Support Request"  // Should be the unlocalized English string for SUPPORT_EMAIL_SUBJECT
     var device: String = AppVersion.hardwareInfoString
     var osBuild: String = AppVersion.iOSVersionString
     var signalBuild: String = AppVersion.sharedInstance().currentAppVersion
@@ -35,12 +36,6 @@ struct SupportEmailModel {
     var emojiMood: EmojiMoodPickerView.Mood?
     var debugLogPolicy: LogPolicy = .none
     fileprivate var resolvedDebugString: String?
-
-    init() {
-        // If this ever happens, the fix is probably to move currentAppVersion to be a class property
-        // It's accessed through the NSBundle's Info.plist anyway, so it shouldn't be blocked on anything
-        owsAssertDebug(AppReadiness.isAppReady, "Accessing AppVersion.sharedInstance() before app is ready")
-    }
 }
 
 class ComposeSupportEmailOperation {
@@ -135,6 +130,7 @@ class ComposeSupportEmailOperation {
     /// Must be called from main queue. Note: This doesn't really *stop* the operation so much as
     /// render it invisible to the user.
     func cancel() {
+        AssertIsOnMainThread()
         isCancelled = true
     }
 
@@ -151,9 +147,9 @@ class ComposeSupportEmailOperation {
     }
 
     private var emailURL: URL? {
-        let linkBuilder = MailtoLink(to: TSConstants.signalSupportEmail,
-                                     subject: self.model.subject,
-                                     body: self.emailBody)
+        let linkBuilder = MailtoLink(to: SupportConstants.supportEmail,
+                                     subject: model.localizedSubject,
+                                     body: emailBody)
         return linkBuilder.url
     }
 
@@ -176,8 +172,8 @@ class ComposeSupportEmailOperation {
                 } else { return nil }
             }(),
             "",
-            model.emojiMood?.rawStringVal,
-            model.emojiMood?.rawValue.description
+            model.emojiMood?.stringRepresentation,
+            model.emojiMood?.emojiRepresentation
         ]
 
         return bodyComponents

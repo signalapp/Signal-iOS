@@ -266,7 +266,7 @@ public class OWSNavigationBar: UINavigationBar {
         case .clear:
             respectsTheme = false
             removeSecondaryBarOverride()
-            removeDarkThemeOverride()
+            applyDarkThemeOverride()
             applyTransparentBarOverride()
         case .alwaysDark:
             respectsTheme = false

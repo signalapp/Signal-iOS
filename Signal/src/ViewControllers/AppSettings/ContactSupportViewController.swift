@@ -5,8 +5,15 @@
 import Foundation
 import PromiseKit
 
+@objc(OWSSupportConstants)
+@objcMembers class SupportConstants: NSObject {
+    static let supportURL = URL(string: "https://support.signal.org/")!
+    static let debugLogsInfoURL = URL(string: "https://support.signal.org/hc/articles/360007318591")!
+    static let supportEmail = "support@signal.org"
+}
+
 @objc(OWSContactSupportViewController)
-class ContactSupportViewController: OWSTableViewController {
+final class ContactSupportViewController: OWSTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,6 +22,7 @@ class ContactSupportViewController: OWSTableViewController {
         tableView.keyboardDismissMode = .interactive
         useThemeBackgroundColors = false
 
+        rebuildTableContents()
         setupNavigationBar()
         setupDataProviderViews()
         applyTheme()
@@ -22,17 +30,6 @@ class ContactSupportViewController: OWSTableViewController {
                                                selector: #selector(keyboardFrameWillChange),
                                                name: UIResponder.keyboardWillChangeFrameNotification,
                                                object: nil)
-    }
-
-    private lazy var declaredContentDefinition = constructContents()
-    override var contents: OWSTableContents {
-        get {
-            return declaredContentDefinition
-        }
-        set {
-            // LSP violation
-            owsFailDebug("Assigning to contents overwrites the content declaration")
-        }
     }
 
     // MARK: - Data providers
@@ -48,43 +45,41 @@ class ContactSupportViewController: OWSTableViewController {
         descriptionField.placeholderText = NSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
                                                              comment: "Placeholder string for support description")
         debugSwitch.onTintColor = nil       // Overrides +UIAppearance default
+        debugSwitch.isOn = true
     }
 
     func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
-                                                           style: .plain,
-                                                           target: self,
-                                                           action: #selector(didTapCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: CommonStrings.nextButton,
-                                                            style: .done,
-                                                            target: self,
-                                                            action: #selector(didTapNext))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.cancelButton,
+            style: .plain,
+            target: self,
+            action: #selector(didTapCancel)
+        )
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.nextButton,
+            style: .done,
+            target: self,
+            action: #selector(didTapNext)
+        )
         navigationItem.rightBarButtonItem?.isEnabled = false
     }
 
     @objc override func applyTheme() {
         super.applyTheme()
-        let navigationBar = navigationController?.navigationBar as? OWSNavigationBar
 
         // Every non-control item should be set to this background color
         let backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : UIColor.ows_white
 
-        // Setting the styling to .clear removes any other navigationBar styling
-        // We explicitly set the backgroundColor to ensure that the entire navigation bar appears the correct color
-        navigationBar?.switchToStyle(.clear)
-
-        navigationController?.view.backgroundColor = backgroundColor
-        navigationController?.navigationBar.backgroundColor = backgroundColor
         view.backgroundColor = backgroundColor
         tableView.backgroundColor = backgroundColor
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
 
-        // Notify any interested subviews that our theme has changed
-        descriptionField.applyTheme()
-        emojiPicker.applyTheme()
-
         // Rebuild the contents to force them to update their theme
-        declaredContentDefinition = constructContents()
+        rebuildTableContents()
+    }
+
+    func rebuildTableContents() {
+        contents = constructContents()
     }
 
     // MARK: - View transitions
@@ -147,7 +142,7 @@ class ContactSupportViewController: OWSTableViewController {
         }.catch(on: .main) { error in
             let alertTitle = NSLocalizedString("ERROR_DESCRIPTION_SUPPORT_EMAIL_FAILURE_TITLE",
                                                comment: "Title for alert dialog presented when a support email failed to send")
-            self.presentBasicAlert(title: alertTitle, message: error.localizedDescription)
+            OWSActionSheets.showActionSheet(title: alertTitle, message: error.localizedDescription)
 
         }.finally(on: .main) {
             self.currentEmailComposeOperation = nil
@@ -260,11 +255,7 @@ extension ContactSupportViewController {
                     cell.textLabel?.textColor = Theme.accentBlueColor
                     return cell
                 }, actionBlock: {
-                    guard let supportURL = URL(string: TSConstants.signalSupportURL) else {
-                        owsFailDebug("Invalid URL")
-                        return
-                    }
-                    UIApplication.shared.open(supportURL, options: [:])
+                    UIApplication.shared.open(SupportConstants.supportURL, options: [:])
                 })
             ]),
 
@@ -291,11 +282,7 @@ extension ContactSupportViewController {
         label.textColor = Theme.primaryTextColor
 
         let infoButton = OWSButton(imageName: "help-outline-24", tintColor: Theme.secondaryTextAndIconColor) {
-            guard let supportURL = URL(string: TSConstants.signalDebugLogsInfoURL) else {
-                owsFailDebug("Invalid URL")
-                return
-            }
-            UIApplication.shared.open(supportURL, options: [:])
+            UIApplication.shared.open(SupportConstants.debugLogsInfoURL, options: [:])
         }
         infoButton.accessibilityLabel = NSLocalizedString("DEBUG_LOG_INFO_BUTTON",
                                                           comment: "Accessibility label for the ? vector asset used to get info about debug logs")
@@ -304,7 +291,7 @@ extension ContactSupportViewController {
         cell.contentView.addSubview(infoButton)
         cell.accessoryView = debugSwitch
 
-        label.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
+        label.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
         label.setCompressionResistanceHigh()
 
         infoButton.autoPinHeightToSuperviewMargins()
@@ -324,17 +311,5 @@ extension ContactSupportViewController {
         containerView.addSubview(emojiPicker)
         emojiPicker.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
         return containerView
-    }
-}
-
-// MARK: - Alerting
-
-private extension ContactSupportViewController {
-    /// Presents a basic UIAlertController modal alert with a single "Okay" button to dismiss the alert
-    func presentBasicAlert(title: String, message: String?) {
-        let actionSheet = ActionSheetController(title: title, message: message)
-        let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
-        actionSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
-        presentActionSheet(actionSheet)
     }
 }

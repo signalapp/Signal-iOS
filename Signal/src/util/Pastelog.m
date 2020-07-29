@@ -534,7 +534,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 + (BOOL)submitEmailWithSubject:(NSString *)subject logUrl:(nullable NSURL *)url error:(NSError **)error
 {
-    NSString *emailAddress = TSConstants.signalSupportEmail;
+    NSString *emailAddress = OWSSupportConstants.supportEmail;
 
     NSMutableString *body = [NSMutableString new];
 

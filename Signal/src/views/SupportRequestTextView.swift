@@ -23,82 +23,73 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
     /// Fallback placeholder text if the field is empty
     var placeholderText: String = "" {
         didSet {
-            configurePlaceholder()
+            placeholderTextView.text = placeholderText
+            textView.accessibilityLabel = placeholderText
         }
     }
 
     /// Any text the user has input
-    var text: String {
-        return showPlaceholder ? "" : textView.text
-    }
+    var text: String { textView.text }
 
     // MARK: - Private Properties
 
-    private let textView: UITextView = {
+    private func buildTextView() -> UITextView {
         let textView = UITextView()
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
 
         textView.font = UIFont.ows_dynamicTypeBody
         textView.adjustsFontForContentSizeCategory = true
-
-        textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
-        return textView
-    }()
 
-    private var showPlaceholder: Bool = true {
-        didSet {
-            configurePlaceholder()
-        }
+        // This would make things align a bit more nicely, but it totally breaks VoiceOver for some reason
+        // Leaving the default inset for now until I can track down what's tripping up VoiceOver.
+        // textView.textContainerInset = .zero
+        return textView
     }
+    private lazy var textView = buildTextView()
+    private lazy var placeholderTextView = buildTextView()
 
     // MARK: - Lifecycle
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        applyTheme()
+
+        textView.delegate = self
+        textView.isEditable = true
+        placeholderTextView.isEditable = false
+        placeholderTextView.isUserInteractionEnabled = false
+
+        // The placeholderTextView is perfectly aligned with the textView to allow for us to easily
+        // hide/show placeholder text without needing to manipulate the text property of our primary
+        // text view. This makes VoiceOver navigation by dragging a bit tricky, since a user won't be
+        // able to find the placeholder text. Let's disable it in VoiceOver. Instead, placeholderText
+        // will be an accessibility label on the primary text view.
+        placeholderTextView.accessibilityElementsHidden = true
 
         // Layout + Constraints
-        addSubview(textView)
-        textView.autoPinEdgesToSuperviewEdges()
-        textView.setCompressionResistanceHigh()
+        for subview in [textView, placeholderTextView] {
+            addSubview(subview)
+            subview.autoPinEdgesToSuperviewEdges()
+            subview.setCompressionResistanceHigh()
+        }
 
-        // Content
-        textView.delegate = self
-        configurePlaceholder()
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func applyTheme() {
-        configurePlaceholder()
-    }
-
     // MARK: - Private
 
-    private func configurePlaceholder() {
-        textView.textColor = showPlaceholder ? Theme.placeholderColor : Theme.primaryTextColor
-        if showPlaceholder {
-            textView.text = placeholderText
-        }
+    @objc private func applyTheme() {
+        placeholderTextView.textColor = Theme.placeholderColor
+        textView.textColor = Theme.primaryTextColor
     }
 
     // MARK: - <UITextViewDelegate>
-
-    func textViewDidBeginEditing(_: UITextView) {
-        if showPlaceholder {
-            // Only clear the text if we were showing the placeholder
-            // i.e. if a user edits, stops editing, edits again: don't clear the text
-            textView.text = ""
-        }
-        showPlaceholder = false
-    }
-
-    func textViewDidEndEditing(_: UITextView) {
-        showPlaceholder = (textView.text.count == 0)
-    }
 
     // These help to track the user's edit focus
     private var oldStartCaretRect: CGRect = .null
@@ -146,6 +137,9 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
+        let showPlaceholder = (textView.text.count == 0)
+        placeholderTextView.isHidden = !showPlaceholder
+
         delegate?.textViewDidUpdateText(self)
     }
 
