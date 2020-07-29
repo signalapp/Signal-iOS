@@ -5,8 +5,8 @@
 * Replace fragment_ → vc_
 * Replace dialog_ → modal_
 * Replace Firebase Cloud Messaging → Apple Push Notification Service
-* Replace FCM → APNs
 * Replace fcm_ → apns_
+* Replace FCM → APNs
 * Replace &gt; → >
 * Remove any \
 * Check for any unescaped “
