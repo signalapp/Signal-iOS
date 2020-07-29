@@ -238,8 +238,15 @@ public class OWSAttachmentUploadV2: NSObject {
         }
     }
 
+    // This fetches a temporary URL that can be used for resumable uploads.
+    //
+    // See: https://cloud.google.com/storage/docs/performing-resumable-uploads#xml-api
+    // NOTE: follow the "XML API" instructions.
     private func fetchResumableUploadLocationV3(form: OWSUploadFormV3,
-                                                attachmentData: Data) -> Promise<URL> {
+                                                attachmentData: Data,
+                                                attemptCount: Int = 0) -> Promise<URL> {
+        Logger.verbose("---- attemptCount: \(attemptCount)")
+
         return firstly(on: .global()) { () -> Promise<AFHTTPSessionManager.Response> in
             let urlString = form.signedUploadLocation
             let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
@@ -262,27 +269,32 @@ public class OWSAttachmentUploadV2: NSObject {
                 throw OWSAssertionError("Invalid location header.")
             }
             return locationUrl
+        }.recover(on: .global()) { (error: Error) -> Promise<URL> in
+            guard IsNetworkConnectivityFailure(error) else {
+                throw error
+            }
+            // TODO: Tune this value.
+            let maxRetryCount: Int = 3
+            guard attemptCount < maxRetryCount else {
+                throw error
+            }
+            return self.fetchResumableUploadLocationV3(form: form,
+                                                       attachmentData: attachmentData,
+                                                       attemptCount: attemptCount + 1)
         }
     }
 
     private func performResumableUploadV3(form: OWSUploadFormV3,
                                           attachmentData: Data,
-                                          locationUrl: URL) -> Promise<Void> {
-        self.resumableUploadAttemptV3(form: form,
-                                      attachmentData: attachmentData,
-                                      locationUrl: locationUrl)
-    }
-
-    private func resumableUploadAttemptV3(form: OWSUploadFormV3,
-                                          attachmentData: Data,
                                           locationUrl: URL,
                                           attemptCount: Int = 0) -> Promise<Void> {
+        Logger.verbose("---- attemptCount: \(attemptCount)")
+
         return firstly(on: .global()) { () -> Promise<Int> in
             let isRetry = attemptCount > 0
             guard isRetry else {
                 return Promise.value(0)
             }
-            // Determine how much has already been uploaded.
             return self.getResumableUploadProgressV3(form: form,
                                                      attachmentData: attachmentData,
                                                      locationUrl: locationUrl)
@@ -301,7 +313,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 throw OWSAssertionError("Could not slice attachment data.")
             }
 
-            // Example:
+            // Example: Resuming after uploading 2359296 of 7351375 bytes.
             //
             // Content-Range: bytes 2359296-7351374/7351375
             // Content-Length: 4992079
@@ -316,18 +328,22 @@ public class OWSAttachmentUploadV2: NSObject {
             let session = sessionManager.session
             return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload).asVoid()
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+            guard IsNetworkConnectivityFailure(error) else {
+                throw error
+            }
             // TODO: Tune this value.
             let maxRetryCount: Int = 16
             guard attemptCount < maxRetryCount else {
                 throw error
             }
-            return self.resumableUploadAttemptV3(form: form,
+            return self.performResumableUploadV3(form: form,
                                                  attachmentData: attachmentData,
                                                  locationUrl: locationUrl,
                                                  attemptCount: attemptCount + 1)
         }
     }
 
+    // Determine how much has already been uploaded.
     private func getResumableUploadProgressV3(form: OWSUploadFormV3,
                                               attachmentData: Data,
                                               locationUrl: URL) -> Promise<Int> {
