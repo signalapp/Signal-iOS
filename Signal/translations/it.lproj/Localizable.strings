@@ -2596,7 +2596,7 @@
 "vc_pn_mode_title" = "Notifiche push";
 "vc_pn_mode_explanation" = "La Sessione può gestire le notifiche push in due modi. Assicurati di leggere attentamente le descrizioni prima di scegliere.";
 "vc_pn_mode_apns_option_title" = "Apple Push Notification Service";
-"vc_pn_mode_apns_option_explanation" = "La Sessione utilizzerà il Apple Push Notification Service per ricevere notifiche push. Riceverai una notifica per i nuovi messaggi in modo affidabile e immediato. L'utilizzo di APNs implica che il tuo indirizzo IP e il token del dispositivo siano esposti a Google. Se usi le notifiche push per altre app, ciò succede già. Il tuo indirizzo IP e il token del dispositivo saranno esposti anche a Loki, ma i messaggi saranno comunque resi anonimi tramite onion routing e crittografia end-to-end, pertanto il contenuto dei messaggi rimarrà completamente privato.";
+"vc_pn_mode_apns_option_explanation" = "La Sessione utilizzerà il Apple Push Notification Service per ricevere notifiche push. Riceverai una notifica per i nuovi messaggi in modo affidabile e immediato. L'utilizzo di APNs implica che il tuo indirizzo IP e il token del dispositivo siano esposti a Apple. Se usi le notifiche push per altre app, ciò succede già. Il tuo indirizzo IP e il token del dispositivo saranno esposti anche a Loki, ma i messaggi saranno comunque resi anonimi tramite onion routing e crittografia end-to-end, pertanto il contenuto dei messaggi rimarrà completamente privato.";
 "vc_pn_mode_background_polling_option_title" = "Polling nel background";
 "vc_pn_mode_background_polling_option_explanation" = "Occasionalmente la Sessione verificherà la presenza di nuovi messaggi in background. Ciò garantisce la protezione completa dei metadati, ma le notifiche dei messaggi potrebbero subire notevoli ritardi.";
 "vc_pn_mode_recommended_option_tag" = "Consigliato";
@@ -2612,7 +2612,7 @@
 "sheet_pn_mode_title" = "Notifiche push";
 "sheet_pn_mode_explanation" = "Ora la Sessione offre due modi per gestire le notifiche push. Assicurati di leggere attentamente le descrizioni prima di scegliere.";
 "sheet_pn_mode_apns_option_title" = "Apple Push Notification Service";
-"sheet_pn_mode_apns_option_explanation" = "La Sessione utilizzerà il Apple Push Notification Service per ricevere notifiche push. Riceverai una notifica per i nuovi messaggi in modo affidabile e immediato. L'utilizzo di APNs implica che il tuo indirizzo IP e il token del dispositivo siano esposti a Google. Se usi le notifiche push per altre app, ciò succede già. Il tuo indirizzo IP e il token del dispositivo saranno esposti anche a Loki, ma i messaggi saranno comunque resi anonimi tramite onion routing e crittografia end-to-end, pertanto il contenuto dei messaggi rimarrà completamente privato.";
+"sheet_pn_mode_apns_option_explanation" = "La Sessione utilizzerà il Apple Push Notification Service per ricevere notifiche push. Riceverai una notifica per i nuovi messaggi in modo affidabile e immediato. L'utilizzo di APNs implica che il tuo indirizzo IP e il token del dispositivo siano esposti a Apple. Se usi le notifiche push per altre app, ciò succede già. Il tuo indirizzo IP e il token del dispositivo saranno esposti anche a Loki, ma i messaggi saranno comunque resi anonimi tramite onion routing e crittografia end-to-end, pertanto il contenuto dei messaggi rimarrà completamente privato.";
 "sheet_pn_mode_background_polling_option_title" = "Polling nel background";
 "sheet_pn_mode_background_polling_option_explanation" = "Occasionalmente la Sessione verificherà la presenza di nuovi messaggi in background. Ciò garantisce la protezione completa dei metadati, ma le notifiche dei messaggi potrebbero subire notevoli ritardi.";
 "sheet_pn_mode_recommended_option_tag" = "Consigliato";
@@ -2699,7 +2699,7 @@
 
 "preferences_notifications_strategy_category_title" = "Strategia di notifica";
 "preferences_notifications_use_apns_option_title" = "Usa APNs";
-"preferences_notifications_use_apns_option_explanation" = "L'uso di Apple Push Notification Service consente notifiche push più affidabili, ma espone l'IP e il token del dispositivo a Google e Loki.";
+"preferences_notifications_use_apns_option_explanation" = "L'uso di Apple Push Notification Service consente notifiche push più affidabili, ma espone l'IP e il token del dispositivo a Apple e Loki.";
 
 "modal_link_device_slave_mode_title_1" = "In attesa di autorizzazione";
 "modal_link_device_slave_mode_title_2" = "Collegamento al dispositivo autorizzato";

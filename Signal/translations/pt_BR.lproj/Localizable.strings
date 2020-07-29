@@ -2596,7 +2596,7 @@
 "vc_pn_mode_title" = "Notificações via push";
 "vc_pn_mode_explanation" = "Há duas maneiras pelas quais o Session pode lidar com notificações push. Certifique-se de ler as descrições cuidadosamente antes de escolher.";
 "vc_pn_mode_apns_option_title" = "Apple Push Notification Service";
-"vc_pn_mode_apns_option_explanation" = "O Session usará o serviço Apple Push Notification Service para receber notificações push. Você será notificado sobre novas mensagens de maneira confiável e imediata. Usar o APNs significa que seu endereço IP e token do dispositivo serão expostos ao Google. Se você usar notificações push para outros aplicativos, esse já será o caso. Seu endereço IP e o token do dispositivo também serão expostos ao Loki, mas suas mensagens ainda serão roteadas anonimamente e criptografadas de ponta a ponta, para que o conteúdo de suas mensagens permaneça completamente privado.";
+"vc_pn_mode_apns_option_explanation" = "O Session usará o serviço Apple Push Notification Service para receber notificações push. Você será notificado sobre novas mensagens de maneira confiável e imediata. Usar o APNs significa que seu endereço IP e token do dispositivo serão expostos ao Apple. Se você usar notificações push para outros aplicativos, esse já será o caso. Seu endereço IP e o token do dispositivo também serão expostos ao Loki, mas suas mensagens ainda serão roteadas anonimamente e criptografadas de ponta a ponta, para que o conteúdo de suas mensagens permaneça completamente privado.";
 "vc_pn_mode_background_polling_option_title" = "Pesquisa profunda";
 "vc_pn_mode_background_polling_option_explanation" = "Ocasionalmente, o Session verifica novas mensagens em segundo plano. Isso garante proteção total aos metadados, mas as notificações de mensagens podem sofrer um atraso significativo.";
 "vc_pn_mode_recommended_option_tag" = "Recomendado";
@@ -2612,7 +2612,7 @@
 "sheet_pn_mode_title" = "Notificações via push";
 "sheet_pn_mode_explanation" = "O Session agora apresenta duas maneiras de lidar com notificações push. Certifique-se de ler as descrições cuidadosamente antes de escolher.";
 "sheet_pn_mode_apns_option_title" = "Apple Push Notification Service";
-"sheet_pn_mode_apns_option_explanation" = "O Session usará o serviço Apple Push Notification Service para receber notificações push. Você será notificado sobre novas mensagens de maneira confiável e imediata. Usar o APNs significa que seu endereço IP e token do dispositivo serão expostos ao Google. Se você usar notificações push para outros aplicativos, esse já será o caso. Seu endereço IP e o token do dispositivo também serão expostos ao Loki, mas suas mensagens ainda serão roteadas anonimamente e criptografadas de ponta a ponta, para que o conteúdo de suas mensagens permaneça completamente privado.";
+"sheet_pn_mode_apns_option_explanation" = "O Session usará o serviço Apple Push Notification Service para receber notificações push. Você será notificado sobre novas mensagens de maneira confiável e imediata. Usar o APNs significa que seu endereço IP e token do dispositivo serão expostos ao Apple. Se você usar notificações push para outros aplicativos, esse já será o caso. Seu endereço IP e o token do dispositivo também serão expostos ao Loki, mas suas mensagens ainda serão roteadas anonimamente e criptografadas de ponta a ponta, para que o conteúdo de suas mensagens permaneça completamente privado.";
 "sheet_pn_mode_background_polling_option_title" = "Pesquisa profunda";
 "sheet_pn_mode_background_polling_option_explanation" = "Ocasionalmente, o Session verificará novas mensagens em segundo plano. Isso garante proteção total aos metadados, mas as notificações de mensagens podem sofrer um atraso significativo.";
 "sheet_pn_mode_recommended_option_tag" = "Recomendado";
@@ -2699,7 +2699,7 @@
 
 "preferences_notifications_strategy_category_title" = "Estratégia de notificação";
 "preferences_notifications_use_apns_option_title" = "Usar APNs";
-"preferences_notifications_use_apns_option_explanation" = "O uso do Apple Push Notification Service permite notificações push mais confiáveis, mas expõe seu IP e token de dispositivo ao Google e ao Loki.";
+"preferences_notifications_use_apns_option_explanation" = "O uso do Apple Push Notification Service permite notificações push mais confiáveis, mas expõe seu IP e token de dispositivo ao Apple e ao Loki.";
 
 "modal_link_device_slave_mode_title_1" = "Esperando autorização";
 "modal_link_device_slave_mode_title_2" = "sincronização de dispositivo autorizada";

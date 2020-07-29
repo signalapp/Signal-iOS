@@ -13,3 +13,4 @@
 * Replace %1$s → %@
 * Replace %s → %@
 * Replace edit_text → text_field
+* Replace Google → Apple
