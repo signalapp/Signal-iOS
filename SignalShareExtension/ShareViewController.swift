@@ -954,7 +954,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return promise
         }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .original)
         if loadedItem.isConvertibleToContactShare {
             Logger.info("isConvertibleToContactShare")
             attachment.isConvertibleToContactShare = true

@@ -551,7 +551,7 @@ public class SignalAttachment: NSObject {
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
                 // Pasted images _SHOULD _NOT_ be resized, if possible.
-                return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
+                return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
             }
         }
         for dataUTI in videoUTISet {
@@ -670,7 +670,7 @@ public class SignalAttachment: NSObject {
             }
 
             if isValidOutput {
-                Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
+                Logger.verbose(" \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
                 Logger.verbose("Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
