@@ -72,7 +72,7 @@ extension MessageBody {
         mutableAttributedString.enumerateAttribute(
             .mention,
             in: NSRange(location: 0, length: attributedString.length),
-            options: .longestEffectiveRangeNotRequired
+            options: []
         ) { mention, subrange, _ in
             guard let mention = mention as? Mention else { return }
 

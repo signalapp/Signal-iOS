@@ -6,9 +6,9 @@ import Foundation
 
 @objc
 public protocol MentionTextViewDelegate: UITextViewDelegate {
-    func textViewDidBeginTypingMention(_ textView: MentionTextView)
-    func textViewDidEndTypingMention(_ textView: MentionTextView)
-    func textView(_ textView: MentionTextView, didUpdateMentionText mentionText: String)
+    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView
+    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView
+    func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress]
 
     func textView(_ textView: MentionTextView, didTapMention: Mention)
     func textView(_ textView: MentionTextView, didDeleteMention: Mention)
@@ -20,7 +20,9 @@ public protocol MentionTextViewDelegate: UITextViewDelegate {
 @objc
 open class MentionTextView: OWSTextView {
     @objc
-    public weak var mentionDelegate: MentionTextViewDelegate?
+    public weak var mentionDelegate: MentionTextViewDelegate? {
+        didSet { updateMentionStateAfterCursorMove() }
+    }
 
     public override var delegate: UITextViewDelegate? {
         didSet {
@@ -37,6 +39,10 @@ open class MentionTextView: OWSTextView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
         tapGesture.delegate = self
         addGestureRecognizer(tapGesture)
+    }
+
+    deinit {
+        pickerView?.removeFromSuperview()
     }
 
     required public init?(coder: NSCoder) {
@@ -207,20 +213,87 @@ open class MentionTextView: OWSTextView {
         didSet {
             switch state {
             case .notTypingMention:
-                if oldValue != .notTypingMention {
-                    mentionDelegate?.textViewDidEndTypingMention(self)
-                }
+                if oldValue != .notTypingMention { didEndTypingMention() }
             case .typingMention:
                 if oldValue == .notTypingMention {
-                    mentionDelegate?.textViewDidBeginTypingMention(self)
-                }
+                    didBeginTypingMention()
+                } else {
+                    guard let currentlyTypingMentionText = currentlyTypingMentionText else {
+                        return owsFailDebug("unexpectedly missing mention text while typing a mention")
+                    }
 
-                guard let currentlyTypingMentionText = currentlyTypingMentionText else {
-                    return owsFailDebug("unexpectedly missing mention text while typing a mention")
+                    didUpdateMentionText(currentlyTypingMentionText)
                 }
-
-                mentionDelegate?.textView(self, didUpdateMentionText: currentlyTypingMentionText)
             }
+        }
+    }
+
+    private weak var pickerView: MentionPicker?
+    private weak var pickerViewTopConstraint: NSLayoutConstraint?
+    private func didBeginTypingMention() {
+        guard let mentionDelegate = mentionDelegate else { return }
+
+        pickerView?.removeFromSuperview()
+
+        let mentionableAddresses = mentionDelegate.textViewMentionPickerPossibleAddresses(self)
+
+        guard !mentionableAddresses.isEmpty else { return }
+
+        let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self)
+        let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self)
+
+        let pickerView = MentionPicker(mentionableAddresses: mentionableAddresses) { [weak self] selectedAddress in
+            self?.insertTypedMention(address: selectedAddress)
+        }
+        self.pickerView = pickerView
+
+        pickerParentView.insertSubview(pickerView, belowSubview: pickerReferenceView)
+        pickerView.autoPinWidthToSuperview()
+        pickerView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+
+        let animationTopConstraint = pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
+
+        didUpdateMentionText(currentlyTypingMentionText ?? "")
+
+        pickerParentView.layoutIfNeeded()
+
+        // Slide up.
+        UIView.animate(withDuration: 0.25) {
+            animationTopConstraint.isActive = false
+            self.pickerViewTopConstraint = pickerView.autoPinEdge(.bottom, to: .top, of: pickerReferenceView)
+            pickerParentView.layoutIfNeeded()
+        }
+    }
+
+    private func didEndTypingMention() {
+        guard let pickerView = pickerView else { return }
+
+        self.pickerView = nil
+
+        let pickerViewTopConstraint = self.pickerViewTopConstraint
+        self.pickerViewTopConstraint = nil
+
+        guard let mentionDelegate = mentionDelegate else {
+            pickerView.removeFromSuperview()
+            return
+        }
+
+        let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self)
+        let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self)
+
+        // Slide down.
+        UIView.animate(withDuration: 0.25, animations: {
+            pickerViewTopConstraint?.isActive = false
+            pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
+            pickerParentView.layoutIfNeeded()
+        }) { _ in
+            pickerView.removeFromSuperview()
+        }
+    }
+
+    private func didUpdateMentionText(_ text: String) {
+        if let pickerView = pickerView, !pickerView.mentionTextChanged(text) {
+            state = .notTypingMention
         }
     }
 
@@ -232,13 +305,19 @@ open class MentionTextView: OWSTextView {
             textStorage.enumerateAttribute(
                 .mention,
                 in: range,
-                options: .longestEffectiveRangeNotRequired
+                options: []
             ) { mention, subrange, _ in
                 guard let mention = mention as? Mention else { return }
 
                 // Get the full range of the mention, we may only be editing a part of it.
                 var uniqueMentionRange = NSRange()
-                guard textStorage.attribute(.mention, at: subrange.location, effectiveRange: &uniqueMentionRange) != nil else {
+
+                guard textStorage.attribute(
+                    .mention,
+                    at: subrange.location,
+                    longestEffectiveRange: &uniqueMentionRange,
+                    in: NSRange(location: 0, length: textStorage.length)
+                ) != nil else {
                     return owsFailDebug("Unexpectedly missing mention for subrange")
                 }
 
@@ -259,7 +338,8 @@ open class MentionTextView: OWSTextView {
                 let rightMention = textStorage.attribute(
                     .mention,
                     at: range.location,
-                    effectiveRange: &uniqueMentionRange
+                    longestEffectiveRange: &uniqueMentionRange,
+                    in: NSRange(location: 0, length: textStorage.length)
                 ) as? Mention,
                 leftMention == rightMention {
                 deletedMentions[uniqueMentionRange] = leftMention
@@ -291,6 +371,10 @@ open class MentionTextView: OWSTextView {
     }
 
     private func updateMentionStateAfterCursorMove() {
+        // If we don't yet have a delegate, we can ignore any updates.
+        // We'll check again when the delegate is assigned.
+        guard mentionDelegate != nil else { return }
+
         guard selectedRange.length == 0, selectedRange.location > 0, textStorage.length > 0 else {
             state = .notTypingMention
             return
@@ -347,6 +431,8 @@ open class MentionTextView: OWSTextView {
         // We checked everything, so we're not typing
         state = .notTypingMention
     }
+
+    // MARK: -
 
     @objc
     private func didTap(_ sender: UITapGestureRecognizer) {

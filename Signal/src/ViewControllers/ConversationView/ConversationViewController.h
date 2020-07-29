@@ -93,6 +93,7 @@ typedef NS_CLOSED_ENUM(NSUInteger,
 @property (nonatomic) ConversationUIMode uiMode;
 - (void)updateBarButtonItems;
 - (void)reloadBottomBar;
+- (UIView *)bottomBar;
 
 #pragma mark - Search
 

@@ -695,6 +695,7 @@
 		88BFD4732335C2B3001797D7 /* waveformLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 88BFD4722335C2B3001797D7 /* waveformLoading.json */; };
 		88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C4E37F24635337009C9B97 /* DeviceTransferService.swift */; };
 		88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C659AF24688335002AC115 /* SelfSignedIdentity.swift */; };
+		88C6FC3B24D0C73C001BAABB /* MentionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C6FC3A24D0C73C001BAABB /* MentionPicker.swift */; };
 		88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */; };
 		88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */; };
 		88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */; };
@@ -1707,6 +1708,7 @@
 		88C483F424A3001C00D9A85A /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = translations/ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88C4E37F24635337009C9B97 /* DeviceTransferService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTransferService.swift; sourceTree = "<group>"; };
 		88C659AF24688335002AC115 /* SelfSignedIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentity.swift; sourceTree = "<group>"; };
+		88C6FC3A24D0C73C001BAABB /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
 		88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPinSettingsTableViewController.swift; sourceTree = "<group>"; };
 		88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestView.swift; sourceTree = "<group>"; };
 		88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsInteraction.swift; sourceTree = "<group>"; };
@@ -3128,6 +3130,7 @@
 			children = (
 				8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */,
 				8851DB4024CCE9E5001EACD2 /* Mention.swift */,
+				88C6FC3A24D0C73C001BAABB /* MentionPicker.swift */,
 			);
 			path = Mentions;
 			sourceTree = "<group>";
@@ -4610,6 +4613,7 @@
 				34BB3C6123C6644B001651FC /* GroupsV2Impl.swift in Sources */,
 				88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
+				88C6FC3B24D0C73C001BAABB /* MentionPicker.swift in Sources */,
 				34C529092361D3540009DB2A /* ApprovalFooterView.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
