@@ -2595,8 +2595,8 @@
 
 "vc_pn_mode_title" = "推送通知";
 "vc_pn_mode_explanation" = "Session可以通过两种方式处理推送通知。选择之前，请务必仔细阅读说明。";
-"vc_pn_mode_apns_option_title" = "Firebase云消息传递";
-"vc_pn_mode_apns_option_explanation" = "会话将使用 Firebase 云消息服务接收推送通知。您会立即可靠地收到新消息的通知。使用 APNs 意味着您的 IP 地址和设备令牌将向 Apple 公开。如果您对其他应用程序使用推送通知，则情况也如此。您的 IP 地址和设备令牌也将向 Loki 公开，但是您的消息仍将经过洋葱路由和端到端加密，因此消息的内容将完全保密。";
+"vc_pn_mode_apns_option_title" = "Apple通知推送服务";
+"vc_pn_mode_apns_option_explanation" = "会话将使用Apple通知推送服务。您会立即可靠地收到新消息的通知。使用 APNs 意味着您的 IP 地址和设备令牌将向 Apple 公开。如果您对其他应用程序使用推送通知，则情况也如此。您的 IP 地址和设备令牌也将向 Loki 公开，但是您的消息仍将经过洋葱路由和端到端加密，因此消息的内容将完全保密。";
 "vc_pn_mode_background_polling_option_title" = "背景轮询";
 "vc_pn_mode_background_polling_option_explanation" = "Session偶尔会在后台检查新消息。这样可以保证完整的元数据保护，但是消息通知可能会大大延迟。";
 "vc_pn_mode_recommended_option_tag" = "推荐的选项";
@@ -2611,8 +2611,8 @@
 
 "sheet_pn_mode_title" = "推送通知";
 "sheet_pn_mode_explanation" = "会话现在具有两种处理推送通知的方式。选择之前，请务必仔细阅读说明。";
-"sheet_pn_mode_apns_option_title" = "Firebase 云消息传递";
-"sheet_pn_mode_apns_option_explanation" = "会话将使用 Firebase 云消息服务接收推送通知。您会立即可靠地收到新消息的通知。使用 APNs 意味着您的 IP 地址和设备令牌将向 Apple 公开。如果您对其他应用程序使用推送通知，则情况也如此。您的 IP 地址和设备令牌也将向 Loki 公开，但是您的消息仍将经过洋葱路由和端到端加密，因此消息的内容将完全保密。";
+"sheet_pn_mode_apns_option_title" = "Apple通知推送服务";
+"sheet_pn_mode_apns_option_explanation" = "会话将使用Apple通知推送服务。您会立即可靠地收到新消息的通知。使用 APNs 意味着您的 IP 地址和设备令牌将向 Apple 公开。如果您对其他应用程序使用推送通知，则情况也如此。您的 IP 地址和设备令牌也将向 Loki 公开，但是您的消息仍将经过洋葱路由和端到端加密，因此消息的内容将完全保密。";
 "sheet_pn_mode_background_polling_option_title" = "背景轮询";
 "sheet_pn_mode_background_polling_option_explanation" = "Session偶尔会在后台检查新消息。这样可以保证完整的元数据保护，但是消息通知可能会大大延迟。";
 "sheet_pn_mode_recommended_option_tag" = "推荐的";
@@ -2699,7 +2699,7 @@
 
 "preferences_notifications_strategy_category_title" = "通知选项";
 "preferences_notifications_use_apns_option_title" = "使用 APNs";
-"preferences_notifications_use_apns_option_explanation" = "使用 Firebase 云消息可以提供更可靠的推送通知，但会将您的 IP 和设备令牌公开给 Apple 和 Loki。";
+"preferences_notifications_use_apns_option_explanation" = "使用Apple通知推送服务可以提供更可靠的推送通知，但会将您的 IP 和设备令牌公开给 Apple 和 Loki。";
 
 "modal_link_device_slave_mode_title_1" = "等待授权";
 "modal_link_device_slave_mode_title_2" = "设备链接授权";
