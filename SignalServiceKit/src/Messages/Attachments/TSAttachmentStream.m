@@ -1148,7 +1148,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable SSKProtoAttachmentPointer *)buildProto
 {
-    OWSAssertDebug(self.serverId > 0);
+    BOOL isValidV1orV2 = self.serverId > 0;
+    BOOL isValidV3 = (self.cdnKey.length > 0 && self.cdnNumber > 0);
+    OWSAssertDebug(isValidV1orV2 || isValidV3);
 
     SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointer builder];
     builder.cdnID = self.serverId;

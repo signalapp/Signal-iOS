@@ -12,6 +12,7 @@ public extension AFHTTPSessionManager {
     private enum Verb {
         case get
         case post
+        case put
     }
 
     func getPromise(_ urlString: String,
@@ -28,6 +29,13 @@ public extension AFHTTPSessionManager {
                      progress: ProgressBlock? = nil) -> Promise<Response> {
 
         performRequest(urlString, verb: .post, headers: headers, parameters: parameters, progress: progress)
+    }
+
+    func putPromise(_ urlString: String,
+                     headers: [String: String]? = nil,
+                     parameters: [String: AnyObject]? = nil) -> Promise<Response> {
+
+        performRequest(urlString, verb: .put, headers: headers, parameters: parameters)
     }
 
     private func performRequest(_ urlString: String,
@@ -53,7 +61,6 @@ public extension AFHTTPSessionManager {
                 Logger.warn("Request failed: \(error)")
             } else {
                 if let task = task {
-                    Logger.info("---- task: \(task)")
                     #if TESTABLE_BUILD
                     TSNetworkManager.logCurl(for: task)
                     #endif
@@ -63,11 +70,15 @@ public extension AFHTTPSessionManager {
             resolver.reject(error)
         }
         switch verb {
-        case .post:
-            post(urlString, parameters: parameters, progress: progress, success: success, failure: failure)
         case .get:
             get(urlString, parameters: parameters, progress: progress, success: success, failure: failure)
+        case .post:
+            post(urlString, parameters: parameters, progress: progress, success: success, failure: failure)
+        case .put:
+            put(urlString, parameters: parameters, success: success, failure: failure)
         }
         return promise
     }
+
+    // TODO: Add dataTaskPromise().
 }

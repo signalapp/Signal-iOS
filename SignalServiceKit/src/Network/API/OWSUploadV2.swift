@@ -223,21 +223,16 @@ public class OWSAttachmentUploadV2: NSObject {
                 return (form, attachmentData)
             }
         }.then(on: .global()) { (form: OWSUploadFormV3, attachmentData: Data) -> Promise<(form: OWSUploadFormV3, attachmentData: Data, locationUrl: URL)> in
-            return firstly { () -> Promise<URL> in
+            return firstly {
                 return self.fetchResumableUploadLocationV3(form: form,
                                                            attachmentData: attachmentData)
             }.map(on: .global()) { (locationUrl: URL) in
-                //                return (form, attachmentData)
                 return (form, attachmentData, locationUrl)
             }
-        }.map(on: .global()) { (_) throws -> Void in
-            //            let uploadUrlPath = "attachments/"
-            //            return OWSUploadV3.upload(data: attachmentData,
-            //                                      uploadForm: form,
-            //                                      uploadUrlPath: uploadUrlPath,
-            //                                      progressBlock: progressBlock)
-
-            throw OWSAssertionError("TODO")
+        }.then(on: .global()) { (form: OWSUploadFormV3, attachmentData: Data, locationUrl: URL) in
+            self.performResumableUploadV3(form: form,
+                                          attachmentData: attachmentData,
+                                          locationUrl: locationUrl)
         }.map(on: .global()) { (_) throws -> Void in
             self.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -252,7 +247,7 @@ public class OWSAttachmentUploadV2: NSObject {
             headers["Content-Length"] = OWSFormat.formatInt(attachmentData.count)
             headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
 
-            return sessionManager.postPromise(urlString)
+            return sessionManager.postPromise(urlString, headers: headers)
         }.map(on: .global()) { (task: URLSessionDataTask, _: Any?) in
             guard let response = task.response as? HTTPURLResponse else {
                 throw OWSAssertionError("Missing response.")
@@ -267,6 +262,95 @@ public class OWSAttachmentUploadV2: NSObject {
                 throw OWSAssertionError("Invalid location header.")
             }
             return locationUrl
+        }
+    }
+
+    private func performResumableUploadV3(form: OWSUploadFormV3,
+                                          attachmentData: Data,
+                                          locationUrl: URL) -> Promise<Void> {
+        self.resumableUploadAttemptV3(form: form,
+                                      attachmentData: attachmentData,
+                                      locationUrl: locationUrl)
+    }
+
+    private func resumableUploadAttemptV3(form: OWSUploadFormV3,
+                                          attachmentData: Data,
+                                          locationUrl: URL,
+                                          attemptCount: Int = 0) -> Promise<Void> {
+        return firstly(on: .global()) { () -> Promise<Int> in
+            let isRetry = attemptCount > 0
+            guard isRetry else {
+                return Promise.value(0)
+            }
+            // Determine how much has already been uploaded.
+            return self.getResumableUploadProgressV3(form: form,
+                                                     attachmentData: attachmentData,
+                                                     locationUrl: locationUrl)
+        }.then(on: .global()) { (progress: Int) -> Promise<Void> in
+            if progress > attachmentData.count {
+                throw OWSAssertionError("Unexpected content length.")
+            }
+            if progress == attachmentData.count {
+                // Upload is already complete.
+                return Promise.value(())
+            }
+
+            let urlString = locationUrl.absoluteString
+            let dataToUpload = attachmentData.suffix(from: progress)
+            guard dataToUpload.count + progress == attachmentData.count else {
+                throw OWSAssertionError("Could not slice attachment data.")
+            }
+
+            // Example:
+            //
+            // Content-Range: bytes 2359296-7351374/7351375
+            // Content-Length: 4992079
+            let headers: [String: String] = [
+                "Content-Length": OWSFormat.formatInt(dataToUpload.count),
+                "Content-Range": "bytes \(OWSFormat.formatInt(progress))-\(OWSFormat.formatInt(attachmentData.count - 1))/\(OWSFormat.formatInt(attachmentData.count))"
+            ]
+
+            // We use a AFHTTPSessionManager so that we can use OWSHTTPSecurityPolicy.
+            // It doesn't matter which session manager we use.
+            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
+            let session = sessionManager.session
+            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload).asVoid()
+        }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+            // TODO: Tune this value.
+            let maxRetryCount: Int = 16
+            guard attemptCount < maxRetryCount else {
+                throw error
+            }
+            return self.resumableUploadAttemptV3(form: form,
+                                                 attachmentData: attachmentData,
+                                                 locationUrl: locationUrl,
+                                                 attemptCount: attemptCount + 1)
+        }
+    }
+
+    private func getResumableUploadProgressV3(form: OWSUploadFormV3,
+                                              attachmentData: Data,
+                                              locationUrl: URL) -> Promise<Int> {
+        return firstly(on: .global()) { () -> Promise<URLSession.Response> in
+            let urlString = locationUrl.absoluteString
+            let headers: [String: String] = [
+                "Content-Length": OWSFormat.formatInt(0),
+                "Content-Range": "bytes */\(OWSFormat.formatInt(attachmentData.count))"
+            ]
+
+            // We use a AFHTTPSessionManager so that we can use OWSHTTPSecurityPolicy.
+            // It doesn't matter which session manager we use.
+            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
+            let session = sessionManager.session
+            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: Data())
+        }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
+            guard let contentLengthHeader = response.allHeaderFields["Content-Length"] as? String else {
+                throw OWSAssertionError("Missing content length header.")
+            }
+            guard let contentLength = Int(contentLengthHeader) else {
+                throw OWSAssertionError("Invalid content length header.")
+            }
+            return contentLength
         }
     }
 }
@@ -287,6 +371,7 @@ public extension OWSUploadV2 {
                       uploadForm: OWSUploadFormV2,
                       uploadUrlPath: String,
                       progressBlock: ((Progress) -> Void)? = nil) -> Promise<String> {
+
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {
             self.uploadSessionManager.post(uploadUrlPath,
