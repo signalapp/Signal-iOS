@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,11 +18,14 @@ import UIKit
         let existingString = textField.text ?? ""
 
         // Given an NSRange, we need to interact with the NS flavor of substring
-        let removedString = (existingString as NSString).substring(with: editingRange)
 
-        let lengthOfRemainingExistingString = byteLength(existingString) - byteLength(removedString)
+        // Filtering the string for display may insert some new characters. We need
+        // to verify that after insertion the string is still within our byte bounds.
+        let filteredForDisplay = (existingString as NSString)
+            .replacingCharacters(in: editingRange, with: replacementString)
+            .filterStringForDisplay()
 
-        let newLength = lengthOfRemainingExistingString + byteLength(replacementString)
+        let newLength = byteLength(filteredForDisplay)
 
         if (newLength <= byteLimit) {
             return true
@@ -34,14 +37,17 @@ import UIKit
         }
 
         // However if pasting, accept as much of the string as possible.
-        let availableSpace = byteLimit - lengthOfRemainingExistingString
-
         var acceptableSubstring = ""
 
         for (_, char) in replacementString.enumerated() {
             var maybeAcceptableSubstring = acceptableSubstring
             maybeAcceptableSubstring.append(char)
-            if (byteLength(maybeAcceptableSubstring) <= availableSpace) {
+
+            let newFilteredString = (existingString as NSString)
+                .replacingCharacters(in: editingRange, with: maybeAcceptableSubstring)
+                .filterStringForDisplay()
+
+            if (byteLength(newFilteredString) <= byteLimit) {
                 acceptableSubstring = maybeAcceptableSubstring
             } else {
                 break

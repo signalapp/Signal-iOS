@@ -635,7 +635,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     // TODO: Possibly filter invalid input.
     return [TextFieldHelper textField:textField
         shouldChangeCharactersInRange:editingRange
-                    replacementString:insertionText
+                    replacementString:insertionText.withoutBidiControlCharacters
                             byteLimit:kOWSProfileManager_NameDataLength];
 }
 
