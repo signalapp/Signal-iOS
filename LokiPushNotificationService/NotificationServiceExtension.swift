@@ -16,9 +16,9 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         notificationContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        // The code using DispatchQueue.main.async { self.setUpIfNecessary(){ Modify the notification content } } will somehow cause a freezing when the second PN comes
+        // The code using DispatchQueue.main.async { self.setUpIfNecessary() { Modify the notification content } } will somehow cause a freeze when a second PN comes
         
-        DispatchQueue.main.sync { self.setUpIfNecessary(){} }
+        DispatchQueue.main.sync { self.setUpIfNecessary() {} }
         
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             if let notificationContent = self.notificationContent {

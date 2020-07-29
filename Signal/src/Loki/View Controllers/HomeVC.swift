@@ -212,7 +212,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         isObservingDatabase = isViewVisible && CurrentAppContext().isAppForegroundAndActive()
     }
     
-    private func updateThreadMapping() {
+    private func updateYDBThreadMapping() {
         uiDatabaseConnection.beginLongLivedReadTransaction()
         uiDatabaseConnection.read { transaction in
             self.threads.update(with: transaction)
@@ -221,7 +221,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     private func reload() {
         AssertIsOnMainThread()
-        updateThreadMapping()
+        updateYDBThreadMapping()
         threadViewModelCache.removeAll()
         tableView.reloadData()
         emptyStateView.isHidden = (threadCount != 0)
@@ -253,7 +253,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                 }
             }
         }
-        
         var sectionChanges = NSArray()
         var rowChanges = NSArray()
         ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)
@@ -280,7 +279,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     @objc private func handleApplicationDidBecomeActiveNotification(_ notification: Notification) {
         updateIsObservingDatabase()
-        updateThreadMapping()
+        updateYDBThreadMapping()
     }
     
     @objc private func handleApplicationWillResignActiveNotification(_ notification: Notification) {
