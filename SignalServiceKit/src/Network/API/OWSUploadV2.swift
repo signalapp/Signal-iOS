@@ -39,6 +39,10 @@ public class OWSAttachmentUploadV2: NSObject {
         return SSKEnvironment.shared.networkManager
     }
 
+//    private var cdnSessionManager: AFHTTPSessionManager {
+//        return OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: 0)
+//    }
+
     // MARK: -
 
     // These properties are only set for v2 uploads.
@@ -218,7 +222,21 @@ public class OWSAttachmentUploadV2: NSObject {
             }.map(on: .global()) { (attachmentData: Data) in
                 return (form, attachmentData)
             }
-        }.then(on: .global()) { (_: OWSUploadFormV3, _: Data) -> Promise<String> in
+        }.then(on: .global()) { (form: OWSUploadFormV3, attachmentData: Data) -> Promise<(form: OWSUploadFormV3, attachmentData: Data, locationUrl: URL)> in
+            return firstly { () -> Promise<URL> in
+                Logger.verbose("form: \(form)")
+                Logger.verbose("cdnNumber: \(form.cdnNumber)")
+                Logger.verbose("cdnKey: \(form.cdnKey)")
+                Logger.verbose("headers: \(form.headers)")
+                Logger.verbose("signedUploadLocation: \(form.signedUploadLocation)")
+                Logger.flush()
+                return self.fetchResumableUploadLocationV3(form: form,
+                                                           attachmentData: attachmentData)
+            }.map(on: .global()) { (locationUrl: URL) in
+//                return (form, attachmentData)
+                return (form, attachmentData, locationUrl)
+            }
+        }.map(on: .global()) { (_) throws -> Void in
 //            let uploadUrlPath = "attachments/"
 //            return OWSUploadV3.upload(data: attachmentData,
 //                                      uploadForm: form,
@@ -226,8 +244,209 @@ public class OWSAttachmentUploadV2: NSObject {
 //                                      progressBlock: progressBlock)
 
             throw OWSAssertionError("TODO")
-        }.map(on: .global()) { [weak self] (_) throws -> Void in
-            self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
+        }.map(on: .global()) { (_) throws -> Void in
+            self.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
+        }
+    }
+
+    private func fetchResumableUploadLocationV3(form: OWSUploadFormV3,
+                                                attachmentData: Data) -> Promise<URL> {
+        Logger.verbose("-----")
+
+        return firstly(on: .global()) { () -> Promise<URL> in
+//            let sessionConfiguration = URLSessionConfiguration.ephemeral
+//            let sessionManager = AFHTTPSessionManager(baseURL: nil,
+//                                                      sessionConfiguration: sessionConfiguration)
+            let urlString = form.signedUploadLocation
+//            guard let url = URL(string: urlString) else {
+//                throw OWSAssertionError("Invalid signedUploadLocation.")
+//            }
+//            var request = URLRequest(url: url)
+//            let headers: [String: String] = form.headers
+            let sessionManager = OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: form.cdnNumber)
+            for (headerField, headerValue) in form.headers {
+//                request.addValue(headerValue, forHTTPHeaderField: headerField)
+                sessionManager.requestSerializer.setValue(headerValue, forHTTPHeaderField: headerField)
+            }
+//            sessionManager.requestSerializer.setValue(headerValue, forHTTPHeaderField: headerField)
+            sessionManager.requestSerializer.setValue("0", forHTTPHeaderField: "Content-Length")
+//            request.addValue("0", forHTTPHeaderField: "Content-Length")
+            // TODO:
+            sessionManager.requestSerializer.setValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
+//            request.addValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
+
+            //        jsonSessionManager.requestSerializer = AFJSONRequestSerializer()
+//        jsonSessionManager.responseSerializer = AFJSONResponseSerializer()
+
+//        sessionManager: AFHTTPSessionManager) -> Promise<ServiceResponse> {
+
+            let (promise, resolver) = Promise<URL>.pending()
+
+            sessionManager.post(urlString,
+                                  parameters: [:],
+                                  progress: nil,
+                                  success: { (task: URLSessionDataTask, _) in
+                                    guard let response = task.response as? HTTPURLResponse else {
+                                        resolver.reject(OWSAssertionError("Missing response."))
+                                        return
+                                    }
+                                    guard response.statusCode == 201 else {
+                                        resolver.reject(OWSAssertionError("Invalid statusCode: \(response.statusCode)."))
+                                        return
+                                    }
+                                    Logger.info("response: \(response)")
+                                    for (key, value) in response.allHeaderFields {
+                                        Logger.info("key: \(key), value: \(value), ")
+                                    }
+                                    guard let locationHeader = response.allHeaderFields["Location"] as? String else {
+                                        resolver.reject(OWSAssertionError("Missing location header."))
+                                        return
+                                    }
+                                    Logger.info("locationHeader: \(locationHeader)")
+                                    guard let locationUrl = URL(string: locationHeader) else {
+                                        resolver.reject(OWSAssertionError("Invalid location header."))
+                                        return
+                                    }
+                                    Logger.info("Request succeeded")
+                                    Logger.flush()
+                                    //                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
+                                    //                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
+                                    //                                    return
+                                    //                                }
+                                    //                                resolver.fulfill(imageInfos)
+                                    resolver.fulfill(locationUrl)
+            },
+                                  failure: { task, error in
+                                    if let task = task {
+                                        Logger.info("---- task: \(task)")
+                                        #if TESTABLE_BUILD
+                                        TSNetworkManager.logCurl(for: task)
+                                        #endif
+                                    }
+                                    if IsNetworkConnectivityFailure(error) {
+                                        Logger.warn("Request failed: \(error)")
+                                    } else {
+                                        owsFailDebug("Request failed: \(error)")
+                                    }
+                                    resolver.reject(error)
+            })
+
+//            let task = cdnSessionManager.downloadTask(with: request as URLRequest,
+//                                                      progress: nil,
+//                                                      destination: { (_, _) -> URL in
+//                                                        return tempFileURL
+//            },
+//                                                      completionHandler: { [weak self] (_, completionUrl, error) in
+//                                                        guard let _ = self else {
+//                                                            return
+//                                                        }
+//                                                        if let error = error {
+//                                                            Logger.warn("Download failed: \(error)")
+//                                                            let errorCopy = error as NSError
+//                                                            errorCopy.isRetryable = !errorCopy.hasFatalAFStatusCode()
+//                                                            return resolver.reject(errorCopy)
+//                                                        }
+//                                                        guard completionUrl == tempFileURL else {
+//                                                            owsFailDebug("Unexpected temp file path.")
+//                                                            return resolver.reject(StickerError.assertionFailure)
+//                                                        }
+//                                                        guard let fileSize = OWSFileSystem.fileSize(ofPath: tempFilePath) else {
+//                                                            owsFailDebug("Couldn't determine file size.")
+//                                                            return resolver.reject(StickerError.assertionFailure)
+//                                                        }
+//                                                        if let maxDownloadSize = maxDownloadSize {
+//                                                            guard fileSize.uint64Value <= maxDownloadSize else {
+//                                                                owsFailDebug("Download length exceeds max size.")
+//                                                                return resolver.reject(StickerError.assertionFailure)
+//                                                            }
+//                                                        }
+//
+//                                                        do {
+//                                                            let data = try Data(contentsOf: tempFileURL)
+//                                                            resolver.fulfill(data)
+//                                                        } catch let error as NSError {
+//                                                            owsFailDebug("Could not load data failed: \(error)")
+//
+//                                                            // Fail immediately; do not retry.
+//                                                            error.isRetryable = false
+//                                                            return resolver.reject(error)
+//                                                        }
+//            })
+//            self.task = task
+//            task.resume()
+//
+//
+////            Data?, URLResponse?, Error
+//            let session = URLSession(configuration: .ephemeral)
+//            let task = session.dataTask(with: request) { (data, response, error) in
+//                if let error = error {
+//                    if IsNetworkConnectivityFailure(error) {
+//                        Logger.warn("Request failed: \(error)")
+//                    } else {
+//                        owsFailDebug("Request failed: \(error)")
+//                    }
+//                    resolver.reject(error)
+//                    return
+//                }
+//
+//                guard let data = data else {
+//                    resolver.reject(OWSAssertionError("Missing data."))
+//                    return
+////                    Logger.warn("data was unexpectedly nil")
+////                    resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+////                    return
+//                }
+//
+//                Logger.info("Request succeeded")
+//                Logger.flush()
+//                //                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
+//                //                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
+//                //                                    return
+//                //                                }
+//                //                                resolver.fulfill(imageInfos)
+//                resolver.fulfill("")
+//
+//
+////                do {
+////                    let decoder = JSONDecoder()
+////                    let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
+////                    guard let appStoreRecord = resultSet.results.first else {
+////                        Logger.warn("record was unexpectedly nil")
+////                        resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+////                        return
+////                    }
+////
+////                    resolver.fulfill(appStoreRecord)
+////                } catch {
+////                    resolver.reject(error)
+////                }
+//            }
+//
+//            task.resume()
+//
+////
+////            let task = sessionManager.get(urlString,
+////                               parameters: [:],
+////                               progress: nil,
+////                               success: { _, value in
+////                                Logger.info("Request succeeded")
+////                                Logger.flush()
+//////                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
+//////                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
+//////                                    return
+//////                                }
+//////                                resolver.fulfill(imageInfos)
+////                                resolver.fulfill("")
+////            },
+////                               failure: { _, error in
+////                                if IsNetworkConnectivityFailure(error) {
+////                                    Logger.warn("Request failed: \(error)")
+////                                } else {
+////                                    owsFailDebug("Request failed: \(error)")
+////                                }
+////                                resolver.reject(error)
+////            })
+            return promise
         }
     }
 }
