@@ -338,11 +338,10 @@ public class OWSAttachmentUploadV2: NSObject {
                 "Content-Range": "bytes */\(OWSFormat.formatInt(attachmentData.count))"
             ]
 
-            // We use a AFHTTPSessionManager so that we can use OWSHTTPSecurityPolicy.
+            // We use a AFHTTPSessionManager so that OWSHTTPSecurityPolicy applies.
             // It doesn't matter which session manager we use.
             let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
-            let session = sessionManager.session
-            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: Data())
+            return sessionManager.uploadTaskPromise(urlString, verb: .put, headers: headers, data: Data())
         }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
             guard let contentLengthHeader = response.allHeaderFields["Content-Length"] as? String else {
                 throw OWSAssertionError("Missing content length header.")

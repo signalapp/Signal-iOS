@@ -5,17 +5,17 @@
 import Foundation
 import PromiseKit
 
+public enum HTTPVerb {
+    case get
+    case post
+    case put
+}
+
 public extension URLSession {
     typealias Response = (response: HTTPURLResponse, data: Data?)
 
-    enum Verb {
-        case get
-        case post
-        case put
-    }
-
     func uploadTaskPromise(_ urlString: String,
-                           verb: Verb,
+                           verb: HTTPVerb,
                            headers: [String: String]? = nil,
                            data requestData: Data) -> Promise<Response> {
         guard let url = URL(string: urlString) else {

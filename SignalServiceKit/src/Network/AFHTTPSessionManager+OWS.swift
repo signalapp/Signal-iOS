@@ -9,12 +9,6 @@ public extension AFHTTPSessionManager {
     typealias Response = (task: URLSessionDataTask, responseObject: Any?)
     typealias ProgressBlock = (Progress) -> Void
 
-    private enum Verb {
-        case get
-        case post
-        case put
-    }
-
     func getPromise(_ urlString: String,
                      headers: [String: String]? = nil,
                      parameters: [String: AnyObject]? = nil,
@@ -39,7 +33,7 @@ public extension AFHTTPSessionManager {
     }
 
     private func performRequest(_ urlString: String,
-                                verb: Verb,
+                                verb: HTTPVerb,
                                 headers: [String: String]? = nil,
                                 parameters: [String: AnyObject]? = nil,
                                 progress: ProgressBlock? = nil) -> Promise<Response> {
@@ -80,5 +74,16 @@ public extension AFHTTPSessionManager {
         return promise
     }
 
-    // TODO: Add dataTaskPromise().
+    func uploadTaskPromise(_ urlString: String,
+                           verb: HTTPVerb,
+                           headers: [String: String]? = nil,
+                           data requestData: Data) -> Promise<URLSession.Response> {
+        session.uploadTaskPromise(urlString, verb: verb, headers: headers, data: requestData)
+    }
+
+    func uploadTaskPromise(request: URLRequest, data requestData: Data) -> Promise<URLSession.Response> {
+        session.uploadTaskPromise(request: request, data: requestData)
+    }
+
+    // TODO: Add downloadTaskPromise().
 }
