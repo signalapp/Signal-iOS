@@ -39,9 +39,9 @@ public class OWSAttachmentUploadV2: NSObject {
         return SSKEnvironment.shared.networkManager
     }
 
-//    private var cdnSessionManager: AFHTTPSessionManager {
-//        return OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: 0)
-//    }
+    private var signalService: OWSSignalService {
+        return OWSSignalService.sharedInstance()
+    }
 
     // MARK: -
 
@@ -154,7 +154,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 throw OWSAssertionError("Upload deallocated")
             }
             return self.parseUploadFormV2(formResponseObject: formResponseObject,
-                                             progressBlock: progressBlock)
+                                          progressBlock: progressBlock)
         }.then(on: .global()) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
             return firstly {
                 return self.attachmentData()
@@ -173,7 +173,7 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     private func parseUploadFormV2(formResponseObject: Any?,
-                                      progressBlock: ((Progress) -> Void)? = nil) -> Promise<OWSUploadFormV2> {
+                                   progressBlock: ((Progress) -> Void)? = nil) -> Promise<OWSUploadFormV2> {
 
         return firstly(on: .global()) { () -> OWSUploadFormV2 in
             guard let formDictionary = formResponseObject as? [AnyHashable: Any] else {
@@ -224,24 +224,18 @@ public class OWSAttachmentUploadV2: NSObject {
             }
         }.then(on: .global()) { (form: OWSUploadFormV3, attachmentData: Data) -> Promise<(form: OWSUploadFormV3, attachmentData: Data, locationUrl: URL)> in
             return firstly { () -> Promise<URL> in
-                Logger.verbose("form: \(form)")
-                Logger.verbose("cdnNumber: \(form.cdnNumber)")
-                Logger.verbose("cdnKey: \(form.cdnKey)")
-                Logger.verbose("headers: \(form.headers)")
-                Logger.verbose("signedUploadLocation: \(form.signedUploadLocation)")
-                Logger.flush()
                 return self.fetchResumableUploadLocationV3(form: form,
                                                            attachmentData: attachmentData)
             }.map(on: .global()) { (locationUrl: URL) in
-//                return (form, attachmentData)
+                //                return (form, attachmentData)
                 return (form, attachmentData, locationUrl)
             }
         }.map(on: .global()) { (_) throws -> Void in
-//            let uploadUrlPath = "attachments/"
-//            return OWSUploadV3.upload(data: attachmentData,
-//                                      uploadForm: form,
-//                                      uploadUrlPath: uploadUrlPath,
-//                                      progressBlock: progressBlock)
+            //            let uploadUrlPath = "attachments/"
+            //            return OWSUploadV3.upload(data: attachmentData,
+            //                                      uploadForm: form,
+            //                                      uploadUrlPath: uploadUrlPath,
+            //                                      progressBlock: progressBlock)
 
             throw OWSAssertionError("TODO")
         }.map(on: .global()) { (_) throws -> Void in
@@ -251,202 +245,28 @@ public class OWSAttachmentUploadV2: NSObject {
 
     private func fetchResumableUploadLocationV3(form: OWSUploadFormV3,
                                                 attachmentData: Data) -> Promise<URL> {
-        Logger.verbose("-----")
-
-        return firstly(on: .global()) { () -> Promise<URL> in
-//            let sessionConfiguration = URLSessionConfiguration.ephemeral
-//            let sessionManager = AFHTTPSessionManager(baseURL: nil,
-//                                                      sessionConfiguration: sessionConfiguration)
+        return firstly(on: .global()) { () -> Promise<AFHTTPSessionManager.Response> in
             let urlString = form.signedUploadLocation
-//            guard let url = URL(string: urlString) else {
-//                throw OWSAssertionError("Invalid signedUploadLocation.")
-//            }
-//            var request = URLRequest(url: url)
-//            let headers: [String: String] = form.headers
-            let sessionManager = OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: form.cdnNumber)
-            for (headerField, headerValue) in form.headers {
-//                request.addValue(headerValue, forHTTPHeaderField: headerField)
-                sessionManager.requestSerializer.setValue(headerValue, forHTTPHeaderField: headerField)
+            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
+            var headers = form.headers
+            headers["Content-Length"] = OWSFormat.formatInt(attachmentData.count)
+            headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
+
+            return sessionManager.postPromise(urlString)
+        }.map(on: .global()) { (task: URLSessionDataTask, _: Any?) in
+            guard let response = task.response as? HTTPURLResponse else {
+                throw OWSAssertionError("Missing response.")
             }
-//            sessionManager.requestSerializer.setValue(headerValue, forHTTPHeaderField: headerField)
-            sessionManager.requestSerializer.setValue("0", forHTTPHeaderField: "Content-Length")
-//            request.addValue("0", forHTTPHeaderField: "Content-Length")
-            // TODO:
-            sessionManager.requestSerializer.setValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
-//            request.addValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
-
-            //        jsonSessionManager.requestSerializer = AFJSONRequestSerializer()
-//        jsonSessionManager.responseSerializer = AFJSONResponseSerializer()
-
-//        sessionManager: AFHTTPSessionManager) -> Promise<ServiceResponse> {
-
-            let (promise, resolver) = Promise<URL>.pending()
-
-            sessionManager.post(urlString,
-                                  parameters: [:],
-                                  progress: nil,
-                                  success: { (task: URLSessionDataTask, _) in
-                                    guard let response = task.response as? HTTPURLResponse else {
-                                        resolver.reject(OWSAssertionError("Missing response."))
-                                        return
-                                    }
-                                    guard response.statusCode == 201 else {
-                                        resolver.reject(OWSAssertionError("Invalid statusCode: \(response.statusCode)."))
-                                        return
-                                    }
-                                    Logger.info("response: \(response)")
-                                    for (key, value) in response.allHeaderFields {
-                                        Logger.info("key: \(key), value: \(value), ")
-                                    }
-                                    guard let locationHeader = response.allHeaderFields["Location"] as? String else {
-                                        resolver.reject(OWSAssertionError("Missing location header."))
-                                        return
-                                    }
-                                    Logger.info("locationHeader: \(locationHeader)")
-                                    guard let locationUrl = URL(string: locationHeader) else {
-                                        resolver.reject(OWSAssertionError("Invalid location header."))
-                                        return
-                                    }
-                                    Logger.info("Request succeeded")
-                                    Logger.flush()
-                                    //                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
-                                    //                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
-                                    //                                    return
-                                    //                                }
-                                    //                                resolver.fulfill(imageInfos)
-                                    resolver.fulfill(locationUrl)
-            },
-                                  failure: { task, error in
-                                    if let task = task {
-                                        Logger.info("---- task: \(task)")
-                                        #if TESTABLE_BUILD
-                                        TSNetworkManager.logCurl(for: task)
-                                        #endif
-                                    }
-                                    if IsNetworkConnectivityFailure(error) {
-                                        Logger.warn("Request failed: \(error)")
-                                    } else {
-                                        owsFailDebug("Request failed: \(error)")
-                                    }
-                                    resolver.reject(error)
-            })
-
-//            let task = cdnSessionManager.downloadTask(with: request as URLRequest,
-//                                                      progress: nil,
-//                                                      destination: { (_, _) -> URL in
-//                                                        return tempFileURL
-//            },
-//                                                      completionHandler: { [weak self] (_, completionUrl, error) in
-//                                                        guard let _ = self else {
-//                                                            return
-//                                                        }
-//                                                        if let error = error {
-//                                                            Logger.warn("Download failed: \(error)")
-//                                                            let errorCopy = error as NSError
-//                                                            errorCopy.isRetryable = !errorCopy.hasFatalAFStatusCode()
-//                                                            return resolver.reject(errorCopy)
-//                                                        }
-//                                                        guard completionUrl == tempFileURL else {
-//                                                            owsFailDebug("Unexpected temp file path.")
-//                                                            return resolver.reject(StickerError.assertionFailure)
-//                                                        }
-//                                                        guard let fileSize = OWSFileSystem.fileSize(ofPath: tempFilePath) else {
-//                                                            owsFailDebug("Couldn't determine file size.")
-//                                                            return resolver.reject(StickerError.assertionFailure)
-//                                                        }
-//                                                        if let maxDownloadSize = maxDownloadSize {
-//                                                            guard fileSize.uint64Value <= maxDownloadSize else {
-//                                                                owsFailDebug("Download length exceeds max size.")
-//                                                                return resolver.reject(StickerError.assertionFailure)
-//                                                            }
-//                                                        }
-//
-//                                                        do {
-//                                                            let data = try Data(contentsOf: tempFileURL)
-//                                                            resolver.fulfill(data)
-//                                                        } catch let error as NSError {
-//                                                            owsFailDebug("Could not load data failed: \(error)")
-//
-//                                                            // Fail immediately; do not retry.
-//                                                            error.isRetryable = false
-//                                                            return resolver.reject(error)
-//                                                        }
-//            })
-//            self.task = task
-//            task.resume()
-//
-//
-////            Data?, URLResponse?, Error
-//            let session = URLSession(configuration: .ephemeral)
-//            let task = session.dataTask(with: request) { (data, response, error) in
-//                if let error = error {
-//                    if IsNetworkConnectivityFailure(error) {
-//                        Logger.warn("Request failed: \(error)")
-//                    } else {
-//                        owsFailDebug("Request failed: \(error)")
-//                    }
-//                    resolver.reject(error)
-//                    return
-//                }
-//
-//                guard let data = data else {
-//                    resolver.reject(OWSAssertionError("Missing data."))
-//                    return
-////                    Logger.warn("data was unexpectedly nil")
-////                    resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-////                    return
-//                }
-//
-//                Logger.info("Request succeeded")
-//                Logger.flush()
-//                //                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
-//                //                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
-//                //                                    return
-//                //                                }
-//                //                                resolver.fulfill(imageInfos)
-//                resolver.fulfill("")
-//
-//
-////                do {
-////                    let decoder = JSONDecoder()
-////                    let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
-////                    guard let appStoreRecord = resultSet.results.first else {
-////                        Logger.warn("record was unexpectedly nil")
-////                        resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-////                        return
-////                    }
-////
-////                    resolver.fulfill(appStoreRecord)
-////                } catch {
-////                    resolver.reject(error)
-////                }
-//            }
-//
-//            task.resume()
-//
-////
-////            let task = sessionManager.get(urlString,
-////                               parameters: [:],
-////                               progress: nil,
-////                               success: { _, value in
-////                                Logger.info("Request succeeded")
-////                                Logger.flush()
-//////                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
-//////                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
-//////                                    return
-//////                                }
-//////                                resolver.fulfill(imageInfos)
-////                                resolver.fulfill("")
-////            },
-////                               failure: { _, error in
-////                                if IsNetworkConnectivityFailure(error) {
-////                                    Logger.warn("Request failed: \(error)")
-////                                } else {
-////                                    owsFailDebug("Request failed: \(error)")
-////                                }
-////                                resolver.reject(error)
-////            })
-            return promise
+            guard response.statusCode == 201 else {
+                throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
+            }
+            guard let locationHeader = response.allHeaderFields["Location"] as? String else {
+                throw OWSAssertionError("Missing location header.")
+            }
+            guard let locationUrl = URL(string: locationHeader) else {
+                throw OWSAssertionError("Invalid location header.")
+            }
+            return locationUrl
         }
     }
 }
@@ -544,14 +364,14 @@ public extension OWSUploadFormV2 {
         }
 
         return OWSUploadFormV2(acl: acl,
-                             key: key,
-                             policy: policy,
-                             algorithm: algorithm,
-                             credential: credential,
-                             date: date,
-                             signature: signature,
-                             attachmentId: nil,
-                             attachmentIdString: nil)
+                               key: key,
+                               policy: policy,
+                               algorithm: algorithm,
+                               credential: credential,
+                               date: date,
+                               signature: signature,
+                               attachmentId: nil,
+                               attachmentIdString: nil)
     }
 }
 
@@ -564,68 +384,68 @@ private class OWSUploadFormV3: NSObject {
     let cdnKey: String
     let cdnNumber: UInt32
 
-//    let
-//// These properties will be set for all uploads.
-//@property (nonatomic, readonly) NSString *acl;
-//@property (nonatomic, readonly) NSString *key;
-//@property (nonatomic, readonly) NSString *policy;
-//@property (nonatomic, readonly) NSString *algorithm;
-//@property (nonatomic, readonly) NSString *credential;
-//@property (nonatomic, readonly) NSString *date;
-//@property (nonatomic, readonly) NSString *signature;
-//
-//// These properties will be set for all attachment uploads.
-//@property (nonatomic, readonly, nullable) NSNumber *attachmentId;
-//@property (nonatomic, readonly, nullable) NSString *attachmentIdString;
-//
-//+ (instancetype)new NS_UNAVAILABLE;
-//- (instancetype)init NS_UNAVAILABLE;
-//
-//- (instancetype)initWithAcl:(NSString *)acl
-//key:(NSString *)key
-//policy:(NSString *)policy
-//algorithm:(NSString *)algorithm
-//credential:(NSString *)credential
-//date:(NSString *)date
-//signature:(NSString *)signature
-//attachmentId:(nullable NSNumber *)attachmentId
-//attachmentIdString:(nullable NSString *)attachmentIdString NS_DESIGNATED_INITIALIZER;
-//
-//+ (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject;
-//
-//- (void)appendToForm:(id<AFMultipartFormData>)formData;
-//
-//@end
-//
-//
-//    // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-//    @implementation OWSUploadFormV2
-//
-//    - (instancetype)initWithAcl:(NSString *)acl
-//    key:(NSString *)key
-//    policy:(NSString *)policy
-//    algorithm:(NSString *)algorithm
-//    credential:(NSString *)credential
-//    date:(NSString *)date
-//    signature:(NSString *)signature
-//    attachmentId:(nullable NSNumber *)attachmentId
-//    attachmentIdString:(nullable NSString *)attachmentIdString
-//    {
-//    self = [super init];
-//
-//    if (self) {
-//    _acl = acl;
-//    _key = key;
-//    _policy = policy;
-//    _algorithm = algorithm;
-//    _credential = credential;
-//    _date = date;
-//    _signature = signature;
-//    _attachmentId = attachmentId;
-//    _attachmentIdString = attachmentIdString;
-//    }
-//    return self;
-//    }
+    //    let
+    //// These properties will be set for all uploads.
+    //@property (nonatomic, readonly) NSString *acl;
+    //@property (nonatomic, readonly) NSString *key;
+    //@property (nonatomic, readonly) NSString *policy;
+    //@property (nonatomic, readonly) NSString *algorithm;
+    //@property (nonatomic, readonly) NSString *credential;
+    //@property (nonatomic, readonly) NSString *date;
+    //@property (nonatomic, readonly) NSString *signature;
+    //
+    //// These properties will be set for all attachment uploads.
+    //@property (nonatomic, readonly, nullable) NSNumber *attachmentId;
+    //@property (nonatomic, readonly, nullable) NSString *attachmentIdString;
+    //
+    //+ (instancetype)new NS_UNAVAILABLE;
+    //- (instancetype)init NS_UNAVAILABLE;
+    //
+    //- (instancetype)initWithAcl:(NSString *)acl
+    //key:(NSString *)key
+    //policy:(NSString *)policy
+    //algorithm:(NSString *)algorithm
+    //credential:(NSString *)credential
+    //date:(NSString *)date
+    //signature:(NSString *)signature
+    //attachmentId:(nullable NSNumber *)attachmentId
+    //attachmentIdString:(nullable NSString *)attachmentIdString NS_DESIGNATED_INITIALIZER;
+    //
+    //+ (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject;
+    //
+    //- (void)appendToForm:(id<AFMultipartFormData>)formData;
+    //
+    //@end
+    //
+    //
+    //    // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
+    //    @implementation OWSUploadFormV2
+    //
+    //    - (instancetype)initWithAcl:(NSString *)acl
+    //    key:(NSString *)key
+    //    policy:(NSString *)policy
+    //    algorithm:(NSString *)algorithm
+    //    credential:(NSString *)credential
+    //    date:(NSString *)date
+    //    signature:(NSString *)signature
+    //    attachmentId:(nullable NSNumber *)attachmentId
+    //    attachmentIdString:(nullable NSString *)attachmentIdString
+    //    {
+    //    self = [super init];
+    //
+    //    if (self) {
+    //    _acl = acl;
+    //    _key = key;
+    //    _policy = policy;
+    //    _algorithm = algorithm;
+    //    _credential = credential;
+    //    _date = date;
+    //    _signature = signature;
+    //    _attachmentId = attachmentId;
+    //    _attachmentIdString = attachmentIdString;
+    //    }
+    //    return self;
+    //    }
 
     required init(responseObject: Any?) throws {
         Logger.verbose("responseObject: \(responseObject)")
@@ -647,23 +467,23 @@ private class OWSUploadFormV3: NSObject {
         }
         headers = try parser.required(key: "headers")
     }
-//
-//
-//    - (void)appendToForm:(id<AFMultipartFormData>)formData
-//    {
-//    // We have to build up the form manually vs. simply passing in a paramaters dict
-//    // because AWS is sensitive to the order of the form params (at least the "key"
-//    // field must occur early on).
-//    //
-//    // For consistency, all fields are ordered here in a known working order.
-//    AppendMultipartFormPath(formData, @"key", self.key);
-//    AppendMultipartFormPath(formData, @"acl", self.acl);
-//    AppendMultipartFormPath(formData, @"x-amz-algorithm", self.algorithm);
-//    AppendMultipartFormPath(formData, @"x-amz-credential", self.credential);
-//    AppendMultipartFormPath(formData, @"x-amz-date", self.date);
-//    AppendMultipartFormPath(formData, @"policy", self.policy);
-//    AppendMultipartFormPath(formData, @"x-amz-signature", self.signature);
-//    }
-//
-//    @end
+    //
+    //
+    //    - (void)appendToForm:(id<AFMultipartFormData>)formData
+    //    {
+    //    // We have to build up the form manually vs. simply passing in a paramaters dict
+    //    // because AWS is sensitive to the order of the form params (at least the "key"
+    //    // field must occur early on).
+    //    //
+    //    // For consistency, all fields are ordered here in a known working order.
+    //    AppendMultipartFormPath(formData, @"key", self.key);
+    //    AppendMultipartFormPath(formData, @"acl", self.acl);
+    //    AppendMultipartFormPath(formData, @"x-amz-algorithm", self.algorithm);
+    //    AppendMultipartFormPath(formData, @"x-amz-credential", self.credential);
+    //    AppendMultipartFormPath(formData, @"x-amz-date", self.date);
+    //    AppendMultipartFormPath(formData, @"policy", self.policy);
+    //    AppendMultipartFormPath(formData, @"x-amz-signature", self.signature);
+    //    }
+    //
+    //    @end
 }

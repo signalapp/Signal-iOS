@@ -652,58 +652,45 @@ public class OWSLinkPreviewManager: NSObject {
             return Promise(error: LinkPreviewError.assertionFailure)
         }
 
-        let (promise, resolver) = Promise<Data>.pending()
-        sessionManager.get(urlString,
-                           parameters: [String: AnyObject](),
-                           progress: nil,
-                           success: { task, value in
+        return firstly(on: .global()) { () -> Promise<AFHTTPSessionManager.Response> in
+            guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
+                throw OWSAssertionError("Could not configure trending")
+            }
+            return sessionManager.getPromise(urlString)
+        }.map(on: .global()) { (task: URLSessionDataTask, responseObject: Any?) -> Data in
+            guard let response = task.response as? HTTPURLResponse else {
+                Logger.warn("Invalid response: \(type(of: task.response)).")
+                throw LinkPreviewError.assertionFailure
+            }
+            if let contentType = response.allHeaderFields["Content-Type"] as? String {
+                guard contentType.lowercased().hasPrefix("text/") else {
+                    Logger.warn("Invalid content type: \(contentType).")
+                    throw LinkPreviewError.invalidContent
+                }
+            }
+            guard let data = responseObject as? Data else {
+                Logger.warn("Response object is not data: \(type(of: responseObject)).")
+                throw LinkPreviewError.assertionFailure
+            }
+            guard data.count > 0 else {
+                Logger.warn("Empty data.")
+                throw LinkPreviewError.invalidContent
+            }
+            return data
+        }.recover(on: .global()) { (error: Error) -> Promise<Data> in
+            Logger.verbose("Error: \(error)")
 
-                            guard let response = task.response as? HTTPURLResponse else {
-                                Logger.warn("Invalid response: \(type(of: task.response)).")
-                                resolver.reject(LinkPreviewError.assertionFailure)
-                                return
-                            }
-                            if let contentType = response.allHeaderFields["Content-Type"] as? String {
-                                guard contentType.lowercased().hasPrefix("text/") else {
-                                    Logger.warn("Invalid content type: \(contentType).")
-                                    resolver.reject(LinkPreviewError.invalidContent)
-                                    return
-                                }
-                            }
-                            guard let data = value as? Data else {
-                                Logger.warn("Result is not data: \(type(of: value)).")
-                                resolver.reject(LinkPreviewError.assertionFailure)
-                                return
-                            }
-                            guard data.count > 0 else {
-                                Logger.warn("Empty data: \(type(of: value)).")
-                                resolver.reject(LinkPreviewError.invalidContent)
-                                return
-                            }
-                            resolver.fulfill(data)
-        },
-                           failure: { _, error in
-                            Logger.verbose("Error: \(error)")
+            guard self.isRetryable(error: error) else {
+                Logger.warn("Error is not retryable.")
+                throw LinkPreviewError.couldNotDownload
+            }
 
-                            guard self.isRetryable(error: error) else {
-                                Logger.warn("Error is not retryable.")
-                                resolver.reject(LinkPreviewError.couldNotDownload)
-                                return
-                            }
-
-                            guard remainingRetries > 0 else {
-                                Logger.warn("No more retries.")
-                                resolver.reject(LinkPreviewError.couldNotDownload)
-                                return
-                            }
-                            self.downloadLink(url: urlString, remainingRetries: remainingRetries - 1)
-                            .done(on: DispatchQueue.global()) { (data) in
-                                resolver.fulfill(data)
-                            }.catch(on: DispatchQueue.global()) { (error) in
-                                resolver.reject(error)
-                            }
-        })
-        return promise
+            guard remainingRetries > 0 else {
+                Logger.warn("No more retries.")
+                throw LinkPreviewError.couldNotDownload
+            }
+            return self.downloadLink(url: urlString, remainingRetries: remainingRetries - 1)
+        }
     }
 
     private func downloadImage(url urlString: String, imageMimeType: String) -> Promise<Data> {

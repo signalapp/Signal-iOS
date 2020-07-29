@@ -5,8 +5,8 @@
 #import "ConversationListCell.h"
 #import "OWSAvatarBuilder.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSFormat.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>

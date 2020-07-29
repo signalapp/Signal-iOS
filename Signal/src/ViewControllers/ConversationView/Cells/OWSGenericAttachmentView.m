@@ -9,8 +9,8 @@
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/OWSFormat.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
