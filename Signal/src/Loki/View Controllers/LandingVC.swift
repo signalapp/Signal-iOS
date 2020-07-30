@@ -59,11 +59,11 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         // Set up link button container
         let linkButtonContainer = UIView()
         linkButtonContainer.set(.height, to: Values.onboardingButtonBottomOffset)
-        linkButtonContainer.addSubview(linkButton)
-        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: Values.massiveSpacing)
-        linkButton.pin(.top, to: .top, of: linkButtonContainer)
-        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: Values.massiveSpacing)
-        linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: isIPhone5OrSmaller ? 6 : 10)
+//        linkButtonContainer.addSubview(linkButton)
+//        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: Values.massiveSpacing)
+//        linkButton.pin(.top, to: .top, of: linkButtonContainer)
+//        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: Values.massiveSpacing)
+//        linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: isIPhone5OrSmaller ? 6 : 10)
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, restoreButton ])
         buttonStackView.axis = .vertical
