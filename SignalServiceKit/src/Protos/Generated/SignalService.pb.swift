@@ -430,7 +430,7 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// @required
+    /// Legacy/deprecated; replaced by 'opaque'
     var sdp: String {
       get {return _sdp ?? String()}
       set {_sdp = newValue}
@@ -448,6 +448,15 @@ struct SignalServiceProtos_CallMessage {
     var hasType: Bool {return self._type != nil}
     /// Clears the value of `type`. Subsequent reads from it will return its default value.
     mutating func clearType() {self._type = nil}
+
+    var opaque: Data {
+      get {return _opaque ?? SwiftProtobuf.Internal.emptyData}
+      set {_opaque = newValue}
+    }
+    /// Returns true if `opaque` has been explicitly set.
+    var hasOpaque: Bool {return self._opaque != nil}
+    /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
+    mutating func clearOpaque() {self._opaque = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -484,6 +493,7 @@ struct SignalServiceProtos_CallMessage {
     fileprivate var _id: UInt64?
     fileprivate var _sdp: String?
     fileprivate var _type: SignalServiceProtos_CallMessage.Offer.TypeEnum?
+    fileprivate var _opaque: Data?
   }
 
   struct Answer {
@@ -501,7 +511,7 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// @required
+    /// Legacy/deprecated; replaced by 'opaque'
     var sdp: String {
       get {return _sdp ?? String()}
       set {_sdp = newValue}
@@ -511,12 +521,22 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
     mutating func clearSdp() {self._sdp = nil}
 
+    var opaque: Data {
+      get {return _opaque ?? SwiftProtobuf.Internal.emptyData}
+      set {_opaque = newValue}
+    }
+    /// Returns true if `opaque` has been explicitly set.
+    var hasOpaque: Bool {return self._opaque != nil}
+    /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
+    mutating func clearOpaque() {self._opaque = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _id: UInt64?
     fileprivate var _sdp: String?
+    fileprivate var _opaque: Data?
   }
 
   struct IceUpdate {
@@ -534,27 +554,27 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// @required
-    var sdpMid: String {
-      get {return _sdpMid ?? String()}
-      set {_sdpMid = newValue}
+    /// Legacy/deprecated; remove when old clients are gone.
+    var mid: String {
+      get {return _mid ?? String()}
+      set {_mid = newValue}
     }
-    /// Returns true if `sdpMid` has been explicitly set.
-    var hasSdpMid: Bool {return self._sdpMid != nil}
-    /// Clears the value of `sdpMid`. Subsequent reads from it will return its default value.
-    mutating func clearSdpMid() {self._sdpMid = nil}
+    /// Returns true if `mid` has been explicitly set.
+    var hasMid: Bool {return self._mid != nil}
+    /// Clears the value of `mid`. Subsequent reads from it will return its default value.
+    mutating func clearMid() {self._mid = nil}
 
-    /// @required
-    var sdpMlineIndex: UInt32 {
-      get {return _sdpMlineIndex ?? 0}
-      set {_sdpMlineIndex = newValue}
+    /// Legacy/deprecated; remove when old clients are gone.
+    var line: UInt32 {
+      get {return _line ?? 0}
+      set {_line = newValue}
     }
-    /// Returns true if `sdpMlineIndex` has been explicitly set.
-    var hasSdpMlineIndex: Bool {return self._sdpMlineIndex != nil}
-    /// Clears the value of `sdpMlineIndex`. Subsequent reads from it will return its default value.
-    mutating func clearSdpMlineIndex() {self._sdpMlineIndex = nil}
+    /// Returns true if `line` has been explicitly set.
+    var hasLine: Bool {return self._line != nil}
+    /// Clears the value of `line`. Subsequent reads from it will return its default value.
+    mutating func clearLine() {self._line = nil}
 
-    /// @required
+    /// Legacy/deprecated; replaced by 'opaque'
     var sdp: String {
       get {return _sdp ?? String()}
       set {_sdp = newValue}
@@ -564,14 +584,24 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
     mutating func clearSdp() {self._sdp = nil}
 
+    var opaque: Data {
+      get {return _opaque ?? SwiftProtobuf.Internal.emptyData}
+      set {_opaque = newValue}
+    }
+    /// Returns true if `opaque` has been explicitly set.
+    var hasOpaque: Bool {return self._opaque != nil}
+    /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
+    mutating func clearOpaque() {self._opaque = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _id: UInt64?
-    fileprivate var _sdpMid: String?
-    fileprivate var _sdpMlineIndex: UInt32?
+    fileprivate var _mid: String?
+    fileprivate var _line: UInt32?
     fileprivate var _sdp: String?
+    fileprivate var _opaque: Data?
   }
 
   struct Busy {
@@ -3657,7 +3687,8 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
     2: .same(proto: "sdp"),
-    3: .same(proto: "type")
+    3: .same(proto: "type"),
+    4: .same(proto: "opaque")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3666,6 +3697,7 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
       case 2: try decoder.decodeSingularStringField(value: &self._sdp)
       case 3: try decoder.decodeSingularEnumField(value: &self._type)
+      case 4: try decoder.decodeSingularBytesField(value: &self._opaque)
       default: break
       }
     }
@@ -3681,6 +3713,9 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
     if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
     }
+    if let v = self._opaque {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3688,6 +3723,7 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
     if lhs._id != rhs._id {return false}
     if lhs._sdp != rhs._sdp {return false}
     if lhs._type != rhs._type {return false}
+    if lhs._opaque != rhs._opaque {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3704,7 +3740,8 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Answer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "sdp")
+    2: .same(proto: "sdp"),
+    3: .same(proto: "opaque")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3712,6 +3749,7 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
       case 2: try decoder.decodeSingularStringField(value: &self._sdp)
+      case 3: try decoder.decodeSingularBytesField(value: &self._opaque)
       default: break
       }
     }
@@ -3724,12 +3762,16 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
     if let v = self._sdp {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
+    if let v = self._opaque {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Answer, rhs: SignalServiceProtos_CallMessage.Answer) -> Bool {
     if lhs._id != rhs._id {return false}
     if lhs._sdp != rhs._sdp {return false}
+    if lhs._opaque != rhs._opaque {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3739,18 +3781,20 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".IceUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "sdpMid"),
-    3: .same(proto: "sdpMLineIndex"),
-    4: .same(proto: "sdp")
+    2: .same(proto: "mid"),
+    3: .same(proto: "line"),
+    4: .same(proto: "sdp"),
+    5: .same(proto: "opaque")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._sdpMid)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self._sdpMlineIndex)
+      case 2: try decoder.decodeSingularStringField(value: &self._mid)
+      case 3: try decoder.decodeSingularUInt32Field(value: &self._line)
       case 4: try decoder.decodeSingularStringField(value: &self._sdp)
+      case 5: try decoder.decodeSingularBytesField(value: &self._opaque)
       default: break
       }
     }
@@ -3760,23 +3804,27 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
     if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     }
-    if let v = self._sdpMid {
+    if let v = self._mid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
-    if let v = self._sdpMlineIndex {
+    if let v = self._line {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
     }
     if let v = self._sdp {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    }
+    if let v = self._opaque {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_CallMessage.IceUpdate, rhs: SignalServiceProtos_CallMessage.IceUpdate) -> Bool {
     if lhs._id != rhs._id {return false}
-    if lhs._sdpMid != rhs._sdpMid {return false}
-    if lhs._sdpMlineIndex != rhs._sdpMlineIndex {return false}
+    if lhs._mid != rhs._mid {return false}
+    if lhs._line != rhs._line {return false}
     if lhs._sdp != rhs._sdp {return false}
+    if lhs._opaque != rhs._opaque {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
