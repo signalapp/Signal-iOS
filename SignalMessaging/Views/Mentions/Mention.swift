@@ -19,6 +19,7 @@ public class Mention: NSObject {
     public enum Style: Int {
         case incoming
         case outgoing
+        case composingAttachment
 
         public static var composing: Self = .incoming
     }
@@ -47,6 +48,9 @@ public class Mention: NSObject {
         case .outgoing:
             attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? .ows_blackAlpha20 : UIColor.ows_signalBlueDark
             attributes[.foregroundColor] = ConversationStyle.bubbleTextColorOutgoing
+        case .composingAttachment:
+            attributes[.backgroundColor] = UIColor.ows_gray75
+            attributes[.foregroundColor] = Theme.darkThemePrimaryColor
         }
 
         return attributes

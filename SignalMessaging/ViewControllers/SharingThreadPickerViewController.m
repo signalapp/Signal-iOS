@@ -301,6 +301,22 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     return @[ [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread] ];
 }
 
+- (NSArray<SignalServiceAddress *> *)attachmentApprovalMentionableAddresses
+{
+    if (!SSKFeatureFlags.mentionsSend) {
+        return @[];
+    }
+
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        if (groupThread.groupModel.groupsVersion == GroupsVersionV2) {
+            return groupThread.recipientAddresses;
+        }
+    }
+
+    return @[];
+}
+
 #pragma mark - TextApprovalViewControllerDelegate
 
 - (void)textApproval:(TextApprovalViewController *)approvalViewController didApproveMessage:(NSString *)messageText

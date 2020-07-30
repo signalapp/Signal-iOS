@@ -206,7 +206,7 @@ public class FeatureFlags: BaseFlags {
     public static let mentionsReceive = build.includes(.dev)
 
     @objc
-    public static let mentionsSend = build.includes(.dev)
+    public static let mentionsSend = mentionsReceive && build.includes(.dev)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in

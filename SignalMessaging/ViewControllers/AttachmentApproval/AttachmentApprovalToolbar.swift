@@ -5,15 +5,15 @@
 import Foundation
 import UIKit
 
-protocol AttachmentApprovalInputAccessoryViewDelegate: class {
-    func attachmentApprovalInputUpdateMediaRail()
-    func attachmentApprovalInputStartEditingCaptions()
-    func attachmentApprovalInputStopEditingCaptions()
+protocol AttachmentApprovalToolbarDelegate: class {
+    func attachmentApprovalToolbarUpdateMediaRail()
+    func attachmentApprovalToolbarStartEditingCaptions()
+    func attachmentApprovalToolbarStopEditingCaptions()
 }
 
 // MARK: -
 
-class AttachmentApprovalInputAccessoryView: UIView {
+class AttachmentApprovalToolbar: UIView {
 
     var options: AttachmentApprovalViewControllerOptions {
         didSet {
@@ -21,13 +21,17 @@ class AttachmentApprovalInputAccessoryView: UIView {
         }
     }
 
-    weak var delegate: AttachmentApprovalInputAccessoryViewDelegate?
+    weak var delegate: AttachmentApprovalToolbarDelegate?
 
     let attachmentTextToolbar: AttachmentTextToolbar
     let attachmentCaptionToolbar: AttachmentCaptionToolbar
     let galleryRailView: GalleryRailView
     let currentCaptionLabel = UILabel()
     let currentCaptionWrapper = UIView()
+
+    var isEditing: Bool {
+        return isEditingMediaMessage || attachmentCaptionToolbar.textView.isFirstResponder
+    }
 
     var isEditingMediaMessage: Bool {
         return attachmentTextToolbar.textView.isFirstResponder
@@ -59,13 +63,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
     }
 
     private func createContents() {
-        // Specifying auto-resizing mask and an intrinsic content size allows proper
-        // sizing when used as an input accessory view.
-        self.autoresizingMask = .flexibleHeight
-        self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = .clear
-
-        preservesSuperviewLayoutMargins = true
 
         // Use a background view that extends below the keyboard to avoid animation glitches.
         let backgroundView = UIView()
@@ -104,7 +102,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
         guard sender.state == .recognized else {
             return
         }
-        delegate?.attachmentApprovalInputStartEditingCaptions()
+        delegate?.attachmentApprovalToolbarStartEditingCaptions()
     }
 
     // MARK: 
@@ -132,6 +130,16 @@ class AttachmentApprovalInputAccessoryView: UIView {
         updateFirstResponder()
 
         layoutSubviews()
+    }
+
+    override func resignFirstResponder() -> Bool {
+        if attachmentCaptionToolbar.textView.isFirstResponder {
+            return attachmentCaptionToolbar.textView.resignFirstResponder()
+        } else if attachmentTextToolbar.textView.isFirstResponder {
+            return attachmentTextToolbar.textView.resignFirstResponder()
+        } else {
+            return super.resignFirstResponder()
+        }
     }
 
     private func updateFirstResponder() {
@@ -199,7 +207,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
 // MARK: -
 
-extension AttachmentApprovalInputAccessoryView: AttachmentCaptionToolbarDelegate {
+extension AttachmentApprovalToolbar: AttachmentCaptionToolbarDelegate {
     public func attachmentCaptionToolbarDidEdit(_ attachmentCaptionToolbar: AttachmentCaptionToolbar) {
         guard let currentAttachmentItem = currentAttachmentItem else {
             owsFailDebug("Missing currentAttachmentItem.")
@@ -208,10 +216,10 @@ extension AttachmentApprovalInputAccessoryView: AttachmentCaptionToolbarDelegate
 
         currentAttachmentItem.attachment.captionText = attachmentCaptionToolbar.textView.text
 
-        delegate?.attachmentApprovalInputUpdateMediaRail()
+        delegate?.attachmentApprovalToolbarUpdateMediaRail()
     }
 
     public func attachmentCaptionToolbarDidComplete() {
-        delegate?.attachmentApprovalInputStopEditingCaptions()
+        delegate?.attachmentApprovalToolbarStopEditingCaptions()
     }
 }

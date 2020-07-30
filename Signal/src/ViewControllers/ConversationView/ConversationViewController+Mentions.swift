@@ -5,19 +5,24 @@
 import Foundation
 
 extension ConversationViewController: MentionTextViewDelegate {
+    @objc
     var supportsMentions: Bool {
-        guard FeatureFlags.mentionsSend && FeatureFlags.mentionsReceive else { return false }
+        guard FeatureFlags.mentionsSend else { return false }
 
         guard let groupThread = thread as? TSGroupThread,
             groupThread.groupModel.groupsVersion == .V2 else { return false }
         return true
     }
 
-    public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView {
+    public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
+
+    public func textViewDidEndTypingMention(_ textView: MentionTextView) {}
+
+    public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
         return view
     }
 
-    public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView {
+    public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
         return bottomBar()
     }
 
@@ -26,13 +31,9 @@ extension ConversationViewController: MentionTextViewDelegate {
         return thread.recipientAddresses
     }
 
-    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {
-        Logger.debug("did tap mention \(mention.address)")
-    }
+    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
 
-    public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {
-        Logger.debug("did delete mention \(mention.address)")
-    }
+    public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
         return supportsMentions && thread.recipientAddresses.contains(address)

@@ -22,9 +22,10 @@ class MentionPicker: UIView {
     static var databaseStorage: SDSDatabaseStorage { .shared }
     static var profileManager: OWSProfileManager { .shared() }
 
+    let style: Mention.Style
     let selectedAddressCallback: (SignalServiceAddress) -> Void
 
-    required init(mentionableAddresses: [SignalServiceAddress], selectedAddressCallback: @escaping (SignalServiceAddress) -> Void) {
+    required init(mentionableAddresses: [SignalServiceAddress], style: Mention.Style, selectedAddressCallback: @escaping (SignalServiceAddress) -> Void) {
         mentionableUsers = Self.databaseStorage.uiRead { transaction in
             let sortedAddresses = Self.contactsManager.sortSignalServiceAddresses(
                 mentionableAddresses,
@@ -48,9 +49,12 @@ class MentionPicker: UIView {
             }
         }
 
+        self.style = style
         self.selectedAddressCallback = selectedAddressCallback
 
         super.init(frame: .zero)
+
+        backgroundColor = .clear
 
         addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
@@ -226,8 +230,13 @@ class MentionPicker: UIView {
     // MARK: -
 
     @objc private func applyTheme() {
-        tableView.backgroundColor = Theme.backgroundColor
-        hairlineView.backgroundColor = Theme.actionSheetHairlineColor
+        if style == .composingAttachment {
+            tableView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+            hairlineView.backgroundColor = .ows_gray65
+        } else {
+            tableView.backgroundColor = Theme.backgroundColor
+            hairlineView.backgroundColor = Theme.actionSheetHairlineColor
+        }
         tableView.reloadData()
     }
 }
@@ -250,7 +259,7 @@ extension MentionPicker: UITableViewDelegate, UITableViewDataSource {
             return cell
         }
 
-        userCell.configure(with: mentionableUser)
+        userCell.configure(with: mentionableUser, style: style)
 
         return userCell
     }
@@ -285,6 +294,8 @@ private class MentionableUserCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = .clear
+
         let avatarContainer = UIView()
         avatarContainer.addSubview(avatarImageView)
         avatarImageView.autoSetDimension(.width, toSize: Self.avatarHeight)
@@ -315,10 +326,14 @@ private class MentionableUserCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with mentionableUser: MentionPicker.MentionableUser) {
-        backgroundColor = Theme.backgroundColor
-        displayNameLabel.textColor = Theme.primaryTextColor
-        usernameLabel.textColor = Theme.secondaryTextAndIconColor
+    func configure(with mentionableUser: MentionPicker.MentionableUser, style: Mention.Style) {
+        if style == .composingAttachment {
+            displayNameLabel.textColor = Theme.darkThemePrimaryColor
+            usernameLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        } else {
+            displayNameLabel.textColor = Theme.primaryTextColor
+            usernameLabel.textColor = Theme.secondaryTextAndIconColor
+        }
 
         displayNameLabel.text = mentionableUser.displayName
 

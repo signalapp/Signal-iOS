@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ protocol AttachmentCaptionToolbarDelegate: class {
 
 // MARK: -
 
-class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
+class AttachmentCaptionToolbar: UIView, MentionTextViewDelegate {
 
     private let kMaxCaptionCharacterCount = 240
 
@@ -50,7 +50,7 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = UIColor.clear
 
-        textView.delegate = self
+        textView.mentionDelegate = self
 
         // Layout
         let kToolbarMargin: CGFloat = 8
@@ -84,7 +84,7 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
 
     // MARK: - Subviews
 
-    lazy var textView: UITextView = {
+    lazy var textView: MentionTextView = {
         let textView = buildTextView()
 
         textView.returnKeyType = .done
@@ -101,7 +101,7 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
         return textContainer
     }()
 
-    private func buildTextView() -> UITextView {
+    private func buildTextView() -> MentionTextView {
         let textView = AttachmentTextView()
 
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
@@ -113,6 +113,36 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
 
         return textView
+    }
+
+    // MARK: - MentionTextViewDelegate
+
+    func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
+
+    func textViewDidEndTypingMention(_ textView: MentionTextView) {}
+
+    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+        return nil
+    }
+
+    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+        return nil
+    }
+
+    func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+        return []
+    }
+
+    func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
+
+    func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
+
+    func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
+        return false
+    }
+
+    func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
+        return .composing
     }
 
     // MARK: - UITextViewDelegate

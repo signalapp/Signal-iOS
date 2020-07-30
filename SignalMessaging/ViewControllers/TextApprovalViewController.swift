@@ -31,6 +31,14 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
 
     private(set) var textView: UITextView!
     private let footerView = ApprovalFooterView()
+    private var footerViewBottomConstraint: NSLayoutConstraint?
+
+    private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
+        let placeholder = InputAccessoryViewPlaceholder()
+        placeholder.delegate = self
+        placeholder.referenceView = view
+        return placeholder
+    }()
 
     private var approvalMode: ApprovalMode {
         guard let delegate = delegate else {
@@ -54,18 +62,10 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         return true
     }
 
-    var currentInputAcccessoryView: UIView? {
-        didSet {
-            if oldValue != currentInputAcccessoryView {
-                textView.inputAccessoryView = currentInputAcccessoryView
-                textView.reloadInputViews()
-                reloadInputViews()
-            }
-        }
-    }
+    var currentInputAcccessoryView: UIView?
 
     public override var inputAccessoryView: UIView? {
-        return currentInputAcccessoryView
+        return inputAccessoryPlaceholder
     }
 
     // MARK: - View Lifecycle
@@ -87,15 +87,15 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
 
     private func updateSendButton() {
         guard textView.text.count > 0 else {
-            currentInputAcccessoryView = nil
+            footerView.isHidden = true
             return
         }
         guard let recipientsDescription = delegate?.textApprovalRecipientsDescription(self) else {
-            currentInputAcccessoryView = nil
+            footerView.isHidden = true
             return
         }
         footerView.setNamesText(recipientsDescription, animated: false)
-        currentInputAcccessoryView = footerView
+        footerView.isHidden = false
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -126,7 +126,11 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         textView.autoPinEdge(toSuperviewSafeArea: .leading)
         textView.autoPinEdge(toSuperviewSafeArea: .trailing)
         textView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: textView, avoidNotch: true)
+
+        view.addSubview(footerView)
+        footerView.autoPinWidthToSuperview()
+        footerView.autoPinEdge(.top, to: .bottom, of: textView)
+        footerViewBottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
     // MARK: - Event Handlers
@@ -151,5 +155,38 @@ extension TextApprovalViewController: ApprovalFooterDelegate {
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
         return approvalMode
+    }
+}
+
+extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
+    func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
+        updateFooterViewPosition()
+    }
+
+    func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        guard animationDuration > 0 else { return updateFooterViewPosition() }
+
+        UIView.beginAnimations("keyboardStateChange", context: nil)
+        UIView.setAnimationBeginsFromCurrentState(true)
+        UIView.setAnimationCurve(animationCurve)
+        UIView.setAnimationDuration(animationDuration)
+        updateFooterViewPosition()
+        UIView.commitAnimations()
+    }
+
+    func updateFooterViewPosition() {
+        footerViewBottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
+
+        // We always want to apply the new bottom bar position immediately,
+        // as this only happens during animations (interactive or otherwise)
+        footerView.superview?.layoutIfNeeded()
     }
 }

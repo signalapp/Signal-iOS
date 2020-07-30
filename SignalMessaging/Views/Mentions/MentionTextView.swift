@@ -6,8 +6,11 @@ import Foundation
 
 @objc
 public protocol MentionTextViewDelegate: UITextViewDelegate {
-    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView
-    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView
+    func textViewDidBeginTypingMention(_ textView: MentionTextView)
+    func textViewDidEndTypingMention(_ textView: MentionTextView)
+
+    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView?
+    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView?
     func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress]
 
     func textView(_ textView: MentionTextView, didTapMention: Mention)
@@ -203,6 +206,11 @@ open class MentionTextView: OWSTextView {
         return MessageBody(attributedString: attributedText.attributedSubstring(from: range))
     }
 
+    @objc
+    public func stopTypingMention() {
+        state = .notTypingMention
+    }
+
     // MARK: - Mention State
 
     private enum State: Equatable {
@@ -233,16 +241,21 @@ open class MentionTextView: OWSTextView {
     private func didBeginTypingMention() {
         guard let mentionDelegate = mentionDelegate else { return }
 
+        mentionDelegate.textViewDidBeginTypingMention(self)
+
         pickerView?.removeFromSuperview()
 
         let mentionableAddresses = mentionDelegate.textViewMentionPickerPossibleAddresses(self)
 
         guard !mentionableAddresses.isEmpty else { return }
 
-        let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self)
-        let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self)
+        guard let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self),
+            let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self) else { return }
 
-        let pickerView = MentionPicker(mentionableAddresses: mentionableAddresses) { [weak self] selectedAddress in
+        let pickerView = MentionPicker(
+            mentionableAddresses: mentionableAddresses,
+            style: mentionDelegate.textViewMentionStyle(self)
+        ) { [weak self] selectedAddress in
             self?.insertTypedMention(address: selectedAddress)
         }
         self.pickerView = pickerView
@@ -257,8 +270,12 @@ open class MentionTextView: OWSTextView {
 
         pickerParentView.layoutIfNeeded()
 
+        let style = mentionDelegate.textViewMentionStyle(self)
+        if style == .composingAttachment { pickerView.alpha = 0 }
+
         // Slide up.
         UIView.animate(withDuration: 0.25) {
+            pickerView.alpha = 1
             animationTopConstraint.isActive = false
             self.pickerViewTopConstraint = pickerView.autoPinEdge(.bottom, to: .top, of: pickerReferenceView)
             pickerParentView.layoutIfNeeded()
@@ -266,6 +283,8 @@ open class MentionTextView: OWSTextView {
     }
 
     private func didEndTypingMention() {
+        mentionDelegate?.textViewDidEndTypingMention(self)
+
         guard let pickerView = pickerView else { return }
 
         self.pickerView = nil
@@ -273,19 +292,22 @@ open class MentionTextView: OWSTextView {
         let pickerViewTopConstraint = self.pickerViewTopConstraint
         self.pickerViewTopConstraint = nil
 
-        guard let mentionDelegate = mentionDelegate else {
-            pickerView.removeFromSuperview()
-            return
+        guard let mentionDelegate = mentionDelegate,
+            let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self),
+            let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self) else {
+                pickerView.removeFromSuperview()
+                return
         }
 
-        let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self)
-        let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self)
+        let style = mentionDelegate.textViewMentionStyle(self)
 
         // Slide down.
         UIView.animate(withDuration: 0.25, animations: {
             pickerViewTopConstraint?.isActive = false
             pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
             pickerParentView.layoutIfNeeded()
+
+            if style == .composingAttachment { pickerView.alpha = 0 }
         }) { _ in
             pickerView.removeFromSuperview()
         }
