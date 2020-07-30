@@ -72,20 +72,38 @@ public class OWSURLSession: NSObject {
             } else {
                 owsFailDebug("Missing task.")
             }
-            if let error = error {
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Request failed: \(error)")
-                } else {
-                    owsFailDebug("Request failed: \(error)")
-                }
-                resolver.reject(error)
-                return
+            Self.handleTaskCompletion(resolver: resolver, responseData: responseData, response: response, error: error)
+        }
+        taskReference = task
+        setProgressBlock(progressBlock, forTask: task)
+        task.resume()
+        return promise
+    }
+
+    func uploadTaskPromise(_ urlString: String,
+                           verb: HTTPVerb,
+                           headers: [String: String]? = nil,
+                           dataUrl: URL,
+                           progressBlock: ProgressBlock? = nil) -> Promise<Response> {
+        firstly(on: .global()) { () -> Promise<Response> in
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            return self.uploadTaskPromise(request: request, dataUrl: dataUrl, progressBlock: progressBlock)
+        }
+    }
+
+    func uploadTaskPromise(request: URLRequest,
+                           dataUrl: URL,
+                           progressBlock: ProgressBlock? = nil) -> Promise<Response> {
+
+        let (promise, resolver) = Promise<Response>.pending()
+        var taskReference: URLSessionDataTask?
+        let task = session.uploadTask(with: request, fromFile: dataUrl) { (responseData: Data?, response: URLResponse?, error: Error?) in
+            if let task = taskReference {
+                self.setProgressBlock(nil, forTask: task)
+            } else {
+                owsFailDebug("Missing task.")
             }
-            guard let httpResponse = response as? HTTPURLResponse else {
-                resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
-                return
-            }
-            resolver.fulfill((response: httpResponse, data: responseData))
+            Self.handleTaskCompletion(resolver: resolver, responseData: responseData, response: response, error: error)
         }
         taskReference = task
         setProgressBlock(progressBlock, forTask: task)
@@ -106,23 +124,30 @@ public class OWSURLSession: NSObject {
 
         let (promise, resolver) = Promise<Response>.pending()
         let task = session.dataTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            if let error = error {
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Request failed: \(error)")
-                } else {
-                    owsFailDebug("Request failed: \(error)")
-                }
-                resolver.reject(error)
-                return
-            }
-            guard let httpResponse = response as? HTTPURLResponse else {
-                resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
-                return
-            }
-            resolver.fulfill((response: httpResponse, data: responseData))
+            Self.handleTaskCompletion(resolver: resolver, responseData: responseData, response: response, error: error)
         }
         task.resume()
         return promise
+    }
+
+    private class func handleTaskCompletion(resolver: Resolver<Response>,
+                                            responseData: Data?,
+                                            response: URLResponse?,
+                                            error: Error?) {
+        if let error = error {
+            if IsNetworkConnectivityFailure(error) {
+                Logger.warn("Request failed: \(error)")
+            } else {
+                owsFailDebug("Request failed: \(error)")
+            }
+            resolver.reject(error)
+            return
+        }
+        guard let httpResponse = response as? HTTPURLResponse else {
+            resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
+            return
+        }
+        resolver.fulfill((response: httpResponse, data: responseData))
     }
 
     // TODO: Add downloadTaskPromise().
