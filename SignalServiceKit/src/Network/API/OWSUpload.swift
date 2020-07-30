@@ -389,6 +389,11 @@ public class OWSAttachmentUploadV2: NSObject {
             // If you receive a 308 Resume Incomplete response with no Range header,
             // it's possible some bytes have been received by Cloud Storage but were
             // not yet persisted at the time Cloud Storage received the query.
+            //
+            // See:
+            //
+            // * https://cloud.google.com/storage/docs/performing-resumable-uploads#resume-upload
+            // * https://cloud.google.com/storage/docs/resumable-uploads
             guard let rangeHeader = response.allHeaderFields["Range"] as? String else {
                 owsFailDebug("Missing Range header.")
                 // Return zero to restart the upload.
