@@ -327,10 +327,13 @@ public class OWSAttachmentUploadV2: NSObject {
             //
             // Content-Range: bytes 2359296-7351374/7351375
             // Content-Length: 4992079
-            let headers: [String: String] = [
-                "Content-Length": OWSFormat.formatInt(dataToUpload.count),
-                "Content-Range": "bytes \(OWSFormat.formatInt(progress))-\(OWSFormat.formatInt(attachmentData.count - 1))/\(OWSFormat.formatInt(attachmentData.count))"
+            let formatInt = OWSFormat.formatInt
+            var headers: [String: String] = [
+                "Content-Length": formatInt(dataToUpload.count)
             ]
+            if progress > 0 {
+                headers["Content-Range"]  = "bytes \(formatInt(progress))-\(formatInt(attachmentData.count - 1))/\(formatInt(attachmentData.count))"
+            }
 
             let session = OWSURLSession()
             return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload, progressBlock: progressBlock).asVoid()
@@ -346,10 +349,18 @@ public class OWSAttachmentUploadV2: NSObject {
                 throw error
             }
             Logger.verbose("---- Trying to resume. ")
-            return self.performResumableUploadV3(form: form,
-                                                 attachmentData: attachmentData,
-                                                 locationUrl: locationUrl,
-                                                 attemptCount: attemptCount + 1)
+            return firstly {
+                // To avoid 308 "Resume Incomplete" errors, we wait briefly
+                // before retrying to give Cloud Storage time to persist the
+                // uploaded data. The docs indicate that we should "wait a
+                // few seconds" but don't specify a specific duration.
+                after(seconds: 3.0)
+            }.then(on: .global()) {
+                self.performResumableUploadV3(form: form,
+                                              attachmentData: attachmentData,
+                                              locationUrl: locationUrl,
+                                              attemptCount: attemptCount + 1)
+            }
         }
     }
 
@@ -365,15 +376,43 @@ public class OWSAttachmentUploadV2: NSObject {
             ]
 
             let session = OWSURLSession()
-            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: Data())
-        }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
-            guard let contentLengthHeader = response.allHeaderFields["Content-Length"] as? String else {
-                throw OWSAssertionError("Missing content length header.")
+//            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: nil)
+            return session.dataTaskPromise(urlString, verb: .put, headers: headers)
+        }.map(on: .global()) { (response: HTTPURLResponse, responseData: Data?) in
+
+            if response.statusCode != 308 {
+                owsFailDebug("Invalid status code: \(response.statusCode).")
+                // Return zero to restart the upload.
+                return 0
             }
-            guard let contentLength = Int(contentLengthHeader) else {
-                throw OWSAssertionError("Invalid content length header.")
+            // From the docs:
+            //
+            // If you receive a 308 Resume Incomplete response with no Range header,
+            // it's possible some bytes have been received by Cloud Storage but were
+            // not yet persisted at the time Cloud Storage received the query.
+            guard let rangeHeader = response.allHeaderFields["Range"] as? String else {
+                owsFailDebug("Missing Range header.")
+                // Return zero to restart the upload.
+                return 0
             }
-            return contentLength
+            let expectedPrefix = "bytes=0-"
+            guard rangeHeader.hasPrefix(expectedPrefix) else {
+                owsFailDebug("Invalid Range header: \(rangeHeader).")
+                // Return zero to restart the upload.
+                return 0
+            }
+            let rangeEndString = rangeHeader.suffix(rangeHeader.count - expectedPrefix.count)
+            guard !rangeEndString.isEmpty,
+                let rangeEnd = Int(rangeEndString) else {
+                owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
+                // Return zero to restart the upload.
+                return 0
+            }
+            Logger.verbose("---- rangeEnd: \(rangeEnd). ")
+            // rangeEnd is the _index_ of the last uploaded bytes, e.g.:
+            // * 0 if 1 byte has been uploaded,
+            // * N if N+1 bytes have been uploaded.
+            return rangeEnd + 1
         }
     }
 }

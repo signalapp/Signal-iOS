@@ -54,25 +54,10 @@ public class OWSURLSession: NSObject {
                            headers: [String: String]? = nil,
                            data requestData: Data,
                            progressBlock: ProgressBlock? = nil) -> Promise<Response> {
-        guard let url = URL(string: urlString) else {
-            return Promise(error: OWSAssertionError("Invalid url."))
+        firstly(on: .global()) { () -> Promise<Response> in
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            return self.uploadTaskPromise(request: request, data: requestData, progressBlock: progressBlock)
         }
-        var request = URLRequest(url: url)
-        switch verb {
-        case .get:
-            request.httpMethod = "GET"
-        case .post:
-            request.httpMethod = "POST"
-        case .put:
-            request.httpMethod = "PUT"
-        }
-        if let headers = headers {
-            for (headerField, headerValue) in headers {
-                request.addValue(headerValue, forHTTPHeaderField: headerField)
-            }
-        }
-
-        return uploadTaskPromise(request: request, data: requestData, progressBlock: progressBlock)
     }
 
     func uploadTaskPromise(request: URLRequest,
@@ -110,9 +95,131 @@ public class OWSURLSession: NSObject {
         return promise
     }
 
+    func dataTaskPromise(_ urlString: String,
+                         verb: HTTPVerb,
+                         headers: [String: String]? = nil) -> Promise<Response> {
+        firstly(on: .global()) { () -> Promise<Response> in
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            return self.dataTaskPromise(request: request)
+        }
+    }
+
+    func dataTaskPromise(request: URLRequest) -> Promise<Response> {
+
+        let (promise, resolver) = Promise<Response>.pending()
+        var taskReference: URLSessionDataTask?
+        let task = session.dataTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
+            if let task = taskReference {
+                Logger.warn("---- task: \(task)")
+            } else {
+                owsFailDebug("Missing task.")
+            }
+            if let error = error {
+                Logger.warn("---- Request failed: \(error)")
+                Logger.warn("---- IsNetworkConnectivityFailure: \(IsNetworkConnectivityFailure(error))")
+                Logger.flush()
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("---- Request failed: \(error)")
+                } else {
+                    // TODO:
+                    //                    owsFailDebug("Request failed: \(error)")
+                    Logger.error("---- Request failed: \(error)")
+                }
+                resolver.reject(error)
+                return
+            }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
+                return
+            }
+            Logger.warn("---- Request: \(request)")
+            if let headers = request.allHTTPHeaderFields {
+                for (key, value) in headers {
+                    Logger.verbose("---- request headers \(key): \(value)")
+                }
+            }
+            resolver.fulfill((response: httpResponse, data: responseData))
+        }
+        taskReference = task
+        task.resume()
+        return promise
+    }
+
+//    func downloadTaskPromise(_ urlString: String,
+//                         verb: HTTPVerb,
+//                         headers: [String: String]? = nil) -> Promise<Response> {
+//        firstly(on: .global()) { () -> Promise<Response> in
+//            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+//            return self.downloadTaskPromise(request: request)
+//        }
+//    }
+//
+//    func downloadTaskPromise(request: URLRequest) -> Promise<Response> {
+//
+//        let (promise, resolver) = Promise<Response>.pending()
+//        var taskReference: URLSessionDataTask?
+//        let task = session.downloadTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
+//            open func downloadTask(with request: URLRequest, completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask
+//            if let task = taskReference {
+//                Logger.warn("---- task: \(task)")
+//            } else {
+//                owsFailDebug("Missing task.")
+//            }
+//            if let error = error {
+//                Logger.warn("---- Request failed: \(error)")
+//                Logger.warn("---- IsNetworkConnectivityFailure: \(IsNetworkConnectivityFailure(error))")
+//                Logger.flush()
+//                if IsNetworkConnectivityFailure(error) {
+//                    Logger.warn("---- Request failed: \(error)")
+//                } else {
+//                    // TODO:
+//                    //                    owsFailDebug("Request failed: \(error)")
+//                    Logger.error("---- Request failed: \(error)")
+//                }
+//                resolver.reject(error)
+//                return
+//            }
+//            guard let httpResponse = response as? HTTPURLResponse else {
+//                resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
+//                return
+//            }
+//            Logger.warn("---- Request: \(request)")
+//            for (key, value) in request.allHTTPHeaderFields {
+//                Logger.verbose("---- request headers \(key): \(value)")
+//            }
+//            resolver.fulfill((response: httpResponse, data: responseData))
+//        }
+//        taskReference = task
+//        task.resume()
+//        return promise
+//    }
+
     // TODO: Add downloadTaskPromise().
 
     // MARK: -
+
+    private func buildRequest(_ urlString: String,
+                              verb: HTTPVerb,
+                              headers: [String: String]? = nil) throws -> URLRequest {
+        guard let url = URL(string: urlString) else {
+            throw OWSAssertionError("Invalid url.")
+        }
+        var request = URLRequest(url: url)
+        switch verb {
+        case .get:
+            request.httpMethod = "GET"
+        case .post:
+            request.httpMethod = "POST"
+        case .put:
+            request.httpMethod = "PUT"
+        }
+        if let headers = headers {
+            for (headerField, headerValue) in headers {
+                request.addValue(headerValue, forHTTPHeaderField: headerField)
+            }
+        }
+        return request
+    }
 
     typealias TaskIdentifier = Int
     typealias ProgressBlockMap = [TaskIdentifier: ProgressBlock]
