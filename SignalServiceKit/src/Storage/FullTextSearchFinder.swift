@@ -488,7 +488,11 @@ class AnySearchIndexer {
 
         let nationalNumber: String? = { (recipientId: String?) -> String? in
             guard let recipientId = recipientId else { return nil }
-
+            
+            guard recipientId != kLocalProfileInvariantPhoneNumber else {
+                return ""
+            }
+            
             guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
                 owsFailDebug("unexpected unparseable recipientId: \(recipientId)")
                 return ""
