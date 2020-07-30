@@ -18,14 +18,14 @@ final class MultiDeviceRemovalSheet : Sheet {
     private lazy var explanation: String = {
         if UserDefaults.standard[.masterHexEncodedPublicKey] != nil {
             let format = """
-            You’re seeing this because this is a secondary device in a multi-device setup. To improve reliability and stability, we’ve decided to temporarily disable Session’s multi-device functionality on %@. Device linking has been disabled, and the next update will erase existing secondary devices.
+            You’re seeing this because this is a secondary device in a multi-device setup. To improve reliability and stability, we’ve decided to temporarily disable Session’s multi-device functionality. Device linking has been disabled, and existing secondary clients will be erased on %@.
 
             To read more about this change, visit the Session FAQ at getsession.org/faq.
             """
             return String(format: format, removalDateDescription)
         } else {
             let format = """
-            You’re seeing this because you have a secondary device linked to your Session ID. To improve reliability and stability, we’ve decided to temporarily disable Session’s multi-device functionality on %@. Device linking has been disabled, and the next update will erase existing secondary devices.
+            You’re seeing this because you have a secondary device linked to your Session ID. To improve reliability and stability, we’ve decided to temporarily disable Session’s multi-device functionality. Device linking has been disabled, and existing secondary clients will be erased on %@.
 
             To read more about this change, visit the Session FAQ at getsession.org/faq
             """
