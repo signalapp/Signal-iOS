@@ -17,9 +17,10 @@ final class ContactSupportViewController: OWSTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        owsAssertDebug(navigationController?.viewControllers.count == 1, "Expecting to be presented in a dedicated navigation controller")
 
         tableView.keyboardDismissMode = .interactive
+        tableView.separatorInsetReference = .fromCellEdges
+        tableView.separatorInset = .zero
         useThemeBackgroundColors = false
 
         rebuildTableContents()
@@ -27,8 +28,12 @@ final class ContactSupportViewController: OWSTableViewController {
         setupDataProviderViews()
         applyTheme()
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardFrameWillChange),
+                                               selector: #selector(keyboardFrameChange),
                                                name: UIResponder.keyboardWillChangeFrameNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardFrameChange),
+                                               name: UIResponder.keyboardDidChangeFrameNotification,
                                                object: nil)
     }
 
@@ -44,7 +49,6 @@ final class ContactSupportViewController: OWSTableViewController {
         descriptionField.delegate = self
         descriptionField.placeholderText = NSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
                                                              comment: "Placeholder string for support description")
-        debugSwitch.onTintColor = nil       // Overrides +UIAppearance default
         debugSwitch.isOn = true
     }
 
@@ -66,12 +70,6 @@ final class ContactSupportViewController: OWSTableViewController {
 
     @objc override func applyTheme() {
         super.applyTheme()
-
-        // Every non-control item should be set to this background color
-        let backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : UIColor.ows_white
-
-        view.backgroundColor = backgroundColor
-        tableView.backgroundColor = backgroundColor
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
 
         // Rebuild the contents to force them to update their theme
@@ -84,35 +82,51 @@ final class ContactSupportViewController: OWSTableViewController {
 
     // MARK: - View transitions
 
-    @objc func keyboardFrameWillChange(_ notification: NSNotification) {
-        guard let endFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+    @objc func keyboardFrameChange(_ notification: NSNotification) {
+        guard let keyboardEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
             owsFailDebug("Missing keyboard frame info")
             return
         }
-        let keyboardFrameInScrollView = tableView.convert(endFrame, from: nil)
-        tableView.contentInset.bottom = keyboardFrameInScrollView.height
-        tableView.scrollIndicatorInsets.bottom = keyboardFrameInScrollView.height
+        let tableViewSafeArea = tableView.bounds.inset(by: tableView.safeAreaInsets)
+        let keyboardFrameInTableView = tableView.convert(keyboardEndFrame, from: nil)
+        let intersectionHeight = keyboardFrameInTableView.intersection(tableViewSafeArea).height
+
+        tableView.contentInset.bottom = intersectionHeight
+        tableView.scrollIndicatorInsets.bottom = intersectionHeight
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { (_) in
-            self.scrollFocusedLineToVisible(animated: true)
+            self.scrollToFocus(animated: true)
         }, completion: nil)
     }
 
     var showSpinnerOnNextButton = false {
         didSet {
+            guard showSpinnerOnNextButton else {
+                navigationItem.rightBarButtonItem?.customView = nil
+                return
+            }
+
             let indicatorStyle: UIActivityIndicatorView.Style
             if #available(iOS 13, *) {
                 indicatorStyle = .medium
             } else {
                 indicatorStyle = Theme.isDarkThemeEnabled ? .white : .gray
             }
-            let indicator = showSpinnerOnNextButton ? UIActivityIndicatorView(style: indicatorStyle) : nil
-            indicator?.startAnimating()
-            navigationItem.rightBarButtonItem?.customView = indicator
+            let spinner = UIActivityIndicatorView(style: indicatorStyle)
+            spinner.startAnimating()
+
+            let label = UILabel()
+            label.text = NSLocalizedString("SUPPORT_LOG_UPLOAD_IN_PROGRESS",
+                                           comment: "A string in the navigation bar indicating that the support request is uploading logs")
+            label.textColor = Theme.secondaryTextAndIconColor
+
+            let stackView = UIStackView(arrangedSubviews: [label, spinner])
+            stackView.spacing = 4
+            navigationItem.rightBarButtonItem?.customView = stackView
         }
     }
 
@@ -140,9 +154,10 @@ final class ContactSupportViewController: OWSTableViewController {
             self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
 
         }.catch(on: .main) { error in
-            let alertTitle = NSLocalizedString("ERROR_DESCRIPTION_SUPPORT_EMAIL_FAILURE_TITLE",
-                                               comment: "Title for alert dialog presented when a support email failed to send")
-            OWSActionSheets.showActionSheet(title: alertTitle, message: error.localizedDescription)
+            let alertTitle = error.localizedDescription
+            let alertMessage = NSLocalizedString("SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
+                                                 comment: "Message for alert dialog presented when a support email failed to send")
+            OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)
 
         }.finally(on: .main) {
             self.currentEmailComposeOperation = nil
@@ -157,7 +172,7 @@ final class ContactSupportViewController: OWSTableViewController {
 extension ContactSupportViewController: SupportRequestTextViewDelegate, UIScrollViewDelegate {
 
     func textViewDidUpdateSelection(_ textView: SupportRequestTextView) {
-        scrollFocusedLineToVisible(animated: true)
+        scrollToFocus(animated: true)
     }
 
     func textViewDidUpdateText(_ textView: SupportRequestTextView) {
@@ -173,53 +188,41 @@ extension ContactSupportViewController: SupportRequestTextViewDelegate, UIScroll
             tableView.performBatchUpdates(nil) { (_) in
                 // And when the size changes have finished, make sure we're scrolled
                 // to the focused line
-                self.scrollFocusedLineToVisible(animated: false)
+                self.scrollToFocus(animated: false)
             }
         }
     }
 
-    /// Ensures the currently focused line is scrolled into the visible content inset
+    /// Ensures the currently focused area is scrolled into the visible content inset
     /// If it's already visible, this will do nothing
-    func scrollFocusedLineToVisible(animated: Bool) {
-        // If we have a null rect, there's nowhere to scroll to
-        let rawRect = descriptionField.getUpdatedFocusLine()
-        guard !rawRect.isNull else { return }
-
-        // We want to exit early if the selection rect is already visible. Using
-        // -adjustedContentInset accounts for both safe area (home affordance +
-        // navigation bar) and contentInset (keyboard frame)
-        let focusedLineRect = tableView.convert(rawRect, from: descriptionField)
+    func scrollToFocus(animated: Bool) {
         let visibleRect = tableView.bounds.inset(by: tableView.adjustedContentInset)
-        guard !visibleRect.contains(focusedLineRect) else { return }
+        let rawCursorFocusRect = descriptionField.getUpdatedFocusLine()
+        let cursorFocusRect = tableView.convert(rawCursorFocusRect, from: descriptionField)
+        let paddedCursorRect = cursorFocusRect.insetBy(dx: 0, dy: -6)
 
-        // A constant offset so we don't place our cursor *immediately* against our insets
-        let selectionEdgePadding: CGFloat = 6
+        let entireContentFits = tableView.contentSize.height <= visibleRect.height
+        let focusRect = entireContentFits ? visibleRect : paddedCursorRect
 
-        // If our selection rect is closer to the bottom of the visible rect, we're going to
-        // scroll so our selection rect's bottom edge is just above the adjusted content inset
-        if focusedLineRect.center.y >= visibleRect.center.y {
-            let bottomEdgeOffset = tableView.height - tableView.adjustedContentInset.bottom
-            let desiredOffset = focusedLineRect.maxY - bottomEdgeOffset + selectionEdgePadding
-            tableView.setContentOffset(CGPoint(x: 0, y: desiredOffset), animated: animated)
+        // If we have a null rect, there's nowhere to scroll to
+        // If the focusRect is already visible, there's no need to scroll
+        guard !focusRect.isNull else { return }
+        guard !visibleRect.contains(focusRect) else { return }
 
+        let targetYOffset: CGFloat
+        if focusRect.minY < visibleRect.minY {
+            targetYOffset = focusRect.minY - tableView.adjustedContentInset.top
         } else {
-            let topEdgeOffset = tableView.adjustedContentInset.top + selectionEdgePadding
-            let desiredUpperBound = focusedLineRect.minY - topEdgeOffset
-            tableView.setContentOffset(CGPoint(x: 0, y: desiredUpperBound), animated: animated)
+            let bottomEdgeOffset = tableView.height - tableView.adjustedContentInset.bottom
+            targetYOffset = focusRect.maxY - bottomEdgeOffset
         }
+        tableView.setContentOffset(CGPoint(x: 0, y: targetYOffset), animated: animated)
     }
 }
 
 // MARK: - Table view content builders
 
 extension ContactSupportViewController {
-
-    func newCell() -> UITableViewCell {
-        let cell = OWSTableItem.newCell()
-        cell.backgroundColor = .clear
-        return cell
-    }
-
     fileprivate func constructContents() -> OWSTableContents {
 
         let titleText = NSLocalizedString("HELP_CONTACT_US",
@@ -237,7 +240,7 @@ extension ContactSupportViewController {
 
                 // Description field
                 OWSTableItem(customCellBlock: {
-                    let cell = self.newCell()
+                    let cell = OWSTableItem.newCell()
                     cell.contentView.addSubview(self.descriptionField)
                     self.descriptionField.autoPinEdgesToSuperviewMargins()
                     self.descriptionField.autoSetDimension(.height, toSize: 125, relation: .greaterThanOrEqual)
@@ -249,12 +252,14 @@ extension ContactSupportViewController {
 
                 // FAQ prompt
                 OWSTableItem(customCellBlock: {
-                    let cell = self.newCell()
-                    cell.textLabel?.text = faqPromptText
+                    let cell = OWSTableItem.newCell()
+                    cell.textLabel?.font = UIFont.ows_dynamicTypeBody
                     cell.textLabel?.adjustsFontForContentSizeCategory = true
+                    cell.textLabel?.numberOfLines = 0
+                    cell.textLabel?.text = faqPromptText
                     cell.textLabel?.textColor = Theme.accentBlueColor
                     return cell
-                }, actionBlock: {
+                }, customRowHeight: UITableView.automaticDimension, actionBlock: {
                     UIApplication.shared.open(SupportConstants.supportURL, options: [:])
                 })
             ]),
@@ -271,7 +276,7 @@ extension ContactSupportViewController {
     }
 
     func createDebugLogCell() -> UITableViewCell {
-        let cell = newCell()
+        let cell = OWSTableItem.newCell()
 
         let label = UILabel()
         label.text = NSLocalizedString("SUPPORT_INCLUDE_DEBUG_LOG",
@@ -305,8 +310,9 @@ extension ContactSupportViewController {
         let containerView = UIView()
 
         // These constants were pulled from OWSTableViewController to get things to line up right
-        let edgeInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
-        containerView.layoutMargins = UIEdgeInsets(top: 0, leading: edgeInset, bottom: 0, trailing: edgeInset)
+        let horizontalEdgeInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
+        containerView.directionalLayoutMargins.leading = horizontalEdgeInset
+        containerView.directionalLayoutMargins.trailing = horizontalEdgeInset
 
         containerView.addSubview(emojiPicker)
         emojiPicker.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)

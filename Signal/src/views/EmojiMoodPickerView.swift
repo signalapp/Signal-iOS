@@ -52,6 +52,7 @@ class EmojiMoodPickerView: UIView {
             button.autoSetDimension(.height, toSize: 44, relation: .greaterThanOrEqual)
         }
 
+        applyTheme()
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
     }
 
@@ -88,7 +89,7 @@ class EmojiMoodPickerView: UIView {
 
     @objc private func applyTheme() {
         let defaultButtonBackground = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
-        let selectedButtonBackground = Theme.isDarkThemeEnabled ? Theme.accentBlueColor : UIColor(rgbHex: 0x4490e3)
+        let selectedButtonBackground = Theme.accentBlueColor
 
         moodButtons.values.forEach { (button) in
             button.setBackgroundImage(UIImage(color: defaultButtonBackground), for: .normal)

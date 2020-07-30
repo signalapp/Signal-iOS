@@ -8,16 +8,36 @@ import Foundation
 final class HelpViewController: OWSTableViewController {
 
     override func viewDidLoad() {
+        super.viewDidLoad()
         contents = constructContents()
     }
 
-    fileprivate func constructContents() -> OWSTableContents {
+    override func applyTheme() {
+        super.applyTheme()
+
+        // Rebuild contents to adopt new theme
+        contents = constructContents()
+    }
+
+    private func createDynamicallySizingCell() -> UITableViewCell {
+        let cell = OWSTableItem.newCell()
+        cell.textLabel?.font = UIFont.ows_dynamicTypeBody
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.textLabel?.numberOfLines = 0
+        return cell
+    }
+
+    private func constructContents() -> OWSTableContents {
         let helpTitle = NSLocalizedString("SETTINGS_HELP",
                                           comment: "Title for support page in app settings.")
         let supportCenterLabel = NSLocalizedString("HELP_SUPPORT_CENTER",
                                                    comment: "Help item that takes the user to the Signal support website")
         let contactLabel = NSLocalizedString("HELP_CONTACT_US",
                                              comment: "Help item allowing the user to file a support request")
+        let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
+                                                    comment: "Title for the fallback support sheet if user cannot send email")
+        let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
+                                                      comment: "Description for the fallback support sheet if user cannot send email")
 
         return OWSTableContents(title: helpTitle, sections: [
             OWSTableSection(header: {
@@ -25,7 +45,7 @@ final class HelpViewController: OWSTableViewController {
                 guard let signalAsset = UIImage(named: "signal-logo-128") else { return nil }
 
                 let header = UIView()
-                header.backgroundColor = Theme.launchScreenBackground
+                header.backgroundColor = Theme.isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
                 let signalLogo = UIImageView(image: signalAsset)
                 signalLogo.contentMode = .scaleAspectFit
 
@@ -34,16 +54,22 @@ final class HelpViewController: OWSTableViewController {
                 return header
 
             }, items: [
-                OWSTableItem.disclosureItem(withText: supportCenterLabel, actionBlock: {
+                OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                    let cell = self.createDynamicallySizingCell()
+                    cell.accessoryType = .disclosureIndicator
+                    cell.textLabel?.text = supportCenterLabel
+                    return cell
+                }, customRowHeight: UITableView.automaticDimension, actionBlock: {
                     UIApplication.shared.open(SupportConstants.supportURL, options: [:])
                 }),
 
-                OWSTableItem.disclosureItem(withText: contactLabel, actionBlock: {
+                OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                    let cell = self.createDynamicallySizingCell()
+                    cell.accessoryType = .disclosureIndicator
+                    cell.textLabel?.text = contactLabel
+                    return cell
+                }, customRowHeight: UITableView.automaticDimension, actionBlock: {
                     guard ComposeSupportEmailOperation.canSendEmails else {
-                        let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
-                                                                    comment: "Title for the fallback support sheet if user cannot send email")
-                        let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
-                                                                      comment: "Description for the fallback support sheet if user cannot send email")
                         let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
                                                                   message: localizedSheetMessage)
                         let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")

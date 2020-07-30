@@ -59,7 +59,7 @@ class ComposeSupportEmailOperation {
                 return NSLocalizedString("ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL",
                                          comment: "Error indicating that a support mailto link could not be created.")
             case .failedToOpenURL:
-                return NSLocalizedString("ERROR_DESCRIPTION_COULD_NOT_OPEN_EMAIL",
+                return NSLocalizedString("ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL",
                                          comment: "Error indicating that openURL for a mailto: URL failed.")
             }
         }
@@ -98,7 +98,7 @@ class ComposeSupportEmailOperation {
                 return Pastelog.uploadLog().map { $0.absoluteString }
             }
 
-        }.timeout(seconds: 10, timeoutErrorBlock: { () -> Error in
+        }.timeout(seconds: 60, timeoutErrorBlock: { () -> Error in
             // If we haven't finished uploading logs in 10s, give up
             return EmailError.logUploadTimedOut
 
