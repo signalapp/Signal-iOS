@@ -157,6 +157,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)isMainAppAndActive
 {
+    if (![NSThread isMainThread]) { return NO; }
     return [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
 }
 
