@@ -214,7 +214,6 @@ public class OWSAttachmentUploadV2: NSObject {
             // Parse upload form.
             let form = try OWSUploadFormV3(responseObject: formResponseObject)
 
-            // TODO: Do we need to set other properties?
             self.cdnKey = form.cdnKey
             self.cdnNumber = form.cdnNumber
 
@@ -350,10 +349,11 @@ public class OWSAttachmentUploadV2: NSObject {
             }
             Logger.info("Trying to resume. ")
             return firstly {
-                // To avoid 308 "Resume Incomplete" errors, we wait briefly
-                // before retrying to give Cloud Storage time to persist the
-                // uploaded data. The docs indicate that we should "wait a
-                // few seconds" but don't specify a specific duration.
+                // To avoid 308 "Resume Incomplete" with a Range header,
+                // we wait briefly before retrying to give Cloud Storage time
+                // to persist the uploaded data. The docs indicate that we
+                // should "wait a few seconds" but don't specify a specific
+                // duration.
                 after(seconds: 3.0)
             }.then(on: .global()) {
                 self.performResumableUploadV3(form: form,
