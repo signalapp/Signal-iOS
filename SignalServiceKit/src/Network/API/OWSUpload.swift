@@ -202,42 +202,75 @@ public class OWSAttachmentUploadV2: NSObject {
     // MARK: - V3
 
     public func uploadV3(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
+        var form: OWSUploadFormV3?
+        var uploadV3Metadata: UploadV3Metadata?
+        var locationUrl: URL?
+
         return firstly(on: .global()) {
             // Fetch attachment upload form.
             return self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV3()
             }
-        }.map(on: .global()) { [weak self] (formResponseObject: Any?) -> OWSUploadFormV3 in
+        }.map(on: .global()) { [weak self] (formResponseObject: Any?) -> Void in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
             // Parse upload form.
-            let form = try OWSUploadFormV3(responseObject: formResponseObject)
-
-            self.cdnKey = form.cdnKey
-            self.cdnNumber = form.cdnNumber
-
-            return form
-        }.then(on: .global()) { (form: OWSUploadFormV3) -> Promise<(form: OWSUploadFormV3, attachmentData: Data)> in
+            let uploadForm = try OWSUploadFormV3(responseObject: formResponseObject)
+            self.cdnKey = uploadForm.cdnKey
+            self.cdnNumber = uploadForm.cdnNumber
+            form = uploadForm
+        }.then(on: .global()) { () -> Promise<Void> in
             return firstly {
-                return self.attachmentData()
-            }.map(on: .global()) { (attachmentData: Data) in
-                return (form, attachmentData)
+                return self.prepareUploadV3()
+            }.map(on: .global()) { (metadata: UploadV3Metadata) in
+                uploadV3Metadata = metadata
             }
-        }.then(on: .global()) { (form: OWSUploadFormV3, attachmentData: Data) -> Promise<(form: OWSUploadFormV3, attachmentData: Data, locationUrl: URL)> in
-            return firstly {
-                return self.fetchResumableUploadLocationV3(form: form,
-                                                           attachmentData: attachmentData)
-            }.map(on: .global()) { (locationUrl: URL) in
-                return (form, attachmentData, locationUrl)
+        }.then(on: .global()) { () -> Promise<Void> in
+            return firstly { () -> Promise<URL> in
+                guard let form = form,
+                    let uploadV3Metadata = uploadV3Metadata else {
+                    throw OWSAssertionError("Missing form or metadata.")
+                }
+                return self.fetchResumableUploadLocationV3(form: form, uploadV3Metadata: uploadV3Metadata)
+            }.map(on: .global()) { (url: URL) in
+                locationUrl = url
             }
-        }.then(on: .global()) { (form: OWSUploadFormV3, attachmentData: Data, locationUrl: URL) in
-            self.performResumableUploadV3(form: form,
-                                          attachmentData: attachmentData,
-                                          locationUrl: locationUrl,
-                                          progressBlock: progressBlock)
-        }.map(on: .global()) { (_) throws -> Void in
+        }.then(on: .global()) { () -> Promise<Void> in
+            guard let form = form,
+                let uploadV3Metadata = uploadV3Metadata,
+                let locationUrl = locationUrl else {
+                    throw OWSAssertionError("Missing form or metadata.")
+            }
+            return self.performResumableUploadV3(form: form,
+                                                 uploadV3Metadata: uploadV3Metadata,
+                                                 locationUrl: locationUrl,
+                                                 progressBlock: progressBlock)
+        }.map(on: .global()) { () throws -> Void in
+            guard let uploadV3Metadata = uploadV3Metadata else {
+                    throw OWSAssertionError("Missing form or metadata.")
+            }
+
             self.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
+
+            OWSFileSystem.deleteFile(uploadV3Metadata.temporaryFileUrl.path)
+        }
+    }
+
+    private struct UploadV3Metadata {
+        let temporaryFileUrl: URL
+        let dataLength: Int
+    }
+
+    private func prepareUploadV3() -> Promise<UploadV3Metadata> {
+        return firstly(on: .global()) { () -> Promise<Data> in
+            self.attachmentData()
+        }.map(on: .global()) { (encryptedData: Data) -> UploadV3Metadata in
+            // Write the encrypted data to a temporary file.
+            let temporaryFilePath = OWSFileSystem.temporaryFilePath()
+            let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
+            try encryptedData.write(to: temporaryFileUrl)
+            return UploadV3Metadata(temporaryFileUrl: temporaryFileUrl, dataLength: encryptedData.count)
         }
     }
 
@@ -246,7 +279,7 @@ public class OWSAttachmentUploadV2: NSObject {
     // See: https://cloud.google.com/storage/docs/performing-resumable-uploads#xml-api
     // NOTE: follow the "XML API" instructions.
     private func fetchResumableUploadLocationV3(form: OWSUploadFormV3,
-                                                attachmentData: Data,
+                                                uploadV3Metadata: UploadV3Metadata,
                                                 attemptCount: Int = 0) -> Promise<URL> {
         if attemptCount > 0 {
             Logger.info("attemptCount: \(attemptCount)")
@@ -256,7 +289,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlString = form.signedUploadLocation
             let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
             var headers = form.headers
-            headers["Content-Length"] = OWSFormat.formatInt(attachmentData.count)
+            headers["Content-Length"] = OWSFormat.formatInt(uploadV3Metadata.dataLength)
             headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
 
             return sessionManager.postPromise(urlString, headers: headers)
@@ -286,13 +319,13 @@ public class OWSAttachmentUploadV2: NSObject {
             }
             Logger.info("Trying to resume. ")
             return self.fetchResumableUploadLocationV3(form: form,
-                                                       attachmentData: attachmentData,
+                                                       uploadV3Metadata: uploadV3Metadata,
                                                        attemptCount: attemptCount + 1)
         }
     }
 
     private func performResumableUploadV3(form: OWSUploadFormV3,
-                                          attachmentData: Data,
+                                          uploadV3Metadata: UploadV3Metadata,
                                           locationUrl: URL,
                                           progressBlock: ProgressBlock? = nil,
                                           attemptCount: Int = 0) -> Promise<Void> {
@@ -306,37 +339,75 @@ public class OWSAttachmentUploadV2: NSObject {
                 return Promise.value(0)
             }
             return self.getResumableUploadProgressV3(form: form,
-                                                     attachmentData: attachmentData,
+                                                     uploadV3Metadata: uploadV3Metadata,
                                                      locationUrl: locationUrl)
-        }.then(on: .global()) { (progress: Int) -> Promise<Void> in
-            if progress > attachmentData.count {
+        }.then(on: .global()) { (bytesAlreadyUploaded: Int) -> Promise<Void> in
+            let totalDataLength = uploadV3Metadata.dataLength
+            if bytesAlreadyUploaded > totalDataLength {
                 throw OWSAssertionError("Unexpected content length.")
             }
-            if progress == attachmentData.count {
+            if bytesAlreadyUploaded == totalDataLength {
                 // Upload is already complete.
                 return Promise.value(())
             }
 
-            let urlString = locationUrl.absoluteString
-            let dataToUpload = attachmentData.suffix(from: progress)
-            guard dataToUpload.count + progress == attachmentData.count else {
-                throw OWSAssertionError("Could not slice attachment data.")
-            }
-
-            // Example: Resuming after uploading 2359296 of 7351375 bytes.
-            //
-            // Content-Range: bytes 2359296-7351374/7351375
-            // Content-Length: 4992079
             let formatInt = OWSFormat.formatInt
-            var headers: [String: String] = [
-                "Content-Length": formatInt(dataToUpload.count)
-            ]
-            if progress > 0 {
-                headers["Content-Range"]  = "bytes \(formatInt(progress))-\(formatInt(attachmentData.count - 1))/\(formatInt(attachmentData.count))"
-            }
-
+            let urlString = locationUrl.absoluteString
             let session = OWSURLSession()
-            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload, progressBlock: progressBlock).asVoid()
+
+            if bytesAlreadyUploaded == 0 {
+                // Either first attempt or no progress so far, use entire encrypted data.
+                let headers: [String: String] = [
+                    "Content-Length": formatInt(uploadV3Metadata.dataLength)
+                ]
+                return session.uploadTaskPromise(urlString,
+                                                 verb: .put,
+                                                 headers: headers,
+                                                 dataUrl: uploadV3Metadata.temporaryFileUrl,
+                                                 progressBlock: progressBlock).asVoid()
+            } else {
+                // Resuming, slice attachment data in memory.
+                //
+                // TODO: It'd be better if we could slice on disk.
+                let entireFileData = try Data(contentsOf: uploadV3Metadata.temporaryFileUrl)
+                let dataSlice = entireFileData.suffix(from: bytesAlreadyUploaded)
+                guard dataSlice.count + bytesAlreadyUploaded == entireFileData.count else {
+                    throw OWSAssertionError("Could not slice the data.")
+                }
+
+                // Write the slice to a temporary file.
+                let dataSliceFilePath = OWSFileSystem.temporaryFilePath()
+                let dataSliceFileUrl = URL(fileURLWithPath: dataSliceFilePath)
+                try dataSlice.write(to: dataSliceFileUrl)
+
+                // Example: Resuming after uploading 2359296 of 7351375 bytes.
+                //
+                // Content-Range: bytes 2359296-7351374/7351375
+                // Content-Length: 4992079
+                let headers: [String: String] = [
+                    "Content-Length": formatInt(dataSlice.count),
+                    "Content-Range": "bytes \(formatInt(bytesAlreadyUploaded))-\(formatInt(totalDataLength - 1))/\(formatInt(totalDataLength))"
+                ]
+
+                // We need to massage the progress to reflect the bytes
+                // already uploaded.
+                let modifiedProgressBlock = { (progress: Progress) in
+                    let sliceProgress = Progress(parent: nil, userInfo: nil)
+                    sliceProgress.totalUnitCount = progress.totalUnitCount + Int64(bytesAlreadyUploaded)
+                    sliceProgress.completedUnitCount = progress.completedUnitCount + Int64(bytesAlreadyUploaded)
+                    progressBlock?(sliceProgress)
+                }
+
+                return firstly(on: .global()) {
+                    session.uploadTaskPromise(urlString,
+                                              verb: .put,
+                                              headers: headers,
+                                              dataUrl: dataSliceFileUrl,
+                                              progressBlock: modifiedProgressBlock).asVoid()
+                }.ensure(on: .global()) {
+                    OWSFileSystem.deleteFile(dataSliceFilePath)
+                }
+            }
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
             guard IsNetworkConnectivityFailure(error) else {
                 throw error
@@ -347,7 +418,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 Logger.warn("No more retries: \(attemptCount). ")
                 throw error
             }
-            Logger.info("Trying to resume. ")
+            Logger.info("Trying to resume.")
             return firstly {
                 // To avoid 308 "Resume Incomplete" with a Range header,
                 // we wait briefly before retrying to give Cloud Storage time
@@ -357,7 +428,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 after(seconds: 3.0)
             }.then(on: .global()) {
                 self.performResumableUploadV3(form: form,
-                                              attachmentData: attachmentData,
+                                              uploadV3Metadata: uploadV3Metadata,
                                               locationUrl: locationUrl,
                                               attemptCount: attemptCount + 1)
             }
@@ -366,13 +437,13 @@ public class OWSAttachmentUploadV2: NSObject {
 
     // Determine how much has already been uploaded.
     private func getResumableUploadProgressV3(form: OWSUploadFormV3,
-                                              attachmentData: Data,
+                                              uploadV3Metadata: UploadV3Metadata,
                                               locationUrl: URL) -> Promise<Int> {
         return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
             let urlString = locationUrl.absoluteString
             let headers: [String: String] = [
                 "Content-Length": OWSFormat.formatInt(0),
-                "Content-Range": "bytes */\(OWSFormat.formatInt(attachmentData.count))"
+                "Content-Range": "bytes */\(OWSFormat.formatInt(uploadV3Metadata.dataLength))"
             ]
 
             let session = OWSURLSession()
@@ -418,9 +489,9 @@ public class OWSAttachmentUploadV2: NSObject {
             // rangeEnd is the _index_ of the last uploaded bytes, e.g.:
             // * 0 if 1 byte has been uploaded,
             // * N if N+1 bytes have been uploaded.
-            let progress = rangeEnd + 1
-            Logger.info("rangeEnd: \(rangeEnd), progress: \(progress).")
-            return progress
+            let bytesAlreadyUploaded = rangeEnd + 1
+            Logger.info("rangeEnd: \(rangeEnd), bytesAlreadyUploaded: \(bytesAlreadyUploaded).")
+            return bytesAlreadyUploaded
         }
     }
 }

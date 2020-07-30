@@ -248,14 +248,13 @@ extension OWSURLSession: URLSessionTaskDelegate {
     }
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-
         guard let progressBlock = self.progressBlock(forTask: task) else {
             return
         }
         let progress = Progress(parent: nil, userInfo: nil)
         // TODO: We could check for NSURLSessionTransferSizeUnknown here.
-        progress.totalUnitCount = task.countOfBytesExpectedToSend
-        progress.completedUnitCount = task.countOfBytesSent
+        progress.totalUnitCount = totalBytesExpectedToSend
+        progress.completedUnitCount = totalBytesSent
         progressBlock(progress)
     }
 }
