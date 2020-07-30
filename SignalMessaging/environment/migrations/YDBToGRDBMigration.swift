@@ -37,12 +37,17 @@ public class YDBToGRDBMigration: NSObject {
 @objc
 public class GRDBMigratorGroup: NSObject {
     public typealias MigratorBlock = (YapDatabaseReadTransaction) -> [GRDBMigrator]
+    public typealias CompletionBlock = () -> Void
 
     private let block: MigratorBlock
 
+    fileprivate let completionBlock: CompletionBlock?
+
     @objc
-    public required init(block: @escaping MigratorBlock) {
+    public required init(completionBlock: CompletionBlock? = nil,
+                         block: @escaping MigratorBlock) {
         self.block = block
+        self.completionBlock = completionBlock
     }
 
     func migrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
@@ -128,6 +133,13 @@ extension YDBToGRDBMigration {
             // "sneaky" transactions.
             GRDBMigratorGroup { ydbTransaction in
                 return self.allKeyValueMigrators(ydbTransaction: ydbTransaction)
+            },
+            // We need to migrate the user profiles before other models since they
+            // are used when indexing various other models.
+            GRDBMigratorGroup(completionBlock: {
+                self.profileManager.warmCaches()
+            }) { ydbTransaction in
+                return self.profileRecordMigrators(ydbTransaction: ydbTransaction)
             },
             GRDBMigratorGroup { ydbTransaction in
                 return self.allUnorderedRecordMigrators(ydbTransaction: ydbTransaction)
@@ -248,6 +260,10 @@ extension YDBToGRDBMigration {
             }
         }
 
+        if let completionBlock = migratorGroup.completionBlock {
+            completionBlock()
+        }
+
         SDSDatabaseStorage.shouldLogDBQueries = DebugFlags.logSQLQueries
     }
 
@@ -312,8 +328,13 @@ extension YDBToGRDBMigration {
         return result
     }
 
+    private func profileRecordMigrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
+        return [
+            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", ydbTransaction: ydbTransaction)
+        ]
+    }
+
     private func allUnorderedRecordMigrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
-        // TODO: We need to test all of these migrations.
         return [
             GRDBUnorderedRecordMigrator<TSAttachment>(label: "TSAttachment", ydbTransaction: ydbTransaction),
             GRDBUnorderedRecordMigrator<OWSMessageContentJob>(label: "OWSMessageContentJob", ydbTransaction: ydbTransaction),
@@ -328,7 +349,6 @@ extension YDBToGRDBMigration {
             GRDBUnorderedRecordMigrator<OWSDisappearingMessagesConfiguration>(label: "OWSDisappearingMessagesConfiguration", ydbTransaction: ydbTransaction),
             GRDBUnorderedRecordMigrator<SignalAccount>(label: "SignalAccount", ydbTransaction: ydbTransaction),
             GRDBUnorderedRecordMigrator<OWSDevice>(label: "OWSDevice", ydbTransaction: ydbTransaction),
-            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", ydbTransaction: ydbTransaction),
             GRDBUnorderedRecordMigrator<OWSReaction>(label: "OWSReaction", ydbTransaction: ydbTransaction)
         ]
     }

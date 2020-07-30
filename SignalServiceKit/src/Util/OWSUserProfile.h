@@ -21,6 +21,8 @@ extern NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange;
 extern NSString *const kNSNotificationKey_ProfileAddress;
 extern NSString *const kNSNotificationKey_ProfileGroupId;
 
+extern NSString *const kLocalProfileInvariantPhoneNumber;
+
 @interface OWSUserProfile : BaseModel
 
 @property (atomic, readonly) SignalServiceAddress *address;

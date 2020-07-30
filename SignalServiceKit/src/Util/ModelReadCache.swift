@@ -366,6 +366,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         guard isCacheReady else {
             return false
         }
+        guard AppReadiness.isAppReady else {
+            return false
+        }
         switch transaction.readTransaction {
         case .yapRead:
             return false
