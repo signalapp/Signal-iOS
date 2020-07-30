@@ -202,8 +202,6 @@ public class OWSAttachmentUploadV2: NSObject {
     // MARK: - V3
 
     public func uploadV3(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        Logger.verbose("---- ")
-
         return firstly(on: .global()) {
             // Fetch attachment upload form.
             return self.performRequest {
@@ -251,7 +249,9 @@ public class OWSAttachmentUploadV2: NSObject {
     private func fetchResumableUploadLocationV3(form: OWSUploadFormV3,
                                                 attachmentData: Data,
                                                 attemptCount: Int = 0) -> Promise<URL> {
-        Logger.verbose("---- attemptCount: \(attemptCount)")
+        if attemptCount > 0 {
+            Logger.info("attemptCount: \(attemptCount)")
+        }
 
         return firstly(on: .global()) { () -> Promise<AFHTTPSessionManager.Response> in
             let urlString = form.signedUploadLocation
@@ -277,16 +277,15 @@ public class OWSAttachmentUploadV2: NSObject {
             return locationUrl
         }.recover(on: .global()) { (error: Error) -> Promise<URL> in
             guard IsNetworkConnectivityFailure(error) else {
-                Logger.verbose("---- Not a network error: \(error). ")
                 throw error
             }
             // TODO: Tune this value.
             let maxRetryCount: Int = 3
             guard attemptCount < maxRetryCount else {
-                Logger.verbose("---- No more retries: \(attemptCount). ")
+                Logger.warn("No more retries: \(attemptCount). ")
                 throw error
             }
-            Logger.verbose("---- Trying to resume. ")
+            Logger.info("Trying to resume. ")
             return self.fetchResumableUploadLocationV3(form: form,
                                                        attachmentData: attachmentData,
                                                        attemptCount: attemptCount + 1)
@@ -298,7 +297,9 @@ public class OWSAttachmentUploadV2: NSObject {
                                           locationUrl: URL,
                                           progressBlock: ProgressBlock? = nil,
                                           attemptCount: Int = 0) -> Promise<Void> {
-        Logger.verbose("---- attemptCount: \(attemptCount)")
+        if attemptCount > 0 {
+            Logger.info("attemptCount: \(attemptCount)")
+        }
 
         return firstly(on: .global()) { () -> Promise<Int> in
             let isRetry = attemptCount > 0
@@ -339,16 +340,15 @@ public class OWSAttachmentUploadV2: NSObject {
             return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: dataToUpload, progressBlock: progressBlock).asVoid()
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
             guard IsNetworkConnectivityFailure(error) else {
-                Logger.verbose("---- Not a network error: \(error). ")
                 throw error
             }
             // TODO: Tune this value.
             let maxRetryCount: Int = 16
             guard attemptCount < maxRetryCount else {
-                Logger.verbose("---- No more retries: \(attemptCount). ")
+                Logger.warn("No more retries: \(attemptCount). ")
                 throw error
             }
-            Logger.verbose("---- Trying to resume. ")
+            Logger.info("Trying to resume. ")
             return firstly {
                 // To avoid 308 "Resume Incomplete" errors, we wait briefly
                 // before retrying to give Cloud Storage time to persist the
@@ -376,9 +376,8 @@ public class OWSAttachmentUploadV2: NSObject {
             ]
 
             let session = OWSURLSession()
-//            return session.uploadTaskPromise(urlString, verb: .put, headers: headers, data: nil)
             return session.dataTaskPromise(urlString, verb: .put, headers: headers)
-        }.map(on: .global()) { (response: HTTPURLResponse, responseData: Data?) in
+        }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
 
             if response.statusCode != 308 {
                 owsFailDebug("Invalid status code: \(response.statusCode).")
@@ -395,6 +394,9 @@ public class OWSAttachmentUploadV2: NSObject {
                 // Return zero to restart the upload.
                 return 0
             }
+            // TODO: Google Cloud Storage isn't currently returning the Range header.
+            // Until we've verified that this works, log the range header.
+            Logger.info("rangeHeader: \(rangeHeader). ")
             let expectedPrefix = "bytes=0-"
             guard rangeHeader.hasPrefix(expectedPrefix) else {
                 owsFailDebug("Invalid Range header: \(rangeHeader).")
@@ -408,11 +410,12 @@ public class OWSAttachmentUploadV2: NSObject {
                 // Return zero to restart the upload.
                 return 0
             }
-            Logger.verbose("---- rangeEnd: \(rangeEnd). ")
             // rangeEnd is the _index_ of the last uploaded bytes, e.g.:
             // * 0 if 1 byte has been uploaded,
             // * N if N+1 bytes have been uploaded.
-            return rangeEnd + 1
+            let progress = rangeEnd + 1
+            Logger.info("rangeEnd: \(rangeEnd), progress: \(progress).")
+            return progress
         }
     }
 }

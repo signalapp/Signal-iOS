@@ -76,9 +76,7 @@ public class OWSURLSession: NSObject {
                 if IsNetworkConnectivityFailure(error) {
                     Logger.warn("Request failed: \(error)")
                 } else {
-                    // TODO:
-                    //                    owsFailDebug("Request failed: \(error)")
-                    Logger.error("Request failed: \(error)")
+                    owsFailDebug("Request failed: \(error)")
                 }
                 resolver.reject(error)
                 return
@@ -107,23 +105,12 @@ public class OWSURLSession: NSObject {
     func dataTaskPromise(request: URLRequest) -> Promise<Response> {
 
         let (promise, resolver) = Promise<Response>.pending()
-        var taskReference: URLSessionDataTask?
         let task = session.dataTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            if let task = taskReference {
-                Logger.warn("---- task: \(task)")
-            } else {
-                owsFailDebug("Missing task.")
-            }
             if let error = error {
-                Logger.warn("---- Request failed: \(error)")
-                Logger.warn("---- IsNetworkConnectivityFailure: \(IsNetworkConnectivityFailure(error))")
-                Logger.flush()
                 if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("---- Request failed: \(error)")
+                    Logger.warn("Request failed: \(error)")
                 } else {
-                    // TODO:
-                    //                    owsFailDebug("Request failed: \(error)")
-                    Logger.error("---- Request failed: \(error)")
+                    owsFailDebug("Request failed: \(error)")
                 }
                 resolver.reject(error)
                 return
@@ -132,67 +119,11 @@ public class OWSURLSession: NSObject {
                 resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
                 return
             }
-            Logger.warn("---- Request: \(request)")
-            if let headers = request.allHTTPHeaderFields {
-                for (key, value) in headers {
-                    Logger.verbose("---- request headers \(key): \(value)")
-                }
-            }
             resolver.fulfill((response: httpResponse, data: responseData))
         }
-        taskReference = task
         task.resume()
         return promise
     }
-
-//    func downloadTaskPromise(_ urlString: String,
-//                         verb: HTTPVerb,
-//                         headers: [String: String]? = nil) -> Promise<Response> {
-//        firstly(on: .global()) { () -> Promise<Response> in
-//            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
-//            return self.downloadTaskPromise(request: request)
-//        }
-//    }
-//
-//    func downloadTaskPromise(request: URLRequest) -> Promise<Response> {
-//
-//        let (promise, resolver) = Promise<Response>.pending()
-//        var taskReference: URLSessionDataTask?
-//        let task = session.downloadTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
-//            open func downloadTask(with request: URLRequest, completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask
-//            if let task = taskReference {
-//                Logger.warn("---- task: \(task)")
-//            } else {
-//                owsFailDebug("Missing task.")
-//            }
-//            if let error = error {
-//                Logger.warn("---- Request failed: \(error)")
-//                Logger.warn("---- IsNetworkConnectivityFailure: \(IsNetworkConnectivityFailure(error))")
-//                Logger.flush()
-//                if IsNetworkConnectivityFailure(error) {
-//                    Logger.warn("---- Request failed: \(error)")
-//                } else {
-//                    // TODO:
-//                    //                    owsFailDebug("Request failed: \(error)")
-//                    Logger.error("---- Request failed: \(error)")
-//                }
-//                resolver.reject(error)
-//                return
-//            }
-//            guard let httpResponse = response as? HTTPURLResponse else {
-//                resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
-//                return
-//            }
-//            Logger.warn("---- Request: \(request)")
-//            for (key, value) in request.allHTTPHeaderFields {
-//                Logger.verbose("---- request headers \(key): \(value)")
-//            }
-//            resolver.fulfill((response: httpResponse, data: responseData))
-//        }
-//        taskReference = task
-//        task.resume()
-//        return promise
-//    }
 
     // TODO: Add downloadTaskPromise().
 
