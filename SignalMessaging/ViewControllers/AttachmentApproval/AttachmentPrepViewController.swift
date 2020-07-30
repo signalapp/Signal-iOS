@@ -10,6 +10,8 @@ protocol AttachmentPrepViewControllerDelegate: class {
     func prepViewControllerUpdateNavigationBar()
 
     func prepViewControllerUpdateControls()
+
+    var prepViewControllerShouldIgnoreTapGesture: Bool { get }
 }
 
 // MARK: -
@@ -401,6 +403,10 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
 
     public func imageEditorUpdateControls() {
         prepDelegate?.prepViewControllerUpdateControls()
+    }
+
+    public var imageEditorShouldIgnoreTapGesture: Bool {
+        return prepDelegate?.prepViewControllerShouldIgnoreTapGesture ?? false
     }
 }
 

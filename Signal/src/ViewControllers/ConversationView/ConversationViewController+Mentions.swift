@@ -5,31 +5,35 @@
 import Foundation
 
 extension ConversationViewController: MentionTextViewDelegate {
-    public func textViewDidBeginTypingMention(_ textView: MentionTextView) {
-        Logger.debug("begin typing mention")
+    @objc
+    var supportsMentions: Bool { Mention.threadAllowsMentionSend(thread) }
+
+    public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
+
+    public func textViewDidEndTypingMention(_ textView: MentionTextView) {}
+
+    public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+        return view
     }
 
-    public func textViewDidEndTypingMention(_ textView: MentionTextView) {
-        Logger.debug("end typing mention")
+    public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+        return bottomBar()
     }
 
-    public func textView(_ textView: MentionTextView, didUpdateMentionText mentionText: String) {
-        Logger.debug("did update mention \(mentionText)")
+    public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+        guard supportsMentions else { return [] }
+        return thread.recipientAddresses
     }
 
-    public func textView(_ textView: MentionTextView, didTapMention mention: MentionRange) {
-        Logger.debug("did tap mention \(mention.address)")
-    }
+    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
 
-    public func textView(_ textView: MentionTextView, didDeleteMention mention: MentionRange) {
-        Logger.debug("did delete mention \(mention.address)")
-    }
+    public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        return false
+        return supportsMentions && thread.recipientAddresses.contains(address)
     }
 
-    public func textViewMentionStyle(_ textView: MentionTextView) -> MentionStyle {
+    public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
         return .composing
     }
 }

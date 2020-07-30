@@ -479,6 +479,13 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
     var attachmentApprovalRecipientNames: [String] {
         selectedConversationsForConversationPicker.map { $0.title }
     }
+
+    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
+        guard selectedConversationsForConversationPicker.count == 1,
+            case .group(let groupThread) = selectedConversationsForConversationPicker.first?.messageRecipient,
+            Mention.threadAllowsMentionSend(groupThread) else { return [] }
+        return groupThread.recipientAddresses
+    }
 }
 
 // MARK: -

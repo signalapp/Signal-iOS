@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-class AttachmentTextView: UITextView {
+class AttachmentTextView: MentionTextView {
     // When creating new lines, contentOffset is animated, but because
     // we are simultaneously resizing the text view, this can cause the
     // text in the textview to be "too high" in the text view.

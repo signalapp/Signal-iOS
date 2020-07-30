@@ -8,7 +8,7 @@ import UIKit
 // Coincides with Android's max text message length
 let kMaxMessageBodyCharacterCount = 2000
 
-protocol AttachmentTextToolbarDelegate: class {
+protocol AttachmentTextToolbarDelegate: class, MentionTextViewDelegate {
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
@@ -20,7 +20,7 @@ protocol AttachmentTextToolbarDelegate: class {
 
 // MARK: -
 
-class AttachmentTextToolbar: UIView, UITextViewDelegate {
+class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
 
     // MARK: - Dependencies
 
@@ -88,7 +88,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = UIColor.clear
 
-        textView.delegate = self
+        textView.mentionDelegate = self
 
         let sendButton = OWSButton.sendButton(imageName: sendButtonImageName) { [weak self] in
             guard let self = self else { return }
@@ -197,12 +197,12 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         updateRecipientNames()
     }
 
-    lazy var textView: UITextView = {
+    lazy var textView: MentionTextView = {
         let textView = buildTextView()
 
         textView.returnKeyType = .done
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
-        textView.delegate = self
+        textView.mentionDelegate = self
 
         return textView
     }()
@@ -289,7 +289,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         return textContainer
     }()
 
-    private func buildTextView() -> UITextView {
+    private func buildTextView() -> MentionTextView {
         let textView = AttachmentTextView()
 
         textView.keyboardAppearance = Theme.darkThemeKeyboardAppearance
@@ -327,7 +327,43 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidViewOnce(self)
 
+        if isViewOnceEnabled { textView.resignFirstResponder() }
+
         updateContent()
+    }
+
+    // MARK: - MentionTextViewDelegate
+
+    func textViewDidBeginTypingMention(_ textView: MentionTextView) {
+        attachmentTextToolbarDelegate?.textViewDidBeginTypingMention(textView)
+    }
+
+    func textViewDidEndTypingMention(_ textView: MentionTextView) {
+        attachmentTextToolbarDelegate?.textViewDidEndTypingMention(textView)
+    }
+
+    func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+        return attachmentTextToolbarDelegate?.textViewMentionPickerParentView(textView)
+    }
+
+    func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+        return attachmentTextToolbarDelegate?.textViewMentionPickerReferenceView(textView)
+    }
+
+    func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+        return attachmentTextToolbarDelegate?.textViewMentionPickerPossibleAddresses(textView) ?? []
+    }
+
+    func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
+
+    func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
+
+    func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
+        return attachmentTextToolbarDelegate?.textView(textView, shouldResolveMentionForAddress: address) ?? false
+    }
+
+    func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
+        return .composingAttachment
     }
 
     // MARK: - UITextViewDelegate

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,28 +30,46 @@ class InputAccessoryViewPlaceholder: UIView {
         return max(0, visibleKeyboardHeight - ownHeight)
     }
 
+    @objc
+    weak var referenceView: UIView?
+
     private var visibleKeyboardHeight: CGFloat {
-        if let transitioningKeyboardHeight = transitioningKeyboardHeight {
-            return transitioningKeyboardHeight
+        guard var keyboardFrame = transitioningKeyboardFrame ?? superview?.frame else { return 0 }
+        guard keyboardFrame.height > 0 else { return 0 }
+
+        let referenceFrame: CGRect
+
+        if let referenceView = referenceView {
+            keyboardFrame = referenceView.convert(keyboardFrame, from: nil)
+            referenceFrame = referenceView.frame
+        } else {
+            referenceFrame = CurrentAppContext().frame
         }
 
-        guard let keyboardFrame = superview?.frame else { return 0 }
-
-        let appFrame = CurrentAppContext().frame
-
         // Measure how much of the keyboard is currently offscreen.
-        let offScreenHeight = keyboardFrame.maxY - appFrame.maxY
+        let offScreenHeight = keyboardFrame.maxY - referenceFrame.maxY
+
+        // This works around a bug in the share extension in iOS 13 where
+        // the keyboard frame given to us by the OS is slightly off.
+        // TODO: See if apple fixes this in iOS 14
+        if #available(iOS 13, *), !CurrentAppContext().isMainApp {
+            keyboardFrame.size.height += 15
+
+            if #available(iOS 14, *) {
+                owsFailDebug("Check if this is fixed")
+            }
+        }
 
         // The onscreen region represents the overlap.
         return max(0, keyboardFrame.height - offScreenHeight)
     }
 
-    private var transitioningKeyboardHeight: CGFloat? {
+    private var transitioningKeyboardFrame: CGRect? {
         switch keyboardState {
         case .dismissing:
-            return 0
-        case .presenting(let height):
-            return height
+            return .zero
+        case .presenting(let frame):
+            return frame
         default:
             return nil
         }
@@ -84,7 +102,7 @@ class InputAccessoryViewPlaceholder: UIView {
         case dismissed
         case dismissing
         case presented
-        case presenting(height: CGFloat)
+        case presenting(frame: CGRect)
     }
     private var keyboardState: KeyboardState = .dismissed
 
@@ -182,7 +200,7 @@ class InputAccessoryViewPlaceholder: UIView {
         // when canceling an interactive dismissal or changing orientations.
         guard beginFrame.height != endFrame.height || beginFrame.minY == UIScreen.main.bounds.height else { return }
 
-        keyboardState = .presenting(height: endFrame.height)
+        keyboardState = .presenting(frame: endFrame)
 
         delegate?.inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: animationDuration, animationCurve: animationCurve)
     }

@@ -3172,6 +3172,15 @@ typedef enum : NSUInteger {
     return @[ [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread] ];
 }
 
+- (NSArray<SignalServiceAddress *> *)sendMediaNavMentionableAddresses
+{
+    if (!self.supportsMentions) {
+        return @[];
+    }
+
+    return self.thread.recipientAddresses;
+}
+
 #pragma mark -
 
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
@@ -3822,6 +3831,15 @@ typedef enum : NSUInteger {
 - (NSArray<NSString *> *)attachmentApprovalRecipientNames
 {
     return @[ [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread] ];
+}
+
+- (NSArray<SignalServiceAddress *> *)attachmentApprovalMentionableAddresses
+{
+    if (!self.supportsMentions) {
+        return @[];
+    }
+
+    return self.thread.recipientAddresses;
 }
 
 #pragma mark -

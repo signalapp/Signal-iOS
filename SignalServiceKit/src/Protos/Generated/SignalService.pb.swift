@@ -733,127 +733,141 @@ struct SignalServiceProtos_DataMessage {
   // methods supported on all messages.
 
   var body: String {
-    get {return _body ?? String()}
-    set {_body = newValue}
+    get {return _storage._body ?? String()}
+    set {_uniqueStorage()._body = newValue}
   }
   /// Returns true if `body` has been explicitly set.
-  var hasBody: Bool {return self._body != nil}
+  var hasBody: Bool {return _storage._body != nil}
   /// Clears the value of `body`. Subsequent reads from it will return its default value.
-  mutating func clearBody() {self._body = nil}
+  mutating func clearBody() {_uniqueStorage()._body = nil}
 
-  var attachments: [SignalServiceProtos_AttachmentPointer] = []
+  var attachments: [SignalServiceProtos_AttachmentPointer] {
+    get {return _storage._attachments}
+    set {_uniqueStorage()._attachments = newValue}
+  }
 
   var group: SignalServiceProtos_GroupContext {
-    get {return _group ?? SignalServiceProtos_GroupContext()}
-    set {_group = newValue}
+    get {return _storage._group ?? SignalServiceProtos_GroupContext()}
+    set {_uniqueStorage()._group = newValue}
   }
   /// Returns true if `group` has been explicitly set.
-  var hasGroup: Bool {return self._group != nil}
+  var hasGroup: Bool {return _storage._group != nil}
   /// Clears the value of `group`. Subsequent reads from it will return its default value.
-  mutating func clearGroup() {self._group = nil}
+  mutating func clearGroup() {_uniqueStorage()._group = nil}
 
   var groupV2: SignalServiceProtos_GroupContextV2 {
-    get {return _groupV2 ?? SignalServiceProtos_GroupContextV2()}
-    set {_groupV2 = newValue}
+    get {return _storage._groupV2 ?? SignalServiceProtos_GroupContextV2()}
+    set {_uniqueStorage()._groupV2 = newValue}
   }
   /// Returns true if `groupV2` has been explicitly set.
-  var hasGroupV2: Bool {return self._groupV2 != nil}
+  var hasGroupV2: Bool {return _storage._groupV2 != nil}
   /// Clears the value of `groupV2`. Subsequent reads from it will return its default value.
-  mutating func clearGroupV2() {self._groupV2 = nil}
+  mutating func clearGroupV2() {_uniqueStorage()._groupV2 = nil}
 
   var flags: UInt32 {
-    get {return _flags ?? 0}
-    set {_flags = newValue}
+    get {return _storage._flags ?? 0}
+    set {_uniqueStorage()._flags = newValue}
   }
   /// Returns true if `flags` has been explicitly set.
-  var hasFlags: Bool {return self._flags != nil}
+  var hasFlags: Bool {return _storage._flags != nil}
   /// Clears the value of `flags`. Subsequent reads from it will return its default value.
-  mutating func clearFlags() {self._flags = nil}
+  mutating func clearFlags() {_uniqueStorage()._flags = nil}
 
   var expireTimer: UInt32 {
-    get {return _expireTimer ?? 0}
-    set {_expireTimer = newValue}
+    get {return _storage._expireTimer ?? 0}
+    set {_uniqueStorage()._expireTimer = newValue}
   }
   /// Returns true if `expireTimer` has been explicitly set.
-  var hasExpireTimer: Bool {return self._expireTimer != nil}
+  var hasExpireTimer: Bool {return _storage._expireTimer != nil}
   /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
-  mutating func clearExpireTimer() {self._expireTimer = nil}
+  mutating func clearExpireTimer() {_uniqueStorage()._expireTimer = nil}
 
   var profileKey: Data {
-    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
-    set {_profileKey = newValue}
+    get {return _storage._profileKey ?? SwiftProtobuf.Internal.emptyData}
+    set {_uniqueStorage()._profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
-  var hasProfileKey: Bool {return self._profileKey != nil}
+  var hasProfileKey: Bool {return _storage._profileKey != nil}
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
-  mutating func clearProfileKey() {self._profileKey = nil}
+  mutating func clearProfileKey() {_uniqueStorage()._profileKey = nil}
 
   var timestamp: UInt64 {
-    get {return _timestamp ?? 0}
-    set {_timestamp = newValue}
+    get {return _storage._timestamp ?? 0}
+    set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {return _storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
-  mutating func clearTimestamp() {self._timestamp = nil}
+  mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
   var quote: SignalServiceProtos_DataMessage.Quote {
-    get {return _quote ?? SignalServiceProtos_DataMessage.Quote()}
-    set {_quote = newValue}
+    get {return _storage._quote ?? SignalServiceProtos_DataMessage.Quote()}
+    set {_uniqueStorage()._quote = newValue}
   }
   /// Returns true if `quote` has been explicitly set.
-  var hasQuote: Bool {return self._quote != nil}
+  var hasQuote: Bool {return _storage._quote != nil}
   /// Clears the value of `quote`. Subsequent reads from it will return its default value.
-  mutating func clearQuote() {self._quote = nil}
+  mutating func clearQuote() {_uniqueStorage()._quote = nil}
 
-  var contact: [SignalServiceProtos_DataMessage.Contact] = []
+  var contact: [SignalServiceProtos_DataMessage.Contact] {
+    get {return _storage._contact}
+    set {_uniqueStorage()._contact = newValue}
+  }
 
-  var preview: [SignalServiceProtos_DataMessage.Preview] = []
+  var preview: [SignalServiceProtos_DataMessage.Preview] {
+    get {return _storage._preview}
+    set {_uniqueStorage()._preview = newValue}
+  }
 
   var sticker: SignalServiceProtos_DataMessage.Sticker {
-    get {return _sticker ?? SignalServiceProtos_DataMessage.Sticker()}
-    set {_sticker = newValue}
+    get {return _storage._sticker ?? SignalServiceProtos_DataMessage.Sticker()}
+    set {_uniqueStorage()._sticker = newValue}
   }
   /// Returns true if `sticker` has been explicitly set.
-  var hasSticker: Bool {return self._sticker != nil}
+  var hasSticker: Bool {return _storage._sticker != nil}
   /// Clears the value of `sticker`. Subsequent reads from it will return its default value.
-  mutating func clearSticker() {self._sticker = nil}
+  mutating func clearSticker() {_uniqueStorage()._sticker = nil}
 
   var requiredProtocolVersion: UInt32 {
-    get {return _requiredProtocolVersion ?? 0}
-    set {_requiredProtocolVersion = newValue}
+    get {return _storage._requiredProtocolVersion ?? 0}
+    set {_uniqueStorage()._requiredProtocolVersion = newValue}
   }
   /// Returns true if `requiredProtocolVersion` has been explicitly set.
-  var hasRequiredProtocolVersion: Bool {return self._requiredProtocolVersion != nil}
+  var hasRequiredProtocolVersion: Bool {return _storage._requiredProtocolVersion != nil}
   /// Clears the value of `requiredProtocolVersion`. Subsequent reads from it will return its default value.
-  mutating func clearRequiredProtocolVersion() {self._requiredProtocolVersion = nil}
+  mutating func clearRequiredProtocolVersion() {_uniqueStorage()._requiredProtocolVersion = nil}
 
   var isViewOnce: Bool {
-    get {return _isViewOnce ?? false}
-    set {_isViewOnce = newValue}
+    get {return _storage._isViewOnce ?? false}
+    set {_uniqueStorage()._isViewOnce = newValue}
   }
   /// Returns true if `isViewOnce` has been explicitly set.
-  var hasIsViewOnce: Bool {return self._isViewOnce != nil}
+  var hasIsViewOnce: Bool {return _storage._isViewOnce != nil}
   /// Clears the value of `isViewOnce`. Subsequent reads from it will return its default value.
-  mutating func clearIsViewOnce() {self._isViewOnce = nil}
+  mutating func clearIsViewOnce() {_uniqueStorage()._isViewOnce = nil}
 
   var reaction: SignalServiceProtos_DataMessage.Reaction {
-    get {return _reaction ?? SignalServiceProtos_DataMessage.Reaction()}
-    set {_reaction = newValue}
+    get {return _storage._reaction ?? SignalServiceProtos_DataMessage.Reaction()}
+    set {_uniqueStorage()._reaction = newValue}
   }
   /// Returns true if `reaction` has been explicitly set.
-  var hasReaction: Bool {return self._reaction != nil}
+  var hasReaction: Bool {return _storage._reaction != nil}
   /// Clears the value of `reaction`. Subsequent reads from it will return its default value.
-  mutating func clearReaction() {self._reaction = nil}
+  mutating func clearReaction() {_uniqueStorage()._reaction = nil}
 
   var delete: SignalServiceProtos_DataMessage.Delete {
-    get {return _delete ?? SignalServiceProtos_DataMessage.Delete()}
-    set {_delete = newValue}
+    get {return _storage._delete ?? SignalServiceProtos_DataMessage.Delete()}
+    set {_uniqueStorage()._delete = newValue}
   }
   /// Returns true if `delete` has been explicitly set.
-  var hasDelete: Bool {return self._delete != nil}
+  var hasDelete: Bool {return _storage._delete != nil}
   /// Clears the value of `delete`. Subsequent reads from it will return its default value.
-  mutating func clearDelete() {self._delete = nil}
+  mutating func clearDelete() {_uniqueStorage()._delete = nil}
+
+  var bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] {
+    get {return _storage._bodyRanges}
+    set {_uniqueStorage()._bodyRanges = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -894,7 +908,8 @@ struct SignalServiceProtos_DataMessage {
     case viewOnceVideo // = 3
     case reactions // = 4
     case cdnSelectorAttachments // = 5
-    static let current = cdnSelectorAttachments
+    case mentions // = 6
+    static let current = mentions
 
     init() {
       self = .initial
@@ -908,6 +923,7 @@ struct SignalServiceProtos_DataMessage {
       case 3: self = .viewOnceVideo
       case 4: self = .reactions
       case 5: self = .cdnSelectorAttachments
+      case 6: self = .mentions
       default: return nil
       }
     }
@@ -920,6 +936,7 @@ struct SignalServiceProtos_DataMessage {
       case .viewOnceVideo: return 3
       case .reactions: return 4
       case .cdnSelectorAttachments: return 5
+      case .mentions: return 6
       }
     }
 
@@ -968,6 +985,8 @@ struct SignalServiceProtos_DataMessage {
     mutating func clearText() {self._text = nil}
 
     var attachments: [SignalServiceProtos_DataMessage.Quote.QuotedAttachment] = []
+
+    var bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1661,21 +1680,55 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _targetSentTimestamp: UInt64?
   }
 
+  struct BodyRange {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var start: UInt32 {
+      get {return _start ?? 0}
+      set {_start = newValue}
+    }
+    /// Returns true if `start` has been explicitly set.
+    var hasStart: Bool {return self._start != nil}
+    /// Clears the value of `start`. Subsequent reads from it will return its default value.
+    mutating func clearStart() {self._start = nil}
+
+    var length: UInt32 {
+      get {return _length ?? 0}
+      set {_length = newValue}
+    }
+    /// Returns true if `length` has been explicitly set.
+    var hasLength: Bool {return self._length != nil}
+    /// Clears the value of `length`. Subsequent reads from it will return its default value.
+    mutating func clearLength() {self._length = nil}
+
+    /// oneof commented out because swift generated
+    /// enum with associated values can't be converted
+    /// to objc representation
+    ///
+    /// oneof associatedValue {
+    var mentionUuid: String {
+      get {return _mentionUuid ?? String()}
+      set {_mentionUuid = newValue}
+    }
+    /// Returns true if `mentionUuid` has been explicitly set.
+    var hasMentionUuid: Bool {return self._mentionUuid != nil}
+    /// Clears the value of `mentionUuid`. Subsequent reads from it will return its default value.
+    mutating func clearMentionUuid() {self._mentionUuid = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _start: UInt32?
+    fileprivate var _length: UInt32?
+    fileprivate var _mentionUuid: String?
+  }
+
   init() {}
 
-  fileprivate var _body: String?
-  fileprivate var _group: SignalServiceProtos_GroupContext?
-  fileprivate var _groupV2: SignalServiceProtos_GroupContextV2?
-  fileprivate var _flags: UInt32?
-  fileprivate var _expireTimer: UInt32?
-  fileprivate var _profileKey: Data?
-  fileprivate var _timestamp: UInt64?
-  fileprivate var _quote: SignalServiceProtos_DataMessage.Quote?
-  fileprivate var _sticker: SignalServiceProtos_DataMessage.Sticker?
-  fileprivate var _requiredProtocolVersion: UInt32?
-  fileprivate var _isViewOnce: Bool?
-  fileprivate var _reaction: SignalServiceProtos_DataMessage.Reaction?
-  fileprivate var _delete: SignalServiceProtos_DataMessage.Delete?
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 #if swift(>=4.2)
@@ -3928,102 +3981,172 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     12: .same(proto: "requiredProtocolVersion"),
     14: .same(proto: "isViewOnce"),
     16: .same(proto: "reaction"),
-    17: .same(proto: "delete")
+    17: .same(proto: "delete"),
+    18: .same(proto: "bodyRanges")
   ]
 
+  fileprivate class _StorageClass {
+    var _body: String?
+    var _attachments: [SignalServiceProtos_AttachmentPointer] = []
+    var _group: SignalServiceProtos_GroupContext?
+    var _groupV2: SignalServiceProtos_GroupContextV2?
+    var _flags: UInt32?
+    var _expireTimer: UInt32?
+    var _profileKey: Data?
+    var _timestamp: UInt64?
+    var _quote: SignalServiceProtos_DataMessage.Quote?
+    var _contact: [SignalServiceProtos_DataMessage.Contact] = []
+    var _preview: [SignalServiceProtos_DataMessage.Preview] = []
+    var _sticker: SignalServiceProtos_DataMessage.Sticker?
+    var _requiredProtocolVersion: UInt32?
+    var _isViewOnce: Bool?
+    var _reaction: SignalServiceProtos_DataMessage.Reaction?
+    var _delete: SignalServiceProtos_DataMessage.Delete?
+    var _bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _body = source._body
+      _attachments = source._attachments
+      _group = source._group
+      _groupV2 = source._groupV2
+      _flags = source._flags
+      _expireTimer = source._expireTimer
+      _profileKey = source._profileKey
+      _timestamp = source._timestamp
+      _quote = source._quote
+      _contact = source._contact
+      _preview = source._preview
+      _sticker = source._sticker
+      _requiredProtocolVersion = source._requiredProtocolVersion
+      _isViewOnce = source._isViewOnce
+      _reaction = source._reaction
+      _delete = source._delete
+      _bodyRanges = source._bodyRanges
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._body)
-      case 2: try decoder.decodeRepeatedMessageField(value: &self.attachments)
-      case 3: try decoder.decodeSingularMessageField(value: &self._group)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self._flags)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self._expireTimer)
-      case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
-      case 7: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
-      case 8: try decoder.decodeSingularMessageField(value: &self._quote)
-      case 9: try decoder.decodeRepeatedMessageField(value: &self.contact)
-      case 10: try decoder.decodeRepeatedMessageField(value: &self.preview)
-      case 11: try decoder.decodeSingularMessageField(value: &self._sticker)
-      case 12: try decoder.decodeSingularUInt32Field(value: &self._requiredProtocolVersion)
-      case 14: try decoder.decodeSingularBoolField(value: &self._isViewOnce)
-      case 15: try decoder.decodeSingularMessageField(value: &self._groupV2)
-      case 16: try decoder.decodeSingularMessageField(value: &self._reaction)
-      case 17: try decoder.decodeSingularMessageField(value: &self._delete)
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        switch fieldNumber {
+        case 1: try decoder.decodeSingularStringField(value: &_storage._body)
+        case 2: try decoder.decodeRepeatedMessageField(value: &_storage._attachments)
+        case 3: try decoder.decodeSingularMessageField(value: &_storage._group)
+        case 4: try decoder.decodeSingularUInt32Field(value: &_storage._flags)
+        case 5: try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer)
+        case 6: try decoder.decodeSingularBytesField(value: &_storage._profileKey)
+        case 7: try decoder.decodeSingularUInt64Field(value: &_storage._timestamp)
+        case 8: try decoder.decodeSingularMessageField(value: &_storage._quote)
+        case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
+        case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
+        case 11: try decoder.decodeSingularMessageField(value: &_storage._sticker)
+        case 12: try decoder.decodeSingularUInt32Field(value: &_storage._requiredProtocolVersion)
+        case 14: try decoder.decodeSingularBoolField(value: &_storage._isViewOnce)
+        case 15: try decoder.decodeSingularMessageField(value: &_storage._groupV2)
+        case 16: try decoder.decodeSingularMessageField(value: &_storage._reaction)
+        case 17: try decoder.decodeSingularMessageField(value: &_storage._delete)
+        case 18: try decoder.decodeRepeatedMessageField(value: &_storage._bodyRanges)
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._body {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if !self.attachments.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.attachments, fieldNumber: 2)
-    }
-    if let v = self._group {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
-    if let v = self._flags {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
-    }
-    if let v = self._expireTimer {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 5)
-    }
-    if let v = self._profileKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
-    }
-    if let v = self._timestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 7)
-    }
-    if let v = self._quote {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-    }
-    if !self.contact.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.contact, fieldNumber: 9)
-    }
-    if !self.preview.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.preview, fieldNumber: 10)
-    }
-    if let v = self._sticker {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
-    }
-    if let v = self._requiredProtocolVersion {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
-    }
-    if let v = self._isViewOnce {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 14)
-    }
-    if let v = self._groupV2 {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
-    }
-    if let v = self._reaction {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
-    }
-    if let v = self._delete {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._body {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+      }
+      if !_storage._attachments.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._attachments, fieldNumber: 2)
+      }
+      if let v = _storage._group {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      }
+      if let v = _storage._flags {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
+      }
+      if let v = _storage._expireTimer {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 5)
+      }
+      if let v = _storage._profileKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+      }
+      if let v = _storage._timestamp {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 7)
+      }
+      if let v = _storage._quote {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      }
+      if !_storage._contact.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._contact, fieldNumber: 9)
+      }
+      if !_storage._preview.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._preview, fieldNumber: 10)
+      }
+      if let v = _storage._sticker {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
+      }
+      if let v = _storage._requiredProtocolVersion {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
+      }
+      if let v = _storage._isViewOnce {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 14)
+      }
+      if let v = _storage._groupV2 {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
+      }
+      if let v = _storage._reaction {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+      }
+      if let v = _storage._delete {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
+      }
+      if !_storage._bodyRanges.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._bodyRanges, fieldNumber: 18)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage, rhs: SignalServiceProtos_DataMessage) -> Bool {
-    if lhs._body != rhs._body {return false}
-    if lhs.attachments != rhs.attachments {return false}
-    if lhs._group != rhs._group {return false}
-    if lhs._groupV2 != rhs._groupV2 {return false}
-    if lhs._flags != rhs._flags {return false}
-    if lhs._expireTimer != rhs._expireTimer {return false}
-    if lhs._profileKey != rhs._profileKey {return false}
-    if lhs._timestamp != rhs._timestamp {return false}
-    if lhs._quote != rhs._quote {return false}
-    if lhs.contact != rhs.contact {return false}
-    if lhs.preview != rhs.preview {return false}
-    if lhs._sticker != rhs._sticker {return false}
-    if lhs._requiredProtocolVersion != rhs._requiredProtocolVersion {return false}
-    if lhs._isViewOnce != rhs._isViewOnce {return false}
-    if lhs._reaction != rhs._reaction {return false}
-    if lhs._delete != rhs._delete {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._body != rhs_storage._body {return false}
+        if _storage._attachments != rhs_storage._attachments {return false}
+        if _storage._group != rhs_storage._group {return false}
+        if _storage._groupV2 != rhs_storage._groupV2 {return false}
+        if _storage._flags != rhs_storage._flags {return false}
+        if _storage._expireTimer != rhs_storage._expireTimer {return false}
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._timestamp != rhs_storage._timestamp {return false}
+        if _storage._quote != rhs_storage._quote {return false}
+        if _storage._contact != rhs_storage._contact {return false}
+        if _storage._preview != rhs_storage._preview {return false}
+        if _storage._sticker != rhs_storage._sticker {return false}
+        if _storage._requiredProtocolVersion != rhs_storage._requiredProtocolVersion {return false}
+        if _storage._isViewOnce != rhs_storage._isViewOnce {return false}
+        if _storage._reaction != rhs_storage._reaction {return false}
+        if _storage._delete != rhs_storage._delete {return false}
+        if _storage._bodyRanges != rhs_storage._bodyRanges {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4044,7 +4167,8 @@ extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoN
     2: .same(proto: "VIEW_ONCE"),
     3: .same(proto: "VIEW_ONCE_VIDEO"),
     4: .same(proto: "REACTIONS"),
-    5: .aliased(proto: "CDN_SELECTOR_ATTACHMENTS", aliases: ["CURRENT"])
+    5: .same(proto: "CDN_SELECTOR_ATTACHMENTS"),
+    6: .aliased(proto: "MENTIONS", aliases: ["CURRENT"])
   ]
 }
 
@@ -4055,7 +4179,8 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     2: .same(proto: "authorE164"),
     5: .same(proto: "authorUuid"),
     3: .same(proto: "text"),
-    4: .same(proto: "attachments")
+    4: .same(proto: "attachments"),
+    6: .same(proto: "bodyRanges")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4066,6 +4191,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
       case 3: try decoder.decodeSingularStringField(value: &self._text)
       case 4: try decoder.decodeRepeatedMessageField(value: &self.attachments)
       case 5: try decoder.decodeSingularStringField(value: &self._authorUuid)
+      case 6: try decoder.decodeRepeatedMessageField(value: &self.bodyRanges)
       default: break
       }
     }
@@ -4087,6 +4213,9 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     if let v = self._authorUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
     }
+    if !self.bodyRanges.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.bodyRanges, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4096,6 +4225,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     if lhs._authorUuid != rhs._authorUuid {return false}
     if lhs._text != rhs._text {return false}
     if lhs.attachments != rhs.attachments {return false}
+    if lhs.bodyRanges != rhs.bodyRanges {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4657,6 +4787,47 @@ extension SignalServiceProtos_DataMessage.Delete: SwiftProtobuf.Message, SwiftPr
 
   static func ==(lhs: SignalServiceProtos_DataMessage.Delete, rhs: SignalServiceProtos_DataMessage.Delete) -> Bool {
     if lhs._targetSentTimestamp != rhs._targetSentTimestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".BodyRange"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "start"),
+    2: .same(proto: "length"),
+    3: .same(proto: "mentionUuid")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularUInt32Field(value: &self._start)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self._length)
+      case 3: try decoder.decodeSingularStringField(value: &self._mentionUuid)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._start {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
+    }
+    if let v = self._length {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
+    }
+    if let v = self._mentionUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.BodyRange, rhs: SignalServiceProtos_DataMessage.BodyRange) -> Bool {
+    if lhs._start != rhs._start {return false}
+    if lhs._length != rhs._length {return false}
+    if lhs._mentionUuid != rhs._mentionUuid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

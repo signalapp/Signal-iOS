@@ -39,6 +39,8 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
     @objc var attachmentApprovalTextInputContextIdentifier: String? { get }
 
     @objc var attachmentApprovalRecipientNames: [String] { get }
+
+    @objc var attachmentApprovalMentionableAddresses: [SignalServiceAddress] { get }
 }
 
 // MARK: -
@@ -104,7 +106,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
         self.receivedOptions = options
-        self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options, sendButtonImageName: sendButtonImageName)
+        self.bottomToolView = AttachmentApprovalToolbar(options: options, sendButtonImageName: sendButtonImageName)
 
         let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
@@ -171,7 +173,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView.attachmentTextToolbar
     }
 
-    let bottomToolView: AttachmentApprovalInputAccessoryView
+    let bottomToolView: AttachmentApprovalToolbar
+    private var bottomToolViewBottomConstraint: NSLayoutConstraint?
+
+    private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
+        let placeholder = InputAccessoryViewPlaceholder()
+        placeholder.delegate = self
+        placeholder.referenceView = view
+        return placeholder
+    }()
 
     lazy var touchInterceptorView = UIView()
 
@@ -216,6 +226,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         touchInterceptorView.isHidden = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
         touchInterceptorView.addGestureRecognizer(tapGesture)
+
+        view.addSubview(bottomToolView)
+        bottomToolView.autoPinWidthToSuperview()
+        bottomToolViewBottomConstraint =  bottomToolView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -248,7 +262,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private func updateContents(isApproved: Bool) {
         updateNavigationBar()
-        updateInputAccessory(isApproved: isApproved)
+        updateBottomToolView(isApproved: isApproved)
 
         touchInterceptorView.isHidden = !isEditingCaptions
 
@@ -258,31 +272,27 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Input Accessory
 
-    override public var inputAccessoryView: UIView? {
-        bottomToolView.layoutIfNeeded()
-        return bottomToolView
+    public override var canBecomeFirstResponder: Bool {
+        return true
+    }
+
+    public override var inputAccessoryView: UIView? {
+        return inputAccessoryPlaceholder
     }
 
     public override var textInputContextIdentifier: String? {
         return approvalDelegate?.attachmentApprovalTextInputContextIdentifier
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return !shouldHideControls
-    }
-
-    public func updateInputAccessory(isApproved: Bool) {
+    public func updateBottomToolView(isApproved: Bool) {
         var currentPageViewController: AttachmentPrepViewController?
         if pageViewControllers.count == 1 {
             currentPageViewController = pageViewControllers.first
         }
         let currentAttachmentItem: AttachmentApprovalItem? = currentPageViewController?.attachmentApprovalItem
 
-        let hasPresentedView = self.presentedViewController != nil
-        let isToolbarFirstResponder = bottomToolView.hasFirstResponder
-        if !shouldHideControls, !isFirstResponder, !hasPresentedView, !isToolbarFirstResponder {
-            becomeFirstResponder()
-        }
+        bottomToolView.isHidden = shouldHideControls
+        bottomToolView.isUserInteractionEnabled = !shouldHideControls
 
         bottomToolView.update(isEditingCaptions: isEditingCaptions,
                               currentAttachmentItem: currentAttachmentItem,
@@ -475,7 +485,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
 
             // use compact scale when keyboard is popped.
-            let scale: AttachmentPrepViewController.AttachmentViewScale = self.isFirstResponder ? .fullsize : .compact
+            let scale: AttachmentPrepViewController.AttachmentViewScale = self.bottomToolView.isEditing ? .compact : .fullsize
             pendingPage.setAttachmentViewScale(scale, animated: false)
         }
     }
@@ -595,7 +605,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         updateMediaRail()
     }
 
-    func updateMediaRail() {
+    func updateMediaRail(animated: Bool = false, isTypingMention: Bool = false) {
         guard let currentItem = self.currentItem else {
             owsFailDebug("currentItem was unexpectedly nil")
             return
@@ -615,10 +625,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
+        galleryRailView.configureCellViews(itemProvider: isTypingMention ? nil : attachmentApprovalItemCollection,
                                            focusedItem: currentItem,
                                            cellViewBuilder: cellViewBuilder,
-                                           animated: false)
+                                           animated: animated)
     }
 
     var attachmentApprovalItemCollection: AttachmentApprovalItemCollection!
@@ -893,6 +903,48 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
 
     func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar) {
         updateContents(isApproved: false)
+
+        if isViewOnceEnabled {
+            attachmentTextToolbar.textView.stopTypingMention()
+        }
+    }
+
+    public func textViewDidBeginTypingMention(_ textView: MentionTextView) {
+        guard !textViewMentionPickerPossibleAddresses(textView).isEmpty else { return }
+
+        updateMediaRail(animated: true, isTypingMention: true)
+    }
+
+    public func textViewDidEndTypingMention(_ textView: MentionTextView) {
+        guard !textViewMentionPickerPossibleAddresses(textView).isEmpty else { return }
+
+        updateMediaRail(animated: true, isTypingMention: false)
+    }
+
+    public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+        return view
+    }
+
+    public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+        return bottomToolView
+    }
+
+    public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+        guard FeatureFlags.mentionsSend else { return [] }
+        return approvalDelegate?.attachmentApprovalMentionableAddresses ?? []
+    }
+
+    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
+
+    public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
+
+    public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
+        guard FeatureFlags.mentionsSend else { return false }
+        return approvalDelegate?.attachmentApprovalMentionableAddresses.contains(address) ?? false
+    }
+
+    public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
+        return .composingAttachment
     }
 }
 
@@ -904,7 +956,13 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewControllerUpdateControls() {
-        updateInputAccessory(isApproved: false)
+        updateBottomToolView(isApproved: false)
+    }
+
+    var prepViewControllerShouldIgnoreTapGesture: Bool {
+        guard bottomToolView.isEditing else { return false }
+        bottomToolView.resignFirstResponder()
+        return true
     }
 }
 
@@ -963,12 +1021,6 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
 
 // MARK: -
 
-enum KeyboardScenario {
-    case hidden, editingMessage, editingCaption
-}
-
-// MARK: -
-
 extension AttachmentApprovalViewController: ApprovalRailCellViewDelegate {
     func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentApprovalItem: AttachmentApprovalItem) {
         remove(attachmentApprovalItem: attachmentApprovalItem)
@@ -979,18 +1031,51 @@ extension AttachmentApprovalViewController: ApprovalRailCellViewDelegate {
     }
 }
 
+extension AttachmentApprovalViewController: InputAccessoryViewPlaceholderDelegate {
+    func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
+    }
+
+    func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
+        updateBottomToolViewPosition()
+    }
+
+    func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+        guard animationDuration > 0 else { return updateBottomToolViewPosition() }
+
+        UIView.beginAnimations("keyboardStateChange", context: nil)
+        UIView.setAnimationBeginsFromCurrentState(true)
+        UIView.setAnimationCurve(animationCurve)
+        UIView.setAnimationDuration(animationDuration)
+        updateBottomToolViewPosition()
+        UIView.commitAnimations()
+    }
+
+    func updateBottomToolViewPosition() {
+        bottomToolViewBottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
+
+        // We always want to apply the new bottom bar position immediately,
+        // as this only happens during animations (interactive or otherwise)
+        bottomToolView.superview?.layoutIfNeeded()
+    }
+}
+
 // MARK: -
 
-extension AttachmentApprovalViewController: AttachmentApprovalInputAccessoryViewDelegate {
-    public func attachmentApprovalInputUpdateMediaRail() {
+extension AttachmentApprovalViewController: AttachmentApprovalToolbarDelegate {
+    public func attachmentApprovalToolbarUpdateMediaRail() {
         updateMediaRail()
     }
 
-    public func attachmentApprovalInputStartEditingCaptions() {
+    public func attachmentApprovalToolbarStartEditingCaptions() {
         isEditingCaptions = true
     }
 
-    public func attachmentApprovalInputStopEditingCaptions() {
+    public func attachmentApprovalToolbarStopEditingCaptions() {
         isEditingCaptions = false
     }
 }

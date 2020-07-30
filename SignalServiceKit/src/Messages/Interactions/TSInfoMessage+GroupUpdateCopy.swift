@@ -12,12 +12,12 @@ struct GroupUpdateCopy {
         return SSKEnvironment.shared.contactsManager
     }
 
-    private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+    private var contactsManager: ContactsManagerProtocol {
+        return SSKEnvironment.shared.contactsManager
     }
 
-    private static var profileManager: ProfileManagerProtocol {
-        return SSKEnvironment.shared.profileManager
+    private static var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
     }
 
     // MARK: -
@@ -571,7 +571,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was granted administrator role."))
             }
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = self.contactsManager.displayName(for: address, transaction: transaction)
 
             switch updater {
             case .localUser:
@@ -638,7 +638,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user had their administrator role revoked."))
             }
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
 
             switch updater {
             case .localUser:
@@ -695,7 +695,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was removed from the group by an unknown user."))
             }
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
 
             switch updater {
             case .localUser:
@@ -741,7 +741,7 @@ extension GroupUpdateCopy {
                     copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
                                             comment: "Message indicating that the local user was invited to the group."))
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
             do {
                 let format = NSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
                                                comment: "Message indicating that a remote user has left the group. Embeds {{remote user name}}.")
@@ -766,7 +766,7 @@ extension GroupUpdateCopy {
         var inviterAddress: SignalServiceAddress?
         if let inviterUuid = oldGroupMembership.addedByUuid(forPendingMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
-            inviterName = Self.displayName(for: SignalServiceAddress(uuid: inviterUuid),
+            inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
                                                       transaction: transaction)
         }
 
@@ -804,7 +804,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user has joined the group."))
             }
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
 
             switch updater {
             case .localUser:
@@ -864,7 +864,7 @@ extension GroupUpdateCopy {
         var inviterAddress: SignalServiceAddress?
         if let inviterUuid = oldGroupMembership.addedByUuid(forPendingMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
-            inviterName = Self.displayName(for: SignalServiceAddress(uuid: inviterUuid),
+            inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
                                                       transaction: transaction)
         }
 
@@ -902,7 +902,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user's invite was revoked by an unknown user."))
             }
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
 
             switch updater {
             case .localUser:
@@ -1007,7 +1007,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user has joined the group."))
             }
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
 
             switch updater {
             case .localUser:
@@ -1076,7 +1076,7 @@ extension GroupUpdateCopy {
                                                 comment: "Message indicating that the local user was invited to the group."))
             }
         } else {
-            let userName = Self.displayName(for: address, transaction: transaction)
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
 
             switch updater {
             case .localUser:
@@ -1251,7 +1251,7 @@ extension GroupUpdateCopy {
             if let localAddress = Self.tsAccountManager.localAddress,
                 let inviterUuid = newGroupMembership.addedByUuid(forPendingMember: localAddress) {
                 let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
-                let inviterName = Self.displayName(for: inviterAddress, transaction: transaction)
+                let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
                 let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState,
@@ -1316,7 +1316,7 @@ extension GroupUpdateCopy {
             return .localUser
         }
 
-        let updaterName = Self.displayName(for: updaterAddress, transaction: transaction)
+        let updaterName = contactsManager.displayName(for: updaterAddress, transaction: transaction)
         return .otherUser(updaterName: updaterName, updaterAddress: updaterAddress)
     }
 
@@ -1342,21 +1342,6 @@ extension GroupUpdateCopy {
         case .unknown:
             return NSLocalizedString("GROUP_UPDATED",
                                      comment: "Info message indicating that the group was updated by an unknown user.")
-        }
-    }
-
-    private static func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
-        // TODO: Remove this after we enable the message request feature flag.
-        assert(!FeatureFlags.messageRequest)
-        var displayName = contactsManager.displayName(for: address, transaction: transaction).filterForDisplay ?? ""
-        if displayName == contactsManager.unknownUserLabel,
-            let profileName = profileManager.fullName(for: address, transaction: transaction) {
-            displayName = profileName.filterForDisplay ?? ""
-        }
-        if displayName.isEmpty {
-            return contactsManager.unknownUserLabel
-        } else {
-            return displayName
         }
     }
 }

@@ -17,6 +17,7 @@ protocol SendMediaNavDelegate: AnyObject {
     var sendMediaNavCanSaveAttachments: Bool { get }
     var sendMediaNavTextInputContextIdentifier: String? { get }
     var sendMediaNavRecipientNames: [String] { get }
+    var sendMediaNavMentionableAddresses: [SignalServiceAddress] { get }
 }
 
 @objc
@@ -661,6 +662,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
     var attachmentApprovalRecipientNames: [String] {
         return sendMediaNavDelegate?.sendMediaNavRecipientNames ?? []
+    }
+
+    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
+        return sendMediaNavDelegate?.sendMediaNavMentionableAddresses ?? []
     }
 }
 

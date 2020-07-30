@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -156,7 +156,10 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
             animate(animationDuration: animationDuration,
                     animated: animated,
                     animations: {
+                        self.alpha = 0
                 self.isHidden = true
+            }, completion: { _ in
+                self.alpha = 1
             })
             self.cellViews = []
             return
