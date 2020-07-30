@@ -177,12 +177,16 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
-        let hasSeenPNModeSheet = UserDefaults.standard[.hasSeenPNModeSheet]
-        if !hasSeenPNModeSheet {
-            let pnModeSheet = PNModeSheet()
-            pnModeSheet.modalPresentationStyle = .overFullScreen
-            pnModeSheet.modalTransitionStyle = .crossDissolve
-            present(pnModeSheet, animated: true, completion: nil)
+        let hasSeenMultiDeviceRemovalSheet = UserDefaults.standard[.hasSeenMultiDeviceRemovalSheet]
+        if !hasSeenMultiDeviceRemovalSheet {
+            let _ = FileServerAPI.getDeviceLinks(associatedWith: getUserHexEncodedPublicKey()).done(on: DispatchQueue.main) { [weak self] deviceLinks in
+                guard !deviceLinks.isEmpty else { return }
+                let multiDeviceRemovalSheet = MultiDeviceRemovalSheet()
+                multiDeviceRemovalSheet.modalPresentationStyle = .overFullScreen
+                multiDeviceRemovalSheet.modalTransitionStyle = .crossDissolve
+                self?.present(multiDeviceRemovalSheet, animated: true, completion: nil)
+            }
+            UserDefaults.standard[.hasSeenMultiDeviceRemovalSheet] = true
         }
         UserDefaults.standard[.hasLaunchedOnce] = true
     }
