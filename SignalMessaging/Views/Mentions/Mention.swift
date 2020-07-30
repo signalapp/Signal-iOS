@@ -61,6 +61,12 @@ public class Mention: NSObject {
         return other.uniqueId == uniqueId
     }
     override public var hash: Int { uniqueId.hashValue }
+
+    public class func threadAllowsMentionSend(_ thread: TSThread) -> Bool {
+        guard FeatureFlags.mentionsSend else { return false }
+        guard let groupThread = thread as? TSGroupThread else { return false }
+        return groupThread.groupModel.groupsVersion == .V2
+    }
 }
 
 extension NSAttributedString.Key {
@@ -71,7 +77,7 @@ extension MessageBody {
     convenience init(attributedString: NSAttributedString) {
         var mentionRanges = [NSRange: UUID]()
 
-        let mutableAttributedString = attributedString.mutableCopy() as! NSMutableAttributedString
+        let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
 
         mutableAttributedString.enumerateAttribute(
             .mention,

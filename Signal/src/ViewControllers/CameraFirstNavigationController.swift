@@ -61,10 +61,9 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     }
 
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] {
-        guard FeatureFlags.mentionsSend else { return [] }
         guard selectedConversations.count == 1,
             case .group(let groupThread) = selectedConversations.first?.messageRecipient,
-            groupThread.groupModel.groupsVersion == .V2 else { return [] }
+            Mention.threadAllowsMentionSend(groupThread) else { return [] }
         return groupThread.recipientAddresses
     }
 }
