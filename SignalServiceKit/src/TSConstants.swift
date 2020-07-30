@@ -175,9 +175,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
     public let keyBackupEnclaveName = "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
     public let keyBackupMrEnclave = "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87"
-    public var keyBackupServiceId: String {
-        return keyBackupEnclaveName
-    }
+    public let keyBackupServiceId = "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
 
     public let applicationGroup = "group.org.whispersystems.signal.group"
 
@@ -216,9 +214,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     public let keyBackupEnclaveName = "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9"
     public let keyBackupMrEnclave = "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87"
-    public var keyBackupServiceId: String {
-        return keyBackupEnclaveName
-    }
+    public let keyBackupServiceId = "038c40bbbacdc873caa81ac793bb75afde6dfe436a99ab1f15e3f0cbb7434ced"
 
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
 
