@@ -83,7 +83,7 @@ public extension OWSAttachmentDownloads {
         required init(job: OWSAttachmentDownloadJob, attachmentPointer: TSAttachmentPointer) {
             self.job = job
             self.attachmentPointer = attachmentPointer
-            
+
             tempFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         }
     }
@@ -99,6 +99,14 @@ public extension OWSAttachmentDownloads {
             Self.downloadAttempt(downloadState: downloadState)
         }.map(on: .global()) { () -> URL in
             downloadState.tempFileUrl
+        }.recover(on: .global()) { (error: Error) -> Promise<URL> in
+            do {
+                try OWSFileSystem.deleteFileIfExists(url: downloadState.tempFileUrl)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+
+            throw error
         }
     }
 
@@ -159,7 +167,6 @@ public extension OWSAttachmentDownloads {
                     }.then { () -> Promise<Void> in
                         if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
                             !resumeData.isEmpty {
-                            Logger.verbose("---- resumeData: \(resumeData.count)")
                             return self.downloadAttempt(downloadState: downloadState, resumeData: resumeData, attemptIndex: attemptIndex + 1)
                         } else {
                             return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
@@ -171,12 +178,6 @@ public extension OWSAttachmentDownloads {
             }
 
             promise.catch(on: .global()) { (error: Error) in
-                do {
-                    try OWSFileSystem.deleteFileIfExists(url: tempFileUrl)
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
-                
                 if let statusCode = HTTPStatusCodeForError(error),
                     attachmentPointer.serverId < 100 {
                     // This looks like the symptom of the "frequent 404
