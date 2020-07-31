@@ -400,16 +400,27 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                                                                   equalTo:profile.familyName];
                                    BOOL avatarUrlPathDidChange = ![NSObject isNullableObject:avatarUrlPathBefore
                                                                                      equalTo:profile.avatarUrlPath];
+                                   NSString *profileKeyDescription;
+                                   if (profile.profileKey.keyData != nil) {
+                                       if (SSKDebugFlags.internalLogging) {
+                                           profileKeyDescription = profile.profileKey.keyData.hexadecimalString;
+                                       } else {
+                                           profileKeyDescription = @"[XXXX]";
+                                       }
+                                   } else {
+                                       profileKeyDescription = @"None";
+                                   }
 
                                    if (profileKeyDidChange || givenNameDidChange || familyNameDidChange
                                        || avatarUrlPathDidChange) {
-                                       OWSLogInfo(@"address: %@, profileKeyDidChange: %d (%d -> %d), "
+                                       OWSLogInfo(@"address: %@, profileKeyDidChange: %d (%d -> %d) %@, "
                                                   @"givenNameDidChange: %d (%d -> %d), familyNameDidChange: %d (%d -> "
                                                   @"%d), avatarUrlPathDidChange: %d (%d -> %d)",
                                            profile.address,
                                            profileKeyDidChange,
                                            profileKeyBefore != nil,
                                            profile.profileKey != nil,
+                                           profileKeyDescription,
                                            givenNameDidChange,
                                            givenNameBefore != nil,
                                            profile.givenName != nil,

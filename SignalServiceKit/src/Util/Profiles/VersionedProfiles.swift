@@ -22,7 +22,7 @@ public class VersionedProfileUpdate: NSObject {
 @objc
 public protocol VersionedProfileRequest: class {
     var request: TSRequest { get }
-    var profileKeyData: Data? { get }
+    var profileKey: OWSAES256Key? { get }
 }
 
 // MARK: -

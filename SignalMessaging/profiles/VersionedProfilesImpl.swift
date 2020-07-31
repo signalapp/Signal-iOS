@@ -11,14 +11,14 @@ import ZKGroup
 public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
     public let request: TSRequest
     public let requestContext: ProfileKeyCredentialRequestContext?
-    public let profileKeyData: Data?
+    public let profileKey: OWSAES256Key?
 
     public required init(request: TSRequest,
                          requestContext: ProfileKeyCredentialRequestContext?,
-                         profileKeyData: Data?) {
+                         profileKey: OWSAES256Key?) {
         self.request = request
         self.requestContext = requestContext
-        self.profileKeyData = profileKeyData
+        self.profileKey = profileKey
     }
 }
 
@@ -162,13 +162,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
         var requestContext: ProfileKeyCredentialRequestContext?
         var profileKeyVersionArg: String?
         var credentialRequestArg: Data?
-        var profileKeyData: Data?
+        var profileKeyForRequest: OWSAES256Key?
         try databaseStorage.read { transaction in
             // We try to include the profile key if we have one.
-            guard let profileKeyForAddress: OWSAES256Key = self.profileManager.profileKey(for: address, transaction: transaction) else {
+            guard let profileKeyForAddress: OWSAES256Key = self.profileManager.profileKey(for: address,
+                                                                                          transaction: transaction) else {
                 return
             }
-            profileKeyData = profileKeyForAddress.keyData
+            profileKeyForRequest = profileKeyForAddress
             let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
             let profileKeyVersion = try profileKey.getProfileKeyVersion(uuid: zkgUuid)
             profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
@@ -190,7 +191,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                                    credentialRequest: credentialRequestArg,
                                                                    udAccessKey: udAccessKey)
 
-        return VersionedProfileRequestImpl(request: request, requestContext: requestContext, profileKeyData: profileKeyData)
+        return VersionedProfileRequestImpl(request: request, requestContext: requestContext, profileKey: profileKeyForRequest)
     }
 
     // MARK: -
