@@ -179,12 +179,16 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
-        let hasSeenPNModeSheet = UserDefaults.standard[.hasSeenPNModeSheet]
-        if !hasSeenPNModeSheet {
-            let pnModeSheet = PNModeSheet()
-            pnModeSheet.modalPresentationStyle = .overFullScreen
-            pnModeSheet.modalTransitionStyle = .crossDissolve
-            present(pnModeSheet, animated: true, completion: nil)
+        let hasSeenMultiDeviceRemovalSheet = UserDefaults.standard[.hasSeenMultiDeviceRemovalSheet]
+        if !hasSeenMultiDeviceRemovalSheet {
+            let _ = FileServerAPI.getDeviceLinks(associatedWith: getUserHexEncodedPublicKey()).done(on: DispatchQueue.main) { [weak self] deviceLinks in
+                guard !deviceLinks.isEmpty else { return }
+                let multiDeviceRemovalSheet = MultiDeviceRemovalSheet()
+                multiDeviceRemovalSheet.modalPresentationStyle = .overFullScreen
+                multiDeviceRemovalSheet.modalTransitionStyle = .crossDissolve
+                self?.present(multiDeviceRemovalSheet, animated: true, completion: nil)
+            }
+            UserDefaults.standard[.hasSeenMultiDeviceRemovalSheet] = true
         }
         UserDefaults.standard[.hasLaunchedOnce] = true
     }
@@ -214,21 +218,17 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         isObservingDatabase = isViewVisible && CurrentAppContext().isAppForegroundAndActive()
     }
     
-    private func updateYDBThreadMapping() {
+    private func reload() {
+        AssertIsOnMainThread()
         uiDatabaseConnection.beginLongLivedReadTransaction()
         uiDatabaseConnection.read { transaction in
             self.threads.update(with: transaction)
         }
-    }
-    
-    private func reload() {
-        AssertIsOnMainThread()
-        updateYDBThreadMapping()
         threadViewModelCache.removeAll()
         tableView.reloadData()
         emptyStateView.isHidden = (threadCount != 0)
     }
-    
+
     @objc private func handleYapDatabaseModifiedNotification(_ notification: Notification) {
         AssertIsOnMainThread()
         let notifications = uiDatabaseConnection.beginLongLivedReadTransaction()
@@ -244,17 +244,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             }
             return
         }
-        // Guard for changes made in Notification Service Extension
-        // Crashes may happen if there is some modification in NSE
-        // The YapDBModificationNotification cannot cross process
-        // So the thread mapping won't update itself if DB modification happened in other process like NSE
-        // With these code we can sync the mapping before asking for changes from YapDB
-        if (notifications.count > 0) {
-            if let firstChangeset = notifications[0].userInfo {
-                let firstSnapshot = firstChangeset[YapDatabaseSnapshotKey] as! UInt64
-                if (self.threads.snapshotOfLastUpdate != firstSnapshot - 1) {
-                    reload()
-                    return
+        // If changes were made in a different process (e.g. the Notification Service Extension) the thread mapping can be out of date
+        // at this point, causing the app to crash. The code below prevents that by force syncing the database before proceeding.
+        if notifications.count > 0 {
+            if let firstChangeSet = notifications[0].userInfo {
+                let firstSnapshot = firstChangeSet[YapDatabaseSnapshotKey] as! UInt64
+                if threads.snapshotOfLastUpdate != firstSnapshot - 1 {
+                    return reload()
                 }
             }
         }

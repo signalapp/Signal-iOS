@@ -574,7 +574,6 @@
 		C31A6C5A247F214E001123EF /* UIView+Glow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C59247F214E001123EF /* UIView+Glow.swift */; };
 		C31A6C5C247F2CF3001123EF /* CGRect+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
-		C353F8F7244808E90011121A /* PNModeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F6244808E90011121A /* PNModeSheet.swift */; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
@@ -584,6 +583,7 @@
 		C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */; };
 		C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAD2485E51D00ACB629 /* IP2Country.swift */; };
 		C3638C0524C7F0B500AF29BC /* LK002RemoveFriendRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */; };
+		C369549D24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */; };
 		C36B8707243C50C60049991D /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
@@ -1362,7 +1362,6 @@
 		C31A6C59247F214E001123EF /* UIView+Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Glow.swift"; sourceTree = "<group>"; };
 		C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Utilities.swift"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
-		C353F8F6244808E90011121A /* PNModeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeSheet.swift; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
@@ -1372,6 +1371,7 @@
 		C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Blocks-IPv4.csv"; sourceTree = "<group>"; };
 		C35E8AAD2485E51D00ACB629 /* IP2Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP2Country.swift; sourceTree = "<group>"; };
 		C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK002RemoveFriendRequests.swift; sourceTree = "<group>"; };
+		C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceRemovalSheet.swift; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
@@ -2710,12 +2710,12 @@
 				B85357C423A1F13800AAF6CD /* LinkDeviceVC.swift */,
 				B85357C623A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
+				C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */,
 				B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */,
 				B8CCF63623961D6D0091D419 /* NewPrivateChatVC.swift */,
 				B894D0742339EDCF00B4D94D /* NukeDataModal.swift */,
 				C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */,
 				B879D448247E1BE300DB3608 /* PathVC.swift */,
-				C353F8F6244808E90011121A /* PNModeSheet.swift */,
 				C3548F0524456447009433A8 /* PNModeVC.swift */,
 				B886B4A62398B23E00211ABE /* QRCodeVC.swift */,
 				B82B408B239A068800A248E7 /* RegisterVC.swift */,
@@ -3801,7 +3801,6 @@
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
-				C353F8F7244808E90011121A /* PNModeSheet.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
 				C3548F0624456447009433A8 /* PNModeVC.swift in Sources */,
@@ -3848,6 +3847,7 @@
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
+				C369549D24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				B8CCF639239721E20091D419 /* TabBar.swift in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
