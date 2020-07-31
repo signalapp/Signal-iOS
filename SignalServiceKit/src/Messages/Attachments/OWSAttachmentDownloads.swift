@@ -162,8 +162,8 @@ public extension OWSAttachmentDownloads {
                     attemptIndex < maxAttemptCount {
 
                     return firstly {
-                        // Wait briefly before trying.
-                        after(seconds: 1.0)
+                        // Wait briefly before retrying.
+                        after(seconds: 0.25)
                     }.then { () -> Promise<Void> in
                         if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
                             !resumeData.isEmpty {
@@ -251,7 +251,7 @@ public extension OWSAttachmentDownloads {
                                         attachmentPointer: attachmentPointer)
             }
         }.ensure(on: .global()) {
-            if !OWSFileSystem.deleteFileIfExists(encryptedFileUrl.path) {
+            if !OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl) {
                 owsFailDebug("Could not delete encrypted data file.")
             }
         }
