@@ -300,7 +300,7 @@ public enum OnionRequestAPI {
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
                 HTTP.execute(.post, url, parameters: parameters).done2 { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
-                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count > ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
+                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
                     let iv = ivAndCiphertext[0..<Int(ivSize)]
                     let ciphertext = ivAndCiphertext[Int(ivSize)...]
                     do {
