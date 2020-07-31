@@ -5,6 +5,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
     private var tableViewTopConstraint: NSLayoutConstraint!
     
+    private var hasDatabaseModifiedNotificationWhenInvisible = false
+    
     private var threads: YapDatabaseViewMappings = {
         let result = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName)
         result.setIsReversed(true, forGroup: TSInboxGroup)
@@ -229,10 +231,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     @objc private func handleYapDatabaseModifiedNotification(_ notification: Notification) {
         AssertIsOnMainThread()
-        guard isObservingDatabase else { return }
         let notifications = uiDatabaseConnection.beginLongLivedReadTransaction()
         let ext = uiDatabaseConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
         let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
+        guard isObservingDatabase else {
+            hasDatabaseModifiedNotificationWhenInvisible = hasChanges
+            return
+        }
         guard hasChanges else {
             uiDatabaseConnection.read { transaction in
                 self.threads.update(with: transaction)
@@ -279,7 +284,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     @objc private func handleApplicationDidBecomeActiveNotification(_ notification: Notification) {
         updateIsObservingDatabase()
-        updateYDBThreadMapping()
+        if (hasDatabaseModifiedNotificationWhenInvisible) {
+            reload()
+            hasDatabaseModifiedNotificationWhenInvisible = false
+        }
     }
     
     @objc private func handleApplicationWillResignActiveNotification(_ notification: Notification) {

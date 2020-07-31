@@ -193,6 +193,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                  quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                   contactShare:nil
                                                    linkPreview:nil];
+    [message save];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"
@@ -200,7 +201,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                           // To avoid blocking the send flow, we dispatch an async write from within this read
                           // transaction
                           [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
-                              [message saveWithTransaction:writeTransaction];
 
                               OWSLinkPreview *_Nullable linkPreview =
                                   [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
