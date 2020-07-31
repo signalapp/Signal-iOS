@@ -78,105 +78,13 @@ public extension OWSAttachmentDownloads {
         let job: OWSAttachmentDownloadJob
         let attachmentPointer: TSAttachmentPointer
 
-        private let lock = UnfairLock()
-        private var tempFileUrls = [URL]()
-
-        let contentLength = AtomicOptional<UInt64>(nil)
+        let tempFileUrl: URL
 
         required init(job: OWSAttachmentDownloadJob, attachmentPointer: TSAttachmentPointer) {
             self.job = job
             self.attachmentPointer = attachmentPointer
-        }
-
-        func addTempFileUrl() -> URL {
-            let tempFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-            lock.withLock {
-                tempFileUrls.append(tempFileUrl)
-            }
-            Logger.verbose("---- tempFileUrl: \(tempFileUrl)")
-            return tempFileUrl
-        }
-
-        func totalBytesDownloaded() throws -> UInt64 {
-            let tempFileUrls = lock.withLock {
-                self.tempFileUrls
-            }
-            var count: UInt64 = 0
-            for url in tempFileUrls {
-                guard OWSFileSystem.fileOrFolderExists(url: url) else {
-                    Logger.verbose("---- tempFileUrl: \(url) doesn't exist")
-                    continue
-                }
-                guard let nsFileSize: NSNumber = OWSFileSystem.fileSize(of: url) else {
-                    throw OWSAssertionError("Can't determine length of file.")
-                }
-                Logger.verbose("---- nsFileSize.uint64Value: \(nsFileSize.uint64Value)")
-                count += nsFileSize.uint64Value
-            }
-            return count
-        }
-
-        func mergeFileUrls() throws -> URL {
-            guard let contentLength = contentLength.get() else {
-                throw OWSAssertionError("Missing contentLength.")
-            }
-            Logger.verbose("---- contentLength: \(contentLength)")
-
-            // Collect the segment files, discarding any empty files.
-            let tempFileUrls = lock.withLock {
-                self.tempFileUrls
-            }
-            let fileUrlsAndSizes = try tempFileUrls.compactMap { (url: URL) -> (URL, UInt64)? in
-                guard OWSFileSystem.fileOrFolderExists(url: url) else {
-                    Logger.verbose("---- tempFileUrl: \(url) doesn't exist")
-                    return nil
-                }
-                guard let nsFileSize: NSNumber = OWSFileSystem.fileSize(of: url) else {
-                    throw OWSAssertionError("Can't determine length of file.")
-                }
-                let fileSize = nsFileSize.uint64Value
-                guard fileSize > 0 else {
-                    return nil
-                }
-                Logger.verbose("---- fileSize: \(fileSize)")
-                return (url, fileSize)
-            }
-            guard !fileUrlsAndSizes.isEmpty else {
-                throw OWSAssertionError("No tempFileUrls.")
-            }
-            if fileUrlsAndSizes.count == 1,
-                let (fileUrl, _) = fileUrlsAndSizes.first {
-                // No need to merge if we didn't resume.
-                return fileUrl
-            }
-            var joinedData = Data()
-            for (fileUrl, fileSize) in fileUrlsAndSizes {
-                let fileData = try Data(contentsOf: fileUrl)
-                guard fileData.count == fileSize else {
-                    throw OWSAssertionError("Segment has unexpected size.")
-                }
-                joinedData.append(fileData)
-                try OWSFileSystem.deleteFile(url: fileUrl)
-            }
-            guard joinedData.count == contentLength else {
-                throw OWSAssertionError("Unexpected data size: \(joinedData.count) != \(contentLength)")
-            }
-            let joinedFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-            try joinedData.write(to: joinedFileUrl)
-            return joinedFileUrl
-        }
-
-        func deleteFileUrls() {
-            let tempFileUrls = lock.withLock {
-                self.tempFileUrls
-            }
-            for tempFileUrl in tempFileUrls {
-                do {
-                    try OWSFileSystem.deleteFileIfExists(url: tempFileUrl)
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                }
-            }
+            
+            tempFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         }
     }
 
@@ -185,27 +93,12 @@ public extension OWSAttachmentDownloads {
     private class func download(job: OWSAttachmentDownloadJob,
                                 attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
 
-        Logger.verbose("---- starting download.")
-
         let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
 
-        return firstly(on: .global()) { () -> Promise<UInt64> in
-            self.getContentLength(downloadState: downloadState)
-        }.then(on: .global()) { (contentLength: UInt64) -> Promise<Void> in
-            guard contentLength > 0 else {
-                throw OWSAssertionError("Empty attachment.")
-            }
-            guard contentLength <= Self.maxDownloadSize else {
-                throw OWSAssertionError("Attachment download length exceeds max size.")
-            }
-            downloadState.contentLength.set(contentLength)
-
-            return Self.downloadAttempt(downloadState: downloadState)
+        return firstly(on: .global()) { () -> Promise<Void> in
+            Self.downloadAttempt(downloadState: downloadState)
         }.map(on: .global()) { () -> URL in
-            try downloadState.mergeFileUrls()
-        }.recover(on: .global()) { (error: Error) -> Promise<URL> in
-            downloadState.deleteFileUrls()
-            throw error
+            downloadState.tempFileUrl
         }
     }
 
@@ -214,22 +107,8 @@ public extension OWSAttachmentDownloads {
                                        attemptIndex: UInt = 0) -> Promise<Void> {
 
         return firstly(on: .global()) { () -> Promise<Void> in
-            guard let contentLength = downloadState.contentLength.get() else {
-                throw OWSAssertionError("Missing contentLength.")
-            }
-            let totalBytesDownloaded = try downloadState.totalBytesDownloaded()
-            Logger.verbose("---- totalBytesDownloaded: \(totalBytesDownloaded)")
-            guard totalBytesDownloaded < contentLength else {
-                // Download is already complete.
-                return Promise.value(())
-            }
-
-            // The amount of bytes to download during this attempt.
-            let segmentStart = totalBytesDownloaded
-            let segmentLength = contentLength - totalBytesDownloaded
-
             let attachmentPointer = downloadState.attachmentPointer
-            let segmentUrl = downloadState.addTempFileUrl()
+            let tempFileUrl = downloadState.tempFileUrl
 
             let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<URL> in
                 let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: attachmentPointer.cdnNumber)
@@ -237,36 +116,31 @@ public extension OWSAttachmentDownloads {
 
                 let url = try Self.url(for: downloadState, sessionManager: sessionManager)
                 let headers: [String: String] = [
-                    "Content-Type": OWSMimeTypeApplicationOctetStream,
-                    "Range": "bytes=\(segmentStart)-\(segmentStart + segmentLength - 1)"
+                    "Content-Type": OWSMimeTypeApplicationOctetStream
                 ]
 
                 let progress = { (progress: Progress, task: URLSessionDownloadTask) in
-                    Logger.verbose("---- progress: \(progress.fractionCompleted), \(progress.completedUnitCount)")
                     Self.handleDownloadProgress(downloadState: downloadState,
                                                 task: task,
-                                                segmentStart: segmentStart,
-                                                segmentLength: segmentLength,
-                                                contentLength: contentLength,
                                                 progress: progress)
                 }
 
                 if let resumeData = resumeData {
                     return sessionManager.resumeDownloadTaskPromise(resumeData: resumeData,
-                                                                    dstFileUrl: segmentUrl,
+                                                                    dstFileUrl: tempFileUrl,
                                                                     progress: progress)
                 } else {
                     return sessionManager.downloadTaskPromise(url.absoluteString,
                                                               verb: .get,
                                                               headers: headers,
-                                                              dstFileUrl: segmentUrl,
+                                                              dstFileUrl: tempFileUrl,
                                                               progress: progress)
                 }
             }.map(on: .global()) { (completionUrl: URL) in
-                if segmentUrl != completionUrl {
+                if tempFileUrl != completionUrl {
                     throw OWSAssertionError("Unexpected temp file path.")
                 }
-                guard let fileSize = OWSFileSystem.fileSize(of: segmentUrl) else {
+                guard let fileSize = OWSFileSystem.fileSize(of: tempFileUrl) else {
                     throw OWSAssertionError("Could not determine attachment file size.")
                 }
                 guard fileSize.int64Value <= Self.maxDownloadSize else {
@@ -291,36 +165,18 @@ public extension OWSAttachmentDownloads {
                             return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
                         }
                     }
-
-//                    let didUploadAnyBytes = { () -> Bool in
-//                        guard OWSFileSystem.fileOrFolderExists(url: segmentUrl) else {
-//                            return false
-//                        }
-//                        guard let fileSize = OWSFileSystem.fileSize(of: segmentUrl) else {
-//                            owsFailDebug("Can't determine size of file segment.")
-//                            return false
-//                        }
-//                        return fileSize.uint64Value > 0
-//                    }()
-//
-//                    if didUploadAnyBytes {
-//                        Logger.warn("Retrying download immediately: \(attemptIndex)")
-//                        return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
-//                    } else {
-//                        Logger.warn("Retrying download after delay: \(attemptIndex)")
-//                        return firstly {
-//                            // TODO:
-//                            after(seconds: 5.0)
-//                        }.then {
-//                            self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
-//                        }
-//                    }
                 } else {
                     throw error
                 }
             }
 
             promise.catch(on: .global()) { (error: Error) in
+                do {
+                    try OWSFileSystem.deleteFileIfExists(url: tempFileUrl)
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
+                
                 if let statusCode = HTTPStatusCodeForError(error),
                     attachmentPointer.serverId < 100 {
                     // This looks like the symptom of the "frequent 404
@@ -349,63 +205,16 @@ public extension OWSAttachmentDownloads {
         return url
     }
 
-    private class func getContentLength(downloadState: DownloadState,
-                                        attemptIndex: UInt = 0) -> Promise<UInt64> {
-
-        return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
-            let attachmentPointer = downloadState.attachmentPointer
-            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: attachmentPointer.cdnNumber)
-            let url = try Self.url(for: downloadState, sessionManager: sessionManager)
-            let urlSession = OWSURLSession()
-            return urlSession.dataTaskPromise(url.absoluteString, verb: .head)
-        }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) -> UInt64 in
-            let statusCode = response.statusCode
-            guard statusCode >= 200 && statusCode < 300 else {
-                throw OWSAssertionError("Invalid statusCode: \(statusCode)")
-            }
-            for (key, value) in response.allHeaderFields {
-                guard let keyString = key as? String else {
-                    owsFailDebug("Invalid header: \(key) \(type(of: key))")
-                    continue
-                }
-                guard let valueString = value as? String else {
-                    owsFailDebug("Invalid header: \(value) \(type(of: value))")
-                    continue
-                }
-                if keyString.lowercased() == "content-length" {
-                    guard let length = UInt64(valueString) else {
-                        throw OWSAssertionError("Invalid content length: \(valueString)")
-                    }
-                    return length
-                }
-            }
-            throw OWSAssertionError("Missing content length.")
-        }.recover(on: .global()) { (error: Error) -> Promise<UInt64> in
-            Logger.warn("Error: \(error)")
-            let maxAttemptCount = 3
-            if IsNetworkConnectivityFailure(error),
-                attemptIndex < maxAttemptCount {
-                Logger.warn("Retrying download: \(attemptIndex)")
-                return self.getContentLength(downloadState: downloadState, attemptIndex: attemptIndex + 1)
-            } else {
-                throw error
-            }
-        }
-    }
-
     private class func handleDownloadProgress(downloadState: DownloadState,
                                               task: URLSessionDownloadTask,
-                                              segmentStart: UInt64,
-                                              segmentLength: UInt64,
-                                              contentLength: UInt64,
                                               progress: Progress) {
         // Don't do anything until we've received at least one byte of data.
         guard progress.completedUnitCount > 0 else {
             return
         }
 
-        guard progress.totalUnitCount <= segmentLength,
-            progress.completedUnitCount <= segmentLength else {
+        guard progress.totalUnitCount <= maxDownloadSize,
+            progress.completedUnitCount <= maxDownloadSize else {
                 // A malicious service might send a misleading content length header,
                 // so....
                 //
@@ -416,16 +225,12 @@ public extension OWSAttachmentDownloads {
                 return
         }
 
-        // The _file_ progress needs to reflect the progress from previous attempts
-        // as well as the progress from the current attempt.
-        let fileProgress = ((Double(segmentStart) + Double(segmentLength) * progress.fractionCompleted) / Double(contentLength)).clamp01()
-
-        downloadState.job.progress = CGFloat(fileProgress)
+        downloadState.job.progress = CGFloat(progress.fractionCompleted)
 
         // Use a slightly non-zero value to ensure that the progress
         // indicator shows up as quickly as possible.
         let progressTheta: Double = 0.001
-        Self.fireProgressNotification(progress: max(progressTheta, fileProgress),
+        Self.fireProgressNotification(progress: max(progressTheta, progress.fractionCompleted),
                                       attachmentId: downloadState.attachmentPointer.uniqueId)
     }
 
