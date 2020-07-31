@@ -9,6 +9,7 @@ public enum HTTPVerb {
     case get
     case post
     case put
+    case head
 
     public var httpMethod: String {
         switch self {
@@ -18,6 +19,8 @@ public enum HTTPVerb {
             return "POST"
         case .put:
             return "PUT"
+        case .head:
+            return "HEAD"
         }
     }
 }
