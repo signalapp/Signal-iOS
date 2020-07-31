@@ -75,7 +75,7 @@ extension NSAttributedString.Key {
 
 extension MessageBody {
     convenience init(attributedString: NSAttributedString) {
-        var mentionRanges = [NSRange: UUID]()
+        var mentions = [NSRange: UUID]()
 
         let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
 
@@ -98,9 +98,9 @@ extension MessageBody {
                 location: subrange.location,
                 length: (Self.mentionPlaceholder as NSString).length
             )
-            mentionRanges[placeholderRange] = mention.address.uuid
+            mentions[placeholderRange] = mention.address.uuid
         }
 
-        self.init(text: mutableAttributedString.string, mentionRanges: mentionRanges)
+        self.init(text: mutableAttributedString.string, ranges: .init(mentions: mentions))
     }
 }

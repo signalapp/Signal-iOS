@@ -121,7 +121,12 @@ open class MentionTextView: OWSTextView {
 
         // We must enumerate the ranges in reverse, so as we replace a ranges
         // text we do not change the previous ranges.
-        for (range, uuid) in messageBody.mentionRanges.sorted(by: { $0.key.location > $1.key.location }) {
+        for (range, uuid) in messageBody.ranges.orderedMentions.reversed() {
+            guard range.location >= 0 && range.location + range.length <= (messageBody.text as NSString).length else {
+                owsFailDebug("Ignoring invalid range in body ranges \(range)")
+                continue
+            }
+
             replaceCharacters(
                 in: range,
                 with: Mention(
@@ -495,7 +500,7 @@ extension MentionTextView {
 
         let messageBody = self.messageBody(in: selectedRange)
 
-        if messageBody.hasMentions {
+        if messageBody.hasRanges {
             let encodedMessageBody = NSKeyedArchiver.archivedData(withRootObject: messageBody)
             UIPasteboard.general.setItems([[Self.pasteboardType: encodedMessageBody]], options: [.localOnly: true])
         } else {
