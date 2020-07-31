@@ -636,7 +636,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     return [TextFieldHelper textField:textField
         shouldChangeCharactersInRange:editingRange
                     replacementString:insertionText.withoutBidiControlCharacters
-                            byteLimit:kOWSProfileManager_NameDataLength];
+                            byteLimit:OWSUserProfile.kNameDataLength
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

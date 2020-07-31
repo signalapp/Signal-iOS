@@ -276,7 +276,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
-           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                      givenName:(nullable NSString *)givenName
+                     familyName:(nullable NSString *)familyName
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath

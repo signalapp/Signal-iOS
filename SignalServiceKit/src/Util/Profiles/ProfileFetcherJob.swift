@@ -528,12 +528,46 @@ public class ProfileFetcherJob: NSObject {
         let profile = fetchedProfile.profile
         let address = profile.address
 
+        let profileKeyFromDatabase = self.databaseStorage.read { transaction in
+            OWSUserProfile.getFor(address, transaction: transaction)?.profileKey
+        }
+        var givenName: String?
+        var familyName: String?
+        if let profileNameEncrypted = profile.profileNameEncrypted,
+            let profileKey = profileKeyFromDatabase,
+            let profileNameComponents = OWSUserProfile.decrypt(profileNameData: profileNameEncrypted,
+                                                               profileKey: profileKey) {
+            givenName = profileNameComponents.givenName?.stripped
+            familyName = profileNameComponents.familyName?.stripped
+        }
+
+        if DebugFlags.internalLogging {
+            let isVersionedProfile = fetchedProfile.versionedProfileRequest != nil
+            let hasAvatar = profile.avatarUrlPath != nil
+            let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
+            let profileKeyForVersionedProfile = fetchedProfile.versionedProfileRequest?.profileKeyData
+            let profileKeyForVersionedProfileDescription = profileKeyForVersionedProfile?.hexadecimalString ?? "None"
+            let profileKeyFromDatabaseDescription = profileKeyFromDatabase?.keyData.hexadecimalString ?? "None"
+            let hasGivenName = givenName?.count ?? 0 > 0
+            let hasFamilyName = familyName?.count ?? 0 > 0
+
+            Logger.info("address: \(address), " +
+                "isVersionedProfile: \(isVersionedProfile), " +
+                "hasAvatar: \(hasAvatar), " +
+                "hasProfileNameEncrypted: \(hasProfileNameEncrypted), " +
+                "hasGivenName: \(hasGivenName), " +
+                "hasFamilyName: \(hasFamilyName), " +
+                "profileKeyForVersionedProfile: \(profileKeyForVersionedProfileDescription), " +
+                "profileKeyFromDatabase: \(profileKeyFromDatabaseDescription)")
+        }
+
         if let profileRequest = fetchedProfile.versionedProfileRequest {
             self.versionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
         }
 
         profileManager.updateProfile(for: address,
-                                     profileNameEncrypted: profile.profileNameEncrypted,
+                                     givenName: givenName,
+                                     familyName: familyName,
                                      username: profile.username,
                                      isUuidCapable: profile.supportsUUID,
                                      avatarUrlPath: profile.avatarUrlPath,

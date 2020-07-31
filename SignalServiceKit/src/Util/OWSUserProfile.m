@@ -385,7 +385,42 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                    NSDictionary *beforeSnapshotWithoutAvatar =
                                        [beforeSnapshot mtl_dictionaryByRemovingValuesForKeys:avatarKeys];
 
+                                   OWSAES256Key *_Nullable profileKeyBefore = profile.profileKey;
+                                   NSString *_Nullable givenNameBefore = profile.givenName;
+                                   NSString *_Nullable familyNameBefore = profile.familyName;
+                                   NSString *_Nullable avatarUrlPathBefore = profile.avatarUrlPath;
+
                                    changeBlock(profile);
+
+                                   BOOL profileKeyDidChange = ![NSObject isNullableObject:profileKeyBefore.keyData
+                                                                                  equalTo:profile.profileKey.keyData];
+                                   BOOL givenNameDidChange = ![NSObject isNullableObject:givenNameBefore
+                                                                                 equalTo:profile.givenName];
+                                   BOOL familyNameDidChange = ![NSObject isNullableObject:familyNameBefore
+                                                                                  equalTo:profile.familyName];
+                                   BOOL avatarUrlPathDidChange = ![NSObject isNullableObject:avatarUrlPathBefore
+                                                                                     equalTo:profile.avatarUrlPath];
+
+                                   if (profileKeyDidChange || givenNameDidChange || familyNameDidChange
+                                       || avatarUrlPathDidChange) {
+                                       OWSLogInfo(@"address: %@, profileKeyDidChange: %d (%d -> %d), "
+                                                  @"givenNameDidChange: %d (%d -> %d), familyNameDidChange: %d (%d -> "
+                                                  @"%d), avatarUrlPathDidChange: %d (%d -> %d)",
+                                           profile.address,
+                                           profileKeyDidChange,
+                                           profileKeyBefore != nil,
+                                           profile.profileKey != nil,
+                                           givenNameDidChange,
+                                           givenNameBefore != nil,
+                                           profile.givenName != nil,
+                                           familyNameDidChange,
+                                           familyNameBefore != nil,
+                                           profile.familyName != nil,
+                                           avatarUrlPathDidChange,
+                                           avatarUrlPathBefore != nil,
+                                           profile.avatarUrlPath != nil);
+                                   }
+
 
                                    NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
                                    NSDictionary *afterSnapshotWithoutAvatar =
