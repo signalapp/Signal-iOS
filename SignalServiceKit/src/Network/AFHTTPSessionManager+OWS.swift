@@ -83,7 +83,7 @@ public extension AFHTTPSessionManager {
                              headers: [String: String]? = nil,
                              parameters: [String: AnyObject]? = nil,
                              dstFileUrl: URL?,
-                             progress: DownloadTaskProgressBlock? = nil) -> Promise<(URL, URLSessionDownloadTask)> {
+                             progress: DownloadTaskProgressBlock? = nil) -> Promise<URL> {
 
         return firstly(on: .global()) { () -> URLRequest in
             try self.buildDownloadTaskRequest(urlString: urlString,
@@ -99,7 +99,7 @@ public extension AFHTTPSessionManager {
 
     func downloadTaskPromise(request: URLRequest,
                              dstFileUrl dstFileUrlParam: URL? = nil,
-                             progress progressBlock: DownloadTaskProgressBlock? = nil) -> Promise<(URL, URLSessionDownloadTask)> {
+                             progress progressBlock: DownloadTaskProgressBlock? = nil) -> Promise<URL> {
         let dstFileUrl: URL
         if let dstFileUrlParam = dstFileUrlParam {
             dstFileUrl = dstFileUrlParam
@@ -107,7 +107,7 @@ public extension AFHTTPSessionManager {
             dstFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         }
 
-        let (promise, resolver) = Promise<(URL, URLSessionDownloadTask)>.pending()
+        let (promise, resolver) = Promise<URL>.pending()
         var taskReference: URLSessionDownloadTask?
         let task = downloadTask(with: request,
                                 progress: { (progress: Progress) in
@@ -129,11 +129,7 @@ public extension AFHTTPSessionManager {
                                         resolver.reject(OWSAssertionError("Unexpected url."))
                                         return
                                     }
-                                    guard let task = taskReference else {
-                                        resolver.reject(OWSAssertionError("Missing task."))
-                                        return
-                                    }
-                                    resolver.fulfill((dstFileUrl, task))
+                                    resolver.fulfill(dstFileUrl)
         })
         taskReference = task
         task.resume()

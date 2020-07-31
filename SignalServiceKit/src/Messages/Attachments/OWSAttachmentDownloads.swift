@@ -78,28 +78,104 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    private struct DownloadState {
+    private class DownloadState {
         let job: OWSAttachmentDownloadJob
         let attachmentPointer: TSAttachmentPointer
-        let tempFileURL: URL
+
+        private let lock = UnfairLock()
+        private var tempFileUrls = [URL]()
 
         let hasCheckedContentLength = AtomicValue<Bool>(false)
+
+        required init(job: OWSAttachmentDownloadJob, attachmentPointer: TSAttachmentPointer) {
+            self.job = job
+            self.attachmentPointer = attachmentPointer
+        }
+
+        func addTempFileUrl() -> URL {
+            let tempFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+            lock.withLock {
+                tempFileUrls.append(tempFileUrl)
+            }
+            return tempFileUrl
+        }
+
+        func mergeFileUrls() throws -> URL {
+            // Discard any empty files.
+            let fileUrlsAndSizes = tempFileUrls.compactMap { (url: URL) -> (URL, UInt64)? in
+                guard OWSFileSystem.fileOrFolderExists(url: url) else {
+                    return nil
+                }
+                guard let nsFileSize: NSNumber = OWSFileSystem.fileSize(of: url) else {
+                    return nil
+                }
+                let fileSize = nsFileSize.uint64Value
+                guard fileSize > 0 else {
+                    return nil
+                }
+                return (url, fileSize)
+            }
+            guard !fileUrlsAndSizes.isEmpty else {
+                throw OWSAssertionError("No tempFileUrls.")
+            }
+            if fileUrlsAndSizes.count == 1,
+                let (fileUrl, _) = fileUrlsAndSizes.first {
+                // No need to merge if we didn't resume.
+                return fileUrl
+            }
+            var joinedData = Data()
+            for (fileUrl, fileSize) in fileUrlsAndSizes {
+                let fileData = try Data(contentsOf: fileUrl)
+                guard fileData.count == fileSize else {
+                    throw OWSAssertionError("Segment has unexpected size.")
+                }
+                joinedData.append(fileData)
+                try OWSFileSystem.deleteFile(url: fileUrl)
+            }
+            let joinedFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+            try joinedData.write(to: joinedFileUrl)
+            return joinedFileUrl
+        }
+
+        func deleteFileUrls() {
+            for tempFileUrl in tempFileUrls {
+                do {
+                    try OWSFileSystem.deleteFile(url: tempFileUrl)
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
+            }
+        }
     }
+
+    func test() {}
 
     private class func download(job: OWSAttachmentDownloadJob,
                                 attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
 
-        return firstly(on: .global()) { () -> Promise<URL> in
-            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: attachmentPointer.cdnNumber)
-            sessionManager.completionQueue = .global()
+        let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
 
-            let tempFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
-            let tempFileURL = URL(fileURLWithPath: tempFilePath)
+        return firstly(on: .global()) { () -> Promise<Void> in
+            Self.downloadAttempt(downloadState: downloadState)
+        }.map(on: .global()) { () -> URL in
+            try downloadState.mergeFileUrls()
+        }.recover(on: .global()) { (error: Error) -> Promise<URL> in
+            downloadState.deleteFileUrls()
+            throw error
+        }
+    }
 
-            let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer, tempFileURL: tempFileURL)
+    private class func downloadAttempt(downloadState: DownloadState,
+                                       attemptIndex: UInt = 0) -> Promise<Void> {
 
-            var taskReference: URLSessionDownloadTask?
-            let promise: Promise<URL> = firstly(on: .global()) { () -> Promise<(URL, URLSessionDownloadTask)> in
+        return firstly(on: .global()) { () -> Promise<Void> in
+            let attachmentPointer = downloadState.attachmentPointer
+            let tempFileUrl = downloadState.addTempFileUrl()
+
+            let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<URL> in
+                let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: attachmentPointer.cdnNumber)
+                sessionManager.completionQueue = .global()
+
                 let urlPath: String
                 if attachmentPointer.cdnKey.count > 0 {
                     urlPath = "attachments/(attachmentPointer.cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed))"
@@ -112,41 +188,39 @@ public extension OWSAttachmentDownloads {
                 return sessionManager.downloadTaskPromise(urlPath,
                                                           verb: .get,
                                                           headers: headers,
-                                                          dstFileUrl: tempFileURL,
+                                                          dstFileUrl: tempFileUrl,
                                                           progress: { (progress: Progress, task: URLSessionDownloadTask) in
                                                             Self.handleDownloadProgress(downloadState: downloadState,
                                                                                         task: task,
                                                                                         progress: progress)
                 })
-            }.map(on: .global()) { (completionUrl: URL, task: URLSessionDownloadTask) -> URL in
-                taskReference = task
-                if tempFileURL != completionUrl {
+            }.map(on: .global()) { (completionUrl: URL) in
+                if tempFileUrl != completionUrl {
                     throw OWSAssertionError("Unexpected temp file path.")
                 }
-                guard let fileSize = OWSFileSystem.fileSize(of: tempFileURL) else {
+                guard let fileSize = OWSFileSystem.fileSize(of: tempFileUrl) else {
                     throw OWSAssertionError("Could not determine attachment file size.")
                 }
                 guard fileSize.int64Value <= Self.maxDownloadSize else {
                     throw OWSAssertionError("Attachment download length exceeds max size.")
                 }
-                return (tempFileURL)
+            }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+                let maxAttemptCount = 16
+                if IsNetworkConnectivityFailure(error),
+                    attemptIndex < maxAttemptCount {
+                    Logger.warn("Retrying download: \(attemptIndex)")
+                    return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
+                } else {
+                    throw error
+                }
             }
 
             promise.catch(on: .global()) { (error: Error) in
-                OWSFileSystem.deleteFileIfExists(tempFilePath)
-
-                guard let task = taskReference else {
-                    owsFailDebug("Missing task.")
-                    return
-                }
-                guard let httpResponse = task.response as? HTTPURLResponse else {
-                    owsFailDebug("Invalid response.")
-                    return
-                }
-                if attachmentPointer.serverId < 100 {
+                if let statusCode = HTTPStatusCodeForError(error),
+                    attachmentPointer.serverId < 100 {
                     // This looks like the symptom of the "frequent 404
                     // downloading attachments with low server ids".
-                    owsFailDebug("\(httpResponse.statusCode) Failure with suspicious attachment id: \(attachmentPointer.serverId), \(error)")
+                    owsFailDebug("\(statusCode) Failure with suspicious attachment id: \(attachmentPointer.serverId), \(error)")
                 }
             }
 

@@ -268,7 +268,7 @@ public class OWSAttachmentUploadV2: NSObject {
             self.attachmentData()
         }.map(on: .global()) { (encryptedData: Data) -> UploadV3Metadata in
             // Write the encrypted data to a temporary file.
-            let temporaryFilePath = OWSFileSystem.temporaryFilePath()
+            let temporaryFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
             let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
             try encryptedData.write(to: temporaryFileUrl)
             return UploadV3Metadata(temporaryFileUrl: temporaryFileUrl, dataLength: encryptedData.count)

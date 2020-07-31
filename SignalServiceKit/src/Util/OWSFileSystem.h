@@ -16,8 +16,6 @@ void ClearOldTemporaryDirectories(void);
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (BOOL)fileOrFolderExistsAtPath:(NSString *)path;
-
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path;
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType;
 
@@ -41,10 +39,6 @@ void ClearOldTemporaryDirectories(void);
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath;
 
 + (BOOL)ensureFileExists:(NSString *)filePath;
-
-+ (BOOL)deleteFile:(NSString *)filePath;
-
-+ (BOOL)deleteFileIfExists:(NSString *)filePath;
 
 + (void)deleteContentsOfDirectory:(NSString *)dirPath;
 
