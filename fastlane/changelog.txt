@@ -1,0 +1,8 @@
+• Tap glass in case of emergency. The new support interface makes it even easier to report bugs and access frequently asked questions. A helping hand is always near your fingertips, especially if you learn how to help yourself.
+• You can now send and receive voice and video calls from your linked iPad.
+• Sometimes your emojions just can’t be contained, so we’ve removed the message bubble on short emoji only messages.
+• If boundless emoji aren’t enough, you can now send memoji and other stickers directly via the keyboard.
+• Not everyone has earned the right to live in your address book, but that doesn’t mean they don’t deserve to hear from you. You’ll now see all approved contacts as options when starting a new conversation or editing a group.
+• Incoming calls will no longer ring your device when you haven’t approved the caller. They’ll be notified their call was rejected because you haven’t accepted their request.
+• Now you can put a pin in PINs and disable them completely. This option is for advanced users who don't want to lose their ability to lose everything.
+
