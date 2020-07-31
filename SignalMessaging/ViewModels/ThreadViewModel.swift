@@ -63,7 +63,11 @@ public class ThreadViewModel: NSObject {
             self.addedToGroupByName = nil
         }
 
-        self.draftText = thread.currentDraft(with: transaction)
+        if let draftMessageBody = thread.currentDraft(with: transaction) {
+            self.draftText = draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
+        } else {
+            self.draftText = nil
+        }
 
         self.lastVisibleInteraction = thread.firstInteraction(atOrAroundSortId: thread.lastVisibleSortId, transaction: transaction)
     }

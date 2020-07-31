@@ -5,7 +5,7 @@
 import Foundation
 
 @objcMembers
-public class MessageBody: NSObject, NSSecureCoding {
+public class MessageBody: NSObject, NSCopying, NSSecureCoding {
     public static var supportsSecureCoding = true
     public static let mentionPlaceholder = "\u{FFFC}" // Object Replacement Character
 
@@ -33,16 +33,25 @@ public class MessageBody: NSObject, NSSecureCoding {
         self.ranges = ranges
     }
 
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return MessageBody(text: text, ranges: ranges)
+    }
+
     public func encode(with coder: NSCoder) {
         coder.encode(text, forKey: "text")
         coder.encode(ranges, forKey: "ranges")
     }
+
+    public func plaintextBody(transaction: GRDBReadTransaction) -> String {
+        return ranges.plaintextBody(text: text, transaction: transaction)
+    }
 }
 
 @objcMembers
-public class MessageBodyRanges: NSObject, NSSecureCoding {
+public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     public static var supportsSecureCoding = true
     public static let mentionPrefix = "@"
+    public static var empty: MessageBodyRanges { MessageBodyRanges(mentions: [:]) }
 
     public let mentions: [NSRange: UUID]
     public var hasMentions: Bool { !mentions.isEmpty }
@@ -75,6 +84,10 @@ public class MessageBodyRanges: NSObject, NSSecureCoding {
         }
 
         self.mentions = mentions
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return MessageBodyRanges(mentions: mentions)
     }
 
     public func encode(with coder: NSCoder) {

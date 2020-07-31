@@ -6,7 +6,7 @@ import Foundation
 
 @objcMembers
 public class Mention: NSObject {
-    public static let mentionPrefix = "@"
+    public static let mentionPrefix = MessageBodyRanges.mentionPrefix
     public static let mentionPrefixLength = (mentionPrefix as NSString).length
 
     // Each mention has a uniqueID so we can differentiate

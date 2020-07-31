@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 BOOL IsNoteToSelfEnabled(void);
 
 @class GRDBReadTransaction;
+@class MessageBody;
 @class MessageBodyRanges;
 @class OWSDisappearingMessagesConfiguration;
 @class SDSAnyReadTransaction;
@@ -203,15 +204,15 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
  *
  *  @return Last known draft for that thread.
  */
-- (NSString *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (nullable MessageBody *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Sets the draft of a thread. Typically called when leaving a conversation view.
  *
- *  @param draftString Draft string to be saved.
+ *  @param draftMessageBody Draft to be saved.
  *  @param transaction Database transaction.
  */
-- (void)updateWithDraft:(NSString *)draftString transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (atomic, readonly) BOOL isMuted;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;

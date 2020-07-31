@@ -415,6 +415,45 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.inputTextView.mentionDelegate = value;
 }
 
+- (nullable MessageBody *)messageBody
+{
+    OWSAssertDebug(self.inputTextView);
+
+    return self.inputTextView.messageBody;
+}
+
+- (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated
+{
+    OWSAssertDebug(self.inputTextView);
+
+    self.inputTextView.messageBody = value;
+
+    // It's important that we set the textViewHeight before
+    // doing any animation in `ensureButtonVisibilityWithIsAnimated`
+    // Otherwise, the resultant keyboard frame posted in `keyboardWillChangeFrame`
+    // could reflect the inputTextView height *before* the new text was set.
+    //
+    // This bug was surfaced to the user as:
+    //  - have a quoted reply draft in the input toolbar
+    //  - type a multiline message
+    //  - hit send
+    //  - quoted reply preview and message text is cleared
+    //  - input toolbar is shrunk to it's expected empty-text height
+    //  - *but* the conversation's bottom content inset was too large. Specifically, it was
+    //    still sized as if the input textview was multiple lines.
+    // Presumably this bug only surfaced when an animation coincides with more complicated layout
+    // changes (in this case while simultaneous with removing quoted reply subviews, hiding the
+    // wrapper view *and* changing the height of the input textView
+    [self ensureTextViewHeight];
+    [self updateInputLinkPreview];
+
+    if (value.text.length > 0) {
+        [self clearDesiredKeyboard];
+    }
+
+    [self ensureButtonVisibilityWithIsAnimated:isAnimated doLayout:YES];
+}
+
 - (NSString *)messageText
 {
     OWSAssertDebug(self.inputTextView);

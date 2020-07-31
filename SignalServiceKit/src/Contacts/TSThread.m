@@ -47,7 +47,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 @property (nonatomic) BOOL isMarkedUnread;
 
 @property (nonatomic, copy, nullable) NSString *messageDraft;
-@property (nonatomic, readonly, nullable) MessageBodyRanges *messageDraftBodyRanges;
+@property (nonatomic, nullable) MessageBodyRanges *messageDraftBodyRanges;
 
 @property (atomic, nullable) NSDate *mutedUntilDate;
 @property (nonatomic) int64_t lastInteractionRowId;
@@ -745,21 +745,23 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 
 #pragma mark - Drafts
 
-- (NSString *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable MessageBody *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     TSThread *_Nullable thread = [TSThread anyFetchWithUniqueId:self.uniqueId transaction:transaction];
     if (thread.messageDraft != nil) {
-        return thread.messageDraft;
+        return [[MessageBody alloc] initWithText:thread.messageDraft
+                                          ranges:thread.messageDraftBodyRanges ?: MessageBodyRanges.empty];
     } else {
-        return @"";
+        return nil;
     }
 }
 
-- (void)updateWithDraft:(NSString *)draftString transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
-                                 thread.messageDraft = draftString;
+                                 thread.messageDraft = draftMessageBody.text;
+                                 thread.messageDraftBodyRanges = draftMessageBody.ranges;
                              }];
 }
 

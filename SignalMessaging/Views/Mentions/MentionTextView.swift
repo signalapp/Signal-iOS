@@ -196,9 +196,16 @@ open class MentionTextView: OWSTextView {
     }
 
     @objc
-    public var messageBody: MessageBody {
+    public var messageBody: MessageBody? {
         get { messageBody(in: NSRange(location: 0, length: textStorage.length)) }
         set {
+            guard let newValue = newValue else {
+                replaceCharacters(
+                    in: NSRange(location: 0, length: textStorage.length),
+                    with: ""
+                )
+                return
+            }
             replaceCharacters(
                 in: NSRange(location: 0, length: textStorage.length),
                 with: newValue

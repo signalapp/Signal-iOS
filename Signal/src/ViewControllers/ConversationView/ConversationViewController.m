@@ -3586,20 +3586,20 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    __block NSString *draft;
+    __block MessageBody *_Nullable draft;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         draft = [self.thread currentDraftWithTransaction:transaction];
     }];
     OWSAssertDebug(self.inputToolbar != nil);
-    OWSAssertDebug(self.inputToolbar.messageText.length == 0);
-    [self.inputToolbar setMessageText:draft animated:NO];
+    OWSAssertDebug(self.inputToolbar.messageBody.text.length == 0);
+    [self.inputToolbar setMessageBody:draft animated:NO];
 }
 
 - (void)saveDraft
 {
     if (!self.inputToolbar.hidden) {
         TSThread *thread = _thread;
-        NSString *currentDraft = [self.inputToolbar messageText];
+        MessageBody *currentDraft = [self.inputToolbar messageBody];
 
         DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [thread updateWithDraft:currentDraft transaction:transaction];
@@ -3776,16 +3776,16 @@ typedef enum : NSUInteger {
 
 - (void)createInputToolbar
 {
-    NSString *_Nullable existingDraft;
+    MessageBody *_Nullable existingDraft;
     if (_inputToolbar != nil) {
-        existingDraft = _inputToolbar.messageText;
+        existingDraft = _inputToolbar.messageBody;
     }
 
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
-    [self.inputToolbar setMessageText:existingDraft animated:NO];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     self.inputToolbar.mentionDelegate = self;
+    [self.inputToolbar setMessageBody:existingDraft animated:NO];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
     [self reloadBottomBar];
 }
@@ -4157,7 +4157,7 @@ typedef enum : NSUInteger {
     });
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.thread updateWithDraft:@"" transaction:transaction];
+        [self.thread updateWithDraft:nil transaction:transaction];
     });
 
     if (didAddToProfileWhitelist) {
