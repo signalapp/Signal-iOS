@@ -104,7 +104,7 @@ public extension AFHTTPSessionManager {
         if let dstFileUrlParam = dstFileUrlParam {
             dstFileUrl = dstFileUrlParam
         } else {
-            dstFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: nil)
+            dstFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         }
 
         let (promise, resolver) = Promise<(URL, URLSessionDownloadTask)>.pending()

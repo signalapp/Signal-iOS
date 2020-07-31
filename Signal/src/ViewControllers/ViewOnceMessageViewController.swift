@@ -171,7 +171,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 owsFailDebug("Couldn't determine file extension.")
                 return
             }
-            let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+            let tempFilePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
             guard OWSFileSystem.fileOrFolderExists(atPath: originalFilePath) else {
                 owsFailDebug("Missing attachment file.")
                 return

@@ -93,8 +93,7 @@ public extension OWSAttachmentDownloads {
             let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: attachmentPointer.cdnNumber)
             sessionManager.completionQueue = .global()
 
-            let tempDirPath = OWSTemporaryDirectoryAccessibleAfterFirstAuth()
-            let tempFilePath = (tempDirPath as NSString).appendingPathComponent(UUID().uuidString)
+            let tempFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
             let tempFileURL = URL(fileURLWithPath: tempFilePath)
 
             let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer, tempFileURL: tempFileURL)

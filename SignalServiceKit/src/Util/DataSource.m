@@ -112,7 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!self.cachedFileUrl) {
-            NSURL *fileUrl = [OWSFileSystem temporaryFileURLWithFileExtension:self.fileExtension];
+            NSURL *fileUrl = [OWSFileSystem temporaryFileUrlWithFileExtension:self.fileExtension
+                                                 isAvailableWhileDeviceLocked:YES];
             if ([self writeToUrl:fileUrl error:nil]) {
                 self.cachedFileUrl = fileUrl;
             } else {
@@ -322,13 +323,11 @@ NS_ASSUME_NONNULL_BEGIN
                                             fileExtension:(NSString *)fileExtension
                                                     error:(NSError **)error
 {
-    NSURL *fileUrl = [OWSFileSystem temporaryFileURLWithFileExtension:fileExtension];
+    NSURL *fileUrl = [OWSFileSystem temporaryFileUrlWithFileExtension:fileExtension isAvailableWhileDeviceLocked:YES];
     [data writeToURL:fileUrl options:NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication error:error];
-
     if (*error != nil) {
         return nil;
     }
-
     return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:YES error:error];
 }
 

@@ -377,7 +377,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 }
 
                 // Write the slice to a temporary file.
-                let dataSliceFilePath = OWSFileSystem.temporaryFilePath()
+                let dataSliceFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
                 let dataSliceFileUrl = URL(fileURLWithPath: dataSliceFilePath)
                 try dataSlice.write(to: dataSliceFileUrl)
 

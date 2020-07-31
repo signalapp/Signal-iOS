@@ -50,13 +50,6 @@ void ClearOldTemporaryDirectories(void);
 
 + (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error;
 
-+ (NSString *)temporaryFilePath;
-+ (NSURL *)temporaryFileURLWithFileExtension:(NSString *_Nullable)fileExtension NS_SWIFT_NAME(temporaryFileUrl(fileExtension:));
-+ (NSString *)temporaryFilePathWithFileExtension:(NSString *_Nullable)fileExtension;
-
-// Returns nil on failure.
-+ (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension;
-
 + (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath;
 
 + (nullable NSNumber *)fileSizeOfUrl:(NSURL *)fileUrl;
