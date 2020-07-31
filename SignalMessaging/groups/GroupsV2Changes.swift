@@ -284,7 +284,11 @@ public class GroupsV2Changes {
                 }
                 continue
             }
-            guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
+            guard !oldGroupMembership.isPendingMember(uuid) else {
+                owsFailDebug("Invalid membership.")
+                continue
+            }
+            guard !oldGroupMembership.isNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
