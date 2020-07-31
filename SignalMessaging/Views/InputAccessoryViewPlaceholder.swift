@@ -15,7 +15,7 @@ protocol InputAccessoryViewPlaceholderDelegate: class {
 /// This wrapper allows resizing the accessory view to fit within its
 /// presenting view.
 @objc
-class InputAccessoryViewPlaceholder: UIView {
+public class InputAccessoryViewPlaceholder: UIView {
     @objc weak var delegate: InputAccessoryViewPlaceholderDelegate?
 
     /// The amount of the application frame that is overlapped
@@ -144,11 +144,11 @@ class InputAccessoryViewPlaceholder: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var intrinsicContentSize: CGSize {
+    public override var intrinsicContentSize: CGSize {
         return .zero
     }
 
-    override func willMove(toSuperview newSuperview: UIView?) {
+    public override func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
 
         // By observing the "center" property of our superview, we can
@@ -161,7 +161,7 @@ class InputAccessoryViewPlaceholder: UIView {
         superview?.removeObserver(self, forKeyPath: "center")
     }
 
-    override func observeValue(
+    public override func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
         change: [NSKeyValueChangeKey: Any]?,
