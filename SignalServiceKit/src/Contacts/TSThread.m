@@ -45,7 +45,10 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchived;
 @property (nonatomic) BOOL isMarkedUnread;
+
 @property (nonatomic, copy, nullable) NSString *messageDraft;
+@property (nonatomic, readonly, nullable) MessageBodyRanges *messageDraftBodyRanges;
+
 @property (atomic, nullable) NSDate *mutedUntilDate;
 @property (nonatomic) int64_t lastInteractionRowId;
 
@@ -121,6 +124,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                lastVisibleSortId:(uint64_t)lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                     messageDraft:(nullable NSString *)messageDraft
+          messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
@@ -139,6 +143,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     _lastVisibleSortId = lastVisibleSortId;
     _lastVisibleSortIdOnScreenPercentage = lastVisibleSortIdOnScreenPercentage;
     _messageDraft = messageDraft;
+    _messageDraftBodyRanges = messageDraftBodyRanges;
     _mutedUntilDate = mutedUntilDate;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 

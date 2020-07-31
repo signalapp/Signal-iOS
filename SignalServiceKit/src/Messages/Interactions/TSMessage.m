@@ -108,6 +108,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
@@ -133,6 +134,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     _attachmentIds = attachmentIds;
     _body = body;
+    _bodyRanges = bodyRanges;
     _contactShare = contactShare;
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;

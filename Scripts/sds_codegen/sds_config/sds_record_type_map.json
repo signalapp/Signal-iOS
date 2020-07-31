@@ -57,6 +57,7 @@
     "TSInvalidIdentityKeyErrorMessage": 17, 
     "TSInvalidIdentityKeyReceivingErrorMessage": 1, 
     "TSInvalidIdentityKeySendingErrorMessage": 23, 
+    "TSMention": 64, 
     "TSMessage": 11, 
     "TSOutgoingMessage": 21, 
     "TSRecipientReadReceipt": 12, 

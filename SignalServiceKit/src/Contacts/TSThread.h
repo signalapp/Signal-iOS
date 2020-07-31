@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 BOOL IsNoteToSelfEnabled(void);
 
 @class GRDBReadTransaction;
+@class MessageBodyRanges;
 @class OWSDisappearingMessagesConfiguration;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
@@ -81,9 +82,10 @@ extern ConversationColorName const ConversationColorNameDefault;
                lastVisibleSortId:(uint64_t)lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                     messageDraft:(nullable NSString *)messageDraft
+          messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortId:lastVisibleSortIdOnScreenPercentage:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortId:lastVisibleSortIdOnScreenPercentage:messageDraft:messageDraftBodyRanges:mutedUntilDate:shouldThreadBeVisible:));
 
 // clang-format on
 
