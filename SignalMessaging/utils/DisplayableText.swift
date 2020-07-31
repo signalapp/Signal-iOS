@@ -7,7 +7,7 @@ import Foundation
 @objc public class DisplayableText: NSObject {
 
     private struct Content {
-        let text: String
+        let attributedText: NSAttributedString
         let naturalAlignment: NSTextAlignment
     }
 
@@ -15,8 +15,8 @@ import Foundation
     private let truncatedContent: Content?
 
     @objc
-    public var fullText: String {
-        return fullContent.text
+    public var fullAttributedText: NSAttributedString {
+        return fullContent.attributedText
     }
 
     @objc
@@ -25,8 +25,8 @@ import Foundation
     }
 
     @objc
-    public var displayText: String {
-        return truncatedContent?.text ?? fullContent.text
+    public var displayAttributetdText: NSAttributedString {
+        return truncatedContent?.attributedText ?? fullContent.attributedText
     }
 
     @objc
@@ -55,7 +55,7 @@ import Foundation
     private init(fullContent: Content, truncatedContent: Content?) {
         self.fullContent = fullContent
         self.truncatedContent = truncatedContent
-        self.jumbomojiCount = DisplayableText.jumbomojiCount(in: fullContent.text)
+        self.jumbomojiCount = DisplayableText.jumbomojiCount(in: fullContent.attributedText.string)
     }
 
     // MARK: Emoji
@@ -127,7 +127,9 @@ import Foundation
             }
         }
 
-        for match in linkDetector.matches(in: fullText, options: [], range: NSRange(location: 0, length: fullText.utf16.count)) {
+        let rawText = fullAttributedText.string
+
+        for match in linkDetector.matches(in: rawText, options: [], range: NSRange(location: 0, length: rawText.utf16.count)) {
             guard let matchURL: URL = match.url else {
                 continue
             }
@@ -137,7 +139,7 @@ import Foundation
             //
             // But what we really want is to check the text which will ultimately be presented to
             // the user.
-            let rawTextOfMatch = (fullText as NSString).substring(with: match.range)
+            let rawTextOfMatch = (rawText as NSString).substring(with: match.range)
             guard isValidLink(linkText: rawTextOfMatch) else {
                 return false
             }
@@ -148,20 +150,49 @@ import Foundation
     // MARK: Filter Methods
 
     @objc
-    public class func displayableText(_ rawText: String) -> DisplayableText {
-        let fullText = rawText.filterStringForDisplay()
-        let fullContent = Content(text: fullText, naturalAlignment: fullText.naturalTextAlignment)
+    public class func displayableText(withMessageBody messageBody: MessageBody, mentionStyle: Mention.Style, transaction: SDSAnyReadTransaction) -> DisplayableText {
+        let fullAttributedText = messageBody.attributedBody(
+            style: mentionStyle,
+            attributes: [:],
+            shouldResolveAddress: { _ in true }, // Resolve all mentions in messages.
+            transaction: transaction.unwrapGrdbRead
+        )
+        let fullContent = Content(
+            attributedText: fullAttributedText,
+            naturalAlignment: fullAttributedText.string.naturalTextAlignment
+        )
 
         // Only show up to N characters of text.
         let kMaxTextDisplayLength = 512
         let truncatedContent: Content?
-        if fullText.count > kMaxTextDisplayLength {
+        if fullAttributedText.string.count > kMaxTextDisplayLength {
+
+            var mentionRange = NSRange()
+            let possibleOverlappingMention = fullAttributedText.attribute(
+                .mention,
+                at: kMaxTextDisplayLength,
+                longestEffectiveRange: &mentionRange,
+                in: NSRange(location: 0, length: fullAttributedText.length)
+            )
+
+            var snippetLength = kMaxTextDisplayLength
+
+            // There's a mention overlapping our normal truncate point, we want to truncate sooner
+            // so we don't "split" the mention.
+            if possibleOverlappingMention != nil && mentionRange.location < kMaxTextDisplayLength {
+                snippetLength = mentionRange.location + 1
+            }
+
             // Trim whitespace before _AND_ after slicing the snipper from the string.
-            let snippet = fullText.safePrefix(kMaxTextDisplayLength).ows_stripped()
-            let truncatedText = String(format: NSLocalizedString("OVERSIZE_TEXT_DISPLAY_FORMAT", comment:
-                "A display format for oversize text messages."),
-                snippet)
-            truncatedContent = Content(text: truncatedText, naturalAlignment: truncatedText.naturalTextAlignment)
+            let truncatedAttributedText = fullAttributedText
+                .attributedSubstring(from: NSRange(location: 0, length: snippetLength))
+                .stringByAppendingString("…")
+
+            // todo: strip
+            truncatedContent = Content(
+                attributedText: truncatedAttributedText,
+                naturalAlignment: truncatedAttributedText.string.naturalTextAlignment
+            )
         } else {
             truncatedContent = nil
         }

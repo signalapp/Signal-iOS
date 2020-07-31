@@ -72,44 +72,33 @@ open class MentionTextView: OWSTextView {
                 location: range.location - Mention.mentionPrefixLength,
                 length: range.length + Mention.mentionPrefixLength
             ),
-            with: Mention(
+            with: Mention.withSneakyTransaction(
                 address: address,
                 style: mentionDelegate.textViewMentionStyle(self)
-            ),
-            alwaysResolveMention: true
+            )
         )
 
         // Add a space after the typed mention
         replaceCharacters(in: selectedRange, with: " ")
     }
 
-    public func replaceCharacters(in range: NSRange, with mention: Mention, alwaysResolveMention: Bool = false) {
-        replaceCharacters(in: range, with: mention, inMutableString: textStorage, alwaysResolveMention: alwaysResolveMention)
-    }
-
     public func replaceCharacters(
         in range: NSRange,
-        with mention: Mention,
-        inMutableString mutableString: NSMutableAttributedString,
-        alwaysResolveMention: Bool = false
+        with mention: Mention
     ) {
         guard let mentionDelegate = mentionDelegate else {
             return owsFailDebug("Can't replace characters without delegate")
         }
 
         let replacementString: NSAttributedString
-        if alwaysResolveMention || mentionDelegate.textView(self, shouldResolveMentionForAddress: mention.address) {
+        if mentionDelegate.textView(self, shouldResolveMentionForAddress: mention.address) {
             replacementString = mention.attributedString
         } else {
             // If we shouldn't resolve the mention, insert the plaintext representation.
             replacementString = NSAttributedString(string: mention.text, attributes: defaultAttributes)
         }
 
-        if mutableString === textStorage {
-            replaceCharacters(in: range, with: replacementString)
-        } else {
-            mutableString.replaceCharacters(in: range, with: replacementString)
-        }
+        replaceCharacters(in: range, with: replacementString)
     }
 
     public func replaceCharacters(in range: NSRange, with messageBody: MessageBody) {
@@ -117,27 +106,16 @@ open class MentionTextView: OWSTextView {
             return owsFailDebug("Can't replace characters without delegate")
         }
 
-        let attributedMentions = NSMutableAttributedString(string: messageBody.text, attributes: defaultAttributes)
-
-        // We must enumerate the ranges in reverse, so as we replace a ranges
-        // text we do not change the previous ranges.
-        for (range, uuid) in messageBody.ranges.orderedMentions.reversed() {
-            guard range.location >= 0 && range.location + range.length <= (messageBody.text as NSString).length else {
-                owsFailDebug("Ignoring invalid range in body ranges \(range)")
-                continue
-            }
-
-            replaceCharacters(
-                in: range,
-                with: Mention(
-                    address: SignalServiceAddress(uuid: uuid),
-                    style: mentionDelegate.textViewMentionStyle(self)
-                ),
-                inMutableString: attributedMentions
+        let attributedBody = SDSDatabaseStorage.shared.uiRead { transaction in
+            messageBody.attributedBody(
+                style: mentionDelegate.textViewMentionStyle(self),
+                attributes: self.defaultAttributes,
+                shouldResolveAddress: { mentionDelegate.textView(self, shouldResolveMentionForAddress: $0) },
+                transaction: transaction.unwrapGrdbRead
             )
         }
 
-        replaceCharacters(in: range, with: attributedMentions)
+        replaceCharacters(in: range, with: attributedBody)
     }
 
     public func replaceCharacters(in range: NSRange, with string: String) {

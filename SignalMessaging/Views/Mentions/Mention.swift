@@ -27,10 +27,16 @@ public class Mention: NSObject {
     public let text: String
     public var length: Int { (text as NSString).length }
 
-    public init(address: SignalServiceAddress, style: Style) {
+    public class func withSneakyTransaction(address: SignalServiceAddress, style: Style) -> Mention {
+        return SDSDatabaseStorage.shared.uiRead { transaction in
+            return Mention(address: address, style: style, transaction: transaction.unwrapGrdbRead)
+        }
+    }
+
+    public init(address: SignalServiceAddress, style: Style, transaction: GRDBReadTransaction) {
         self.address = address
         self.style = style
-        self.text = Self.mentionPrefix + Environment.shared.contactsManager.displayName(for: address)
+        self.text = Self.mentionPrefix + Environment.shared.contactsManager.displayName(for: address, transaction: transaction.asAnyRead)
     }
 
     public var attributedString: NSAttributedString { NSAttributedString(string: text, attributes: attributes) }
@@ -74,7 +80,7 @@ extension NSAttributedString.Key {
 }
 
 extension MessageBody {
-    convenience init(attributedString: NSAttributedString) {
+    public convenience init(attributedString: NSAttributedString) {
         var mentions = [NSRange: UUID]()
 
         let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
@@ -102,5 +108,57 @@ extension MessageBody {
         }
 
         self.init(text: mutableAttributedString.string, ranges: .init(mentions: mentions))
+    }
+
+    @objc
+    public func attributedBody(
+        style: Mention.Style,
+        attributes: [NSAttributedString.Key: Any],
+        shouldResolveAddress: (SignalServiceAddress) -> Bool,
+        transaction: GRDBReadTransaction
+    ) -> NSAttributedString {
+        return ranges.attributedBody(
+            text: text,
+            style: style,
+            attributes: attributes,
+            shouldResolveAddress: shouldResolveAddress,
+            transaction: transaction
+        )
+    }
+}
+
+extension MessageBodyRanges {
+    @objc
+    public func attributedBody(
+        text: String,
+        style: Mention.Style,
+        attributes: [NSAttributedString.Key: Any],
+        shouldResolveAddress: (SignalServiceAddress) -> Bool,
+        transaction: GRDBReadTransaction
+    ) -> NSAttributedString {
+        guard hasMentions else { return NSAttributedString(string: text, attributes: attributes) }
+
+        let mutableText = NSMutableAttributedString(string: text, attributes: attributes)
+
+        for (range, uuid) in orderedMentions.reversed() {
+            guard range.location >= 0 && range.location + range.length <= (text as NSString).length else {
+                owsFailDebug("Ignoring invalid range in body ranges \(range)")
+                continue
+            }
+
+            let mention = Mention(
+                address: SignalServiceAddress(uuid: uuid),
+                style: style,
+                transaction: transaction
+            )
+
+            if shouldResolveAddress(mention.address) {
+                mutableText.replaceCharacters(in: range, with: mention.attributedString)
+            } else {
+                mutableText.replaceCharacters(in: range, with: mention.text)
+            }
+        }
+
+        return NSAttributedString(attributedString: mutableText)
     }
 }

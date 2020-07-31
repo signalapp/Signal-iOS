@@ -363,20 +363,6 @@ class MessageDetailViewController: OWSViewController {
         updateMessageViewLayout()
     }
 
-    private func displayableTextIfText() -> String? {
-        guard viewItem.hasBodyText else {
-                return nil
-        }
-        guard let displayableText = viewItem.displayableBodyText else {
-                return nil
-        }
-        let messageBody = displayableText.fullText
-        guard messageBody.count > 0  else {
-            return nil
-        }
-        return messageBody
-    }
-
     let bubbleViewHMargin: CGFloat = 10
 
     private func contentRows() -> [UIView] {

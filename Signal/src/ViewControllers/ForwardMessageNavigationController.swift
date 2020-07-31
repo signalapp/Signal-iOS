@@ -33,7 +33,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
     var approvedAttachments: [SignalAttachment]?
     var approvedContactShare: ContactShareViewModel?
-    var approvalMessageText: String?
+    var approvalMessageBody: MessageBody?
 
     var selectedConversations: [ConversationItem] = []
 
@@ -43,8 +43,8 @@ class ForwardMessageNavigationController: OWSNavigationController {
     public init(conversationViewItem: ConversationViewItem) {
         self.conversationViewItem = conversationViewItem
 
-        if conversationViewItem.hasBodyText {
-            self.approvalMessageText = conversationViewItem.displayableBodyText?.fullText
+        if conversationViewItem.hasBodyText, let attributedText = conversationViewItem.displayableBodyText?.fullAttributedText {
+            self.approvalMessageBody = MessageBody(attributedString: attributedText)
         }
 
         super.init()
@@ -106,12 +106,12 @@ extension ForwardMessageNavigationController {
     func showApprovalUI() throws {
         switch conversationViewItem.messageCellType {
         case .textOnlyMessage:
-            guard let body = approvalMessageText,
-                body.count > 0 else {
+            guard let body = approvalMessageBody,
+                body.text.count > 0 else {
                     throw OWSAssertionError("Missing body.")
             }
 
-            let approvalView = TextApprovalViewController(messageText: body)
+            let approvalView = TextApprovalViewController(messageBody: body)
             approvalView.delegate = self
             pushViewController(approvalView, animated: true)
         case .contactShare:
@@ -146,7 +146,7 @@ extension ForwardMessageNavigationController {
                                                                           sendButtonImageName: sendButtonImageName,
                                                                           attachmentApprovalItems: attachmentApprovalItems)
             approvalViewController.approvalDelegate = self
-            approvalViewController.messageText = approvalMessageText
+            approvalViewController.messageBody = approvalMessageBody
 
             pushViewController(approvalViewController, animated: true)
         case .unknown,
@@ -174,8 +174,8 @@ extension ForwardMessageNavigationController {
     func tryToSend() throws {
         switch conversationViewItem.messageCellType {
         case .textOnlyMessage:
-            guard let body = approvalMessageText,
-                body.count > 0 else {
+            guard let body = approvalMessageBody,
+                body.text.count > 0 else {
                     throw OWSAssertionError("Missing body.")
             }
 
@@ -246,7 +246,7 @@ extension ForwardMessageNavigationController {
                 let conversations = selectedConversationsForConversationPicker
                 firstly {
                     AttachmentMultisend.sendApprovedMedia(conversations: conversations,
-                                                          approvalMessageText: self.approvalMessageText,
+                                                          approvalMessageBody: self.approvalMessageBody,
                                                           approvedAttachments: approvedAttachments)
                 }.done { threads in
                     self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
@@ -263,9 +263,9 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    func send(body: String, thread: TSThread) {
+    func send(body: MessageBody, thread: TSThread) {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(withText: body, thread: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
+            ThreadUtil.enqueueMessage(with: body, thread: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
         }
     }
 
@@ -273,9 +273,9 @@ extension ForwardMessageNavigationController {
         ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, thread: thread)
     }
 
-    func send(body: String?, attachment: SignalAttachment, thread: TSThread) {
+    func send(body: MessageBody?, attachment: SignalAttachment, thread: TSThread) {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(withText: body,
+            ThreadUtil.enqueueMessage(with: body,
                                       mediaAttachments: [attachment],
                                       thread: thread,
                                       quotedReplyModel: nil,
@@ -380,10 +380,10 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
 // MARK: -
 
 extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate {
-    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageText: String) {
-        assert(messageText.count > 0)
+    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?) {
+        assert(messageBody?.text.count ?? 0 > 0)
 
-        approvalMessageText = messageText.stripped.filterForDisplay
+        approvalMessageBody = messageBody
 
         send()
     }
@@ -449,17 +449,17 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
         // We can ignore this event.
     }
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
-        self.approvalMessageText = newMessageText
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
+        self.approvalMessageBody = newMessageBody
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
         // We can ignore this event.
     }
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
         self.approvedAttachments = attachments
-        self.approvalMessageText = messageText
+        self.approvalMessageBody = messageBody
 
         send()
     }

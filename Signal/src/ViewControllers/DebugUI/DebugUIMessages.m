@@ -348,7 +348,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
     __block TSOutgoingMessage *message;
     DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-        message = [ThreadUtil enqueueMessageWithText:text
+        message = [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:text
+                                                                                ranges:MessageBodyRanges.empty]
                                               thread:thread
                                     quotedReplyModel:nil
                                     linkPreviewDraft:nil
@@ -1750,7 +1751,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (attachment != nil) {
             attachments = @[ attachment ];
         }
-        [ThreadUtil enqueueMessageWithText:messageBody
+        [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:messageBody ranges:MessageBodyRanges.empty]
                           mediaAttachments:attachments
                                     thread:thread
                           quotedReplyModel:nil
@@ -3856,7 +3857,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     void (^completion)(TSGroupThread *) = ^(TSGroupThread *thread) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-                [ThreadUtil enqueueMessageWithText:[@(counter) description]
+                [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:[@(counter) description]
+                                                                              ranges:MessageBodyRanges.empty]
                                             thread:thread
                                   quotedReplyModel:nil
                                   linkPreviewDraft:nil
@@ -4721,12 +4723,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithText:messageBody
-                                                       mediaAttachments:attachments
-                                                                 thread:thread
-                                                       quotedReplyModel:nil
-                                                       linkPreviewDraft:nil
-                                                            transaction:transaction];
+        TSOutgoingMessage *message = [ThreadUtil
+            enqueueMessageWithBody:[[MessageBody alloc] initWithText:messageBody ranges:MessageBodyRanges.empty]
+                  mediaAttachments:attachments
+                            thread:thread
+                  quotedReplyModel:nil
+                  linkPreviewDraft:nil
+                       transaction:transaction];
         OWSLogDebug(@"timestamp: %llu.", message.timestamp);
     }];
 }

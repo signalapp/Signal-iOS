@@ -51,13 +51,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Durable Message Enqueue
 
-+ (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
++ (TSOutgoingMessage *)enqueueMessageWithBody:(MessageBody *)messageBody
                                        thread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self enqueueMessageWithText:fullMessageText
+    return [self enqueueMessageWithBody:messageBody
                        mediaAttachments:@[]
                                  thread:thread
                        quotedReplyModel:quotedReplyModel
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                             transaction:transaction];
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithText:(nullable NSString *)fullMessageText
++ (TSOutgoingMessage *)enqueueMessageWithBody:(nullable MessageBody *)messageBody
                              mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                        thread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
@@ -76,11 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
 
     OutgoingMessagePreparer *outgoingMessagePreparer =
-        [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
-                                                mediaAttachments:mediaAttachments
-                                                          thread:thread
-                                                quotedReplyModel:quotedReplyModel
-                                                     transaction:transaction];
+        [[OutgoingMessagePreparer alloc] initWithMessageBody:messageBody
+                                            mediaAttachments:mediaAttachments
+                                                      thread:thread
+                                            quotedReplyModel:quotedReplyModel
+                                                 transaction:transaction];
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
                                 block:^(void (^benchmarkCompletion)(void)) {
@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     return outgoingMessagePreparer.unpreparedMessage;
 }
 
-+ (nullable TSOutgoingMessage *)createUnsentMessageWithText:(nullable NSString *)fullMessageText
++ (nullable TSOutgoingMessage *)createUnsentMessageWithBody:(nullable MessageBody *)messageBody
                                            mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                                      thread:(TSThread *)thread
                                            quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
@@ -110,11 +110,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
 
     OutgoingMessagePreparer *outgoingMessagePreparer =
-        [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
-                                                mediaAttachments:mediaAttachments
-                                                          thread:thread
-                                                quotedReplyModel:quotedReplyModel
-                                                     transaction:transaction];
+        [[OutgoingMessagePreparer alloc] initWithMessageBody:messageBody
+                                            mediaAttachments:mediaAttachments
+                                                      thread:thread
+                                            quotedReplyModel:quotedReplyModel
+                                                 transaction:transaction];
 
     [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:transaction];
 
@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
 // MARK: Non-Durable Sending
 
 // We might want to generate a link preview here.
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
++ (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(completion);
 
-    return [self sendMessageNonDurablyWithText:fullMessageText
+    return [self sendMessageNonDurablyWithBody:messageBody
                               mediaAttachments:@[]
                                         thread:thread
                               quotedReplyModel:quotedReplyModel
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     completion:completion];
 }
 
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
++ (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
                                     mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
@@ -243,11 +243,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(completion);
 
     OutgoingMessagePreparer *outgoingMessagePreparer =
-        [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
-                                                mediaAttachments:mediaAttachments
-                                                          thread:thread
-                                                quotedReplyModel:quotedReplyModel
-                                                     transaction:transaction];
+        [[OutgoingMessagePreparer alloc] initWithMessageBody:messageBody
+                                            mediaAttachments:mediaAttachments
+                                                      thread:thread
+                                            quotedReplyModel:quotedReplyModel
+                                                 transaction:transaction];
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
         [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];

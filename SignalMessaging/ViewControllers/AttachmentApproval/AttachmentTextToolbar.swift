@@ -42,17 +42,17 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         return options.contains(.canToggleViewOnce) && attachmentTextToolbarDelegate?.isViewOnceEnabled ?? false
     }
 
-    var messageText: String? {
+    var messageBody: MessageBody? {
         get {
             // Ignore message text if "view-once" is enabled.
             guard !isViewOnceEnabled else {
                 return nil
             }
-            return textView.text
+            return textView.messageBody
         }
 
         set {
-            textView.text = newValue
+            textView.messageBody = newValue
             updatePlaceholderTextViewVisibility()
         }
     }
@@ -359,6 +359,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
+        owsAssert(attachmentTextToolbarDelegate != nil)
         return attachmentTextToolbarDelegate?.textView(textView, shouldResolveMentionForAddress: address) ?? false
     }
 

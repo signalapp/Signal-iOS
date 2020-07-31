@@ -1107,6 +1107,33 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
         [builder setBody:truncatedBody];
     }
+
+    if (self.bodyRanges) {
+        NSMutableArray<SSKProtoDataMessageBodyRange *> *bodyRanges = [NSMutableArray new];
+        for (NSValue *rangeValue in self.bodyRanges.mentions) {
+            NSRange range = [rangeValue rangeValue];
+            NSUUID *uuid = self.bodyRanges.mentions[rangeValue];
+
+            SSKProtoDataMessageBodyRangeBuilder *bodyRangeBuilder = [SSKProtoDataMessageBodyRange builder];
+            [bodyRangeBuilder setStart:(uint32_t)range.location];
+            [bodyRangeBuilder setLength:(uint32_t)range.length];
+            [bodyRangeBuilder setMentionUuid:uuid.UUIDString];
+
+            NSError *error;
+            SSKProtoDataMessageBodyRange *_Nullable bodyRange = [bodyRangeBuilder buildAndReturnError:&error];
+            if (!bodyRange || error) {
+                OWSFailDebug(@"could not build protobuf: %@", error);
+                return nil;
+            }
+            if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
+                requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
+            }
+
+            [bodyRanges addObject:bodyRange];
+        }
+        [builder setBodyRanges:bodyRanges];
+    }
+
     [builder setExpireTimer:self.expiresInSeconds];
     
     // Group Messages

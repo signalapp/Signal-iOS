@@ -18,6 +18,8 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var messageBody: String?
     @objc
+    public var bodyRanges: MessageBodyRanges?
+    @objc
     public var attachmentIds = [String]()
     @objc
     public var expiresInSeconds: UInt32 = 0
@@ -37,6 +39,7 @@ public class TSMessageBuilder: NSObject {
     init(thread: TSThread,
          timestamp: UInt64? = nil,
          messageBody: String? = nil,
+         bodyRanges: MessageBodyRanges? = nil,
          attachmentIds: [String]? = nil,
          expiresInSeconds: UInt32 = 0,
          expireStartedAt: UInt64 = 0,
@@ -51,6 +54,7 @@ public class TSMessageBuilder: NSObject {
             self.timestamp = timestamp
         }
         self.messageBody = messageBody
+        self.bodyRanges = bodyRanges
         if let attachmentIds = attachmentIds {
             self.attachmentIds = attachmentIds
         }

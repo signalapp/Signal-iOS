@@ -34,8 +34,8 @@ public class LongTextViewController: OWSViewController {
         return viewItem.displayableBodyText
     }
 
-    var fullText: String {
-        return displayableText?.fullText ?? ""
+    var fullAttributedText: NSAttributedString {
+        return displayableText?.fullAttributedText ?? NSAttributedString()
     }
 
     // MARK: Initializers
@@ -106,7 +106,7 @@ public class LongTextViewController: OWSViewController {
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryTextColor
         if let displayableText = displayableText {
-            messageTextView.text = fullText
+            messageTextView.attributedText = fullAttributedText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
             messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
         } else {
@@ -154,7 +154,7 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Actions
 
     @objc func shareButtonPressed(_ sender: UIBarButtonItem) {
-        AttachmentSharing.showShareUI(forText: fullText, sender: sender)
+        AttachmentSharing.showShareUI(forText: fullAttributedText.string, sender: sender)
     }
 
     @objc func forwardButtonPressed() {

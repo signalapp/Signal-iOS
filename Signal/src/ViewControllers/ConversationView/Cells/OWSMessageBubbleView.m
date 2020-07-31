@@ -822,18 +822,19 @@ typedef struct {
     };
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
 
-    NSString *text = displayableText.displayText;
 
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
     paragraphStyle.alignment = displayableText.displayTextNaturalAlignment;
 
-    NSMutableAttributedString *attributedText =
-        [[NSMutableAttributedString alloc] initWithString:text
-                                               attributes:@{
-                                                   NSFontAttributeName : font,
-                                                   NSForegroundColorAttributeName : textColor,
-                                                   NSParagraphStyleAttributeName : paragraphStyle
-                                               }];
+    NSMutableAttributedString *attributedText = [displayableText.displayAttributetdText mutableCopy];
+    [attributedText addAttributes:@{
+        NSFontAttributeName : font,
+        NSForegroundColorAttributeName : textColor,
+        NSParagraphStyleAttributeName : paragraphStyle
+    }
+                            range:NSMakeRange(0, attributedText.length)];
+    // TODO:
+
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
         NSError *error;
@@ -842,8 +843,9 @@ typedef struct {
                                                  options:NSRegularExpressionCaseInsensitive
                                                    error:&error];
         OWSAssertDebug(error == nil);
-        for (NSTextCheckingResult *match in
-            [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
+        for (NSTextCheckingResult *match in [regex matchesInString:attributedText.string
+                                                           options:NSMatchingWithoutAnchoringBounds
+                                                             range:NSMakeRange(0, attributedText.length)]) {
 
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
             [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
@@ -859,7 +861,8 @@ typedef struct {
     // attributes are reset.
     textView.attributedText = attributedText;
 
-    textView.accessibilityLabel = [self accessibilityLabelWithDescription:text authorName:accessibilityAuthorName];
+    textView.accessibilityLabel = [self accessibilityLabelWithDescription:attributedText.string
+                                                               authorName:accessibilityAuthorName];
 }
 
 - (BOOL)shouldShowSenderName

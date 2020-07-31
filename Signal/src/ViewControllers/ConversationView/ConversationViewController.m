@@ -3127,11 +3127,12 @@ typedef enum : NSUInteger {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+
 - (void)sendMediaNav:(SendMediaNavigationController *)sendMediaNavigationController
     didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
-              messageText:(nullable NSString *)messageText
+              messageBody:(nullable MessageBody *)messageBody
 {
-    [self tryToSendAttachments:attachments messageText:messageText];
+    [self tryToSendAttachments:attachments messageBody:messageBody];
     [self.inputToolbar clearTextMessageAnimated:NO];
 
     // we want to already be at the bottom when the user returns, rather than have to watch
@@ -3141,15 +3142,15 @@ typedef enum : NSUInteger {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (nullable NSString *)sendMediaNavInitialMessageText:(SendMediaNavigationController *)sendMediaNavigationController
+- (nullable MessageBody *)sendMediaNavInitialMessageBody:(SendMediaNavigationController *)sendMediaNavigationController
 {
-    return self.inputToolbar.messageText;
+    return self.inputToolbar.messageBody;
 }
 
 - (void)sendMediaNav:(SendMediaNavigationController *)sendMediaNavigationController
-    didChangeMessageText:(nullable NSString *)messageText
+    didChangeMessageBody:(nullable MessageBody *)messageBody
 {
-    [self.inputToolbar setMessageText:messageText animated:NO];
+    [self.inputToolbar setMessageBody:messageBody animated:NO];
 }
 
 - (NSString *)sendMediaNavApprovalButtonImageName
@@ -3276,13 +3277,13 @@ typedef enum : NSUInteger {
         if (!strongSelf) {
             return;
         }
-        
+
         if (strongSelf.voiceMessageUUID != voiceMessageUUID) {
             // This voice message recording has been cancelled
             // before recording could begin.
             return;
         }
-        
+
         if (granted) {
             [strongSelf startRecordingVoiceMemo];
         } else {
@@ -3406,7 +3407,7 @@ typedef enum : NSUInteger {
         OWSLogWarn(@"Invalid attachment: %@.", attachment ? [attachment errorName] : @"Missing data");
         [self showErrorAlertForAttachment:attachment];
     } else {
-        [self tryToSendAttachments:@[ attachment ] messageText:nil];
+        [self tryToSendAttachments:@[ attachment ] messageBody:nil];
     }
 }
 
@@ -3651,7 +3652,7 @@ typedef enum : NSUInteger {
     // If the thing we pasted is sticker-like, send it immediately
     // and render it borderless.
     if (attachment.isBorderless) {
-        [self tryToSendAttachments:@[ attachment ] messageText:nil];
+        [self tryToSendAttachments:@[ attachment ] messageBody:nil];
     } else {
         [self showApprovalDialogForAttachment:attachment];
     }
@@ -3671,13 +3672,13 @@ typedef enum : NSUInteger {
 {
     OWSNavigationController *modal =
         [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:attachments
-                                                             initialMessageText:self.inputToolbar.messageText
+                                                             initialMessageBody:self.inputToolbar.messageBody
                                                                approvalDelegate:self];
 
     [self presentFullScreenViewController:modal animated:YES completion:nil];
 }
 
-- (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageText:(NSString *_Nullable)messageText
+- (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageBody:(MessageBody *_Nullable)messageBody
 {
     OWSLogError(@"");
 
@@ -3686,7 +3687,7 @@ typedef enum : NSUInteger {
         if ([self isBlockedConversation]) {
             [self showUnblockConversationUI:^(BOOL isBlocked) {
                 if (!isBlocked) {
-                    [weakSelf tryToSendAttachments:attachments messageText:messageText];
+                    [weakSelf tryToSendAttachments:attachments messageBody:messageBody];
                 }
             }];
             return;
@@ -3697,7 +3698,7 @@ typedef enum : NSUInteger {
                                                                    completion:^(BOOL didConfirmIdentity) {
                                                                        if (didConfirmIdentity) {
                                                                            [weakSelf tryToSendAttachments:attachments
-                                                                                              messageText:messageText];
+                                                                                              messageBody:messageBody];
                                                                        }
                                                                    }];
         if (didShowSNAlert) {
@@ -3717,7 +3718,7 @@ typedef enum : NSUInteger {
 
         __block TSOutgoingMessage *message;
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
-            message = [ThreadUtil enqueueMessageWithText:messageText
+            message = [ThreadUtil enqueueMessageWithBody:messageBody
                                         mediaAttachments:attachments
                                                   thread:self.thread
                                         quotedReplyModel:self.inputToolbar.quotedReply
@@ -3799,9 +3800,9 @@ typedef enum : NSUInteger {
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
      didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
-               messageText:(NSString *_Nullable)messageText
+               messageBody:(MessageBody *_Nullable)messageBody
 {
-    [self tryToSendAttachments:attachments messageText:messageText];
+    [self tryToSendAttachments:attachments messageBody:messageBody];
     [self.inputToolbar clearTextMessageAnimated:NO];
     [self dismissViewControllerAnimated:YES completion:nil];
 
@@ -3818,9 +3819,9 @@ typedef enum : NSUInteger {
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
-      didChangeMessageText:(nullable NSString *)newMessageText
+      didChangeMessageBody:(nullable MessageBody *)newMessageBody
 {
-    [self.inputToolbar setMessageText:newMessageText animated:NO];
+    [self.inputToolbar setMessageBody:newMessageBody animated:NO];
 }
 
 - (nullable NSString *)attachmentApprovalTextInputContextIdentifier
@@ -4005,11 +4006,11 @@ typedef enum : NSUInteger {
         // wait, or too fast, and fails to wait long enough to be ready to become first responder.
         // Luckily in this case the stakes aren't catastrophic. In the case that we're too aggressive
         // the user will just have to manually tap into the search field before typing.
-        
+
         // Leaving this assert in as proof that we're not ready to become first responder yet.
         // If this assert fails, *great* maybe we can get rid of this delay.
         OWSAssertDebug(![self.searchController.uiSearchController.searchBar canBecomeFirstResponder]);
-        
+
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.searchController.uiSearchController.searchBar becomeFirstResponder];
         });
@@ -4086,10 +4087,10 @@ typedef enum : NSUInteger {
                               eventId:@"fromSendUntil_toggleDefaultKeyboard"];
 
     [self.inputToolbar acceptAutocorrectSuggestion];
-    [self tryToSendTextMessage:self.inputToolbar.messageText updateKeyboardState:YES];
+    [self tryToSendTextMessage:self.inputToolbar.messageBody updateKeyboardState:YES];
 }
 
-- (void)tryToSendTextMessage:(NSString *)text updateKeyboardState:(BOOL)updateKeyboardState
+- (void)tryToSendTextMessage:(MessageBody *)messageBody updateKeyboardState:(BOOL)updateKeyboardState
 {
     OWSAssertIsOnMainThread();
 
@@ -4097,7 +4098,7 @@ typedef enum : NSUInteger {
     if ([self isBlockedConversation]) {
         [self showUnblockConversationUI:^(BOOL isBlocked) {
             if (!isBlocked) {
-                [weakSelf tryToSendTextMessage:text updateKeyboardState:NO];
+                [weakSelf tryToSendTextMessage:messageBody updateKeyboardState:NO];
             }
         }];
         return;
@@ -4107,7 +4108,7 @@ typedef enum : NSUInteger {
         [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
                                                                completion:^(BOOL didConfirmIdentity) {
                                                                    if (didConfirmIdentity) {
-                                                                       [weakSelf tryToSendTextMessage:text
+                                                                       [weakSelf tryToSendTextMessage:messageBody
                                                                                   updateKeyboardState:NO];
                                                                    }
                                                                }];
@@ -4115,18 +4116,18 @@ typedef enum : NSUInteger {
         return;
     }
 
-    text = [text ows_stripped];
-
-    if (text.length < 1) {
-        return;
-    }
+    //    text = [text ows_stripped];
+    //
+    //    if (text.length < 1) {
+    //        return;
+    //    }
 
     BOOL didAddToProfileWhitelist =
         [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     __block TSOutgoingMessage *message;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        message = [ThreadUtil enqueueMessageWithText:text
+        message = [ThreadUtil enqueueMessageWithBody:messageBody
                                               thread:self.thread
                                     quotedReplyModel:self.inputToolbar.quotedReply
                                     linkPreviewDraft:self.inputToolbar.linkPreviewDraft
@@ -4352,8 +4353,9 @@ typedef enum : NSUInteger {
 #ifdef DEBUG
     // TODO: Confirm with nancy if this will work.
     NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
-    if (viewItem.hasBodyText && viewItem.displayableBodyText.displayText.length > 0) {
-        NSString *textForId = [viewItem.displayableBodyText.displayText stringByReplacingOccurrencesOfString:@" "
+    if (viewItem.hasBodyText && viewItem.displayableBodyText.displayAttributetdText.length > 0) {
+        NSString *textForId =
+            [viewItem.displayableBodyText.displayAttributetdText.string stringByReplacingOccurrencesOfString:@" "
                                                                                                   withString:@"_"];
         cellName = [NSString stringWithFormat:@"message.text.%@", textForId];
     } else if (viewItem.stickerInfo) {
@@ -4751,7 +4753,7 @@ typedef enum : NSUInteger {
     __block BOOL shouldInvalidateLayout = NO;
     void (^batchUpdates)(void) = ^{
         OWSAssertIsOnMainThread();
-        
+
         const NSUInteger section = 0;
         BOOL hasInserted = NO, hasUpdated = NO;
         for (ConversationUpdateItem *updateItem in conversationUpdate.updateItems) {
@@ -4762,14 +4764,14 @@ typedef enum : NSUInteger {
                     [self.collectionView deleteItemsAtIndexPaths:@[
                         [NSIndexPath indexPathForRow:(NSInteger)updateItem.oldIndex inSection:section]
                     ]];
-                    
+
                     if (isSusceptibleToCrashAfterDeletingLastItem) {
                         OWSAssertDebug(interactionCount != nil);
                         if (interactionCount.unsignedLongValue == 0) {
                             shouldInvalidateLayout = YES;
                         }
                     }
-                    
+
                     break;
                 }
                 case ConversationUpdateItemType_Insert: {
@@ -4779,7 +4781,7 @@ typedef enum : NSUInteger {
                         [NSIndexPath indexPathForRow:(NSInteger)updateItem.newIndex inSection:section]
                     ]];
                     hasInserted = YES;
-                    
+
                     id<ConversationViewItem> viewItem = updateItem.viewItem;
                     OWSAssertDebug(viewItem);
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
@@ -4801,7 +4803,7 @@ typedef enum : NSUInteger {
                 }
             }
         }
-        
+
         if (shouldInvalidateLayout) {
             OWSLogDebug(@"invalidating layout");
             [self.layout invalidateLayout];
@@ -4811,21 +4813,21 @@ typedef enum : NSUInteger {
     BOOL shouldAnimateUpdates = conversationUpdate.shouldAnimateUpdates;
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
         OWSAssertIsOnMainThread();
-        
+
         // We can't use the transaction parameter; this completion
         // will be run async.
         [self updateUnreadMessageFlagUsingAsyncTransaction];
         [self configureScrollDownButton];
-        
+
         [self showMessageRequestDialogIfRequired];
-        
+
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
         }
-        
+
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
-        
+
         if (!finished) {
             OWSLogInfo(@"performBatchUpdates did not finish");
             // If did not finish, reset to get back to a known good state.
@@ -5190,7 +5192,8 @@ typedef enum : NSUInteger {
         __block TSOutgoingMessage *message;
 
         [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            message = [ThreadUtil enqueueMessageWithText:location.messageText
+            message = [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:location.messageText
+                                                                                    ranges:MessageBodyRanges.empty]
                                         mediaAttachments:@[ attachment ]
                                                   thread:strongSelf.thread
                                         quotedReplyModel:nil
@@ -5372,7 +5375,7 @@ typedef enum : NSUInteger {
             // If we were scrolled away from the bottom, shift the content in lockstep with the
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
-            
+
             // Only update the content offset if the inset has changed.
             if (insetChange != 0) {
                 // The content offset can go negative, up to the size of the top layout guide.
@@ -5382,7 +5385,7 @@ typedef enum : NSUInteger {
 
                 CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
                 CGPoint newOffset = CGPointMake(0, newYOffset);
-                
+
                 [self.collectionView setContentOffset:newOffset animated:NO];
             }
         }

@@ -76,6 +76,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _schemaVersion = OWSMessageSchemaVersion;
 
     _body = messageBuilder.messageBody;
+    _bodyRanges = messageBuilder.bodyRanges;
     _attachmentIds = messageBuilder.attachmentIds;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;

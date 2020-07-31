@@ -61,9 +61,10 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(quotedMessage);
 
     DisplayableText *_Nullable displayableQuotedText = nil;
-    if (quotedMessage.body.length > 0) {
-        displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
-    }
+    //    if (quotedMessage.body.length > 0) {
+    //        displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
+    //    }
+    // TODO:
 
     OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc]
         initWithQuotedMessage:quotedMessage
@@ -433,8 +434,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     NSString *_Nullable fileTypeForSnippet = [self fileTypeForSnippet];
     NSString *_Nullable sourceFilename = [self.quotedMessage.sourceFilename filterStringForDisplay];
 
-    if (self.displayableQuotedText.displayText.length > 0) {
-        text = self.displayableQuotedText.displayText;
+    if (self.displayableQuotedText.displayAttributetdText.length > 0) {
+        text = self.displayableQuotedText.displayAttributetdText.string; // TODO:
         textColor = self.quotedTextColor;
         font = self.quotedTextFont;
     } else if (fileTypeForSnippet) {

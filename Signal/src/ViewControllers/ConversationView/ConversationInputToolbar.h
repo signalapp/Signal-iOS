@@ -86,9 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable MessageBody *)messageBody;
 - (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated;
-
-- (NSString *)messageText;
-- (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;
 - (void)acceptAutocorrectSuggestion;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
 - (void)clearDesiredKeyboard;

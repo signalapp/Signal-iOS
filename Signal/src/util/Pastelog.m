@@ -616,7 +616,8 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             thread = [TSContactThread getOrCreateThreadWithContactAddress:recipientAddress transaction:transaction];
         });
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [ThreadUtil enqueueMessageWithText:url.absoluteString
+            [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:url.absoluteString
+                                                                          ranges:MessageBodyRanges.empty]
                                         thread:thread
                               quotedReplyModel:nil
                               linkPreviewDraft:nil
