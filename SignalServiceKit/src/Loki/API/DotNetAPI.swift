@@ -142,7 +142,9 @@ public class DotNetAPI : NSObject {
                 let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
                 var error: NSError?
                 var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
-                    formData.appendPart(withFileData: data, name: "content", fileName: UUID().uuidString, mimeType: "application/binary")
+                    let uuid = UUID().uuidString
+                    print("[Loki] File UUID: \(uuid)")
+                    formData.appendPart(withFileData: data, name: "content", fileName: uuid, mimeType: "application/binary")
                 }, error: &error)
                 request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
                 if let error = error {
