@@ -290,6 +290,10 @@ public enum OnionRequestAPI {
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
+                if case Destination.server = destination, onion.count > FileServerAPI.maxFileSize {
+                    print("[Loki] Onion request size: ~\(onion.count)")
+                    throw DotNetAPI.DotNetAPIError.maxFileSizeExceeded
+                }
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()

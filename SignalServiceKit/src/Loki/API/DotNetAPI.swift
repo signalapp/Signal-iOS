@@ -134,6 +134,7 @@ public class DotNetAPI : NSObject {
                     data = unencryptedAttachmentData
                 }
                 // Check the file size if needed
+                print("[Loki] File size: \(data.count)")
                 if data.count > FileServerAPI.maxFileSize {
                     return seal.reject(DotNetAPIError.maxFileSizeExceeded)
                 }
