@@ -7,11 +7,17 @@ public final class FileServerAPI : DotNetAPI {
     private static let attachmentType = "net.app.core.oembed"
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
     
-    internal static let fileServerPublicKey = "62509D59BDEEC404DD0D489C1E15BA8F94FD3D619B01C1BF48A9922BFCB7311C"
+    internal static let fileServerPublicKey = "2662315C4E728FDBDEC61F69ECA2316BFF267AA8931197907A1C944C7C4E667A"
 
     public static let maxFileSize = 10_000_000 // 10 MB
+    /// The file server has a file size limit of `maxFileSize`, which the Service Nodes try to enforce as well. However, the limit applied by the Service Nodes
+    /// is on the **HTTP request** and not the file size. Because of onion request encryption, a file that's about 4 MB will result in a request that's about 15 MB.
+    /// On average the multiplier appears to be about 3.4, so when checking whether the file will exceed the file size limit when uploading a file we just divide
+    /// the size of the file by this number. The alternative would be to actually check the size of the HTTP request but that's only possible after proof of work
+    /// has been calculated and the onion request encryption has happened, which takes several seconds.
+    public static let fileSizeORMultiplier = 3.4
 
-    @objc public static let server = "https://file.getsession.org"
+    @objc public static let server = "https://file-dev.getsession.org"
 
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
@@ -153,7 +159,7 @@ public final class FileServerAPI : DotNetAPI {
     }
 
     public static func uploadProfilePicture(_ profilePicture: Data) -> Promise<String> {
-        guard profilePicture.count < maxFileSize else { return Promise(error: DotNetAPIError.maxFileSizeExceeded) }
+        guard Double(profilePicture.count) < Double(maxFileSize) / fileSizeORMultiplier else { return Promise(error: DotNetAPIError.maxFileSizeExceeded) }
         let url = "\(server)/files"
         let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
         var error: NSError?

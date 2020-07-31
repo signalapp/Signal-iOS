@@ -135,7 +135,7 @@ public class DotNetAPI : NSObject {
                 }
                 // Check the file size if needed
                 print("[Loki] File size: \(data.count)")
-                if data.count > FileServerAPI.maxFileSize {
+                if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
                     return seal.reject(DotNetAPIError.maxFileSizeExceeded)
                 }
                 // Create the request
