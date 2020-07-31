@@ -161,4 +161,43 @@ public extension AFHTTPSessionManager {
         }
         return request as URLRequest
     }
+
+    func resumeDownloadTaskPromise(resumeData: Data,
+                                   dstFileUrl dstFileUrlParam: URL? = nil,
+                                   progress progressBlock: DownloadTaskProgressBlock? = nil) -> Promise<URL> {
+        let dstFileUrl: URL
+        if let dstFileUrlParam = dstFileUrlParam {
+            dstFileUrl = dstFileUrlParam
+        } else {
+            dstFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
+        }
+
+        let (promise, resolver) = Promise<URL>.pending()
+        var taskReference: URLSessionDownloadTask?
+        let task = downloadTask(withResumeData: resumeData,
+                                progress: { (progress: Progress) in
+                                    guard let task = taskReference else {
+                                        owsFailDebug("Missing task.")
+                                        return
+                                    }
+                                    progressBlock?(progress, task)
+        },
+                                destination: { (_: URL, _: URLResponse) -> URL in
+                                    dstFileUrl
+        },
+                                completionHandler: { (_: URLResponse, completionUrl: URL?, error: Error?) in
+                                    if let error = error {
+                                        resolver.reject(error)
+                                        return
+                                    }
+                                    if dstFileUrl != completionUrl {
+                                        resolver.reject(OWSAssertionError("Unexpected url."))
+                                        return
+                                    }
+                                    resolver.fulfill(dstFileUrl)
+        })
+        taskReference = task
+        task.resume()
+        return promise
+    }
 }

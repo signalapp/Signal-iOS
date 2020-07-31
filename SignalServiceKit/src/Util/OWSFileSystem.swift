@@ -35,6 +35,13 @@ public extension OWSFileSystem {
         try FileManager.default.removeItem(at: url)
     }
 
+    class func deleteFileIfExists(url: URL) throws {
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            return
+        }
+        try deleteFile(url: url)
+    }
+
     class func temporaryFileUrl(fileExtension: String? = nil,
                                 isAvailableWhileDeviceLocked: Bool = false) -> URL {
         return URL(fileURLWithPath: temporaryFilePath(fileExtension: fileExtension,

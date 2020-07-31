@@ -23,14 +23,24 @@ NSErrorDomain const TSNetworkManagerErrorDomain = @"SignalServiceKit.TSNetworkMa
 
 BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
 {
+    if ([error.domain isEqualToString:NSURLErrorDomain]) {
+        switch (error.code) {
+            case kCFURLErrorTimedOut:
+            case kCFURLErrorCannotConnectToHost:
+            case kCFURLErrorNetworkConnectionLost:
+            case kCFURLErrorDNSLookupFailed:
+            case kCFURLErrorNotConnectedToInternet:
+                // TODO: We might want to add kCFURLErrorCannotFindHost.
+                return YES;
+            default:
+                break;
+        }
+    }
     BOOL isObjCNetworkConnectivityFailure = ([error.domain isEqualToString:TSNetworkManagerErrorDomain]
         && error.code == TSNetworkManagerErrorFailedConnection);
-    BOOL isNetworkTimeout = ([error.domain isEqualToString:NSURLErrorDomain] && error.code == kCFURLErrorTimedOut);
     BOOL isNetworkProtocolError = ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == 100);
 
     if (isObjCNetworkConnectivityFailure) {
-        return YES;
-    } else if (isNetworkTimeout) {
         return YES;
     } else if (isNetworkProtocolError) {
         return YES;
