@@ -7,7 +7,7 @@ public final class FileServerAPI : DotNetAPI {
     private static let attachmentType = "net.app.core.oembed"
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
     
-    internal static let fileServerPublicKey = "2662315C4E728FDBDEC61F69ECA2316BFF267AA8931197907A1C944C7C4E667A"
+    internal static let fileServerPublicKey = "62509D59BDEEC404DD0D489C1E15BA8F94FD3D619B01C1BF48A9922BFCB7311C"
 
     public static let maxFileSize = 10_000_000 // 10 MB
     /// The file server has a file size limit of `maxFileSize`, which the Service Nodes try to enforce as well. However, the limit applied by the Service Nodes
@@ -17,7 +17,7 @@ public final class FileServerAPI : DotNetAPI {
     /// has been calculated and the onion request encryption has happened, which takes several seconds.
     public static let fileSizeORMultiplier = 3.4
 
-    @objc public static let server = "https://file-dev.getsession.org"
+    @objc public static let server = "https://file.getsession.org"
 
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
