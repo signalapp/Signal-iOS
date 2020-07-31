@@ -292,7 +292,6 @@ public enum OnionRequestAPI {
                 let onion = finalEncryptionResult.ciphertext
                 if case Destination.server = destination {
                     print("[Loki] Onion request size: ~\(onion.count)")
-                    throw DotNetAPI.DotNetAPIError.maxFileSizeExceeded
                 }
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
