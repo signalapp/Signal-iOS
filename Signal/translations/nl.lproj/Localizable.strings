@@ -1028,6 +1028,9 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub-doorverwijzing";
 
+/* Accessibility label for the ? vector asset used to get info about debug logs */
+"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Wil je alle berichten in dit gesprek wissen? Ze worden alleen voor jou gewist.";
 
@@ -1217,6 +1220,12 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Laten we Signal gebruiken";
 
+/* Description for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+
+/* Title for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activiteiten";
 
@@ -1270,6 +1279,15 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Bericht versturen mislukt.";
+
+/* Error indicating that openURL for a mailto: URL failed. */
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+
+/* Error indicating that a support mailto link could not be created. */
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+
+/* Generic error indicating that log upload failed */
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kan niet verzenden vanwege oude prekey-gegevens.";
@@ -1726,6 +1744,12 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Kies een nieuwe beheerder";
+
+/* Help item allowing the user to file a support request */
+"HELP_CONTACT_US" = "Neem contact met ons op";
+
+/* Help item that takes the user to the Signal support website */
+"HELP_SUPPORT_CENTER" = "Support Center";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Gearchiveerde gesprekken";
@@ -2703,10 +2727,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Maak een numerieke pincode aan";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PIN uitschakelen";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Pincode uitschakelen";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Als je de PIN uitschakelt zul je alle gegevens kwijtraken wanneer je Signal opnieuw registreert tenzij je de gegevens vanaf een ander iOS apparaat overzet.  Je kunt geen registratievergrendeling gebruiken zolang de PIN uitgeschakeld is.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Als je de pincode uitschakelt dan zul je alle gegevens kwijtraken wanneer je Signal opnieuw registreert, tenzij je de gegevens vanaf een ander iOS apparaat overzet. Zolang de pincode is uitgeschakeld kun je geen registratievergrendeling inschakelen.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Waarschuwing";
@@ -2718,7 +2742,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Je kunt hierdoor je profielnaam en -foto, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de PIN niet nodig om de app te openen.";
+"PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt hierdoor je profielnaam en -foto, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de pincode niet nodig om de app te openen.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Leer meer over pincodes";
@@ -2745,13 +2769,13 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Uitschakelen";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Om je PIN uit te zetten moet je eerst de registratievergrendeling uitzetten.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Om je pincode uit te schakelen moet je eerst de registratievergrendeling uitschakelen.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Registratievergrendeling uitschakelen?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "PIN uitschakelen";
+"PIN_CREATION_SKIP" = "Pincode uitschakelen";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Pincode aanmaken";
@@ -2817,7 +2841,7 @@
 "PINS_MEGAPHONE_TOAST" = "Pincode aangemaakt. Je kunt deze wijzigen in de instellingen.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "Pin uitgeschakeld.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "Pincode uitgeschakeld.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
@@ -2871,10 +2895,10 @@
 "PROCEED_BUTTON" = "Doorgaan";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ heeft zijn of haar profielnaam van %@ naar %@ gewijzigd.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ heeft zijn of haar profielnaam naar %@ gewijzigd.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profielfoto instellen";
@@ -2910,7 +2934,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Je profiel kan alleen worden bijgewerkt als je bent verbonden met het internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profielen worden eind-tot-eind-versleuteld. Deze gegevens zijn alleen zichtbaar voor personen wie zijn opgeslagen in jouw contactenlijst, personen naar wie je zelf een nieuwe gesprek initieert, alle leden van een groep waarvan jij een uitnodiging aanvaard.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profielen worden eind-tot-eind-versleuteld uitgewisseld. Deze gegevens zijn alleen zichtbaar voor personen wie zijn opgeslagen in jouw contactenlijst, personen naar wie je zelf een nieuwe gesprek initieert en alle leden van een groep waarvan jij een uitnodiging aanvaard.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Opslaan";
@@ -3141,7 +3165,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Veiligheidsnummer veranderingen";
 
 /* View safety number action for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Bekijken";
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Weergeven";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Ons Signal-veiligheidsnummer:\n%@";
@@ -3465,16 +3489,16 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Foutopsporingslog inschakelen";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Geavanceerde PIN instellingen";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Geavanceerde pincode-instellingen";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Geavanceerde PIN instellingen";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Geavanceerde pincode-instellingen";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "PIN uitschakelen";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Pincode uitschakelen";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN inschakelen";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Pincode inschakelen";
 
 /* Table header for the 'pins' section. */
 "SETTINGS_ADVANCED_PINS_HEADER" = "Signal-pincode";
@@ -3581,8 +3605,8 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Alles wissen";
 
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Hulp";
+/* Title for support page in app settings. */
+"SETTINGS_HELP" = "Hulp";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Gespreksgeschiedenis wissen";
@@ -3618,7 +3642,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Tel gedempte gesprekken mee";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Reactiesteller";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Reacties-teller";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Oproep- en berichtmeldingen kunnen verschijnen wanneer je telefoon vergrendeld is. Als je wilt, kun je beperken wat in deze meldingen zichtbaar is.";
@@ -3724,9 +3748,6 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Beveiliging tegen schermafdrukken";
-
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "Ondersteuning";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registratievergrendeling";
@@ -3865,6 +3886,30 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Veiligheidsnummer komt overeen!";
+
+/* Header of support description field */
+"SUPPORT_CONTACT_US_HEADER" = "Neem contact met ons op";
+
+/* Placeholder string for support description */
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Vertel ons wat er aan de hand is";
+
+/* Message for alert dialog presented when a support email failed to send */
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+
+/* Localized subject for support request emails */
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+
+/* Header for emoji mood selection */
+"SUPPORT_EMOJI_PROMPT" = "Hoe voel je je? (Optioneel)";
+
+/* Label in support request informing user about Signal FAQ */
+"SUPPORT_FAQ_PROMPT" = "Heb je onze antwoorden op veelgestelde vragen al gelezen?";
+
+/* Label describing support switch to attach debug logs */
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+
+/* A string in the navigation bar indicating that the support request is uploading logs */
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Aan het laden";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Veiligheidsnummer verifiëren";
@@ -4011,7 +4056,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Je apparaat ondersteunt deze functie niet.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Contactpersoon bijwerken";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "De groep kan niet worden bijgewerkt.";
@@ -4026,13 +4071,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lees meer over pincodes";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Je kunt hierdoor je profielnaam en -foto, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de PIN niet nodig om de app te openen.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt hierdoor je profielnaam en -foto, instellingen en (geblokkeerde) contacten herstellen wanneer je Signal opnieuw installeert. Je hebt de PIN niet nodig om de app te openen.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "We introduceren pincodes";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN uitschakelen";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Pincode uitschakelen";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Binnenkort vereist Signal dat je iOS 11 of een nieuwere versie gebruikt. Werk je besturingssysteem bij via de Instellingen-app >> Algemeen >> Software-update.";

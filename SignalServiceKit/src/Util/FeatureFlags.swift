@@ -236,6 +236,9 @@ public class FeatureFlags: BaseFlags {
 /// development should go here, rather than cluttering up FeatureFlags.
 @objc(SSKDebugFlags)
 public class DebugFlags: BaseFlags {
+    @objc
+    public static let internalLogging = build.includes(.qa)
+
     // DEBUG builds won't receive push notifications, which prevents receiving messages
     // while the app is backgrounded or the system call screen is active.
     //

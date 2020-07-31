@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "حالا نه";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "قبول کلید هویت‌سنجی جدید";
+"ACCEPT_NEW_IDENTITY_ACTION" = "قبول شمارهٔ امنیتی جدید";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "پیوست";
@@ -135,7 +135,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "داده‌هایی که از دستگاه قدیمی شما انتقال یافته است قابل بازیابی نیست. لطفاً یک گزارش خرابی به support@signal.org ارسال کنید تا ما بتوانیم این مشکل را حل کنیم. اگر Signal را دوباره نصب کنید، ممکن است تاریخچهٔ پیام‌های شما از دست برود.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "انتقال تکمیل نشد";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "انتقال کامل نشد.";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "نام خود را وارد کنید";
@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "ساکت‌ کردن";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ از شما یک درخواست پیام دریافت خواهد کرد. زمانی که درخواست شما پذیرفته شد می‌توانید تماس بگیرید.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "جهت دوربین را تغییر دهید.";
@@ -1028,6 +1028,9 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "ریدایرکشن گیت هاب";
 
+/* Accessibility label for the ? vector asset used to get info about debug logs */
+"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "تمامی پیام‌های مکالمه حذف شود؟";
 
@@ -1217,6 +1220,12 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "به نرم افزار پیام رسان Signal بپیوندید";
 
+/* Description for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+
+/* Title for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "فعالیت‌ها";
 
@@ -1270,6 +1279,15 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "خطا در ارسال پیام.";
+
+/* Error indicating that openURL for a mailto: URL failed. */
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+
+/* Error indicating that a support mailto link could not be created. */
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+
+/* Generic error indicating that log upload failed */
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "ناتوانی در ارسال به دلیل داده پیش کلید قدیمی.";
@@ -1726,6 +1744,12 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "مدیر جدید را انتخاب کنید";
+
+/* Help item allowing the user to file a support request */
+"HELP_CONTACT_US" = "Contact Us";
+
+/* Help item that takes the user to the Signal support website */
+"HELP_SUPPORT_CENTER" = "Support Center";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "مکالمه های آرشیو شده";
@@ -2706,7 +2730,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "غیرفعال کردن پین";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "اگر پین را غیرفعال کنید، هنگامی که دوباره در Signal ثبت‌نام می‌کنید تمامی داده‌ها را از دست خواهید داد، مگر اینکه از یک دستگاه iOS دیگر آنها را منتقل کنید. هنگامی که پین غیرفعال است نمی‌توانید قفل ثبت‌نام را روشن کنید.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "اخطار";
@@ -2745,7 +2769,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "خاموش کن";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "برای غیرفعال کردن پین، شما باید ابتدا قفل ثبت‌نام را خاموش کنید.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "قفل ثبت نام خاموش شود؟";
@@ -2871,10 +2895,10 @@
 "PROCEED_BUTTON" = "ادامه دادن";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ اسم پروفایلش را از %@ به %@ تغییر داد.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ اسم پروفایلش را به %@ تغییر داد.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "تنظیم عکس پروفایل";
@@ -3581,8 +3605,8 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "پاک کردن همه چیز";
 
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "راهنمایی";
+/* Title for support page in app settings. */
+"SETTINGS_HELP" = "راهنمایی";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "پاکسازی تاریخچه مکالمه";
@@ -3725,9 +3749,6 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "امنیت صفحه نمایش";
 
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "پشتیبانی";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل ثبت‌نام";
 
@@ -3865,6 +3886,30 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "کلید هویت‌سنجی مطابقت دارد!";
+
+/* Header of support description field */
+"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+
+/* Placeholder string for support description */
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "در مورد اشکال به ما توضیح دهید";
+
+/* Message for alert dialog presented when a support email failed to send */
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+
+/* Localized subject for support request emails */
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+
+/* Header for emoji mood selection */
+"SUPPORT_EMOJI_PROMPT" = "چه حسی دارید؟ (اختیاری)";
+
+/* Label in support request informing user about Signal FAQ */
+"SUPPORT_FAQ_PROMPT" = "آیا قسمت پرسش‌های متداول را خوانده‌اید؟";
+
+/* Label describing support switch to attach debug logs */
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+
+/* A string in the navigation bar indicating that the support request is uploading logs */
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "در حال بارگذاری";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "تایید کد امنیتی";
@@ -4017,7 +4062,7 @@
 "UPDATE_GROUP_FAILED" = "گروه قابل بروز رسانی نیست.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "گروه نتوانست به‌روزرسانی شود. اتصال اینترنت خود را بررسی و دوباره تلاش کنید.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "پین خود را ایجاد کنید";

@@ -1028,6 +1028,9 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "ഗിട്ട്ഹബ്ബ് റീഡയറക്ഷൻ";
 
+/* Accessibility label for the ? vector asset used to get info about debug logs */
+"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "സംഭാഷണത്തിലെ എല്ലാ സന്ദേശങ്ങളും ഇല്ലാതാക്കണോ?";
 
@@ -1217,6 +1220,12 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "നമുക്ക് Signal ലേക്ക് മാറാം";
 
+/* Description for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+
+/* Title for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "പ്രവർത്തനങ്ങൾ";
 
@@ -1270,6 +1279,15 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "സന്ദേശം അയയ്ക്കുന്നതിൽ പരാജയപ്പെട്ടു.";
+
+/* Error indicating that openURL for a mailto: URL failed. */
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+
+/* Error indicating that a support mailto link could not be created. */
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+
+/* Generic error indicating that log upload failed */
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "സ്റ്റെയിൽ പ്രീകീ ഡാറ്റ കാരണം അയയ്ക്കാനായില്ല.";
@@ -1727,6 +1745,12 @@
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കുക";
 
+/* Help item allowing the user to file a support request */
+"HELP_CONTACT_US" = "Contact Us";
+
+/* Help item that takes the user to the Signal support website */
+"HELP_SUPPORT_CENTER" = "Support Center";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "ആർക്കൈവുചെയ്‌ത സംഭാഷണങ്ങൾ";
 
@@ -2007,7 +2031,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "എല്ലാവർക്കുമായി ഇല്ലാതാക്കുക";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "സംഭാഷണത്തിലെ എല്ലാവർക്കുമായി ഈ സന്ദേശം ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും. നിങ്ങൾ ഒരു സന്ദേശം ഇല്ലാതാക്കിയതായി അംഗങ്ങൾക്ക് കാണാൻ കഴിയും.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
@@ -2184,7 +2208,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "പരാജയപ്പെട്ടു";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "ഭാഗികമായി അയച്ചു, വിശദാംശങ്ങൾക്ക് ടാപ്പുചെയ്യുക";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "വായിച്ചു";
@@ -3581,8 +3605,8 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "എല്ലാം ഇല്ലാതാക്കുക";
 
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "സഹായം";
+/* Title for support page in app settings. */
+"SETTINGS_HELP" = "സഹായം";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "സംഭാഷണ ചരിത്രം ഇല്ലതാക്കുക";
@@ -3725,9 +3749,6 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "സ്ക്രീൻ സുരക്ഷ";
 
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "സപ്പോർട്ട്";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "രജിസ്ട്രേഷൻ ലോക്ക്";
 
@@ -3865,6 +3886,30 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "സുരക്ഷാ നമ്പർ പൊരുത്തപ്പെടുന്നു!";
+
+/* Header of support description field */
+"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+
+/* Placeholder string for support description */
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "എന്താണ് സംഭവിക്കുന്നതെന്ന് ഞങ്ങളോട് പറയുക";
+
+/* Message for alert dialog presented when a support email failed to send */
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+
+/* Localized subject for support request emails */
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+
+/* Header for emoji mood selection */
+"SUPPORT_EMOJI_PROMPT" = "നിങ്ങൾക്ക് എന്തുതോന്നുന്നു? (ഓപ്ഷണൽ)";
+
+/* Label in support request informing user about Signal FAQ */
+"SUPPORT_FAQ_PROMPT" = "നിങ്ങൾ ഞങ്ങളുടെ പതിവുചോദ്യങ്ങൾ വായിച്ചിട്ടുണ്ടോ?";
+
+/* Label describing support switch to attach debug logs */
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+
+/* A string in the navigation bar indicating that the support request is uploading logs */
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ലോഡിംഗ്";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "സുരക്ഷാ നമ്പർ പരിശോധിക്കുക";

@@ -384,7 +384,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ni kommer att kunna meddela och ringa varandra.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Befintliga medlemmar kommer att kunna lägga dig till gruppen igen.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Befintliga medlemmar kommer att kunna lägga till dig i gruppen igen.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Gruppmedlemmar kommer att kunna lägga till dig i denna grupp igen.";
@@ -1028,6 +1028,9 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Går vidare till GitHub";
 
+/* Accessibility label for the ? vector asset used to get info about debug logs */
+"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Ta bort alla meddelanden i konversationen?";
 
@@ -1146,7 +1149,7 @@
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Placera QR-koden i cirkeln";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Håll din nya enhet upp mot kameran";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "Håll upp din nya enhet mot kameran";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Håll båda enheterna nära varandra. Stäng inte av någon av enheterna och håll Signal öppen.";
@@ -1217,6 +1220,12 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Låt oss använda Signal";
 
+/* Description for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+
+/* Title for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktiviteter";
 
@@ -1236,7 +1245,7 @@
 "EMOJI_CATEGORY_RECENTS_NAME" = "Senaste";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Humörsymboler & personer";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & människor";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Symboler";
@@ -1270,6 +1279,15 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Det gick inte att skicka meddelandet.";
+
+/* Error indicating that openURL for a mailto: URL failed. */
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+
+/* Error indicating that a support mailto link could not be created. */
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+
+/* Generic error indicating that log upload failed */
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Det går inte att skicka på grund av inaktuella prekey-data.";
@@ -1727,6 +1745,12 @@
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Välj ny administratör";
 
+/* Help item allowing the user to file a support request */
+"HELP_CONTACT_US" = "Kontakta oss";
+
+/* Help item that takes the user to the Signal support website */
+"HELP_SUPPORT_CENTER" = "Support Center";
+
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverade konversationer";
 
@@ -1749,7 +1773,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Några av dina kontakter är redan på Signal, inklusive %@, %@ och %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Starta ditt första samtal här.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Starta din första konversation här.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ lade till dig i gruppen";
@@ -2166,7 +2190,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Lägg till profilnamn";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "Du kan nu välja att \"Acceptera\" eller \"Ta bort\" en ny konversation. Namn låter folk veta vem som har meddelanden till dem.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Du kan nu välja att \"Acceptera\" eller \"Ta bort\" en ny konversation. Namn låter folk veta vem som har skickat meddelanden till dem.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Ditt profilnamn har sparats.";
@@ -2340,19 +2364,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du kan ha fått nya meddelanden medan din %@ startades om.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Så här får du aviseringar för nya meddelanden:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Så här får du notiser för nya meddelanden:";
 
 /* First step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tryck på \"Gå till inställningar\" nedan";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Slå på \"Tillåt aviseringar\"";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Slå på \"Tillåt notiser\"";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tryck på aviseringar";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tryck på Notiser";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Slå på aviseringar";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Slå på notiser";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Inte nu";
@@ -2364,7 +2388,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Missa aldrig ett meddelande från dina kontakter och grupper.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Slå på aviseringar?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Slå på notiser?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Åtgärderna inkluderar \"Markera som läst\", \"Svara\" och \"Ring tillbaka.\"";
@@ -2859,7 +2883,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Den skannade koden verkar inte vara ett säkerhetsnummer. Använder ni båda en uppdaterad version av Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Om du vill verifiera säkerheten för din ände-till-ände-kryptering med %@, jämför siffrorna ovan med siffrorna på deras enhet.\n\nAlternativt kan du skanna koden på deras telefon eller be dem att skanna din kod.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Om du vill verifiera säkerheten för din end-to-end-kryptering med %@, jämför siffrorna ovan med siffrorna på deras enhet.\n\nAlternativt kan du skanna koden på deras telefon eller be dem att skanna din kod.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verifiera säkerhetsnummer";
@@ -2871,10 +2895,10 @@
 "PROCEED_BUTTON" = "Fortsätt";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ändrade sitt profilnamn från %@ till %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ändrade sitt profilnamn till %@.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Ställ in profilfoto";
@@ -2910,7 +2934,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profilen kan endast uppdateras när du är ansluten till internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din profil är ände-till-ände-krypterad. Din profil och ändringar av den kommer att synas för dina kontakter, när du initierar eller accepterar nya konversationer och när du går med i nya grupper.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din profil är end-to-end-krypterad. Din profil och ändringar av den kommer att synas för dina kontakter, när du initierar eller accepterar nya konversationer och när du går med i nya grupper.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Spara";
@@ -3581,8 +3605,8 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Ta bort allt";
 
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Hjälp";
+/* Title for support page in app settings. */
+"SETTINGS_HELP" = "Hjälp";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Rensa konversationshistorik";
@@ -3725,9 +3749,6 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Skärmsäkerhet";
 
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "Support";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
 
@@ -3865,6 +3886,30 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Säkerhetsnumret stämmer!";
+
+/* Header of support description field */
+"SUPPORT_CONTACT_US_HEADER" = "Kontakta oss";
+
+/* Placeholder string for support description */
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Berätta vad som händer";
+
+/* Message for alert dialog presented when a support email failed to send */
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+
+/* Localized subject for support request emails */
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+
+/* Header for emoji mood selection */
+"SUPPORT_EMOJI_PROMPT" = "Hur mår du? (valfritt)";
+
+/* Label in support request informing user about Signal FAQ */
+"SUPPORT_FAQ_PROMPT" = "Har du läst våra Vanliga frågor ännu?";
+
+/* Label describing support switch to attach debug logs */
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+
+/* A string in the navigation bar indicating that the support request is uploading logs */
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Läser in";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifiera säkerhetsnummer";
@@ -4011,7 +4056,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Den här funktionen stöds inte på din enhet.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Uppdatera kontakt";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Gruppen kunde inte uppdateras.";

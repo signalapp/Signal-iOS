@@ -303,6 +303,9 @@ extension OWSProfileManager {
     }
 
     private class func updateProfileOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+        Logger.info("avatar?: \(attempt.update.profileAvatarData != nil), " +
+            "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
+            "profileFamilyName?: \(attempt.update.profileFamilyName != nil).")
         return updateProfileNameOnServiceUnversioned(attempt: attempt)
             .then { _ in
                 return updateProfileAvatarOnServiceUnversioned(attempt: attempt)
@@ -339,6 +342,9 @@ extension OWSProfileManager {
     }
 
     private class func updateProfileOnServiceVersioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
+        Logger.info("avatar?: \(attempt.update.profileAvatarData != nil), " +
+            "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
+            "profileFamilyName?: \(attempt.update.profileFamilyName != nil).")
         return self.versionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
                                                            profileFamilyName: attempt.update.profileFamilyName,
                                                            profileAvatarData: attempt.update.profileAvatarData)
