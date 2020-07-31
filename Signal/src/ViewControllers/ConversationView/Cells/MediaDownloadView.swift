@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -49,9 +49,11 @@ public class MediaDownloadView: UIView {
         progressView.autoSetDimension(.height, toSize: radius * 2)
         progressView.autoCenterInSuperview()
 
-        NotificationCenter.default.addObserver(forName: .attachmentDownloadProgress, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: OWSAttachmentDownloads.attachmentDownloadProgressNotification,
+                                               object: nil,
+                                               queue: nil) { [weak self] notification in
             guard let strongSelf = self else { return }
-            guard let notificationAttachmentId = notification.userInfo?[kAttachmentDownloadAttachmentIDKey] as? String else {
+                                                guard let notificationAttachmentId = notification.userInfo?[OWSAttachmentDownloads.attachmentDownloadAttachmentIDKey] as? String else {
                 return
             }
             guard notificationAttachmentId == strongSelf.attachmentId else {

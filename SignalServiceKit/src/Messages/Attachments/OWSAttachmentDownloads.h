@@ -4,15 +4,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const kAttachmentDownloadProgressNotification;
-extern NSString *const kAttachmentDownloadProgressKey;
-extern NSString *const kAttachmentDownloadAttachmentIDKey;
-
 @class SDSAnyReadTransaction;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
+
+typedef void (^AttachmentDownloadSuccess)(TSAttachmentStream *attachmentStream);
+typedef void (^AttachmentDownloadFailure)(NSError *error);
+
+@interface OWSAttachmentDownloadJob : NSObject
+
+@property (nonatomic, readonly) NSString *attachmentId;
+@property (nonatomic, readonly, nullable) TSMessage *message;
+@property (nonatomic, readonly) AttachmentDownloadSuccess success;
+@property (nonatomic, readonly) AttachmentDownloadFailure failure;
+@property (atomic) CGFloat progress;
+
+@end
 
 #pragma mark -
 
