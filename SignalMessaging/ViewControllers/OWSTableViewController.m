@@ -632,7 +632,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 }
 
-- (void)applyContents {
+- (void)applyContents
+{
     if (self.contents.title.length > 0) {
         self.title = self.contents.title;
     }
