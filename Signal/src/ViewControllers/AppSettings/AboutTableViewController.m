@@ -92,18 +92,6 @@
 
     [contents addSection:informationSection];
 
-    OWSTableSection *helpSection = [OWSTableSection new];
-    helpSection.headerTitle = NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
-    [helpSection
-        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"support")
-                                         actionBlock:^{
-                                             SFSafariViewController *safariVC = [[SFSafariViewController alloc]
-                                                 initWithURL:[NSURL URLWithString:@"https://support.signal.org"]];
-                                             [weakSelf presentViewController:safariVC animated:YES completion:nil];
-                                         }]];
-    [contents addSection:helpSection];
-
     UILabel *copyrightLabel = [UILabel new];
     copyrightLabel.text = NSLocalizedString(@"SETTINGS_COPYRIGHT", @"");
     copyrightLabel.textColor = Theme.secondaryTextAndIconColor;
@@ -111,8 +99,8 @@
     copyrightLabel.numberOfLines = 2;
     copyrightLabel.lineBreakMode = NSLineBreakByWordWrapping;
     copyrightLabel.textAlignment = NSTextAlignmentCenter;
-    helpSection.customFooterView = copyrightLabel;
-    helpSection.customFooterHeight = @(60.f);
+    informationSection.customFooterView = copyrightLabel;
+    informationSection.customFooterHeight = @(60.f);
 
     if (SSKDebugFlags.verboseAboutView) {
         [self addVerboseContents:contents];

@@ -68,6 +68,7 @@ public extension UIColor {
     /// Nav Bar, Primary Buttons
     @objc(ows_accentBlueColor)
     class var ows_accentBlue: UIColor {
+        // Ultramarine UI
         return UIColor(rgbHex: 0x2C6BED)
     }
 

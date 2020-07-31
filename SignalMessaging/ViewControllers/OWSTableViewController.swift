@@ -197,3 +197,43 @@ public extension OWSTableItem {
         return iconWrapper
     }
 }
+
+// MARK: - Declarative Initializers
+
+public extension OWSTableContents {
+
+    convenience init(title: String? = nil,
+                     sections: [OWSTableSection] = []) {
+        self.init()
+        if let title = title {
+            self.title = title
+        }
+        sections.forEach { section in
+            self.addSection(section)
+        }
+    }
+
+}
+
+public extension OWSTableSection {
+
+    convenience init(title: String? = nil,
+                     header: UIView? = nil,
+                     items: [OWSTableItem] = [],
+                     footer: UIView? = nil) {
+
+        self.init(title: title, items: items)
+        self.customHeaderView = header
+        self.customFooterView = footer
+    }
+
+    convenience init(title: String? = nil,
+                     header: (() -> UIView?) = {nil},
+                     items: [OWSTableItem] = [],
+                     footer: (() -> UIView?) = {nil}) {
+        self.init(title: title,
+                  header: header(),
+                  items: items,
+                  footer: footer())
+    }
+}

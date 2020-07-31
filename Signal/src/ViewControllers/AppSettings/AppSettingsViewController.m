@@ -184,6 +184,10 @@
                                                       [weakSelf showBackup];
                                                   }]];
     }
+    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_HELP",
+                                                              @"Title for support page in app settings.")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"help")
+                                              actionBlock:^{ [weakSelf showHelp]; }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"about")
                                               actionBlock:^{
@@ -407,6 +411,12 @@
 - (void)showAdvanced
 {
     AdvancedSettingsTableViewController *vc = [[AdvancedSettingsTableViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showHelp
+{
+    OWSHelpViewController *vc = [[OWSHelpViewController alloc] init];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

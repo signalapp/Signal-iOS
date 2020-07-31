@@ -47,6 +47,21 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     return instance;
 }
 
++ (NSString *)hardwareInfoString
+{
+    NSString *marketingString = UIDevice.currentDevice.model;
+    NSString *machineString = [NSString stringFromSysctlKey:@"hw.machine"];
+    NSString *modelString = [NSString stringFromSysctlKey:@"hw.model"];
+    return [NSString stringWithFormat:@"%@ (%@; %@)", marketingString, machineString, modelString];
+}
+
++ (NSString *)iOSVersionString
+{
+    NSString *majorMinor = UIDevice.currentDevice.systemVersion;
+    NSString *buildNumber = [NSString stringFromSysctlKey:@"kern.osversion"];
+    return [NSString stringWithFormat:@"%@ (%@)", majorMinor, buildNumber];
+}
+
 - (void)configure {
     OWSAssertIsOnMainThread();
 
@@ -98,9 +113,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"lastCompletedLaunchSAEAppVersion: %@", self.lastCompletedLaunchSAEAppVersion);
     OWSLogInfo(@"lastCompletedLaunchNSEAppVersion: %@", self.lastCompletedLaunchNSEAppVersion);
 
-    OWSLogInfo(@"iOS Version: %@ (%@)",
-        [UIDevice currentDevice].systemVersion,
-        [NSString stringFromSysctlKey:@"kern.osversion"]);
+    OWSLogInfo(@"iOS Version: %@", [[self class] iOSVersionString]);
 
     NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
     if (localeIdentifier.length > 0) {
@@ -115,7 +128,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
         OWSLogInfo(@"Language Code: %@", languageCode);
     }
 
-    OWSLogInfo(@"Device Model: %@ (%@)", UIDevice.currentDevice.model, [NSString stringFromSysctlKey:@"hw.machine"]);
+    OWSLogInfo(@"Device Model: %@", [[self class] hardwareInfoString]);
 
     NSDictionary<NSString *, NSString *> *buildDetails =
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
