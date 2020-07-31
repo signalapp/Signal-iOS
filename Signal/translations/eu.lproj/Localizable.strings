@@ -1028,6 +1028,9 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHubera Birzuzendu";
 
+/* Accessibility label for the ? vector asset used to get info about debug logs */
+"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Solasaldian dauden mezu guztiak ezabatu?";
 
@@ -1217,6 +1220,12 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal erabiltzen has gaitezen";
 
+/* Description for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+
+/* Title for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktibitateak";
 
@@ -1270,6 +1279,15 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Ezin izan da mezua bidali.";
+
+/* Error indicating that openURL for a mailto: URL failed. */
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+
+/* Error indicating that a support mailto link could not be created. */
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+
+/* Generic error indicating that log upload failed */
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Ezin izan da bidali pregako datu akasdunak direla eta.";
@@ -1710,7 +1728,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Ezin izan da gonbidapena onartu.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Taldea Blokeatu";
+"GROUPS_INVITE_BLOCK_GROUP" = "Blokeatu Taldea";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blokeatu Taldea eta %@";
@@ -1726,6 +1744,12 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Hautatu administratzaile berria";
+
+/* Help item allowing the user to file a support request */
+"HELP_CONTACT_US" = "Harremanetan Jarri Gurekin";
+
+/* Help item that takes the user to the Signal support website */
+"HELP_SUPPORT_CENTER" = "Support Center";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Artxibatutako solasaldiak";
@@ -1872,7 +1896,7 @@
 "KEEP_MESSAGES_FOREVER" = "Mezuak ez dira desagertzen.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Euskarri guztietara joan";
+"KEY_COMMAND_ALL_MEDIA" = "Joan euskarri guztietara";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Artxibatu solasaldia";
@@ -1935,7 +1959,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Gailu hau gai izango da zure talde eta kontaktuak ikusteko, zure solasaldietan sartzeko eta zure izenean mezuak bidaltzeko.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Lotu gailu hau?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Lotu nahi duzu gailu hau?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Berriro saiatu";
@@ -1947,7 +1971,7 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "QR kodea eskaneatu";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Gailu berria lotu";
+"LINK_NEW_DEVICE_TITLE" = "Lotu Gailu Berria";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Estekaren aurrebista";
@@ -1983,7 +2007,7 @@
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d mezu ezabatu";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Ezabadu mezua";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Ezabatu mezua";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -2007,7 +2031,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Ezabatu guztientzat";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Mezu hau betiko ezabatuko da solasaldian dago edonorentzat. Kideek ikusi ahal izango dute mezu bat ezabatu duzula.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Mezu hau betiko ezabatuko da solasaldian dagoen edonorentzat. Kideek ikusi ahal izango dute mezu bat ezabatu duzula.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Norentzat nahi duzu mezu hau ezabatu?";
@@ -2028,7 +2052,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Birbidali mezu hau";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Erantzun mezu hau";
+"MESSAGE_ACTION_REPLY" = "Erantzun mezu honi";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Hautatu Anitzak";
@@ -2145,7 +2169,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Talde honetan duzun solasaldian jarraitzeko zure profila partekatu behar duzu.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@  taldean sartzeko gonbidatua izan zara. Talde honetako kideei zuri mezuak bidaltzen utzi nahi diezu?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ taldean sartzeko gonbidatua izan zara. Talde honetako kideei zuri mezuak bidaltzen utzi nahi diezu?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ erabiltzaileari baimena eman nahi diozu zuri mezuak bidaltzeko eta zure izena eta argazkia beraiekin partekatzeko. Zuk onartu arte ez dute jakingo beraien mezua ikusi duzunik.";
@@ -2166,7 +2190,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Gehitu Profil Izena";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "Orain aukeratu dezakezu solasaldi berri batean \"Onartu\" edo \"Ezabatu\". Izenek aukeratu ematen diote jendeari igorlea nor den jakiteko.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Orain aukeratu dezakezu solasaldi berri batean \"Onartu\" edo \"Ezabatu\". Izenek aukera ematen diote jendeari igorlea nor den jakiteko.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Zure profilaren izena gorde da.";
@@ -2208,13 +2232,13 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mezu Berria";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ jada ez dago egiaztatu gisa markatuta. Klikatu aukerak ikusteko.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ jada ez dago egiaztatu gisa markatuta. Ukitu aukerak ikusteko.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ jada ez dago egiaztatu gisa markatuta. Klikatu aukerak ikusteko.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ jada ez dago egiaztatu gisa markatuta. Ukitu aukerak ikusteko.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Talde honetako partaide bat blokeatu duzu";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Talde honetako kide bat blokeatu duzu";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Talde honetako %@ partaide blokeatu dituzu";
@@ -2223,7 +2247,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Talde honetan kide bat baino gehiago, dagoeneko, ez dago egiaztatu gisa markatuta. Ukitu aukeratarako.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Klik egin ezarpenak ikusteko";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Ukitu hemen ezarpenak ikusteko";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Mezu Berriak";
@@ -2232,7 +2256,7 @@
 "MISSED_CALL" = "Dei galdua";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal-en bideo-deiak egin ahal izateko, aktiba dezakezu kameran erabiltzeko baimena iOS ezarpenak aplikazioan.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal-en bideo-deiak egin ahal izateko, aktiba dezakezu kamera erabiltzeko baimena iOS ezarpenak aplikazioan.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signalek zure kamera erabiltzeko baimena behar du.";
@@ -2253,10 +2277,10 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Ezin duzu gailu gehiagorik lotu.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Zure kontuarekin lotu dezakezun gehienezko gailu kopurura  iritsi zara. Mesedez, ezabatu gailu bat eta saia zaitez berriro.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Zure kontuarekin lotu dezakezun gehienezko gailu kopurura iritsi zara. Mesedez, ezabatu gailu bat eta saia zaitez berriro.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Mututako solasaldietarako jakinarazpenik ez duzu jasoko.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Mututako solasaldietarako ez duzu jakinarazpenik jasoko.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Jarraitu";
@@ -2283,10 +2307,10 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Talde berria ezin izan da sortu. Egiaztatu zure interneterako konexioa eta saia zaitez berriro.";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Taldeko izena beharrezkoa da.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Taldearen izena beharrezkoa da.";
 
 /* Title for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Taldearen izena faltatzen da";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Taldearen izena falta da";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Talde berria";
@@ -2367,7 +2391,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Aktibatu Jakinarazpenak?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Ekintzak ondokoak dira: \"Markatu irakuri gisa\", \"Erantzun\", eta \"Deia Bueltatu\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "Ekintzak ondokoak dira: \"Markatu irakurritako gisa\", \"Erantzun\", eta \"Deia Bueltatu\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Izenik edo edukirik ez";
@@ -2418,7 +2442,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Saltatu eta PIN berri bat sortu";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Zure PINa ezin baduzu gogoratu, berri bat sortu dezakezu. Zure kontua erregistratu eta erabili dezakezu, baina gordetako ezarpen batzuk galduko dituzu; esate baterako, zure profilaren informazioa.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Zure PINa ezin baduzu gogoratu, berri bat sortu dezakezu. Zure kontua erregistratu eta erabili dezakezu, baina gordetako ezarpen batzuk galduko dituzu; esate baterako, zure profilari buruzko informazioa.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Saltatu PIN-a sartzea?";
@@ -2454,7 +2478,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Gaitu baimenak";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Jakinarazpenen bitartez ikus ahal izango duzu mezu berriak iritsi diren eta jaso ahal izango duzu solasaldiei buruziko egunerapenak.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Jakinarazpenen bitartez ikusi ahal izango duzu mezu berriak iritsi diren eta jaso ahal izango duzu solasaldiei buruziko egunerapenak.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Mezua eskuratu";
@@ -2598,7 +2622,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Ezeztatu edo berbidali \"%2$@\" erabiltzaileak bidali dituen  %1$@ gonbidapen?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Taldeko beste partaideek gonbidatutako pertsonen xehetasunak ez dira erakusten. Gonbidatueek taldean sartzea erabakitzen badute, beraien informazioa une horretan partekatuko da taldearekin. Taldean sartu arte ez dute mezurik ikusiko.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Taldeko beste partaideek gonbidatutako pertsonen xehetasunak ez dira erakusten. Gonbidatuek taldean sartzea erabakitzen badute, beraien informazioa une horretan partekatuko da taldearekin. Taldean sartu arte ez dute mezurik ikusiko.";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Beste talde partaideek egindako gonbidapenak";
@@ -2613,10 +2637,10 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Errorea sarrerako mezua kudeatzean";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Behi ikusteko multimedia";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Bakarrik behin ikusteko medioa";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Media";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Medioa";
 
 /* inbox cell and notification text for a view-once photo. */
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Behin ikusteko argazkia";
@@ -2775,7 +2799,7 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Egiaztatu PINa";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Noizean behin eskatuko dizugu zure PINa egiaztatzeko, gogora dezazun.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Noizean behin, ahaztu ez dezazun, zure PINa egiaztatzeko eskatuko dizugu, ";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Berriro gogoraraziko dizugu egun batzuen buruan.";
@@ -3581,8 +3605,8 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Ezabatu dena";
 
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Laguntza";
+/* Title for support page in app settings. */
+"SETTINGS_HELP" = "Laguntza";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Garbitu Solasaldien Historia";
@@ -3725,9 +3749,6 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Pantailaren segurtasuna";
 
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "Laguntzarako";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Erregistratze-blokeoa";
 
@@ -3865,6 +3886,30 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Segurtasun Zenbakia Bat Dator!";
+
+/* Header of support description field */
+"SUPPORT_CONTACT_US_HEADER" = "Harremanetan Jarri Gurekin";
+
+/* Placeholder string for support description */
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Esaiguzu zer gertatzen ari den";
+
+/* Message for alert dialog presented when a support email failed to send */
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+
+/* Localized subject for support request emails */
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+
+/* Header for emoji mood selection */
+"SUPPORT_EMOJI_PROMPT" = "Nola sentitzen zara? (Aukerazkoa)";
+
+/* Label in support request informing user about Signal FAQ */
+"SUPPORT_FAQ_PROMPT" = "Gure FAQ-a irakurri duzu?";
+
+/* Label describing support switch to attach debug logs */
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+
+/* A string in the navigation bar indicating that the support request is uploading logs */
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Kargatzen";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Segurtasun zenbakia baieztatu";

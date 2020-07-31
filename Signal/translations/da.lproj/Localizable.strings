@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Déaktiver lyd";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ vil modtage en beskedanmodning fra dig. Du kan ringe, når din beskedanmodning er accepteret";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ vil modtage en beskedanmodning fra dig. Du kan ringe når din beskedanmodning er accepteret";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Skift kamera retning";
@@ -1028,6 +1028,9 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Omdirigering til GitHub";
 
+/* Accessibility label for the ? vector asset used to get info about debug logs */
+"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Slet alle beskeder i samtalen?";
 
@@ -1217,6 +1220,12 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Lad os skifte til Signal";
 
+/* Description for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+
+/* Title for the fallback support sheet if user cannot send email */
+"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktiviteter";
 
@@ -1270,6 +1279,15 @@
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Beskeden kunne ikke sendes";
+
+/* Error indicating that openURL for a mailto: URL failed. */
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+
+/* Error indicating that a support mailto link could not be created. */
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+
+/* Generic error indicating that log upload failed */
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kunne ikke sende grundet gamle prekey data";
@@ -1665,7 +1683,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ fjernede fotoet.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Gruppens foto blev opdateret.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Gruppens foto blev opdateret";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Du opdaterede fotoet.";
@@ -1726,6 +1744,12 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Vælg ny administrator";
+
+/* Help item allowing the user to file a support request */
+"HELP_CONTACT_US" = "Kontakt os";
+
+/* Help item that takes the user to the Signal support website */
+"HELP_SUPPORT_CENTER" = "Support Center";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiveret samtaler";
@@ -2703,10 +2727,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Opret numerisk PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Deaktivér pinkode";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Déaktiver PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Hvis du deaktiverer pinkoden, mister du alle data, når du omregistrerer Signal, medmindre du overfører den fra en anden iOS-enhed. Du kan ikke aktivere Registreringslås, mens pinkoden er deaktiveret.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Hvis du deaktiverer din PIN, mister du alle data når du genregistrerer Signal, medmindre du overfører den fra en anden iOS-enhed. Du kan ikke aktivere Registreringslås, mens PIN er déaktiveret";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Advarsel";
@@ -2718,10 +2742,10 @@
 "PIN_CREATION_ERROR_TITLE" = "Oprettelse af PIN fejlede";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Pinkoder opbevarer krypteret information, lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes mens du geninstallerer. Du har ikke brug for din pinkode for at åbne appen.";
+"PIN_CREATION_EXPLANATION" = "PIN opbevarer krypteret information lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes mens du geninstallerer. Du har ikke brug for din PIN for at åbne app´en";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Lær mere om pinkoder";
+"PIN_CREATION_LEARN_MORE" = "Lær mere om PIN";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN´s matcher ikke. Prøv igen";
@@ -2742,16 +2766,16 @@
 "PIN_CREATION_RECREATION_TITLE" = "Skift din PIN-kode";
 
 /* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Deaktivér";
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Déaktiver";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "For at deaktivere din pinkode skal du først fraslå registreringslåsen.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "For at déaktivere din PIN skal du først déaktivere registreringslåsen";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Deaktiver registreringslås?";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Déaktiver registreringslås?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Deaktivér pinkode";
+"PIN_CREATION_SKIP" = "Déaktiver PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Opret din PIN";
@@ -2760,10 +2784,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Vælg en stærkere pinkode";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Din pinkode kunne ikke deaktiveres. Du vil blive mindet igen senere.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Din PIN kunne ikke deaktiveres. Du vil blive mindet om det igen senere";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "Pinkode-deaktivering mislykkedes";
+"PIN_DISABLE_ERROR_TITLE" = "Déaktivering af PIN mislykkedes";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "For at hjælpe dig med at huske din PIN, vil du blive bedt om at indtaste den periodisk. Det vil ske sjældnere over tid";
@@ -2817,7 +2841,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN oprettet. Du kan ændre den i Indstillinger";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "Pinkode er deaktiveret.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN er déaktiveret";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Afspil medier";
@@ -2871,10 +2895,10 @@
 "PROCEED_BUTTON" = "Fortsæt";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ændrede deres profilnavn fra %@ til %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ændrede deres profilnavn fra %@ til %@";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ændrede deres profilnavn til %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ændrede deres profilnavn til %@";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Indstil profilfoto";
@@ -2910,7 +2934,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil kan kun opdateres når der er internetforbindelse";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din profil er end-to-end krypteret. Din profil og dens ændringer vil være synlig for dine kontaktpersoner, når du indleder eller accepterer nye samtaler, og når du tilslutter dig nye grupper.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din profil er end-to-end krypteret. Din profil og dens ændringer vil være synlig for dine kontaktpersoner, når du indleder eller accepterer nye samtaler, og når du tilslutter dig nye grupper";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Gem";
@@ -3465,16 +3489,16 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Aktiver fejlrapporteringslog";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Avancerede indstillinger for pinkode";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Avancerede indstillinger for PIN";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Avancerede indstillinger for pinkode";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Avancerede indstillinger for PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Deaktivér pinkode";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Déaktiver PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktivér pinkode";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktivér PIN";
 
 /* Table header for the 'pins' section. */
 "SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
@@ -3581,8 +3605,8 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Slet alt";
 
-/* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Hjælp";
+/* Title for support page in app settings. */
+"SETTINGS_HELP" = "Hjælp";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Ryd samtalehistorik";
@@ -3725,9 +3749,6 @@
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Skærmsikkerhed";
 
-/* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "Support";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
 
@@ -3865,6 +3886,30 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sikkerhedsnummeret matcher!";
+
+/* Header of support description field */
+"SUPPORT_CONTACT_US_HEADER" = "Kontakt os";
+
+/* Placeholder string for support description */
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Fortæl os hvad der sker";
+
+/* Message for alert dialog presented when a support email failed to send */
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+
+/* Localized subject for support request emails */
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+
+/* Header for emoji mood selection */
+"SUPPORT_EMOJI_PROMPT" = "Hvordan har du det? (Frivilligt)";
+
+/* Label in support request informing user about Signal FAQ */
+"SUPPORT_FAQ_PROMPT" = "Har du læst i vores FAQ?";
+
+/* Label describing support switch to attach debug logs */
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+
+/* A string in the navigation bar indicating that the support request is uploading logs */
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Henter";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verificer sikkerhedsnummer";
@@ -4023,16 +4068,16 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Opret din PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lær mere om pinkoder";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lær mere om PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Pinkoder opbevarer krypteret information, lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes mens du geninstallerer. Du har ikke brug for din pinkode for at åbne appen.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN´s opbevarer krypteret information lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes når du geninstallerer. Du har ikke brug for din PIN for at åbne app´en";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerer PIN´s";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktivér pinkode";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Déaktiver PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal vil snart kræve iOS 11 eller nyere. Opgrader venligst i indstillingsappen >> Generelt >> Softwareopdatering";
