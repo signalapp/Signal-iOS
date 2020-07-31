@@ -16,6 +16,14 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         notificationContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
+        var isMainAppActive = false
+        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
+            isMainAppActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+        }
+        print("[Ryan debug] isMainAppActive \(isMainAppActive)")
+        // If the main app is running, skip the whole process
+        guard !isMainAppActive else { return self.completeWithFailure(content: notificationContent!) }
+        
         // The code using DispatchQueue.main.async { self.setUpIfNecessary() { Modify the notification content } } will somehow cause a freeze when a second PN comes
         
         DispatchQueue.main.sync { self.setUpIfNecessary() {} }
