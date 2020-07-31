@@ -78,85 +78,75 @@ public extension OWSAttachmentDownloads {
         }
     }
 
+    private struct DownloadState {
+        let job: OWSAttachmentDownloadJob
+        let attachmentPointer: TSAttachmentPointer
+        let tempFileURL: URL
+
+        let hasCheckedContentLength = AtomicValue<Bool>(false)
+    }
+
     private class func download(job: OWSAttachmentDownloadJob,
                                 attachmentPointer: TSAttachmentPointer) -> Promise<URL> {
 
         return firstly(on: .global()) { () -> Promise<URL> in
             let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: attachmentPointer.cdnNumber)
             sessionManager.completionQueue = .global()
-            let urlPath: String
-            if attachmentPointer.cdnKey.count > 0 {
-                urlPath = "attachments/(attachmentPointer.cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed))"
-            } else {
-                urlPath = String(format: "attachments/%llu", attachmentPointer.serverId)
-            }
-            guard let url = URL(string: urlPath, relativeTo: sessionManager.baseURL) else {
-                throw OWSAssertionError("Invalid URL.")
-            }
-
-            var hasCheckedContentLength = false
 
             let tempDirPath = OWSTemporaryDirectoryAccessibleAfterFirstAuth()
             let tempFilePath = (tempDirPath as NSString).appendingPathComponent(UUID().uuidString)
             let tempFileURL = URL(fileURLWithPath: tempFilePath)
 
+            let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer, tempFileURL: tempFileURL)
+
             var taskReference: URLSessionDownloadTask?
-
-            let method = "GET"
-            var nsError: NSError?
-            let request = sessionManager.requestSerializer.request(withMethod: method,
-                                                                   urlString: url.absoluteString,
-                                                                   parameters: nil,
-                                                                   error: &nsError)
-            if let error = nsError {
-                throw error
+            let promise: Promise<URL> = firstly(on: .global()) { () -> Promise<(URL, URLSessionDownloadTask)> in
+                let urlPath: String
+                if attachmentPointer.cdnKey.count > 0 {
+                    urlPath = "attachments/(attachmentPointer.cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed))"
+                } else {
+                    urlPath = String(format: "attachments/%llu", attachmentPointer.serverId)
+                }
+                let headers: [String: String] = [
+                    "Content-Type": OWSMimeTypeApplicationOctetStream
+                ]
+                return sessionManager.downloadTaskPromise(urlPath,
+                                                          verb: .get,
+                                                          headers: headers,
+                                                          dstFileUrl: tempFileURL,
+                                                          progress: { (progress: Progress, task: URLSessionDownloadTask) in
+                                                            Self.handleDownloadProgress(downloadState: downloadState,
+                                                                                        task: task,
+                                                                                        progress: progress)
+                })
+            }.map(on: .global()) { (completionUrl: URL, task: URLSessionDownloadTask) -> URL in
+                taskReference = task
+                if tempFileURL != completionUrl {
+                    throw OWSAssertionError("Unexpected temp file path.")
+                }
+                guard let fileSize = OWSFileSystem.fileSize(of: tempFileURL) else {
+                    throw OWSAssertionError("Could not determine attachment file size.")
+                }
+                guard fileSize.int64Value <= Self.maxDownloadSize else {
+                    throw OWSAssertionError("Attachment download length exceeds max size.")
+                }
+                return (tempFileURL)
             }
-            request.setValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
-
-            let (promise, resolver) = Promise<URL>.pending()
-            let task = sessionManager.downloadTask(with: request as URLRequest,
-                                                   progress: { (progress: Progress) in
-                                                    Self.handleDownloadProgress(job: job,
-                                                                                attachmentPointer: attachmentPointer,
-                                                                                progress: progress,
-                                                                                task: taskReference,
-                                                                                hasCheckedContentLength: &hasCheckedContentLength)
-            },
-                                                   destination: { (_: URL, _: URLResponse) -> URL in
-                                                    tempFileURL
-            },
-                                                   completionHandler: { (_: URLResponse, completionUrl: URL?, error: Error?) in
-                                                    if let error = error {
-                                                        resolver.reject(error)
-                                                        return
-                                                    }
-                                                    if tempFileURL != completionUrl {
-                                                        resolver.reject(OWSAssertionError("Unexpected temp file path."))
-                                                        return
-                                                    }
-                                                    guard let fileSize = OWSFileSystem.fileSize(of: tempFileURL) else {
-                                                        resolver.reject(OWSAssertionError("Could not determine attachment file size."))
-                                                        return
-                                                    }
-                                                    guard fileSize.int64Value <= Self.maxDownloadSize else {
-                                                        resolver.reject(OWSAssertionError("Attachment download length exceeds max size."))
-                                                        return
-                                                    }
-                                                    resolver.fulfill(tempFileURL)
-            })
-            taskReference = task
-            task.resume()
 
             promise.catch(on: .global()) { (error: Error) in
                 OWSFileSystem.deleteFileIfExists(tempFilePath)
 
+                guard let task = taskReference else {
+                    owsFailDebug("Missing task.")
+                    return
+                }
+                guard let httpResponse = task.response as? HTTPURLResponse else {
+                    owsFailDebug("Invalid response.")
+                    return
+                }
                 if attachmentPointer.serverId < 100 {
                     // This looks like the symptom of the "frequent 404
                     // downloading attachments with low server ids".
-                    guard let httpResponse = task.response as? HTTPURLResponse else {
-                        owsFailDebug("Invalid response.")
-                        return
-                    }
                     owsFailDebug("\(httpResponse.statusCode) Failure with suspicious attachment id: \(attachmentPointer.serverId), \(error)")
                 }
             }
@@ -165,15 +155,9 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    private class func handleDownloadProgress(job: OWSAttachmentDownloadJob,
-                                              attachmentPointer: TSAttachmentPointer,
-                                              progress: Progress,
-                                              task: URLSessionDownloadTask?,
-                                              hasCheckedContentLength: inout Bool) {
-        guard let task = task else {
-            owsFailDebug("Missing task.")
-            return
-        }
+    private class func handleDownloadProgress(downloadState: DownloadState,
+                                              task: URLSessionDownloadTask,
+                                              progress: Progress) {
         // Don't do anything until we've received at least one byte of data.
         guard progress.completedUnitCount > 0 else {
             return
@@ -191,13 +175,13 @@ public extension OWSAttachmentDownloads {
                 return
         }
 
-        job.progress = CGFloat(progress.fractionCompleted)
+        downloadState.job.progress = CGFloat(progress.fractionCompleted)
 
         Self.fireProgressNotification(progress: max(progressTheta, progress.fractionCompleted),
-                                 attachmentId: attachmentPointer.uniqueId)
+                                      attachmentId: downloadState.attachmentPointer.uniqueId)
 
         // We only need to check the content length header once.
-        guard !hasCheckedContentLength else {
+        guard !downloadState.hasCheckedContentLength.get() else {
             return
         }
 
@@ -229,7 +213,7 @@ public extension OWSAttachmentDownloads {
 
         // This response has a valid content length that is less
         // than our max download size.  Proceed with the download.
-        hasCheckedContentLength = true
+        downloadState.hasCheckedContentLength.set(true)
     }
 
     // MARK: -

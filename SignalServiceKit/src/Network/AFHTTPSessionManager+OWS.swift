@@ -73,4 +73,94 @@ public extension AFHTTPSessionManager {
         }
         return promise
     }
+
+    // MARK: - Download Tasks
+
+    typealias DownloadTaskProgressBlock = (Progress, URLSessionDownloadTask) -> Void
+
+    func downloadTaskPromise(_ urlString: String,
+                             verb: HTTPVerb,
+                             headers: [String: String]? = nil,
+                             parameters: [String: AnyObject]? = nil,
+                             dstFileUrl: URL?,
+                             progress: DownloadTaskProgressBlock? = nil) -> Promise<(URL, URLSessionDownloadTask)> {
+
+        return firstly(on: .global()) { () -> URLRequest in
+            try self.buildDownloadTaskRequest(urlString: urlString,
+                                              verb: verb,
+                                              headers: headers,
+                                              parameters: parameters)
+        }.then(on: .global()) { (request: URLRequest) in
+            self.downloadTaskPromise(request: request,
+                                     dstFileUrl: dstFileUrl,
+                                     progress: progress)
+        }
+    }
+
+    func downloadTaskPromise(request: URLRequest,
+                             dstFileUrl dstFileUrlParam: URL? = nil,
+                             progress progressBlock: DownloadTaskProgressBlock? = nil) -> Promise<(URL, URLSessionDownloadTask)> {
+        let dstFileUrl: URL
+        if let dstFileUrlParam = dstFileUrlParam {
+            dstFileUrl = dstFileUrlParam
+        } else {
+            dstFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: nil)
+        }
+
+        let (promise, resolver) = Promise<(URL, URLSessionDownloadTask)>.pending()
+        var taskReference: URLSessionDownloadTask?
+        let task = downloadTask(with: request,
+                                progress: { (progress: Progress) in
+                                    guard let task = taskReference else {
+                                        owsFailDebug("Missing task.")
+                                        return
+                                    }
+                                    progressBlock?(progress, task)
+        },
+                                destination: { (_: URL, _: URLResponse) -> URL in
+                                    dstFileUrl
+        },
+                                completionHandler: { (_: URLResponse, completionUrl: URL?, error: Error?) in
+                                    if let error = error {
+                                        resolver.reject(error)
+                                        return
+                                    }
+                                    if dstFileUrl != completionUrl {
+                                        resolver.reject(OWSAssertionError("Unexpected url."))
+                                        return
+                                    }
+                                    guard let task = taskReference else {
+                                        resolver.reject(OWSAssertionError("Missing task."))
+                                        return
+                                    }
+                                    resolver.fulfill((dstFileUrl, task))
+        })
+        taskReference = task
+        task.resume()
+        return promise
+    }
+
+    private func buildDownloadTaskRequest(urlString: String,
+                                          verb: HTTPVerb,
+                                          headers: [String: String]? = nil,
+                                          parameters: [String: AnyObject]? = nil) throws -> URLRequest {
+        guard let url = URL(string: urlString, relativeTo: baseURL) else {
+            throw OWSAssertionError("Invalid URL.")
+        }
+
+        var nsError: NSError?
+        let request = requestSerializer.request(withMethod: verb.httpMethod,
+                                                urlString: url.absoluteString,
+                                                parameters: parameters,
+                                                error: &nsError)
+        if let error = nsError {
+            throw error
+        }
+        if let headers = headers {
+            for (headerField, headerValue) in headers {
+                request.addValue(headerValue, forHTTPHeaderField: headerField)
+            }
+        }
+        return request as URLRequest
+    }
 }

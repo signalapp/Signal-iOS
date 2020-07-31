@@ -9,6 +9,17 @@ public enum HTTPVerb {
     case get
     case post
     case put
+
+    public var httpMethod: String {
+        switch self {
+        case .get:
+            return "GET"
+        case .post:
+            return "POST"
+        case .put:
+            return "PUT"
+        }
+    }
 }
 
 private var URLSessionProgressBlockHandle: UInt8 = 0
@@ -161,14 +172,7 @@ public class OWSURLSession: NSObject {
             throw OWSAssertionError("Invalid url.")
         }
         var request = URLRequest(url: url)
-        switch verb {
-        case .get:
-            request.httpMethod = "GET"
-        case .post:
-            request.httpMethod = "POST"
-        case .put:
-            request.httpMethod = "PUT"
-        }
+        request.httpMethod = verb.httpMethod
         if let headers = headers {
             for (headerField, headerValue) in headers {
                 request.addValue(headerValue, forHTTPHeaderField: headerField)
