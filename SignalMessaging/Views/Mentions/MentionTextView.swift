@@ -436,6 +436,41 @@ open class MentionTextView: OWSTextView {
     }
 }
 
+// MARK: - Picker Keyboard Interaction
+
+extension MentionTextView {
+    open override var keyCommands: [UIKeyCommand]? {
+        guard let pickerView = pickerView else { return nil }
+
+        return [
+            UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(upArrowPressed(_:))),
+            UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(downArrowPressed(_:))),
+            UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(returnPressed(_:))),
+            UIKeyCommand(input: "\t", modifierFlags: [], action: #selector(tabPressed(_:)))
+        ]
+    }
+
+    @objc func upArrowPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapUpArrow()
+    }
+
+    @objc func downArrowPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapDownArrow()
+    }
+
+    @objc func returnPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapReturn()
+    }
+
+    @objc func tabPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapTab()
+    }
+}
+
 // MARK: - Cut/Copy/Paste
 
 extension MentionTextView {
