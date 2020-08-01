@@ -231,7 +231,7 @@ class MentionPicker: UIView {
 
     @objc private func applyTheme() {
         if style == .composingAttachment {
-            tableView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+            tableView.backgroundColor = UIColor.ows_gray95
             hairlineView.backgroundColor = .ows_gray65
         } else {
             tableView.backgroundColor = Theme.backgroundColor
@@ -348,6 +348,7 @@ private class MentionableUserCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundColor = .clear
+        selectedBackgroundView = UIView()
 
         let avatarContainer = UIView()
         avatarContainer.addSubview(avatarImageView)
@@ -383,9 +384,11 @@ private class MentionableUserCell: UITableViewCell {
         if style == .composingAttachment {
             displayNameLabel.textColor = Theme.darkThemePrimaryColor
             usernameLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+            selectedBackgroundView?.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         } else {
             displayNameLabel.textColor = Theme.primaryTextColor
             usernameLabel.textColor = Theme.secondaryTextAndIconColor
+            selectedBackgroundView?.backgroundColor = Theme.cellSelectedColor
         }
 
         displayNameLabel.text = mentionableUser.displayName
