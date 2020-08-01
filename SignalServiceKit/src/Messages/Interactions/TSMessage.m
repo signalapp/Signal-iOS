@@ -380,7 +380,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId: %@", attachmentId];
     } else {
-        return [NSString stringWithFormat:@"%@ with body: %@", [self class], self.body];
+        return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@", [self class], self.body, self.bodyRanges.hasMentions ? @"YES" : @"NO"];
     }
 }
 
@@ -554,6 +554,20 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
+    // If we have any mentions, we need to save them to aid in querying
+    // for messages that mention a given user. We only need to save one
+    // mention record per UUID, even if the same UUID is mentioned
+    // multiple times in the message.
+    if (self.bodyRanges.hasMentions) {
+        NSSet<NSUUID *> *uniqueMentionUuids = [NSSet setWithArray:self.bodyRanges.mentions.allValues];
+        for (NSUUID *uuid in uniqueMentionUuids) {
+            TSMention *mention = [[TSMention alloc] initWithUniqueMessageId:self.uniqueId
+                                                             uniqueThreadId:self.uniqueThreadId
+                                                                 uuidString:uuid.UUIDString];
+            [mention anyInsertWithTransaction:transaction];
+        }
+    }
+
     [self updateStoredShouldStartExpireTimer];
 
 #ifdef DEBUG
@@ -629,6 +643,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self removeAllAttachmentsWithTransaction:transaction];
 
     [self removeAllReactionsWithTransaction:transaction];
+
+    [self removeAllMentionsWithTransaction:transaction];
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -648,6 +664,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
         [attachment anyRemoveWithTransaction:transaction];
     };
+}
+
+- (void)removeAllMentionsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [MentionFinder deleteAllMentionsFor:self transaction:transaction.unwrapGrdbWrite];
 }
 
 - (BOOL)hasPerConversationExpiration
@@ -786,6 +807,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     // attachments once.
     [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self removeAllAttachmentsWithTransaction:transaction];
+    [self removeAllMentionsWithTransaction:transaction];
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
