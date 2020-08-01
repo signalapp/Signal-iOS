@@ -209,7 +209,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage-staging"
 
     // CDS uses the same EnclaveName and MrEnclave
-    public let contactDiscoveryEnclaveName = "e49d9043c4ed121114064a2636b575de1edb78956caf82b8e18de7186d35949d"
+    public let contactDiscoveryEnclaveName = "bd123560b01c8fa92935bc5ae15cd2064e5c45215f23f0bd40364d521329d2ad"
     public var contactDiscoveryMrEnclave: String {
         return contactDiscoveryEnclaveName
     }

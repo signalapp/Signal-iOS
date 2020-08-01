@@ -496,8 +496,17 @@ extension MessageSender {
                 completion(error)
                 return
             }
+            guard let results = operation.registeredContacts else {
+                // This works around a tiny discrepancy between the two contact discovery operations
+                // It should only happen if an operation is cancelled, and even then it really shouldn't happen
+                // Force an error for now but this will probably be removed in the next week
+                let error = OWSAssertionError("Unexpectedly received nil from discovery operation") as NSError
+                error.isRetryable = true
+                completion(error)
+                return
+            }
 
-            let discoveredContactMap = operation.registeredContacts.reduce(into: [:], { (builder, contact) in
+            let discoveredContactMap = results.reduce(into: [:], { (builder, contact) in
                 builder[contact.e164PhoneNumber] = contact.signalUuid
             })
 

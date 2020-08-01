@@ -208,7 +208,13 @@ extension UUIDBackfillTask {
                                  completion: @escaping (Set<CDSRegisteredContact>, Error?) -> Void) {
             let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbers)
             operation.completionBlock = {
-                completion(operation.registeredContacts, operation.failingError)
+                guard let results = operation.registeredContacts else {
+                    // This is only hit if the operation is cancelled. Force an error so we don't try and unregister everyone
+                    let error = operation.failingError ?? OWSAssertionError("Operation unexpectedly cancelled")
+                    completion(Set(), error)
+                    return
+                }
+                completion(results, nil)
             }
             operation.perform()
         }
