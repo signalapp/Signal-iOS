@@ -447,18 +447,18 @@ public class ProfileFetcherJob: NSObject {
         // the avatar data, if necessary.
 
         let profileAddress = fetchedProfile.profile.address
-        guard let avatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
-            // If profile has no avatar, we don't need to download the avatar.
-            return updateProfile(fetchedProfile: fetchedProfile,
-                                 optionalAvatarData: nil)
-        }
-        guard let profileKey = (databaseStorage.read { transaction in
-            self.profileManager.profileKey(for: profileAddress,
-                                           transaction: transaction)
-        }) else {
+        guard let profileKey = profileKeyForProfile(fetchedProfile) else {
             // If we don't have a profile key for this user, don't bother
             // downloading their avatar - we can't decrypt it.
             return updateProfile(fetchedProfile: fetchedProfile,
+                                 profileKey: nil,
+                                 optionalAvatarData: nil)
+        }
+
+        guard let avatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
+            // If profile has no avatar, we don't need to download the avatar.
+            return updateProfile(fetchedProfile: fetchedProfile,
+                                 profileKey: profileKey,
                                  optionalAvatarData: nil)
         }
 
@@ -473,6 +473,7 @@ public class ProfileFetcherJob: NSObject {
         }) {
             Logger.verbose("Skipping avatar data download; already downloaded.")
             return updateProfile(fetchedProfile: fetchedProfile,
+                                 profileKey: profileKey,
                                  optionalAvatarData: existingAvatarData)
         }
 
@@ -488,6 +489,7 @@ public class ProfileFetcherJob: NSObject {
             return avatarData
         }.then(on: .global()) { (avatarData: Data) -> Promise<Void> in
             self.updateProfile(fetchedProfile: fetchedProfile,
+                               profileKey: profileKey,
                                optionalAvatarData: avatarData)
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
             if error.isNetworkFailureOrTimeout {
@@ -517,23 +519,73 @@ public class ProfileFetcherJob: NSObject {
             // We made a best effort to download the avatar
             // before updating the profile.
             return self.updateProfile(fetchedProfile: fetchedProfile,
+                                      profileKey: profileKey,
                                       optionalAvatarData: nil)
         }
+    }
+
+    private func profileKeyForProfile(_ fetchedProfile: FetchedProfile) -> OWSAES256Key? {
+        let profileAddress = fetchedProfile.profile.address
+        if let profileKey = fetchedProfile.versionedProfileRequest?.profileKey {
+            if DebugFlags.internalLogging {
+                Logger.info("Using profileKey used in versioned profile request.")
+            }
+            return profileKey
+        }
+        if let profileKey = (databaseStorage.read { transaction in
+            self.profileManager.profileKey(for: profileAddress,
+                                           transaction: transaction)
+        }) {
+            if DebugFlags.internalLogging {
+                Logger.info("Using profileKey from database.")
+            }
+            return profileKey
+        }
+        return nil
     }
 
     // TODO: This method can cause many database writes.
     //       Perhaps we can use a single transaction?
     private func updateProfile(fetchedProfile: FetchedProfile,
+                               profileKey: OWSAES256Key?,
                                optionalAvatarData: Data?) -> Promise<Void> {
         let profile = fetchedProfile.profile
         let address = profile.address
+
+        var givenName: String?
+        var familyName: String?
+        if let profileNameEncrypted = profile.profileNameEncrypted,
+            let profileKey = profileKey,
+            let profileNameComponents = OWSUserProfile.decrypt(profileNameData: profileNameEncrypted,
+                                                               profileKey: profileKey) {
+            givenName = profileNameComponents.givenName?.stripped
+            familyName = profileNameComponents.familyName?.stripped
+        }
+
+        if DebugFlags.internalLogging {
+            let isVersionedProfile = fetchedProfile.versionedProfileRequest != nil
+            let profileKeyDescription = profileKey?.keyData.hexadecimalString ?? "None"
+            let hasAvatar = profile.avatarUrlPath != nil
+            let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
+            let hasGivenName = givenName?.count ?? 0 > 0
+            let hasFamilyName = familyName?.count ?? 0 > 0
+
+            Logger.info("address: \(address), " +
+                "isVersionedProfile: \(isVersionedProfile), " +
+                "hasAvatar: \(hasAvatar), " +
+                "hasProfileNameEncrypted: \(hasProfileNameEncrypted), " +
+                "hasGivenName: \(hasGivenName), " +
+                "hasFamilyName: \(hasFamilyName), " +
+                "profileKey: \(profileKeyDescription)")
+        }
 
         if let profileRequest = fetchedProfile.versionedProfileRequest {
             self.versionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
         }
 
         profileManager.updateProfile(for: address,
-                                     profileNameEncrypted: profile.profileNameEncrypted,
+                                     givenName: givenName,
+                                     familyName: familyName,
                                      username: profile.username,
                                      isUuidCapable: profile.supportsUUID,
                                      avatarUrlPath: profile.avatarUrlPath,

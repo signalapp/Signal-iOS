@@ -105,7 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
 // not be populated due to network failures,
 // decryption errors, service issues, etc.
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
-           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                      givenName:(nullable NSString *)givenName
+                     familyName:(nullable NSString *)familyName
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath

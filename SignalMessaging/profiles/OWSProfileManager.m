@@ -35,9 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSNotificationName const kNSNotificationNameProfileKeyDidChange = @"kNSNotificationNameProfileKeyDidChange";
 
-// The max bytes for a user's profile name, encoded in UTF8.
-// Before encrypting and submitting we NULL pad the name data to this length.
-const NSUInteger kOWSProfileManager_NameDataLength = 26;
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 1024;
 const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_WasLocallyInitiated";
 
@@ -411,7 +408,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSData *_Nullable encryptedAvatarData;
         if (avatarData) {
-            encryptedAvatarData = [self encryptLocalProfileData:avatarData];
+            encryptedAvatarData = [OWSUserProfile encryptProfileData:avatarData profileKey:self.localProfileKey];
             OWSAssertDebug(encryptedAvatarData.length > 0);
         }
 
@@ -447,7 +444,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         NSPersonNameComponents *nameComponents = [NSPersonNameComponents new];
         nameComponents.givenName = givenName;
         nameComponents.familyName = familyName;
-        NSData *_Nullable encryptedPaddedName = [self encryptLocalProfileNameComponents:nameComponents];
+        NSData *_Nullable encryptedPaddedName = [OWSUserProfile encryptProfileNameComponents:nameComponents
+                                                                                  profileKey:self.localProfileKey];
         if (encryptedPaddedName == nil) {
             return failureBlock(OWSErrorMakeAssertionError(@"encryptedPaddedName was unexpectedly nil"));
         }
@@ -1742,7 +1740,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)addressParam
-           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                      givenName:(nullable NSString *)givenName
+                     familyName:(nullable NSString *)familyName
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -1752,10 +1751,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
     OWSAssertDebug(address.isValid);
 
-    OWSLogDebug(@"update profile for: %@ -> %@ name: %@ avatar: %@, avatarData: %d",
+    OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, avatar: %@, avatarData: %d",
         addressParam,
         address,
-        profileNameEncrypted,
+        givenName,
+        familyName,
         avatarUrlPath,
         optionalDecryptedAvatarData.length > 0);
 
@@ -1785,18 +1785,10 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 return;
             }
 
-            NSPersonNameComponents *_Nullable profileNameComponents = nil;
-
-            if (profileNameEncrypted.length > 0) {
-                // Decryption is slightly expensive to do inside this write transaction.
-                profileNameComponents = [self decryptProfileNameData:profileNameEncrypted
-                                                          profileKey:userProfile.profileKey];
-            }
-
             if (avatarImage != nil) {
                 [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
-                [userProfile updateWithGivenName:profileNameComponents.givenName
-                                      familyName:profileNameComponents.familyName
+                [userProfile updateWithGivenName:givenName
+                                      familyName:familyName
                                         username:username
                                    isUuidCapable:isUuidCapable
                                    avatarUrlPath:avatarUrlPath
@@ -1805,8 +1797,8 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                      transaction:transaction
                                       completion:nil];
             } else {
-                [userProfile updateWithGivenName:profileNameComponents.givenName
-                                      familyName:profileNameComponents.familyName
+                [userProfile updateWithGivenName:givenName
+                                      familyName:familyName
                                         username:username
                                    isUuidCapable:isUuidCapable
                                    avatarUrlPath:avatarUrlPath
@@ -1863,7 +1855,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSAssertIsOnMainThread();
 
     NSData *nameData = [profileName dataUsingEncoding:NSUTF8StringEncoding];
-    return nameData.length > kOWSProfileManager_NameDataLength;
+    return nameData.length > OWSUserProfile.kNameDataLength;
 }
 
 #pragma mark - Avatar Disk Cache

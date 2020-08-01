@@ -11,11 +11,14 @@ import ZKGroup
 public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
     public let request: TSRequest
     public let requestContext: ProfileKeyCredentialRequestContext?
+    public let profileKey: OWSAES256Key?
 
     public required init(request: TSRequest,
-                         requestContext: ProfileKeyCredentialRequestContext?) {
+                         requestContext: ProfileKeyCredentialRequestContext?,
+                         profileKey: OWSAES256Key?) {
         self.request = request
         self.requestContext = requestContext
+        self.profileKey = profileKey
     }
 }
 
@@ -104,9 +107,9 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                 nameComponents.givenName = profileGivenName
                 nameComponents.familyName = profileFamilyName
 
-                guard let encryptedPaddedProfileName = self.profileManager.encrypt(profileNameComponents: nameComponents,
-                                                                                   profileKey: profileKey) else {
-                                                                                    throw OWSAssertionError("Could not encrypt profile name.")
+                guard let encryptedPaddedProfileName = OWSUserProfile.encrypt(profileNameComponents: nameComponents,
+                                                                              profileKey: profileKey) else {
+                                                                                throw OWSAssertionError("Could not encrypt profile name.")
                 }
                 nameData = encryptedPaddedProfileName
             }
@@ -118,9 +121,9 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
         }.then(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {
                 let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
-                guard let encryptedProfileAvatarData = self.profileManager.encrypt(profileData: profileAvatarData,
-                                                                                   profileKey: profileKey) else {
-                                                                                    throw OWSAssertionError("Could not encrypt profile avatar.")
+                guard let encryptedProfileAvatarData = OWSUserProfile.encrypt(profileData: profileAvatarData,
+                                                                              profileKey: profileKey) else {
+                                                                                throw OWSAssertionError("Could not encrypt profile avatar.")
                 }
                 return self.parseFormAndUpload(formResponseObject: responseObject,
                                                profileAvatarData: encryptedProfileAvatarData)
@@ -159,11 +162,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
         var requestContext: ProfileKeyCredentialRequestContext?
         var profileKeyVersionArg: String?
         var credentialRequestArg: Data?
+        var profileKeyForRequest: OWSAES256Key?
         try databaseStorage.read { transaction in
             // We try to include the profile key if we have one.
-            guard let profileKeyForAddress: OWSAES256Key = self.profileManager.profileKey(for: address, transaction: transaction) else {
+            guard let profileKeyForAddress: OWSAES256Key = self.profileManager.profileKey(for: address,
+                                                                                          transaction: transaction) else {
                 return
             }
+            profileKeyForRequest = profileKeyForAddress
             let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
             let profileKeyVersion = try profileKey.getProfileKeyVersion(uuid: zkgUuid)
             profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
@@ -185,7 +191,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                                    credentialRequest: credentialRequestArg,
                                                                    udAccessKey: udAccessKey)
 
-        return VersionedProfileRequestImpl(request: request, requestContext: requestContext)
+        return VersionedProfileRequestImpl(request: request, requestContext: requestContext, profileKey: profileKeyForRequest)
     }
 
     // MARK: -

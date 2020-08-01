@@ -492,87 +492,6 @@ private class ProfileUpdateAttempt {
     }
 }
 
-// MARK: - Encryption
-
-@objc
-public extension OWSProfileManager {
-    @objc(encryptProfileData:profileKey:)
-    func encrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
-        assert(profileKey.keyData.count == kAES256_KeyByteLength)
-        return Cryptography.encryptAESGCMProfileData(plainTextData: profileData, key: profileKey)
-    }
-
-    @objc(encryptLocalProfileData:)
-    func encrypt(localProfileData: Data) -> Data? {
-        return encrypt(profileData: localProfileData, profileKey: localProfileKey())
-    }
-
-    @objc(decryptProfileData:profileKey:)
-    func decrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
-        assert(profileKey.keyData.count == kAES256_KeyByteLength)
-        return Cryptography.decryptAESGCMProfileData(encryptedData: profileData, key: profileKey)
-    }
-
-    @objc(decryptProfileNameData:profileKey:)
-    func decrypt(profileNameData: Data, profileKey: OWSAES256Key) -> PersonNameComponents? {
-        guard let decryptedData = decrypt(profileData: profileNameData, profileKey: profileKey) else { return nil }
-
-        // Unpad profile name. The given and family name are stored
-        // in the string like "<given name><null><family name><null padding>"
-        let nameSegments = decryptedData.split(separator: 0x00)
-
-        // Given name is required
-        guard let givenNameData = nameSegments[safe: 0],
-            let givenName = String(data: givenNameData, encoding: .utf8), !givenName.isEmpty else {
-                owsFailDebug("unexpectedly missing first name")
-                return nil
-        }
-
-        // Family name is optional
-        let familyName: String?
-        if let familyNameData = nameSegments[safe: 1] {
-            familyName = String(data: familyNameData, encoding: .utf8)
-        } else {
-            familyName = nil
-        }
-
-        var nameComponents = PersonNameComponents()
-        nameComponents.givenName = givenName
-        nameComponents.familyName = familyName
-        return nameComponents
-    }
-
-    @objc(encryptLocalProfileNameComponents:)
-    func encrypt(profileNameComponents: PersonNameComponents) -> Data? {
-        return encrypt(profileNameComponents: profileNameComponents, profileKey: localProfileKey())
-    }
-
-    @objc(encryptProfileNameComponents:profileKey:)
-    func encrypt(profileNameComponents: PersonNameComponents, profileKey: OWSAES256Key) -> Data? {
-        guard var paddedNameData = profileNameComponents.givenName?.data(using: .utf8) else { return nil }
-        if let familyName = profileNameComponents.familyName {
-            // Insert a null separator
-            paddedNameData.count += 1
-            guard let familyNameData = familyName.data(using: .utf8) else { return nil }
-            paddedNameData.append(familyNameData)
-        }
-
-        // Two names plus null separator.
-        let totalNameLength = Int(kOWSProfileManager_NameDataLength) * 2 + 1
-
-        guard paddedNameData.count <= totalNameLength else { return nil }
-
-        // All encrypted profile names should be the same length on the server,
-        // so we pad out the length with null bytes to the maximum length.
-        let paddingByteCount = totalNameLength - paddedNameData.count
-        paddedNameData.count += paddingByteCount
-
-        assert(paddedNameData.count == totalNameLength)
-
-        return encrypt(profileData: paddedNameData, profileKey: profileKey)
-    }
-}
-
 // MARK: - Avatar Downloads
 
 public extension OWSProfileManager {
@@ -685,7 +604,8 @@ public extension OWSProfileManager {
             task.resume()
             return promise
         }.map(on: .global()) { (encryptedData: Data) -> Data in
-            guard let decryptedData = Self.profileManager.decrypt(profileData: encryptedData, profileKey: profileKey) else {
+            guard let decryptedData = OWSUserProfile.decrypt(profileData: encryptedData,
+                                                             profileKey: profileKey) else {
                 throw OWSGenericError("Could not decrypt profile avatar.")
             }
             return decryptedData
