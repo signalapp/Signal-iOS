@@ -493,7 +493,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
 
             let pathForCachedAsset = asset.filePath
-            let pathForConsumableFile = OWSFileSystem.temporaryFilePath(withFileExtension: "gif")
+            let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: "gif")
             try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
             let dataSource = try DataSourcePath.dataSource(withFilePath: pathForConsumableFile,
                                                            shouldDeleteOnDeallocation: false)

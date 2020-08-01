@@ -403,7 +403,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         // This sticker is not downloaded; try to download now.
         StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
             .map(on: DispatchQueue.global()) { (stickerData: Data) -> String in
-                let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: "webp")
+                let filePath = OWSFileSystem.temporaryFilePath(fileExtension: "webp")
                 try stickerData.write(to: URL(fileURLWithPath: filePath))
                 return filePath
             }.done { [weak self] (filePath) in

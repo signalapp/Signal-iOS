@@ -183,7 +183,7 @@ class PhotoCollectionContents {
                 exportSession.outputFileType = AVFileType.mp4
                 exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
 
-                let exportPath = OWSFileSystem.temporaryFilePath(withFileExtension: "mp4")
+                let exportPath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
                 let exportURL = URL(fileURLWithPath: exportPath)
                 exportSession.outputURL = exportURL
 

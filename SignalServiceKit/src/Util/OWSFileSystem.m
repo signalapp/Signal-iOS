@@ -1,21 +1,16 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFileSystem.h"
 #import "OWSError.h"
 #import "TSConstants.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFileSystem
-
-+ (BOOL)fileOrFolderExistsAtPath:(NSString *)path
-{
-    BOOL isDirectory;
-    return [NSFileManager.defaultManager fileExistsAtPath:path isDirectory:&isDirectory];
-}
 
 + (BOOL)protectRecursiveContentsAtPath:(NSString *)path
 {
@@ -58,12 +53,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *error;
     NSDictionary *fileProtection = @{ NSFileProtectionKey : fileProtectionType };
-    [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
+    BOOL success = [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
+    if (error || !success) {
+        OWSFailDebug(@"Could not protect file or folder: %@", error);
+        OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
+        return NO;
+    }
 
     NSDictionary *resourcesAttrs = @{ NSURLIsExcludedFromBackupKey : @YES };
 
     NSURL *ressourceURL = [NSURL fileURLWithPath:path];
-    BOOL success = [ressourceURL setResourceValues:resourcesAttrs error:&error];
+    success = [ressourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
         OWSFailDebug(@"Could not protect file or folder: %@", error);
@@ -279,25 +279,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (BOOL)deleteFile:(NSString *)filePath
-{
-    NSError *error;
-    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-    if (!success || error) {
-        OWSLogError(@"Failed to delete file: %@", error.description);
-        return NO;
-    }
-    return YES;
-}
-
-+ (BOOL)deleteFileIfExists:(NSString *)filePath
-{
-    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-        return YES;
-    }
-    return [self deleteFile:filePath];
-}
-
 + (void)deleteContentsOfDirectory:(NSString *)dirPath
 {
     NSError *error;
@@ -341,45 +322,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return filePaths;
-}
-
-+ (NSString *)temporaryFilePath
-{
-    return [self temporaryFilePathWithFileExtension:nil];
-}
-
-+ (NSURL *)temporaryFileURLWithFileExtension:(NSString *_Nullable)fileExtension
-{
-    return [NSURL fileURLWithPath:[self temporaryFilePathWithFileExtension:fileExtension]];
-}
-
-+ (NSString *)temporaryFilePathWithFileExtension:(NSString *_Nullable)fileExtension
-{
-    NSString *temporaryDirectory = OWSTemporaryDirectory();
-    NSString *tempFileName = NSUUID.UUID.UUIDString;
-    if (fileExtension.length > 0) {
-        tempFileName = [[tempFileName stringByAppendingString:@"."] stringByAppendingString:fileExtension];
-    }
-    NSString *tempFilePath = [temporaryDirectory stringByAppendingPathComponent:tempFileName];
-
-    return tempFilePath;
-}
-
-+ (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension
-{
-    OWSAssertDebug(data);
-
-    NSString *tempFilePath = [self temporaryFilePathWithFileExtension:fileExtension];
-    NSError *error;
-    BOOL success = [data writeToFile:tempFilePath options:NSDataWritingAtomic error:&error];
-    if (!success || error) {
-        OWSFailDebug(@"could not write to temporary file: %@", error);
-        return nil;
-    }
-
-    [self protectFileOrFolderAtPath:tempFilePath];
-
-    return tempFilePath;
 }
 
 + (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath

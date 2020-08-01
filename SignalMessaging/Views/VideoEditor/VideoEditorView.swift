@@ -344,7 +344,7 @@ public class VideoEditorView: UIView {
             guard let fileExtension = videoFilePath.fileExtension else {
                 return Promise(error: OWSAssertionError("Missing fileExtension."))
             }
-            let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+            let tempFilePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
             do {
                 try FileManager.default.copyItem(atPath: videoFilePath, toPath: tempFilePath)
             } catch {

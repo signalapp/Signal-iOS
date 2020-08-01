@@ -52,7 +52,7 @@ class ImageEditorTest: SignalBaseTest {
         guard let data = image.pngData() else {
             owsFail("Couldn't export dummy image.")
         }
-        let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
+        let filePath = OWSFileSystem.temporaryFilePath(fileExtension: "png")
         try! data.write(to: URL(fileURLWithPath: filePath))
         return filePath
     }

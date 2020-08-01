@@ -340,7 +340,7 @@ private class TrimVideoOperation: OWSOperation {
             }
 
             let asset = AVURLAsset(url: URL(fileURLWithPath: render.srcVideoPath))
-            let dstFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "mp4")
+            let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
 
             // AVAssetExportPresetPassthrough maintains the source quality.
             guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {

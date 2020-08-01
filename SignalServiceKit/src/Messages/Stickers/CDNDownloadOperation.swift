@@ -63,8 +63,7 @@ open class CDNDownloadOperation: OWSOperation {
         }
         request.setValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
 
-        let tempDirPath = OWSTemporaryDirectoryAccessibleAfterFirstAuth()
-        let tempFilePath = (tempDirPath as NSString).appendingPathComponent(UUID().uuidString)
+        let tempFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
         self.tempFilePath = tempFilePath
         let tempFileURL = URL(fileURLWithPath: tempFilePath)
 

@@ -6,11 +6,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDispatch : NSObject
 
-/**
- * Attachment downloading
- */
-+ (dispatch_queue_t)attachmentsQueue;
-
 @property (class, strong, nonatomic, readonly) dispatch_queue_t sharedUserInteractive;
 @property (class, strong, nonatomic, readonly) dispatch_queue_t sharedUserInitiated;
 @property (class, strong, nonatomic, readonly) dispatch_queue_t sharedUtility;
