@@ -1594,6 +1594,11 @@ typedef struct {
         return YES;
     }
 
+    Mention *_Nullable tappedMention = [self tappedMention:sender];
+    if (tappedMention) {
+        return YES;
+    }
+
     CGPoint locationInMessageBubble = [sender locationInView:self];
     switch ([self gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
@@ -1637,6 +1642,12 @@ typedef struct {
         }
     }
 
+    Mention *_Nullable tappedMention = [self tappedMention:sender];
+    if (tappedMention) {
+        [self.delegate didTapMention:tappedMention];
+        return;
+    }
+
     CGPoint locationInMessageBubble = [sender locationInView:self];
     switch ([self gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
@@ -1666,6 +1677,37 @@ typedef struct {
             OWSFailDebug(@"Unexpected value.");
             break;
     }
+}
+
+- (nullable Mention *)tappedMention:(UITapGestureRecognizer *)sender
+{
+    if (![self.viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        return nil;
+    }
+
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    if (!message.bodyRanges.hasMentions) {
+        return nil;
+    }
+
+    CGPoint tapPoint = [sender locationInView:self.bodyTextView];
+
+    if (!CGRectContainsPoint(self.bodyTextView.frame, tapPoint)) {
+        return nil;
+    }
+
+    NSUInteger tappedCharacterIndex =
+        [self.bodyTextView.layoutManager characterIndexForPoint:tapPoint
+                                                inTextContainer:self.bodyTextView.textContainer
+                       fractionOfDistanceBetweenInsertionPoints:nil];
+
+    if (tappedCharacterIndex < 0 || tappedCharacterIndex >= self.bodyTextView.attributedText.length) {
+        return nil;
+    }
+
+    return [self.bodyTextView.textStorage attribute:Mention.attributeKey
+                                            atIndex:tappedCharacterIndex
+                                     effectiveRange:nil];
 }
 
 - (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble

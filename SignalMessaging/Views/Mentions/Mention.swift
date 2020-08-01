@@ -9,6 +9,8 @@ public class Mention: NSObject {
     public static let mentionPrefix = MessageBodyRanges.mentionPrefix
     public static let mentionPrefixLength = (mentionPrefix as NSString).length
 
+    public static let attributeKey = NSAttributedString.Key.mention
+
     // Each mention has a uniqueID so we can differentiate
     // two mentions for the same address that are side-by-side
     public let uniqueId = UUID().uuidString

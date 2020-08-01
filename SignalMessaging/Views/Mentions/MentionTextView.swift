@@ -13,7 +13,6 @@ public protocol MentionTextViewDelegate: UITextViewDelegate {
     func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView?
     func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress]
 
-    func textView(_ textView: MentionTextView, didTapMention: Mention)
     func textView(_ textView: MentionTextView, didDeleteMention: Mention)
 
     func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool
@@ -38,10 +37,6 @@ open class MentionTextView: OWSTextView {
     public required init() {
         super.init(frame: .zero, textContainer: nil)
         delegate = self
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        tapGesture.delegate = self
-        addGestureRecognizer(tapGesture)
     }
 
     deinit {
@@ -438,30 +433,6 @@ open class MentionTextView: OWSTextView {
 
         // We checked everything, so we're not typing
         state = .notTypingMention
-    }
-
-    // MARK: -
-
-    @objc
-    private func didTap(_ sender: UITapGestureRecognizer) {
-        var tapPoint = sender.location(in: self)
-        tapPoint.x -= textContainerInset.left
-        tapPoint.y -= textContainerInset.right
-
-        let tappedCharacterIndex = layoutManager.characterIndex(
-            for: tapPoint,
-            in: textContainer,
-            fractionOfDistanceBetweenInsertionPoints: nil
-        )
-        guard tappedCharacterIndex > 0, tappedCharacterIndex < textStorage.length else { return }
-
-        guard let tappedMention = textStorage.attribute(
-            .mention,
-            at: tappedCharacterIndex,
-            effectiveRange: nil
-        ) as? Mention else { return }
-
-        mentionDelegate?.textView(self, didTapMention: tappedMention)
     }
 }
 

@@ -380,7 +380,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId: %@", attachmentId];
     } else {
-        return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@", [self class], self.body, self.bodyRanges.hasMentions ? @"YES" : @"NO"];
+        return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@",
+                         [self class],
+                         self.body,
+                         self.bodyRanges.hasMentions ? @"YES" : @"NO"];
     }
 }
 

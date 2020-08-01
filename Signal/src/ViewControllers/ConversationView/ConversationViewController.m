@@ -2513,6 +2513,16 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
+- (void)didTapMention:(Mention *)mention
+{
+    GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
+    groupViewHelper.delegate = self;
+    MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:mention.address
+                                                             contactsViewHelper:self.contactsViewHelper
+                                                                groupViewHelper:groupViewHelper];
+    [actionSheet presentFromViewController:self];
+}
+
 - (void)didTapContactShareViewItem:(id<ConversationViewItem>)conversationItem
 {
     OWSAssertIsOnMainThread();

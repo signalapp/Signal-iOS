@@ -25,8 +25,6 @@ extension ConversationViewController: MentionTextViewDelegate {
         return thread.recipientAddresses
     }
 
-    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
-
     public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {

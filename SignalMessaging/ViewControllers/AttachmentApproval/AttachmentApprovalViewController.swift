@@ -935,8 +935,6 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         return approvalDelegate?.attachmentApprovalMentionableAddresses ?? []
     }
 
-    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
-
     public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {

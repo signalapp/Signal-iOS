@@ -164,8 +164,6 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         return .composing
     }
 
-    public func textView(_ textView: MentionTextView, didTapMention: Mention) {}
-
     public func textView(_ textView: MentionTextView, didDeleteMention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {

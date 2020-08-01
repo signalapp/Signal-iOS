@@ -354,8 +354,6 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         return attachmentTextToolbarDelegate?.textViewMentionPickerPossibleAddresses(textView) ?? []
     }
 
-    func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
-
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {

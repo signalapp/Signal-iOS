@@ -712,6 +712,10 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
         navigationController.pushViewController(viewController, animated: true)
     }
 
+    func didTapMention(_ mention: Mention) {
+        // no - op
+    }
+
     func didTapFailedIncomingAttachment(_ viewItem: ConversationViewItem) {
         // no - op
     }
