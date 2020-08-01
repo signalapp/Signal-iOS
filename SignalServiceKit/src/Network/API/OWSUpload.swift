@@ -11,10 +11,11 @@ public class OWSUpload: NSObject {
     public typealias ProgressBlock = (Progress) -> Void
 
     @objc
-    public class func uploadObjc(data: Data,
-                                 uploadForm: OWSUploadFormV2,
-                                 uploadUrlPath: String,
-                                 progressBlock: ((Progress) -> Void)?) -> AnyPromise {
+    @available(swift, obsoleted: 1.0)
+    public class func upload(data: Data,
+                             uploadForm: OWSUploadFormV2,
+                             uploadUrlPath: String,
+                             progressBlock: ((Progress) -> Void)?) -> AnyPromise {
         return AnyPromise(upload(data: data,
                                  uploadForm: uploadForm,
                                  uploadUrlPath: uploadUrlPath,
