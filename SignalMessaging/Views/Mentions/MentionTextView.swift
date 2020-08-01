@@ -321,12 +321,8 @@ open class MentionTextView: OWSTextView {
 
         if range.length > 0 {
             // Locate any mentions in the edited range.
-            textStorage.enumerateAttribute(
-                .mention,
-                in: range,
-                options: []
-            ) { mention, subrange, _ in
-                guard let mention = mention as? Mention else { return }
+            textStorage.enumerateMentions(in: range) { mention, subrange, _ in
+                guard let mention = mention else { return }
 
                 // Get the full range of the mention, we may only be editing a part of it.
                 var uniqueMentionRange = NSRange()
@@ -343,7 +339,11 @@ open class MentionTextView: OWSTextView {
                 deletedMentions[uniqueMentionRange] = mention
             }
         } else if range.location > 0,
-            let leftMention = textStorage.attribute(.mention, at: range.location - 1, effectiveRange: nil) as? Mention {
+            let leftMention = textStorage.attribute(
+                .mention,
+                at: range.location - 1,
+                effectiveRange: nil
+            ) as? Mention {
             // If there is a mention to the left, the typing attributes will
             // be the mention's attributes. We don't want that, so we need
             // to reset them here.

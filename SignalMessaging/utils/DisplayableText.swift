@@ -11,8 +11,8 @@ import Foundation
         let naturalAlignment: NSTextAlignment
     }
 
-    private let fullContent: Content
-    private let truncatedContent: Content?
+    private var fullContent: Content
+    private var truncatedContent: Content?
 
     @objc
     public var fullAttributedText: NSAttributedString {
@@ -56,6 +56,34 @@ import Foundation
         self.fullContent = fullContent
         self.truncatedContent = truncatedContent
         self.jumbomojiCount = DisplayableText.jumbomojiCount(in: fullContent.attributedText.string)
+
+        super.init()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(themeDidChange),
+            name: .ThemeDidChange,
+            object: nil
+        )
+    }
+
+    @objc private func themeDidChange() {
+        // When the theme changes, we must refresh any mention attributes.
+        let mutableFullText = NSMutableAttributedString(attributedString: fullAttributedText)
+        Mention.refreshAttributes(in: mutableFullText)
+        fullContent = Content(
+            attributedText: mutableFullText,
+            naturalAlignment: fullContent.naturalAlignment
+        )
+
+        if let truncatedContent = truncatedContent {
+            let mutableTruncatedText = NSMutableAttributedString(attributedString: truncatedContent.attributedText)
+            Mention.refreshAttributes(in: mutableTruncatedText)
+            self.truncatedContent = Content(
+                attributedText: mutableTruncatedText,
+                naturalAlignment: truncatedContent.naturalAlignment
+            )
+        }
     }
 
     // MARK: Emoji
