@@ -100,13 +100,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
         [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
 
-        if (operation.failingError != nil) {
-            failure(operation.failingError);
-            return;
-        }
-        if (operation.isCancelled) {
-            // This should never happen, but if it does we'll end up unregistering everyting. Force a failure
-            failure(OWSErrorMakeAssertionError(@"Unexpected operation cancellation"));
+        if (operation.discoveredContactInfo == nil) {
+            NSError *error = operation.failingError ?: OWSErrorMakeAssertionError(@"Unexpected operation cancellation");
+            failure(error);
             return;
         }
 
