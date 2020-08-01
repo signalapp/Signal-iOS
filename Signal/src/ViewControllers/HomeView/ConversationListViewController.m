@@ -18,10 +18,10 @@
 #import <SignalCoreKit/Threading.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/UIUtil.h>
+#import <SignalServiceKit/OWSFormat.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

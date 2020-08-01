@@ -55,7 +55,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)turnServerInfoRequest;
 
-+ (TSRequest *)allocAttachmentRequest;
++ (TSRequest *)allocAttachmentRequestV2;
+
++ (TSRequest *)allocAttachmentRequestV3;
 
 + (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes;
 

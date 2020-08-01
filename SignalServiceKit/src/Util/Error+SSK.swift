@@ -55,6 +55,12 @@ extension OWSAssertionError: OperationError {
     }
 }
 
+extension OWSGenericError: OperationError {
+    public var isRetryable: Bool {
+        return false
+    }
+}
+
 /// Swift/ObjC error bridging is a little tricky.
 ///
 /// Our NSError objects have an associatedObject backing `NSError.isRetryable`, but our Swift errors do not inherit that.

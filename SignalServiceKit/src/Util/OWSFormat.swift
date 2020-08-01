@@ -25,4 +25,8 @@ public extension OWSFormat {
     class func formatUInt32(_ value: UInt32) -> String {
         return formatNSInt(NSNumber(value: value))
     }
+
+    class func formatUInt64(_ value: UInt64) -> String {
+        return formatNSInt(NSNumber(value: value))
+    }
 }

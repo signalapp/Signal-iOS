@@ -2,7 +2,7 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSUploadV2.h"
+#import "OWSUpload.h"
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -30,7 +30,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 #pragma mark -
 
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-@implementation OWSUploadForm
+@implementation OWSUploadFormV2
 
 - (instancetype)initWithAcl:(NSString *)acl
                         key:(NSString *)key
@@ -58,7 +58,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     return self;
 }
 
-+ (nullable OWSUploadForm *)parseDictionary:(nullable NSDictionary *)formResponseObject
++ (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject
 {
     if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
         OWSFailDebug(@"Invalid upload form.");
@@ -117,15 +117,15 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         return nil;
     }
 
-    return [[OWSUploadForm alloc] initWithAcl:formAcl
-                                          key:formKey
-                                       policy:formPolicy
-                                    algorithm:formAlgorithm
-                                   credential:formCredential
-                                         date:formDate
-                                    signature:formSignature
-                                 attachmentId:attachmentId
-                           attachmentIdString:attachmentIdString];
+    return [[OWSUploadFormV2 alloc] initWithAcl:formAcl
+                                            key:formKey
+                                         policy:formPolicy
+                                      algorithm:formAlgorithm
+                                     credential:formCredential
+                                           date:formDate
+                                      signature:formSignature
+                                   attachmentId:attachmentId
+                             attachmentIdString:attachmentIdString];
 }
 
 - (void)appendToForm:(id<AFMultipartFormData>)formData
@@ -190,12 +190,8 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                     }
 
                     [strongSelf parseFormAndUpload:formResponseObject]
-                        .thenInBackground(^{
-                            return resolve(@(1));
-                        })
-                        .catchInBackground(^(NSError *error) {
-                            resolve(error);
-                        });
+                        .thenInBackground(^{ return resolve(@(1)); })
+                        .catchInBackground(^(NSError *error) { resolve(error); });
                 }
                 failure:^(NSURLSessionDataTask *task, NSError *error) {
                     OWSLogError(@"Failed to get profile avatar upload form: %@", error);
@@ -208,7 +204,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 - (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
 {
-    OWSUploadForm *_Nullable form = [OWSUploadForm parseDictionary:formResponseObject];
+    OWSUploadFormV2 *_Nullable form = [OWSUploadFormV2 parseDictionary:formResponseObject];
     if (!form) {
         return [AnyPromise
             promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];
@@ -217,161 +213,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     self.urlPath = form.key;
 
     NSString *uploadUrlPath = @"";
-    return [OWSUploadV2 uploadObjcWithData:self.avatarData
-                                uploadForm:form
-                             uploadUrlPath:uploadUrlPath
-                             progressBlock:nil];
-}
-
-@end
-
-#pragma mark - Attachments
-
-@interface OWSAttachmentUploadV2 ()
-
-@property (nonatomic) TSAttachmentStream *attachmentStream;
-
-@end
-
-#pragma mark -
-
-@implementation OWSAttachmentUploadV2
-
-#pragma mark - Dependencies
-
-- (TSNetworkManager *)networkManager
-{
-    return SSKEnvironment.shared.networkManager;
-}
-
-- (TSSocketManager *)socketManager
-{
-    return SSKEnvironment.shared.socketManager;
-}
-
-#pragma mark -
-
-- (nullable NSData *)attachmentData
-{
-    OWSAssertDebug(self.attachmentStream);
-
-    NSData *encryptionKey;
-    NSData *digest;
-    NSError *error;
-    NSData *attachmentData = [self.attachmentStream readDataFromFileWithError:&error];
-    if (error) {
-        OWSLogError(@"Failed to read attachment data with error: %@", error);
-        return nil;
-    }
-
-    NSData *_Nullable encryptedAttachmentData = [Cryptography encryptAttachmentData:attachmentData
-                                                                          shouldPad:YES
-                                                                             outKey:&encryptionKey
-                                                                          outDigest:&digest];
-    if (!encryptedAttachmentData) {
-        OWSFailDebug(@"could not encrypt attachment data.");
-        return nil;
-    }
-
-    self.encryptionKey = encryptionKey;
-    self.digest = digest;
-
-    return encryptedAttachmentData;
-}
-
-// On success, yields an instance of OWSUploadV2.
-- (AnyPromise *)uploadAttachmentToService:(TSAttachmentStream *)attachmentStream
-                            progressBlock:(UploadProgressBlock)progressBlock
-{
-    OWSAssertDebug(attachmentStream);
-
-    self.attachmentStream = attachmentStream;
-
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self uploadAttachmentToService:resolve progressBlock:progressBlock skipWebsocket:NO];
-        });
-    }];
-    return promise;
-}
-
-- (void)uploadAttachmentToService:(PMKResolver)resolve
-                    progressBlock:(UploadProgressBlock)progressBlock
-                    skipWebsocket:(BOOL)skipWebsocket
-{
-    TSRequest *formRequest = [OWSRequestFactory allocAttachmentRequest];
-
-    BOOL shouldUseWebsocket = (self.socketManager.canMakeRequests && !skipWebsocket);
-
-    __weak OWSAttachmentUploadV2 *weakSelf = self;
-    void (^formSuccess)(id _Nullable) = ^(id _Nullable formResponseObject) {
-        OWSAttachmentUploadV2 *_Nullable strongSelf = weakSelf;
-        if (!strongSelf) {
-            return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
-        }
-
-        [strongSelf parseFormAndUpload:formResponseObject progressBlock:progressBlock]
-            .thenInBackground(^{
-                resolve(@(1));
-            })
-            .catchInBackground(^(NSError *error) {
-                resolve(error);
-            });
-    };
-    void (^formFailure)(NSError *) = ^(NSError *error) {
-        OWSLogError(@"Failed to get profile avatar upload form: %@", error);
-        resolve(error);
-    };
-
-    if (shouldUseWebsocket) {
-        [self.socketManager makeRequest:formRequest
-            success:^(id _Nullable responseObject) {
-                formSuccess(responseObject);
-            }
-            failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *_Nullable error) {
-                OWSLogError(@"Websocket request failed: %d, %@", (int)statusCode, error);
-
-                // Try again without websocket.
-                [weakSelf uploadAttachmentToService:resolve progressBlock:progressBlock skipWebsocket:YES];
-            }];
-    } else {
-        [self.networkManager makeRequest:formRequest
-            success:^(NSURLSessionDataTask *task, id _Nullable formResponseObject) {
-                formSuccess(formResponseObject);
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                formFailure(error);
-            }];
-    }
-}
-
-#pragma mark -
-
-- (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
-                     progressBlock:(UploadProgressBlock)progressBlock
-{
-    OWSUploadForm *_Nullable form = [OWSUploadForm parseDictionary:formResponseObject];
-    if (!form) {
-        return [AnyPromise
-            promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];
-    }
-    UInt64 serverId = form.attachmentId.unsignedLongLongValue;
-    if (serverId < 1) {
-        return [AnyPromise
-            promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];
-    }
-
-    self.serverId = serverId;
-
-    __weak OWSAttachmentUploadV2 *weakSelf = self;
-    NSString *uploadUrlPath = @"attachments/";
-    return [OWSUploadV2 uploadObjcWithData:self.attachmentData
-                                uploadForm:form
-                             uploadUrlPath:uploadUrlPath
-                             progressBlock:progressBlock]
-        .then(^{
-            weakSelf.uploadTimestamp = NSDate.ows_millisecondTimeStamp;
-        });
+    return [OWSUpload uploadWithData:self.avatarData uploadForm:form uploadUrlPath:uploadUrlPath progressBlock:nil];
 }
 
 @end

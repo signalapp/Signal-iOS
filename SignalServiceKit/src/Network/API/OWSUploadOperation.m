@@ -10,7 +10,7 @@
 #import "OWSError.h"
 #import "OWSOperation.h"
 #import "OWSRequestFactory.h"
-#import "OWSUploadV2.h"
+#import "OWSUpload.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
@@ -113,26 +113,23 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     
     [self fireNotificationWithProgress:0];
 
-    // TODO: Use attachment v3 if enabled by feature flag and fill in cdnKey and cdnNumber below.
-    OWSAttachmentUploadV2 *upload = [OWSAttachmentUploadV2 new];
+    OWSAttachmentUploadV2 *upload = [[OWSAttachmentUploadV2 alloc] initWithAttachmentStream:attachmentStream];
     [BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
         .catchInBackground(^{
             // Swallow these errors; blurHashes are strictly optional.
             OWSLogWarn(@"Error generating blurHash.");
         })
         .thenInBackground(^{
-            return [upload uploadAttachmentToService:attachmentStream
-                                       progressBlock:^(NSProgress *uploadProgress) {
-                                           [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
-                                       }];
+            return [upload uploadWithProgressBlock:^(
+                NSProgress *uploadProgress) { [self fireNotificationWithProgress:uploadProgress.fractionCompleted]; }];
         })
         .thenInBackground(^{
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
                                                              digest:upload.digest
                                                            serverId:upload.serverId
-                                                             cdnKey:@""
-                                                          cdnNumber:0
+                                                             cdnKey:upload.cdnKey
+                                                          cdnNumber:upload.cdnNumber
                                                     uploadTimestamp:upload.uploadTimestamp
                                                         transaction:transaction];
             });
