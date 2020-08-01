@@ -251,8 +251,10 @@ public extension OWSAttachmentDownloads {
                                         attachmentPointer: attachmentPointer)
             }
         }.ensure(on: .global()) {
-            if !OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl) {
-                owsFailDebug("Could not delete encrypted data file.")
+            do {
+                try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
+            } catch {
+                owsFailDebug("Error: \(error).")
             }
         }
     }
