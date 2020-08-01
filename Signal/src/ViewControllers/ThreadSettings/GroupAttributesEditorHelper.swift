@@ -238,7 +238,7 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
         return TextFieldHelper.textField(
             textField,
             shouldChangeCharactersInRange: range,
-            replacementString: replacementString,
+            replacementString: replacementString.withoutBidiControlCharacters,
             byteLimit: UInt(GroupManager.maxGroupNameLength)
         )
     }

@@ -87,12 +87,12 @@ public class ProfileChanges: MTLModel {
             from: oldNameComponents,
             style: .default,
             options: []
-        )
+        ).filterStringForDisplay()
         let newFullName = PersonNameComponentsFormatter.localizedString(
             from: newNameComponents,
             style: .default,
             options: []
-        )
+        ).filterStringForDisplay()
 
         if contactsManager.hasNameInSystemContacts(for: address) {
             let displayName = contactsManager.displayName(for: address, transaction: transaction)
