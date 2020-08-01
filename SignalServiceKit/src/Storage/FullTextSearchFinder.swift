@@ -488,11 +488,11 @@ class AnySearchIndexer {
 
         let nationalNumber: String? = { (recipientId: String?) -> String? in
             guard let recipientId = recipientId else { return nil }
-            
+
             guard recipientId != kLocalProfileInvariantPhoneNumber else {
                 return ""
             }
-            
+
             guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
                 owsFailDebug("unexpected unparseable recipientId: \(recipientId)")
                 return ""
@@ -510,7 +510,7 @@ class AnySearchIndexer {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: SDSAnyReadTransaction) in
-        if let bodyText = message.bodyText(with: transaction.unwrapGrdbRead) {
+        if let bodyText = message.rawBody(with: transaction.unwrapGrdbRead) {
             return bodyText
         }
         return ""

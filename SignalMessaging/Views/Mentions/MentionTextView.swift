@@ -175,13 +175,14 @@ open class MentionTextView: OWSTextView {
 
     @objc
     public var messageBody: MessageBody? {
-        get { messageBody(in: NSRange(location: 0, length: textStorage.length)) }
+        get { MessageBody(attributedString: attributedText) }
         set {
             guard let newValue = newValue else {
                 replaceCharacters(
                     in: NSRange(location: 0, length: textStorage.length),
                     with: ""
                 )
+                typingAttributes = defaultAttributes
                 return
             }
             replaceCharacters(
@@ -189,11 +190,6 @@ open class MentionTextView: OWSTextView {
                 with: newValue
             )
         }
-    }
-
-    @objc
-    public func messageBody(in range: NSRange) -> MessageBody {
-        return MessageBody(attributedString: attributedText.attributedSubstring(from: range))
     }
 
     @objc
@@ -477,13 +473,13 @@ extension MentionTextView {
         replaceCharacters(in: selectedRange, with: "")
     }
 
-    public static let pasteboardType = "private.archived-mention-text"
-    open override func copy(_ sender: Any?) {
-        guard let plaintextData = attributedText.attributedSubstring(from: selectedRange).string.data(using: .utf8) else {
+    @objc
+    public class func copyAttributedStringToPasteboard(_ attributedString: NSAttributedString) {
+        guard let plaintextData = attributedString.string.data(using: .utf8) else {
             return owsFailDebug("Failed to calculate plaintextData on copy")
         }
 
-        let messageBody = self.messageBody(in: selectedRange)
+        let messageBody = MessageBody(attributedString: attributedString)
 
         if messageBody.hasRanges {
             let encodedMessageBody = NSKeyedArchiver.archivedData(withRootObject: messageBody)
@@ -493,6 +489,11 @@ extension MentionTextView {
         }
 
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
+    }
+
+    public static let pasteboardType = "private.archived-mention-text"
+    open override func copy(_ sender: Any?) {
+        Self.copyAttributedStringToPasteboard(attributedText.attributedSubstring(from: selectedRange))
     }
 
     open override func paste(_ sender: Any?) {

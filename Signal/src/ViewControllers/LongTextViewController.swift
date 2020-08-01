@@ -106,7 +106,31 @@ public class LongTextViewController: OWSViewController {
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryTextColor
         if let displayableText = displayableText {
-            messageTextView.attributedText = fullAttributedText
+            let mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
+            mutableText.addAttributes(
+                [.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
+                range: NSRange(location: 0, length: mutableText.length)
+            )
+
+            // Mentions have a custom style on the long-text view
+            // that differs from the message, so we re-color them here.
+            mutableText.enumerateAttribute(
+                .mention,
+                in: NSRange(location: 0, length: mutableText.length),
+                options: []
+            ) { mention, subrange, _ in
+                guard mention != nil else { return }
+
+                mutableText.addAttributes(
+                    [
+                        .backgroundColor: Theme.isDarkThemeEnabled ? UIColor.ows_signalBlueDark : UIColor.ows_blackAlpha20,
+                        .foregroundColor: Theme.primaryTextColor
+                    ],
+                    range: subrange
+                )
+            }
+
+            messageTextView.attributedText = mutableText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
             messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
         } else {

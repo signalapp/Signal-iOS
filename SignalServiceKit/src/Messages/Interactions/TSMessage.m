@@ -424,10 +424,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         OWSFailDebug(@"Can't parse oversize text data.");
         return nil;
     }
-    return text.filterStringForDisplay;
+    return text;
 }
 
-- (nullable NSString *)bodyTextWithTransaction:(GRDBReadTransaction *)transaction
+- (nullable NSString *)rawBodyWithTransaction:(GRDBReadTransaction *)transaction
 {
     NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
     if (oversizeText) {
@@ -435,7 +435,21 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (self.body.length > 0) {
-        return self.body.filterStringForDisplay;
+        return self.body;
+    }
+
+    return nil;
+}
+
+- (nullable NSString *)plaintextBodyWithTransaction:(GRDBReadTransaction *)transaction
+{
+    NSString *_Nullable rawBody = [self rawBodyWithTransaction:transaction];
+    if (rawBody) {
+        if (self.bodyRanges) {
+            return [self.bodyRanges plaintextBodyWithText:rawBody transaction:transaction];
+        }
+
+        return rawBody.filterStringForDisplay;
     }
 
     return nil;
@@ -454,6 +468,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (self.body.length > 0) {
         bodyDescription = self.body;
+    }
+
+    if (self.bodyRanges) {
+        bodyDescription = [self.bodyRanges plaintextBodyWithText:bodyDescription
+                                                     transaction:transaction.unwrapGrdbRead];
     }
 
     if (bodyDescription == nil) {

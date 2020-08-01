@@ -310,6 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
                                         authorAddress:self.authorAddress
                                                  body:self.body
+                                           bodyRanges:self.bodyRanges
                           quotedAttachmentsForSending:attachments];
 }
 

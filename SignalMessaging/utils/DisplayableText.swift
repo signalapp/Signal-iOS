@@ -150,6 +150,22 @@ import Foundation
     // MARK: Filter Methods
 
     @objc
+    public class var empty: DisplayableText {
+        return DisplayableText(
+            fullContent: .init(attributedText: .init(string: ""), naturalAlignment: .natural),
+            truncatedContent: .init(attributedText: .init(string: ""), naturalAlignment: .natural)
+        )
+    }
+
+    @objc
+    public class func displayableTextForTests(_ text: String) -> DisplayableText {
+        return DisplayableText(
+            fullContent: .init(attributedText: .init(string: text), naturalAlignment: text.naturalTextAlignment),
+            truncatedContent: .init(attributedText: .init(string: text), naturalAlignment: text.naturalTextAlignment)
+        )
+    }
+
+    @objc
     public class func displayableText(withMessageBody messageBody: MessageBody, mentionStyle: Mention.Style, transaction: SDSAnyReadTransaction) -> DisplayableText {
         let fullAttributedText = messageBody.attributedBody(
             style: mentionStyle,
@@ -180,15 +196,15 @@ import Foundation
             // There's a mention overlapping our normal truncate point, we want to truncate sooner
             // so we don't "split" the mention.
             if possibleOverlappingMention != nil && mentionRange.location < kMaxTextDisplayLength {
-                snippetLength = mentionRange.location + 1
+                snippetLength = mentionRange.location
             }
 
             // Trim whitespace before _AND_ after slicing the snipper from the string.
             let truncatedAttributedText = fullAttributedText
                 .attributedSubstring(from: NSRange(location: 0, length: snippetLength))
+                .ows_stripped()
                 .stringByAppendingString("…")
 
-            // todo: strip
             truncatedContent = Content(
                 attributedText: truncatedAttributedText,
                 naturalAlignment: truncatedAttributedText.string.naturalTextAlignment

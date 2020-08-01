@@ -232,8 +232,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         let outgoingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_1", comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble.")
         let message = MockOutgoingMessage(messageBody: outgoingText, thread: thread)
         let outgoingItem = MockConversationViewItem(interaction: message, thread: thread)
-        // TODO:
-//        outgoingItem.displayableBodyText = DisplayableText.displayableText(outgoingText)
+        outgoingItem.displayableBodyText = DisplayableText.displayableTextForTests(outgoingText)
         outgoingItem.interactionType = .outgoingMessage
         return outgoingItem
     }
@@ -243,8 +242,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         let incomingText = NSLocalizedString("COLOR_PICKER_DEMO_MESSAGE_2", comment: "The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble.")
         let message = MockIncomingMessage(messageBody: incomingText, thread: thread)
         let incomingItem = MockConversationViewItem(interaction: message, thread: thread)
-        // TODO:
-//        incomingItem.displayableBodyText = DisplayableText.displayableText(incomingText)
+        incomingItem.displayableBodyText = DisplayableText.displayableTextForTests(incomingText)
         incomingItem.interactionType = .incomingMessage
         return incomingItem
     }

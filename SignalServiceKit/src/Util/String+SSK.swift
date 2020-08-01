@@ -89,6 +89,16 @@ public extension NSAttributedString {
     static func + (lhs: NSAttributedString, rhs: String) -> NSAttributedString {
         return lhs.stringByAppendingString(rhs)
     }
+
+    @objc
+    func ows_stripped() -> NSAttributedString {
+        guard length > 0 else { return self }
+        guard !string.ows_stripped().isEmpty else { return NSAttributedString() }
+
+        let mutableString = NSMutableAttributedString(attributedString: self)
+        mutableString.ows_strip()
+        return NSAttributedString(attributedString: mutableString)
+    }
 }
 
 // MARK: - 
@@ -97,6 +107,42 @@ public extension NSMutableAttributedString {
     @objc
     func append(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) {
         append(NSAttributedString(string: string, attributes: attributes))
+    }
+
+    @objc
+    func ows_strip() {
+        guard length > 0 else { return }
+
+        let nsString = string as NSString
+        let strippedString = string.ows_stripped()
+
+        func replaceWithEmptyString() {
+            replaceCharacters(in: NSRange(location: 0, length: length), with: "")
+        }
+
+        guard !strippedString.isEmpty else { return replaceWithEmptyString() }
+
+        let remainingRange = nsString.range(of: strippedString)
+        guard remainingRange.location != NSNotFound else {
+            owsFailDebug("Unexpectedly missing substring after strip")
+            return replaceWithEmptyString()
+        }
+
+        let newEndOfString = remainingRange.location + remainingRange.length
+        if newEndOfString < mutableString.length {
+            mutableString.replaceCharacters(
+                in: NSRange(location: newEndOfString, length: mutableString.length - newEndOfString),
+                with: ""
+            )
+        }
+
+        let newStartOfString = remainingRange.location
+        if newStartOfString > 0 {
+            mutableString.replaceCharacters(
+                in: NSRange(location: 0, length: newStartOfString),
+                with: ""
+            )
+        }
     }
 }
 

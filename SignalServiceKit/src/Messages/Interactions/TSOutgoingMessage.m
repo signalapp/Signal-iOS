@@ -1108,30 +1108,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [builder setBody:truncatedBody];
     }
 
-    if (self.bodyRanges) {
-        NSMutableArray<SSKProtoDataMessageBodyRange *> *bodyRanges = [NSMutableArray new];
-        for (NSValue *rangeValue in self.bodyRanges.mentions) {
-            NSRange range = [rangeValue rangeValue];
-            NSUUID *uuid = self.bodyRanges.mentions[rangeValue];
-
-            SSKProtoDataMessageBodyRangeBuilder *bodyRangeBuilder = [SSKProtoDataMessageBodyRange builder];
-            [bodyRangeBuilder setStart:(uint32_t)range.location];
-            [bodyRangeBuilder setLength:(uint32_t)range.length];
-            [bodyRangeBuilder setMentionUuid:uuid.UUIDString];
-
-            NSError *error;
-            SSKProtoDataMessageBodyRange *_Nullable bodyRange = [bodyRangeBuilder buildAndReturnError:&error];
-            if (!bodyRange || error) {
-                OWSFailDebug(@"could not build protobuf: %@", error);
-                return nil;
-            }
-            if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
-                requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
-            }
-
-            [bodyRanges addObject:bodyRange];
-        }
+    NSArray<SSKProtoDataMessageBodyRange *> *bodyRanges = [self bodyRangeProtosWithBodyText:self.body
+                                                                              andBodyRanges:self.bodyRanges];
+    if (bodyRanges.count > 0) {
         [builder setBodyRanges:bodyRanges];
+
+        if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
+            requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
+        }
     }
 
     [builder setExpireTimer:self.expiresInSeconds];
@@ -1190,6 +1174,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             return nil;
         }
         [builder setQuote:quoteProto];
+
+        if (quoteProto.bodyRanges.count > 0) {
+            if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionMentions) {
+                requiredProtocolVersion = SSKProtoDataMessageProtocolVersionMentions;
+            }
+        }
     }
 
     // Contact Share
@@ -1367,6 +1357,40 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
 }
 
+- (NSArray<SSKProtoDataMessageBodyRange *> *)bodyRangeProtosWithBodyText:(NSString *)bodyText
+                                                           andBodyRanges:(nullable MessageBodyRanges *)bodyRanges
+{
+    if (bodyText.length == 0 || bodyRanges == nil) {
+        return @[];
+    }
+
+    NSMutableArray<SSKProtoDataMessageBodyRange *> *bodyRangeProtos = [NSMutableArray new];
+    for (NSValue *rangeValue in bodyRanges.mentions) {
+        NSRange range = [rangeValue rangeValue];
+        NSUUID *uuid = bodyRanges.mentions[rangeValue];
+
+        if (range.location + range.length > bodyText.length) {
+            OWSFailDebug(@"Skipping invalid range in body ranges.");
+            continue;
+        }
+
+        SSKProtoDataMessageBodyRangeBuilder *bodyRangeBuilder = [SSKProtoDataMessageBodyRange builder];
+        [bodyRangeBuilder setStart:(uint32_t)range.location];
+        [bodyRangeBuilder setLength:(uint32_t)range.length];
+        [bodyRangeBuilder setMentionUuid:uuid.UUIDString];
+
+        NSError *error;
+        SSKProtoDataMessageBodyRange *_Nullable bodyRange = [bodyRangeBuilder buildAndReturnError:&error];
+        if (!bodyRange || error) {
+            OWSFailDebug(@"could not build protobuf: %@", error);
+            return nil;
+        }
+
+        [bodyRangeProtos addObject:bodyRange];
+    }
+    return [bodyRangeProtos copy];
+}
+
 - (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.quotedMessage) {
@@ -1384,6 +1408,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     if (self.quotedMessage.body.length > 0) {
         hasQuotedText = YES;
         [quoteBuilder setText:quotedMessage.body];
+
+        NSArray<SSKProtoDataMessageBodyRange *> *bodyRanges =
+            [self bodyRangeProtosWithBodyText:self.quotedMessage.body andBodyRanges:self.quotedMessage.bodyRanges];
+        if (bodyRanges.count > 0) {
+            [quoteBuilder setBodyRanges:bodyRanges];
+        }
     }
 
     if (quotedMessage.quotedAttachments) {

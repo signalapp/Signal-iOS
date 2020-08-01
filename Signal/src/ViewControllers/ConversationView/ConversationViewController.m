@@ -4116,11 +4116,9 @@ typedef enum : NSUInteger {
         return;
     }
 
-    //    text = [text ows_stripped];
-    //
-    //    if (text.length < 1) {
-    //        return;
-    //    }
+    if (messageBody.text.length < 1) {
+        return;
+    }
 
     BOOL didAddToProfileWhitelist =
         [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];

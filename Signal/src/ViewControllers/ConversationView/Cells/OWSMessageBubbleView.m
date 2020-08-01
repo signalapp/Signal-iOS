@@ -833,7 +833,6 @@ typedef struct {
         NSParagraphStyleAttributeName : paragraphStyle
     }
                             range:NSMakeRange(0, attributedText.length)];
-    // TODO:
 
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];

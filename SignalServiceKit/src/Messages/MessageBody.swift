@@ -67,6 +67,16 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
         super.init()
     }
 
+    public convenience init(protos: [SSKProtoDataMessageBodyRange]) {
+        var mentions = [NSRange: UUID]()
+        for proto in protos {
+            guard let mentionUuidString = proto.mentionUuid, let mentionUuid = UUID(uuidString: mentionUuidString) else { continue }
+            let range = NSRange(location: Int(proto.start), length: Int(proto.length))
+            mentions[range] = mentionUuid
+        }
+        self.init(mentions: mentions)
+    }
+
     public required init?(coder: NSCoder) {
         let mentionsCount = coder.decodeInteger(forKey: "mentionsCount")
 
@@ -116,6 +126,6 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
             mutableText.replaceCharacters(in: range, with: Self.mentionPrefix + displayName)
         }
 
-        return mutableText as String
+        return mutableText.filterStringForDisplay()
     }
 }

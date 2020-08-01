@@ -20,6 +20,7 @@ public class Mention: NSObject {
         case incoming
         case outgoing
         case composingAttachment
+        case quotedReply
 
         public static var composing: Self = .incoming
     }
@@ -36,7 +37,7 @@ public class Mention: NSObject {
     public init(address: SignalServiceAddress, style: Style, transaction: GRDBReadTransaction) {
         self.address = address
         self.style = style
-        self.text = Self.mentionPrefix + Environment.shared.contactsManager.displayName(for: address, transaction: transaction.asAnyRead)
+        self.text = (Self.mentionPrefix + Environment.shared.contactsManager.displayName(for: address, transaction: transaction.asAnyRead)).bidirectionallyBalancedAndIsolated
     }
 
     public var attributedString: NSAttributedString { NSAttributedString(string: text, attributes: attributes) }
@@ -49,14 +50,17 @@ public class Mention: NSObject {
 
         switch style {
         case .incoming:
-            attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? .ows_blackAlpha20 : UIColor(rgbHex: 0xCCCCCC)
+            attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? UIColor.ows_gray60 : UIColor.ows_gray20
             attributes[.foregroundColor] = ConversationStyle.bubbleTextColorIncoming
         case .outgoing:
-            attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? .ows_blackAlpha20 : UIColor.ows_signalBlueDark
+            attributes[.backgroundColor] = UIColor.ows_signalBlueDark
             attributes[.foregroundColor] = ConversationStyle.bubbleTextColorOutgoing
         case .composingAttachment:
             attributes[.backgroundColor] = UIColor.ows_gray75
             attributes[.foregroundColor] = Theme.darkThemePrimaryColor
+        case .quotedReply:
+            attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? UIColor.ows_blackAlpha40 : UIColor.ows_blackAlpha20
+            attributes[.foregroundColor] = Theme.primaryTextColor
         }
 
         return attributes
@@ -76,18 +80,19 @@ public class Mention: NSObject {
 }
 
 extension NSAttributedString.Key {
-    static let mention = NSAttributedString.Key("Mention")
+    public static let mention = NSAttributedString.Key("Mention")
 }
 
 extension MessageBody {
     public convenience init(attributedString: NSAttributedString) {
         var mentions = [NSRange: UUID]()
 
-        let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
+        let filteredAttributedString = attributedString.filterForDisplay
+        let mutableAttributedString = NSMutableAttributedString(attributedString: filteredAttributedString)
 
         mutableAttributedString.enumerateAttribute(
             .mention,
-            in: NSRange(location: 0, length: attributedString.length),
+            in: NSRange(location: 0, length: mutableAttributedString.length),
             options: []
         ) { mention, subrange, _ in
             guard let mention = mention as? Mention else { return }
@@ -159,6 +164,44 @@ extension MessageBodyRanges {
             }
         }
 
-        return NSAttributedString(attributedString: mutableText)
+        return NSAttributedString(attributedString: mutableText).filterForDisplay
+    }
+}
+
+private extension NSAttributedString {
+    // This is private because it's *only* safe to use on mention attributed strings.
+    var filterForDisplay: NSAttributedString {
+        guard length > 0 else { return self }
+
+        if string.ows_stripped().isEmpty { return NSAttributedString(string: "") }
+
+        let mutableString = NSMutableAttributedString(attributedString: self)
+
+        // Filter each non-mention substring
+
+        // TODO: If we ever start supporting other styling than mentions,
+        // this method of filtering will fall down. For now, we can safely
+        // filter all the text before/after/between mentions and treat it
+        // as having the same set of attributes.
+        mutableString.enumerateAttribute(
+            .mention,
+            in: NSRange(location: 0, length: length),
+            options: []
+        ) { mention, subrange, _ in
+            guard mention == nil else { return }
+
+            let string = mutableString.attributedSubstring(from: subrange).string
+            let attributes = mutableString.attributes(at: subrange.location, effectiveRange: nil)
+
+            mutableString.replaceCharacters(
+                in: subrange,
+                with: NSAttributedString(string: string.filterSubstringForDisplay(), attributes: attributes)
+            )
+        }
+
+        // Strip the resulting string
+        mutableString.ows_strip()
+
+        return NSAttributedString(attributedString: mutableString)
     }
 }

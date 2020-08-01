@@ -736,11 +736,14 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     NSString *displayableTextCacheKey = [@"body-" stringByAppendingString:interactionId];
 
-    return [self displayableTextForCacheKey:displayableTextCacheKey
-                           messageBodyBlock:^{
-                               return [[MessageBody alloc] initWithText:text ranges:ranges ?: MessageBodyRanges.empty];
-                           }
-                                transaction:transaction];
+    return [self
+        displayableTextForCacheKey:displayableTextCacheKey
+                  messageBodyBlock:^{
+                      return [[MessageBody alloc] initWithText:text ranges:ranges ?: MessageBodyRanges.empty];
+                  }
+                      mentionStyle:[self.interaction isKindOfClass:[TSOutgoingMessage class]] ? MentionStyleOutgoing
+                                                                                              : MentionStyleIncoming
+                       transaction:transaction];
 }
 
 - (DisplayableText *)displayableBodyTextForOversizeTextAttachment:(TSAttachmentStream *)attachmentStream
@@ -754,13 +757,16 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
     NSString *displayableTextCacheKey = [@"oversize-body-" stringByAppendingString:interactionId];
 
-    return [self displayableTextForCacheKey:displayableTextCacheKey
-                           messageBodyBlock:^{
-                               NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.originalMediaURL];
-                               NSString *text = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
-                               return [[MessageBody alloc] initWithText:text ranges:ranges ?: MessageBodyRanges.empty];
-                           }
-                                transaction:transaction];
+    return [self
+        displayableTextForCacheKey:displayableTextCacheKey
+                  messageBodyBlock:^{
+                      NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.originalMediaURL];
+                      NSString *text = [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
+                      return [[MessageBody alloc] initWithText:text ranges:ranges ?: MessageBodyRanges.empty];
+                  }
+                      mentionStyle:[self.interaction isKindOfClass:[TSOutgoingMessage class]] ? MentionStyleOutgoing
+                                                                                              : MentionStyleIncoming
+                       transaction:transaction];
 }
 
 - (DisplayableText *)displayableQuotedTextForText:(NSString *)text
@@ -778,6 +784,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                            messageBodyBlock:^{
                                return [[MessageBody alloc] initWithText:text ranges:ranges ?: MessageBodyRanges.empty];
                            }
+                               mentionStyle:MentionStyleQuotedReply
                                 transaction:transaction];
 }
 
@@ -795,11 +802,13 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                            messageBodyBlock:^{
                                return [[MessageBody alloc] initWithText:text ranges:MessageBodyRanges.empty];
                            }
+                               mentionStyle:MentionStyleIncoming
                                 transaction:transaction];
 }
 
 - (DisplayableText *)displayableTextForCacheKey:(NSString *)displayableTextCacheKey
                                messageBodyBlock:(MessageBody * (^_Nonnull)(void))messageBodyBlock
+                                   mentionStyle:(MentionStyle)mentionStyle
                                     transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(displayableTextCacheKey.length > 0);
@@ -807,12 +816,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     DisplayableText *_Nullable displayableText = [[self displayableTextCache] objectForKey:displayableTextCacheKey];
     if (!displayableText) {
         MessageBody *messageBody = messageBodyBlock();
-        displayableText =
-            [DisplayableText displayableTextWithMessageBody:messageBody
-                                               mentionStyle:[self.interaction isKindOfClass:[TSOutgoingMessage class]]
-                                                   ? MentionStyleOutgoing
-                                                   : MentionStyleIncoming
-                                                transaction:transaction];
+        displayableText = [DisplayableText displayableTextWithMessageBody:messageBody
+                                                             mentionStyle:mentionStyle
+                                                              transaction:transaction];
         [[self displayableTextCache] setObject:displayableText forKey:displayableTextCacheKey];
     }
     return displayableText;
@@ -918,7 +924,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         self.attachmentPointer = (TSAttachmentPointer *)oversizeTextAttachmentPointer;
         return;
     } else {
-        NSString *_Nullable bodyText = [message bodyTextWithTransaction:transaction.unwrapGrdbRead];
+        NSString *_Nullable bodyText = message.body;
         if (bodyText) {
             self.displayableBodyText = [self displayableBodyTextForText:bodyText
                                                                  ranges:message.bodyRanges
@@ -1013,8 +1019,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         // are rendered like empty text messages, but without any interactivity.
         OWSLogWarn(@"Treating unknown message as empty text message: %@ %llu", message.class, message.timestamp);
         self.messageCellType = OWSMessageCellType_TextOnlyMessage;
-        //        self.displayableBodyText = [DisplayableText displayableText:@""];
-        // TODO:
+        self.displayableBodyText = DisplayableText.empty;
     }
 }
 
@@ -1271,12 +1276,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_MediaMessage:
         case OWSMessageCellType_GenericAttachment: {
             OWSAssertDebug(self.displayableBodyText);
-
-            // TODO:
-            MessageBody *messageBody =
-                [[MessageBody alloc] initWithAttributedString:self.displayableBodyText.fullAttributedText];
-
-            [UIPasteboard.generalPasteboard setString:self.displayableBodyText.fullAttributedText.string];
+            [MentionTextView copyAttributedStringToPasteboard:self.displayableBodyText.fullAttributedText];
             break;
         }
         case OWSMessageCellType_Unknown:

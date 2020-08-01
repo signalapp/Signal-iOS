@@ -114,8 +114,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
-- (nullable NSString *)oversizeTextWithTransaction:(GRDBReadTransaction *)transaction;
-- (nullable NSString *)bodyTextWithTransaction:(GRDBReadTransaction *)transaction;
+- (nullable NSString *)rawBodyWithTransaction:(GRDBReadTransaction *)transaction;
+- (nullable NSString *)plaintextBodyWithTransaction:(GRDBReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimer;
 

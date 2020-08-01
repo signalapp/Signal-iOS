@@ -463,10 +463,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let notificationBody: String
         if let bodyDescription: String = {
-            if let messageBody = message.body, !messageBody.isEmpty {
-                return messageBody.filterStringForDisplay()
-            } else if let oversizeText = message.oversizeText(with: transaction.unwrapGrdbRead), !oversizeText.isEmpty {
-                return oversizeText.filterStringForDisplay()
+            if let messageBody = message.plaintextBody(with: transaction.unwrapGrdbRead), !messageBody.isEmpty {
+                return messageBody
             } else {
                 return nil
             }
