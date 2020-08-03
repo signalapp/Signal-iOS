@@ -1,10 +1,12 @@
 import SwiftCSV
 
 final class IP2Country {
+    var countryNamesCache: [String:String] = [:]
 
     private lazy var ipv4Table = try! CSV(name: "GeoLite2-Country-Blocks-IPv4", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
     private lazy var countryNamesTable = try! CSV(name: "GeoLite2-Country-Locations-English", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
-    var countryNamesCache: [String:String] = [:]
+
+    private static let workQueue = DispatchQueue(label: "IP2Country.workQueue", qos: .utility) // It's important that this is a serial queue
 
     static var isInitialized = false
 
@@ -44,7 +46,7 @@ final class IP2Country {
     }
 
     @objc func populateCacheIfNeededAsync() {
-        DispatchQueue.global(qos: .utility).async {
+        IP2Country.workQueue.async {
             let _ = self.populateCacheIfNeeded()
         }
     }

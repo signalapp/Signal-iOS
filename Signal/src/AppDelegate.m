@@ -944,6 +944,13 @@ static NSTimeInterval launchStartedAt;
 
 - (void)handleDataNukeRequested:(NSNotification *)notification
 {
+    NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+    BOOL isUsingFullAPNs = [userDefaults boolForKey:@"isUsingFullAPNs"];
+    NSString *hexEncodedDeviceToken = [userDefaults stringForKey:@"deviceToken"];
+    if (isUsingFullAPNs && hexEncodedDeviceToken != nil) {
+        NSData *deviceToken = [NSData dataFromHexString:hexEncodedDeviceToken];
+        [[LKPushNotificationManager registerWithToken:deviceToken isForcedUpdate:YES] retainUntilComplete]; // This actually unregisters the user; we should rename the function
+    }
     [ThreadUtil deleteAllContent];
     [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];

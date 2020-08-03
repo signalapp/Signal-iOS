@@ -85,7 +85,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
         // Show device unlinked alert if needed
         if UserDefaults.standard[.wasUnlinked] {
-            let alert = UIAlertController(title: "Device Unlinked", message: NSLocalizedString("vc_landing_device_unlinked_dialog_title", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: "Device Unlinked", message: NSLocalizedString("vc_landing_device_unlinked_modal_title", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
             UserDefaults.removeAll()

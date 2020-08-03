@@ -115,15 +115,15 @@ public enum OWSMediaError: Error {
      * https://github.com/signalapp/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
      */
     @objc
-    public static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
+    public static var kMaxFileSizeAnimatedImage: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
     @objc
-    public static let kMaxFileSizeImage = UInt(6 * 1024 * 1024)
+    public static var kMaxFileSizeImage: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
     @objc
-    public static let kMaxFileSizeVideo = UInt(100 * 1024 * 1024)
+    public static var kMaxFileSizeVideo: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
     @objc
-    public static let kMaxFileSizeAudio = UInt(100 * 1024 * 1024)
+    public static var kMaxFileSizeAudio: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
     @objc
-    public static let kMaxFileSizeGeneric = UInt(100 * 1024 * 1024)
+    public static var kMaxFileSizeGeneric: UInt { UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) }
 
     @objc
     public static let kMaxVideoDimensions: CGFloat = 3 * 1024

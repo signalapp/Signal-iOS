@@ -284,12 +284,15 @@ public enum OnionRequestAPI {
     internal static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode!
-        DispatchQueue.global(qos: .userInitiated).async {
+        SnodeAPI.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
+                if case Destination.server = destination {
+                    print("[Loki] Onion request size: ~\(onion.count)")
+                }
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
@@ -297,7 +300,7 @@ public enum OnionRequestAPI {
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
                 HTTP.execute(.post, url, parameters: parameters).done2 { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
-                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(HTTP.Error.invalidJSON) }
+                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
                     let iv = ivAndCiphertext[0..<Int(ivSize)]
                     let ciphertext = ivAndCiphertext[Int(ivSize)...]
                     do {
