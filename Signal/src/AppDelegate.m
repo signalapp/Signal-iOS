@@ -260,13 +260,6 @@ static NSTimeInterval launchStartedAt;
         UNUserNotificationCenter.currentNotificationCenter.delegate = self;
     }
 
-    // Accept push notification when app is not open
-    NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotif) {
-        OWSLogInfo(@"Application was launched by tapping a push notification.");
-        [self application:application didReceiveRemoteNotification:remoteNotif];
-    }
-
     [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
     [[OWSWindowManager sharedManager] setupWithRootWindow:self.window
                                      screenBlockingWindow:OWSScreenLockUI.sharedManager.screenBlockingWindow];
