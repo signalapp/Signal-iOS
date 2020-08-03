@@ -92,9 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
         OWSOperation<OWSContactDiscovering> *operation = nil;
 
         if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
-            operation = [[OWSContactDiscoveryOperation alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
+            operation =
+                [[OWSContactDiscoveryOperation alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
         } else {
-            operation = [[OWSLegacyContactDiscoveryOperation alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
+            operation = [[OWSLegacyContactDiscoveryOperation alloc]
+                initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
         }
 
         NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
@@ -112,9 +114,10 @@ NS_ASSUME_NONNULL_BEGIN
             for (OWSDiscoveredContactInfo *contactInfo in operation.discoveredContactInfo) {
                 SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:contactInfo.uuid
                                                                                phoneNumber:contactInfo.e164];
-                SignalRecipient *recipient = [SignalRecipient markRecipientAsRegisteredAndGet:address
-                                                                                   trustLevel:SignalRecipientTrustLevelHigh
-                                                                                  transaction:transaction];
+                SignalRecipient *recipient =
+                    [SignalRecipient markRecipientAsRegisteredAndGet:address
+                                                          trustLevel:SignalRecipientTrustLevelHigh
+                                                         transaction:transaction];
 
                 [registeredRecipients addObject:recipient];
                 [toUnregister removeObject:contactInfo.e164];
