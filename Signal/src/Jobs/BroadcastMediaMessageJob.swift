@@ -88,7 +88,8 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
 
     public override func run() {
         let uploadOperations = jobRecord.attachmentIdMap.keys.map { attachmentId in
-            return OWSUploadOperation(attachmentId: attachmentId)
+            // This is only used for media attachments, so we can always use v3.
+            return OWSUploadOperation(attachmentId: attachmentId, canUseV3: true)
         }
 
         OWSUploadOperation.uploadQueue.addOperations(uploadOperations, waitUntilFinished: true)
