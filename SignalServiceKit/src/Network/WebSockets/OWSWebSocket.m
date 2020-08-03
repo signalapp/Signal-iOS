@@ -867,7 +867,11 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     NSError *error;
     BOOL didSucceed = [self.websocket sendResponseForRequest:request status:200 message:@"OK" error:&error];
     if (!didSucceed) {
-        OWSFailDebug(@"failure: %@", error);
+        if (IsNetworkConnectivityFailure(error)) {
+            OWSLogWarn(@"Error: %@", error);
+        } else {
+            OWSFailDebug(@"Error: %@", error);
+        }
     }
 }
 
