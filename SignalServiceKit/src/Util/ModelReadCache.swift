@@ -56,12 +56,6 @@ private struct ModelCacheKey<KeyType: AnyObject> {
 
 // MARK: -
 
-private func BuildCacheKey(forAddress address: SignalServiceAddress) -> ModelCacheKey<SignalServiceAddress> {
-    return ModelCacheKey(key: OWSUserProfile.resolve(address))
-}
-
-// MARK: -
-
 private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
     func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
         notImplemented()
@@ -610,8 +604,9 @@ public class UserProfileReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
+            // Resolve key for local user to the invariant key.
             let key = OWSUserProfile.resolve(key)
-            return BuildCacheKey(forAddress: key)
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -680,7 +675,7 @@ public class SignalAccountReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return BuildCacheKey(forAddress: key)
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -748,7 +743,7 @@ public class SignalRecipientReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return BuildCacheKey(forAddress: key)
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
