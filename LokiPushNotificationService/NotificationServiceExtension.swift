@@ -20,7 +20,6 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
             isMainAppActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
         }
-        print("[Ryan debug] isMainAppActive \(isMainAppActive)")
         // If the main app is running, skip the whole process
         guard !isMainAppActive else { return self.completeWithFailure(content: notificationContent!) }
         

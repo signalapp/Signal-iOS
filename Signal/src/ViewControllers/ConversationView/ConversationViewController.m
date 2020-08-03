@@ -842,8 +842,7 @@ typedef enum : NSUInteger {
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     [self startReadTimer];
-    [self.conversationViewModel viewDidLoad];
-    [self.conversationViewModel loadAnotherPageOfMessages];
+    [self resetContentAndLayout];
 }
 
 - (void)dismissPresentedViewControllerIfNecessary

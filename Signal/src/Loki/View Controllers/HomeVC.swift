@@ -4,8 +4,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     private var isObservingDatabase = true
     private var isViewVisible = false { didSet { updateIsObservingDatabase() } }
     private var tableViewTopConstraint: NSLayoutConstraint!
-    
-    private var hasDatabaseModifiedNotificationWhenInvisible = false
+    private var wasDatabaseModifiedExternally = false
     
     private var threads: YapDatabaseViewMappings = {
         let result = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName)
@@ -235,7 +234,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let ext = uiDatabaseConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
         let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
         guard isObservingDatabase else {
-            hasDatabaseModifiedNotificationWhenInvisible = hasChanges
+            wasDatabaseModifiedExternally = hasChanges
             return
         }
         guard hasChanges else {
@@ -280,9 +279,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     @objc private func handleApplicationDidBecomeActiveNotification(_ notification: Notification) {
         updateIsObservingDatabase()
-        if (hasDatabaseModifiedNotificationWhenInvisible) {
+        if wasDatabaseModifiedExternally {
             reload()
-            hasDatabaseModifiedNotificationWhenInvisible = false
+            wasDatabaseModifiedExternally = false
         }
     }
     

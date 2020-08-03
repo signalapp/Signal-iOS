@@ -308,7 +308,7 @@ static NSTimeInterval launchStartedAt;
     }
     
     NSUserDefaults *sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.loki-project.loki-messenger"];
-    [sharedUserDefaults setBool:true forKey:@"isMainAppActive"];
+    [sharedUserDefaults setBool:YES forKey:@"isMainAppActive"];
     [sharedUserDefaults synchronize];
 
     [self ensureRootViewController];
@@ -339,7 +339,7 @@ static NSTimeInterval launchStartedAt;
     [self clearAllNotificationsAndRestoreBadgeCount];
     
     NSUserDefaults *sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.loki-project.loki-messenger"];
-    [sharedUserDefaults setBool:false forKey:@"isMainAppActive"];
+    [sharedUserDefaults setBool:NO forKey:@"isMainAppActive"];
     [sharedUserDefaults synchronize];
 
     [DDLog flushLog];
