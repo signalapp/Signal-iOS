@@ -89,35 +89,43 @@ NS_ASSUME_NONNULL_BEGIN
                            failure:(void (^)(NSError *error))failure
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableSet<SignalRecipient *> *registeredRecipients = [NSMutableSet new];
-        if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
-            OWSFailDebug(@"failure: TODO");
-        }
+        OWSOperation<OWSContactDiscovering> *operation = nil;
 
-        OWSLegacyContactDiscoveryOperation *operation =
-            [[OWSLegacyContactDiscoveryOperation alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
+        if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+            operation =
+                [[OWSContactDiscoveryOperation alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
+        } else {
+            operation = [[OWSLegacyContactDiscoveryOperation alloc]
+                initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
+        }
 
         NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
         [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
 
-        if (operation.failingError != nil) {
-            failure(operation.failingError);
+        if (operation.discoveredContactInfo == nil) {
+            NSError *error = operation.failingError ?: OWSErrorMakeAssertionError(@"Unexpected operation cancellation");
+            failure(error);
             return;
         }
 
-        NSSet<NSString *> *registeredPhoneNumbers = operation.registeredPhoneNumbers;
+        NSMutableSet<SignalRecipient *> *registeredRecipients = [[NSMutableSet alloc] init];
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            for (NSString *phoneNumber in phoneNumbersToLookup) {
+            NSMutableSet<NSString *> *toUnregister = [phoneNumbersToLookup mutableCopy];
+            for (OWSDiscoveredContactInfo *contactInfo in operation.discoveredContactInfo) {
+                SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:contactInfo.uuid
+                                                                               phoneNumber:contactInfo.e164];
+                SignalRecipient *recipient =
+                    [SignalRecipient markRecipientAsRegisteredAndGet:address
+                                                          trustLevel:SignalRecipientTrustLevelHigh
+                                                         transaction:transaction];
+
+                [registeredRecipients addObject:recipient];
+                [toUnregister removeObject:contactInfo.e164];
+            }
+
+            for (NSString *phoneNumber in toUnregister) {
                 SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
-                if ([registeredPhoneNumbers containsObject:phoneNumber]) {
-                    SignalRecipient *recipient =
-                        [SignalRecipient markRecipientAsRegisteredAndGet:address
-                                                              trustLevel:SignalRecipientTrustLevelHigh
-                                                             transaction:transaction];
-                    [registeredRecipients addObject:recipient];
-                } else {
-                    [SignalRecipient markRecipientAsUnregistered:address transaction:transaction];
-                }
+                [SignalRecipient markRecipientAsUnregistered:address transaction:transaction];
             }
         });
 

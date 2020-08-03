@@ -5,16 +5,47 @@
 import Foundation
 import PromiseKit
 
+/// This would be a struct if it didn't need to be bridged to objc.
+/// A plain-old tuple of contact info. This is not cached or updated like SignalServiceAddress
+@objc (OWSDiscoveredContactInfo) @objcMembers
+public class DiscoveredContactInfo: NSObject {
+    public let e164: String?
+    public let uuid: UUID?
+
+    public init(e164: String?, uuid: UUID?) {
+        self.e164 = e164
+        self.uuid = uuid
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let otherInfo = object as? DiscoveredContactInfo else { return false }
+        return e164 == otherInfo.e164 && uuid == otherInfo.uuid
+    }
+
+    public override var hash: Int {
+        return e164.hashValue ^ uuid.hashValue
+    }
+}
+
+@objc (OWSContactDiscovering)
+public protocol ContactDiscovering {
+    /// Constructs a ContactDiscovering object from an array of e164 phone numbers
+    @objc init(phoneNumbersToLookup: [String])
+
+    /// On successful completion, this property will be populated with the resulting contact info
+    @objc var discoveredContactInfo: Set<DiscoveredContactInfo>? { get }
+}
+
 @objc(OWSLegacyContactDiscoveryOperation)
-public class LegacyContactDiscoveryOperation: OWSOperation {
-
-    @objc
-    public var registeredPhoneNumbers: Set<String>?
-
-    @objc
-    public var registeredAddresses: Set<SignalServiceAddress>?
+public class LegacyContactDiscoveryOperation: OWSOperation, ContactDiscovering {
 
     private let phoneNumbersToLookup: [String]
+    @objc public var registeredPhoneNumbers: Set<String>?
+    @objc public var discoveredContactInfo: Set<DiscoveredContactInfo>? {
+        return registeredPhoneNumbers?.reduce(into: Set()) {
+            $0.insert(DiscoveredContactInfo(e164: $1, uuid: nil))
+        }
+    }
 
     // MARK: - Dependencies
 
@@ -158,8 +189,8 @@ enum ContactDiscoveryError: Error {
     case serverError(underlyingError: Error)
 }
 
-@objc(SSKContactDiscoveryOperation)
-public class ContactDiscoveryOperation: OWSOperation {
+@objc(OWSContactDiscoveryOperation)
+public class ContactDiscoveryOperation: OWSOperation, ContactDiscovering {
 
     let batchSize = 2048
     static let operationQueue: OperationQueue = {
@@ -170,12 +201,17 @@ public class ContactDiscoveryOperation: OWSOperation {
     }()
 
     let phoneNumbersToLookup: [String]
-    var registeredContacts: Set<CDSRegisteredContact>
+    var registeredContacts: Set<CDSRegisteredContact>?
 
-    required init(phoneNumbersToLookup: [String]) {
+    @objc public var discoveredContactInfo: Set<DiscoveredContactInfo>? {
+        return registeredContacts?.reduce(into: Set()) {
+            $0.insert(DiscoveredContactInfo(e164: $1.e164PhoneNumber, uuid: $1.signalUuid))
+        }
+    }
+
+    @objc required public init(phoneNumbersToLookup: [String]) {
         assert(phoneNumbersToLookup.count == Set(phoneNumbersToLookup).count)
         self.phoneNumbersToLookup = phoneNumbersToLookup
-        self.registeredContacts = Set()
 
         super.init()
 
@@ -198,6 +234,7 @@ public class ContactDiscoveryOperation: OWSOperation {
     override public func run() {
         Logger.debug("")
 
+        var accumulatedResultSet = Set<CDSRegisteredContact>()
         for dependency in self.dependencies {
             guard let batchOperation = dependency as? CDSBatchOperation else {
                 owsFailDebug("unexpected dependency: \(dependency)")
@@ -209,9 +246,9 @@ public class ContactDiscoveryOperation: OWSOperation {
                 continue
             }
 
-            self.registeredContacts.formUnion(registeredContactsBatch)
+            accumulatedResultSet.formUnion(registeredContactsBatch)
         }
-
+        self.registeredContacts = accumulatedResultSet
         self.reportSuccess()
     }
 
@@ -484,7 +521,9 @@ class CDSFeedbackOperation: OWSOperation {
             return
         }
 
-        let registeredPhoneNumbers = Set(cdsOperation.registeredContacts.map { $0.e164PhoneNumber })
+        let modernResults = cdsOperation.registeredContacts ?? Set()
+
+        let registeredPhoneNumbers = Set(modernResults.map { $0.e164PhoneNumber })
 
         if registeredPhoneNumbers == legacyRegisteredPhoneNumbers {
             self.makeRequest(result: .ok)
@@ -511,14 +550,6 @@ class CDSFeedbackOperation: OWSOperation {
         self.networkManager.makeRequest(request,
                                         success: { _, _ in self.reportSuccess() },
                                         failure: { _, error in self.reportError(withUndefinedRetry: error) })
-    }
-}
-
-extension Array {
-    func chunked(by chunkSize: Int) -> [[Element]] {
-        return stride(from: 0, to: self.count, by: chunkSize).map {
-            Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
-        }
     }
 }
 
