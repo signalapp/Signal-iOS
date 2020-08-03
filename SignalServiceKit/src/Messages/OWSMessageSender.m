@@ -466,10 +466,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
         }
 
-        BOOL canUseV3 = YES;
-        if (message.groupMetaMessage != TSGroupMetaMessageDeliver) {
-            canUseV3 = SSKFeatureFlags.attachmentUploadV3ForV1GroupAvatars;
-        }
+        BOOL canUseV3 = (SSKFeatureFlags.attachmentUploadV3ForV1GroupAvatars
+            || message.groupMetaMessage == TSGroupMetaMessageUnspecified
+            || message.groupMetaMessage == TSGroupMetaMessageDeliver);
 
         OWSSendMessageOperation *sendMessageOperation =
             [[OWSSendMessageOperation alloc] initWithMessage:message
