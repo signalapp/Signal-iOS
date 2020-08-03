@@ -247,9 +247,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)suppressUnsatisfiableConstraintLogging
 {
-    if (!SSKDebugFlags.internalLogging) {
-        [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
-    }
+    [[NSUserDefaults standardUserDefaults] setValue:@(SSKDebugFlags.internalLogging)
+                                             forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
 }
 
 + (BOOL)shouldTruncateGrdbWal
