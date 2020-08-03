@@ -46,6 +46,9 @@ class ViewOnceMessageViewController: OWSViewController {
     // MARK: - Properties
 
     private let content: Content
+    // For the UIScrollView delegate
+    private var imageView: UIImageView?
+    private var scrollView: UIScrollView?
 
     // MARK: - Initializers
 
@@ -294,6 +297,7 @@ class ViewOnceMessageViewController: OWSViewController {
             }
 
             let imageView = UIImageView()
+            self.imageView = imageView
             // We need to specify a contentMode since the size of the image
             // might not match the aspect ratio of the view.
             imageView.contentMode = .scaleAspectFit
@@ -303,7 +307,19 @@ class ViewOnceMessageViewController: OWSViewController {
             imageView.layer.magnificationFilter = .trilinear
             imageView.layer.allowsEdgeAntialiasing = true
             imageView.image = image
-            return imageView
+
+            // Scroll View - used to zoom/pan on images and video
+            let scrollView = UIScrollView()
+            self.scrollView = scrollView
+            scrollView.delegate = self
+
+            scrollView.addSubview(imageView)
+            imageView.autoPinEdgesToSuperviewEdges()
+            imageView.autoMatch(.height, to: .height, of: scrollView)
+            imageView.autoMatch(.width, to: .width, of: scrollView)
+            imageView.autoCenterInSuperview()
+            
+            return scrollView
         case .video:
             let videoContainer = UIView()
 
@@ -357,6 +373,14 @@ class ViewOnceMessageViewController: OWSViewController {
 
             return videoContainer
         }
+    }
+    
+    override public func viewWillLayoutSubviews() {
+        Logger.debug("")
+        super.viewWillLayoutSubviews()
+
+        // e.g. if flipping to/from landscape
+        updateMinZoomScaleForSize(view.bounds.size)
     }
 
     // MARK: Video
@@ -451,5 +475,84 @@ extension ViewOnceMessageViewController: UIDatabaseSnapshotDelegate {
 extension ViewOnceMessageViewController: OWSVideoPlayerDelegate {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
         // no-op
+    }
+}
+
+extension ViewOnceMessageViewController: UIScrollViewDelegate {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        guard let imageView = self.imageView else {
+            return nil
+        }
+        
+        return imageView
+    }
+
+    fileprivate func updateMinZoomScaleForSize(_ size: CGSize) {
+        Logger.debug("")
+
+        guard let imageView = self.imageView, let scrollView = self.scrollView else {
+            return
+        }
+
+        // Ensure bounds have been computed
+        guard imageView.bounds.width > 0, imageView.bounds.height > 0 else {
+            Logger.warn("bad bounds")
+            return
+        }
+
+        // Set the zoom scale
+        let widthScale = size.width / imageView.bounds.width
+        let heightScale = size.height / imageView.bounds.height
+        let minScale = min(widthScale, heightScale)
+        scrollView.maximumZoomScale = minScale * 5.0
+        scrollView.minimumZoomScale = minScale
+        scrollView.zoomScale = minScale
+    }
+
+    // Keep the media view centered within the scroll view as you zoom
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        guard let imageView = self.imageView else {
+            owsFailDebug("No media message view.")
+            return
+        }
+
+        // The scroll view has zoomed, so you need to re-center the contents
+        let scrollViewSize = self.scrollViewVisibleSize
+
+        // First assume that imageView center coincides with the contents center
+        // This is correct when the imageView is bigger than scrollView due to zoom
+        var contentCenter = CGPoint(x: (scrollView.contentSize.width / 2), y: (scrollView.contentSize.height / 2))
+
+        let scrollViewCenter = self.scrollViewCenter
+
+        // if imageView is smaller than the scrollView visible size - fix the content center accordingly
+        if scrollView.contentSize.width < scrollViewSize.width {
+            contentCenter.x = scrollViewCenter.x
+        }
+
+        if scrollView.contentSize.height < scrollViewSize.height {
+            contentCenter.y = scrollViewCenter.y
+        }
+
+        imageView.center = contentCenter
+    }
+
+    // return the scroll view center
+    private var scrollViewCenter: CGPoint {
+        let size = scrollViewVisibleSize
+        return CGPoint(x: (size.width / 2), y: (size.height / 2))
+    }
+
+    // Return scrollview size without the area overlapping with tab and nav bar.
+    private var scrollViewVisibleSize: CGSize {
+        guard let scrollView = self.scrollView else {
+            return CGSize(width: 0, height: 0)
+        }
+        
+        let contentInset = scrollView.contentInset
+        let scrollViewSize = scrollView.bounds.standardized.size
+        let width = scrollViewSize.width - (contentInset.left + contentInset.right)
+        let height = scrollViewSize.height - (contentInset.top + contentInset.bottom)
+        return CGSize(width: width, height: height)
     }
 }
