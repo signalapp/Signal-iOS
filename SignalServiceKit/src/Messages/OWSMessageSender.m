@@ -466,6 +466,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
         }
 
+        BOOL canUseV3 = (SSKFeatureFlags.attachmentUploadV3ForV1GroupAvatars
+            || message.groupMetaMessage == TSGroupMetaMessageUnspecified
+            || message.groupMetaMessage == TSGroupMetaMessageDeliver);
+
         OWSSendMessageOperation *sendMessageOperation =
             [[OWSSendMessageOperation alloc] initWithMessage:message
                                                messageSender:self
@@ -475,7 +479,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug(outgoingMessagePreparer.savedAttachmentIds != nil);
         for (NSString *attachmentId in outgoingMessagePreparer.savedAttachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
-                [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId];
+                [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId canUseV3:canUseV3];
             [sendMessageOperation addDependency:uploadAttachmentOperation];
             [OWSUploadOperation.uploadQueue addOperation:uploadAttachmentOperation];
         }

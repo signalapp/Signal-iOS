@@ -80,9 +80,13 @@ public class OWSAttachmentUploadV2: NSObject {
 
     private let attachmentStream: TSAttachmentStream
 
+    private let canUseV3: Bool
+
     @objc
-    public required init(attachmentStream: TSAttachmentStream) {
+    public required init(attachmentStream: TSAttachmentStream,
+                         canUseV3: Bool) {
         self.attachmentStream = attachmentStream
+        self.canUseV3 = canUseV3
     }
 
     private func attachmentData() -> Promise<Data> {
@@ -118,7 +122,7 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     public func upload(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        return (FeatureFlags.attachmentUploadV3
+        return (canUseV3 && FeatureFlags.attachmentUploadV3
             ? uploadV3(progressBlock: progressBlock)
             : uploadV2(progressBlock: progressBlock))
     }

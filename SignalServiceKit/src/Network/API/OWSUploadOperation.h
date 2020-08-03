@@ -19,7 +19,7 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId canUseV3:(BOOL)canUseV3 NS_DESIGNATED_INITIALIZER;
 
 @end
 

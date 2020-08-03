@@ -31,6 +31,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 @interface OWSUploadOperation ()
 
 @property (readonly, nonatomic) NSString *attachmentId;
+@property (readonly, nonatomic) BOOL canUseV3;
+
 @property (nonatomic, nullable) TSAttachmentStream *completedUpload;
 
 @end
@@ -63,7 +65,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
 #pragma mark -
 
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId canUseV3:(BOOL)canUseV3
 {
     self = [super init];
     if (!self) {
@@ -73,6 +75,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     self.remainingRetries = 4;
 
     _attachmentId = attachmentId;
+    _canUseV3 = canUseV3;
 
     return self;
 }
@@ -113,7 +116,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     
     [self fireNotificationWithProgress:0];
 
-    OWSAttachmentUploadV2 *upload = [[OWSAttachmentUploadV2 alloc] initWithAttachmentStream:attachmentStream];
+    OWSAttachmentUploadV2 *upload = [[OWSAttachmentUploadV2 alloc] initWithAttachmentStream:attachmentStream
+                                                                                   canUseV3:self.canUseV3];
     [BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
         .catchInBackground(^{
             // Swallow these errors; blurHashes are strictly optional.
