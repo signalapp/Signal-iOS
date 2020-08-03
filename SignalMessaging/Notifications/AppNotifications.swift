@@ -82,7 +82,7 @@ extension AppNotificationCategory {
         switch self {
         case .incomingMessageWithActions:
             if DebugFlags.reactWithThumbsUpFromLockscreen {
-                return [.reply, .reactWithThumbsUp]
+                return [.markAsRead, .reply, .reactWithThumbsUp]
             } else {
                 return [.markAsRead, .reply]
             }
