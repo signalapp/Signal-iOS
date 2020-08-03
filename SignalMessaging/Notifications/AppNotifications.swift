@@ -40,6 +40,7 @@ public enum AppNotificationAction: CaseIterable {
     case markAsRead
     case reply
     case showThread
+    case reactWithThumbsUp
 }
 
 public struct AppNotificationUserInfoKey {
@@ -80,7 +81,11 @@ extension AppNotificationCategory {
     var actions: [AppNotificationAction] {
         switch self {
         case .incomingMessageWithActions:
-            return [.markAsRead, .reply]
+            if DebugFlags.reactWithThumbsUpFromLockscreen {
+                return [.reply, .reactWithThumbsUp]
+            } else {
+                return [.markAsRead, .reply]
+            }
         case .incomingMessageWithoutActions:
             return []
         case .incomingMessageFromNoLongerVerifiedIdentity:
@@ -118,6 +123,8 @@ extension AppNotificationAction {
             return "Signal.AppNotifications.Action.reply"
         case .showThread:
             return "Signal.AppNotifications.Action.showThread"
+        case .reactWithThumbsUp:
+            return "Signal.AppNotifications.Action.reactWithThumbsUp"
         }
     }
 }

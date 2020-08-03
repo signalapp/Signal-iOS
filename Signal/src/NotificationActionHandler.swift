@@ -131,6 +131,33 @@ class NotificationActionHandler {
             thread.markAllAsRead(updateStorageService: true, transaction: transaction)
         }
     }
+
+    func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+        guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
+            throw NotificationError.failDebug("threadId was unexpectedly nil")
+        }
+        guard let messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String else {
+            throw NotificationError.failDebug("messageId was unexpectedly nil")
+        }
+
+        return databaseStorage.write(.promise) { transaction in
+            guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
+            }
+            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+                throw NotificationError.failDebug("unable to find interaction with id: \(messageId)")
+            }
+            guard let incomingMessage = interaction as? TSIncomingMessage else {
+                throw NotificationError.failDebug("Unexpected interaction type.")
+            }
+
+            ReactionManager.localUserReacted(to: incomingMessage, emoji: "👍", isRemoving: false, transaction: transaction)
+
+            let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+            let readCircumstance: OWSReadCircumstance = (hasPendingMessageRequest ? .readOnThisDeviceWhilePendingMessageRequest : .readOnThisDevice)
+            incomingMessage.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), thread: thread, circumstance: readCircumstance, transaction: transaction)
+        }
+    }
 }
 
 extension ThreadUtil {
