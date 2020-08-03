@@ -74,7 +74,7 @@ public class Mention: NSObject {
             attributes[.backgroundColor] = UIColor.ows_gray75
             attributes[.foregroundColor] = Theme.darkThemePrimaryColor
         case .quotedReply:
-            attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? UIColor.ows_blackAlpha40 : UIColor.ows_blackAlpha20
+            attributes[.backgroundColor] = nil
             attributes[.foregroundColor] = Theme.primaryTextColor
         case .longMessageView:
             attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? UIColor.ows_signalBlueDark : UIColor.ows_blackAlpha20
