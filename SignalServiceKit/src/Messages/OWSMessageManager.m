@@ -1614,7 +1614,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Update thread preview in inbox
     [masterThread touchWithTransaction:transaction];
     
-    if (CurrentAppContext().isMainAppAndActive) {
+    if (CurrentAppContext().isMainApp) {
         [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage inThread:masterThread transaction:transaction];
     }
 
