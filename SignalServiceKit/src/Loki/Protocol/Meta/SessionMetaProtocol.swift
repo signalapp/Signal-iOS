@@ -19,7 +19,8 @@ public final class SessionMetaProtocol : NSObject {
 
     // MARK: Message Destination(s)
     @objc public static func getDestinationsForOutgoingSyncMessage() -> NSMutableSet {
-        return NSMutableSet(set: MultiDeviceProtocol.getUserLinkedDevices())
+        return NSMutableSet(set: [ getUserHexEncodedPublicKey() ])
+//        return NSMutableSet(set: MultiDeviceProtocol.getUserLinkedDevices())
     }
 
     @objc(getDestinationsForOutgoingGroupMessage:inThread:)
@@ -41,7 +42,8 @@ public final class SessionMetaProtocol : NSObject {
             } else {
                 result = Set(outgoingGroupMessage.sendingRecipientIds())
                     .intersection(thread.groupModel.groupMemberIds)
-                    .subtracting(MultiDeviceProtocol.getUserLinkedDevices())
+                    .subtracting([ getUserHexEncodedPublicKey() ])
+//                    .subtracting(MultiDeviceProtocol.getUserLinkedDevices())
             }
         }
         return NSMutableSet(set: result)
@@ -51,11 +53,12 @@ public final class SessionMetaProtocol : NSObject {
     @objc(isThreadNoteToSelf:)
     public static func isThreadNoteToSelf(_ thread: TSThread) -> Bool {
         guard let thread = thread as? TSContactThread else { return false }
-        var isNoteToSelf = false
-        storage.dbReadConnection.read { transaction in
-            isNoteToSelf = LokiDatabaseUtilities.isUserLinkedDevice(thread.contactIdentifier(), transaction: transaction)
-        }
-        return isNoteToSelf
+        return thread.contactIdentifier() == getUserHexEncodedPublicKey()
+//        var isNoteToSelf = false
+//        storage.dbReadConnection.read { transaction in
+//            isNoteToSelf = LokiDatabaseUtilities.isUserLinkedDevice(thread.contactIdentifier(), transaction: transaction)
+//        }
+//        return isNoteToSelf
     }
 
     // MARK: Transcripts
@@ -65,12 +68,13 @@ public final class SessionMetaProtocol : NSObject {
         let isOpenGroupMessage = (thread as? TSGroupThread)?.isPublicChat == true
         let wouldSignalRequireTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript)
         guard wouldSignalRequireTranscript && !isOpenGroupMessage else { return false }
-        var usesMultiDevice = false
-        storage.dbReadConnection.read { transaction in
-            usesMultiDevice = !storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction).isEmpty
-                || UserDefaults.standard[.masterHexEncodedPublicKey] != nil
-        }
-        return usesMultiDevice
+        return false
+//        var usesMultiDevice = false
+//        storage.dbReadConnection.read { transaction in
+//            usesMultiDevice = !storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction).isEmpty
+//                || UserDefaults.standard[.masterHexEncodedPublicKey] != nil
+//        }
+//        return usesMultiDevice
     }
 
     // MARK: Typing Indicators
@@ -91,21 +95,22 @@ public final class SessionMetaProtocol : NSObject {
 
     @objc(shouldSkipMessageDecryptResult:wrappedIn:)
     public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
-        if result.source == getUserHexEncodedPublicKey() { return true }
-        var isLinkedDevice = false
-        Storage.read { transaction in
-            isLinkedDevice = LokiDatabaseUtilities.isUserLinkedDevice(result.source, transaction: transaction)
-        }
-        return isLinkedDevice && envelope.type == .closedGroupCiphertext
+        return result.source == getUserHexEncodedPublicKey()
+//        if result.source == getUserHexEncodedPublicKey() { return true }
+//        var isLinkedDevice = false
+//        Storage.read { transaction in
+//            isLinkedDevice = LokiDatabaseUtilities.isUserLinkedDevice(result.source, transaction: transaction)
+//        }
+//        return isLinkedDevice && envelope.type == .closedGroupCiphertext
     }
 
     @objc(updateDisplayNameIfNeededForPublicKey:using:transaction:)
     public static func updateDisplayNameIfNeeded(for publicKey: String, using dataMessage: SSKProtoDataMessage, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let rawDisplayName = profile.displayName, !rawDisplayName.isEmpty else { return }
         let displayName: String
-        if UserDefaults.standard[.masterHexEncodedPublicKey] == publicKey {
-            displayName = rawDisplayName
-        } else {
+//        if UserDefaults.standard[.masterHexEncodedPublicKey] == publicKey {
+//            displayName = rawDisplayName
+//        } else {
             let shortID = publicKey.substring(from: publicKey.index(publicKey.endIndex, offsetBy: -8))
             let suffix = "(...\(shortID))"
             if rawDisplayName.hasSuffix(suffix) {
@@ -113,7 +118,7 @@ public final class SessionMetaProtocol : NSObject {
             } else {
                 displayName = "\(rawDisplayName) \(suffix)"
             }
-        }
+//        }
         let profileManager = SSKEnvironment.shared.profileManager
         profileManager.updateProfileForContact(withID: publicKey, displayName: displayName, with: transaction)
     }

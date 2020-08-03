@@ -61,9 +61,11 @@ public final class PublicChatPoller : NSObject {
             func proceed() {
                 let storage = OWSPrimaryStorage.shared()
                 var newDisplayNameUpdatees: Set<String> = []
+                /*
                 storage.dbReadConnection.read { transaction in
                     newDisplayNameUpdatees = Set(uniquePublicKeys.filter { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) != $0 }.compactMap { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) })
                 }
+                 */
                 if !newDisplayNameUpdatees.isEmpty {
                     let displayNameUpdatees = PublicChatAPI.displayNameUpdatees[publicChat.id] ?? []
                     PublicChatAPI.displayNameUpdatees[publicChat.id] = displayNameUpdatees.union(newDisplayNameUpdatees)
@@ -183,6 +185,7 @@ public final class PublicChatPoller : NSObject {
                     }
                 }
             }
+            /*
             let hexEncodedPublicKeysToUpdate = uniquePublicKeys.filter { hexEncodedPublicKey in
                 let timeSinceLastUpdate: TimeInterval
                 if let lastDeviceLinkUpdate = MultiDeviceProtocol.lastDeviceLinkUpdate[hexEncodedPublicKey] {
@@ -208,10 +211,13 @@ public final class PublicChatPoller : NSObject {
                     proceed()
                 }
             } else {
+             */
                 DispatchQueue.global(qos: .default).async {
                     proceed()
                 }
+            /*
             }
+             */
         }
     }
     

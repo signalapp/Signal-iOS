@@ -22,7 +22,56 @@ public final class FileServerAPI : DotNetAPI {
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
     
-    // MARK: Device Links
+    // MARK: Profile Pictures
+    @objc(uploadProfilePicture:)
+    public static func objc_uploadProfilePicture(_ profilePicture: Data) -> AnyPromise {
+        return AnyPromise.from(uploadProfilePicture(profilePicture))
+    }
+
+    public static func uploadProfilePicture(_ profilePicture: Data) -> Promise<String> {
+        guard Double(profilePicture.count) < Double(maxFileSize) / fileSizeORMultiplier else { return Promise(error: DotNetAPIError.maxFileSizeExceeded) }
+        let url = "\(server)/files"
+        let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
+        var error: NSError?
+        var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
+            formData.appendPart(withFileData: profilePicture, name: "content", fileName: UUID().uuidString, mimeType: "application/binary")
+        }, error: &error)
+        // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
+        request.addValue("Bearer loki", forHTTPHeaderField: "Authorization")
+        if let error = error {
+            print("[Loki] Couldn't upload profile picture due to error: \(error).")
+            return Promise(error: error)
+        }
+        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { json in
+            guard let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
+                print("[Loki] Couldn't parse profile picture from: \(json).")
+                throw DotNetAPIError.parsingFailed
+            }
+            UserDefaults.standard[.lastProfilePictureUpload] = Date()
+            return downloadURL
+        }
+    }
+    
+    // MARK: Open Group Server Public Key
+    public static func getPublicKey(for openGroupServer: String) -> Promise<String> {
+        let url = URL(string: "\(server)/loki/v1/getOpenGroupKey/\(URL(string: openGroupServer)!.host!)")!
+        let request = TSRequest(url: url)
+        let token = "loki" // Tokenless request; use a dummy token
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { json in
+            guard let bodyAsString = json["data"] as? String, let bodyAsData = bodyAsString.data(using: .utf8),
+                let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { throw HTTP.Error.invalidJSON }
+            guard let base64EncodedPublicKey = body["data"] as? String else {
+                print("[Loki] Couldn't parse open group public key from: \(body).")
+                throw DotNetAPIError.parsingFailed
+            }
+            let prefixedPublicKey = Data(base64Encoded: base64EncodedPublicKey)!
+            let hexEncodedPrefixedPublicKey = prefixedPublicKey.toHexString()
+            return hexEncodedPrefixedPublicKey.removing05PrefixIfNeeded()
+        }
+    }
+
+    // MARK: Deprecated
     /// - Note: Deprecated.
     @objc(getDeviceLinksAssociatedWithHexEncodedPublicKey:)
     public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> AnyPromise {
@@ -42,12 +91,14 @@ public final class FileServerAPI : DotNetAPI {
     public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> AnyPromise {
         return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKeys))
     }
-    
+
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
     ///
     /// - Note: Deprecated.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
+        return Promise { $0.fulfill([]) }
+        /*
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
         return getAuthToken(for: server).then2 { token -> Promise<Set<DeviceLink>> in
@@ -101,10 +152,13 @@ public final class FileServerAPI : DotNetAPI {
                 return deviceLinks
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
+         */
     }
 
     /// - Note: Deprecated.
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
+        return Promise { $0.fulfill(()) }
+        /*
         print("[Loki] Updating device links.")
         return getAuthToken(for: server).then2 { token -> Promise<Void> in
             let isMaster = deviceLinks.contains { $0.master.publicKey == getUserHexEncodedPublicKey() }
@@ -122,12 +176,15 @@ public final class FileServerAPI : DotNetAPI {
                 throw error
             }
         }
+         */
     }
-    
+
     /// Adds the given device link to the user's device mapping on the server.
     ///
     /// - Note: Deprecated.
     public static func addDeviceLink(_ deviceLink: DeviceLink) -> Promise<Void> {
+        return Promise { $0.fulfill(()) }
+        /*
         var deviceLinks: Set<DeviceLink> = []
         storage.dbReadConnection.read { transaction in
             deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
@@ -136,12 +193,15 @@ public final class FileServerAPI : DotNetAPI {
         return setDeviceLinks(deviceLinks).map2 { _ in
             storage.addDeviceLink(deviceLink)
         }
+         */
     }
 
     /// Removes the given device link from the user's device mapping on the server.
     ///
     /// - Note: Deprecated.
     public static func removeDeviceLink(_ deviceLink: DeviceLink) -> Promise<Void> {
+        return Promise { $0.fulfill(()) }
+        /*
         var deviceLinks: Set<DeviceLink> = []
         storage.dbReadConnection.read { transaction in
             deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
@@ -150,54 +210,6 @@ public final class FileServerAPI : DotNetAPI {
         return setDeviceLinks(deviceLinks).map2 { _ in
             storage.removeDeviceLink(deviceLink)
         }
-    }
-    
-    // MARK: Profile Pictures
-    @objc(uploadProfilePicture:)
-    public static func objc_uploadProfilePicture(_ profilePicture: Data) -> AnyPromise {
-        return AnyPromise.from(uploadProfilePicture(profilePicture))
-    }
-
-    public static func uploadProfilePicture(_ profilePicture: Data) -> Promise<String> {
-        guard Double(profilePicture.count) < Double(maxFileSize) / fileSizeORMultiplier else { return Promise(error: DotNetAPIError.maxFileSizeExceeded) }
-        let url = "\(server)/files"
-        let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
-        var error: NSError?
-        var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
-            formData.appendPart(withFileData: profilePicture, name: "content", fileName: UUID().uuidString, mimeType: "application/binary")
-        }, error: &error)
-        // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
-        request.addValue("Bearer loki", forHTTPHeaderField: "Authorization")
-        if let error = error {
-            print("[Loki] Couldn't upload profile picture due to error: \(error).")
-            return Promise(error: error)
-        }
-        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { json in
-            guard let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
-                print("[Loki] Couldn't parse profile picture from: \(json).")
-                throw DotNetAPIError.parsingFailed
-            }
-            UserDefaults.standard[.lastProfilePictureUpload] = Date()
-            return downloadURL
-        }
-    }
-    
-    // MARK: Open Group Server Public Key
-    public static func getPublicKey(for openGroupServer: String) -> Promise<String> {
-        let url = URL(string: "\(server)/loki/v1/getOpenGroupKey/\(URL(string: openGroupServer)!.host!)")!
-        let request = TSRequest(url: url)
-        let token = "loki" // Tokenless request; use a dummy token
-        request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey).map2 { json in
-            guard let bodyAsString = json["data"] as? String, let bodyAsData = bodyAsString.data(using: .utf8),
-                let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { throw HTTP.Error.invalidJSON }
-            guard let base64EncodedPublicKey = body["data"] as? String else {
-                print("[Loki] Couldn't parse open group public key from: \(body).")
-                throw DotNetAPIError.parsingFailed
-            }
-            let prefixedPublicKey = Data(base64Encoded: base64EncodedPublicKey)!
-            let hexEncodedPrefixedPublicKey = prefixedPublicKey.toHexString()
-            return hexEncodedPrefixedPublicKey.removing05PrefixIfNeeded()
-        }
+         */
     }
 }
