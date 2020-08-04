@@ -1,20 +1,28 @@
-import UITextView_Placeholder
 
-final class TextView : UITextView {
+final class TextView : UITextView, UITextViewDelegate {
     private let usesDefaultHeight: Bool
     private let height: CGFloat
     private let horizontalInset: CGFloat
     private let verticalInset: CGFloat
+    private let placeholder: String
 
     override var contentSize: CGSize { didSet { centerTextVertically() } }
+
+    private lazy var placeholderLabel: UILabel = {
+        let result = UILabel()
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        return result
+    }()
 
     init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight
         self.height = customHeight ?? Values.textFieldHeight
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
         self.verticalInset = customVerticalInset ?? (isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing)
-        super.init(frame: CGRect.zero, textContainer: nil)
         self.placeholder = placeholder
+        super.init(frame: CGRect.zero, textContainer: nil)
+        self.delegate = self
         setUpStyle()
     }
 
@@ -29,12 +37,7 @@ final class TextView : UITextView {
     private func setUpStyle() {
         showsHorizontalScrollIndicator = false
         showsVerticalScrollIndicator = false
-        let placeholder = NSMutableAttributedString(string: self.placeholder!)
-        self.placeholder = nil
-        let placeholderColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        placeholder.addAttribute(.foregroundColor, value: placeholderColor, range: NSRange(location: 0, length: placeholder.length))
-        placeholder.addAttribute(.font, value: UIFont.systemFont(ofSize: Values.smallFontSize), range: NSRange(location: 0, length: placeholder.length))
-        attributedPlaceholder = placeholder
+        placeholderLabel.text = placeholder
         backgroundColor = .clear
         textColor = Colors.text
         font = .systemFont(ofSize: Values.smallFontSize)
@@ -48,6 +51,15 @@ final class TextView : UITextView {
         layer.cornerRadius = Values.textFieldCornerRadius
         let horizontalInset = usesDefaultHeight ? self.horizontalInset : Values.mediumSpacing
         textContainerInset = UIEdgeInsets(top: 0, leading: horizontalInset, bottom: 0, trailing: horizontalInset)
+        addSubview(placeholderLabel)
+        placeholderLabel.pin(.leading, to: .leading, of: self, withInset: horizontalInset + 3) // Slight visual adjustment
+        placeholderLabel.pin(.top, to: .top, of: self)
+        pin(.trailing, to: .trailing, of: placeholderLabel, withInset: horizontalInset)
+        pin(.bottom, to: .bottom, of: placeholderLabel)
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        placeholderLabel.isHidden = !text.isEmpty
     }
 
     private func centerTextVertically() {

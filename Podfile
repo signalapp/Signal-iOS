@@ -77,7 +77,6 @@ target 'Signal' do
   pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'CryptoSwift', '~> 1.3', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', '~> 4.7', :inhibit_warnings => true
-  pod 'UITextView+Placeholder', '~> 1.4', :inhibit_warnings => true
 
   target 'SignalTests' do
     inherit! :search_paths
