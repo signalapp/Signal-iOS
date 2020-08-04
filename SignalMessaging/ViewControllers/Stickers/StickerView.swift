@@ -33,16 +33,17 @@ public class StickerView: YYAnimatedImageView {
     // MARK: -
 
     private func loadSticker() {
-        guard let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) else {
+        guard let stickerDataUrl = StickerManager.stickerDataUrlWithSneakyTransaction(stickerInfo: stickerInfo,
+                                                                                      verifyExists: true) else {
             Logger.warn("Sticker not yet installed.")
             return
         }
-        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
+        guard NSData.ows_isValidImage(at: stickerDataUrl, mimeType: OWSMimeTypeImageWebp) else {
             owsFailDebug("Invalid sticker.")
             return
         }
         // TODO: Asset to show while loading a sticker - if any.
-        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
+        guard let stickerImage = YYImage(contentsOfFile: stickerDataUrl.path) else {
             owsFailDebug("Sticker could not be parsed.")
             return
         }

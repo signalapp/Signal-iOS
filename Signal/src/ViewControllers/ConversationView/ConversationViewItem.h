@@ -48,6 +48,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class SDSAnyReadTransaction;
 @class SignalServiceAddress;
 @class StickerInfo;
+@class StickerMetadata;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -152,6 +153,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
+@property (nonatomic, readonly, nullable) StickerMetadata *stickerMetadata;
 @property (nonatomic, readonly) BOOL isFailedSticker;
 @property (nonatomic, readonly) ViewOnceMessageState viewOnceMessageState;
 

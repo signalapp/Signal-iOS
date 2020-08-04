@@ -238,7 +238,11 @@ extension InstalledStickerPackDataSource: StickerPackDataSource {
     func filePath(forSticker stickerInfo: StickerInfo) -> String? {
         AssertIsOnMainThread()
 
-        return StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo)
+        guard let stickerDataUrl = StickerManager.stickerDataUrlWithSneakyTransaction(stickerInfo: stickerInfo,
+                                                                                      verifyExists: true) else {
+                                                                                        return nil
+        }
+        return stickerDataUrl.path
     }
 }
 
@@ -592,6 +596,10 @@ extension RecentStickerPackDataSource: StickerPackDataSource {
     func filePath(forSticker stickerInfo: StickerInfo) -> String? {
         AssertIsOnMainThread()
 
-        return StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo)
+        guard let stickerDataUrl = StickerManager.stickerDataUrlWithSneakyTransaction(stickerInfo: stickerInfo,
+                                                                                      verifyExists: true) else {
+                                                                                        return nil
+        }
+        return stickerDataUrl.path
     }
 }

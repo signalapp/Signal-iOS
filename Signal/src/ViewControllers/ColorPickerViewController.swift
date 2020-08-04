@@ -368,6 +368,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var linkPreviewAttachment: TSAttachment?
     var stickerInfo: StickerInfo?
     var stickerAttachment: TSAttachmentStream?
+    var stickerMetadata: StickerMetadata?
     var isFailedSticker: Bool = false
     var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
     var mutualGroupNames: [String]?

@@ -79,23 +79,25 @@ public class StickerTooltip: TooltipView {
             iconView.isHidden = true
             return
         }
+
         let stickerInfo = stickerPack.coverInfo
-        guard let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) else {
-            // This sticker is not downloaded; try to download now.
-            firstly {
-                StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-            }.done { [weak self] (stickerData: Data) in
-                guard let self = self else {
-                    return
-                }
-                self.updateIconView(imageData: stickerData)
-            }.catch {(error) in
-                owsFailDebug("error: \(error)")
-            }
+        guard let stickerDataUrl = StickerManager.stickerDataUrlWithSneakyTransaction(stickerInfo: stickerInfo,
+                                                                                      verifyExists: true) else {
+                                                                                        // This sticker is not downloaded; try to download now.
+                                                                                        firstly {
+                                                                                            StickerManager.tryToDownloadSticker(stickerPack: self.stickerPack, stickerInfo: stickerInfo)
+                                                                                        }.done { [weak self] (stickerData: Data) in
+                                                                                            guard let self = self else {
+                                                                                                return
+                                                                                            }
+                                                                                            self.updateIconView(imageData: stickerData)
+                                                                                        }.catch {(error) in
+                                                                                            owsFailDebug("error: \(error)")
+                                                                                        }
             return
         }
 
-        guard let image = YYImage(contentsOfFile: filePath) else {
+        guard let image = YYImage(contentsOfFile: stickerDataUrl.path) else {
             owsFailDebug("could not load asset.")
             return
         }

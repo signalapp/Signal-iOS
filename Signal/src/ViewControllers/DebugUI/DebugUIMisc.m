@@ -487,16 +487,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                            packKey:stickerPackInfo.packKey
                                                          stickerId:0];
     // InstalledSticker
-    [[[InstalledSticker alloc] initWithInfo:stickerInfo emojiString:nil] anyInsertWithTransaction:transaction];
+    [[[InstalledSticker alloc] initWithInfo:stickerInfo contentType:nil
+                                emojiString:nil] anyInsertWithTransaction:transaction];
 
     // StickerPack
     [[[StickerPack alloc] initWithInfo:stickerPackInfo
                                  title:@"some title"
                                 author:nil
-                                 cover:[[StickerPackItem alloc] initWithStickerId:0 emojiString:@""]
+                                 cover:[[StickerPackItem alloc] initWithStickerId:0 emojiString:@"" contentType:nil]
                               stickers:@[
-                                  [[StickerPackItem alloc] initWithStickerId:1 emojiString:@""],
-                                  [[StickerPackItem alloc] initWithStickerId:2 emojiString:@""],
+                                  [[StickerPackItem alloc] initWithStickerId:1 emojiString:@"" contentType:nil],
+                                  [[StickerPackItem alloc] initWithStickerId:2 emojiString:@"" contentType:nil],
                               ]] anyInsertWithTransaction:transaction];
 
     // KnownStickerPack

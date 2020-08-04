@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-typedef NS_ENUM(NSInteger, ImageFormat) {
+typedef NS_CLOSED_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Unknown,
     ImageFormat_Png,
     ImageFormat_Gif,

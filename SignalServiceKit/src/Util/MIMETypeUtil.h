@@ -20,6 +20,8 @@ extern NSString *const OWSMimeTypePdf;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
 extern NSString *const OWSMimeTypeProtobuf;
 extern NSString *const OWSMimeTypeJson;
+extern NSString *const OWSMimeTypeWebp;
+extern NSString *const OWSMimeTypeLottieSticker;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentUTI;

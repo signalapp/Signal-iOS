@@ -134,37 +134,42 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
-        NSString *_Nullable filePath = [StickerManager filepathForInstalledStickerWithStickerInfo:stickerInfo];
-        if (!filePath) {
+        StickerMetadata *_Nullable stickerMetadata;
+        stickerMetadata = [StickerManager installedStickerMetadataWithSneakyTransaction:stickerInfo verifyExists:YES];
+        if (stickerMetadata == nil) {
             OWSFailDebug(@"Could not find sticker file.");
             return;
         }
-        NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:filePath];
+        NSData *_Nullable stickerData = [NSData dataWithContentsOfURL:stickerMetadata.stickerDataUrl];
         if (!stickerData) {
             OWSFailDebug(@"Couldn't load sticker data.");
             return;
         }
         MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo
-                                                                          stickerData:stickerData];
-        
+                                                                          stickerData:stickerData
+                                                                          stickerType:stickerMetadata.stickerType
+                                                                                emoji:stickerMetadata.firstEmoji];
+
         [self enqueueMessage:message stickerDraft:stickerDraft thread:thread];
     });
 
     return message;
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo
++ (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerMetadata *)stickerMetadata
                                                 stickerData:(NSData *)stickerData
                                                      thread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(stickerInfo != nil);
+    OWSAssertDebug(stickerMetadata != nil);
     OWSAssertDebug(stickerData.length > 0);
     OWSAssertDebug(thread != nil);
 
-    TSOutgoingMessage *message = [self buildOutgoingMessageForSticker:stickerInfo thread:thread];
-
-    MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
+    TSOutgoingMessage *message = [self buildOutgoingMessageForSticker:stickerMetadata.stickerInfo thread:thread];
+    MessageStickerDraft *stickerDraft = [[MessageStickerDraft alloc] initWithInfo:stickerMetadata.stickerInfo
+                                                                      stickerData:stickerData
+                                                                      stickerType:stickerMetadata.stickerType
+                                                                            emoji:stickerMetadata.firstEmoji];
 
     [self enqueueMessage:message stickerDraft:stickerDraft thread:thread];
 

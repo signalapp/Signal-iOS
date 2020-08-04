@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) StickerInfo *info;
 @property (nonatomic, readonly, nullable) NSString *emojiString;
+@property (nonatomic, readonly, nullable) NSString *contentType;
 
 // Convenience accessors.
 @property (nonatomic, readonly) NSData *packId;
@@ -25,7 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
-- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithInfo:(StickerInfo *)info
+                 contentType:(nullable NSString *)contentType
+                 emojiString:(nullable NSString *)emojiString NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

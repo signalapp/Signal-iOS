@@ -1232,6 +1232,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                       packKey:self.messageSticker.packKey
                                                     stickerID:self.messageSticker.stickerId
                                                          data:attachmentProto];
+            if (self.messageSticker.emoji.length > 0) {
+                [stickerBuilder setEmoji:self.messageSticker.emoji];
+            }
 
             NSError *error;
             SSKProtoDataMessageSticker *_Nullable stickerProto = [stickerBuilder buildAndReturnError:&error];
