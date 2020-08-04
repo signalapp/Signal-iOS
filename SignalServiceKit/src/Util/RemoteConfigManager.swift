@@ -49,13 +49,12 @@ public class RemoteConfig: BaseFlags {
     // TODO: There's more work to be done around feature flags and
     //       remote configuration for modern CDS:
     //
-    // * Modify most usage of FeatureFlags.useOnlyModernContactDiscovery
+    // * Modify most usage of FeatureFlags.modernContactDiscovery
     //   and FeatureFlags.compareLegacyContactDiscoveryAgainstModern to
     //   consult this remote config flag.
     @objc
     public static var modernCDS: Bool {
-        let isModernCDSAvailable = (FeatureFlags.useOnlyModernContactDiscovery ||
-            FeatureFlags.compareLegacyContactDiscoveryAgainstModern)
+        let isModernCDSAvailable = FeatureFlags.modernContactDiscovery
         guard isModernCDSAvailable else { return false }
         return isEnabled(.modernCDS)
     }

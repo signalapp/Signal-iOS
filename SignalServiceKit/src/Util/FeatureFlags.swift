@@ -113,7 +113,7 @@ public class FeatureFlags: BaseFlags {
     }
 
     @objc
-    public static let uuidCapabilities = (allowUUIDOnlyContacts && useOnlyModernContactDiscovery) || groupsV2
+    public static let uuidCapabilities = (allowUUIDOnlyContacts && modernContactDiscovery) || groupsV2
 
     @objc
     public static var storageModeDescription: String {
@@ -135,16 +135,13 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static let allowUUIDOnlyContacts = useOnlyModernContactDiscovery || groupsV2
+    public static let allowUUIDOnlyContacts = modernContactDiscovery || groupsV2
 
     @objc
     public static let uuidSafetyNumbers = allowUUIDOnlyContacts
 
     @objc
-    public static let useOnlyModernContactDiscovery = false
-
-    @objc
-    public static let compareLegacyContactDiscoveryAgainstModern = !isUsingProductionService
+    public static let modernContactDiscovery = build.includes(.qa)
 
     @objc
     public static let phoneNumberPrivacy = false

@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSOperation<OWSContactDiscovering> *operation = nil;
 
-        if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+        if (SSKFeatureFlags.modernContactDiscovery) {
             operation =
                 [[OWSContactDiscoveryOperation alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
         } else {
