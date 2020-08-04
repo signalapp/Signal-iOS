@@ -355,29 +355,30 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return userInfo
     }
 
+    public func canNotify(for incomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        guard thread.isMuted else { return true }
+
+        guard let localAddress = TSAccountManager.localAddress else {
+            owsFailDebug("Missing local address")
+            return false
+        }
+
+        let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
+        guard mentionedAddresses.contains(localAddress) else { return false }
+
+        switch thread.mentionNotificationMode {
+        case .default:
+            return preferences.areMentionNotificationsEnabled()
+        case .always:
+            return true
+        case .never:
+            return false
+        }
+    }
+
     public func notifyUser(for incomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
 
-        if thread.isMuted {
-            guard let localAddress = TSAccountManager.localAddress else {
-                return owsFailDebug("Missing local address")
-            }
-
-            let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
-            guard mentionedAddresses.contains(localAddress) else { return }
-
-            switch thread.mentionNotificationMode {
-            case .default:
-                if preferences.areMentionNotificationsEnabled() {
-                    break
-                } else {
-                    return
-                }
-            case .always:
-                break
-            case .never:
-                return
-            }
-        }
+        guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else { return }
 
         // While batch processing, some of the necessary changes have not been commited.
         let rawMessageText = incomingMessage.previewText(transaction: transaction)
