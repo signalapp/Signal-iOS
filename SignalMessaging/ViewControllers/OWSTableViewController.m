@@ -555,10 +555,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     OWSAssertDebug(self.contents);
 
-    if (self.contents.title.length > 0) {
-        self.title = self.contents.title;
-    }
-
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:self.tableViewStyle];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -583,6 +579,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 
+    [self applyContents];
     [self applyTheme];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -629,8 +626,17 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     OWSAssertDebug(contents);
     OWSAssertIsOnMainThread();
 
-    _contents = contents;
+    if (contents != _contents) {
+        _contents = contents;
+        [self applyContents];
+    }
+}
 
+- (void)applyContents
+{
+    if (self.contents.title.length > 0) {
+        self.title = self.contents.title;
+    }
     [self.tableView reloadData];
 }
 
