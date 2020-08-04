@@ -40,8 +40,26 @@ public class ProfileChanges: MTLModel {
     var oldNameComponents: PersonNameComponents?
     var newNameComponents: PersonNameComponents?
 
+    var oldFullName: String? {
+        guard let oldNameComponents = oldNameComponents else { return nil }
+        return PersonNameComponentsFormatter.localizedString(
+            from: oldNameComponents,
+            style: .default,
+            options: []
+        ).filterStringForDisplay()
+    }
+
+    var newFullName: String? {
+        guard let newNameComponents = newNameComponents else { return nil }
+        return PersonNameComponentsFormatter.localizedString(
+            from: newNameComponents,
+            style: .default,
+            options: []
+        ).filterStringForDisplay()
+    }
+
     var hasRenderableChanges: Bool {
-        return oldNameComponents != nil && newNameComponents != nil && oldNameComponents != newNameComponents
+        return oldFullName != nil && newFullName != nil && oldFullName != newFullName
     }
 
     init(oldProfile: OWSUserProfile, newProfile: OWSUserProfile) {
@@ -78,21 +96,10 @@ public class ProfileChanges: MTLModel {
             return nil
         }
 
-        guard let oldNameComponents = oldNameComponents, let newNameComponents = newNameComponents else {
-            owsFailDebug("Unexpectedly missing name change for profile change")
+        guard let oldFullName = oldFullName, let newFullName = newFullName else {
+            owsFailDebug("Unexpectedly missing old and new full name")
             return nil
         }
-
-        let oldFullName = PersonNameComponentsFormatter.localizedString(
-            from: oldNameComponents,
-            style: .default,
-            options: []
-        ).filterStringForDisplay()
-        let newFullName = PersonNameComponentsFormatter.localizedString(
-            from: newNameComponents,
-            style: .default,
-            options: []
-        ).filterStringForDisplay()
 
         if contactsManager.hasNameInSystemContacts(for: address) {
             let displayName = contactsManager.displayName(for: address, transaction: transaction)
