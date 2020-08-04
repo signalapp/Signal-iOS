@@ -44,9 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSAccountManager *)tsAccountManager
 {
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
     return SSKEnvironment.shared.tsAccountManager;
+}
+
++ (OWSMessageSender *)messageSender
+{
+    return SSKEnvironment.shared.messageSender;
 }
 
 #pragma mark - Durable Message Enqueue
@@ -216,7 +219,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssertDebug(completion);
@@ -226,7 +228,6 @@ NS_ASSUME_NONNULL_BEGIN
                                         thread:thread
                               quotedReplyModel:quotedReplyModel
                                    transaction:transaction
-                                 messageSender:messageSender
                                     completion:completion];
 }
 
@@ -235,7 +236,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
@@ -253,17 +253,10 @@ NS_ASSUME_NONNULL_BEGIN
         [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
 
         [writeTransaction addAsyncCompletionOffMain:^{
-            [messageSender sendMessage:outgoingMessagePreparer
-                success:^{
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        completion(nil);
-                    });
-                }
-                failure:^(NSError *_Nonnull error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        completion(error);
-                    });
-                }];
+            [self.messageSender sendMessage:outgoingMessagePreparer
+                success:^{ dispatch_async(dispatch_get_main_queue(), ^{ completion(nil); }); }
+                failure:^(
+                    NSError *_Nonnull error) { dispatch_async(dispatch_get_main_queue(), ^{ completion(error); }); }];
         }];
     });
 

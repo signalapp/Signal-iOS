@@ -61,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion;
 
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
@@ -70,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion;
 
 #pragma mark - Profile Whitelist

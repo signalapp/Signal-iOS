@@ -71,44 +71,67 @@ class NotificationActionHandler {
         return Promise.value(())
     }
 
-    private func threadWithSneakyTransaction(threadId: String) -> TSThread? {
-        return databaseStorage.read { transaction in
-            return TSThread.anyFetch(uniqueId: threadId, transaction: transaction)
-        }
-    }
-
     func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
-
-        guard let thread = threadWithSneakyTransaction(threadId: threadId) else {
-            throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
+        guard let messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String else {
+            throw NotificationError.failDebug("messageId was unexpectedly nil")
         }
 
-        return markAsRead(thread: thread)
+        return self.databaseStorage.write(.promise) { transaction in
+            guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
+            }
+            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+                throw NotificationError.failDebug("unable to find interaction with id: \(messageId)")
+            }
+            self.markMessageAsUnread(thread: thread,
+                                     interaction: interaction,
+                                     transaction: transaction)
+        }
     }
 
     func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
-
-        guard let thread = threadWithSneakyTransaction(threadId: threadId) else {
-            throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
+        guard let messageId = userInfo[AppNotificationUserInfoKey.messageId] as? String else {
+            throw NotificationError.failDebug("messageId was unexpectedly nil")
         }
 
-        return markAsRead(thread: thread).then { () -> Promise<Void> in
-            let sendPromise = ThreadUtil.sendMessageNonDurably(body: MessageBody(text: replyText, ranges: .empty),
-                                                               thread: thread,
-                                                               quotedReplyModel: nil,
-                                                               messageSender: self.messageSender)
+        let (promise, resolver) = Promise<Void>.pending()
+        firstly(on: .global()) { () -> Promise<Void> in
+            try self.databaseStorage.write { transaction in
+                guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                    throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
+                }
+                guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+                    throw NotificationError.failDebug("unable to find interaction with id: \(messageId)")
+                }
+                guard nil != interaction as? TSIncomingMessage else {
+                    throw NotificationError.failDebug("Unexpected interaction type.")
+                }
+                self.markMessageAsUnread(thread: thread,
+                                         interaction: interaction,
+                                         transaction: transaction)
 
-            return sendPromise.recover { error in
-                Logger.warn("Failed to send reply message from notification with error: \(error)")
-                self.notificationPresenter.notifyForFailedSend(inThread: thread)
+                return firstly(on: .global()) {
+                    ThreadUtil.sendMessageNonDurably(body: MessageBody(text: replyText, ranges: .empty),
+                                                     thread: thread,
+                                                     transaction: transaction)
+                }.recover(on: .global()) { error -> Promise<Void> in
+                    Logger.warn("Failed to send reply message from notification with error: \(error)")
+                    self.notificationPresenter.notifyForFailedSend(inThread: thread)
+                    throw error
+                }
             }
+        }.done(on: .global()) { _ in
+            resolver.fulfill(())
+        }.catch(on: .global()) { (error: Error) in
+            resolver.reject(error)
         }
+        return promise
     }
 
     func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
@@ -126,12 +149,6 @@ class NotificationActionHandler {
         return Promise.value(())
     }
 
-    private func markAsRead(thread: TSThread) -> Promise<Void> {
-        return databaseStorage.write(.promise) { transaction in
-            thread.markAllAsRead(updateStorageService: true, transaction: transaction)
-        }
-    }
-
     func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
@@ -140,23 +157,44 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("messageId was unexpectedly nil")
         }
 
-        return databaseStorage.write(.promise) { transaction in
-            guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
-                throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
-            }
-            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
-                throw NotificationError.failDebug("unable to find interaction with id: \(messageId)")
-            }
-            guard let incomingMessage = interaction as? TSIncomingMessage else {
-                throw NotificationError.failDebug("Unexpected interaction type.")
-            }
+        let (promise, resolver) = Promise<Void>.pending()
+        firstly(on: .global()) { () -> Promise<Void> in
+            try self.databaseStorage.write { transaction in
+                guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
+                    throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
+                }
+                guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+                    throw NotificationError.failDebug("unable to find interaction with id: \(messageId)")
+                }
+                guard let incomingMessage = interaction as? TSIncomingMessage else {
+                    throw NotificationError.failDebug("Unexpected interaction type.")
+                }
 
-            ReactionManager.localUserReacted(to: incomingMessage, emoji: "👍", isRemoving: false, transaction: transaction)
+                self.markMessageAsUnread(thread: thread,
+                                         interaction: interaction,
+                                         transaction: transaction)
 
-            let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
-            let readCircumstance: OWSReadCircumstance = (hasPendingMessageRequest ? .readOnThisDeviceWhilePendingMessageRequest : .readOnThisDevice)
-            incomingMessage.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), thread: thread, circumstance: readCircumstance, transaction: transaction)
+                return ReactionManager.localUserReacted(to: incomingMessage, emoji: "👍", isRemoving: false, sendNonDurably: true, transaction: transaction)
+            }
+        }.done(on: .global()) { _ in
+            resolver.fulfill(())
+        }.catch(on: .global()) { (error: Error) in
+            resolver.reject(error)
         }
+        return promise
+    }
+
+    private func markMessageAsUnread(thread: TSThread,
+                                     interaction: TSInteraction,
+                                     transaction: SDSAnyWriteTransaction) {
+        guard let message = interaction as? OWSReadTracking else {
+            owsFailDebug("Invalid message type.")
+            return
+        }
+
+        let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
+        let readCircumstance: OWSReadCircumstance = (hasPendingMessageRequest ? .readOnThisDeviceWhilePendingMessageRequest : .readOnThisDevice)
+        message.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), thread: thread, circumstance: readCircumstance, transaction: transaction)
     }
 }
 
@@ -172,7 +210,6 @@ extension ThreadUtil {
                                                thread: thread,
                                                quotedReplyModel: quotedReplyModel,
                                                transaction: transaction,
-                                               messageSender: messageSender,
                                                completion: resolver.resolve)
             }
         }
