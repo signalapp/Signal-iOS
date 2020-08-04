@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *iconName;
 @property (nonatomic) UIImageView *iconView;
 @property (nonatomic) UIView *circleView;
+@property (nonatomic) UIView *shadowView;
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
@@ -66,12 +67,22 @@ NS_ASSUME_NONNULL_BEGIN
     iconView.userInteractionEnabled = NO;
 
     const CGFloat circleSize = self.class.circleSize;
+
+    UIView *shadowView = [[OWSCircleView alloc] initWithDiameter:circleSize];
+    self.shadowView = shadowView;
+    shadowView.userInteractionEnabled = NO;
+    shadowView.layer.shadowOffset = CGSizeMake(0, 0);
+    shadowView.layer.shadowRadius = 4;
+    shadowView.layer.shadowOpacity = 0.05f;
+    shadowView.layer.shadowColor = UIColor.blackColor.CGColor;
+
     UIView *circleView = [[OWSCircleView alloc] initWithDiameter:circleSize];
     self.circleView = circleView;
     circleView.userInteractionEnabled = NO;
     circleView.layer.shadowOffset = CGSizeMake(0, 4.f);
-    circleView.layer.shadowRadius = 4.f;
-    circleView.layer.shadowOpacity = 0.5f;
+    circleView.layer.shadowRadius = 12.f;
+    circleView.layer.shadowOpacity = 0.3f;
+    circleView.layer.shadowColor = UIColor.blackColor.CGColor;
 
     UIView *unreadBadge = [UIView new];
     self.unreadBadge = unreadBadge;
@@ -81,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *unreadCountLabel = [UILabel new];
     self.unreadLabel = unreadCountLabel;
-    unreadCountLabel.font = [UIFont monospacedDigitSystemFontOfSize:12 weight:UIFontWeightRegular];
+    unreadCountLabel.font = [UIFont systemFontOfSize:12];
     unreadCountLabel.textColor = UIColor.ows_whiteColor;
     unreadCountLabel.textAlignment = NSTextAlignmentCenter;
 
@@ -89,9 +100,14 @@ NS_ASSUME_NONNULL_BEGIN
     [unreadCountLabel autoPinHeightToSuperview];
     [unreadCountLabel autoPinWidthToSuperviewWithMargin:3];
 
+    [self addSubview:shadowView];
+
     [self addSubview:circleView];
     [circleView autoHCenterInSuperview];
     [circleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    [shadowView autoPinWidthToWidthOfView:circleView];
+    [shadowView autoPinHeightToHeightOfView:circleView];
 
     [circleView addSubview:iconView];
     [iconView autoCenterInSuperview];
@@ -124,11 +140,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateColors
 {
-    self.unreadBadge.backgroundColor = Theme.accentBlueColor;
-    self.circleView.layer.shadowColor
-        = (Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor).CGColor;
-    self.circleView.backgroundColor = Theme.backgroundColor;
-    [self.iconView setTemplateImageName:self.iconName tintColor:Theme.accentBlueColor];
+    self.unreadBadge.backgroundColor = UIColor.ows_accentBlueColor;
+    self.circleView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray02Color;
+    [self.iconView setTemplateImageName:self.iconName
+                              tintColor:Theme.isDarkThemeEnabled ? UIColor.ows_gray15Color : UIColor.ows_gray75Color];
 }
 
 @end

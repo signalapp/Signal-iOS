@@ -171,7 +171,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) ConversationScrollState *scrollStateBeforeLoadingMore;
 
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
+@property (nonatomic) BOOL isHidingScrollDownButton;
 @property (nonatomic) ConversationScrollButton *scrollToNextMentionButton;
+@property (nonatomic) BOOL isHidingScrollToNextMentionButton;
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
@@ -2789,6 +2791,8 @@ typedef enum : NSUInteger {
     [self.scrollDownButton addTarget:self
                               action:@selector(scrollDownButtonTapped)
                     forControlEvents:UIControlEventTouchUpInside];
+    self.scrollDownButton.hidden = YES;
+    self.scrollDownButton.alpha = 0;
     [self.view addSubview:self.scrollDownButton];
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollDownButton);
@@ -2800,6 +2804,8 @@ typedef enum : NSUInteger {
     [self.scrollToNextMentionButton addTarget:self
                                        action:@selector(scrollToNextMentionButtonTapped)
                              forControlEvents:UIControlEventTouchUpInside];
+    self.scrollToNextMentionButton.hidden = YES;
+    self.scrollToNextMentionButton.alpha = 0;
     [self.view addSubview:self.scrollToNextMentionButton];
     [self.scrollToNextMentionButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollToNextMentionButton);
@@ -2918,9 +2924,16 @@ typedef enum : NSUInteger {
 
     BOOL hasLaterMessageOffscreen = ([self lastSortIdInLoadedWindow] > [self lastVisibleSortId]) || [self.conversationViewModel canLoadNewerItems];
 
+    BOOL scrollDownWasHidden = self.isHidingScrollDownButton ? YES : self.scrollDownButton.hidden;
+    BOOL scrollDownIsHidden = scrollDownWasHidden;
+
+    BOOL scrollToNextMentionWasHidden
+        = self.isHidingScrollToNextMentionButton ? YES : self.scrollToNextMentionButton.hidden;
+    BOOL scrollToNextMentionIsHidden = scrollToNextMentionWasHidden;
+
     if (self.isInPreviewPlatter) {
-        self.scrollDownButton.hidden = YES;
-        self.scrollToNextMentionButton.hidden = YES;
+        scrollDownIsHidden = YES;
+        scrollToNextMentionIsHidden = YES;
 
     } else if (self.isPresentingMessageActions) {
         // Content offset calculations get messed up when we're presenting message actions
@@ -2929,10 +2942,49 @@ typedef enum : NSUInteger {
 
     } else {
         BOOL shouldScrollDownAppear = isScrolledUpOnePage || hasLaterMessageOffscreen || self.unreadMessageCount > 0;
-        self.scrollDownButton.hidden = !shouldScrollDownAppear;
+        scrollDownIsHidden = !shouldScrollDownAppear;
 
         BOOL shouldScrollToMentionAppear = shouldScrollDownAppear && self.unreadMentionMessages.count > 0;
-        self.scrollToNextMentionButton.hidden = !shouldScrollToMentionAppear;
+        scrollToNextMentionIsHidden = !shouldScrollToMentionAppear;
+    }
+
+    BOOL scrollDownVisibilityDidChange = scrollDownIsHidden != scrollDownWasHidden;
+    BOOL scrollToNextMentionVisibilityDidChange = scrollToNextMentionIsHidden != scrollToNextMentionWasHidden;
+
+    if (scrollDownVisibilityDidChange || scrollToNextMentionVisibilityDidChange) {
+        if (scrollDownVisibilityDidChange) {
+            self.scrollDownButton.hidden = NO;
+            self.isHidingScrollDownButton = scrollDownIsHidden;
+            [self.scrollDownButton.layer removeAllAnimations];
+        }
+        if (scrollToNextMentionVisibilityDidChange) {
+            self.scrollToNextMentionButton.hidden = NO;
+            self.isHidingScrollToNextMentionButton = scrollToNextMentionIsHidden;
+            [self.scrollToNextMentionButton.layer removeAllAnimations];
+        }
+
+        [UIView animateWithDuration:0.2
+            animations:^{
+                if (scrollDownVisibilityDidChange) {
+                    self.scrollDownButton.alpha = scrollDownIsHidden ? 0 : 1;
+                }
+                if (scrollToNextMentionVisibilityDidChange) {
+                    self.scrollToNextMentionButton.alpha = scrollToNextMentionIsHidden ? 0 : 1;
+                }
+            }
+            completion:^(BOOL finished) {
+                if (!finished) {
+                    return;
+                }
+                if (scrollDownVisibilityDidChange) {
+                    self.scrollDownButton.hidden = scrollDownIsHidden;
+                    self.isHidingScrollDownButton = NO;
+                }
+                if (scrollToNextMentionVisibilityDidChange) {
+                    self.scrollToNextMentionButton.hidden = scrollToNextMentionIsHidden;
+                    self.isHidingScrollToNextMentionButton = NO;
+                }
+            }];
     }
 
     self.scrollDownButton.unreadCount = self.unreadMessageCount;
