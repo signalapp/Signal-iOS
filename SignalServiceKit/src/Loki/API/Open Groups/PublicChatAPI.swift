@@ -32,7 +32,7 @@ public final class PublicChatAPI : DotNetAPI {
     
     private static func getLastMessageServerID(for group: UInt64, on server: String) -> UInt? {
         var result: UInt? = nil
-        storage.dbReadConnection.read { transaction in
+        Storage.read { transaction in
             result = transaction.object(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection) as! UInt?
         }
         return result
@@ -52,7 +52,7 @@ public final class PublicChatAPI : DotNetAPI {
     
     private static func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt? {
         var result: UInt? = nil
-        storage.dbReadConnection.read { transaction in
+        Storage.read { transaction in
             result = transaction.object(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection) as! UInt?
         }
         return result
@@ -174,8 +174,8 @@ public final class PublicChatAPI : DotNetAPI {
                             return nil
                         }
                         var existingMessageID: String? = nil
-                        storage.dbReadConnection.read { transaction in
-                            existingMessageID = storage.getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
+                        Storage.read { transaction in
+                            existingMessageID = OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt(result.serverID!), in: transaction)
                         }
                         guard existingMessageID == nil else {
                             print("[Loki] Ignoring duplicate public chat message.")

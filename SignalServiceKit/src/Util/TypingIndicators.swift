@@ -397,7 +397,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             AssertIsOnMainThread()
 
             displayTypingTimer?.invalidate()
-            displayTypingTimer = Timer.weakScheduledTimer(withTimeInterval: 15,
+            displayTypingTimer = Timer.weakScheduledTimer(withTimeInterval: 5,
                                                           target: self,
                                                           selector: #selector(IncomingIndicators.displayTypingTimerDidFire),
                                                           userInfo: nil,

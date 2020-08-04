@@ -60,6 +60,7 @@ public final class PublicChatPoller : NSObject {
             let uniquePublicKeys = Set(messages.map { $0.senderPublicKey })
             func proceed() {
                 let storage = OWSPrimaryStorage.shared()
+                /*
                 var newDisplayNameUpdatees: Set<String> = []
                 storage.dbReadConnection.read { transaction in
                     newDisplayNameUpdatees = Set(uniquePublicKeys.filter { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) != $0 }.compactMap { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) })
@@ -68,6 +69,7 @@ public final class PublicChatPoller : NSObject {
                     let displayNameUpdatees = PublicChatAPI.displayNameUpdatees[publicChat.id] ?? []
                     PublicChatAPI.displayNameUpdatees[publicChat.id] = displayNameUpdatees.union(newDisplayNameUpdatees)
                 }
+                 */
                 // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
                 messages.sorted { $0.timestamp < $1.timestamp }.forEach { message in
                     var wasSentByCurrentUser = false
@@ -183,6 +185,7 @@ public final class PublicChatPoller : NSObject {
                     }
                 }
             }
+            /*
             let hexEncodedPublicKeysToUpdate = uniquePublicKeys.filter { hexEncodedPublicKey in
                 let timeSinceLastUpdate: TimeInterval
                 if let lastDeviceLinkUpdate = MultiDeviceProtocol.lastDeviceLinkUpdate[hexEncodedPublicKey] {
@@ -208,10 +211,13 @@ public final class PublicChatPoller : NSObject {
                     proceed()
                 }
             } else {
+             */
                 DispatchQueue.global(qos: .default).async {
                     proceed()
                 }
+            /*
             }
+             */
         }
     }
     

@@ -26,6 +26,8 @@ public final class LokiDatabaseUtilities : NSObject {
     // MARK: - Device Links
     @objc(getLinkedDeviceHexEncodedPublicKeysFor:in:)
     public static func getLinkedDeviceHexEncodedPublicKeys(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<String> {
+        return [ hexEncodedPublicKey ]
+        /*
         let storage = OWSPrimaryStorage.shared()
         let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
         var result = Set(storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction).flatMap { deviceLink in
@@ -33,28 +35,35 @@ public final class LokiDatabaseUtilities : NSObject {
         })
         result.insert(hexEncodedPublicKey)
         return result
+         */
     }
 
     @objc(getLinkedDeviceThreadsFor:in:)
     public static func getLinkedDeviceThreads(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<TSContactThread> {
-        return Set(getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction).compactMap { TSContactThread.getWithContactId($0, transaction: transaction) })
+        return Set([ TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction) ].compactMap { $0 })
+//        return Set(getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction).compactMap { TSContactThread.getWithContactId($0, transaction: transaction) })
     }
     
     @objc(isUserLinkedDevice:in:)
     public static func isUserLinkedDevice(_ hexEncodedPublicKey: String, transaction: YapDatabaseReadTransaction) -> Bool {
+        return hexEncodedPublicKey == getUserHexEncodedPublicKey()
+        /*
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         let userLinkedDeviceHexEncodedPublicKeys = getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         return userLinkedDeviceHexEncodedPublicKeys.contains(hexEncodedPublicKey)
+         */
     }
 
     @objc(getMasterHexEncodedPublicKeyFor:in:)
     public static func objc_getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
-        return OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: slaveHexEncodedPublicKey, in: transaction)
+        return nil
+//        return OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: slaveHexEncodedPublicKey, in: transaction)
     }
     
     @objc(getDeviceLinksFor:in:)
     public static func objc_getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
-        return OWSPrimaryStorage.shared().getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
+        return []
+//        return OWSPrimaryStorage.shared().getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
     }
 
 

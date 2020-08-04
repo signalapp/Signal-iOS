@@ -132,7 +132,7 @@ final class PathVC : BaseVC {
     // MARK: General
     private func getPathRow(title: String, subtitle: String?, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double) -> UIStackView {
         let lineView = LineView(location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-        lineView.set(.width, to: Values.pathRowDotSize)
+        lineView.set(.width, to: Values.pathRowExpandedDotSize)
         lineView.set(.height, to: Values.pathRowHeight)
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
@@ -190,7 +190,9 @@ private final class LineView : UIView {
     private lazy var dotView: UIView = {
         let result = UIView()
         result.layer.cornerRadius = Values.pathRowDotSize / 2
-        let glowConfiguration = UIView.CircularGlowConfiguration(size: Values.pathRowDotSize, color: Colors.accent, isAnimated: true, radius: isLightMode ? 2 : 4)
+        let glowRadius: CGFloat = isLightMode ? 1 : 2
+        let glowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
+        let glowConfiguration = UIView.CircularGlowConfiguration(size: Values.pathRowDotSize, color: glowColor, isAnimated: true, animationDuration: 0.5, radius: glowRadius)
         result.setCircularGlow(with: glowConfiguration)
         result.backgroundColor = Colors.accent
         return result
@@ -254,17 +256,19 @@ private final class LineView : UIView {
 
     private func expandDot() {
         let newSize = Values.pathRowExpandedDotSize
-        let newGlowRadius: CGFloat = isLightMode ? 6 : 8
-        updateDotView(size: newSize, glowRadius: newGlowRadius)
+        let newGlowRadius: CGFloat = isLightMode ? 4 : 6
+        let newGlowColor = Colors.accent.withAlphaComponent(0.6)
+        updateDotView(size: newSize, glowRadius: newGlowRadius, glowColor: newGlowColor)
     }
 
     private func collapseDot() {
         let newSize = Values.pathRowDotSize
-        let newGlowRadius: CGFloat = isLightMode ? 2 : 4
-        updateDotView(size: newSize, glowRadius: newGlowRadius)
+        let newGlowRadius: CGFloat = isLightMode ? 1 : 2
+        let newGlowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
+        updateDotView(size: newSize, glowRadius: newGlowRadius, glowColor: newGlowColor)
     }
 
-    private func updateDotView(size: CGFloat, glowRadius: CGFloat) {
+    private func updateDotView(size: CGFloat, glowRadius: CGFloat, glowColor: UIColor) {
         let frame = CGRect(center: dotView.center, size: CGSize(width: size, height: size))
         dotViewWidthConstraint.constant = size
         dotViewHeightConstraint.constant = size
@@ -272,8 +276,7 @@ private final class LineView : UIView {
             self.layoutIfNeeded()
             self.dotView.frame = frame
             self.dotView.layer.cornerRadius = size / 2
-            let glowColor = Colors.accent
-            let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: true, radius: glowRadius)
+            let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: true, animationDuration: 0.5, radius: glowRadius)
             self.dotView.setCircularGlow(with: glowConfiguration)
             self.dotView.backgroundColor = Colors.accent
         }

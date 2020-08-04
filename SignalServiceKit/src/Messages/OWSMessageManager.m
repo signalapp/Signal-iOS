@@ -1240,6 +1240,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    /*
     // Loki: Update device links in a blocking way
     // FIXME: This is horrible for performance
     // FIXME: ========
@@ -1256,6 +1257,7 @@ NS_ASSUME_NONNULL_BEGIN
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
     }
     // FIXME: ========
+     */
 
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
@@ -1509,9 +1511,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
-        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:incomingMessage.authorId using:dataMessage transaction:transaction];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:masterPublicKey using:dataMessage];
 
-        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:thread.contactIdentifier using:dataMessage];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:masterPublicKey using:dataMessage transaction:transaction];
 
         NSArray<TSAttachmentPointer *> *attachmentPointers =
             [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];

@@ -598,14 +598,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     resolve(error);
                 }];
 
-            NSString *publicKey = recipients.firstObject.recipientId;
-            if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message toPublicKey:publicKey]) { // Avoid the write transaction if possible
-                [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                    [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend transaction:transaction];
-                }];
-            } else {
+//            NSString *publicKey = recipients.firstObject.recipientId;
+//            if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message toPublicKey:publicKey]) { // Avoid the write transaction if possible
+//                [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+//                    [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend transaction:transaction];
+//                }];
+//            } else {
                 [self sendMessage:messageSend];
-            }
+//            }
         }];
         [sendPromises addObject:sendPromise];
     }

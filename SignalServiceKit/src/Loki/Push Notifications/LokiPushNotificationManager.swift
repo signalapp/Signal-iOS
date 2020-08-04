@@ -25,11 +25,7 @@ public final class LokiPushNotificationManager : NSObject {
         let isUsingFullAPNs = userDefaults[.isUsingFullAPNs]
         let now = Date().timeIntervalSince1970
         guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
-            print("[Loki] Device token hasn't changed; no need to re-upload.")
-            return Promise<Void> { $0.fulfill(()) }
-        }
-        guard !isUsingFullAPNs else {
-            print("[Loki] Using full APNs; ignoring call to register(with:).")
+            print("[Loki] Device token hasn't changed or expired; no need to re-upload.")
             return Promise<Void> { $0.fulfill(()) }
         }
         let parameters = [ "token" : hexEncodedToken ]
@@ -70,7 +66,7 @@ public final class LokiPushNotificationManager : NSObject {
         let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
         let now = Date().timeIntervalSince1970
         guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
-            print("[Loki] Device token hasn't changed; no need to re-upload.")
+            print("[Loki] Device token hasn't changed or expired; no need to re-upload.")
             return Promise<Void> { $0.fulfill(()) }
         }
         let parameters = [ "token" : hexEncodedToken, "pubKey" : hexEncodedPublicKey]

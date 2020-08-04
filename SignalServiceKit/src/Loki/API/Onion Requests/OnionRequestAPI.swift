@@ -290,8 +290,8 @@ public enum OnionRequestAPI {
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
-                if case Destination.server = destination {
-                    print("[Loki] Onion request size: ~\(onion.count)")
+                if case Destination.server = destination, Double(onion.count) > 0.75 * (Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier) {
+                    print("[Loki] Approaching request size limit: ~\(onion.count) bytes.")
                 }
                 let parameters: JSON = [
                     "ciphertext" : onion.base64EncodedString(),
@@ -327,7 +327,7 @@ public enum OnionRequestAPI {
                             guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: json)) }
                             seal.fulfill(json)
                         }
-                    } catch (let error) {
+                    } catch {
                         seal.reject(error)
                     }
                 }.catch2 { error in

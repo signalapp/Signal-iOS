@@ -30,7 +30,7 @@ public extension OWSPrimaryStorage {
 
     // MARK: Swarm
     public func setSwarm(_ swarm: [Snode], for publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
-        print("[Loki] Caching swarm for: \(publicKey).")
+        print("[Loki] Caching swarm for: \(publicKey == getUserHexEncodedPublicKey() ? "self" : publicKey).")
         clearSwarm(for: publicKey, in: transaction)
         let collection = Storage.getSwarmCollection(for: publicKey)
         swarm.forEach { snode in
@@ -95,31 +95,12 @@ public extension OWSPrimaryStorage {
     }
 
     // MARK: Multi Device
-    private static var deviceLinkCache: Set<DeviceLink> = []
-
-    public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) {
-        deviceLinks.forEach { addDeviceLink($0) }
-    }
-
-    public func addDeviceLink(_ deviceLink: DeviceLink) {
-        OWSPrimaryStorage.deviceLinkCache.insert(deviceLink)
-    }
-
-    public func removeDeviceLink(_ deviceLink: DeviceLink) {
-        OWSPrimaryStorage.deviceLinkCache.remove(deviceLink)
-    }
-    
-    public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
-        return OWSPrimaryStorage.deviceLinkCache.filter { $0.master.publicKey == masterHexEncodedPublicKey }
-    }
-    
-    public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> DeviceLink? {
-        return OWSPrimaryStorage.deviceLinkCache.filter { $0.slave.publicKey == slaveHexEncodedPublicKey }.first
-    }
-    
-    public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
-        return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.publicKey
-    }
+    public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) { }
+    public func addDeviceLink(_ deviceLink: DeviceLink) { }
+    public func removeDeviceLink(_ deviceLink: DeviceLink) { }
+    public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> { return [] }
+    public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> DeviceLink? { return nil }
+    public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? { return nil }
 
     // MARK: Open Groups
     public func getUserCount(for publicChat: PublicChat, in transaction: YapDatabaseReadTransaction) -> Int? {

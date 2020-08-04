@@ -149,7 +149,7 @@ private final class EnterPublicKeyVC : UIViewController {
     }()
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
+    private let publicKeyTextView = TextView(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
     
     private lazy var copyButton: Button = {
         let result = Button(style: .unimportant, size: .medium)
@@ -200,7 +200,7 @@ private final class EnterPublicKeyVC : UIViewController {
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextField, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.largeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.largeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, UIView.spacer(withHeight: Values.largeSpacing), separator, UIView.spacer(withHeight: Values.largeSpacing), userPublicKeyLabel, UIView.spacer(withHeight: Values.largeSpacing), buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
@@ -220,7 +220,7 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     @objc private func dismissKeyboard() {
-        publicKeyTextField.resignFirstResponder()
+        publicKeyTextView.resignFirstResponder()
     }
     
     @objc private func enableCopyButton() {
@@ -246,7 +246,7 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     @objc private func startNewPrivateChatIfPossible() {
-        let hexEncodedPublicKey = publicKeyTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        let hexEncodedPublicKey = publicKeyTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
         newPrivateChatVC.startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
     }
 }

@@ -119,7 +119,7 @@ public final class SnodeAPI : NSObject {
         if let cachedSwarm = swarmCache[publicKey], cachedSwarm.count >= minimumSwarmSnodeCount && !isForcedReload {
             return Promise<[Snode]> { $0.fulfill(cachedSwarm) }
         } else {
-            print("[Loki] Getting swarm for: \(publicKey).")
+            print("[Loki] Getting swarm for: \(publicKey == getUserHexEncodedPublicKey() ? "self" : publicKey).")
             let parameters: [String:Any] = [ "pubKey" : publicKey ]
             return getRandomSnode().then2 {
                 invoke(.getSwarm, on: $0, associatedWith: publicKey, parameters: parameters)
