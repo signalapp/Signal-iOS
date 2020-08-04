@@ -438,8 +438,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     NSString *_Nullable fileTypeForSnippet = [self fileTypeForSnippet];
     NSString *_Nullable sourceFilename = [self.quotedMessage.sourceFilename filterStringForDisplay];
 
-    if (self.displayableQuotedText.displayAttributetdText.length > 0) {
-        NSMutableAttributedString *mutableText = [self.displayableQuotedText.displayAttributetdText mutableCopy];
+    if (self.displayableQuotedText.displayAttributedText.length > 0) {
+        NSMutableAttributedString *mutableText = [self.displayableQuotedText.displayAttributedText mutableCopy];
         [mutableText addAttributes:@{
             NSFontAttributeName : self.quotedTextFont,
             NSForegroundColorAttributeName : self.quotedTextColor

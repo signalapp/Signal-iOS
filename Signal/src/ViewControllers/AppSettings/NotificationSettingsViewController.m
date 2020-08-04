@@ -155,11 +155,13 @@
 
     [contents addSection:eventsSection];
 
-    OWSTableSection *mentionsSection = [OWSTableSection new];
-    mentionsSection.headerTitle = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_TITLE", @"table section header");
-    mentionsSection.footerTitle = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_FOOTER", @"table section footer");
-
     if (SSKFeatureFlags.mentionsSend) {
+        OWSTableSection *mentionsSection = [OWSTableSection new];
+        mentionsSection.headerTitle
+            = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_TITLE", @"table section header");
+        mentionsSection.footerTitle
+            = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_FOOTER", @"table section footer");
+
         NSString *mentionsNotifyMeText = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_NOTIFY_ME",
             @"Title for an option that indicates whether the user wishes to receive notifications for messages that "
             @"mention them.");

@@ -1111,7 +1111,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         NSString *_Nullable caption = (attachment.caption ? [self displayableCaptionForText:attachment.caption
                                                                                attachmentId:attachment.uniqueId
                                                                                 transaction:transaction]
-                                                                .displayAttributetdText.string
+                                                                .displayAttributedText.string
                                                           : nil);
 
         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -1229,7 +1229,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     OWSAssertDebug(self.hasViewState);
 
     OWSAssertDebug(_displayableBodyText);
-    OWSAssertDebug(_displayableBodyText.displayAttributetdText);
+    OWSAssertDebug(_displayableBodyText.displayAttributedText);
     OWSAssertDebug(_displayableBodyText.fullAttributedText);
 
     return _displayableBodyText;
@@ -1257,7 +1257,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     OWSAssertDebug(self.hasViewState);
 
     OWSAssertDebug(_displayableQuotedText);
-    OWSAssertDebug(_displayableQuotedText.displayAttributetdText);
+    OWSAssertDebug(_displayableQuotedText.displayAttributedText);
     OWSAssertDebug(_displayableQuotedText.fullAttributedText);
 
     return _displayableQuotedText;

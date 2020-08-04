@@ -25,6 +25,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @interface TSMessage ()
 
 @property (nonatomic, nullable) NSString *body;
+@property (nonatomic, nullable) MessageBodyRanges *bodyRanges;
+
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
 
@@ -816,6 +818,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) {
                                         // Remove renderable content.
                                         message.body = nil;
+                                        message.bodyRanges = nil;
                                         message.contactShare = nil;
                                         message.quotedMessage = nil;
                                         message.linkPreview = nil;

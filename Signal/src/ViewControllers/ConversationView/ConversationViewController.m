@@ -4458,10 +4458,10 @@ typedef enum : NSUInteger {
 #ifdef DEBUG
     // TODO: Confirm with nancy if this will work.
     NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
-    if (viewItem.hasBodyText && viewItem.displayableBodyText.displayAttributetdText.length > 0) {
+    if (viewItem.hasBodyText && viewItem.displayableBodyText.displayAttributedText.length > 0) {
         NSString *textForId =
-            [viewItem.displayableBodyText.displayAttributetdText.string stringByReplacingOccurrencesOfString:@" "
-                                                                                                  withString:@"_"];
+            [viewItem.displayableBodyText.displayAttributedText.string stringByReplacingOccurrencesOfString:@" "
+                                                                                                 withString:@"_"];
         cellName = [NSString stringWithFormat:@"message.text.%@", textForId];
     } else if (viewItem.stickerInfo) {
         cellName = [NSString stringWithFormat:@"message.sticker.%@", [viewItem.stickerInfo asKey]];

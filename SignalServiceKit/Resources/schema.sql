@@ -33,6 +33,7 @@ CREATE
             ,"lastVisibleSortIdOnScreenPercentage" DOUBLE NOT NULL DEFAULT 0
             ,"lastVisibleSortId" INTEGER NOT NULL DEFAULT 0
             ,"messageDraftBodyRanges" BLOB
+            ,"mentionNotificationMode" INTEGER NOT NULL DEFAULT 0
         )
 ;
 

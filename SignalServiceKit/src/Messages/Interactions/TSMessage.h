@@ -114,6 +114,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
+// The raw body contains placeholders for things like mentions and is not
+// user friendly. If you want a constant string representing the body of
+// this message, this is it. The `plaintextBody` below will fill in the
+// appropriate contact names for a given mention at the time of querying
+// providing a more "user friendly" string.
 - (nullable NSString *)rawBodyWithTransaction:(GRDBReadTransaction *)transaction;
 - (nullable NSString *)plaintextBodyWithTransaction:(GRDBReadTransaction *)transaction;
 

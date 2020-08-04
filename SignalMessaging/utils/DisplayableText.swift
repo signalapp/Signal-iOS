@@ -25,7 +25,7 @@ import Foundation
     }
 
     @objc
-    public var displayAttributetdText: NSAttributedString {
+    public var displayAttributedText: NSAttributedString {
         return truncatedContent?.attributedText ?? fullContent.attributedText
     }
 

@@ -826,7 +826,7 @@ typedef struct {
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
     paragraphStyle.alignment = displayableText.displayTextNaturalAlignment;
 
-    NSMutableAttributedString *attributedText = [displayableText.displayAttributetdText mutableCopy];
+    NSMutableAttributedString *attributedText = [displayableText.displayAttributedText mutableCopy];
     [attributedText addAttributes:@{
         NSFontAttributeName : font,
         NSForegroundColorAttributeName : textColor,
@@ -1692,7 +1692,7 @@ typedef struct {
 
     CGPoint tapPoint = [sender locationInView:self.bodyTextView];
 
-    if (!CGRectContainsPoint(self.bodyTextView.frame, tapPoint)) {
+    if (!CGRectContainsPoint(self.bodyTextView.bounds, tapPoint)) {
         return nil;
     }
 
@@ -1705,9 +1705,9 @@ typedef struct {
         return nil;
     }
 
-    return [self.bodyTextView.textStorage attribute:Mention.attributeKey
-                                            atIndex:tappedCharacterIndex
-                                     effectiveRange:nil];
+    return [self.bodyTextView.attributedText attribute:Mention.attributeKey
+                                               atIndex:tappedCharacterIndex
+                                        effectiveRange:nil];
 }
 
 - (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble
