@@ -141,7 +141,7 @@ public class FeatureFlags: BaseFlags {
     public static let uuidSafetyNumbers = allowUUIDOnlyContacts
 
     @objc
-    public static let modernContactDiscovery = build.includes(.internalPreview)
+    public static let modernContactDiscovery = build.includes(.qa)
 
     @objc
     public static let phoneNumberPrivacy = false
