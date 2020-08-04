@@ -2941,7 +2941,7 @@ typedef enum : NSUInteger {
         // no-op
 
     } else {
-        BOOL shouldScrollDownAppear = isScrolledUpOnePage || hasLaterMessageOffscreen || self.unreadMessageCount > 0;
+        BOOL shouldScrollDownAppear = isScrolledUpOnePage || hasLaterMessageOffscreen;
         scrollDownIsHidden = !shouldScrollDownAppear;
 
         BOOL shouldScrollToMentionAppear = shouldScrollDownAppear && self.unreadMentionMessages.count > 0;
