@@ -203,10 +203,10 @@ public class FeatureFlags: BaseFlags {
     public static let deviceTransferThrowAway = false
 
     @objc
-    public static let mentionsReceive = build.includes(.dev)
+    public static let mentionsReceive = build.includes(.qa)
 
     @objc
-    public static let mentionsSend = mentionsReceive && build.includes(.dev)
+    public static let mentionsSend = mentionsReceive && build.includes(.qa)
 
     @objc
     public static let attachmentUploadV3 = build.includes(.qa)
