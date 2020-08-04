@@ -171,12 +171,14 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) ConversationScrollState *scrollStateBeforeLoadingMore;
 
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
+@property (nonatomic) ConversationScrollButton *scrollToNextMentionButton;
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic) BOOL hasUnreadMessages;
+@property (nonatomic) NSUInteger unreadMessageCount;
+@property (nonatomic, nullable) NSArray<TSMessage *> *unreadMentionMessages;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
@@ -487,7 +489,7 @@ typedef enum : NSUInteger {
 {
     if (_inPreviewPlatter != inPreviewPlatter) {
         _inPreviewPlatter = inPreviewPlatter;
-        [self configureScrollDownButton];
+        [self configureScrollDownButtons];
     }
 }
 
@@ -1185,7 +1187,7 @@ typedef enum : NSUInteger {
     self.actionOnOpen = ConversationViewActionNone;
 
     [self updateInputToolbarLayout];
-    [self configureScrollDownButton];
+    [self configureScrollDownButtons];
     [self.inputToolbar viewDidAppear];
 }
 
@@ -2783,25 +2785,47 @@ typedef enum : NSUInteger {
 
 - (void)createConversationScrollButtons
 {
-    self.scrollDownButton = [[ConversationScrollButton alloc] initWithIconText:@"\uf103"];
+    self.scrollDownButton = [[ConversationScrollButton alloc] initWithIconName:@"chevron-down-20"];
     [self.scrollDownButton addTarget:self
                               action:@selector(scrollDownButtonTapped)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.scrollDownButton];
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
-    [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollDownButton);
 
-    [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.bottomBar];
+    [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.bottomBar withOffset:-16];
     [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
+
+    self.scrollToNextMentionButton = [[ConversationScrollButton alloc] initWithIconName:@"mention-24"];
+    [self.scrollToNextMentionButton addTarget:self
+                                       action:@selector(scrollToNextMentionButtonTapped)
+                             forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.scrollToNextMentionButton];
+    [self.scrollToNextMentionButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _scrollToNextMentionButton);
+
+    [self.scrollToNextMentionButton autoPinEdge:ALEdgeBottom
+                                         toEdge:ALEdgeTop
+                                         ofView:self.scrollDownButton
+                                     withOffset:-10];
+    [self.scrollToNextMentionButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 }
 
-- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
+- (void)setUnreadMessageCount:(NSUInteger)unreadMessageCount
 {
     OWSAssertIsOnMainThread();
-    if (_hasUnreadMessages != hasUnreadMessages) {
-        _hasUnreadMessages = hasUnreadMessages;
-        [self configureScrollDownButton];
+    if (_unreadMessageCount != unreadMessageCount) {
+        _unreadMessageCount = unreadMessageCount;
+        [self configureScrollDownButtons];
+    }
+}
+
+- (void)setUnreadMentionMessages:(nullable NSArray<TSMessage *> *)unreadMentionMessages
+{
+    OWSAssertIsOnMainThread();
+    if (_unreadMentionMessages != unreadMentionMessages) {
+        _unreadMentionMessages = unreadMentionMessages;
+        [self configureScrollDownButtons];
     }
 }
 
@@ -2809,7 +2833,7 @@ typedef enum : NSUInteger {
 - (void)clearUnreadMessageFlagIfNecessary
 {
     OWSAssertIsOnMainThread();
-    if ([self hasUnreadMessages]) {
+    if (self.unreadMessageCount > 0) {
         [self updateUnreadMessageFlagUsingAsyncTransaction];
     }
 }
@@ -2835,7 +2859,12 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
     NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction.unwrapGrdbRead];
-    [self setHasUnreadMessages:(unreadCount > 0)];
+    [self setUnreadMessageCount:unreadCount];
+
+    self.unreadMentionMessages = [MentionFinder messagesMentioningWithAddress:self.tsAccountManager.localAddress
+                                                                           in:self.thread
+                                                          includeReadMessages:NO
+                                                                  transaction:transaction.unwrapGrdbRead];
 }
 
 - (void)scrollDownButtonTapped
@@ -2866,7 +2895,18 @@ typedef enum : NSUInteger {
     [self scrollToBottomAnimated:YES];
 }
 
-- (void)configureScrollDownButton
+- (void)scrollToNextMentionButtonTapped
+{
+    TSMessage *_Nullable nextMessage = self.unreadMentionMessages.firstObject;
+    if (nextMessage) {
+        [self scrollToInteractionWithUniqueId:nextMessage.uniqueId
+                           onScreenPercentage:1
+                                     position:ScrollToBottomIfNotEntirelyOnScreen
+                                     animated:YES];
+    }
+}
+
+- (void)configureScrollDownButtons
 {
     OWSAssertIsOnMainThread();
 
@@ -2878,20 +2918,25 @@ typedef enum : NSUInteger {
 
     BOOL hasLaterMessageOffscreen = ([self lastSortIdInLoadedWindow] > [self lastVisibleSortId]) || [self.conversationViewModel canLoadNewerItems];
 
-    if ([self isInPreviewPlatter]) {
-        [[self scrollDownButton] setHidden:YES];
+    if (self.isInPreviewPlatter) {
+        self.scrollDownButton.hidden = YES;
+        self.scrollToNextMentionButton.hidden = YES;
 
-    } else if ([self isPresentingMessageActions]) {
+    } else if (self.isPresentingMessageActions) {
         // Content offset calculations get messed up when we're presenting message actions
         // Don't change button visibility if we're presenting actions
         // no-op
 
     } else {
-        BOOL shouldAppear = isScrolledUpOnePage || hasLaterMessageOffscreen;
-        [[self scrollDownButton] setHidden:!shouldAppear];
+        BOOL shouldScrollDownAppear = isScrolledUpOnePage || hasLaterMessageOffscreen || self.unreadMessageCount > 0;
+        self.scrollDownButton.hidden = !shouldScrollDownAppear;
 
+        BOOL shouldScrollToMentionAppear = shouldScrollDownAppear && self.unreadMentionMessages.count > 0;
+        self.scrollToNextMentionButton.hidden = !shouldScrollToMentionAppear;
     }
-    [[self scrollDownButton] setHasUnreadMessages:[self hasUnreadMessages]];
+
+    self.scrollDownButton.unreadCount = self.unreadMessageCount;
+    self.scrollToNextMentionButton.unreadCount = self.unreadMentionMessages.count;
 }
 
 #pragma mark - Attachment Picking: Contacts
@@ -3897,7 +3942,7 @@ typedef enum : NSUInteger {
     // Constantly try to update the lastKnownDistanceFromBottom.
     [self updateLastKnownDistanceFromBottom];
 
-    [self configureScrollDownButton];
+    [self configureScrollDownButtons];
 
     [self scheduleScrollUpdateTimer];
 }
@@ -4310,7 +4355,7 @@ typedef enum : NSUInteger {
         [self resetForSizeOrOrientationChange];
     }
 
-    [self configureScrollDownButton];
+    [self configureScrollDownButtons];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -4825,7 +4870,7 @@ typedef enum : NSUInteger {
         // We can't use the transaction parameter; this completion
         // will be run async.
         [self updateUnreadMessageFlagUsingAsyncTransaction];
-        [self configureScrollDownButton];
+        [self configureScrollDownButtons];
 
         [self showMessageRequestDialogIfRequired];
 

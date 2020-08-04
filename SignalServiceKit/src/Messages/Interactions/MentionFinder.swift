@@ -14,6 +14,7 @@ public class MentionFinder: NSObject {
     public class func messagesMentioning(
         address: SignalServiceAddress,
         in thread: TSThread? = nil,
+        includeReadMessages: Bool = true,
         transaction: GRDBReadTransaction
     ) -> [TSMessage] {
         guard let uuidString = address.uuidString else { return [] }
@@ -27,10 +28,19 @@ public class MentionFinder: NSObject {
 
         var arguments = [uuidString]
 
+        var next = "WHERE"
+
         if let thread = thread {
-            sql += " WHERE interaction.\(interactionColumn: .threadUniqueId) = ?"
+            sql += " \(next) interaction.\(interactionColumn: .threadUniqueId) = ?"
             arguments.append(thread.uniqueId)
+            next = "AND"
         }
+
+        if !includeReadMessages {
+            sql += " \(next) interaction.\(interactionColumn: .read) IS 0"
+        }
+
+        sql += " ORDER BY \(interactionColumn: .id)"
 
         let cursor = TSMessage.grdbFetchCursor(sql: sql, arguments: StatementArguments(arguments), transaction: transaction)
 

@@ -12,9 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationScrollButton ()
 
-@property (nonatomic) NSString *iconText;
-@property (nonatomic) UILabel *iconLabel;
+@property (nonatomic) NSString *iconName;
+@property (nonatomic) UIImageView *iconView;
 @property (nonatomic) UIView *circleView;
+
+@property (nonatomic) UIView *unreadBadge;
+@property (nonatomic) UILabel *unreadLabel;
 
 @end
 
@@ -22,16 +25,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ConversationScrollButton
 
-- (nullable instancetype)initWithIconText:(NSString *)iconText
+- (nullable instancetype)initWithIconName:(NSString *)iconName
 {
     self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
 
-    self.iconText = iconText;
+    self.iconName = iconName;
 
     [self createContents];
+
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(themeDidChange:)
+                                               name:ThemeDidChangeNotification
+                                             object:nil];
 
     return self;
 }
@@ -46,57 +54,81 @@ NS_ASSUME_NONNULL_BEGIN
     return self.circleSize + 2 * 15.f;
 }
 
+- (void)themeDidChange:(NSNotification *)notification
+{
+    [self updateColors];
+}
+
 - (void)createContents
 {
-    UILabel *iconLabel = [UILabel new];
-    self.iconLabel = iconLabel;
-    iconLabel.userInteractionEnabled = NO;
+    UIImageView *iconView = [UIImageView new];
+    self.iconView = iconView;
+    iconView.userInteractionEnabled = NO;
 
     const CGFloat circleSize = self.class.circleSize;
     UIView *circleView = [[OWSCircleView alloc] initWithDiameter:circleSize];
     self.circleView = circleView;
     circleView.userInteractionEnabled = NO;
-    circleView.layer.shadowColor = Theme.middleGrayColor.CGColor;
-    circleView.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
-    circleView.layer.shadowRadius = 1.5f;
-    circleView.layer.shadowOpacity = 0.35f;
+    circleView.layer.shadowOffset = CGSizeMake(0, 4.f);
+    circleView.layer.shadowRadius = 4.f;
+    circleView.layer.shadowOpacity = 0.5f;
+
+    UIView *unreadBadge = [UIView new];
+    self.unreadBadge = unreadBadge;
+    unreadBadge.userInteractionEnabled = NO;
+    unreadBadge.layer.cornerRadius = 8;
+    unreadBadge.clipsToBounds = YES;
+
+    UILabel *unreadCountLabel = [UILabel new];
+    self.unreadLabel = unreadCountLabel;
+    unreadCountLabel.font = [UIFont monospacedDigitSystemFontOfSize:12 weight:UIFontWeightRegular];
+    unreadCountLabel.textColor = UIColor.ows_whiteColor;
+    unreadCountLabel.textAlignment = NSTextAlignmentCenter;
+
+    [unreadBadge addSubview:unreadCountLabel];
+    [unreadCountLabel autoPinHeightToSuperview];
+    [unreadCountLabel autoPinWidthToSuperviewWithMargin:3];
 
     [self addSubview:circleView];
-    [self addSubview:iconLabel];
-    [circleView autoCenterInSuperview];
-    [iconLabel autoCenterInSuperview];
+    [circleView autoHCenterInSuperview];
+    [circleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    [circleView addSubview:iconView];
+    [iconView autoCenterInSuperview];
+
+    [self addSubview:unreadBadge];
+
+    [unreadBadge autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:circleView withOffset:8];
+    [unreadBadge autoHCenterInSuperview];
+    [unreadBadge autoSetDimension:ALDimensionHeight toSize:16];
+    [unreadBadge autoSetDimension:ALDimensionWidth toSize:16 relation:NSLayoutRelationGreaterThanOrEqual];
+    [unreadBadge autoMatchDimension:ALDimensionWidth
+                        toDimension:ALDimensionWidth
+                             ofView:self
+                         withOffset:0
+                           relation:NSLayoutRelationLessThanOrEqual];
+    [unreadBadge autoPinEdgeToSuperviewEdge:ALEdgeTop];
 
     [self updateColors];
 }
 
-- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
+- (void)setUnreadCount:(NSUInteger)unreadCount
 {
-    _hasUnreadMessages = hasUnreadMessages;
+    _unreadCount = unreadCount;
+
+    self.unreadLabel.text = [NSString stringWithFormat:@"%lu", unreadCount];
+    self.unreadBadge.hidden = unreadCount < 1;
 
     [self updateColors];
 }
 
 - (void)updateColors
 {
-    UIColor *foregroundColor;
-    UIColor *backgroundColor;
-    if (self.hasUnreadMessages) {
-        foregroundColor = UIColor.whiteColor;
-        backgroundColor = UIColor.ows_accentBlueColor;
-    } else {
-        foregroundColor = Theme.accentBlueColor;
-        backgroundColor = Theme.scrollButtonBackgroundColor;
-    }
-
-    const CGFloat circleSize = self.class.circleSize;
-    self.circleView.backgroundColor = backgroundColor;
-    self.iconLabel.attributedText =
-        [[NSAttributedString alloc] initWithString:self.iconText
-                                        attributes:@{
-                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:circleSize * 0.8f],
-                                            NSForegroundColorAttributeName : foregroundColor,
-                                            NSBaselineOffsetAttributeName : @(-0.5f),
-                                        }];
+    self.unreadBadge.backgroundColor = Theme.accentBlueColor;
+    self.circleView.layer.shadowColor
+        = (Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor).CGColor;
+    self.circleView.backgroundColor = Theme.backgroundColor;
+    [self.iconView setTemplateImageName:self.iconName tintColor:Theme.accentBlueColor];
 }
 
 @end

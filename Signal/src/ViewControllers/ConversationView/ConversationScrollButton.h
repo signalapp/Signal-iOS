@@ -1,16 +1,16 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationScrollButton : UIButton
 
-@property (nonatomic) BOOL hasUnreadMessages;
+@property (nonatomic) NSUInteger unreadCount;
 
 + (CGFloat)buttonSize;
 
-- (nullable instancetype)initWithIconText:(NSString *)iconText;
+- (nullable instancetype)initWithIconName:(NSString *)iconName;
 
 @end
 
