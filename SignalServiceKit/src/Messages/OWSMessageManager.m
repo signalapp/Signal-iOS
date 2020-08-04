@@ -1511,9 +1511,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
-        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:incomingMessage.authorId using:dataMessage transaction:transaction];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:masterPublicKey using:dataMessage];
 
-        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:thread.contactIdentifier using:dataMessage];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:masterPublicKey using:dataMessage transaction:transaction];
 
         NSArray<TSAttachmentPointer *> *attachmentPointers =
             [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];

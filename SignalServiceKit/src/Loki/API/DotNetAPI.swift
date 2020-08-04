@@ -4,7 +4,6 @@ import SessionMetadataKit
 /// Base class for `FileServerAPI` and `PublicChatAPI`.
 public class DotNetAPI : NSObject {
 
-    internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
     internal static var userKeyPair: ECKeyPair { OWSIdentityManager.shared().identityKeyPair()! }
 
     // MARK: Settings
@@ -41,10 +40,8 @@ public class DotNetAPI : NSObject {
 
     private static func getAuthTokenFromDatabase(for server: String) -> String? {
         var result: String? = nil
-        storage.dbReadConnection.read { transaction in
-            if transaction.hasObject(forKey: server, inCollection: authTokenCollection) {
-                result = transaction.object(forKey: server, inCollection: authTokenCollection) as? String
-            }
+        Storage.read { transaction in
+            result = transaction.object(forKey: server, inCollection: authTokenCollection) as? String
         }
         return result
     }
@@ -53,7 +50,7 @@ public class DotNetAPI : NSObject {
         transaction.setObject(newValue, forKey: server, inCollection: authTokenCollection)
     }
 
-    public static func clearAuthToken(for server: String) {
+    public static func removeAuthToken(for server: String) {
         try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: server, inCollection: authTokenCollection)
         }
@@ -68,12 +65,12 @@ public class DotNetAPI : NSObject {
         let queryParameters = "pubKey=\(getUserHexEncodedPublicKey())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise.value(FileServerAPI.fileServerPublicKey)
             : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
         return serverPublicKeyPromise.then2 { serverPublicKey in
             OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey)
-        }.map2 { rawResponse in
-            guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
+        }.map2 { json in
+            guard let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw DotNetAPIError.parsingFailed
             }
@@ -96,7 +93,7 @@ public class DotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+        let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise.value(FileServerAPI.fileServerPublicKey)
             : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
         return serverPublicKeyPromise.then2 { serverPublicKey in
             OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey)
@@ -134,7 +131,7 @@ public class DotNetAPI : NSObject {
                     data = unencryptedAttachmentData
                 }
                 // Check the file size if needed
-                print("[Loki] File size: \(data.count)")
+                print("[Loki] File size: \(data.count) bytes.")
                 if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
                     return seal.reject(DotNetAPIError.maxFileSizeExceeded)
                 }
@@ -144,7 +141,7 @@ public class DotNetAPI : NSObject {
                 var error: NSError?
                 var request = AFHTTPRequestSerializer().multipartFormRequest(withMethod: "POST", urlString: url, parameters: parameters, constructingBodyWith: { formData in
                     let uuid = UUID().uuidString
-                    print("[Loki] File UUID: \(uuid)")
+                    print("[Loki] File UUID: \(uuid).")
                     formData.appendPart(withFileData: data, name: "content", fileName: uuid, mimeType: "application/binary")
                 }, error: &error)
                 request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -153,7 +150,7 @@ public class DotNetAPI : NSObject {
                     return seal.reject(error)
                 }
                 // Send the request
-                let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise { $0.fulfill(FileServerAPI.fileServerPublicKey) }
+                let serverPublicKeyPromise = (server == FileServerAPI.server) ? Promise.value(FileServerAPI.fileServerPublicKey)
                     : PublicChatAPI.getOpenGroupServerPublicKey(for: server)
                 attachment.isUploaded = false
                 attachment.save()
@@ -198,7 +195,7 @@ internal extension Promise {
         return recover2 { error -> Promise<T> in
             if case HTTP.Error.httpRequestFailed(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                 print("[Loki] Auth token for: \(server) expired; dropping it.")
-                DotNetAPI.clearAuthToken(for: server)
+                DotNetAPI.removeAuthToken(for: server)
             }
             throw error
         }

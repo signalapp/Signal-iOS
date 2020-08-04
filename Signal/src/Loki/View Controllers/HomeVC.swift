@@ -135,7 +135,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         newConversationButtonSet.center(.horizontal, in: view)
         newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
         // Set up previewing
-        if (traitCollection.forceTouchCapability == .available) {
+        if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: tableView)
         }
         // Listen for notifications

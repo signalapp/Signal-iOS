@@ -30,7 +30,7 @@ public extension OWSPrimaryStorage {
 
     // MARK: Swarm
     public func setSwarm(_ swarm: [Snode], for publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
-        print("[Loki] Caching swarm for: \(publicKey).")
+        print("[Loki] Caching swarm for: \(publicKey == getUserHexEncodedPublicKey() ? "self" : publicKey).")
         clearSwarm(for: publicKey, in: transaction)
         let collection = Storage.getSwarmCollection(for: publicKey)
         swarm.forEach { snode in
