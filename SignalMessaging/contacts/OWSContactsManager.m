@@ -868,12 +868,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         if (components.count <= 2) {
             nameComponents.givenName = components.firstObject;
             nameComponents.familyName = components.lastObject;
+        } else {
+            nameComponents.givenName = signalAccount.contactFullName;
         }
-    }
-
-    // We don't have valid name components for this address so return nothing.
-    // This will fallback to using the full display name for rendering.
-    if (nameComponents.givenName.length == 0 && nameComponents.familyName.length == 0) {
+    } else {
         return nil;
     }
 
