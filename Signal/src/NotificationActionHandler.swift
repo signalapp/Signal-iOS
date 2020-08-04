@@ -174,7 +174,7 @@ class NotificationActionHandler {
                                        interaction: interaction,
                                        transaction: transaction)
 
-                return ReactionManager.localUserReacted(to: incomingMessage, emoji: "👍", isRemoving: false, sendNonDurably: true, transaction: transaction)
+                return ReactionManager.localUserReactedWithNonDurableSend(to: incomingMessage, emoji: "👍", isRemoving: false, transaction: transaction)
             }
         }.done(on: .global()) { _ in
             resolver.fulfill(())
