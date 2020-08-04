@@ -91,6 +91,16 @@
 			"record_swift_type": "Data",
 			"serialize_record_invocation": "optionalArchive(%s)",
 			"should_use_blob": true
+		},
+		"TSThread.mentionNotificationMode": {
+			"swift_type": "TSThreadMentionNotificationMode",
+			"objc_initializer_type": "TSThreadMentionNotificationMode",
+			"is_objc_codable": true,
+			"is_enum": true,
+			"column_type": ".int",
+			"record_swift_type": "UInt",
+			"serialize_record_invocation": "%s.rawValue",
+			"should_use_blob": false
 		}
 	},
 	"custom_accessors": {

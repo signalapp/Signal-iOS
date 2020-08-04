@@ -933,6 +933,37 @@ class ConversationSettingsViewController: OWSTableViewController {
         updateTableContents()
     }
 
+    func showMentionNotificationModeActionSheet() {
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE",
+                                     comment: "Title of the 'mention notification mode' action sheet."),
+            message: NSLocalizedString("CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_MESSAGE",
+                                       comment: "Explanation of the 'mention notification mode' action sheet.")
+        )
+
+        for mode: TSThreadMentionNotificationMode in [.default, .always, .never] {
+            let action =
+                ActionSheetAction(
+                    title: nameForMentionMode(mode),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: String(describing: mode))
+                ) { [weak self] _ in
+                    self?.setMentionNotificationMode(mode)
+            }
+            actionSheet.addAction(action)
+        }
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    private func setMentionNotificationMode(_ value: TSThreadMentionNotificationMode) {
+        databaseStorage.write { transaction in
+            self.thread.updateWithMentionNotificationMode(value, transaction: transaction)
+        }
+
+        updateTableContents()
+    }
+
     func showMediaGallery() {
         Logger.debug("")
 

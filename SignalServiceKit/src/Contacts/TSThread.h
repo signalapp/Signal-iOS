@@ -35,6 +35,10 @@ extern ConversationColorName const ConversationColorNameSteel;
 
 extern ConversationColorName const ConversationColorNameDefault;
 
+typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMentionNotificationMode_Default = 0,
+    TSThreadMentionNotificationMode_Always,
+    TSThreadMentionNotificationMode_Never };
+
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
@@ -82,11 +86,12 @@ extern ConversationColorName const ConversationColorNameDefault;
             lastInteractionRowId:(int64_t)lastInteractionRowId
                lastVisibleSortId:(uint64_t)lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
+         mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortId:lastVisibleSortIdOnScreenPercentage:messageDraft:messageDraftBodyRanges:mutedUntilDate:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortId:lastVisibleSortIdOnScreenPercentage:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDate:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -217,6 +222,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 @property (atomic, readonly) BOOL isMuted;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;
 
+@property (nonatomic, readonly) TSThreadMentionNotificationMode mentionNotificationMode;
+
 #pragma mark - Update With... Methods
 
 - (void)updateWithLastVisibleSortId:(uint64_t)lastVisibleSortId
@@ -224,6 +231,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
+                              transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateWithMentionNotificationMode(_:transaction:));
 
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
 

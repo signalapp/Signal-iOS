@@ -155,6 +155,28 @@
 
     [contents addSection:eventsSection];
 
+    OWSTableSection *mentionsSection = [OWSTableSection new];
+    mentionsSection.headerTitle = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_TITLE", @"table section header");
+    mentionsSection.footerTitle = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_FOOTER", @"table section footer");
+
+    if (SSKFeatureFlags.mentionsSend) {
+        NSString *mentionsNotifyMeText = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_NOTIFY_ME",
+            @"Title for an option that indicates whether the user wishes to receive notifications for messages that "
+            @"mention them.");
+        [mentionsSection
+            addItem:[OWSTableItem switchItemWithText:mentionsNotifyMeText
+                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"mentions_notify_me")
+                        isOnBlock:^{
+                            return self.preferences.areMentionNotificationsEnabled;
+                        }
+                        isEnabledBlock:^{
+                            return YES;
+                        }
+                        target:weakSelf
+                        selector:@selector(didToggleMentionsNotifyMeSwitch:)]];
+        [contents addSection:mentionsSection];
+    }
+
     self.contents = contents;
 }
 
@@ -188,6 +210,11 @@
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.preferences setShouldNotifyOfNewAccounts:sender.isOn transaction:transaction];
     });
+}
+
+- (void)didToggleMentionsNotifyMeSwitch:(UISwitch *)sender
+{
+    [self.preferences setMentionNotificationsEnabled:sender.isOn];
 }
 
 @end

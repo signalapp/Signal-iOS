@@ -55,4 +55,27 @@ public class MentionFinder: NSObject {
         """
         transaction.executeUpdate(sql: sql, arguments: [message.uniqueId])
     }
+
+    @objc
+    public class func mentionedAddresses(for message: TSMessage, transaction: GRDBReadTransaction) -> [SignalServiceAddress] {
+        let sql = """
+            SELECT *
+            FROM \(MentionRecord.databaseTableName)
+            WHERE \(mentionColumn: .uniqueMessageId) = ?
+        """
+
+        let cursor = TSMention.grdbFetchCursor(sql: sql, arguments: [message.uniqueId], transaction: transaction)
+
+        var addresses = [SignalServiceAddress]()
+
+        do {
+            while let mention = try cursor.next() {
+                addresses.append(mention.address)
+            }
+        } catch {
+            owsFailDebug("unexpected error \(error)")
+        }
+
+        return addresses
+    }
 }

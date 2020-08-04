@@ -40,6 +40,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
             lastInteractionRowId:(int64_t)lastInteractionRowId
                lastVisibleSortId:(uint64_t)lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
+         mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -55,6 +56,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
               lastInteractionRowId:lastInteractionRowId
                  lastVisibleSortId:lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
+           mentionNotificationMode:mentionNotificationMode
                       messageDraft:messageDraft
             messageDraftBodyRanges:messageDraftBodyRanges
                     mutedUntilDate:mutedUntilDate

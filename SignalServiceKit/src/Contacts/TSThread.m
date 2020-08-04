@@ -55,6 +55,8 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 @property (nonatomic) uint64_t lastVisibleSortId;
 @property (nonatomic) double lastVisibleSortIdOnScreenPercentage;
 
+@property (nonatomic) TSThreadMentionNotificationMode mentionNotificationMode;
+
 @end
 
 #pragma mark -
@@ -123,6 +125,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
             lastInteractionRowId:(int64_t)lastInteractionRowId
                lastVisibleSortId:(uint64_t)lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
+         mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -142,6 +145,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     _lastInteractionRowId = lastInteractionRowId;
     _lastVisibleSortId = lastVisibleSortId;
     _lastVisibleSortIdOnScreenPercentage = lastVisibleSortIdOnScreenPercentage;
+    _mentionNotificationMode = mentionNotificationMode;
     _messageDraft = messageDraft;
     _messageDraftBodyRanges = messageDraftBodyRanges;
     _mutedUntilDate = mutedUntilDate;
@@ -797,6 +801,15 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  [thread setMutedUntilDate:mutedUntilDate];
+                             }];
+}
+
+- (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
+                              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.mentionNotificationMode = mentionNotificationMode;
                              }];
 }
 

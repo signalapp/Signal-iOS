@@ -43,6 +43,7 @@ public struct ThreadRecord: SDSRecord {
     public let lastVisibleSortIdOnScreenPercentage: Double
     public let lastVisibleSortId: UInt64
     public let messageDraftBodyRanges: Data?
+    public let mentionNotificationMode: UInt
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -63,6 +64,7 @@ public struct ThreadRecord: SDSRecord {
         case lastVisibleSortIdOnScreenPercentage
         case lastVisibleSortId
         case messageDraftBodyRanges
+        case mentionNotificationMode
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -104,6 +106,7 @@ public extension ThreadRecord {
         lastVisibleSortIdOnScreenPercentage = row[15]
         lastVisibleSortId = row[16]
         messageDraftBodyRanges = row[17]
+        mentionNotificationMode = row[18]
     }
 }
 
@@ -143,6 +146,7 @@ extension TSThread {
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastVisibleSortId: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
             let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
@@ -162,6 +166,7 @@ extension TSThread {
                                    lastInteractionRowId: lastInteractionRowId,
                                    lastVisibleSortId: lastVisibleSortId,
                                    lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                   mentionNotificationMode: mentionNotificationMode,
                                    messageDraft: messageDraft,
                                    messageDraftBodyRanges: messageDraftBodyRanges,
                                    mutedUntilDate: mutedUntilDate,
@@ -181,6 +186,7 @@ extension TSThread {
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastVisibleSortId: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
             let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
@@ -199,6 +205,7 @@ extension TSThread {
                                  lastInteractionRowId: lastInteractionRowId,
                                  lastVisibleSortId: lastVisibleSortId,
                                  lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                 mentionNotificationMode: mentionNotificationMode,
                                  messageDraft: messageDraft,
                                  messageDraftBodyRanges: messageDraftBodyRanges,
                                  mutedUntilDate: mutedUntilDate,
@@ -216,6 +223,7 @@ extension TSThread {
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastVisibleSortId: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
             let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
@@ -232,6 +240,7 @@ extension TSThread {
                             lastInteractionRowId: lastInteractionRowId,
                             lastVisibleSortId: lastVisibleSortId,
                             lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                            mentionNotificationMode: mentionNotificationMode,
                             messageDraft: messageDraft,
                             messageDraftBodyRanges: messageDraftBodyRanges,
                             mutedUntilDate: mutedUntilDate,
@@ -298,6 +307,7 @@ extension TSThread: DeepCopyable {
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
             let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -327,6 +337,7 @@ extension TSThread: DeepCopyable {
                                  lastInteractionRowId: lastInteractionRowId,
                                  lastVisibleSortId: lastVisibleSortId,
                                  lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                 mentionNotificationMode: mentionNotificationMode,
                                  messageDraft: messageDraft,
                                  messageDraftBodyRanges: messageDraftBodyRanges,
                                  mutedUntilDate: mutedUntilDate,
@@ -344,6 +355,7 @@ extension TSThread: DeepCopyable {
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
             let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -373,6 +385,7 @@ extension TSThread: DeepCopyable {
                                    lastInteractionRowId: lastInteractionRowId,
                                    lastVisibleSortId: lastVisibleSortId,
                                    lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                   mentionNotificationMode: mentionNotificationMode,
                                    messageDraft: messageDraft,
                                    messageDraftBodyRanges: messageDraftBodyRanges,
                                    mutedUntilDate: mutedUntilDate,
@@ -393,6 +406,7 @@ extension TSThread: DeepCopyable {
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
             let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
@@ -419,6 +433,7 @@ extension TSThread: DeepCopyable {
                             lastInteractionRowId: lastInteractionRowId,
                             lastVisibleSortId: lastVisibleSortId,
                             lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                            mentionNotificationMode: mentionNotificationMode,
                             messageDraft: messageDraft,
                             messageDraftBodyRanges: messageDraftBodyRanges,
                             mutedUntilDate: mutedUntilDate,
@@ -453,6 +468,7 @@ extension TSThreadSerializer {
     static let lastVisibleSortIdOnScreenPercentageColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdOnScreenPercentage", columnType: .double)
     static let lastVisibleSortIdColumn = SDSColumnMetadata(columnName: "lastVisibleSortId", columnType: .int64)
     static let messageDraftBodyRangesColumn = SDSColumnMetadata(columnName: "messageDraftBodyRanges", columnType: .blob, isOptional: true)
+    static let mentionNotificationModeColumn = SDSColumnMetadata(columnName: "mentionNotificationMode", columnType: .int)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -476,7 +492,8 @@ extension TSThreadSerializer {
         isMarkedUnreadColumn,
         lastVisibleSortIdOnScreenPercentageColumn,
         lastVisibleSortIdColumn,
-        messageDraftBodyRangesColumn
+        messageDraftBodyRangesColumn,
+        mentionNotificationModeColumn
         ])
 }
 
@@ -921,8 +938,9 @@ class TSThreadSerializer: SDSSerializer {
         let lastVisibleSortIdOnScreenPercentage: Double = model.lastVisibleSortIdOnScreenPercentage
         let lastVisibleSortId: UInt64 = model.lastVisibleSortId
         let messageDraftBodyRanges: Data? = optionalArchive(model.messageDraftBodyRanges)
+        let mentionNotificationMode: UInt = model.mentionNotificationMode.rawValue
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode)
     }
 }
 

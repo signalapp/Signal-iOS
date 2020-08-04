@@ -357,8 +357,26 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
 
-        guard !thread.isMuted else {
-            return
+        if thread.isMuted {
+            guard let localAddress = TSAccountManager.localAddress else {
+                return owsFailDebug("Missing local address")
+            }
+
+            let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
+            guard mentionedAddresses.contains(localAddress) else { return }
+
+            switch thread.mentionNotificationMode {
+            case .default:
+                if preferences.areMentionNotificationsEnabled() {
+                    break
+                } else {
+                    return
+                }
+            case .always:
+                break
+            case .never:
+                return
+            }
         }
 
         // While batch processing, some of the necessary changes have not been commited.

@@ -81,6 +81,7 @@ public class GRDBSchemaMigrator: NSObject {
         case resetThreadVisibility
         case trackUserProfileFetches
         case addMentions
+        case addMentionNotificationMode
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -771,6 +772,18 @@ public class GRDBSchemaMigrator: NSObject {
 
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "bodyRanges", .blob)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addMentionNotificationMode.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                    table.add(column: "mentionNotificationMode", .integer)
+                        .notNull()
+                        .defaults(to: 0)
                 }
             } catch {
                 owsFail("Error: \(error)")

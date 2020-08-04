@@ -56,6 +56,9 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setNotificationPreviewType:(NotificationType)type;
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;
 
+- (BOOL)areMentionNotificationsEnabled;
+- (void)setMentionNotificationsEnabled:(BOOL)value;
+
 - (BOOL)soundInForeground;
 - (void)setSoundInForeground:(BOOL)value;
 
