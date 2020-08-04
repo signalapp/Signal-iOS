@@ -86,9 +86,9 @@ class NotificationActionHandler {
             guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
                 throw NotificationError.failDebug("unable to find interaction with id: \(messageId)")
             }
-            self.markMessageAsUnread(thread: thread,
-                                     interaction: interaction,
-                                     transaction: transaction)
+            self.markMessageAsRead(thread: thread,
+                                   interaction: interaction,
+                                   transaction: transaction)
         }
     }
 
@@ -112,14 +112,14 @@ class NotificationActionHandler {
                 guard nil != interaction as? TSIncomingMessage else {
                     throw NotificationError.failDebug("Unexpected interaction type.")
                 }
-                self.markMessageAsUnread(thread: thread,
-                                         interaction: interaction,
-                                         transaction: transaction)
+                self.markMessageAsRead(thread: thread,
+                                       interaction: interaction,
+                                       transaction: transaction)
 
                 return firstly(on: .global()) {
-                    ThreadUtil.sendMessageNonDurably(body: MessageBody(text: replyText, ranges: .empty),
-                                                     thread: thread,
-                                                     transaction: transaction)
+                    ThreadUtil.sendMessageNonDurablyPromise(body: MessageBody(text: replyText, ranges: .empty),
+                                                            thread: thread,
+                                                            transaction: transaction)
                 }.recover(on: .global()) { error -> Promise<Void> in
                     Logger.warn("Failed to send reply message from notification with error: \(error)")
                     self.notificationPresenter.notifyForFailedSend(inThread: thread)
@@ -170,9 +170,9 @@ class NotificationActionHandler {
                     throw NotificationError.failDebug("Unexpected interaction type.")
                 }
 
-                self.markMessageAsUnread(thread: thread,
-                                         interaction: interaction,
-                                         transaction: transaction)
+                self.markMessageAsRead(thread: thread,
+                                       interaction: interaction,
+                                       transaction: transaction)
 
                 return ReactionManager.localUserReacted(to: incomingMessage, emoji: "👍", isRemoving: false, sendNonDurably: true, transaction: transaction)
             }
@@ -184,9 +184,9 @@ class NotificationActionHandler {
         return promise
     }
 
-    private func markMessageAsUnread(thread: TSThread,
-                                     interaction: TSInteraction,
-                                     transaction: SDSAnyWriteTransaction) {
+    private func markMessageAsRead(thread: TSThread,
+                                   interaction: TSInteraction,
+                                   transaction: SDSAnyWriteTransaction) {
         guard let message = interaction as? OWSReadTracking else {
             owsFailDebug("Invalid message type.")
             return
@@ -195,24 +195,6 @@ class NotificationActionHandler {
         let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbWrite)
         let readCircumstance: OWSReadCircumstance = (hasPendingMessageRequest ? .readOnThisDeviceWhilePendingMessageRequest : .readOnThisDevice)
         message.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), thread: thread, circumstance: readCircumstance, transaction: transaction)
-    }
-}
-
-extension ThreadUtil {
-    static var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    class func sendMessageNonDurably(body: MessageBody, thread: TSThread, quotedReplyModel: OWSQuotedReplyModel?, messageSender: MessageSender) -> Promise<Void> {
-        return Promise { resolver in
-            self.databaseStorage.read { transaction in
-                _ = self.sendMessageNonDurably(with: body,
-                                               thread: thread,
-                                               quotedReplyModel: quotedReplyModel,
-                                               transaction: transaction,
-                                               completion: resolver.resolve)
-            }
-        }
     }
 }
 

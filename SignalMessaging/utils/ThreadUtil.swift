@@ -142,34 +142,14 @@ public extension ThreadUtil {
         return promise
     }
 
-    class func sendMessageNonDurablyPromise(text: String,
+    class func sendMessageNonDurablyPromise(body: MessageBody,
+                                            mediaAttachments: [SignalAttachment] = [],
                                             thread: TSThread,
                                             quotedReplyModel: OWSQuotedReplyModel? = nil,
                                             transaction: SDSAnyReadTransaction) -> Promise<Void> {
 
         let (promise, resolver) = Promise<Void>.pending()
-        ThreadUtil.sendMessageNonDurably(withText: text,
-                                         thread: thread,
-                                         quotedReplyModel: quotedReplyModel,
-                                         transaction: transaction) { (error: Error?) in
-            guard let error = error else {
-                resolver.fulfill(())
-                return
-            }
-            resolver.reject(error)
-
-        }
-        return promise
-    }
-
-    class func sendMessageNonDurablyPromise(text: String,
-                                            mediaAttachments: [SignalAttachment],
-                                            thread: TSThread,
-                                            quotedReplyModel: OWSQuotedReplyModel? = nil,
-                                            transaction: SDSAnyReadTransaction) -> Promise<Void> {
-
-        let (promise, resolver) = Promise<Void>.pending()
-        ThreadUtil.sendMessageNonDurably(withText: text,
+        ThreadUtil.sendMessageNonDurably(body: body,
                                          mediaAttachments: mediaAttachments,
                                          thread: thread,
                                          quotedReplyModel: quotedReplyModel,
