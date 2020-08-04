@@ -195,7 +195,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     func hasClearAvatarAction() -> Bool {
-        return true
+        return false
     }
     
     func clearAvatarActionLabel() -> String {
