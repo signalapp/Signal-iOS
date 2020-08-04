@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @class GRDBReadTransaction;
+@class MessageBodyRanges;
 @class MessageSticker;
 @class OWSLinkPreview;
 @class SDSAnyReadTransaction;
@@ -27,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 // NOTE: These correspond to just the "body" attachments.
 @property (nonatomic) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
+@property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 
 // Per-conversation expiration.
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
@@ -78,6 +80,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(messageWithBuilder:));
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
@@ -89,7 +92,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(messageWithBuilder:));
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:));
 
 // clang-format on
 
@@ -111,8 +114,13 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
-- (nullable NSString *)oversizeTextWithTransaction:(GRDBReadTransaction *)transaction;
-- (nullable NSString *)bodyTextWithTransaction:(GRDBReadTransaction *)transaction;
+// The raw body contains placeholders for things like mentions and is not
+// user friendly. If you want a constant string representing the body of
+// this message, this is it. The `plaintextBody` below will fill in the
+// appropriate contact names for a given mention at the time of querying
+// providing a more "user friendly" string.
+- (nullable NSString *)rawBodyWithTransaction:(GRDBReadTransaction *)transaction;
+- (nullable NSString *)plaintextBodyWithTransaction:(GRDBReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimer;
 

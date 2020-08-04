@@ -152,7 +152,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSNavigationController *approvalModal =
         [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:self.attachments
-                                                             initialMessageText:nil
+                                                             initialMessageBody:nil
                                                                approvalDelegate:self];
     [self presentViewController:approvalModal animated:YES completion:nil];
 }
@@ -166,7 +166,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         return NO;
     }
 
-    TextApprovalViewController *approvalVC = [[TextApprovalViewController alloc] initWithMessageText:messageText];
+    MessageBody *messageBody = [[MessageBody alloc] initWithText:messageText ranges:MessageBodyRanges.empty];
+
+    TextApprovalViewController *approvalVC = [[TextApprovalViewController alloc] initWithMessageBody:messageBody];
     approvalVC.delegate = self;
 
     [self.navigationController pushViewController:approvalVC animated:YES];
@@ -249,7 +251,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *_Nonnull)attachmentApproval
      didApproveAttachments:(NSArray<SignalAttachment *> *_Nonnull)attachments
-               messageText:(NSString *_Nullable)messageText
+               messageBody:(MessageBody *_Nullable)messageBody
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     [self
@@ -263,7 +265,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             // TODO ALBUMS - send album via SAE
 
             [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
+                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithBody:messageBody
                                                            mediaAttachments:attachments
                                                                      thread:self.thread
                                                            quotedReplyModel:nil
@@ -286,7 +288,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
-      didChangeMessageText:(nullable NSString *)newMessageText
+      didChangeMessageBody:(nullable MessageBody *)newMessageBody
 {
     // no-op
 }
@@ -319,9 +321,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 #pragma mark - TextApprovalViewControllerDelegate
 
-- (void)textApproval:(TextApprovalViewController *)approvalViewController didApproveMessage:(NSString *)messageText
+- (void)textApproval:(TextApprovalViewController *)approvalViewController
+    didApproveMessage:(nullable MessageBody *)messageBody
 {
-    OWSAssertDebug(messageText.length > 0);
+    OWSAssertDebug(messageBody.text.length > 0);
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
@@ -332,7 +335,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
         // SAE runs as long as it needs.
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
+            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithBody:messageBody
                                                                  thread:self.thread
                                                        quotedReplyModel:nil
                                                             transaction:transaction

@@ -411,6 +411,8 @@ class TypeInfo:
             value_statement = 'let %s: %s = %s(%s)' % ( value_name, initializer_param_type, initializer_param_type, value_expr, )
         elif value_name == 'conversationColorName':
             value_statement = 'let %s: %s = ConversationColorName(rawValue: %s)' % ( value_name, "ConversationColorName", value_expr, )
+        elif value_name == 'mentionNotificationMode':
+            value_statement = 'let %s: %s = TSThreadMentionNotificationMode(rawValue: %s) ?? .default' % ( value_name, "TSThreadMentionNotificationMode", value_expr, )
         elif self.is_codable:
             value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
         elif self.should_use_blob:

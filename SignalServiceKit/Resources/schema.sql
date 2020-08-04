@@ -32,6 +32,8 @@ CREATE
             ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
             ,"lastVisibleSortIdOnScreenPercentage" DOUBLE NOT NULL DEFAULT 0
             ,"lastVisibleSortId" INTEGER NOT NULL DEFAULT 0
+            ,"messageDraftBodyRanges" BLOB
+            ,"mentionNotificationMode" INTEGER NOT NULL DEFAULT 0
         )
 ;
 
@@ -99,6 +101,7 @@ CREATE
             ,"wasReceivedByUD" INTEGER
             ,"infoMessageUserInfo" BLOB
             ,"wasRemotelyDeleted" BOOLEAN
+            ,"bodyRanges" BLOB
         )
 ;
 
@@ -888,5 +891,39 @@ CREATE
     INDEX "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds"
         ON "model_TSInteraction"("uniqueThreadId"
     ,"attachmentIds"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSMention" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"uniqueMessageId" TEXT NOT NULL
+            ,"uniqueThreadId" TEXT NOT NULL
+            ,"uuidString" TEXT NOT NULL
+            ,"creationTimestamp" DOUBLE NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_model_TSMention_on_uniqueId"
+        ON "model_TSMention"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_TSMention_on_uuidString_and_uniqueThreadId"
+        ON "model_TSMention"("uuidString"
+    ,"uniqueThreadId"
+)
+;
+
+CREATE
+    UNIQUE INDEX "index_model_TSMention_on_uniqueMessageId_and_uuidString"
+        ON "model_TSMention"("uniqueMessageId"
+    ,"uuidString"
 )
 ;

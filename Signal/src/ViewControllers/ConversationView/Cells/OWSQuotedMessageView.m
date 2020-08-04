@@ -62,7 +62,16 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     DisplayableText *_Nullable displayableQuotedText = nil;
     if (quotedMessage.body.length > 0) {
-        displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
+        __block DisplayableText *displayableText;
+        [SDSDatabaseStorage.shared uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            displayableText = [DisplayableText
+                displayableTextWithMessageBody:[[MessageBody alloc]
+                                                   initWithText:quotedMessage.body
+                                                         ranges:quotedMessage.bodyRanges ?: MessageBodyRanges.empty]
+                                  mentionStyle:MentionStyleQuotedReply
+                                   transaction:transaction];
+        }];
+        displayableQuotedText = displayableText;
     }
 
     OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc]
@@ -424,40 +433,45 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 {
     OWSAssertDebug(self.quotedTextLabel);
 
-    UIColor *textColor = self.quotedTextColor;
-    SUPPRESS_DEADSTORE_WARNING(textColor);
-    UIFont *font = self.quotedTextFont;
-    SUPPRESS_DEADSTORE_WARNING(font);
-    NSString *text = @"";
+    NSAttributedString *attributedText;
 
     NSString *_Nullable fileTypeForSnippet = [self fileTypeForSnippet];
     NSString *_Nullable sourceFilename = [self.quotedMessage.sourceFilename filterStringForDisplay];
 
-    if (self.displayableQuotedText.displayText.length > 0) {
-        text = self.displayableQuotedText.displayText;
-        textColor = self.quotedTextColor;
-        font = self.quotedTextFont;
+    if (self.displayableQuotedText.displayAttributedText.length > 0) {
+        NSMutableAttributedString *mutableText = [self.displayableQuotedText.displayAttributedText mutableCopy];
+        [mutableText addAttributes:@{
+            NSFontAttributeName : self.quotedTextFont,
+            NSForegroundColorAttributeName : self.quotedTextColor
+        }
+                             range:NSMakeRange(0, mutableText.length)];
+        attributedText = mutableText;
     } else if (fileTypeForSnippet) {
-        text = fileTypeForSnippet;
-        textColor = self.fileTypeTextColor;
-        font = self.fileTypeFont;
+        attributedText = [[NSAttributedString alloc] initWithString:fileTypeForSnippet
+                                                         attributes:@{
+                                                             NSFontAttributeName : self.fileTypeFont,
+                                                             NSForegroundColorAttributeName : self.fileTypeTextColor,
+                                                         }];
     } else if (sourceFilename) {
-        text = sourceFilename;
-        textColor = self.filenameTextColor;
-        font = self.filenameFont;
+        attributedText = [[NSAttributedString alloc] initWithString:sourceFilename
+                                                         attributes:@{
+                                                             NSFontAttributeName : self.filenameFont,
+                                                             NSForegroundColorAttributeName : self.filenameTextColor,
+                                                         }];
     } else {
-        text = NSLocalizedString(
-                                 @"QUOTED_REPLY_TYPE_ATTACHMENT", @"Indicates this message is a quoted reply to an attachment of unknown type.");
-        textColor = self.fileTypeTextColor;
-        font = self.fileTypeFont;
+        attributedText = [[NSAttributedString alloc]
+            initWithString:NSLocalizedString(@"QUOTED_REPLY_TYPE_ATTACHMENT",
+                               @"Indicates this message is a quoted reply to an attachment of unknown type.")
+                attributes:@{
+                    NSFontAttributeName : self.fileTypeFont,
+                    NSForegroundColorAttributeName : self.fileTypeTextColor,
+                }];
     }
 
     self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 2;
     self.quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.quotedTextLabel.text = text;
     self.quotedTextLabel.textAlignment = self.displayableQuotedText.displayTextNaturalAlignment;
-    self.quotedTextLabel.textColor = textColor;
-    self.quotedTextLabel.font = font;
+    self.quotedTextLabel.attributedText = attributedText;
 
     return self.quotedTextLabel;
 }

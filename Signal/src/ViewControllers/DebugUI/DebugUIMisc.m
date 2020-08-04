@@ -331,7 +331,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
-        [ThreadUtil enqueueMessageWithText:nil
+        [ThreadUtil enqueueMessageWithBody:nil
                           mediaAttachments:@[ attachment ]
                                     thread:thread
                           quotedReplyModel:nil

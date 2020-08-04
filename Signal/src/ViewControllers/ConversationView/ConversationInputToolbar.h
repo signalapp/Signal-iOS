@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
+@class MessageBody;
 @class OWSLinkPreviewDraft;
 @class OWSQuotedReplyModel;
 @class PHAsset;
@@ -83,8 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setInputTextViewDelegate:(id<ConversationInputTextViewDelegate>)value;
 - (void)setMentionDelegate:(id<MentionTextViewDelegate>)value;
 
-- (NSString *)messageText;
-- (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;
+- (nullable MessageBody *)messageBody;
+- (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated;
 - (void)acceptAutocorrectSuggestion;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
 - (void)clearDesiredKeyboard;

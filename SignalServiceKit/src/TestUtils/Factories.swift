@@ -280,6 +280,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        authorAddress: authorAddressBuilder(thread),
                                                        sourceDeviceId: sourceDeviceIdBuilder(),
                                                        messageBody: messageBodyBuilder(),
+                                                       bodyRanges: bodyRangesBuilder(),
                                                        attachmentIds: attachmentIdsBuilder(),
                                                        expiresInSeconds: expiresInSecondsBuilder(),
                                                        quotedMessage: quotedMessageBuilder(),
@@ -311,6 +312,11 @@ public class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var messageBodyBuilder: () -> String = {
         return CommonGenerator.paragraph
+    }
+
+    @objc
+    public var bodyRangesBuilder: () -> MessageBodyRanges = {
+        return MessageBodyRanges.empty
     }
 
     @objc

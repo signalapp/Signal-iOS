@@ -51,8 +51,8 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
 
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
                                    didApproveAttachments attachments: [SignalAttachment],
-                                   messageText: String?) {
-        approvalDelegate?.attachmentApproval(attachmentApproval, didApproveAttachments: attachments, messageText: messageText)
+                                   messageBody: MessageBody?) {
+        approvalDelegate?.attachmentApproval(attachmentApproval, didApproveAttachments: attachments, messageBody: messageBody)
     }
 
     public func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
@@ -60,8 +60,8 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
     }
 
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                                   didChangeMessageText newMessageText: String?) {
-        approvalDelegate?.attachmentApproval(attachmentApproval, didChangeMessageText: newMessageText)
+                                   didChangeMessageBody newMessageBody: MessageBody?) {
+        approvalDelegate?.attachmentApproval(attachmentApproval, didChangeMessageBody: newMessageBody)
     }
 
     public func attachmentApprovalBackButtonTitle() -> String {

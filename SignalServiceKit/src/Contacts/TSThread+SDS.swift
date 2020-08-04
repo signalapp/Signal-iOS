@@ -42,6 +42,8 @@ public struct ThreadRecord: SDSRecord {
     public let isMarkedUnread: Bool
     public let lastVisibleSortIdOnScreenPercentage: Double
     public let lastVisibleSortId: UInt64
+    public let messageDraftBodyRanges: Data?
+    public let mentionNotificationMode: UInt
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -61,6 +63,8 @@ public struct ThreadRecord: SDSRecord {
         case isMarkedUnread
         case lastVisibleSortIdOnScreenPercentage
         case lastVisibleSortId
+        case messageDraftBodyRanges
+        case mentionNotificationMode
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -78,495 +82,12 @@ public struct ThreadRecord: SDSRecord {
 
 // MARK: - Row Initializer
 
-@objc
-public protocol ThreadRowChecker {
-    func check_columnCount()
-    func check_columnNames()
-
-    func checkIsNull_id()
-    func checkIsNull_recordType()
-    func checkIsNull_uniqueId()
-    func checkIsNull_conversationColorName()
-    func checkIsNull_creationDate()
-    func checkIsNull_isArchived()
-    func checkIsNull_lastInteractionRowId()
-    func checkIsNull_messageDraft()
-    func checkIsNull_mutedUntilDate()
-    func checkIsNull_shouldThreadBeVisible()
-    func checkIsNull_contactPhoneNumber()
-    func checkIsNull_contactUUID()
-    func checkIsNull_groupModel()
-    func checkIsNull_hasDismissedOffers()
-    func checkIsNull_isMarkedUnread()
-    func checkIsNull_lastVisibleSortIdOnScreenPercentage()
-    func checkIsNull_lastVisibleSortId()
-
-    func checkType_id()
-    func checkType_recordType()
-    func checkType_uniqueId()
-    func checkType_conversationColorName()
-    func checkType_creationDate()
-    func checkType_isArchived()
-    func checkType_lastInteractionRowId()
-    func checkType_messageDraft()
-    func checkType_mutedUntilDate()
-    func checkType_shouldThreadBeVisible()
-    func checkType_contactPhoneNumber()
-    func checkType_contactUUID()
-    func checkType_groupModel()
-    func checkType_hasDismissedOffers()
-    func checkType_isMarkedUnread()
-    func checkType_lastVisibleSortIdOnScreenPercentage()
-    func checkType_lastVisibleSortId()
-}
-
-@objc
-public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
-    let row: Row
-
-    init(row: Row) {
-        self.row = row
-    }
-
-    @objc
-    public func check_columnCount() {
-        guard row.count == 17 else {
-            owsFail("Unexpected row count: \(row.count)")
-        }
-    }
-
-    @objc
-    public func check_columnNames() {
-        let columnNames = Array(row.columnNames)
-        let expectedColumnNames = ["id", "recordType", "uniqueId", "conversationColorName", "creationDate", "isArchived", "lastInteractionRowId", "messageDraft", "mutedUntilDate", "shouldThreadBeVisible", "contactPhoneNumber", "contactUUID", "groupModel", "hasDismissedOffers", "isMarkedUnread", "lastVisibleSortIdOnScreenPercentage", "lastVisibleSortId"]
-        guard columnNames == expectedColumnNames else {
-            Logger.verbose("columnNames: \(columnNames)")
-            owsFail("Unexpected column names")
-        }
-    }
-
-    struct ExpectedType {
-        let storage: DatabaseValue.Storage
-        let index: Int
-        let isOptional: Bool
-
-        init(_ storage: DatabaseValue.Storage, index: Int, isOptional: Bool = false) {
-            self.storage = storage
-            self.index = index
-            self.isOptional = isOptional
-        }
-
-        func isValidValue(_ value: DatabaseValue) -> Bool {
-            if isOptional, value.isNull {
-                return true
-            }
-            // There's no simpler way to compare enums while ignoring
-            // their associated values
-            switch value.storage {
-            case .null:
-                return false
-            case .int64:
-                if case .int64 = storage {
-                    return true
-                }
-            case .double:
-                if case .double = storage {
-                    return true
-                }
-            case .string:
-                if case .string = storage {
-                    return true
-                }
-            case .blob:
-                if case .blob = storage {
-                    return true
-                }
-            }
-            return false
-        }
-    }
-
-    private let expectedType_id = ExpectedType(DatabaseValue.Storage.int64(0), index: 0)
-    private let expectedType_recordType = ExpectedType(DatabaseValue.Storage.int64(0), index: 1)
-    private let expectedType_uniqueId = ExpectedType(DatabaseValue.Storage.string(""), index: 2)
-    private let expectedType_conversationColorName = ExpectedType(DatabaseValue.Storage.string(""), index: 3)
-    private let expectedType_creationDate = ExpectedType(DatabaseValue.Storage.double(0), index: 4, isOptional: true)
-    private let expectedType_isArchived = ExpectedType(DatabaseValue.Storage.int64(0), index: 5)
-    private let expectedType_lastInteractionRowId = ExpectedType(DatabaseValue.Storage.int64(0), index: 6)
-    private let expectedType_messageDraft = ExpectedType(DatabaseValue.Storage.string(""), index: 7, isOptional: true)
-    private let expectedType_mutedUntilDate = ExpectedType(DatabaseValue.Storage.double(0), index: 8, isOptional: true)
-    private let expectedType_shouldThreadBeVisible = ExpectedType(DatabaseValue.Storage.int64(0), index: 9)
-    private let expectedType_contactPhoneNumber = ExpectedType(DatabaseValue.Storage.string(""), index: 10, isOptional: true)
-    private let expectedType_contactUUID = ExpectedType(DatabaseValue.Storage.string(""), index: 11, isOptional: true)
-    private let expectedType_groupModel = ExpectedType(DatabaseValue.Storage.blob(Data()), index: 12, isOptional: true)
-    private let expectedType_hasDismissedOffers = ExpectedType(DatabaseValue.Storage.int64(0), index: 13, isOptional: true)
-    private let expectedType_isMarkedUnread = ExpectedType(DatabaseValue.Storage.int64(0), index: 14)
-    private let expectedType_lastVisibleSortIdOnScreenPercentage = ExpectedType(DatabaseValue.Storage.double(0), index: 15)
-    private let expectedType_lastVisibleSortId = ExpectedType(DatabaseValue.Storage.int64(0), index: 16)
-
-    @objc
-    public func checkIsNull_id() {
-        let expectedType = expectedType_id
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_recordType() {
-        let expectedType = expectedType_recordType
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_uniqueId() {
-        let expectedType = expectedType_uniqueId
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_conversationColorName() {
-        let expectedType = expectedType_conversationColorName
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_creationDate() {
-        let expectedType = expectedType_creationDate
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_isArchived() {
-        let expectedType = expectedType_isArchived
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_lastInteractionRowId() {
-        let expectedType = expectedType_lastInteractionRowId
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_messageDraft() {
-        let expectedType = expectedType_messageDraft
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_mutedUntilDate() {
-        let expectedType = expectedType_mutedUntilDate
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_shouldThreadBeVisible() {
-        let expectedType = expectedType_shouldThreadBeVisible
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_contactPhoneNumber() {
-        let expectedType = expectedType_contactPhoneNumber
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_contactUUID() {
-        let expectedType = expectedType_contactUUID
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_groupModel() {
-        let expectedType = expectedType_groupModel
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_hasDismissedOffers() {
-        let expectedType = expectedType_hasDismissedOffers
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_isMarkedUnread() {
-        let expectedType = expectedType_isMarkedUnread
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_lastVisibleSortIdOnScreenPercentage() {
-        let expectedType = expectedType_lastVisibleSortIdOnScreenPercentage
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkIsNull_lastVisibleSortId() {
-        let expectedType = expectedType_lastVisibleSortId
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isOptional || !value.isNull else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_id() {
-        let expectedType = expectedType_id
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_recordType() {
-        let expectedType = expectedType_recordType
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_uniqueId() {
-        let expectedType = expectedType_uniqueId
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_conversationColorName() {
-        let expectedType = expectedType_conversationColorName
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_creationDate() {
-        let expectedType = expectedType_creationDate
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_isArchived() {
-        let expectedType = expectedType_isArchived
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_lastInteractionRowId() {
-        let expectedType = expectedType_lastInteractionRowId
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_messageDraft() {
-        let expectedType = expectedType_messageDraft
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_mutedUntilDate() {
-        let expectedType = expectedType_mutedUntilDate
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_shouldThreadBeVisible() {
-        let expectedType = expectedType_shouldThreadBeVisible
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_contactPhoneNumber() {
-        let expectedType = expectedType_contactPhoneNumber
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_contactUUID() {
-        let expectedType = expectedType_contactUUID
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_groupModel() {
-        let expectedType = expectedType_groupModel
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_hasDismissedOffers() {
-        let expectedType = expectedType_hasDismissedOffers
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_isMarkedUnread() {
-        let expectedType = expectedType_isMarkedUnread
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_lastVisibleSortIdOnScreenPercentage() {
-        let expectedType = expectedType_lastVisibleSortIdOnScreenPercentage
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-
-    @objc
-    public func checkType_lastVisibleSortId() {
-        let expectedType = expectedType_lastVisibleSortId
-        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
-        guard expectedType.isValidValue(value) else {
-            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-        }
-    }
-}
-
 public extension ThreadRecord {
     static var databaseSelection: [SQLSelectable] {
         return CodingKeys.allCases
     }
 
-    private static let hasChecked = AtomicBool(false)
-
-    static func check(checker: ThreadRowChecker) {
-        Logger.verbose("---- checking...")
-        // TODO: Remove these temporary checks.
-        checker.check_columnCount()
-        checker.check_columnNames()
-
-        checker.checkIsNull_id()
-        checker.checkIsNull_recordType()
-        checker.checkIsNull_uniqueId()
-        checker.checkIsNull_conversationColorName()
-        checker.checkIsNull_creationDate()
-        checker.checkIsNull_isArchived()
-        checker.checkIsNull_lastInteractionRowId()
-        checker.checkIsNull_messageDraft()
-        checker.checkIsNull_mutedUntilDate()
-        checker.checkIsNull_shouldThreadBeVisible()
-        checker.checkIsNull_contactPhoneNumber()
-        checker.checkIsNull_contactUUID()
-        checker.checkIsNull_groupModel()
-        checker.checkIsNull_hasDismissedOffers()
-        checker.checkIsNull_isMarkedUnread()
-        checker.checkIsNull_lastVisibleSortIdOnScreenPercentage()
-        checker.checkIsNull_lastVisibleSortId()
-
-        checker.checkType_id()
-        checker.checkType_recordType()
-        checker.checkType_uniqueId()
-        checker.checkType_conversationColorName()
-        checker.checkType_creationDate()
-        checker.checkType_isArchived()
-        checker.checkType_lastInteractionRowId()
-        checker.checkType_messageDraft()
-        checker.checkType_mutedUntilDate()
-        checker.checkType_shouldThreadBeVisible()
-        checker.checkType_contactPhoneNumber()
-        checker.checkType_contactUUID()
-        checker.checkType_groupModel()
-        checker.checkType_hasDismissedOffers()
-        checker.checkType_isMarkedUnread()
-        checker.checkType_lastVisibleSortIdOnScreenPercentage()
-        checker.checkType_lastVisibleSortId()
-    }
-
     init(row: Row) {
-        // TODO: Remove these temporary checks.
-        if ThreadRecord.hasChecked.tryToSetFlag() || CurrentAppContext().didLastLaunchNotTerminate {
-            ThreadRecord.check(checker: ThreadRowCheckerImpl(row: row))
-        }
-
         id = row[0]
         recordType = row[1]
         uniqueId = row[2]
@@ -584,6 +105,8 @@ public extension ThreadRecord {
         isMarkedUnread = row[14]
         lastVisibleSortIdOnScreenPercentage = row[15]
         lastVisibleSortId = row[16]
+        messageDraftBodyRanges = row[17]
+        mentionNotificationMode = row[18]
     }
 }
 
@@ -623,7 +146,10 @@ extension TSThread {
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastVisibleSortId: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
+            let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
+            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
@@ -640,7 +166,9 @@ extension TSThread {
                                    lastInteractionRowId: lastInteractionRowId,
                                    lastVisibleSortId: lastVisibleSortId,
                                    lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                   mentionNotificationMode: mentionNotificationMode,
                                    messageDraft: messageDraft,
+                                   messageDraftBodyRanges: messageDraftBodyRanges,
                                    mutedUntilDate: mutedUntilDate,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
                                    contactPhoneNumber: contactPhoneNumber,
@@ -658,7 +186,10 @@ extension TSThread {
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastVisibleSortId: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
+            let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
+            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
@@ -674,7 +205,9 @@ extension TSThread {
                                  lastInteractionRowId: lastInteractionRowId,
                                  lastVisibleSortId: lastVisibleSortId,
                                  lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                 mentionNotificationMode: mentionNotificationMode,
                                  messageDraft: messageDraft,
+                                 messageDraftBodyRanges: messageDraftBodyRanges,
                                  mutedUntilDate: mutedUntilDate,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
                                  groupModel: groupModel)
@@ -690,7 +223,10 @@ extension TSThread {
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let lastVisibleSortId: UInt64 = record.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
+            let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
+            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
@@ -704,7 +240,9 @@ extension TSThread {
                             lastInteractionRowId: lastInteractionRowId,
                             lastVisibleSortId: lastVisibleSortId,
                             lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                            mentionNotificationMode: mentionNotificationMode,
                             messageDraft: messageDraft,
+                            messageDraftBodyRanges: messageDraftBodyRanges,
                             mutedUntilDate: mutedUntilDate,
                             shouldThreadBeVisible: shouldThreadBeVisible)
 
@@ -769,7 +307,21 @@ extension TSThread: DeepCopyable {
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
             let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let messageDraftBodyRanges: MessageBodyRanges?
+            if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
+               messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
+            } else {
+               messageDraftBodyRanges = nil
+            }
             let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
             // NOTE: If this generates build errors, you made need to
@@ -785,7 +337,9 @@ extension TSThread: DeepCopyable {
                                  lastInteractionRowId: lastInteractionRowId,
                                  lastVisibleSortId: lastVisibleSortId,
                                  lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                 mentionNotificationMode: mentionNotificationMode,
                                  messageDraft: messageDraft,
+                                 messageDraftBodyRanges: messageDraftBodyRanges,
                                  mutedUntilDate: mutedUntilDate,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
                                  groupModel: groupModel)
@@ -801,7 +355,21 @@ extension TSThread: DeepCopyable {
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
             let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let messageDraftBodyRanges: MessageBodyRanges?
+            if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
+               messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
+            } else {
+               messageDraftBodyRanges = nil
+            }
             let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
             let contactPhoneNumber: String? = modelToCopy.contactPhoneNumber
@@ -817,7 +385,9 @@ extension TSThread: DeepCopyable {
                                    lastInteractionRowId: lastInteractionRowId,
                                    lastVisibleSortId: lastVisibleSortId,
                                    lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                                   mentionNotificationMode: mentionNotificationMode,
                                    messageDraft: messageDraft,
+                                   messageDraftBodyRanges: messageDraftBodyRanges,
                                    mutedUntilDate: mutedUntilDate,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
                                    contactPhoneNumber: contactPhoneNumber,
@@ -836,7 +406,21 @@ extension TSThread: DeepCopyable {
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
             let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
             let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
+            let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let messageDraftBodyRanges: MessageBodyRanges?
+            if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
+               messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
+            } else {
+               messageDraftBodyRanges = nil
+            }
             let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
 
@@ -849,7 +433,9 @@ extension TSThread: DeepCopyable {
                             lastInteractionRowId: lastInteractionRowId,
                             lastVisibleSortId: lastVisibleSortId,
                             lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
+                            mentionNotificationMode: mentionNotificationMode,
                             messageDraft: messageDraft,
+                            messageDraftBodyRanges: messageDraftBodyRanges,
                             mutedUntilDate: mutedUntilDate,
                             shouldThreadBeVisible: shouldThreadBeVisible)
         }
@@ -881,6 +467,8 @@ extension TSThreadSerializer {
     static let isMarkedUnreadColumn = SDSColumnMetadata(columnName: "isMarkedUnread", columnType: .int)
     static let lastVisibleSortIdOnScreenPercentageColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdOnScreenPercentage", columnType: .double)
     static let lastVisibleSortIdColumn = SDSColumnMetadata(columnName: "lastVisibleSortId", columnType: .int64)
+    static let messageDraftBodyRangesColumn = SDSColumnMetadata(columnName: "messageDraftBodyRanges", columnType: .blob, isOptional: true)
+    static let mentionNotificationModeColumn = SDSColumnMetadata(columnName: "mentionNotificationMode", columnType: .int)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -903,7 +491,9 @@ extension TSThreadSerializer {
         hasDismissedOffersColumn,
         isMarkedUnreadColumn,
         lastVisibleSortIdOnScreenPercentageColumn,
-        lastVisibleSortIdColumn
+        lastVisibleSortIdColumn,
+        messageDraftBodyRangesColumn,
+        mentionNotificationModeColumn
         ])
 }
 
@@ -1347,8 +937,10 @@ class TSThreadSerializer: SDSSerializer {
         let isMarkedUnread: Bool = model.isMarkedUnread
         let lastVisibleSortIdOnScreenPercentage: Double = model.lastVisibleSortIdOnScreenPercentage
         let lastVisibleSortId: UInt64 = model.lastVisibleSortId
+        let messageDraftBodyRanges: Data? = optionalArchive(model.messageDraftBodyRanges)
+        let mentionNotificationMode: UInt = model.mentionNotificationMode.rawValue
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode)
     }
 }
 

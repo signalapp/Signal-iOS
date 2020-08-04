@@ -9,6 +9,7 @@
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StorageCoordinator.h>
+#import <SignalServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -51,10 +52,12 @@ NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWa
 NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
     = @"OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown";
 NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlurTooltipShown";
+NSString *const OWSPreferencesKeyMentionNotificationsEnabled = @"OWSPreferencesKeyMentionNotificationsEnabled";
 
 @interface OWSPreferences ()
 
 @property (atomic, nullable) NSNumber *notificationPreviewTypeCache;
+@property (atomic, nullable) NSNumber *mentionNotificationsEnabledCache;
 
 @end
 
@@ -492,6 +495,25 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
             OWSLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
+}
+
+- (BOOL)areMentionNotificationsEnabled
+{
+    NSNumber *_Nullable cachedValue = self.mentionNotificationsEnabledCache;
+    if (cachedValue != nil) {
+        return cachedValue.boolValue;
+    }
+
+    BOOL result = [self boolForKey:OWSPreferencesKeyMentionNotificationsEnabled defaultValue:YES];
+    self.mentionNotificationsEnabledCache = @(result);
+    return result;
+}
+
+- (void)setMentionNotificationsEnabled:(BOOL)value
+{
+    [self setBool:value forKey:OWSPreferencesKeyMentionNotificationsEnabled];
+
+    self.mentionNotificationsEnabledCache = @(value);
 }
 
 #pragma mark - Push Tokens

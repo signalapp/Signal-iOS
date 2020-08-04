@@ -822,18 +822,18 @@ typedef struct {
     };
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
 
-    NSString *text = displayableText.displayText;
 
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
     paragraphStyle.alignment = displayableText.displayTextNaturalAlignment;
 
-    NSMutableAttributedString *attributedText =
-        [[NSMutableAttributedString alloc] initWithString:text
-                                               attributes:@{
-                                                   NSFontAttributeName : font,
-                                                   NSForegroundColorAttributeName : textColor,
-                                                   NSParagraphStyleAttributeName : paragraphStyle
-                                               }];
+    NSMutableAttributedString *attributedText = [displayableText.displayAttributedText mutableCopy];
+    [attributedText addAttributes:@{
+        NSFontAttributeName : font,
+        NSForegroundColorAttributeName : textColor,
+        NSParagraphStyleAttributeName : paragraphStyle
+    }
+                            range:NSMakeRange(0, attributedText.length)];
+
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
         NSError *error;
@@ -842,8 +842,9 @@ typedef struct {
                                                  options:NSRegularExpressionCaseInsensitive
                                                    error:&error];
         OWSAssertDebug(error == nil);
-        for (NSTextCheckingResult *match in
-            [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
+        for (NSTextCheckingResult *match in [regex matchesInString:attributedText.string
+                                                           options:NSMatchingWithoutAnchoringBounds
+                                                             range:NSMakeRange(0, attributedText.length)]) {
 
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
             [attributedText addAttribute:NSBackgroundColorAttributeName value:UIColor.yellowColor range:match.range];
@@ -859,7 +860,8 @@ typedef struct {
     // attributes are reset.
     textView.attributedText = attributedText;
 
-    textView.accessibilityLabel = [self accessibilityLabelWithDescription:text authorName:accessibilityAuthorName];
+    textView.accessibilityLabel = [self accessibilityLabelWithDescription:attributedText.string
+                                                               authorName:accessibilityAuthorName];
 }
 
 - (BOOL)shouldShowSenderName
@@ -1592,6 +1594,11 @@ typedef struct {
         return YES;
     }
 
+    Mention *_Nullable tappedMention = [self tappedMention:sender];
+    if (tappedMention) {
+        return YES;
+    }
+
     CGPoint locationInMessageBubble = [sender locationInView:self];
     switch ([self gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
@@ -1635,6 +1642,12 @@ typedef struct {
         }
     }
 
+    Mention *_Nullable tappedMention = [self tappedMention:sender];
+    if (tappedMention) {
+        [self.delegate didTapMention:tappedMention];
+        return;
+    }
+
     CGPoint locationInMessageBubble = [sender locationInView:self];
     switch ([self gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
@@ -1664,6 +1677,37 @@ typedef struct {
             OWSFailDebug(@"Unexpected value.");
             break;
     }
+}
+
+- (nullable Mention *)tappedMention:(UITapGestureRecognizer *)sender
+{
+    if (![self.viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        return nil;
+    }
+
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    if (!message.bodyRanges.hasMentions) {
+        return nil;
+    }
+
+    CGPoint tapPoint = [sender locationInView:self.bodyTextView];
+
+    if (!CGRectContainsPoint(self.bodyTextView.bounds, tapPoint)) {
+        return nil;
+    }
+
+    NSUInteger tappedCharacterIndex =
+        [self.bodyTextView.layoutManager characterIndexForPoint:tapPoint
+                                                inTextContainer:self.bodyTextView.textContainer
+                       fractionOfDistanceBetweenInsertionPoints:nil];
+
+    if (tappedCharacterIndex < 0 || tappedCharacterIndex >= self.bodyTextView.attributedText.length) {
+        return nil;
+    }
+
+    return [self.bodyTextView.attributedText attribute:Mention.attributeKey
+                                               atIndex:tappedCharacterIndex
+                                        effectiveRange:nil];
 }
 
 - (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble

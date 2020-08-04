@@ -25,6 +25,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @interface TSMessage ()
 
 @property (nonatomic, nullable) NSString *body;
+@property (nonatomic, nullable) MessageBodyRanges *bodyRanges;
+
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
 
@@ -76,6 +78,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _schemaVersion = OWSMessageSchemaVersion;
 
     _body = messageBuilder.messageBody;
+    _bodyRanges = messageBuilder.bodyRanges;
     _attachmentIds = messageBuilder.attachmentIds;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;
@@ -108,6 +111,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
@@ -133,6 +137,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     _attachmentIds = attachmentIds;
     _body = body;
+    _bodyRanges = bodyRanges;
     _contactShare = contactShare;
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;
@@ -377,7 +382,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         NSString *attachmentId = self.attachmentIds[0];
         return [NSString stringWithFormat:@"Media Message with attachmentId: %@", attachmentId];
     } else {
-        return [NSString stringWithFormat:@"%@ with body: %@", [self class], self.body];
+        return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@",
+                         [self class],
+                         self.body,
+                         self.bodyRanges.hasMentions ? @"YES" : @"NO"];
     }
 }
 
@@ -421,10 +429,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         OWSFailDebug(@"Can't parse oversize text data.");
         return nil;
     }
-    return text.filterStringForDisplay;
+    return text;
 }
 
-- (nullable NSString *)bodyTextWithTransaction:(GRDBReadTransaction *)transaction
+- (nullable NSString *)rawBodyWithTransaction:(GRDBReadTransaction *)transaction
 {
     NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
     if (oversizeText) {
@@ -432,7 +440,21 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (self.body.length > 0) {
-        return self.body.filterStringForDisplay;
+        return self.body;
+    }
+
+    return nil;
+}
+
+- (nullable NSString *)plaintextBodyWithTransaction:(GRDBReadTransaction *)transaction
+{
+    NSString *_Nullable rawBody = [self rawBodyWithTransaction:transaction];
+    if (rawBody) {
+        if (self.bodyRanges) {
+            return [self.bodyRanges plaintextBodyWithText:rawBody transaction:transaction];
+        }
+
+        return rawBody.filterStringForDisplay;
     }
 
     return nil;
@@ -451,6 +473,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (self.body.length > 0) {
         bodyDescription = self.body;
+    }
+
+    if (self.bodyRanges) {
+        bodyDescription = [self.bodyRanges plaintextBodyWithText:bodyDescription
+                                                     transaction:transaction.unwrapGrdbRead];
     }
 
     if (bodyDescription == nil) {
@@ -532,6 +559,20 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
+    // If we have any mentions, we need to save them to aid in querying
+    // for messages that mention a given user. We only need to save one
+    // mention record per UUID, even if the same UUID is mentioned
+    // multiple times in the message.
+    if (self.bodyRanges.hasMentions) {
+        NSSet<NSUUID *> *uniqueMentionUuids = [NSSet setWithArray:self.bodyRanges.mentions.allValues];
+        for (NSUUID *uuid in uniqueMentionUuids) {
+            TSMention *mention = [[TSMention alloc] initWithUniqueMessageId:self.uniqueId
+                                                             uniqueThreadId:self.uniqueThreadId
+                                                                 uuidString:uuid.UUIDString];
+            [mention anyInsertWithTransaction:transaction];
+        }
+    }
+
     [self updateStoredShouldStartExpireTimer];
 
 #ifdef DEBUG
@@ -607,6 +648,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self removeAllAttachmentsWithTransaction:transaction];
 
     [self removeAllReactionsWithTransaction:transaction];
+
+    [self removeAllMentionsWithTransaction:transaction];
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -626,6 +669,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
         [attachment anyRemoveWithTransaction:transaction];
     };
+}
+
+- (void)removeAllMentionsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [MentionFinder deleteAllMentionsFor:self transaction:transaction.unwrapGrdbWrite];
 }
 
 - (BOOL)hasPerConversationExpiration
@@ -764,11 +812,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     // attachments once.
     [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self removeAllAttachmentsWithTransaction:transaction];
+    [self removeAllMentionsWithTransaction:transaction];
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
                                         // Remove renderable content.
                                         message.body = nil;
+                                        message.bodyRanges = nil;
                                         message.contactShare = nil;
                                         message.quotedMessage = nil;
                                         message.linkPreview = nil;

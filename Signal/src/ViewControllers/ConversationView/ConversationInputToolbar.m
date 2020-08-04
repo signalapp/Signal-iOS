@@ -415,18 +415,18 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.inputTextView.mentionDelegate = value;
 }
 
-- (NSString *)messageText
+- (nullable MessageBody *)messageBody
 {
     OWSAssertDebug(self.inputTextView);
 
-    return self.inputTextView.trimmedText;
+    return self.inputTextView.messageBody;
 }
 
-- (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated
+- (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated
 {
     OWSAssertDebug(self.inputTextView);
 
-    self.inputTextView.text = value;
+    self.inputTextView.messageBody = value;
 
     // It's important that we set the textViewHeight before
     // doing any animation in `ensureButtonVisibilityWithIsAnimated`
@@ -447,7 +447,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self ensureTextViewHeight];
     [self updateInputLinkPreview];
 
-    if (value.length > 0) {
+    if (value.text.length > 0) {
         [self clearDesiredKeyboard];
     }
 
@@ -466,7 +466,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 - (void)clearTextMessageAnimated:(BOOL)isAnimated
 {
-    [self setMessageText:nil animated:isAnimated];
+    [self setMessageBody:nil animated:isAnimated];
     [self.inputTextView.undoManager removeAllActions];
     self.wasLinkPreviewCancelled = NO;
 }
@@ -1318,9 +1318,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *body =
-        [[self messageText] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (body.length < 1) {
+    NSString *bodyText =
+        [[self messageBody].text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (bodyText.length < 1) {
         [self clearLinkPreviewStateAndView];
         self.wasLinkPreviewCancelled = NO;
         return;
@@ -1332,7 +1332,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
 
     // Don't include link previews for oversize text messages.
-    if ([body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+    if ([bodyText lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         [self clearLinkPreviewStateAndView];
         return;
     }

@@ -99,7 +99,7 @@ class NotificationActionHandler {
         }
 
         return markAsRead(thread: thread).then { () -> Promise<Void> in
-            let sendPromise = ThreadUtil.sendMessageNonDurably(text: replyText,
+            let sendPromise = ThreadUtil.sendMessageNonDurably(body: MessageBody(text: replyText, ranges: .empty),
                                                                thread: thread,
                                                                quotedReplyModel: nil,
                                                                messageSender: self.messageSender)
@@ -138,10 +138,10 @@ extension ThreadUtil {
         return SSKEnvironment.shared.databaseStorage
     }
 
-    class func sendMessageNonDurably(text: String, thread: TSThread, quotedReplyModel: OWSQuotedReplyModel?, messageSender: MessageSender) -> Promise<Void> {
+    class func sendMessageNonDurably(body: MessageBody, thread: TSThread, quotedReplyModel: OWSQuotedReplyModel?, messageSender: MessageSender) -> Promise<Void> {
         return Promise { resolver in
             self.databaseStorage.read { transaction in
-                _ = self.sendMessageNonDurably(withText: text,
+                _ = self.sendMessageNonDurably(with: body,
                                                thread: thread,
                                                quotedReplyModel: quotedReplyModel,
                                                transaction: transaction,

@@ -13,7 +13,6 @@ public protocol MentionTextViewDelegate: UITextViewDelegate {
     func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView?
     func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress]
 
-    func textView(_ textView: MentionTextView, didTapMention: Mention)
     func textView(_ textView: MentionTextView, didDeleteMention: Mention)
 
     func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool
@@ -38,10 +37,6 @@ open class MentionTextView: OWSTextView {
     public required init() {
         super.init(frame: .zero, textContainer: nil)
         delegate = self
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        tapGesture.delegate = self
-        addGestureRecognizer(tapGesture)
     }
 
     deinit {
@@ -72,44 +67,33 @@ open class MentionTextView: OWSTextView {
                 location: range.location - Mention.mentionPrefixLength,
                 length: range.length + Mention.mentionPrefixLength
             ),
-            with: Mention(
+            with: Mention.withSneakyTransaction(
                 address: address,
                 style: mentionDelegate.textViewMentionStyle(self)
-            ),
-            alwaysResolveMention: true
+            )
         )
 
         // Add a space after the typed mention
         replaceCharacters(in: selectedRange, with: " ")
     }
 
-    public func replaceCharacters(in range: NSRange, with mention: Mention, alwaysResolveMention: Bool = false) {
-        replaceCharacters(in: range, with: mention, inMutableString: textStorage, alwaysResolveMention: alwaysResolveMention)
-    }
-
     public func replaceCharacters(
         in range: NSRange,
-        with mention: Mention,
-        inMutableString mutableString: NSMutableAttributedString,
-        alwaysResolveMention: Bool = false
+        with mention: Mention
     ) {
         guard let mentionDelegate = mentionDelegate else {
             return owsFailDebug("Can't replace characters without delegate")
         }
 
         let replacementString: NSAttributedString
-        if alwaysResolveMention || mentionDelegate.textView(self, shouldResolveMentionForAddress: mention.address) {
+        if mentionDelegate.textView(self, shouldResolveMentionForAddress: mention.address) {
             replacementString = mention.attributedString
         } else {
             // If we shouldn't resolve the mention, insert the plaintext representation.
             replacementString = NSAttributedString(string: mention.text, attributes: defaultAttributes)
         }
 
-        if mutableString === textStorage {
-            replaceCharacters(in: range, with: replacementString)
-        } else {
-            mutableString.replaceCharacters(in: range, with: replacementString)
-        }
+        replaceCharacters(in: range, with: replacementString)
     }
 
     public func replaceCharacters(in range: NSRange, with messageBody: MessageBody) {
@@ -117,22 +101,16 @@ open class MentionTextView: OWSTextView {
             return owsFailDebug("Can't replace characters without delegate")
         }
 
-        let attributedMentions = NSMutableAttributedString(string: messageBody.text, attributes: defaultAttributes)
-
-        // We must enumerate the ranges in reverse, so as we replace a ranges
-        // text we do not change the previous ranges.
-        for (range, uuid) in messageBody.mentionRanges.sorted(by: { $0.key.location > $1.key.location }) {
-            replaceCharacters(
-                in: range,
-                with: Mention(
-                    address: SignalServiceAddress(uuid: uuid),
-                    style: mentionDelegate.textViewMentionStyle(self)
-                ),
-                inMutableString: attributedMentions
+        let attributedBody = SDSDatabaseStorage.shared.uiRead { transaction in
+            messageBody.attributedBody(
+                style: mentionDelegate.textViewMentionStyle(self),
+                attributes: self.defaultAttributes,
+                shouldResolveAddress: { mentionDelegate.textView(self, shouldResolveMentionForAddress: $0) },
+                transaction: transaction.unwrapGrdbRead
             )
         }
 
-        replaceCharacters(in: range, with: attributedMentions)
+        replaceCharacters(in: range, with: attributedBody)
     }
 
     public func replaceCharacters(in range: NSRange, with string: String) {
@@ -191,19 +169,22 @@ open class MentionTextView: OWSTextView {
     }
 
     @objc
-    public var messageBody: MessageBody {
-        get { messageBody(in: NSRange(location: 0, length: textStorage.length)) }
+    public var messageBody: MessageBody? {
+        get { MessageBody(attributedString: attributedText) }
         set {
+            guard let newValue = newValue else {
+                replaceCharacters(
+                    in: NSRange(location: 0, length: textStorage.length),
+                    with: ""
+                )
+                typingAttributes = defaultAttributes
+                return
+            }
             replaceCharacters(
                 in: NSRange(location: 0, length: textStorage.length),
                 with: newValue
             )
         }
-    }
-
-    @objc
-    public func messageBody(in range: NSRange) -> MessageBody {
-        return MessageBody(attributedString: attributedText.attributedSubstring(from: range))
     }
 
     @objc
@@ -237,6 +218,7 @@ open class MentionTextView: OWSTextView {
     }
 
     private weak var pickerView: MentionPicker?
+    private weak var pickerReferenceBackdrop: UIView?
     private weak var pickerViewTopConstraint: NSLayoutConstraint?
     private func didBeginTypingMention() {
         guard let mentionDelegate = mentionDelegate else { return }
@@ -268,14 +250,23 @@ open class MentionTextView: OWSTextView {
 
         didUpdateMentionText(currentlyTypingMentionText ?? "")
 
-        pickerParentView.layoutIfNeeded()
-
         let style = mentionDelegate.textViewMentionStyle(self)
-        if style == .composingAttachment { pickerView.alpha = 0 }
+        if style == .composingAttachment {
+            pickerView.alpha = 0
+            let referenceBackdrop = UIView()
+            referenceBackdrop.backgroundColor = UIColor.ows_gray80
+            pickerParentView.insertSubview(referenceBackdrop, belowSubview: pickerReferenceView)
+            referenceBackdrop.autoPin(toEdgesOf: pickerReferenceView)
+            referenceBackdrop.alpha = 0
+            self.pickerReferenceBackdrop = referenceBackdrop
+        }
+
+        pickerParentView.layoutIfNeeded()
 
         // Slide up.
         UIView.animate(withDuration: 0.25) {
             pickerView.alpha = 1
+            self.pickerReferenceBackdrop?.alpha = 1
             animationTopConstraint.isActive = false
             self.pickerViewTopConstraint = pickerView.autoPinEdge(.bottom, to: .top, of: pickerReferenceView)
             pickerParentView.layoutIfNeeded()
@@ -287,7 +278,10 @@ open class MentionTextView: OWSTextView {
 
         guard let pickerView = pickerView else { return }
 
+        let referenceBackdrop = pickerReferenceBackdrop
+
         self.pickerView = nil
+        self.pickerReferenceBackdrop = nil
 
         let pickerViewTopConstraint = self.pickerViewTopConstraint
         self.pickerViewTopConstraint = nil
@@ -296,6 +290,7 @@ open class MentionTextView: OWSTextView {
             let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self),
             let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self) else {
                 pickerView.removeFromSuperview()
+                referenceBackdrop?.removeFromSuperview()
                 return
         }
 
@@ -303,6 +298,7 @@ open class MentionTextView: OWSTextView {
 
         // Slide down.
         UIView.animate(withDuration: 0.25, animations: {
+            referenceBackdrop?.alpha = 0
             pickerViewTopConstraint?.isActive = false
             pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
             pickerParentView.layoutIfNeeded()
@@ -310,6 +306,7 @@ open class MentionTextView: OWSTextView {
             if style == .composingAttachment { pickerView.alpha = 0 }
         }) { _ in
             pickerView.removeFromSuperview()
+            referenceBackdrop?.removeFromSuperview()
         }
     }
 
@@ -324,12 +321,8 @@ open class MentionTextView: OWSTextView {
 
         if range.length > 0 {
             // Locate any mentions in the edited range.
-            textStorage.enumerateAttribute(
-                .mention,
-                in: range,
-                options: []
-            ) { mention, subrange, _ in
-                guard let mention = mention as? Mention else { return }
+            textStorage.enumerateMentions(in: range) { mention, subrange, _ in
+                guard let mention = mention else { return }
 
                 // Get the full range of the mention, we may only be editing a part of it.
                 var uniqueMentionRange = NSRange()
@@ -346,7 +339,11 @@ open class MentionTextView: OWSTextView {
                 deletedMentions[uniqueMentionRange] = mention
             }
         } else if range.location > 0,
-            let leftMention = textStorage.attribute(.mention, at: range.location - 1, effectiveRange: nil) as? Mention {
+            let leftMention = textStorage.attribute(
+                .mention,
+                at: range.location - 1,
+                effectiveRange: nil
+            ) as? Mention {
             // If there is a mention to the left, the typing attributes will
             // be the mention's attributes. We don't want that, so we need
             // to reset them here.
@@ -453,29 +450,40 @@ open class MentionTextView: OWSTextView {
         // We checked everything, so we're not typing
         state = .notTypingMention
     }
+}
 
-    // MARK: -
+// MARK: - Picker Keyboard Interaction
 
-    @objc
-    private func didTap(_ sender: UITapGestureRecognizer) {
-        var tapPoint = sender.location(in: self)
-        tapPoint.x -= textContainerInset.left
-        tapPoint.y -= textContainerInset.right
+extension MentionTextView {
+    open override var keyCommands: [UIKeyCommand]? {
+        guard let pickerView = pickerView else { return nil }
 
-        let tappedCharacterIndex = layoutManager.characterIndex(
-            for: tapPoint,
-            in: textContainer,
-            fractionOfDistanceBetweenInsertionPoints: nil
-        )
-        guard tappedCharacterIndex > 0, tappedCharacterIndex < textStorage.length else { return }
+        return [
+            UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(upArrowPressed(_:))),
+            UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(downArrowPressed(_:))),
+            UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(returnPressed(_:))),
+            UIKeyCommand(input: "\t", modifierFlags: [], action: #selector(tabPressed(_:)))
+        ]
+    }
 
-        guard let tappedMention = textStorage.attribute(
-            .mention,
-            at: tappedCharacterIndex,
-            effectiveRange: nil
-        ) as? Mention else { return }
+    @objc func upArrowPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapUpArrow()
+    }
 
-        mentionDelegate?.textView(self, didTapMention: tappedMention)
+    @objc func downArrowPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapDownArrow()
+    }
+
+    @objc func returnPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapReturn()
+    }
+
+    @objc func tabPressed(_ sender: UIKeyCommand) {
+        guard let pickerView = pickerView else { return }
+        pickerView.didTapTab()
     }
 }
 
@@ -487,15 +495,15 @@ extension MentionTextView {
         replaceCharacters(in: selectedRange, with: "")
     }
 
-    public static let pasteboardType = "private.archived-mention-text"
-    open override func copy(_ sender: Any?) {
-        guard let plaintextData = attributedText.attributedSubstring(from: selectedRange).string.data(using: .utf8) else {
+    @objc
+    public class func copyAttributedStringToPasteboard(_ attributedString: NSAttributedString) {
+        guard let plaintextData = attributedString.string.data(using: .utf8) else {
             return owsFailDebug("Failed to calculate plaintextData on copy")
         }
 
-        let messageBody = self.messageBody(in: selectedRange)
+        let messageBody = MessageBody(attributedString: attributedString)
 
-        if messageBody.hasMentions {
+        if messageBody.hasRanges {
             let encodedMessageBody = NSKeyedArchiver.archivedData(withRootObject: messageBody)
             UIPasteboard.general.setItems([[Self.pasteboardType: encodedMessageBody]], options: [.localOnly: true])
         } else {
@@ -503,6 +511,11 @@ extension MentionTextView {
         }
 
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
+    }
+
+    public static let pasteboardType = "private.archived-mention-text"
+    open override func copy(_ sender: Any?) {
+        Self.copyAttributedStringToPasteboard(attributedText.attributedSubstring(from: selectedRange))
     }
 
     open override func paste(_ sender: Any?) {

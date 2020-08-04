@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationViewItem;
 
+@class MessageBodyRanges;
 @class SDSAnyReadTransaction;
 @class SignalServiceAddress;
 @class TSAttachmentPointer;
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This property should be set IFF we are quoting a text message
 // or attachment with caption.
 @property (nullable, nonatomic, readonly) NSString *body;
+@property (nullable, nonatomic, readonly) MessageBodyRanges *bodyRanges;
 @property (nonatomic, readonly) BOOL isRemotelySourced;
 
 #pragma mark - Attachments

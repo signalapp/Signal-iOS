@@ -54,7 +54,9 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
             lastInteractionRowId:(int64_t)lastInteractionRowId
                lastVisibleSortId:(uint64_t)lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
+         mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
+          messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
@@ -70,7 +72,9 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
               lastInteractionRowId:lastInteractionRowId
                  lastVisibleSortId:lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
+           mentionNotificationMode:mentionNotificationMode
                       messageDraft:messageDraft
+            messageDraftBodyRanges:messageDraftBodyRanges
                     mutedUntilDate:mutedUntilDate
              shouldThreadBeVisible:shouldThreadBeVisible];
 

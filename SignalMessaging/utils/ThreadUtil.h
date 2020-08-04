@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MessageBody;
 @class OWSContact;
 @class OWSLinkPreviewDraft;
 @class OWSMessageSender;
@@ -26,20 +27,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Durable Message Enqueue
 
-+ (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
++ (TSOutgoingMessage *)enqueueMessageWithBody:(MessageBody *)messageBody
                                        thread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (TSOutgoingMessage *)enqueueMessageWithText:(nullable NSString *)fullMessageText
++ (TSOutgoingMessage *)enqueueMessageWithBody:(nullable MessageBody *)messageBody
                              mediaAttachments:(NSArray<SignalAttachment *> *)attachments
                                        thread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (nullable TSOutgoingMessage *)createUnsentMessageWithText:(nullable NSString *)fullMessageText
++ (nullable TSOutgoingMessage *)createUnsentMessageWithBody:(nullable MessageBody *)messageBody
                                            mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                                      thread:(TSThread *)thread
                                            quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
@@ -56,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Non-Durable Sending
 
 // Used by SAE and "reply from lockscreen", otherwise we should use the durable `enqueue` counterpart
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
++ (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
@@ -64,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           completion:(void (^)(NSError *_Nullable error))completion;
 
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
++ (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
                                     mediaAttachments:(NSArray<SignalAttachment *> *)attachments
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel

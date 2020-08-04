@@ -6,7 +6,7 @@ import Foundation
 
 extension OutgoingMessagePreparer {
     @objc
-    public convenience init(fullMessageText: String,
+    public convenience init(messageBody: MessageBody,
                             mediaAttachments: [SignalAttachment],
                             thread: TSThread,
                             quotedReplyModel: OWSQuotedReplyModel?,
@@ -14,12 +14,12 @@ extension OutgoingMessagePreparer {
 
         var attachments = mediaAttachments
         let truncatedText: String?
-        if fullMessageText.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold {
-            truncatedText = fullMessageText
+        if messageBody.text.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold {
+            truncatedText = messageBody.text
         } else {
-            truncatedText = fullMessageText.truncated(toByteCount: kOversizeTextMessageSizeThreshold)
+            truncatedText = messageBody.text.truncated(toByteCount: kOversizeTextMessageSizeThreshold)
 
-            if let dataSource = DataSourceValue.dataSource(withOversizeText: fullMessageText) {
+            if let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text) {
                 let attachment = SignalAttachment.attachment(dataSource: dataSource,
                                                              dataUTI: kOversizeTextAttachmentUTI)
                 attachments.append(attachment)
@@ -67,6 +67,7 @@ extension OutgoingMessagePreparer {
 
         let message = TSOutgoingMessageBuilder(thread: thread,
                                                 messageBody: truncatedText,
+                                                bodyRanges: messageBody.ranges,
                                                 expiresInSeconds: expiresInSeconds,
                                                 isVoiceMessage: isVoiceMessage,
                                                 quotedMessage: quotedMessage,

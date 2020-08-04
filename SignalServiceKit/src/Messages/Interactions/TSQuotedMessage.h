@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MessageBodyRanges;
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class SignalServiceAddress;
@@ -65,6 +66,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 // This property should be set IFF we are quoting a text message
 // or attachment with caption.
 @property (nullable, nonatomic, readonly) NSString *body;
+@property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 
 #pragma mark - Attachments
 
@@ -96,14 +98,16 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 // used when receiving quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                     authorAddress:(SignalServiceAddress *)authorAddress
-                             body:(NSString *_Nullable)body
+                             body:(nullable NSString *)body
+                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                        bodySource:(TSQuotedMessageContentSource)bodySource
     receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
 
 // used when sending quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                     authorAddress:(SignalServiceAddress *)authorAddress
-                             body:(NSString *_Nullable)body
+                             body:(nullable NSString *)body
+                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
 
 

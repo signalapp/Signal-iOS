@@ -80,6 +80,8 @@ public class GRDBSchemaMigrator: NSObject {
         case fixIncorrectIndexes
         case resetThreadVisibility
         case trackUserProfileFetches
+        case addMentions
+        case addMentionNotificationMode
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -112,7 +114,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 10
+    public static let grdbSchemaVersionLatest: UInt = 11
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -729,6 +731,60 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.create(index: "index_model_OWSUserProfile_on_lastFetchDate_and_lastMessagingDate",
                               on: "model_OWSUserProfile",
                               columns: ["lastFetchDate", "lastMessagingDate"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addMentions.rawValue) { db in
+            do {
+                try db.create(table: "model_TSMention") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("recordType", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column("uniqueMessageId", .text)
+                        .notNull()
+                    table.column("uniqueThreadId", .text)
+                        .notNull()
+                    table.column("uuidString", .text)
+                        .notNull()
+                    table.column("creationTimestamp", .double)
+                        .notNull()
+                }
+                try db.create(index: "index_model_TSMention_on_uniqueId",
+                              on: "model_TSMention",
+                              columns: ["uniqueId"])
+                try db.create(index: "index_model_TSMention_on_uuidString_and_uniqueThreadId",
+                              on: "model_TSMention",
+                              columns: ["uuidString", "uniqueThreadId"])
+                try db.create(index: "index_model_TSMention_on_uniqueMessageId_and_uuidString",
+                              on: "model_TSMention",
+                              columns: ["uniqueMessageId", "uuidString"],
+                              unique: true)
+
+                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                    table.add(column: "messageDraftBodyRanges", .blob)
+                }
+
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "bodyRanges", .blob)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addMentionNotificationMode.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                    table.add(column: "mentionNotificationMode", .integer)
+                        .notNull()
+                        .defaults(to: 0)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }

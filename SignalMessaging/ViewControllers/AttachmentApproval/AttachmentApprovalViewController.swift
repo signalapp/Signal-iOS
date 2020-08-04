@@ -20,12 +20,12 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
     func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController)
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                            didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+                            didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController)
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                            didChangeMessageText newMessageText: String?)
+                            didChangeMessageBody newMessageBody: MessageBody?)
 
     @objc
     optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment)
@@ -113,6 +113,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                    navigationOrientation: .horizontal,
                    options: pageOptions)
 
+        attachmentTextToolbar.attachmentTextToolbarDelegate = self
+
         let isAddMoreVisibleBlock = { [weak self] in
             return self?.isAddMoreVisible ?? false
         }
@@ -133,7 +135,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment],
-                                             initialMessageText: String?,
+                                             initialMessageBody: MessageBody?,
                                              approvalDelegate: AttachmentApprovalViewControllerDelegate)
         -> OWSNavigationController {
 
@@ -141,7 +143,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         let vc = AttachmentApprovalViewController(options: [.hasCancel],
                                                   sendButtonImageName: "send-solid-24",
                                                   attachmentApprovalItems: attachmentApprovalItems)
-        vc.messageText = initialMessageText
+        vc.messageBody = initialMessageBody
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
@@ -205,7 +207,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // Bottom Toolbar
         galleryRailView.delegate = self
-        attachmentTextToolbar.attachmentTextToolbarDelegate = self
 
         // Navigation
 
@@ -301,12 +302,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                               recipientNames: approvalDelegate?.attachmentApprovalRecipientNames ?? [])
     }
 
-    public var messageText: String? {
+    public var messageBody: MessageBody? {
         get {
-            return attachmentTextToolbar.messageText
+            return attachmentTextToolbar.messageBody
         }
         set {
-            attachmentTextToolbar.messageText = newValue
+            attachmentTextToolbar.messageBody = newValue
         }
     }
 
@@ -885,7 +886,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
                             assert(attachments.count <= 1)
                         }
 
-                        self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
+                        self.approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageBody: attachmentTextToolbar.messageBody)
                     }
                 }.catch { error in
                     AssertIsOnMainThread()
@@ -898,7 +899,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        approvalDelegate?.attachmentApproval(self, didChangeMessageText: attachmentTextToolbar.messageText)
+        approvalDelegate?.attachmentApproval(self, didChangeMessageBody: attachmentTextToolbar.messageBody)
     }
 
     func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar) {
@@ -933,8 +934,6 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         guard FeatureFlags.mentionsSend else { return [] }
         return approvalDelegate?.attachmentApprovalMentionableAddresses ?? []
     }
-
-    public func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 

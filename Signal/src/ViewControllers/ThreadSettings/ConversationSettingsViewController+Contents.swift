@@ -426,7 +426,48 @@ extension ConversationSettingsViewController {
                                     self?.showMuteUnmuteActionSheet()
         }))
 
+        if Mention.threadAllowsMentionSend(thread) {
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+
+                let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsMention,
+                                                                    itemName: NSLocalizedString("CONVERSATION_SETTINGS_MENTIONS_LABEL",
+                                                                                                comment: "label for 'mentions' cell in conversation settings"),
+                                                                    accessoryText: self.nameForMentionMode(self.thread.mentionNotificationMode))
+
+                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "mentions")
+
+                return cell
+                },
+                                     customRowHeight: UITableView.automaticDimension,
+                                     actionBlock: { [weak self] in
+                                        self?.showMentionNotificationModeActionSheet()
+            }))
+        }
+
         return section
+    }
+
+    func nameForMentionMode(_ mode: TSThreadMentionNotificationMode) -> String {
+        switch mode {
+        case .default:
+            if Environment.shared.preferences.areMentionNotificationsEnabled() {
+                return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_ON",
+                                         comment: "label for 'default' option for mention notifications in conversation settings when global mention notifications are on")
+            } else {
+                return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_OFF",
+                                         comment: "label for 'default' option for mention notifications in conversation settings when global mention notifications are off")
+            }
+        case .always:
+            return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS",
+                                     comment: "label for 'always' option for mention notifications in conversation settings")
+        case .never:
+            return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_NEVER",
+                                     comment: "label for 'never' option for mention notifications in conversation settings")
+        }
     }
 
     private func buildBlockAndLeaveSection() -> OWSTableSection {

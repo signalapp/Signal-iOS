@@ -2053,6 +2053,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *body = dataMessage.body;
+
+    MessageBodyRanges *_Nullable bodyRanges;
+    if (dataMessage.bodyRanges.count > 0) {
+        bodyRanges = [[MessageBodyRanges alloc] initWithProtos:dataMessage.bodyRanges];
+    }
+
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
     if (serverTimestamp != nil && ![SDS fitsInInt64WithNSNumber:serverTimestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
@@ -2097,20 +2103,22 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // The builder() factory method requires us to specify every
     // property so that this will break if we add any new properties.
-    TSIncomingMessageBuilder *incomingMessageBuilder = [TSIncomingMessageBuilder builderWithThread:thread
-                                                                                         timestamp:timestamp
-                                                                                     authorAddress:authorAddress
-                                                                                    sourceDeviceId:envelope.sourceDevice
-                                                                                       messageBody:body
-                                                                                     attachmentIds:[NSMutableArray new]
-                                                                                  expiresInSeconds:dataMessage.expireTimer
-                                                                                     quotedMessage:quotedMessage
-                                                                                      contactShare:contact
-                                                                                       linkPreview:linkPreview
-                                                                                    messageSticker:messageSticker
-                                                                                   serverTimestamp:serverTimestamp
-                                                                                   wasReceivedByUD:wasReceivedByUD
-                                                                                 isViewOnceMessage:isViewOnceMessage];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder builderWithThread:thread
+                                          timestamp:timestamp
+                                      authorAddress:authorAddress
+                                     sourceDeviceId:envelope.sourceDevice
+                                        messageBody:body
+                                         bodyRanges:bodyRanges
+                                      attachmentIds:[NSMutableArray new]
+                                   expiresInSeconds:dataMessage.expireTimer
+                                      quotedMessage:quotedMessage
+                                       contactShare:contact
+                                        linkPreview:linkPreview
+                                     messageSticker:messageSticker
+                                    serverTimestamp:serverTimestamp
+                                    wasReceivedByUD:wasReceivedByUD
+                                  isViewOnceMessage:isViewOnceMessage];
     TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     if (!incomingMessage) {
         OWSFailDebug(@"Missing incomingMessage.");

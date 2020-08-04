@@ -184,10 +184,12 @@ class ConversationInputTextView: MentionTextView {
     // MARK: - Key Commands
 
     override var keyCommands: [UIKeyCommand]? {
+        let keyCommands = super.keyCommands ?? []
+
         // We don't define discoverability title for these key commands as they're
         // considered "default" functionality and shouldn't clutter the shortcut
         // list that is rendered when you hold down the command key.
-        return [
+        return keyCommands + [
             // An unmodified return can only be sent by a hardware keyboard,
             // return on the software keyboard will not trigger this command.
             // Return, send message

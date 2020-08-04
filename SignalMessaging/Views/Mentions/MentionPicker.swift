@@ -231,7 +231,7 @@ class MentionPicker: UIView {
 
     @objc private func applyTheme() {
         if style == .composingAttachment {
-            tableView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+            tableView.backgroundColor = UIColor.ows_gray95
             hairlineView.backgroundColor = .ows_gray65
         } else {
             tableView.backgroundColor = Theme.backgroundColor
@@ -240,6 +240,59 @@ class MentionPicker: UIView {
         tableView.reloadData()
     }
 }
+
+// MARK: - Keyboard Interaction
+
+extension MentionPicker {
+    func highlightAndScrollToRow(_ row: Int, animated: Bool = true) {
+        guard row >= 0 && row < filteredMentionableUsers.count else { return }
+
+        tableView.selectRow(at: IndexPath(row: row, section: 0), animated: animated, scrollPosition: .none)
+        tableView.scrollToRow(at: IndexPath(row: row, section: 0), at: .none, animated: animated)
+    }
+
+    func didTapUpArrow() {
+        guard !filteredMentionableUsers.isEmpty else { return }
+
+        var nextRow = filteredMentionableUsers.count - 1
+
+        if let selectedIndex = tableView.indexPathForSelectedRow {
+            nextRow = selectedIndex.row - 1
+            if nextRow < 0 { nextRow = filteredMentionableUsers.count - 1 }
+        }
+
+        highlightAndScrollToRow(nextRow)
+    }
+
+    func didTapDownArrow() {
+        guard !filteredMentionableUsers.isEmpty else { return }
+
+        var nextRow = 0
+
+        if let selectedIndex = tableView.indexPathForSelectedRow {
+            nextRow = selectedIndex.row + 1
+            if nextRow >= filteredMentionableUsers.count { nextRow = 0 }
+        }
+
+        highlightAndScrollToRow(nextRow)
+    }
+
+    func didTapReturn() {
+        selectHighlightedRow()
+    }
+
+    func didTapTab() {
+        selectHighlightedRow()
+    }
+
+    func selectHighlightedRow() {
+        guard let selectedIndex = tableView.indexPathForSelectedRow,
+            let mentionableUser = filteredMentionableUsers[safe: selectedIndex.row] else { return }
+        selectedAddressCallback(mentionableUser.address)
+    }
+}
+
+// MARK: -
 
 extension MentionPicker: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -295,6 +348,7 @@ private class MentionableUserCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundColor = .clear
+        selectedBackgroundView = UIView()
 
         let avatarContainer = UIView()
         avatarContainer.addSubview(avatarImageView)
@@ -330,9 +384,11 @@ private class MentionableUserCell: UITableViewCell {
         if style == .composingAttachment {
             displayNameLabel.textColor = Theme.darkThemePrimaryColor
             usernameLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+            selectedBackgroundView?.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         } else {
             displayNameLabel.textColor = Theme.primaryTextColor
             usernameLabel.textColor = Theme.secondaryTextAndIconColor
+            selectedBackgroundView?.backgroundColor = Theme.cellSelectedColor
         }
 
         displayNameLabel.text = mentionableUser.displayName

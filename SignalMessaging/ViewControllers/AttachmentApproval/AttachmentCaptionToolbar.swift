@@ -133,8 +133,6 @@ class AttachmentCaptionToolbar: UIView, MentionTextViewDelegate {
         return []
     }
 
-    func textView(_ textView: MentionTextView, didTapMention mention: Mention) {}
-
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {

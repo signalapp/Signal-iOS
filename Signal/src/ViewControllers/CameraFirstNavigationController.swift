@@ -17,7 +17,7 @@ public class CameraFirstCaptureSendFlow: NSObject {
     public weak var delegate: CameraFirstCaptureDelegate?
 
     var approvedAttachments: [SignalAttachment]?
-    var approvalMessageText: String?
+    var approvalMessageBody: MessageBody?
 
     var selectedConversations: [ConversationItem] = []
 }
@@ -27,21 +27,21 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         delegate?.cameraFirstCaptureSendFlowDidCancel(self)
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
         self.approvedAttachments = attachments
-        self.approvalMessageText = messageText
+        self.approvalMessageBody = messageBody
 
         let pickerVC = ConversationPickerViewController()
         pickerVC.delegate = self
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
-    func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String? {
-        return approvalMessageText
+    func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
+        return approvalMessageBody
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?) {
-        self.approvalMessageText = newMessageText
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?) {
+        self.approvalMessageBody = newMessageBody
     }
 
     var sendMediaNavApprovalButtonImageName: String {
@@ -95,7 +95,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
         let conversations = selectedConversationsForConversationPicker
         firstly {
             AttachmentMultisend.sendApprovedMedia(conversations: conversations,
-                                                  approvalMessageText: self.approvalMessageText,
+                                                  approvalMessageBody: self.approvalMessageBody,
                                                   approvedAttachments: approvedAttachments)
         }.done { _ in
                 self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)

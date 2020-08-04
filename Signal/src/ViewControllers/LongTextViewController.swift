@@ -34,8 +34,8 @@ public class LongTextViewController: OWSViewController {
         return viewItem.displayableBodyText
     }
 
-    var fullText: String {
-        return displayableText?.fullText ?? ""
+    var fullAttributedText: NSAttributedString {
+        return displayableText?.fullAttributedText ?? NSAttributedString()
     }
 
     // MARK: Initializers
@@ -106,7 +106,17 @@ public class LongTextViewController: OWSViewController {
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryTextColor
         if let displayableText = displayableText {
-            messageTextView.text = fullText
+            let mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
+            mutableText.addAttributes(
+                [.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
+                range: NSRange(location: 0, length: mutableText.length)
+            )
+
+            // Mentions have a custom style on the long-text view
+            // that differs from the message, so we re-color them here.
+            Mention.updateWithStyle(.longMessageView, in: mutableText)
+
+            messageTextView.attributedText = mutableText
             messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
             messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
         } else {
@@ -154,7 +164,7 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Actions
 
     @objc func shareButtonPressed(_ sender: UIBarButtonItem) {
-        AttachmentSharing.showShareUI(forText: fullText, sender: sender)
+        AttachmentSharing.showShareUI(forText: fullAttributedText.string, sender: sender)
     }
 
     @objc func forwardButtonPressed() {

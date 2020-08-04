@@ -45,12 +45,17 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchived;
 @property (nonatomic) BOOL isMarkedUnread;
+
 @property (nonatomic, copy, nullable) NSString *messageDraft;
+@property (nonatomic, nullable) MessageBodyRanges *messageDraftBodyRanges;
+
 @property (atomic, nullable) NSDate *mutedUntilDate;
 @property (nonatomic) int64_t lastInteractionRowId;
 
 @property (nonatomic) uint64_t lastVisibleSortId;
 @property (nonatomic) double lastVisibleSortIdOnScreenPercentage;
+
+@property (nonatomic) TSThreadMentionNotificationMode mentionNotificationMode;
 
 @end
 
@@ -120,7 +125,9 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
             lastInteractionRowId:(int64_t)lastInteractionRowId
                lastVisibleSortId:(uint64_t)lastVisibleSortId
 lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
+         mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                     messageDraft:(nullable NSString *)messageDraft
+          messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
@@ -138,7 +145,9 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     _lastInteractionRowId = lastInteractionRowId;
     _lastVisibleSortId = lastVisibleSortId;
     _lastVisibleSortIdOnScreenPercentage = lastVisibleSortIdOnScreenPercentage;
+    _mentionNotificationMode = mentionNotificationMode;
     _messageDraft = messageDraft;
+    _messageDraftBodyRanges = messageDraftBodyRanges;
     _mutedUntilDate = mutedUntilDate;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 
@@ -740,21 +749,23 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 
 #pragma mark - Drafts
 
-- (NSString *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable MessageBody *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     TSThread *_Nullable thread = [TSThread anyFetchWithUniqueId:self.uniqueId transaction:transaction];
     if (thread.messageDraft != nil) {
-        return thread.messageDraft;
+        return [[MessageBody alloc] initWithText:thread.messageDraft
+                                          ranges:thread.messageDraftBodyRanges ?: MessageBodyRanges.empty];
     } else {
-        return @"";
+        return nil;
     }
 }
 
-- (void)updateWithDraft:(NSString *)draftString transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
-                                 thread.messageDraft = draftString;
+                                 thread.messageDraft = draftMessageBody.text;
+                                 thread.messageDraftBodyRanges = draftMessageBody.ranges;
                              }];
 }
 
@@ -790,6 +801,15 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  [thread setMutedUntilDate:mutedUntilDate];
+                             }];
+}
+
+- (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
+                              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.mentionNotificationMode = mentionNotificationMode;
                              }];
 }
 

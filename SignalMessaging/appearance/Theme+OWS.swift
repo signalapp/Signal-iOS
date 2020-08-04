@@ -29,6 +29,7 @@ public enum ThemeIcon: UInt {
     case settingsViewRemoveFromGroup
     case settingsViewPendingInvites
     case settingsAddToGroup
+    case settingsMention
 
     case stickerButton
     case cameraButton
@@ -156,6 +157,8 @@ public extension Theme {
             return "chevron-down-256"
         case .settingsAddToGroup:
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsMention:
+            return "mention-24"
 
         // Input Toolbar
         case .stickerButton:

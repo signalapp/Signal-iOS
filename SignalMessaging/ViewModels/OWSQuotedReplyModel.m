@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
+                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                        bodySource:(TSQuotedMessageContentSource)bodySource
                    thumbnailImage:(nullable UIImage *)thumbnailImage
                       contentType:(nullable NSString *)contentType
@@ -43,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                     authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
+                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                        bodySource:(TSQuotedMessageContentSource)bodySource
                    thumbnailImage:(nullable UIImage *)thumbnailImage
                       contentType:(nullable NSString *)contentType
@@ -59,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     _timestamp = timestamp;
     _authorAddress = authorAddress;
     _body = body;
+    _bodyRanges = bodyRanges;
     _bodySource = bodySource;
     _thumbnailImage = thumbnailImage;
     _contentType = contentType;
@@ -106,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[self alloc] initWithTimestamp:quotedMessage.timestamp
                              authorAddress:quotedMessage.authorAddress
                                       body:quotedMessage.body
+                                bodyRanges:quotedMessage.bodyRanges
                                 bodySource:quotedMessage.bodySource
                             thumbnailImage:thumbnailImage
                                contentType:attachmentInfo.contentType
@@ -152,6 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [[self alloc] initWithTimestamp:timestamp
                                  authorAddress:authorAddress
                                           body:body
+                                    bodyRanges:nil
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:nil
                                    contentType:nil
@@ -171,6 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [[self alloc] initWithTimestamp:timestamp
                                  authorAddress:authorAddress
                                           body:[@"👤 " stringByAppendingString:contactShare.displayName]
+                                    bodyRanges:nil
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:nil
                                    contentType:nil
@@ -201,6 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [[self alloc] initWithTimestamp:timestamp
                                  authorAddress:authorAddress
                                           body:nil
+                                    bodyRanges:nil
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:thumbnailImage
                                    contentType:quotedAttachment.contentType
@@ -283,6 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[self alloc] initWithTimestamp:timestamp
                              authorAddress:authorAddress
                                       body:quotedText
+                                bodyRanges:message.bodyRanges
                                 bodySource:TSQuotedMessageContentSourceLocal
                             thumbnailImage:thumbnailImage
                                contentType:quotedAttachment.contentType
@@ -302,6 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
                                         authorAddress:self.authorAddress
                                                  body:self.body
+                                           bodyRanges:self.bodyRanges
                           quotedAttachmentsForSending:attachments];
 }
 

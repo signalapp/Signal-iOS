@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
+@class Mention;
 @class OWSContact;
 @class OWSLayerView;
 @class OWSLinkPreview;
@@ -57,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
     NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
 
 - (void)didTapStickerPack:(StickerPackInfo *)stickerPackInfo NS_SWIFT_NAME(didTapStickerPack(_:));
+
+- (void)didTapMention:(Mention *)mention NS_SWIFT_NAME(didTapMention(_:));
 
 @property (nonatomic, readonly, nullable) NSString *lastSearchedText;
 

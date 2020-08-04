@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 public protocol TextApprovalViewControllerDelegate: class {
-    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageText: String)
+    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?)
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController)
 
@@ -20,16 +20,15 @@ public protocol TextApprovalViewControllerDelegate: class {
 // MARK: -
 
 @objc
-public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
-
+public class TextApprovalViewController: OWSViewController, MentionTextViewDelegate {
     @objc
     public weak var delegate: TextApprovalViewControllerDelegate?
 
     // MARK: - Properties
 
-    private let initialMessageText: String
+    private let initialMessageBody: MessageBody
 
-    private(set) var textView: UITextView!
+    private(set) var textView: MentionTextView!
     private let footerView = ApprovalFooterView()
     private var footerViewBottomConstraint: NSLayoutConstraint?
 
@@ -50,8 +49,8 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
     // MARK: - Initializers
 
     @objc
-    required public init(messageText: String) {
-        self.initialMessageText = messageText
+    required public init(messageBody: MessageBody) {
+        self.initialMessageBody = messageBody
 
         super.init()
     }
@@ -114,12 +113,12 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
         self.view.backgroundColor = Theme.backgroundColor
 
         // Text View
-        textView = OWSTextView()
-        textView.delegate = self
+        textView = MentionTextView()
+        textView.mentionDelegate = self
         textView.backgroundColor = Theme.backgroundColor
         textView.textColor = Theme.primaryTextColor
         textView.font = UIFont.ows_dynamicTypeBody
-        textView.text = self.initialMessageText
+        textView.messageBody = self.initialMessageBody
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
         view.addSubview(textView)
@@ -144,13 +143,39 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
     public func textViewDidChange(_ textView: UITextView) {
         updateSendButton()
     }
+
+    public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
+
+    public func textViewDidEndTypingMention(_ textView: MentionTextView) {}
+
+    public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
+        return nil
+    }
+
+    public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
+        return nil
+    }
+
+    public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
+        return []
+    }
+
+    public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
+        return .composing
+    }
+
+    public func textView(_ textView: MentionTextView, didDeleteMention: Mention) {}
+
+    public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
+        return false
+    }
 }
 
 // MARK: -
 
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        delegate?.textApproval(self, didApproveMessage: self.textView.text)
+        delegate?.textApproval(self, didApproveMessage: self.textView.messageBody)
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
