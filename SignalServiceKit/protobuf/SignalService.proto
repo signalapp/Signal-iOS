@@ -234,13 +234,14 @@ message DataMessage {
 
   message Sticker {
     // @required
-    optional bytes packId = 1;
+    optional bytes             packId    = 1;
     // @required
-    optional bytes packKey = 2;
+    optional bytes             packKey   = 2;
     // @required
-    optional uint32 stickerId = 3;
+    optional uint32            stickerId = 3;
     // @required
-    optional AttachmentPointer data = 4;
+    optional AttachmentPointer data      = 4;
+    optional string            emoji     = 5;
   }
 
   message Reaction {
@@ -563,8 +564,9 @@ message GroupDetails {
 message Pack {
   message Sticker {
     // @required
-    optional uint32 id    = 1;
-    optional string emoji = 2;
+    optional uint32 id          = 1;
+    optional string emoji       = 2;
+    optional string contentType = 3;
   }
 
   optional string  title    = 1;
