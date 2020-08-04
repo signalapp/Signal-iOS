@@ -25,7 +25,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
                                network: network,
                                readiness: readiness)
         dut.testing_shortBackoffInterval = true
-        dut.testing_skipProductionCheck = true
+        dut.testing_skipModernCDSFlagCheck = true
     }
 
     // MARK: - Tests
@@ -237,7 +237,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
                             NSError(domain: "TestDomain", code: 3, userInfo: nil),
                             NSError(domain: "TestDomain", code: 4, userInfo: nil),
                             NSError(domain: "TestDomain", code: 5, userInfo: nil),
-                            NSError(domain: "TestDomain", code: 6, userInfo: nil),
+                            NSError(domain: "TestDomain", code: 6, userInfo: nil)
         ])
 
         // Test

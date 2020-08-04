@@ -607,12 +607,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             dispatch_group_leave(group);
         }];
 
-    if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+    if (SSKFeatureFlags.modernContactDiscovery) {
         dispatch_group_enter(group);
         [self populateUUIDsForLegacyRecipientsOf:message
                                       completion:^(NSError *error) {
-                                          OWSLogError(@"Failed CDS lookup with error: %@", error);
-                                          uuidError = error;
+                                          if (error) {
+                                              OWSLogError(@"Failed CDS lookup with error: %@", error);
+                                              uuidError = error;
+                                          }
                                           dispatch_group_leave(group);
                                       }];
     }
@@ -1247,7 +1249,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
 
-    if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+    if (SSKFeatureFlags.modernContactDiscovery) {
         // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
         // If we have no UUID, consider the recipient unregistered.
         BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);

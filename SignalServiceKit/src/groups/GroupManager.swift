@@ -1335,8 +1335,7 @@ public class GroupManager: NSObject {
 
     public static func tryToFillInMissingUuuids(for addresses: [SignalServiceAddress],
                                                 isBlocking: Bool) -> Promise<Void> {
-        guard FeatureFlags.useOnlyModernContactDiscovery ||
-            FeatureFlags.compareLegacyContactDiscoveryAgainstModern else {
+        guard FeatureFlags.modernContactDiscovery else {
                 // Can't fill in UUIDs using legacy contact intersections.
                 return Promise.value(())
         }

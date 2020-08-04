@@ -84,28 +84,6 @@ public class LegacyContactDiscoveryOperation: OWSOperation, ContactDiscovering {
         })
     }
 
-    // Called at most one time.
-    override public func didSucceed() {
-
-        guard FeatureFlags.compareLegacyContactDiscoveryAgainstModern else {
-            // comparison disabled in prod for now
-            return
-        }
-
-        // Compare against new CDS service
-        let modernContactDiscoveryOperation = ContactDiscoveryOperation(phoneNumbersToLookup: self.phoneNumbersToLookup)
-        modernContactDiscoveryOperation.perform()
-
-        guard let legacyRegisteredPhoneNumbers = self.registeredPhoneNumbers else {
-            owsFailDebug("legacyRegisteredPhoneNumbers was unexpectedly nil")
-            return
-        }
-
-        let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredPhoneNumbers: legacyRegisteredPhoneNumbers)
-        cdsFeedbackOperation.addDependency(modernContactDiscoveryOperation)
-        ContactDiscoveryOperation.operationQueue.addOperation(cdsFeedbackOperation)
-    }
-
     // MARK: Private Helpers
 
     private func parse(response: Any?, phoneNumbersByHashes: [String: String]) throws -> Set<String> {
