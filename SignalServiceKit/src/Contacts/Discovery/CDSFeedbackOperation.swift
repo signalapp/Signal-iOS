@@ -4,6 +4,10 @@
 
 import Foundation
 
+/*
+
+ Is this still necessary?
+
 class CDSFeedbackOperation: OWSOperation {
 
     enum FeedbackResult {
@@ -130,3 +134,4 @@ extension CDSFeedbackOperation.FeedbackResult {
         }
     }
 }
+*/

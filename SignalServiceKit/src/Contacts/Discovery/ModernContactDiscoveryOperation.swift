@@ -5,125 +5,42 @@
 import Foundation
 import PromiseKit
 
-public struct CDSRegisteredContact: Hashable {
+struct CDSRegisteredContact: Hashable {
     let signalUuid: UUID
     let e164PhoneNumber: String
 }
 
-@objc(OWSContactDiscoveryOperation)
-public class ContactDiscoveryOperation: OWSOperation, ContactDiscovering {
+/// Fetches contact info from the ContactDiscoveryService
+/// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
+class ModernContactDiscoveryOperation: ContactDiscovering {
+    static let batchSize = 2048
 
-    let batchSize = 2048
-    static let operationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 5
-        queue.name = ContactDiscoveryOperation.logTag()
-        return queue
-    }()
-
-    let phoneNumbersToLookup: [String]
-    var registeredContacts: Set<CDSRegisteredContact>?
-
-    @objc public var discoveredContactInfo: Set<DiscoveredContactInfo>? {
-        return registeredContacts?.reduce(into: Set()) {
-            $0.insert(DiscoveredContactInfo(e164: $1.e164PhoneNumber, uuid: $1.signalUuid))
-        }
-    }
-
-    @objc required public init(phoneNumbersToLookup: [String]) {
-        assert(phoneNumbersToLookup.count == Set(phoneNumbersToLookup).count)
+    private let phoneNumbersToLookup: Set<String>
+    required init(phoneNumbersToLookup: Set<String>) {
         self.phoneNumbersToLookup = phoneNumbersToLookup
-
-        super.init()
-
-        Logger.debug("with phoneNumbersToLookup.count: \(phoneNumbersToLookup.count)")
-        for phoneNumberBatch in phoneNumbersToLookup.chunked(by: batchSize) {
-            let batchOperation = CDSBatchOperation(phoneNumbersToLookup: phoneNumberBatch)
-            self.addDependency(batchOperation)
-        }
     }
 
-    /// Asynchronously start the operation and its dependencies
-    @objc public func perform(completion: @escaping () -> Void) {
-        completionBlock = completion
+    func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {
+        firstly { () -> Promise<[Set<CDSRegisteredContact>]> in
+            // First, build a bunch of batch Promises
+            let batchOperationPromises = Array(phoneNumbersToLookup)
+                .chunked(by: Self.batchSize)
+                .map { makeContactDiscoveryRequest(phoneNumbersToLookup: $0) }
 
-        let operationSet = self.dependencies + [self]
-        Self.operationQueue.addOperations(operationSet, waitUntilFinished: false)
-    }
+            // Then, wait for them all to be fulfilled before joining the subsets together
+            return when(fulfilled: batchOperationPromises)
 
-    // MARK: Mandatory overrides
-
-    // Called every retry, this is where the bulk of the operation's work should go.
-    override public func run() {
-        Logger.debug("")
-
-        var accumulatedResultSet = Set<CDSRegisteredContact>()
-        for dependency in self.dependencies {
-            guard let batchOperation = dependency as? CDSBatchOperation else {
-                owsFailDebug("unexpected dependency: \(dependency)")
-                continue
-            }
-
-            guard let registeredContactsBatch = batchOperation.registeredContacts else {
-                owsFailDebug("registeredContactsBatch was unexpectedly nil")
-                continue
-            }
-
-            accumulatedResultSet.formUnion(registeredContactsBatch)
-        }
-        self.registeredContacts = accumulatedResultSet
-        self.reportSuccess()
-    }
-
-}
-
-public
-class CDSBatchOperation: OWSOperation {
-
-    private let phoneNumbersToLookup: [String]
-
-    private(set) var registeredContacts: Set<CDSRegisteredContact>?
-
-    var contactDiscoveryService: ContactDiscoveryService {
-        return ContactDiscoveryService()
-    }
-
-    // MARK: Initializers
-
-    public required init(phoneNumbersToLookup: [String]) {
-        self.phoneNumbersToLookup = phoneNumbersToLookup
-
-        super.init()
-
-        Logger.debug("with phoneNumbersToLookup: \(phoneNumbersToLookup.count)")
-    }
-
-    // MARK: OWSOperationOverrides
-
-    // Called every retry, this is where the bulk of the operation's work should go.
-    override public func run() {
-        Logger.debug("")
-
-        guard !isCancelled else {
-            Logger.info("no work to do, since we were canceled")
-            self.reportCancelled()
-            return
-        }
-
-        firstly {
-            self.makeContactDiscoveryRequest(phoneNumbersToLookup: self.phoneNumbersToLookup)
-        }.done(on: .global()) { registeredContacts in
-            self.registeredContacts = registeredContacts
-            self.reportSuccess()
-        }.catch(on: .global()) { error in
-            switch error {
-            case let serviceError as ContactDiscoveryService.ServiceError:
-                self.reportError(serviceError)
-            default:
-                self.reportError(withUndefinedRetry: error)
+        }.map(on: queue) { (setArray) -> Set<DiscoveredContactInfo> in
+            setArray.reduce(into: Set()) { (builder, cdsContactSubset) in
+                builder.formUnion(cdsContactSubset.map {
+                    DiscoveredContactInfo(e164: $0.e164PhoneNumber, uuid: $0.signalUuid)
+                })
             }
         }
     }
+
+    // Below, we have a bunch of then blocks being performed on a global concurrent queue
+    // It might be worthwhile to audit and see if we can move these onto the queue passed into `perform(on:)`
 
     private func makeContactDiscoveryRequest(phoneNumbersToLookup: [String]) -> Promise<Set<CDSRegisteredContact>> {
         let contactCount = UInt(phoneNumbersToLookup.count)
@@ -134,13 +51,13 @@ class CDSBatchOperation: OWSOperation {
             return firstly { () -> Promise<ContactDiscoveryService.IntersectionResponse> in
                 let query = try self.buildIntersectionQuery(phoneNumbersToLookup: phoneNumbersToLookup,
                                                             remoteAttestations: attestation.remoteAttestations)
-                return self.contactDiscoveryService.getRegisteredSignalUsers(query: query,
-                                                                             cookies: attestation.cookies,
-                                                                             authUsername: attestation.auth.username,
-                                                                             authPassword: attestation.auth.password,
-                                                                             enclaveName: attestation.enclaveConfig.enclaveName,
-                                                                             host: attestation.enclaveConfig.host,
-                                                                             censorshipCircumventionPrefix: attestation.enclaveConfig.censorshipCircumventionPrefix)
+                return ContactDiscoveryService().getRegisteredSignalUsers(query: query,
+                                                                          cookies: attestation.cookies,
+                                                                          authUsername: attestation.auth.username,
+                                                                          authPassword: attestation.auth.password,
+                                                                          enclaveName: attestation.enclaveConfig.enclaveName,
+                                                                          host: attestation.enclaveConfig.host,
+                                                                          censorshipCircumventionPrefix: attestation.enclaveConfig.censorshipCircumventionPrefix)
             }.map(on: .global()) { response -> Set<CDSRegisteredContact> in
                 let allEnclaveAttestations = attestation.remoteAttestations
                 let respondingEnclaveAttestation = allEnclaveAttestations.first(where: { $1.requestId == response.requestId })
@@ -260,21 +177,6 @@ class CDSBatchOperation: OWSOperation {
             [uuid_t]($0.bindMemory(to: uuid_t.self))
         }.map {
             UUID(uuid: $0)
-        }
-    }
-}
-
-extension ContactDiscoveryService.ServiceError: OperationError {
-    var isRetryable: Bool {
-        switch self {
-        case .error5xx:
-            return true
-        case .tooManyRequests:
-            return false
-        case .error4xx:
-            return false
-        case .invalidResponse:
-            return true
         }
     }
 }

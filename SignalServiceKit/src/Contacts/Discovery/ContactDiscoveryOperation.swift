@@ -3,39 +3,26 @@
 //
 
 import Foundation
+import PromiseKit
 
-/// This would be a struct if it didn't need to be bridged to objc.
-/// A plain-old tuple of contact info. This is not cached or updated like SignalServiceAddress
-@objc (OWSDiscoveredContactInfo) @objcMembers
-public class DiscoveredContactInfo: NSObject {
-    public let e164: String?
-    public let uuid: UUID?
+struct DiscoveredContactInfo: Hashable {
+    let e164: String?
+    let uuid: UUID?
 
-    public init(e164: String?, uuid: UUID?) {
+    init(e164: String?, uuid: UUID?) {
         self.e164 = e164
         self.uuid = uuid
     }
-
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let otherInfo = object as? DiscoveredContactInfo else { return false }
-        return e164 == otherInfo.e164 && uuid == otherInfo.uuid
-    }
-
-    public override var hash: Int {
-        return e164.hashValue ^ uuid.hashValue
-    }
 }
 
-@objc (OWSContactDiscovering)
-public protocol ContactDiscovering {
-    /// Constructs a ContactDiscovering object from an array of e164 phone numbers
-    @objc init(phoneNumbersToLookup: [String])
+/// An item that fetches contact info from the ContactDiscoveryService
+/// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
+protocol ContactDiscovering {
+    /// Constructs a ContactDiscovering object from a set of e164 phone numbers
+    init(phoneNumbersToLookup: Set<String>)
 
-    /// Asynchronously performs the operation, invoking the completion handler when complete.
-    @objc func perform(completion: @escaping () -> Void)
-
-    /// On successful completion, this property will be populated with the resulting contact info
-    @objc var discoveredContactInfo: Set<DiscoveredContactInfo>? { get }
+    /// Returns a promise that performs ContactDiscovery on the provided queue
+    func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>>
 }
 
 enum ContactDiscoveryError: Error {

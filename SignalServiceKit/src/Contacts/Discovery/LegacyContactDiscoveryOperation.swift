@@ -3,50 +3,33 @@
 //
 
 import Foundation
+import PromiseKit
 
-@objc(OWSLegacyContactDiscoveryOperation)
-public class LegacyContactDiscoveryOperation: OWSOperation, ContactDiscovering {
+/// Fetches contact info from the ContactDiscoveryService
+/// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
+class LegacyContactDiscoveryOperation: ContactDiscovering {
 
-    private let phoneNumbersToLookup: [String]
-    @objc public var registeredPhoneNumbers: Set<String>?
-    @objc public var discoveredContactInfo: Set<DiscoveredContactInfo>? {
-        return registeredPhoneNumbers?.reduce(into: Set()) {
-            $0.insert(DiscoveredContactInfo(e164: $1, uuid: nil))
-        }
-    }
-
-    // MARK: - Dependencies
-
-    private var networkManager: TSNetworkManager {
-        return TSNetworkManager.shared()
-    }
-
-    // MARK: - Initializers
-
-    @objc
-    public required init(phoneNumbersToLookup: [String]) {
+    private let phoneNumbersToLookup: Set<String>
+    required init(phoneNumbersToLookup: Set<String>) {
         self.phoneNumbersToLookup = phoneNumbersToLookup
-        Logger.debug("with phoneNumbersToLookup: \(phoneNumbersToLookup.count)")
     }
 
-    @objc
-    public func perform(completion: @escaping () -> Void) {
-        completionBlock = completion
-        start()
-    }
+    func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {
+        let phoneNumberByHashes = mapHashToPhoneNumber()
 
-    // MARK: - OWSOperation Overrides
+        return Promise<Any?> { (resolver) in
+            let hashes = Array(phoneNumberByHashes.keys)
+            self.makeRequest(for: hashes, on: queue, responseResolver: resolver)
 
-    // Called every retry, this is where the bulk of the operation's work should go.
-    override public func run() {
-        Logger.debug("")
-
-        guard !isCancelled else {
-            Logger.info("no work to do, since we were canceled")
-            self.reportCancelled()
-            return
+        }.map(on: queue) { (response) -> Set<DiscoveredContactInfo> in
+            let discoveredNumbers = try self.parse(response: response, phoneNumbersByHashes: phoneNumberByHashes)
+            return Set(discoveredNumbers.map { DiscoveredContactInfo(e164: $0, uuid: nil) })
         }
+    }
 
+    // MARK: - Private
+
+    private func mapHashToPhoneNumber() -> [String: String] {
         var phoneNumbersByHashes: [String: String] = [:]
 
         for phoneNumber in phoneNumbersToLookup {
@@ -57,43 +40,40 @@ public class LegacyContactDiscoveryOperation: OWSOperation, ContactDiscovering {
             assert(phoneNumbersByHashes[hash] == nil)
             phoneNumbersByHashes[hash] = phoneNumber
         }
-
-        let hashes: [String] = Array(phoneNumbersByHashes.keys)
-
-        let request = OWSRequestFactory.contactsIntersectionRequest(withHashesArray: hashes)
-
-        self.networkManager.makeRequest(request,
-                                        success: { (task, responseDict) in
-                                            do {
-                                                self.registeredPhoneNumbers = try self.parse(response: responseDict, phoneNumbersByHashes: phoneNumbersByHashes)
-                                                self.reportSuccess()
-                                            } catch {
-                                                self.reportError(withUndefinedRetry: error)
-                                            }
-        },
-                                        failure: { (task, error) in
-                                            guard let response = task.response as? HTTPURLResponse else {
-                                                let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
-                                                responseError.isRetryable = true
-                                                self.reportError(responseError)
-                                                return
-                                            }
-
-                                            guard response.statusCode != 413 else {
-                                                let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactDiscoveryRateLimit, "Contacts Intersection Rate Limit") as NSError
-                                                nsError.isRetryable = false
-                                                self.reportError(nsError)
-                                                return
-                                            }
-
-                                            self.reportError(withUndefinedRetry: error)
-        })
+        return phoneNumbersByHashes
     }
 
-    // MARK: Private Helpers
+    private func makeRequest(for hashes: [String],
+                     on queue: DispatchQueue,
+                     responseResolver: Resolver<Any?>) {
+        let request = OWSRequestFactory.contactsIntersectionRequest(withHashesArray: hashes)
+
+        self.networkManager.makeRequest(
+            request,
+            completionQueue: queue,
+            success: { (task, responseDict) in
+                responseResolver.fulfill(responseDict)
+            },
+            failure: { (task, error) in
+                guard let response = task.response as? HTTPURLResponse else {
+                    let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
+                    responseError.isRetryable = true
+                    responseResolver.reject(responseError)
+                    return
+                }
+
+                guard response.statusCode != 413 else {
+                    let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactDiscoveryRateLimit, "Contacts Intersection Rate Limit") as NSError
+                    nsError.isRetryable = false
+                    responseResolver.reject(nsError)
+                    return
+                }
+                responseResolver.reject(error)
+            }
+        )
+    }
 
     private func parse(response: Any?, phoneNumbersByHashes: [String: String]) throws -> Set<String> {
-
         guard let responseDict = response as? [String: AnyObject] else {
             let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
             responseError.isRetryable = true
@@ -131,5 +111,12 @@ public class LegacyContactDiscoveryOperation: OWSOperation, ContactDiscovering {
 
         return registeredRecipientIds
     }
+}
 
+// MARK: - Dependencies
+
+extension LegacyContactDiscoveryOperation {
+    private var networkManager: TSNetworkManager {
+        return TSNetworkManager.shared()
+    }
 }

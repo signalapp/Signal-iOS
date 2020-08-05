@@ -9,43 +9,31 @@ import PromiseKit
 @objc(OWSContactDiscoveryTask)
 public class ContactDiscoveryTask: NSObject {
 
-    let identifiersToFetch: Set<String>
+    // MARK: - Lifecycle
+
+    @objc public let identifiersToFetch: Set<String>
     @objc public init(identifiers: Set<String>) {
         self.identifiersToFetch = identifiers
     }
 
-    @objc (performOnQueue:success:failure:)
-    public func perform(on queue: DispatchQueue = .sharedUtility,
-                        success: @escaping (Set<SignalRecipient>) -> Void,
-                        failure: @escaping (Error) -> Void) {
-        firstly {
-            perform(on: queue)
-        }.done(on: queue) { (results) in
-            success(results)
-        }.catch(on: queue) { error in
-            failure(error)
-        }
-    }
+    // MARK: - Public
 
-    public func perform(on queue: DispatchQueue = .sharedUtility) -> Promise<Set<SignalRecipient>> {
+    /// Returns a promise that will perform contact discovery and SignalRecipients
+    /// - Parameter queue: The queue where most work will be performed. Promise will be resolved on this queue, but some underlying
+    /// work may be dispatched to a global queue.
+    /// - Parameter database: The persistent storage that will be updated with the CDS results. Defaults to the shared database, but
+    /// a caller can pass in nil to have the returned Promise resolve to unsaved SignalRecipients
+    public func perform(on queue: DispatchQueue = .sharedUtility,
+                        database: SDSDatabaseStorage? = SDSDatabaseStorage.shared) -> Promise<Set<SignalRecipient>> {
         guard identifiersToFetch.count > 0 else {
             owsFailDebug("Cannot lookup zero identifiers")
             let error = OWSErrorWithCodeDescription(.invalidMethodParameters, "Cannot lookup zero identifiers")
             return Promise(error: error)
         }
 
-        return Promise<Set<DiscoveredContactInfo>> { (resolver) in
-            let identifiers = Array(self.identifiersToFetch)
-            let operation = self.discoveryProviderMetatype.init(phoneNumbersToLookup: identifiers)
-            operation.perform {
-                if operation.isCancelled {
-                    resolver.reject(NSError())
-                } else if let error = operation.failingError {
-                    resolver.reject(error)
-                } else {
-                    resolver.fulfill(operation.discoveredContactInfo ?? Set())
-                }
-            }
+        return firstly { () -> Promise<Set<DiscoveredContactInfo>> in
+            let discoveryOperation = createContactDiscoveryOperation()
+            return discoveryOperation.perform(on: queue)
 
         }.map(on: queue) { (discoveredContacts) -> Set<SignalRecipient> in
             let discoveredIdentifiers = Set(discoveredContacts.compactMap { $0.e164 })
@@ -57,23 +45,56 @@ public class ContactDiscoveryTask: NSObject {
                 .subtracting(discoveredIdentifiers)
                 .map { SignalServiceAddress(uuid: nil, phoneNumber: $0)}
 
-            return SDSDatabaseStorage.shared.write { (tx) -> Set<SignalRecipient> in
-                let recipientSet = Set(addressesToRegister.map { address in
-                    SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: tx)
-                })
-                addressesToUnregister.forEach { address in
-                    SignalRecipient.mark(asUnregistered: address, transaction: tx)
-                }
-                return recipientSet
-            }
+            return self.storeResults(registering: addressesToRegister,
+                                     unregistering: addressesToUnregister,
+                                     database: database)
         }
     }
 
-    private let discoveryProviderMetatype: (OWSOperation & ContactDiscovering).Type = {
+    // MARK: - Private
+
+    private func createContactDiscoveryOperation() -> (ContactDiscovering) {
         if FeatureFlags.modernContactDiscovery {
-            return ContactDiscoveryOperation.self
+            return ModernContactDiscoveryOperation(phoneNumbersToLookup: identifiersToFetch)
         } else {
-            return LegacyContactDiscoveryOperation.self
+            return LegacyContactDiscoveryOperation(phoneNumbersToLookup: identifiersToFetch)
         }
-    }()
+    }
+
+    private func storeResults(registering toRegister: [SignalServiceAddress],
+                              unregistering toUnregister: [SignalServiceAddress],
+                              database: SDSDatabaseStorage?) -> Set<SignalRecipient> {
+        guard let database = database else {
+            // Just return a set of in-memory SignalRecipients built from toRegister
+            return Set(toRegister.map { SignalRecipient(address: $0) })
+        }
+
+        return database.write { tx in
+            let recipientSet = Set(toRegister.map { address -> SignalRecipient in
+                return SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: tx)
+            })
+            toUnregister.forEach { address in
+                SignalRecipient.mark(asUnregistered: address, transaction: tx)
+            }
+            return recipientSet
+        }
+    }
+}
+
+// MARK: - ObjC Support
+
+@objc public extension ContactDiscoveryTask {
+
+    @objc (performOnQueue:success:failure:)
+    func perform(on queue: DispatchQueue = .sharedUtility,
+                        success: @escaping (Set<SignalRecipient>) -> Void,
+                        failure: @escaping (Error) -> Void) {
+        firstly {
+            perform(on: queue)
+        }.done(on: queue) { (results) in
+            success(results)
+        }.catch(on: queue) { error in
+            failure(error)
+        }
+    }
 }

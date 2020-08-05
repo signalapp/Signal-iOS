@@ -136,7 +136,7 @@ public class UUIDBackfillTask: NSObject {
         assertOnQueue(queue)
 
         attemptCount += 1
-        firstly { () throws -> Promise<Set<CDSRegisteredContact>> in
+        firstly { () throws -> Promise<Set<DiscoveredContactInfo>> in
             return Promise { resolver in
                 Logger.info("Beginning CDS fetch for UUID backfill")
                 let e164Numbers = self.phoneNumbersToFetch.compactMap { $0.e164 }
@@ -157,11 +157,11 @@ public class UUIDBackfillTask: NSObject {
         onqueue_schedule()
     }
 
-    func onqueue_handleResults(results: Set<CDSRegisteredContact>) {
+    func onqueue_handleResults(results: Set<DiscoveredContactInfo>) {
         assertOnQueue(queue)
 
         let resultMap = results.reduce(into: [:]) { (dict, contact) in
-            dict[contact.e164PhoneNumber] = contact.signalUuid
+            dict[contact.e164] = contact.uuid
         }
         let addresses = phoneNumbersToFetch.map { (numberTuple) -> SignalServiceAddress in
             if let e164 = numberTuple.e164, let uuid = resultMap[e164] {
@@ -205,17 +205,12 @@ extension UUIDBackfillTask {
         static var `default`: NetworkProvider { return NetworkProvider() }
 
         func fetchServiceAddress(for phoneNumbers: [String],
-                                 completion: @escaping (Set<CDSRegisteredContact>, Error?) -> Void) {
-            let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbers)
-            operation.perform {
-                guard let results = operation.registeredContacts else {
-                    // This is only hit if the operation is cancelled. Force an error so we don't try and unregister everyone
-                    let error = operation.failingError ?? OWSAssertionError("Operation unexpectedly cancelled")
-                    completion(Set(), error)
-                    return
-                }
-                completion(results, nil)
-            }
+                                 completion: @escaping (Set<DiscoveredContactInfo>, Error?) -> Void) {
+
+            ModernContactDiscoveryOperation(phoneNumbersToLookup: Set(phoneNumbers))
+                .perform(on: .sharedUtility)
+                .done { contactSet in completion(contactSet, nil) }
+                .catch { error in completion(Set(), error) }
         }
     }
 
