@@ -58,8 +58,8 @@ extension StorageServiceProtoContactRecord {
 
         let isInWhitelist = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
         let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
-        let profileGivenName = profileManager.givenName(for: address, transaction: transaction)
-        let profileFamilyName = profileManager.familyName(for: address, transaction: transaction)
+        let profileGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
+        let profileFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
 
         builder.setBlocked(blockingManager.isAddressBlocked(address))
         builder.setWhitelisted(isInWhitelist)
@@ -132,8 +132,8 @@ extension StorageServiceProtoContactRecord {
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: address, transaction: transaction)
-        let localGivenName = profileManager.givenName(for: address, transaction: transaction)
-        let localFamilyName = profileManager.familyName(for: address, transaction: transaction)
+        let localGivenName = profileManager.unfilteredGivenName(for: address, transaction: transaction)
+        let localFamilyName = profileManager.unfilteredFamilyName(for: address, transaction: transaction)
         let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
         let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
         let localIsBlocked = blockingManager.isAddressBlocked(address)
@@ -584,10 +584,10 @@ extension StorageServiceProtoAccountRecord {
             builder.setProfileKey(profileKey)
         }
 
-        if let profileGivenName = profileManager.givenName(for: localAddress, transaction: transaction) {
+        if let profileGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction) {
             builder.setGivenName(profileGivenName)
         }
-        if let profileFamilyName = profileManager.familyName(for: localAddress, transaction: transaction) {
+        if let profileFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction) {
             builder.setFamilyName(profileFamilyName)
         }
 
@@ -634,8 +634,8 @@ extension StorageServiceProtoAccountRecord {
 
         // Gather some local contact state to do comparisons against.
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
-        let localGivenName = profileManager.givenName(for: localAddress, transaction: transaction)
-        let localFamilyName = profileManager.familyName(for: localAddress, transaction: transaction)
+        let localGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction)
+        let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction)
 
         // If our local profile key record differs from what's on the service, use the service's value.

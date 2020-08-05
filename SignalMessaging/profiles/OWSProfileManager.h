@@ -114,8 +114,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 // This method is for debugging.
 - (void)logUserProfiles;
 
+- (nullable NSString *)unfilteredGivenNameForAddress:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyReadTransaction *)transaction;
+
 - (nullable NSString *)givenNameForAddress:(SignalServiceAddress *)address
                                transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSString *)unfilteredFamilyNameForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)familyNameForAddress:(SignalServiceAddress *)address
                                 transaction:(SDSAnyReadTransaction *)transaction;

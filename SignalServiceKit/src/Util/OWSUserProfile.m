@@ -729,18 +729,28 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                      self.avatarFileName];
 }
 
-- (nullable NSString *)profileName
+- (nullable NSString *)unfilteredProfileName
 {
     @synchronized(self) {
         return _profileName;
     }
 }
 
+- (nullable NSString *)profileName
+{
+    return self.unfilteredProfileName.filterStringForDisplay;
+}
+
 - (void)setProfileName:(nullable NSString *)profileName
 {
     @synchronized(self) {
-        _profileName = profileName.filterStringForDisplay;
+        _profileName = profileName;
     }
+}
+
+- (nullable NSString *)unfilteredGivenName
+{
+    return self.unfilteredProfileName;
 }
 
 - (nullable NSString *)givenName
@@ -753,17 +763,22 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     [self setProfileName:givenName];
 }
 
-- (nullable NSString *)familyName
+- (nullable NSString *)unfilteredFamilyName
 {
     @synchronized(self) {
         return _familyName;
     }
 }
 
+- (nullable NSString *)familyName
+{
+    return self.unfilteredFamilyName.filterStringForDisplay;
+}
+
 - (void)setFamilyName:(nullable NSString *)familyName
 {
     @synchronized(self) {
-        _familyName = familyName.filterStringForDisplay;
+        _familyName = familyName;
     }
 }
 
