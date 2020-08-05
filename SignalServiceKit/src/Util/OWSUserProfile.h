@@ -27,7 +27,9 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
 
 @property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
+@property (atomic, readonly, nullable) NSString *unfilteredGivenName;
 @property (atomic, readonly, nullable) NSString *givenName;
+@property (atomic, readonly, nullable) NSString *unfilteredFamilyName;
 @property (atomic, readonly, nullable) NSString *familyName;
 @property (atomic, readonly, nullable) NSPersonNameComponents *nameComponents;
 @property (atomic, readonly, nullable) NSString *fullName;
