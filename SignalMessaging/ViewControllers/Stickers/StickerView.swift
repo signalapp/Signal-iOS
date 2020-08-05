@@ -77,6 +77,7 @@ public class StickerView: NSObject {
             lottieView.animationSpeed = 1
             lottieView.loopMode = .loop
             lottieView.backgroundBehavior = .pause
+            lottieView.play()
             stickerView = lottieView
         }
         return stickerView

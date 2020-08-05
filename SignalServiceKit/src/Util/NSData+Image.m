@@ -620,7 +620,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
     } else if (imageFormat == ImageFormat_LottieSticker) {
         CGSize imageSize = [self sizeForLottieStickerData];
         if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
-            return ImageData.invalid;
+            return ImageMetadata.invalid;
         }
         return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
     }
