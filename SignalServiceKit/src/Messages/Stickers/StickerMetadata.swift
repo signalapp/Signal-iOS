@@ -48,6 +48,11 @@ public enum StickerType: UInt {
 
 // MARK: - StickerMetadata
 
+// The state needed to render or send a sticker.
+// Should only ever be instantiated for a sticker which is available locally.
+// This might represent an "installed" sticker, a "transient" sticker (used
+// to render sticker pack views for uninstalled packs) or a sticker received
+// in a message.
 @objc
 public class StickerMetadata: NSObject {
     @objc

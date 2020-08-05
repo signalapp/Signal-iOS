@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import YYImage
 
 @objc
 public protocol StickerPackCollectionViewDelegate {
@@ -213,28 +212,11 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     private func imageView(forStickerInfo stickerInfo: StickerInfo) -> UIView? {
-
         guard let stickerPackDataSource = stickerPackDataSource else {
             owsFailDebug("Missing stickerPackDataSource.")
             return nil
         }
-        guard let filePath = stickerPackDataSource.filePath(forSticker: stickerInfo) else {
-            owsFailDebug("Missing sticker data file path.")
-            return nil
-        }
-        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
-            owsFailDebug("Invalid sticker.")
-            return nil
-        }
-        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
-            owsFailDebug("Sticker could not be parsed.")
-            return nil
-        }
-
-        let stickerView = YYAnimatedImageView()
-        stickerView.image = stickerImage
-        stickerView.contentMode = .scaleAspectFit
-        return stickerView
+        return StickerView.stickerView(forStickerInfo: stickerInfo, dataSource: stickerPackDataSource)
     }
 }
 
