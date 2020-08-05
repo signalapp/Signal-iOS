@@ -12,6 +12,7 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
     private let phoneNumbersToLookup: Set<String>
     required init(phoneNumbersToLookup: Set<String>) {
         self.phoneNumbersToLookup = phoneNumbersToLookup
+        Logger.debug("with phoneNumbersToLookup: \(phoneNumbersToLookup.count)")
     }
 
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {

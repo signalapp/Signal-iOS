@@ -18,6 +18,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
     private let phoneNumbersToLookup: Set<String>
     required init(phoneNumbersToLookup: Set<String>) {
         self.phoneNumbersToLookup = phoneNumbersToLookup
+        Logger.debug("with phoneNumbersToLookup.count: \(phoneNumbersToLookup.count)")
     }
 
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {

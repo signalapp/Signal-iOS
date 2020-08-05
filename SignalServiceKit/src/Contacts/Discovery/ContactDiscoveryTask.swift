@@ -48,12 +48,17 @@ public class ContactDiscoveryTask: NSObject {
             return self.storeResults(registering: addressesToRegister,
                                      unregistering: addressesToUnregister,
                                      database: database)
+
+        }.recover(on: queue) { error -> Promise<Set<SignalRecipient>> in
+            // Insert our log message then rethrow
+            Logger.warn("ContactDiscoveryTask failed: \(error)")
+            return Promise(error: error)
         }
     }
 
     // MARK: - Private
 
-    private func createContactDiscoveryOperation() -> (ContactDiscovering) {
+    private func createContactDiscoveryOperation() -> ContactDiscovering {
         if FeatureFlags.modernContactDiscovery {
             return ModernContactDiscoveryOperation(phoneNumbersToLookup: identifiersToFetch)
         } else {

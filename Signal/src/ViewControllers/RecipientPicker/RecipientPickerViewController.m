@@ -1324,11 +1324,13 @@ const NSUInteger kMinimumSearchLength = 2;
     __weak RecipientPickerViewController *weakSelf = self;
 
     OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithIdentifiers:unknownPhoneNumbers];
-    [discoveryTask performOnQueue:dispatch_get_main_queue() success:^(NSSet<SignalRecipient *> *resultSet) {
-        [weakSelf updateNonContactAccountSet:[resultSet allObjects]];
-    } failure:^(NSError *error) {
-        // Ignore
-    }];
+    [discoveryTask performOnQueue:dispatch_get_main_queue()
+                          success:^(NSSet<SignalRecipient *> *resultSet) {
+                              [weakSelf updateNonContactAccountSet:[resultSet allObjects]];
+                          }
+                          failure:^(NSError *error) {
+                              // Ignore.
+                          }];
 }
 
 - (void)updateNonContactAccountSet:(NSArray<SignalRecipient *> *)recipients
