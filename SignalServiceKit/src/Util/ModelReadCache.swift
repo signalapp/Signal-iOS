@@ -671,7 +671,7 @@ public class SignalAccountReadCache: NSObject {
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            OWSUserProfile.resolve(value.recipientAddress)
+            value.recipientAddress
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -739,7 +739,7 @@ public class SignalRecipientReadCache: NSObject {
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            OWSUserProfile.resolve(value.address)
+            value.address
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
