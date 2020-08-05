@@ -494,9 +494,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             });
     };
     OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithIdentifiers:phoneNumbers];
-    [discoveryTask performOnQueue:dispatch_get_main_queue()
-                          success:success
-                          failure:failure];
+    [discoveryTask performOnQueue:dispatch_get_main_queue() success:success failure:failure];
 }
 
 - (void)startObserving
