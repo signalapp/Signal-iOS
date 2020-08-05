@@ -78,8 +78,11 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 - (TSAccountManager *)tsAccountManager
 {
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    return SSKEnvironment.shared.tsAccountManager;
+}
 
++ (TSAccountManager *)tsAccountManager
+{
     return SSKEnvironment.shared.tsAccountManager;
 }
 
@@ -170,9 +173,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return ([self isLocalProfileAddress:address] ? self.localProfileAddress : address);
 }
 
-- (SignalServiceAddress *)publicAddress
++ (SignalServiceAddress *)publicAddressForAddress:(SignalServiceAddress *)address
 {
-    if ([self.address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
+    if ([self isLocalProfileAddress:address]) {
         SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
         if (localAddress == nil) {
             OWSFailDebug(@"Missing localAddress.");
@@ -180,7 +183,12 @@ NSUInteger const kUserProfileSchemaVersion = 1;
             return localAddress;
         }
     }
-    return self.address;
+    return address;
+}
+
+- (SignalServiceAddress *)publicAddress
+{
+    return [OWSUserProfile publicAddressForAddress:self.address];
 }
 
 + (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam

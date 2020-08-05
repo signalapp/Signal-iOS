@@ -154,6 +154,7 @@ class ConversationPickerViewController: OWSViewController {
         return DispatchQueue.global().async(.promise) {
             return self.databaseStorage.read { transaction in
                 return self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
+                                                                    omitLocalUser: false,
                                                                     transaction: transaction)
             }
         }

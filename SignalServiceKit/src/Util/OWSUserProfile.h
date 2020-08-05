@@ -83,6 +83,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 @property (atomic, readonly, class) SignalServiceAddress *localProfileAddress;
 + (BOOL)isLocalProfileAddress:(SignalServiceAddress *)address;
 + (SignalServiceAddress *)resolveUserProfileAddress:(SignalServiceAddress *)address;
++ (SignalServiceAddress *)publicAddressForAddress:(SignalServiceAddress *)address;
 
 + (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;

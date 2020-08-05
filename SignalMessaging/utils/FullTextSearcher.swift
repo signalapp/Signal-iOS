@@ -31,6 +31,8 @@ public struct ConversationSortKey: Comparable {
     }
 }
 
+// MARK: -
+
 public class ConversationSearchResult<SortKey>: Comparable where SortKey: Comparable {
     public let thread: ThreadViewModel
 
@@ -62,6 +64,8 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
             lhs.messageId == rhs.messageId
     }
 }
+
+// MARK: -
 
 @objc
 public class ContactSearchResult: NSObject, Comparable {
@@ -96,6 +100,8 @@ public class ContactSearchResult: NSObject, Comparable {
     }
 }
 
+// MARK: -
+
 public class HomeScreenSearchResultSet: NSObject {
     public let searchText: String
     public let conversations: [ConversationSearchResult<ConversationSortKey>]
@@ -117,6 +123,8 @@ public class HomeScreenSearchResultSet: NSObject {
         return conversations.isEmpty && contacts.isEmpty && messages.isEmpty
     }
 }
+
+// MARK: -
 
 @objc
 public class GroupSearchResult: NSObject, Comparable {
@@ -141,6 +149,8 @@ public class GroupSearchResult: NSObject, Comparable {
         return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId
     }
 }
+
+// MARK: -
 
 @objc
 public class ComposeScreenSearchResultSet: NSObject {
@@ -179,6 +189,8 @@ public class ComposeScreenSearchResultSet: NSObject {
     }
 }
 
+// MARK: -
+
 @objc
 public class MessageSearchResult: NSObject, Comparable {
 
@@ -196,6 +208,8 @@ public class MessageSearchResult: NSObject, Comparable {
         return lhs.sortId < rhs.sortId
     }
 }
+
+// MARK: -
 
 @objc
 public class ConversationScreenSearchResultSet: NSObject {
