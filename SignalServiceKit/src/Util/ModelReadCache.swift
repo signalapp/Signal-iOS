@@ -1110,6 +1110,8 @@ public class ModelReadCaches: NSObject {
     fileprivate static let evacuateAllModelCaches = Notification.Name("EvacuateAllModelCaches")
 
     func evacuateAllCaches() {
-        NotificationCenter.default.postNotificationNameAsync(Self.evacuateAllModelCaches, object: nil)
+        DispatchSyncMainThreadSafe {
+            NotificationCenter.default.post(name: Self.evacuateAllModelCaches, object: nil)
+        }
     }
 }
