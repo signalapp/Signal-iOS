@@ -99,6 +99,12 @@ public class PickedRecipient: NSObject {
 extension RecipientPickerViewController {
 
     func tryToSelectRecipient(_ recipient: PickedRecipient) {
+        if let address = recipient.address,
+            address.isLocalAddress,
+            shouldHideLocalRecipient {
+            return
+        }
+
         guard let delegate = delegate else { return }
         guard showUseAsyncSelection else {
             AssertIsOnMainThread()

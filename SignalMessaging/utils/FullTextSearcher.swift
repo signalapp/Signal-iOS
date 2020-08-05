@@ -268,6 +268,7 @@ public class FullTextSearcher: NSObject {
 
     @objc
     public func searchForComposeScreen(searchText: String,
+                                       omitLocalUser: Bool,
                                        maxResults: UInt = kDefaultMaxResults,
                                        transaction: SDSAnyReadTransaction) -> ComposeScreenSearchResultSet {
 
@@ -337,7 +338,9 @@ public class FullTextSearcher: NSObject {
 
         // Filter out contact results with pending message requests.
         var signalContacts = Array(signalContactMap.values).filter { (contactResult: ContactSearchResult) in
-            !self.shouldFilterContactResult(contactResult: contactResult, transaction: transaction)
+            !self.shouldFilterContactResult(contactResult: contactResult,
+                                            omitLocalUser: omitLocalUser,
+                                            transaction: transaction)
         }
         // Order contact results by display name.
         signalContacts.sort()
@@ -349,10 +352,12 @@ public class FullTextSearcher: NSObject {
         return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
     }
 
-    func shouldFilterContactResult(contactResult: ContactSearchResult, transaction: SDSAnyReadTransaction) -> Bool {
+    func shouldFilterContactResult(contactResult: ContactSearchResult,
+                                   omitLocalUser: Bool,
+                                   transaction: SDSAnyReadTransaction) -> Bool {
         let address = contactResult.recipientAddress
         if address.isLocalAddress {
-            return false
+            return omitLocalUser
         }
         if self.contactsManager.isSystemContact(address: address) {
             return false
