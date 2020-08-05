@@ -29,6 +29,12 @@ public class LegacyContactDiscoveryOperation: OWSOperation, ContactDiscovering {
         Logger.debug("with phoneNumbersToLookup: \(phoneNumbersToLookup.count)")
     }
 
+    @objc
+    public func perform(completion: @escaping () -> Void) {
+        completionBlock = completion
+        start()
+    }
+
     // MARK: - OWSOperation Overrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
@@ -74,7 +80,7 @@ public class LegacyContactDiscoveryOperation: OWSOperation, ContactDiscovering {
                                             }
 
                                             guard response.statusCode != 413 else {
-                                                let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactsUpdaterRateLimit, "Contacts Intersection Rate Limit") as NSError
+                                                let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactDiscoveryRateLimit, "Contacts Intersection Rate Limit") as NSError
                                                 nsError.isRetryable = false
                                                 self.reportError(nsError)
                                                 return

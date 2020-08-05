@@ -31,6 +31,9 @@ public protocol ContactDiscovering {
     /// Constructs a ContactDiscovering object from an array of e164 phone numbers
     @objc init(phoneNumbersToLookup: [String])
 
+    /// Asynchronously performs the operation, invoking the completion handler when complete.
+    @objc func perform(completion: @escaping () -> Void)
+
     /// On successful completion, this property will be populated with the resulting contact info
     @objc var discoveredContactInfo: Set<DiscoveredContactInfo>? { get }
 }

@@ -41,10 +41,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
     }
 
-    private var contactsUpdater: ContactsUpdater {
-        return SSKEnvironment.shared.contactsUpdater
-    }
-
     private var versionedProfiles: VersionedProfilesImpl {
         return SSKEnvironment.shared.versionedProfiles as! VersionedProfilesImpl
     }

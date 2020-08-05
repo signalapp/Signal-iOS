@@ -207,7 +207,7 @@ extension UUIDBackfillTask {
         func fetchServiceAddress(for phoneNumbers: [String],
                                  completion: @escaping (Set<CDSRegisteredContact>, Error?) -> Void) {
             let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbers)
-            operation.completionBlock = {
+            operation.perform {
                 guard let results = operation.registeredContacts else {
                     // This is only hit if the operation is cancelled. Force an error so we don't try and unregister everyone
                     let error = operation.failingError ?? OWSAssertionError("Operation unexpectedly cancelled")
@@ -216,7 +216,6 @@ extension UUIDBackfillTask {
                 }
                 completion(results, nil)
             }
-            operation.perform()
         }
     }
 

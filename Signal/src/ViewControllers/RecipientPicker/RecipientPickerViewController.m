@@ -1310,7 +1310,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
 - (void)checkForAccountsForPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
 {
-    NSMutableArray<NSString *> *unknownPhoneNumbers = [NSMutableArray new];
+    NSMutableSet<NSString *> *unknownPhoneNumbers = [NSMutableSet new];
     for (NSString *phoneNumber in phoneNumbers) {
         if (!
             [self.nonContactAccountSet containsObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]]) {
@@ -1322,13 +1322,13 @@ const NSUInteger kMinimumSearchLength = 2;
     }
 
     __weak RecipientPickerViewController *weakSelf = self;
-    [[ContactsUpdater sharedUpdater] lookupIdentifiers:unknownPhoneNumbers
-                                               success:^(NSArray<SignalRecipient *> *recipients) {
-                                                   [weakSelf updateNonContactAccountSet:recipients];
-                                               }
-                                               failure:^(NSError *error) {
-                                                   // Ignore.
-                                               }];
+
+    OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithIdentifiers:unknownPhoneNumbers];
+    [discoveryTask performOnQueue:dispatch_get_main_queue() success:^(NSSet<SignalRecipient *> *resultSet) {
+        [weakSelf updateNonContactAccountSet:[resultSet allObjects]];
+    } failure:^(NSError *error) {
+        // Ignore
+    }];
 }
 
 - (void)updateNonContactAccountSet:(NSArray<SignalRecipient *> *)recipients

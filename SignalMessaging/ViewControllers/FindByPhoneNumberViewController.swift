@@ -189,7 +189,9 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
         if requiresRegisteredNumber {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { [weak self] modal in
-                ContactsUpdater.shared().lookupIdentifiers(phoneNumbers.map { $0.toE164() }, success: { recipients in
+                let discoverySet = Set(phoneNumbers.map { $0.toE164() })
+                let discoveryTask = ContactDiscoveryTask(identifiers: discoverySet)
+                discoveryTask.perform(on: .main, success: { recipients in
                     AssertIsOnMainThread()
 
                     guard !modal.wasCancelled else { return }

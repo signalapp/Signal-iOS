@@ -20,7 +20,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic, nullable) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic) ContactsUpdater *contactsUpdater;
 @property (nonatomic) TSNetworkManager *networkManager;
 @property (nonatomic) OWSMessageManager *messageManager;
 @property (nonatomic) OWSBlockingManager *blockingManager;
@@ -74,7 +73,6 @@ static SSKEnvironment *sharedSSKEnvironment;
              pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
-                        contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
@@ -128,7 +126,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageSenderJobQueue);
     OWSAssertDebug(pendingReadReceiptRecorder);
     OWSAssertDebug(profileManager);
-    OWSAssertDebug(contactsUpdater);
     OWSAssertDebug(networkManager);
     OWSAssertDebug(messageManager);
     OWSAssertDebug(blockingManager);
@@ -177,7 +174,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _pendingReadReceiptRecorder = pendingReadReceiptRecorder;
     _profileManager = profileManager;
     _primaryStorage = primaryStorage;
-    _contactsUpdater = contactsUpdater;
     _networkManager = networkManager;
     _messageManager = messageManager;
     _blockingManager = blockingManager;

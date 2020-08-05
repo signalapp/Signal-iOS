@@ -490,7 +490,7 @@ extension MessageSender {
 
         let phoneNumbersToFetch = invalidRecipients.compactMap { $0.phoneNumber }
         let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbersToFetch)
-        operation.completionBlock = {
+        operation.perform {
             guard let results = operation.registeredContacts else {
                 // This works around a tiny discrepancy between the two contact discovery operations
                 // It should only happen if an operation is cancelled, and even then it really shouldn't happen
@@ -522,6 +522,5 @@ extension MessageSender {
             }
             completion(nil)
         }
-        operation.perform()
     }
 }

@@ -44,7 +44,9 @@ public class ContactDiscoveryOperation: OWSOperation, ContactDiscovering {
     }
 
     /// Asynchronously start the operation and its dependencies
-    @objc public func perform() {
+    @objc public func perform(completion: @escaping () -> Void) {
+        completionBlock = completion
+
         let operationSet = self.dependencies + [self]
         Self.operationQueue.addOperations(operationSet, waitUntilFinished: false)
     }

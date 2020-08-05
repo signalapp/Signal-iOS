@@ -53,7 +53,6 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
@@ -307,11 +306,6 @@ typedef enum : NSUInteger {
 - (BulkProfileFetch *)bulkProfileFetch
 {
     return SSKEnvironment.shared.bulkProfileFetch;
-}
-
-- (ContactsUpdater *)contactsUpdater
-{
-    return SSKEnvironment.shared.contactsUpdater;
 }
 
 - (OWSBlockingManager *)blockingManager

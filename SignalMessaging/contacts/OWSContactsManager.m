@@ -14,7 +14,6 @@
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIFont+OWS.h>
-#import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -469,13 +468,13 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(successParameter);
     OWSAssertDebug(failureParameter);
 
-    void (^success)(NSArray<SignalRecipient *> *) = ^(NSArray<SignalRecipient *> *registeredRecipients) {
+    void (^success)(NSSet<SignalRecipient *> *) = ^(NSSet<SignalRecipient *> *registeredRecipients) {
         OWSLogInfo(@"Successfully intersected contacts.");
-        successParameter([NSSet setWithArray:registeredRecipients]);
+        successParameter(registeredRecipients);
     };
     void (^failure)(NSError *) = ^(NSError *error) {
         if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
-            && error.code == OWSErrorCodeContactsUpdaterRateLimit) {
+            && error.code == OWSErrorCodeContactDiscoveryRateLimit) {
             OWSLogError(@"Contact intersection hit rate limit with error: %@", error);
             failureParameter(error);
             return;
@@ -494,7 +493,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                 failure:failureParameter];
             });
     };
-    [[ContactsUpdater sharedUpdater] lookupIdentifiers:phoneNumbers.allObjects success:success failure:failure];
+    OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithIdentifiers:phoneNumbers];
+    [discoveryTask performOnQueue:dispatch_get_main_queue()
+                          success:success
+                          failure:failure];
 }
 
 - (void)startObserving
