@@ -112,8 +112,10 @@ NS_ASSUME_NONNULL_BEGIN
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             NSMutableSet<NSString *> *toUnregister = [phoneNumbersToLookup mutableCopy];
             for (OWSDiscoveredContactInfo *contactInfo in operation.discoveredContactInfo) {
-                SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:contactInfo.uuid
-                                                                               phoneNumber:contactInfo.e164];
+                SignalServiceAddress *address =
+                    [[SignalServiceAddress alloc] initWithUuid:contactInfo.uuid
+                                                   phoneNumber:contactInfo.e164
+                                                    trustLevel:SignalRecipientTrustLevelHigh];
                 SignalRecipient *recipient =
                     [SignalRecipient markRecipientAsRegisteredAndGet:address
                                                           trustLevel:SignalRecipientTrustLevelHigh

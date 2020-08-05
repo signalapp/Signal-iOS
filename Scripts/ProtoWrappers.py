@@ -408,7 +408,7 @@ public enum %s: Error {
 
 
 class MessageField:
-    def __init__(self, name, index, rules, proto_type, default_value, sort_index, is_required):
+    def __init__(self, name, index, rules, proto_type, default_value, sort_index, is_required, is_trusted_mapping):
         self.name = name
         self.index = index
         self.rules = rules
@@ -416,6 +416,7 @@ class MessageField:
         self.default_value = default_value
         self.sort_index = sort_index
         self.is_required = is_required
+        self.is_trusted_mapping = is_trusted_mapping
 
     def has_accessor_name(self):
         name = 'has' + self.name_swift[0].upper() + self.name_swift[1:]
@@ -711,7 +712,7 @@ class MessageContext(BaseContext):
             writer.add('}()')
             writer.newline()
 
-            writer.add('let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)')
+            writer.add('let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: %s)' % ('.high' if uuid_field.is_trusted_mapping else '.low'))
             writer.add('guard address.isValid else {')
             writer.push_indent()
             writer.add('owsFailDebug("address was unexpectedly invalid")')
@@ -1626,7 +1627,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 oneof_context = parse_oneof(args, proto_file_path, parser, context, oneof_name)
                 oneof_index = oneof_context.last_index()
                 oneof_type = oneof_context.derive_swift_name()
-                context.field_map[oneof_index] = MessageField(oneof_name, oneof_index, 'optional', oneof_type, None, sort_index, False)
+                context.field_map[oneof_index] = MessageField(oneof_name, oneof_index, 'optional', oneof_type, None, sort_index, False, False)
                 sort_index = sort_index + 1
                 continue
 
@@ -1686,7 +1687,10 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             # if is_required:
             #     print 'is_required:', item_name
             # print 'item_name:', item_name, 'item_type:', item_type
-            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required)
+
+            is_trusted_mapping = '@trustedMapping' in field_comments
+
+            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required, is_trusted_mapping)
 
             sort_index = sort_index + 1
 

@@ -68,7 +68,33 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
-    public init(uuid: UUID?, phoneNumber: String?) {
+    public convenience init(uuidString: String?, phoneNumber: String?) {
+        self.init(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
+    }
+
+    @objc
+    public convenience init(uuidString: String?, phoneNumber: String?, trustLevel: SignalRecipientTrustLevel) {
+        let uuid: UUID?
+
+        if let uuidString = uuidString {
+            uuid = UUID(uuidString: uuidString)
+            if uuid == nil {
+                owsFailDebug("Unexpectedly initialized signal service address with invalid uuid")
+            }
+        } else {
+            uuid = nil
+        }
+
+        self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: trustLevel)
+    }
+
+    @objc
+    public convenience init(uuid: UUID?, phoneNumber: String?) {
+        self.init(uuid: uuid, phoneNumber: phoneNumber, trustLevel: .low)
+    }
+
+    @objc
+    public init(uuid: UUID?, phoneNumber: String?, trustLevel: SignalRecipientTrustLevel) {
         if phoneNumber == nil, let uuid = uuid,
             let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
             backingPhoneNumber = AtomicOptional(cachedPhoneNumber)
@@ -87,14 +113,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             backingUuid = AtomicOptional(uuid)
         }
 
-        // If we have a backing UUID, we don't want to cache its mapping to the phone number.
-        // Instead, just lookup the hash based on the UUID alone.
-        // Only SignalRecipient ever updates the UUID <-> phone number mapping.
-        if let backingUuid = backingUuid.get() {
-            backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid)
-        } else {
-            backingHashValue = SignalServiceAddress.cache.hashAndCache(phoneNumber: backingPhoneNumber.get())
-        }
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(
+            uuid: backingUuid.get(),
+            phoneNumber: backingPhoneNumber.get(),
+            trustLevel: trustLevel
+        )
 
         super.init()
 
@@ -124,22 +147,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid))
     }
 
-    @objc
-    public convenience init(uuidString: String?, phoneNumber: String?) {
-        let uuid: UUID?
-
-        if let uuidString = uuidString {
-            uuid = UUID(uuidString: uuidString)
-            if uuid == nil {
-                owsFailDebug("Unexpectedly initialized signal service address with invalid uuid")
-            }
-        } else {
-            uuid = nil
-        }
-
-        self.init(uuid: uuid, phoneNumber: phoneNumber)
-    }
-
     // MARK: -
 
     public func encode(with aCoder: NSCoder) {
@@ -160,7 +167,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             backingPhoneNumber = AtomicOptional(aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
         }
 
-        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get())
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get(), trustLevel: .low)
     }
 
     // MARK: -
@@ -286,7 +293,7 @@ public class SignalServiceAddressCache: NSObject {
         let localUuid = TSAccountManager.sharedInstance().localUuid
 
         if localNumber != nil || localUuid != nil {
-            hashAndCache(uuid: localUuid, phoneNumber: localNumber)
+            hashAndCache(uuid: localUuid, phoneNumber: localNumber, trustLevel: .high)
         }
 
         SDSDatabaseStorage.shared.read { transaction in
@@ -297,7 +304,7 @@ public class SignalServiceAddressCache: NSObject {
                 } else {
                     recipientUuid = nil
                 }
-                self.hashAndCache(uuid: recipientUuid, phoneNumber: recipient.recipientPhoneNumber)
+                self.hashAndCache(uuid: recipientUuid, phoneNumber: recipient.recipientPhoneNumber, trustLevel: .high)
             }
         }
     }
@@ -306,7 +313,13 @@ public class SignalServiceAddressCache: NSObject {
     /// and returns a constant hash value that can be used to represent
     /// either of these values going forward for the lifetime of the cache.
     @discardableResult
-    func hashAndCache(uuid: UUID? = nil, phoneNumber: String? = nil) -> Int {
+    func hashAndCache(uuid: UUID? = nil, phoneNumber: String? = nil, trustLevel: SignalRecipientTrustLevel) -> Int {
+        var phoneNumber = phoneNumber
+
+        // If we have a UUID, don't trust the phone number for mapping
+        // in low trust scenarios.
+        if trustLevel == .low, uuid != nil { phoneNumber = nil }
+
         return serialQueue.sync {
             // If we have a UUID and a phone number, cache the mapping.
             if let uuid = uuid, let phoneNumber = phoneNumber {

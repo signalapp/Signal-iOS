@@ -52,6 +52,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(SignalServiceAddress(uuid: uuid1),
                        SignalServiceAddress(uuid: uuid1))
 
+        // Ignores phone number when UUIDs match.
+        XCTAssertEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
+                       SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2))
+
         // Match fails if no common value.
         XCTAssertEqual(SignalServiceAddress(uuid: uuid1),
                        SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1))
@@ -67,8 +71,6 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
                           SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber2))
         XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
                           SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1))
-        XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
-                          SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2))
         XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
                           SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2))
     }
