@@ -244,7 +244,7 @@ open class MentionTextView: OWSTextView {
 
         pickerParentView.insertSubview(pickerView, belowSubview: pickerReferenceView)
         pickerView.autoPinWidthToSuperview()
-        pickerView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        pickerView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 0, relation: .greaterThanOrEqual)
 
         let animationTopConstraint = pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
 
