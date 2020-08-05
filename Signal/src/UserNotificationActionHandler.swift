@@ -46,7 +46,7 @@ public class UserNotificationActionHandler: NSObject {
         }
 
         guard let action = UserNotificationConfig.action(identifier: response.actionIdentifier) else {
-            throw NotificationError.failDebug("unable to find action for actionIdentifier: \(response.actionIdentifier)")
+            throw OWSAssertionError("unable to find action for actionIdentifier: \(response.actionIdentifier)")
         }
 
         switch action {
@@ -60,7 +60,7 @@ public class UserNotificationActionHandler: NSObject {
             return try actionHandler.markAsRead(userInfo: userInfo)
         case .reply:
             guard let textInputResponse = response as? UNTextInputNotificationResponse else {
-                throw NotificationError.failDebug("response had unexpected type: \(response)")
+                throw OWSAssertionError("response had unexpected type: \(response)")
             }
 
             return try actionHandler.reply(userInfo: userInfo, replyText: textInputResponse.userText)

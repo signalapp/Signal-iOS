@@ -39,11 +39,11 @@ class NotificationActionHandler {
 
     func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
+            throw OWSAssertionError("localCallIdString was unexpectedly nil")
         }
 
         guard let localCallId = UUID(uuidString: localCallIdString) else {
-            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
+            throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
         callUIAdapter.answerCall(localId: localCallId)
@@ -55,7 +55,7 @@ class NotificationActionHandler {
         let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
         let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
         guard address.isValid else {
-            throw NotificationError.failDebug("Missing or invalid address.")
+            throw OWSAssertionError("Missing or invalid address.")
         }
 
         callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
@@ -64,11 +64,11 @@ class NotificationActionHandler {
 
     func declineCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-            throw NotificationError.failDebug("localCallIdString was unexpectedly nil")
+            throw OWSAssertionError("localCallIdString was unexpectedly nil")
         }
 
         guard let localCallId = UUID(uuidString: localCallIdString) else {
-            throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
+            throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
         callUIAdapter.localHangupCall(localId: localCallId)
@@ -110,8 +110,10 @@ class NotificationActionHandler {
     }
 
     func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+        AssertIsOnMainThread()
+
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-            throw NotificationError.failDebug("threadId was unexpectedly nil")
+            throw OWSAssertionError("threadId was unexpectedly nil")
         }
 
         // If this happens when the the app is not, visible we skip the animation so the thread
@@ -131,7 +133,7 @@ class NotificationActionHandler {
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
             guard let incomingMessage = interaction as? TSIncomingMessage else {
-                throw NotificationError.failDebug("Unexpected interaction type.")
+                throw OWSAssertionError("Unexpected interaction type.")
             }
 
             return firstly(on: .global()) { () -> Promise<Void> in
@@ -184,16 +186,5 @@ class NotificationActionHandler {
                                                     resolver.fulfill(())
         }
         return promise
-    }
-}
-
-enum NotificationError: Error {
-    case assertionError(description: String)
-}
-
-extension NotificationError {
-    static func failDebug(_ description: String) -> NotificationError {
-        owsFailDebug(description)
-        return NotificationError.assertionError(description: description)
     }
 }
