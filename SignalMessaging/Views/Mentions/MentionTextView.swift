@@ -248,7 +248,13 @@ open class MentionTextView: OWSTextView {
 
         let animationTopConstraint = pickerView.autoPinEdge(.top, to: .top, of: pickerReferenceView)
 
-        didUpdateMentionText(currentlyTypingMentionText ?? "")
+        guard let currentlyTypingMentionText = currentlyTypingMentionText,
+            pickerView.mentionTextChanged(currentlyTypingMentionText) else {
+                pickerView.removeFromSuperview()
+                self.pickerView = nil
+                state = .notTypingMention
+                return
+        }
 
         let style = mentionDelegate.textViewMentionStyle(self)
         if style == .composingAttachment {
