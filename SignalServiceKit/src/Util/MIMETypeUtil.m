@@ -39,6 +39,7 @@ NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
 NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
 NSString *const kSyncMessageFileExtension = @"bin";
+NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
@@ -100,6 +101,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             OWSMimeTypeImageWebp : @"webp",
             OWSMimeTypeImageHeic : @"heic",
             OWSMimeTypeImageHeif : @"heif",
+            OWSMimeTypeLottieSticker : kLottieStickerFileExtension,
         };
     });
     return result;
@@ -1635,6 +1637,9 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = @ {
+            // Custom MIME types.
+            kLottieStickerFileExtension : OWSMimeTypeLottieSticker,
+            // Common MIME types.
             @"123" : @"application/vnd.lotus-1-2-3",
             @"3dml" : @"text/vnd.in3d.3dml",
             @"3ds" : @"image/x-3ds",

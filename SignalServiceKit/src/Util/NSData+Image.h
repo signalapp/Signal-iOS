@@ -15,6 +15,7 @@ typedef NS_CLOSED_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Webp,
     ImageFormat_Heic,
     ImageFormat_Heif,
+    ImageFormat_LottieSticker,
 };
 
 NSString *NSStringForImageFormat(ImageFormat value);

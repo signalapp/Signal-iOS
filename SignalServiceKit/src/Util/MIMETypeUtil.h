@@ -28,6 +28,7 @@ extern NSString *const kOversizeTextAttachmentUTI;
 extern NSString *const kOversizeTextAttachmentFileExtension;
 extern NSString *const kUnknownTestAttachmentUTI;
 extern NSString *const kSyncMessageFileExtension;
+extern NSString *const kLottieStickerFileExtension;
 
 @interface MIMETypeUtil : NSObject
 

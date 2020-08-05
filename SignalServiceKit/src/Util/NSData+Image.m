@@ -180,13 +180,15 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
             return OWSMimeTypeImageHeic;
         case ImageFormat_Heif:
             return OWSMimeTypeImageHeif;
+        case ImageFormat_LottieSticker:
+            return OWSMimeTypeLottieSticker;
     }
 }
 
 + (BOOL)isAnimatedWithImageFormat:(ImageFormat)imageFormat
 {
     // TODO: ImageFormat_Webp
-    return imageFormat == ImageFormat_Gif;
+    return imageFormat == ImageFormat_Gif || imageFormat == ImageFormat_LottieSticker;
 }
 
 - (BOOL)ows_hasValidImageFormat:(ImageFormat)imageFormat
@@ -210,6 +212,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         case ImageFormat_Webp:
         case ImageFormat_Heic:
         case ImageFormat_Heif:
+        case ImageFormat_LottieSticker:
             return YES;
     }
 }
@@ -239,6 +242,8 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeic] == NSOrderedSame);
         case ImageFormat_Heif:
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeif] == NSOrderedSame);
+        case ImageFormat_LottieSticker:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeLottieSticker] == NSOrderedSame);
     }
 }
 
@@ -283,6 +288,11 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 - (ImageFormat)ows_guessImageFormat
 {
+    return [self ows_guessImageFormatWithCanBeLottieSticker:NO];
+}
+
+- (ImageFormat)ows_guessImageFormatWithCanBeLottieSticker:(BOOL)canBeLottieSticker
+{
     const NSUInteger kTwoBytesLength = 2;
     if (self.length < kTwoBytesLength) {
         return ImageFormat_Unknown;
@@ -311,6 +321,10 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
     } else if (byte0 == 0x52 && byte1 == 0x49) {
         // First two letters of RIFF tag.
         return ImageFormat_Webp;
+    } else if (canBeLottieSticker && byte0 == 0x7B) {
+        // Lottie is just JSON.
+        // Lottie files always start with '{', so we just check for that.
+        return ImageFormat_LottieSticker;
     }
 
     return [self ows_guessHighEfficiencyImageFormat];
@@ -456,6 +470,29 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
     return CGSizeMake(canvasWidth, canvasHeight);
 }
 
+- (CGSize)sizeForLottieStickerData
+{
+    NSError *_Nullable error;
+    NSDictionary<NSString *, id> *_Nullable json = [NSJSONSerialization JSONObjectWithData:self options:0 error:&error];
+    if (error != nil || ![json isKindOfClass:[NSDictionary class]]) {
+        OWSFailDebug(@"Could not parse Lottie JSON.");
+        return CGSizeZero;
+    }
+    NSNumber *_Nullable nsWidth = json[@"w"];
+    NSNumber *_Nullable nsHeight = json[@"h"];
+    if (![nsWidth isKindOfClass:[NSNumber class]] || ![nsHeight isKindOfClass:[NSNumber class]]) {
+        OWSFailDebug(@"Lottie JSON has missing or invalid width or height.");
+        return CGSizeZero;
+    }
+    CGFloat width = nsWidth.floatValue;
+    CGFloat height = nsHeight.floatValue;
+    if (width < 1 || height < 1) {
+        OWSFailDebug(@"Lottie JSON has invalid width or height.");
+        return CGSizeZero;
+    }
+    return CGSizeMake(width, height);
+}
+
 - (nullable UIImage *)stillForWebpData
 {
     if ([self ows_guessImageFormat] != ImageFormat_Webp) {
@@ -532,7 +569,8 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 // that value and the per-format max dimension
 - (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
 {
-    ImageFormat imageFormat = [self ows_guessImageFormat];
+    BOOL canBeLottieSticker = (declaredMimeType != nil && [OWSMimeTypeLottieSticker isEqualToString:declaredMimeType]);
+    ImageFormat imageFormat = [self ows_guessImageFormatWithCanBeLottieSticker:canBeLottieSticker];
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
         return ImageMetadata.invalid;
@@ -577,6 +615,12 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         CGSize imageSize = [self sizeForWebpData];
         if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
             return ImageMetadata.invalid;
+        }
+        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
+    } else if (imageFormat == ImageFormat_LottieSticker) {
+        CGSize imageSize = [self sizeForLottieStickerData];
+        if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
+            return ImageData.invalid;
         }
         return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
     }

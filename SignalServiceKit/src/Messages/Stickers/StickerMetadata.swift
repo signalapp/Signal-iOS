@@ -41,7 +41,7 @@ public enum StickerType: UInt {
         case .webp:
             return "webp"
         case .signalLottie:
-            return "lottieSticker"
+            return kLottieStickerFileExtension
         }
     }
 }
