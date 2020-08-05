@@ -134,8 +134,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.unreadLabel.text = [NSString stringWithFormat:@"%lu", unreadCount];
     self.unreadBadge.hidden = unreadCount < 1;
-
-    [self updateColors];
 }
 
 - (void)updateColors

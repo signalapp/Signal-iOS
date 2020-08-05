@@ -41,7 +41,7 @@ public class Mention: NSObject {
         let displayName = Environment.shared.contactsManager.displayName(
             for: address,
             transaction: transaction.asAnyRead
-        ).bidirectionallyBalancedAndIsolated
+        )
         self.init(
             address: address,
             style: style,
