@@ -13,6 +13,7 @@ public final class MentionUtilities : NSObject {
         var publicChat: PublicChat?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
+            MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
         }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])

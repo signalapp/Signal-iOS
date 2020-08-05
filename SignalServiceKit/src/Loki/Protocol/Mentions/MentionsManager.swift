@@ -75,8 +75,8 @@ public final class MentionsManager : NSObject {
                     guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
                     result.insert(message.authorId)
                 }
-                result.insert(getUserHexEncodedPublicKey())
             }
+            result.insert(getUserHexEncodedPublicKey())
         }
         if let transaction = transaction {
             populate(in: transaction)
