@@ -113,5 +113,9 @@ extension SignalRecipient {
 
         // Verify the mapping change worked as expected.
         owsAssertDebug(SignalServiceAddress(uuid: uuid).phoneNumber == phoneNumber)
+
+        // Evacuate caches again once the transaction completes, in case
+        // some kind of race occured.
+        transaction.addAsyncCompletion(queue: .main) { ModelReadCaches.shared.evacuateAllCaches() }
     }
 }
