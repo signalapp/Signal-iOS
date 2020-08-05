@@ -16,7 +16,7 @@ public class StickerView: NSObject {
                             dataSource: StickerPackDataSource,
                             size: CGFloat? = nil) -> UIView? {
         guard let stickerMetadata = dataSource.metadata(forSticker: stickerInfo) else {
-            owsFailDebug("Missing sticker metadata.")
+            Logger.warn("Missing sticker metadata.")
             return nil
         }
         return stickerView(stickerInfo: stickerInfo, stickerMetadata: stickerMetadata, size: size)
@@ -24,10 +24,11 @@ public class StickerView: NSObject {
 
     static func stickerView(forInstalledStickerInfo stickerInfo: StickerInfo,
                             size: CGFloat? = nil) -> UIView? {
-        guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                                                 verifyExists: false) else {
-                                                                                                    owsFailDebug("Missing sticker metadata.")
-                                                                                                    return nil
+        let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
+                                                                                    verifyExists: false)
+        guard let stickerMetadata = metadata else {
+            Logger.warn("Missing sticker metadata.")
+            return nil
         }
         return stickerView(stickerInfo: stickerInfo, stickerMetadata: stickerMetadata, size: size)
     }

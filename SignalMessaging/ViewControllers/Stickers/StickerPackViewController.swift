@@ -284,7 +284,7 @@ public class StickerPackViewController: OWSViewController {
         }
         guard let stickerPack = dataSource.getStickerPack() else { return }
         let coverInfo = stickerPack.coverInfo
-        guard let stickerView = StickerView.stickerView(forInstalledStickerInfo: coverInfo) else {
+        guard let stickerView = StickerView.stickerView(forStickerInfo: coverInfo, dataSource: dataSource) else {
             return
         }
         coverView.addSubview(stickerView)
