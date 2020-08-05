@@ -165,9 +165,9 @@ public class MessageSticker: MTLModel {
             // Sticker is not installed.
             return nil
         }
-        let stickerDataUrl = StickerManager.stickerDataUrl(forInstalledSticker: installedSticker)
-        guard OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) else {
-            owsFailDebug("Missing file for installed sticker.")
+        guard let stickerDataUrl = StickerManager.stickerDataUrl(forInstalledSticker: installedSticker,
+                                                                 verifyExists: true) else {
+            owsFailDebug("Missing data for installed sticker.")
             return nil
         }
         guard let fileSize = OWSFileSystem.fileSize(of: stickerDataUrl) else {

@@ -24,8 +24,7 @@ public class StickerView: NSObject {
 
     static func stickerView(forInstalledStickerInfo stickerInfo: StickerInfo,
                             size: CGFloat? = nil) -> UIView? {
-        let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                                    verifyExists: false)
+        let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
         guard let stickerMetadata = metadata else {
             Logger.warn("Missing sticker metadata.")
             return nil

@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
         StickerMetadata *_Nullable stickerMetadata;
-        stickerMetadata = [StickerManager installedStickerMetadataWithSneakyTransaction:stickerInfo verifyExists:YES];
+        stickerMetadata = [StickerManager installedStickerMetadataWithSneakyTransaction:stickerInfo];
         if (stickerMetadata == nil) {
             OWSFailDebug(@"Could not find sticker file.");
             return;

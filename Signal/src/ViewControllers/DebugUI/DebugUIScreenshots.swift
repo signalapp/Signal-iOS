@@ -886,8 +886,7 @@ public extension DebugUIScreenshots {
             owsFailDebug("Couldn't find sticker info in pack.")
             return nil
         }
-        guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                                                 verifyExists: true) else {
+        guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo) else {
             owsFailDebug("Couldn't find sticker metadata.")
             return nil
         }

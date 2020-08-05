@@ -173,7 +173,9 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
                 }
             }
 
-            self.stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack, transaction: transaction)
+            self.stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack,
+                                                                 verifyExists: false,
+                                                                 transaction: transaction)
         }
     }
 
@@ -240,8 +242,7 @@ extension InstalledStickerPackDataSource: StickerPackDataSource {
 
         // This logic is perf-sensitive and on the main thread;
         // don't bother checking that the sticker data resides on disk.
-        return StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                            verifyExists: false)
+        return StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
     }
 }
 
@@ -535,8 +536,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
             return stickerMetadata
         }
 
-        guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                                                 verifyExists: false) else {
+        guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo) else {
                                                                                                     return nil
         }
         stickerMetadataMap[key] = stickerMetadata
@@ -622,8 +622,7 @@ extension RecentStickerPackDataSource: StickerPackDataSource {
 
         // This logic is perf-sensitive and on the main thread;
         // don't bother checking that the sticker data resides on disk.
-        return StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                            verifyExists: false)
+        return StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
     }
 }
 

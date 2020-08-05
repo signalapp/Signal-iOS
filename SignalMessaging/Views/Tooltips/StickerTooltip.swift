@@ -72,8 +72,7 @@ public class StickerTooltip: TooltipView {
     private func updateIconView() {
         let stickerPackItem: StickerPackItem = stickerPack.cover
         let stickerInfo = stickerPackItem.stickerInfo(with: stickerPack)
-        let installedMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo,
-                                                                                             verifyExists: false)
+        let installedMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
         guard let stickerMetadata = installedMetadata else {
             updateIconView(stickerPackItem: stickerPackItem,
                            stickerDataUrl: nil)

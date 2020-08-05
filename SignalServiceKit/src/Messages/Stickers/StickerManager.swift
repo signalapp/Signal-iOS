@@ -429,10 +429,12 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func installedStickers(forStickerPack stickerPack: StickerPack) -> [StickerInfo] {
+    public class func installedStickers(forStickerPack stickerPack: StickerPack,
+                                        verifyExists: Bool) -> [StickerInfo] {
         var result = [StickerInfo]()
         databaseStorage.read { (transaction) in
             result = self.installedStickers(forStickerPack: stickerPack,
+                                            verifyExists: verifyExists,
                                             transaction: transaction)
         }
         return result
@@ -440,6 +442,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func installedStickers(forStickerPack stickerPack: StickerPack,
+                                        verifyExists: Bool,
                                         transaction: SDSAnyReadTransaction) -> [StickerInfo] {
 
         let allInstalledUniqueIds = Set(InstalledSticker.anyAllUniqueIds(transaction: transaction))
@@ -447,19 +450,15 @@ public class StickerManager: NSObject {
         for stickerInfo in stickerPack.stickerInfos {
             let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
             let isStickerInstalled = allInstalledUniqueIds.contains(uniqueId)
-            if isStickerInstalled {
-                #if DEBUG
-                if let installedSticker = InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) {
-                    let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker)
-                    if !OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) {
-                        owsFailDebug("Missing sticker data for installed sticker.")
-                    }
-                } else {
-                    owsFailDebug("Missing installedSticker.")
-                }
-                #endif
-                result.append(stickerInfo)
+            guard isStickerInstalled,
+                let installedSticker = InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                    continue
             }
+            if verifyExists,
+                nil == self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: verifyExists) {
+                continue
+            }
+            result.append(stickerInfo)
         }
         return result
     }
@@ -495,19 +494,16 @@ public class StickerManager: NSObject {
         StickerType.stickerType(forContentType: contentType)
     }
 
-    @objc(installedStickerMetadataWithSneakyTransaction:verifyExists:)
-    public class func installedStickerMetadataWithSneakyTransaction(stickerInfo: StickerInfo,
-                                                                    verifyExists: Bool) -> StickerMetadata? {
+    @objc(installedStickerMetadataWithSneakyTransaction:)
+    public class func installedStickerMetadataWithSneakyTransaction(stickerInfo: StickerInfo) -> StickerMetadata? {
         databaseStorage.read { transaction in
             self.installedStickerMetadata(stickerInfo: stickerInfo,
-                                          verifyExists: verifyExists,
                                           transaction: transaction)
         }
     }
 
     @objc
     public class func installedStickerMetadata(stickerInfo: StickerInfo,
-                                               verifyExists: Bool,
                                                transaction: SDSAnyReadTransaction) -> StickerMetadata? {
 
         let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
@@ -517,23 +513,17 @@ public class StickerManager: NSObject {
         }
 
         return installedStickerMetadata(installedSticker: installedSticker,
-                                        verifyExists: verifyExists,
                                         transaction: transaction)
     }
 
     @objc
     public class func installedStickerMetadata(installedSticker: InstalledSticker,
-                                               verifyExists: Bool,
                                                transaction: SDSAnyReadTransaction) -> StickerMetadata? {
 
         let stickerInfo = installedSticker.info
         let stickerType = StickerType.stickerType(forContentType: installedSticker.contentType)
-        let stickerDataUrl = self.stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType)
-        if verifyExists {
-            guard OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) else {
-                owsFailDebug("Sticker data not found.")
-                return nil
-            }
+        guard let stickerDataUrl = self.stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, verifyExists: true) else {
+            return nil
         }
         return StickerMetadata(stickerInfo: stickerInfo,
                                stickerType: stickerType,
@@ -542,39 +532,34 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func stickerDataUrlWithSneakyTransaction(stickerInfo: StickerInfo,
-                                                          verifyExists: Bool) -> URL? {
+    public class func stickerDataUrlWithSneakyTransaction(stickerInfo: StickerInfo, verifyExists: Bool) -> URL? {
         guard let installedSticker = fetchInstalledStickerWithSneakyTransaction(stickerInfo: stickerInfo) else {
             return nil
         }
-        let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker)
-        if verifyExists {
-            guard OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) else {
-                owsFailDebug("Sticker data not found.")
-                return nil
-            }
-        }
-        return stickerDataUrl
+        return self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: verifyExists)
     }
 
     private class func stickerDataUrl(stickerInfo: StickerInfo,
-                                      contentType: String?) -> URL {
+                                      contentType: String?,
+                                      verifyExists: Bool) -> URL? {
         let stickerType = StickerType.stickerType(forContentType: contentType)
-        return stickerDataUrl(stickerInfo: stickerInfo,
-                              stickerType: stickerType)
+        return stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, verifyExists: verifyExists)
     }
 
-    public class func stickerDataUrl(forInstalledSticker installedSticker: InstalledSticker) -> URL {
+    public class func stickerDataUrl(forInstalledSticker installedSticker: InstalledSticker, verifyExists: Bool) -> URL? {
         let stickerInfo = installedSticker.info
         let stickerType = StickerType.stickerType(forContentType: installedSticker.contentType)
-        return stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType)
+        return stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, verifyExists: verifyExists)
     }
 
-    private class func stickerDataUrl(stickerInfo: StickerInfo, stickerType: StickerType) -> URL {
+    private class func stickerDataUrl(stickerInfo: StickerInfo, stickerType: StickerType, verifyExists: Bool) -> URL? {
         let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
         var url = cacheDirUrl()
         // Not all stickers are .webp.
         url.appendPathComponent("\(uniqueId).\(stickerType.fileExtension)")
+        if verifyExists && !OWSFileSystem.fileOrFolderExists(url: url) {
+            return nil
+        }
         return url
     }
 
@@ -583,8 +568,9 @@ public class StickerManager: NSObject {
 
         var filePaths = [String]()
         InstalledSticker.anyEnumerate(transaction: transaction) { (installedSticker, _) in
-            let filePath = stickerDataUrl(forInstalledSticker: installedSticker).path
-            filePaths.append(filePath)
+            if let stickerDataUrl = stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: true) {
+                filePaths.append(stickerDataUrl.path)
+            }
         }
         return filePaths
     }
@@ -626,7 +612,10 @@ public class StickerManager: NSObject {
 
         removeStickerFromEmojiMap(installedSticker, transaction: transaction)
 
-        let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker)
+        guard let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: false) else {
+            owsFailDebug("Could not generate sticker data URL.")
+            return
+        }
 
         // Cleans up the sticker data on disk. We want to do these deletions
         // after the transaction is complete so that other transactions aren't
@@ -678,7 +667,12 @@ public class StickerManager: NSObject {
                                                     contentType: contentType,
                                                     emojiString: emojiString)
 
-            let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker)
+            guard let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: false) else {
+                owsFailDebug("Could not generate sticker data URL.")
+                completion?()
+                return
+            }
+
             do {
                 try stickerData.write(to: stickerDataUrl, options: .atomic)
             } catch let error as NSError {
@@ -715,9 +709,7 @@ public class StickerManager: NSObject {
                 }
             }
 
-            if let completion = completion {
-                completion()
-            }
+            completion?()
         }
     }
 
@@ -1043,12 +1035,10 @@ public class StickerManager: NSObject {
                 owsFailDebug("Couldn't fetch sticker")
                 continue
             }
-            #if DEBUG
-            let stickerDataUrl = self.stickerDataUrl(forInstalledSticker: installedSticker)
-            if !OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) {
+            guard nil != self.stickerDataUrl(forInstalledSticker: installedSticker, verifyExists: true) else {
                 owsFailDebug("Missing sticker data for installed sticker.")
+                continue
             }
-            #endif
             result.append(installedSticker.info)
         }
         return result
