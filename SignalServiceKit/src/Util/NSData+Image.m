@@ -472,6 +472,9 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 - (CGSize)sizeForLottieStickerData
 {
+    // This method is expensive and we don't currently need it.
+    OWSFailDebug(@"Deprecated mthod.");
+
     NSError *_Nullable error;
     NSDictionary<NSString *, id> *_Nullable json = [NSJSONSerialization JSONObjectWithData:self options:0 error:&error];
     if (error != nil || ![json isKindOfClass:[NSDictionary class]]) {
@@ -618,9 +621,16 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         }
         return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
     } else if (imageFormat == ImageFormat_LottieSticker) {
-        CGSize imageSize = [self sizeForLottieStickerData];
-        if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
-            return ImageMetadata.invalid;
+        // sizeForLottieStickerData() is expensive and we don't currently need it.
+        const BOOL ignoreLottieStickerSize = YES;
+        CGSize imageSize;
+        if (ignoreLottieStickerSize) {
+            imageSize = CGSizeZero;
+        } else {
+            imageSize = [self sizeForLottieStickerData];
+            if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
+                return ImageMetadata.invalid;
+            }
         }
         return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
     }

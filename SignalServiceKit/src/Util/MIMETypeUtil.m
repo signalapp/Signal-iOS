@@ -33,7 +33,7 @@ NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 NSString *const OWSMimeTypeProtobuf = @"application/x-protobuf";
 NSString *const OWSMimeTypeJson = @"application/json";
 NSString *const OWSMimeTypeWebp = @"image/webp";
-NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker";
+NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker-lottie";
 
 NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
