@@ -27,8 +27,7 @@ public class OWSAccountIdFinder: NSObject {
             return accountId
         }
 
-        let recipient = SignalRecipient(address: address)
-        recipient.anyInsert(transaction: transaction)
+        let recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .low, transaction: transaction)
         return recipient.accountId
     }
 
@@ -51,11 +50,8 @@ extension OWSAccountIdFinder: SMKAccountIdFinder {
     }
 
     private func ensureAccountId(forUuid uuid: UUID?, phoneNumber: String?, transaction: SDSAnyWriteTransaction) -> String? {
-        guard let address: SignalServiceAddress = {
-            if let uuid = uuid { return .init(uuid: uuid) }
-            if let phoneNumber = phoneNumber { return .init(phoneNumber: phoneNumber) }
-            return nil
-        }(), address.isValid else {
+        let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
+        guard address.isValid else {
             owsFailDebug("address was invalid")
             return nil
         }
