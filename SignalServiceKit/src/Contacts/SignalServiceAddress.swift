@@ -280,19 +280,24 @@ public class SignalServiceAddressCache: NSObject {
     private var uuidToHashValueCache = [UUID: Int]()
     private var phoneNumberToHashValueCache = [String: Int]()
 
-    override init() {
-        super.init()
-        AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
-            SDSDatabaseStorage.shared.asyncRead { transaction in
-                SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
-                    let recipientUuid: UUID?
-                    if let uuidString = recipient.recipientUUID {
-                        recipientUuid = UUID(uuidString: uuidString)
-                    } else {
-                        recipientUuid = nil
-                    }
-                    self?.hashAndCache(uuid: recipientUuid, phoneNumber: recipient.recipientPhoneNumber)
+    @objc
+    func warmCaches() {
+        let localNumber = TSAccountManager.sharedInstance().localNumber
+        let localUuid = TSAccountManager.sharedInstance().localUuid
+
+        if localNumber != nil || localUuid != nil {
+            hashAndCache(uuid: localUuid, phoneNumber: localNumber)
+        }
+
+        SDSDatabaseStorage.shared.read { transaction in
+            SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
+                let recipientUuid: UUID?
+                if let uuidString = recipient.recipientUUID {
+                    recipientUuid = UUID(uuidString: uuidString)
+                } else {
+                    recipientUuid = nil
                 }
+                self.hashAndCache(uuid: recipientUuid, phoneNumber: recipient.recipientPhoneNumber)
             }
         }
     }
