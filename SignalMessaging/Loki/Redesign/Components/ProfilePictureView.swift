@@ -50,7 +50,7 @@ public final class ProfilePictureView : UIView {
             return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
         }
         let size: CGFloat
-        if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed {
+        if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed, openGroupProfilePicture == nil {
             size = Values.smallProfilePictureSize
             imageViewWidthConstraint.constant = size
             imageViewHeightConstraint.constant = size
