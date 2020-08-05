@@ -76,7 +76,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2maxMemberCount: UInt {
-        let defaultValue: UInt = 100
+        let defaultValue: UInt = 151
         guard AppReadiness.isAppReady else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
