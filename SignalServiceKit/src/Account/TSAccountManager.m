@@ -505,6 +505,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                               transaction:transaction];
         }
 
+        // Update the address cache mapping for the local user.
+        [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:localUuid phoneNumber:localNumber];
+
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
 
         [self loadAccountStateWithTransaction:transaction];
