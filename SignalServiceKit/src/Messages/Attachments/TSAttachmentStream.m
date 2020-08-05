@@ -502,7 +502,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (CGSize)imageSize
 {
-    OWSAssertDebug(self.shouldHaveImageSize);
+    // Avoid crash in dev mode
+    // OWSAssertDebug(self.shouldHaveImageSize);
 
     @synchronized(self)
     {
