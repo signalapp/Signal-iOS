@@ -9,33 +9,33 @@ public final class MentionUtilities : NSObject {
     }
     
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         var publicChat: PublicChat?
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
         }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
-        let knownHexEncodedPublicKeys = MentionsManager.userPublicKeyCache[threadID] ?? [] // Should always be populated at this point
+        let knownPublicKeys = MentionsManager.userPublicKeyCache[threadID] ?? [] // Should always be populated at this point
         var mentions: [(range: NSRange, hexEncodedPublicKey: String)] = []
         var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.count))
         while let match = outerMatch {
-            let hexEncodedPublicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
+            let publicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
-            if knownHexEncodedPublicKeys.contains(hexEncodedPublicKey) {
+            if knownPublicKeys.contains(publicKey) {
                 var displayName: String?
-                if hexEncodedPublicKey == userHexEncodedPublicKey {
+                if publicKey == userPublicKey {
                     displayName = OWSProfileManager.shared().localProfileName()
                 } else {
                     if let publicChat = publicChat {
-                        displayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: hexEncodedPublicKey, in: publicChat.channel, on: publicChat.server)
+                        displayName = UserDisplayNameUtilities.getPublicChatDisplayName(for: publicKey, in: publicChat.channel, on: publicChat.server)
                     } else {
-                        displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey)
+                        displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey)
                     }
                 }
                 if let displayName = displayName {
                     string = (string as NSString).replacingCharacters(in: match.range, with: "@\(displayName)")
-                    mentions.append((range: NSRange(location: match.range.location, length: displayName.count + 1), hexEncodedPublicKey: hexEncodedPublicKey)) // + 1 to include the @
+                    mentions.append((range: NSRange(location: match.range.location, length: displayName.count + 1), hexEncodedPublicKey: publicKey)) // + 1 to include the @
                     matchEnd = match.range.location + displayName.count
                 } else {
                     matchEnd = match.range.location + match.range.length
