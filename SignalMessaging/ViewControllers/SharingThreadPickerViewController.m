@@ -24,8 +24,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     TextApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate>
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
 @property (nonatomic, readonly) UIProgressView *progressView;
@@ -36,6 +34,20 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 #pragma mark -
 
 @implementation SharingThreadPickerViewController
+
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
+- (OWSMessageSender *)messageSender
+{
+    return SSKEnvironment.shared.messageSender;
+}
+
+#pragma mark - Durable Message Enqueue
 
 - (instancetype)initWithShareViewDelegate:(id<ShareViewDelegate>)shareViewDelegate
 {
@@ -62,9 +74,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)loadView
 {
     [super loadView];
-
-    _contactsManager = Environment.shared.contactsManager;
-    _messageSender = SSKEnvironment.shared.messageSender;
 
     _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
     self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
@@ -270,7 +279,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                                      thread:self.thread
                                                            quotedReplyModel:nil
                                                                 transaction:transaction
-                                                              messageSender:self.messageSender
                                                                  completion:^(NSError *_Nullable error) {
                                                                      sendCompletion(error, outgoingMessage);
                                                                  }];
@@ -339,7 +347,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                                  thread:self.thread
                                                        quotedReplyModel:nil
                                                             transaction:transaction
-                                                          messageSender:self.messageSender
                                                              completion:^(NSError *_Nullable error) {
                                                                  if (error) {
                                                                      sendCompletion(error, outgoingMessage);

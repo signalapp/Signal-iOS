@@ -558,10 +558,10 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
             }
 
             self.databaseStorage.asyncWrite { transaction in
-                ReactionManager.localUserReacted(to: message,
-                                                 emoji: reaction,
-                                                 isRemoving: isRemoving,
-                                                 transaction: transaction)
+                ReactionManager.localUserReactedWithDurableSend(to: message,
+                                                                emoji: reaction,
+                                                                isRemoving: isRemoving,
+                                                                transaction: transaction)
             }
         }
     }

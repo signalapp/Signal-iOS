@@ -52,6 +52,10 @@ public class UserNotificationConfig {
             return UNNotificationAction(identifier: action.identifier,
                                         title: CallStrings.showThreadButtonTitle,
                                         options: [.foreground])
+        case .reactWithThumbsUp:
+            return UNNotificationAction(identifier: action.identifier,
+                                        title: MessageStrings.reactWithThumbsUpNotificationAction,
+                                        options: [])
         }
     }
 

@@ -95,6 +95,9 @@ public class MessageStrings: NSObject {
     static public let markAsReadNotificationAction = NSLocalizedString("PUSH_MANAGER_MARKREAD", comment: "Notification action button title")
 
     @objc
+    static public let reactWithThumbsUpNotificationAction = NSLocalizedString("PUSH_MANAGER_REACT_WITH_THUMBS_UP", comment: "Notification action button title for 'react with thumbs up.'")
+
+    @objc
     static public let sendButton =  NSLocalizedString("SEND_BUTTON_TITLE", comment: "Label for the button to send a message")
 
     @objc

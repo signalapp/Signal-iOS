@@ -3059,6 +3059,9 @@
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Mark as Read";
 
+/* Notification action button title for 'react with thumbs up.' */
+"PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
+
 /* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Reply";
 

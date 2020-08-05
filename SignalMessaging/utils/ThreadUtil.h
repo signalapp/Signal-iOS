@@ -61,8 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^)(NSError *_Nullable error))completion;
+                                          completion:(void (^)(NSError *_Nullable error))completion
+    NS_SWIFT_NAME(sendMessageNonDurably(body:thread:quotedReplyModel:transaction:completion:));
 
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
 + (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
@@ -70,8 +70,9 @@ NS_ASSUME_NONNULL_BEGIN
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                          transaction:(SDSAnyReadTransaction *)transaction
-                                       messageSender:(OWSMessageSender *)messageSender
-                                          completion:(void (^)(NSError *_Nullable error))completion;
+                                          completion:(void (^)(NSError *_Nullable error))completion
+    NS_SWIFT_NAME(sendMessageNonDurably(body:mediaAttachments:thread:quotedReplyModel:transaction:completion:));
+
 
 #pragma mark - Profile Whitelist
 

@@ -3,27 +3,84 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {
-    static var databaseStorage: SDSDatabaseStorage {
+
+    // MARK: - Dependencies
+
+    private static var databaseStorage: SDSDatabaseStorage {
         return .shared
     }
 
-    static var tsAccountManager: TSAccountManager {
+    private static var tsAccountManager: TSAccountManager {
         return .sharedInstance()
     }
 
+    private static var messageSender: MessageSender {
+        return SSKEnvironment.shared.messageSender
+    }
+
+    // MARK: -
+
     public static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 
-    @objc(localUserReactedToMessage:emoji:isRemoving:transaction:)
-    public class func localUserReacted(to message: TSMessage, emoji: String, isRemoving: Bool, transaction: SDSAnyWriteTransaction) {
+    public class func localUserReactedWithDurableSend(to message: TSMessage,
+                                                      emoji: String,
+                                                      isRemoving: Bool,
+                                                      transaction: SDSAnyWriteTransaction) {
+        let outgoingMessage: TSOutgoingMessage
+        do {
+            outgoingMessage = try _localUserReacted(to: message, emoji: emoji, isRemoving: isRemoving, transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return
+        }
+        let messagePreparer = outgoingMessage.asPreparer
+        SSKEnvironment.shared.messageSenderJobQueue.add(message: messagePreparer, transaction: transaction)
+    }
+
+    public class func localUserReactedWithNonDurableSend(to message: TSMessage,
+                                                         emoji: String,
+                                                         isRemoving: Bool,
+                                                         transaction: SDSAnyWriteTransaction) -> Promise<Void> {
+
+        let outgoingMessage: TSOutgoingMessage
+        do {
+            outgoingMessage = try _localUserReacted(to: message, emoji: emoji, isRemoving: isRemoving, transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return Promise(error: error)
+        }
+
+        let messagePreparer = outgoingMessage.asPreparer
+        messagePreparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
+
+        let (promise, resolver) = Promise<Void>.pending()
+        transaction.addAsyncCompletionOffMain {
+            self.messageSender.sendMessage(messagePreparer,
+                                           success: {
+                                            resolver.fulfill(())
+            },
+                                           failure: { (error: Error) in
+                                            resolver.reject(error)
+            })
+        }
+        return promise
+    }
+
+    // This helper method DRYs up the logic shared by the above methods.
+    private class func _localUserReacted(to message: TSMessage,
+                                         emoji: String,
+                                         isRemoving: Bool,
+                                         transaction: SDSAnyWriteTransaction) throws -> OWSOutgoingReactionMessage {
         assert(emoji.isSingleEmoji)
 
         Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving)")
 
         guard let localAddress = tsAccountManager.localAddress else {
-            return owsFailDebug("missing local address")
+            throw OWSAssertionError("missing local address")
         }
 
         // Though we generally don't parse the expiration timer from
@@ -65,7 +122,7 @@ public class ReactionManager: NSObject {
             outgoingMessage.createdReaction?.markAsRead(transaction: transaction)
         }
 
-        SSKEnvironment.shared.messageSenderJobQueue.add(message: outgoingMessage.asPreparer, transaction: transaction)
+        return outgoingMessage
     }
 
     @objc(OWSReactionProcessingResult)
