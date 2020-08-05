@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -51,8 +51,11 @@ extension OWSAccountIdFinder: SMKAccountIdFinder {
     }
 
     private func ensureAccountId(forUuid uuid: UUID?, phoneNumber: String?, transaction: SDSAnyWriteTransaction) -> String? {
-        let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
-        guard address.isValid else {
+        guard let address: SignalServiceAddress = {
+            if let uuid = uuid { return .init(uuid: uuid) }
+            if let phoneNumber = phoneNumber { return .init(phoneNumber: phoneNumber) }
+            return nil
+        }(), address.isValid else {
             owsFailDebug("address was invalid")
             return nil
         }

@@ -74,6 +74,7 @@ message ContactRecord {
     UNVERIFIED = 2;
   }
 
+  // @trustedMapping
   string        serviceUuid   = 1;
   string        serviceE164   = 2;
   bytes         profileKey    = 3;

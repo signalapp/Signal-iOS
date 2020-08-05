@@ -104,12 +104,12 @@ class DisplayableTextTest: SignalBaseTest {
 
     func test_shouldAllowLinkification() {
         func assertLinkifies(_ text: String, file: StaticString = #file, line: UInt = #line) {
-            let displayableText = DisplayableText.displayableText(text)
+            let displayableText = DisplayableText.displayableTextForTests(text)
             XCTAssert(displayableText.shouldAllowLinkification, "was not linkifiable text: \(text)", file: file, line: line)
         }
 
         func assertNotLinkifies(_ text: String, file: StaticString = #file, line: UInt = #line) {
-            let displayableText = DisplayableText.displayableText(text)
+            let displayableText = DisplayableText.displayableTextForTests(text)
             XCTAssertFalse(displayableText.shouldAllowLinkification, "was linkifiable text: \(text)", file: file, line: line)
         }
 

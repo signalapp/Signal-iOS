@@ -507,7 +507,7 @@ extension MessageSender {
 
             let fetchedAddresses: [SignalServiceAddress] = phoneNumbersToFetch.compactMap { rawNumber in
                 guard let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: rawNumber)?.toE164() else { return nil }
-                return SignalServiceAddress(uuid: discoveredContactMap[e164], phoneNumber: rawNumber)
+                return SignalServiceAddress(uuid: discoveredContactMap[e164], phoneNumber: rawNumber, trustLevel: .high)
             }
 
             SDSDatabaseStorage.shared.write { (writeTx) in

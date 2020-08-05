@@ -165,9 +165,9 @@ public class UUIDBackfillTask: NSObject {
         }
         let addresses = phoneNumbersToFetch.map { (numberTuple) -> SignalServiceAddress in
             if let e164 = numberTuple.e164, let uuid = resultMap[e164] {
-                return SignalServiceAddress(uuid: uuid, phoneNumber: numberTuple.persisted)
+                return SignalServiceAddress(uuid: uuid, phoneNumber: numberTuple.persisted, trustLevel: .high)
             } else {
-                return SignalServiceAddress(uuid: nil, phoneNumber: numberTuple.persisted)
+                return SignalServiceAddress(uuid: nil, phoneNumber: numberTuple.persisted, trustLevel: .high)
             }
         }
 

@@ -98,7 +98,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
                 return
             }
             XCTAssertNil(firstThread.messageDraft)
-            firstThread.update(withDraft: "Some draft", transaction: transaction)
+            firstThread.update(withDraft: MessageBody(text: "Some draft", ranges: .empty), transaction: transaction)
         }
         storage.read { transaction in
             let threads = TSThread.anyFetchAll(transaction: transaction)

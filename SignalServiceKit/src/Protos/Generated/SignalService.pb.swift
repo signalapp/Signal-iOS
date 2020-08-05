@@ -114,6 +114,7 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `serverTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearServerTimestamp() {self._serverTimestamp = nil}
 
+  /// @trustedMapping
   var sourceUuid: String {
     get {return _sourceUuid ?? String()}
     set {_sourceUuid = newValue}
@@ -3072,23 +3073,24 @@ struct SignalServiceProtos_ContactDetails {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var number: String {
-    get {return _number ?? String()}
-    set {_number = newValue}
+  var contactE164: String {
+    get {return _contactE164 ?? String()}
+    set {_contactE164 = newValue}
   }
-  /// Returns true if `number` has been explicitly set.
-  var hasNumber: Bool {return self._number != nil}
-  /// Clears the value of `number`. Subsequent reads from it will return its default value.
-  mutating func clearNumber() {self._number = nil}
+  /// Returns true if `contactE164` has been explicitly set.
+  var hasContactE164: Bool {return self._contactE164 != nil}
+  /// Clears the value of `contactE164`. Subsequent reads from it will return its default value.
+  mutating func clearContactE164() {self._contactE164 = nil}
 
-  var uuid: String {
-    get {return _uuid ?? String()}
-    set {_uuid = newValue}
+  /// @trustedMapping
+  var contactUuid: String {
+    get {return _contactUuid ?? String()}
+    set {_contactUuid = newValue}
   }
-  /// Returns true if `uuid` has been explicitly set.
-  var hasUuid: Bool {return self._uuid != nil}
-  /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
-  mutating func clearUuid() {self._uuid = nil}
+  /// Returns true if `contactUuid` has been explicitly set.
+  var hasContactUuid: Bool {return self._contactUuid != nil}
+  /// Clears the value of `contactUuid`. Subsequent reads from it will return its default value.
+  mutating func clearContactUuid() {self._contactUuid = nil}
 
   var name: String {
     get {return _name ?? String()}
@@ -3206,8 +3208,8 @@ struct SignalServiceProtos_ContactDetails {
 
   init() {}
 
-  fileprivate var _number: String?
-  fileprivate var _uuid: String?
+  fileprivate var _contactE164: String?
+  fileprivate var _contactUuid: String?
   fileprivate var _name: String?
   fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar?
   fileprivate var _color: String?
@@ -5891,8 +5893,8 @@ extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtob
 extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ContactDetails"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "number"),
-    9: .same(proto: "uuid"),
+    1: .same(proto: "contactE164"),
+    9: .same(proto: "contactUuid"),
     2: .same(proto: "name"),
     3: .same(proto: "avatar"),
     4: .same(proto: "color"),
@@ -5907,7 +5909,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._number)
+      case 1: try decoder.decodeSingularStringField(value: &self._contactE164)
       case 2: try decoder.decodeSingularStringField(value: &self._name)
       case 3: try decoder.decodeSingularMessageField(value: &self._avatar)
       case 4: try decoder.decodeSingularStringField(value: &self._color)
@@ -5915,7 +5917,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
       case 7: try decoder.decodeSingularBoolField(value: &self._blocked)
       case 8: try decoder.decodeSingularUInt32Field(value: &self._expireTimer)
-      case 9: try decoder.decodeSingularStringField(value: &self._uuid)
+      case 9: try decoder.decodeSingularStringField(value: &self._contactUuid)
       case 10: try decoder.decodeSingularUInt32Field(value: &self._inboxPosition)
       case 11: try decoder.decodeSingularBoolField(value: &self._archived)
       default: break
@@ -5924,7 +5926,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._number {
+    if let v = self._contactE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
     if let v = self._name {
@@ -5948,7 +5950,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     if let v = self._expireTimer {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 8)
     }
-    if let v = self._uuid {
+    if let v = self._contactUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 9)
     }
     if let v = self._inboxPosition {
@@ -5961,8 +5963,8 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
   }
 
   static func ==(lhs: SignalServiceProtos_ContactDetails, rhs: SignalServiceProtos_ContactDetails) -> Bool {
-    if lhs._number != rhs._number {return false}
-    if lhs._uuid != rhs._uuid {return false}
+    if lhs._contactE164 != rhs._contactE164 {return false}
+    if lhs._contactUuid != rhs._contactUuid {return false}
     if lhs._name != rhs._name {return false}
     if lhs._avatar != rhs._avatar {return false}
     if lhs._color != rhs._color {return false}

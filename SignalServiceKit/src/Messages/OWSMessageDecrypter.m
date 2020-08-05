@@ -534,8 +534,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
             NSString *_Nullable senderE164 = decryptError.userInfo[SecretSessionKnownSenderError.kSenderE164Key];
             NSUUID *_Nullable senderUuid = decryptError.userInfo[SecretSessionKnownSenderError.kSenderUuidKey];
-            SignalServiceAddress *senderAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid
-                                                                                 phoneNumber:senderE164];
+            SignalServiceAddress *senderAddress =
+                [[SignalServiceAddress alloc] initWithUuid:senderUuid
+                                               phoneNumber:senderE164
+                                                trustLevel:SignalRecipientTrustLevelHigh];
             OWSAssert(senderAddress.isValid);
 
             NSNumber *senderDeviceId = decryptError.userInfo[SecretSessionKnownSenderError.kSenderDeviceIdKey];
@@ -601,7 +603,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
     NSString *_Nullable senderE164 = decryptResult.senderE164;
     NSUUID *_Nullable senderUuid = decryptResult.senderUuid;
-    SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid phoneNumber:senderE164];
+    SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid
+                                                                         phoneNumber:senderE164
+                                                                          trustLevel:SignalRecipientTrustLevelHigh];
     if (!sourceAddress.isValid) {
         NSString *errorDescription = [NSString stringWithFormat:@"Invalid UD sender: %@", sourceAddress];
         OWSFailDebug(@"%@", errorDescription);

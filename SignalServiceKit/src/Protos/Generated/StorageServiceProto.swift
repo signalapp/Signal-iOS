@@ -1559,7 +1559,7 @@ public class StorageServiceProtoContactRecord: NSObject, Codable {
             return serviceE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil

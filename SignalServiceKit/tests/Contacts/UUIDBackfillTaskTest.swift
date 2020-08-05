@@ -345,7 +345,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
 extension UUIDBackfillTaskTest {
 
     class MockServiceAddressCache: SignalServiceAddressCache {
-        override func hashAndCache(uuid: UUID?, phoneNumber: String?) -> Int {
+        override func hashAndCache(uuid: UUID?, phoneNumber: String?, trustLevel: SignalRecipientTrustLevel) -> Int {
             // If the cache is disabled, we just still return a valid hash to speed up isEqual: checks
             // Anything works as long as it's consistent.
             if let uuid = uuid {

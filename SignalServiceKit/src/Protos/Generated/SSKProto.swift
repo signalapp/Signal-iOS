@@ -365,7 +365,7 @@ public class SSKProtoEnvelope: NSObject, Codable {
             return sourceE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -2675,7 +2675,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
             return authorE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -4831,7 +4831,7 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
             return authorE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -6346,7 +6346,7 @@ public class SSKProtoVerified: NSObject, Codable {
             return destinationE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -6575,7 +6575,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
             return destinationE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -6871,7 +6871,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable {
             return destinationE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -7747,7 +7747,7 @@ public class SSKProtoSyncMessageRead: NSObject, Codable {
             return senderE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -8393,7 +8393,7 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable {
             return senderE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -9001,7 +9001,7 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable {
             return threadE164
         }()
 
-        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
         guard address.isValid else {
             owsFailDebug("address was unexpectedly invalid")
             return nil
@@ -10774,11 +10774,11 @@ public class SSKProtoContactDetails: NSObject, Codable {
     @objc
     public func asBuilder() -> SSKProtoContactDetailsBuilder {
         let builder = SSKProtoContactDetailsBuilder()
-        if let _value = number {
-            builder.setNumber(_value)
+        if let _value = contactE164 {
+            builder.setContactE164(_value)
         }
-        if let _value = uuid {
-            builder.setUuid(_value)
+        if let _value = contactUuid {
+            builder.setContactUuid(_value)
         }
         if let _value = name {
             builder.setName(_value)
@@ -10823,24 +10823,24 @@ public class SSKProtoContactDetails: NSObject, Codable {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setNumber(_ valueParam: String?) {
+        public func setContactE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
-            proto.number = valueParam
+            proto.contactE164 = valueParam
         }
 
-        public func setNumber(_ valueParam: String) {
-            proto.number = valueParam
+        public func setContactE164(_ valueParam: String) {
+            proto.contactE164 = valueParam
         }
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setUuid(_ valueParam: String?) {
+        public func setContactUuid(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
-            proto.uuid = valueParam
+            proto.contactUuid = valueParam
         }
 
-        public func setUuid(_ valueParam: String) {
-            proto.uuid = valueParam
+        public func setContactUuid(_ valueParam: String) {
+            proto.contactUuid = valueParam
         }
 
         @objc
@@ -10942,27 +10942,27 @@ public class SSKProtoContactDetails: NSObject, Codable {
     public let verified: SSKProtoVerified?
 
     @objc
-    public var number: String? {
-        guard hasNumber else {
+    public var contactE164: String? {
+        guard hasContactE164 else {
             return nil
         }
-        return proto.number
+        return proto.contactE164
     }
     @objc
-    public var hasNumber: Bool {
-        return proto.hasNumber
+    public var hasContactE164: Bool {
+        return proto.hasContactE164
     }
 
     @objc
-    public var uuid: String? {
-        guard hasUuid else {
+    public var contactUuid: String? {
+        guard hasContactUuid else {
             return nil
         }
-        return proto.uuid
+        return proto.contactUuid
     }
     @objc
-    public var hasUuid: Bool {
-        return proto.hasUuid
+    public var hasContactUuid: Bool {
+        return proto.hasContactUuid
     }
 
     @objc
@@ -11035,6 +11035,54 @@ public class SSKProtoContactDetails: NSObject, Codable {
     @objc
     public var hasArchived: Bool {
         return proto.hasArchived
+    }
+
+    @objc
+    public var hasValidContact: Bool {
+        return contactAddress != nil
+    }
+    @objc
+    public var contactAddress: SignalServiceAddress? {
+        guard hasContactE164 || hasContactUuid else { return nil }
+
+        let uuidString: String? = {
+            guard hasContactUuid else { return nil }
+
+            guard let contactUuid = contactUuid else {
+                owsFailDebug("contactUuid was unexpectedly nil")
+                return nil
+            }
+
+            return contactUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasContactE164 else {
+                // Shouldn’t happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let contactE164 = contactE164 else {
+                owsFailDebug("contactE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard !contactE164.isEmpty else {
+                owsFailDebug("contactE164 was unexpectedly empty")
+                return nil
+            }
+
+            return contactE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
     }
 
     public var hasUnknownFields: Bool {

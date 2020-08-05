@@ -253,6 +253,7 @@ struct StorageServiceProtos_ContactRecord {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @trustedMapping
   var serviceUuid: String = String()
 
   var serviceE164: String = String()
