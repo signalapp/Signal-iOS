@@ -671,7 +671,7 @@ public class SignalAccountReadCache: NSObject {
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            OWSUserProfile.resolve(value.recipientAddress)
+            value.recipientAddress
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -739,7 +739,7 @@ public class SignalRecipientReadCache: NSObject {
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            OWSUserProfile.resolve(value.address)
+            value.address
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -1110,6 +1110,8 @@ public class ModelReadCaches: NSObject {
     fileprivate static let evacuateAllModelCaches = Notification.Name("EvacuateAllModelCaches")
 
     func evacuateAllCaches() {
-        NotificationCenter.default.postNotificationNameAsync(Self.evacuateAllModelCaches, object: nil)
+        DispatchSyncMainThreadSafe {
+            NotificationCenter.default.post(name: Self.evacuateAllModelCaches, object: nil)
+        }
     }
 }
