@@ -139,6 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessageBuilder builderWithThread:transcript.thread
                                                                             timestamp:transcript.timestamp
                                                                           messageBody:transcript.body
+                                                                           bodyRanges:transcript.bodyRanges
                                                                         attachmentIds:[NSMutableArray new]
                                                                      expiresInSeconds:transcript.expirationDuration
                                                                       expireStartedAt:transcript.expirationStartedAt

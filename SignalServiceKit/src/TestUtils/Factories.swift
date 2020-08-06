@@ -138,6 +138,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return TSOutgoingMessageBuilder.builder(thread: threadCreator(transaction),
                                                 timestamp: timestampBuilder(),
                                                 messageBody: messageBodyBuilder(),
+                                                bodyRanges: bodyRangesBuilder(),
                                                 attachmentIds: attachmentIdsBuilder(),
                                                 expiresInSeconds: expiresInSecondsBuilder(),
                                                 expireStartedAt: expireStartedAtBuilder(),
@@ -177,6 +178,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
     @objc
     public var messageBodyBuilder: () -> String = {
         return CommonGenerator.paragraph
+    }
+
+    @objc
+    public var bodyRangesBuilder: () -> MessageBodyRanges = {
+        return MessageBodyRanges.empty
     }
 
     @objc
