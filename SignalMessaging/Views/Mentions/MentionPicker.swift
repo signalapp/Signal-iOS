@@ -5,8 +5,9 @@
 import Foundation
 
 class MentionPicker: UIView {
-    let tableView = UITableView()
-    let hairlineView = UIView()
+    private let tableView = UITableView()
+    private let hairlineView = UIView()
+    private let resizingScrollView = ResizingScrollView<UITableView>()
 
     let mentionableUsers: [MentionableUser]
     struct MentionableUser {
@@ -64,9 +65,15 @@ class MentionPicker: UIView {
         tableView.estimatedRowHeight = 48
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.isScrollEnabled = false
 
-        tableView.panGestureRecognizer.addTarget(self, action: #selector(handlePan))
         tableView.register(MentionableUserCell.self, forCellReuseIdentifier: MentionableUserCell.reuseIdentifier)
+
+        resizingScrollView.resizingView = tableView
+        resizingScrollView.delegate = self
+        addSubview(resizingScrollView)
+        resizingScrollView.autoPinEdgesToSuperviewEdges()
+        tableView.autoMatch(.height, to: .height, of: resizingScrollView)
 
         NotificationCenter.default.addObserver(
             self,
@@ -87,7 +94,12 @@ class MentionPicker: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private lazy var tableViewHeightConstraint = tableView.autoSetDimension(.height, toSize: minimumTableHeight)
+    @objc public override var center: CGPoint {
+        didSet {
+            if oldValue != center { resizingScrollView.refreshHeightConstraints() }
+        }
+    }
+
     private var cellHeight: CGFloat { MentionableUserCell.cellHeight }
     private var minimumTableHeight: CGFloat {
         let minimumTableHeight = filteredMentionableUsers.count < 5
@@ -135,96 +147,11 @@ class MentionPicker: UIView {
 
         guard !filteredMentionableUsers.isEmpty else { return false }
 
-        tableView.contentOffset.y = 0
         tableView.reloadData()
 
-        var newHeight = min(maximumTableHeight, tableView.height)
-        newHeight = max(minimumTableHeight, newHeight)
-
-        tableViewHeightConstraint.constant = newHeight
-
-        resetInteractiveTransition()
+        resizingScrollView.refreshHeightConstraints()
 
         return true
-    }
-
-    // MARK: - Interactive resize
-
-    let maxAnimationDuration: TimeInterval = 0.2
-    var startingHeight: CGFloat?
-    var startingTranslation: CGFloat?
-
-    @objc private func handlePan(_ sender: UIPanGestureRecognizer) {
-        switch sender.state {
-        case .began, .changed:
-            guard beginInteractiveTransitionIfNecessary(sender),
-                let startingHeight = startingHeight,
-                let startingTranslation = startingTranslation else {
-                    return resetInteractiveTransition()
-            }
-
-            // We're in an interactive transition, so don't let the scrollView scroll.
-            tableView.contentOffset.y = 0
-            tableView.showsVerticalScrollIndicator = false
-
-            // We may have panned some distance if we were scrolling before we started
-            // this interactive transition. Offset the translation we use to move the
-            // view by whatever the translation was when we started the interactive
-            // portion of the gesture.
-            let translation = sender.translation(in: self).y - startingTranslation
-
-            var newHeight = startingHeight - translation
-            newHeight = min(newHeight, maximumTableHeight)
-
-            // Scale the translation when below the desired range,
-            // to produce an elastic feeling when you overscroll.
-            if (newHeight < minimumTableHeight) {
-                let scaledHeightChange = (minimumTableHeight - newHeight) / 3
-                newHeight = minimumTableHeight - scaledHeightChange
-            }
-
-            // Update our height to reflect the new position
-            tableViewHeightConstraint.constant = newHeight
-            layoutIfNeeded()
-
-        case .ended, .cancelled, .failed:
-            defer { resetInteractiveTransition() }
-
-            guard tableView.height < minimumTableHeight else { break }
-
-            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: {
-                self.tableViewHeightConstraint.constant = self.minimumTableHeight
-                self.layoutIfNeeded()
-            }, completion: nil)
-        default:
-            resetInteractiveTransition()
-
-            guard let startingHeight = startingHeight else { break }
-            tableViewHeightConstraint.constant = startingHeight
-        }
-    }
-
-    private func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
-        // If we're at the top of the scrollView, or the view is not
-        // currently maximized, we want to do an interactive transition.
-
-        guard tableView.height < maximumTableHeight || tableView.height > minimumTableHeight && tableView.contentOffset.y <= 0 else { return false }
-
-        if startingTranslation == nil {
-            startingTranslation = sender.translation(in: self).y
-        }
-
-        if startingHeight == nil {
-            startingHeight = tableView.height
-        }
-
-        return true
-    }
-
-    private func resetInteractiveTransition() {
-        startingTranslation = nil
-        startingHeight = nil
-        tableView.showsVerticalScrollIndicator = true
     }
 
     // MARK: -
@@ -239,6 +166,12 @@ class MentionPicker: UIView {
         }
         tableView.reloadData()
     }
+}
+
+extension MentionPicker: ResizingScrollViewDelegate {
+    var resizingViewMinimumHeight: CGFloat { minimumTableHeight }
+
+    var resizingViewMaximumHeight: CGFloat { maximumTableHeight }
 }
 
 // MARK: - Keyboard Interaction
@@ -373,7 +306,9 @@ private class MentionableUserCell: UITableViewCell {
         stackView.layoutMargins = UIEdgeInsets(top: Self.vSpacing, left: Self.hSpacing, bottom: Self.vSpacing, right: Self.hSpacing)
 
         contentView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewSafeArea()
+        stackView.autoPinHeightToSuperview()
+        stackView.autoPinEdge(toSuperviewSafeArea: .leading)
+        stackView.autoPinEdge(toSuperviewSafeArea: .trailing)
     }
 
     required init?(coder: NSCoder) {
