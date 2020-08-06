@@ -63,9 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
                                                     transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
-                         withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));
-
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;
 

@@ -15,8 +15,6 @@ public extension OWSContactsManager {
 
     // MARK: -
 
-    // TODO: Remove signalAccountComparator
-
     func sortSignalAccountsWithSneakyTransaction(_ signalAccounts: [SignalAccount]) -> [SignalAccount] {
         databaseStorage.read { transaction in
             self.sortSignalAccounts(signalAccounts, transaction: transaction)

@@ -743,7 +743,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         [allAddresses addObject:signalAccount.recipientAddress];
     }
 
-    self.signalAccounts = [signalAccounts sortedArrayUsingComparator:self.signalAccountComparator];
+    self.signalAccounts = [self sortSignalAccountsWithSneakyTransaction:signalAccounts];
 
     [self.profileManager setContactAddresses:allAddresses];
 
@@ -1290,26 +1290,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     // Else try to use the image from their profile
     return [self.profileManager profileAvatarForAddress:address transaction:transaction];
-}
-
-- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right
-{
-    return self.signalAccountComparator(left, right);
-}
-
-- (NSComparisonResult (^)(SignalAccount *left, SignalAccount *right))signalAccountComparator
-{
-    return ^NSComparisonResult(SignalAccount *left, SignalAccount *right) {
-        NSString *leftName = [self comparableNameForSignalAccount:left];
-        NSString *rightName = [self comparableNameForSignalAccount:right];
-
-        NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
-        if (nameComparison == NSOrderedSame) {
-            return [left.recipientAddress.stringForDisplay compare:right.recipientAddress.stringForDisplay];
-        }
-
-        return nameComparison;
-    };
 }
 
 - (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
