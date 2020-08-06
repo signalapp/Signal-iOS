@@ -60,9 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
-- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                                    transaction:(SDSAnyReadTransaction *)transaction;
-
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;
 

@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class CNContactViewController;
 @class SignalServiceAddress;
 
+// TODO: This class does some expensive work and isn't stateful.
+//       It probably makes sense to make it a singleton.
 @interface ContactsViewHelper : NSObject
 
 @property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
@@ -55,7 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 // is only safe to be called on the main thread.
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 
-// NOTE: This method uses a transaction.
 - (SignalServiceAddress *)localAddress;
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
