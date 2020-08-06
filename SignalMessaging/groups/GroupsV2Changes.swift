@@ -146,7 +146,7 @@ public class GroupsV2Changes {
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
 
-            guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
+            guard !oldGroupMembership.isNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)

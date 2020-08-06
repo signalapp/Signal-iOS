@@ -103,7 +103,7 @@ extension ConversationViewController: MessageRequestDelegate {
             return
         }
         let groupMembership = groupThread.groupModel.groupMembership
-        guard groupMembership.isPending(localAddress) else {
+        guard groupMembership.isPendingMember(localAddress) else {
             owsFailDebug("Can't reject invite if not pending.")
             return
         }
