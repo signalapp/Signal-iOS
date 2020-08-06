@@ -100,6 +100,11 @@ const NSUInteger kMinimumSearchLength = 2;
     return [OWSProfileManager sharedManager];
 }
 
+- (ContactsViewHelper *)contactsViewHelper
+{
+    return Environment.shared.contactsViewHelper;
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -130,7 +135,7 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.signalContactsStackView autoPinEdgesToSuperviewEdges];
 
     _searchResults = nil;
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    [self.contactsViewHelper addDelegate:self];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
 
@@ -1121,11 +1126,6 @@ const NSUInteger kMinimumSearchLength = 2;
     [self updateTableContents];
 
     [self showContactAppropriateViews];
-}
-
-- (BOOL)shouldHideLocalNumber
-{
-    return self.shouldHideLocalRecipient;
 }
 
 #pragma mark - FindByPhoneNumberDelegate

@@ -18,7 +18,36 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface ContactsViewHelperDelegateBox : NSObject
+
+@property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
+
+@end
+
+#pragma mark -
+
+@implementation ContactsViewHelperDelegateBox
+
+- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    OWSAssertDebug(delegate);
+    _delegate = delegate;
+
+    return self;
+}
+
+@end
+
+#pragma mark -
+
 @interface ContactsViewHelper () <OWSBlockListCacheDelegate>
+
+@property (nonatomic, nullable) NSMutableArray<ContactsViewHelperDelegateBox *> *delegates;
 
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
@@ -63,15 +92,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
+- (instancetype)init
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    OWSAssertDebug(delegate);
-    _delegate = delegate;
+    _delegates = [NSMutableArray new];
 
     _blockListCache = [OWSBlockListCache new];
     [_blockListCache startObservingAndSyncStateWithDelegate:self];
@@ -118,6 +146,28 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateContacts];
 }
 
+- (void)addDelegate:(id<ContactsViewHelperDelegate>)delegate
+{
+    OWSAssertIsOnMainThread();
+
+    [self.delegates addObject:[[ContactsViewHelperDelegateBox alloc] initWithDelegate:delegate]];
+}
+
+- (void)fireDidUpdateContacts
+{
+    OWSAssertIsOnMainThread();
+
+    NSMutableArray<ContactsViewHelperDelegateBox *> *delegates = [NSMutableArray new];
+    for (ContactsViewHelperDelegateBox *box in self.delegates) {
+        id<ContactsViewHelperDelegate> _Nullable delegate = box.delegate;
+        if (delegate) {
+            [delegates addObject:delegate];
+            [delegate contactsViewHelperDidUpdateContacts];
+        }
+    }
+    _delegates = delegates;
+}
+
 #pragma mark - Contacts
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
@@ -146,35 +196,9 @@ NS_ASSUME_NONNULL_BEGIN
     return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
 }
 
-- (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
+- (NSArray<SignalAccount *> *)allSignalAccounts
 {
-    OWSAssertIsOnMainThread();
-
-    if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
-        [self isCurrentUser:signalAccount]) {
-
-        return YES;
-    }
-
-    return NO;
-}
-
-- (BOOL)isCurrentUser:(SignalAccount *)signalAccount
-{
-    OWSAssertIsOnMainThread();
-
-    if (signalAccount.recipientAddress.isLocalAddress) {
-        return YES;
-    }
-
-    NSString *localNumber = [TSAccountManager localNumber];
-    for (PhoneNumber *phoneNumber in signalAccount.contact.parsedPhoneNumbers) {
-        if ([[phoneNumber toE164] isEqualToString:localNumber]) {
-            return YES;
-        }
-    }
-
-    return NO;
+    return self.signalAccounts;
 }
 
 - (SignalServiceAddress *)localAddress
@@ -239,15 +263,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (SignalAccount *signalAccount in accountsToProcess) {
-        if (![self isSignalAccountHidden:signalAccount]) {
-            if (signalAccount.recipientPhoneNumber) {
-                phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
-            }
-            if (signalAccount.recipientUUID) {
-                uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
-            }
-            [signalAccounts addObject:signalAccount];
+        if (signalAccount.recipientPhoneNumber) {
+            phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
         }
+        if (signalAccount.recipientUUID) {
+            uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
+        }
+        [signalAccounts addObject:signalAccount];
     }
 
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
@@ -257,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't fire delegate "change" events during initialization.
     if (self.shouldNotifyDelegateOfUpdatedContacts) {
-        [self.delegate contactsViewHelperDidUpdateContacts];
+        [self fireDidUpdateContacts];
     }
 }
 
