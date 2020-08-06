@@ -62,6 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
     _expirationStartedAt = sentProto.expirationStartTimestamp;
     _expirationDuration = _dataMessage.expireTimer;
     _body = _dataMessage.body;
+    if (_dataMessage.bodyRanges.count > 0) {
+        _bodyRanges = [[MessageBodyRanges alloc] initWithProtos:_dataMessage.bodyRanges];
+    }
     _dataMessageTimestamp = _dataMessage.timestamp;
     _disappearingMessageToken = [DisappearingMessageToken tokenForProtoExpireTimer:_dataMessage.expireTimer];
 
