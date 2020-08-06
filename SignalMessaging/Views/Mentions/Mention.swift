@@ -91,7 +91,7 @@ public class Mention: NSObject {
     override public var hash: Int { uniqueId.hashValue }
 
     public class func threadAllowsMentionSend(_ thread: TSThread) -> Bool {
-        guard FeatureFlags.mentionsSend else { return false }
+        guard RemoteConfig.mentions else { return false }
         guard let groupThread = thread as? TSGroupThread else { return false }
         return groupThread.groupModel.groupsVersion == .V2
     }

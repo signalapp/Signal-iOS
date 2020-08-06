@@ -200,10 +200,7 @@ public class FeatureFlags: BaseFlags {
     public static let deviceTransferThrowAway = false
 
     @objc
-    public static let mentionsReceive = build.includes(.qa)
-
-    @objc
-    public static let mentionsSend = mentionsReceive && build.includes(.qa)
+    public static let mentions = groupsV2
 
     @objc
     public static let attachmentUploadV3 = build.includes(.qa)
@@ -415,6 +412,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
+
+    @objc
+    public static let forceMentions = build.includes(.dev)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
