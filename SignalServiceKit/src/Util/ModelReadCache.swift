@@ -334,7 +334,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         for key in keys {
             let cacheKey = adapter.cacheKey(forKey: key)
             if let value = getValue(for: cacheKey, transaction: transaction, returnNilOnCacheMiss: true) {
-                result[cacheKey.key] = value
+                result[key] = value
             }
         }
         return result
