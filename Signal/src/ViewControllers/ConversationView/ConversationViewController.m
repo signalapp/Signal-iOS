@@ -156,8 +156,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, getter=isInPreviewPlatter) BOOL inPreviewPlatter;
 
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic, nullable) NSDate *lastMessageSentDate;
 
@@ -225,7 +223,7 @@ typedef enum : NSUInteger {
         focusMessageId = threadViewModel.lastVisibleInteraction.uniqueId;
     }
 
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    [self.contactsViewHelper addDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
 
@@ -358,6 +356,11 @@ typedef enum : NSUInteger {
 - (id<SyncManagerProtocol>)syncManager
 {
     return SSKEnvironment.shared.syncManager;
+}
+
+- (ContactsViewHelper *)contactsViewHelper
+{
+    return Environment.shared.contactsViewHelper;
 }
 
 #pragma mark -

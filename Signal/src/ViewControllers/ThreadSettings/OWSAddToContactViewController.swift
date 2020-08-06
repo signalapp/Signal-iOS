@@ -12,7 +12,6 @@ import SignalMessaging
 @objc
 public class OWSAddToContactViewController: OWSViewController {
 
-    private var contactsViewHelper: ContactsViewHelper!
     private let address: SignalServiceAddress
     private var tableView: UITableView!
 
@@ -24,10 +23,14 @@ public class OWSAddToContactViewController: OWSViewController {
         return Environment.shared.contactsManager
     }
 
+    var contactsViewHelper: ContactsViewHelper {
+        return Environment.shared.contactsViewHelper
+    }
+
     @objc public init(address: SignalServiceAddress) {
         self.address = address
         super.init()
-        self.contactsViewHelper = ContactsViewHelper(delegate: self)
+        contactsViewHelper.addDelegate(self)
     }
 
     public override func loadView() {
