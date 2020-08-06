@@ -64,6 +64,9 @@ private func buildCacheKey(forAddress address: SignalServiceAddress) -> ModelCac
             owsAssertDebug(address.uuid == nil)
             return true
         }
+        #if TESTABLE_BUILD
+        Logger.warn("Skipping cache for: \(address)")
+        #endif
         return false
     }()
     return ModelCacheKey(key: address, isCachable: isCachable)
@@ -213,7 +216,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         if let value = adapter.read(key: cacheKey.key, transaction: transaction) {
             #if TESTABLE_BUILD
             if !isExcluded(cacheKey: cacheKey),
-                canUseCache(transaction: transaction) {
+                canUseCache(cacheKey: cacheKey, transaction: transaction) {
                 // NOTE: We don't need to update the cache; the SDS
                 // model extensions will populate the cache for us.
                 if readFromCache(cacheKey: cacheKey)?.value == nil {
@@ -224,7 +227,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             return value
         }
         if !isExcluded(cacheKey: cacheKey),
-            canUseCache(transaction: transaction) {
+            canUseCache(cacheKey: cacheKey, transaction: transaction) {
             // Update cache.
             writeToCache(cacheKey: cacheKey, value: nil)
         }
@@ -233,12 +236,12 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
     func didRead(value: ValueType, transaction: SDSAnyReadTransaction) {
         let cacheKey = adapter.cacheKey(forValue: value)
-        guard canUseCache(transaction: transaction) else {
+        guard canUseCache(cacheKey: cacheKey, transaction: transaction) else {
             return
         }
         performSync {
             if !isExcluded(cacheKey: cacheKey),
-                canUseCache(transaction: transaction) {
+                canUseCache(cacheKey: cacheKey, transaction: transaction) {
                 writeToCache(cacheKey: cacheKey, value: value)
             }
         }
@@ -357,7 +360,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     }
 
     private func updateCacheForWrite(cacheKey: ModelCacheKey<KeyType>, value: ValueType?, transaction: SDSAnyWriteTransaction) {
-        guard canUseCache(transaction: transaction) else {
+        guard canUseCache(cacheKey: cacheKey, transaction: transaction) else {
             return
         }
 
@@ -389,7 +392,11 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         }
     }
 
-    private func canUseCache(transaction: SDSAnyReadTransaction) -> Bool {
+    private func canUseCache(cacheKey: ModelCacheKey<KeyType>,
+                             transaction: SDSAnyReadTransaction) -> Bool {
+        guard cacheKey.isCachable else {
+            return false
+        }
         guard isCacheReady else {
             return false
         }
