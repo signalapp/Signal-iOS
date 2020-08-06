@@ -57,9 +57,13 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
             },
             failure: { (task, error) in
                 guard let response = task.response as? HTTPURLResponse else {
-                    let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
-                    responseError.isRetryable = true
-                    responseResolver.reject(responseError)
+                    if IsNetworkConnectivityFailure(error) {
+                        responseResolver.reject(error)
+                    } else {
+                        let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
+                        responseError.isRetryable = true
+                        responseResolver.reject(responseError)
+                    }
                     return
                 }
 

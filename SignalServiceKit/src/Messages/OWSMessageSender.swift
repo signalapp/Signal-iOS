@@ -491,7 +491,7 @@ extension MessageSender {
         let phoneNumbersToFetch = invalidRecipients.compactMap { $0.phoneNumber }
 
         ContactDiscoveryTask(identifiers: Set(phoneNumbersToFetch))
-            .perform(on: .sharedUtility)
+            .perform()
             .done(on: .sharedUtility) { _ in completion(nil) }
             .catch(on: .sharedUtility) { error in
                 let nsError = error as NSError

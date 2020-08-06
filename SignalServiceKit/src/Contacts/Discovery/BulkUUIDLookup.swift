@@ -124,7 +124,8 @@ public class BulkUUIDLookup: NSObject {
         isUpdateInFlight = true
         firstly { () -> Promise<Void> in
             let discoveryTask = ContactDiscoveryTask(identifiers: phoneNumbers)
-            return discoveryTask.perform(on: self.serialQueue).asVoid()
+            let promise = discoveryTask.perform(targetQueue: self.serialQueue)
+            return promise.asVoid()
         }.done(on: self.serialQueue) {
             self.isUpdateInFlight = false
             let outcome = UpdateOutcome(.success)

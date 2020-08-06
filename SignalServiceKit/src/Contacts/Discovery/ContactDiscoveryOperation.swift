@@ -7,12 +7,7 @@ import PromiseKit
 
 struct DiscoveredContactInfo: Hashable {
     let e164: String?
-    let uuid: UUID?
-
-    init(e164: String?, uuid: UUID?) {
-        self.e164 = e164
-        self.uuid = uuid
-    }
+    let uuid: UUID?         // This should be made non-optional when we drop Legacy CDS
 }
 
 /// An item that fetches contact info from the ContactDiscoveryService

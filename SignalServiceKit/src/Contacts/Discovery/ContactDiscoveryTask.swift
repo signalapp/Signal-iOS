@@ -18,24 +18,31 @@ public class ContactDiscoveryTask: NSObject {
 
     // MARK: - Public
 
-    /// Returns a promise that will perform contact discovery and SignalRecipients
-    /// - Parameter queue: The queue where most work will be performed. Promise will be resolved on this queue, but some underlying
-    /// work may be dispatched to a global queue.
-    /// - Parameter database: The persistent storage that will be updated with the CDS results. Defaults to the shared database, but
-    /// a caller can pass in nil to have the returned Promise resolve to unsaved SignalRecipients
-    public func perform(on queue: DispatchQueue = .sharedUtility,
+    /// Returns a promise that will perform contact discovery and return SignalRecipients
+    /// - Parameter qos: The preferred quality of service for this task. A best effort attempt will be made to ensure that all works is performed
+    /// at this priority or higher.
+    /// - Parameter targetQueue: Callers may optionally provide a queue to target. Defaults to nil, and in that case work will be dispatched
+    /// to the shared serial queue.
+    /// - Parameter database: The persistent storage that will be updated with the CDS results. Defaults to the shared database.
+    /// Nil is a valid database parameter, but only in a testing context. This will perform the discovery task and return a set of unsaved SignalRecipients
+    public func perform(at qos: DispatchQoS = .utility,
+                        targetQueue: DispatchQueue? = nil,
                         database: SDSDatabaseStorage? = SDSDatabaseStorage.shared) -> Promise<Set<SignalRecipient>> {
         guard identifiersToFetch.count > 0 else {
-            owsFailDebug("Cannot lookup zero identifiers")
-            let error = OWSErrorWithCodeDescription(.invalidMethodParameters, "Cannot lookup zero identifiers")
-            return Promise(error: error)
+            return .value(Set())
         }
+        let workQueue = DispatchQueue(
+            label: "org.whispersystems.signal.\(type(of: self))",
+            qos: qos,
+            autoreleaseFrequency: .workItem,
+            target: targetQueue ?? .sharedQueue(at: qos)
+        )
 
         return firstly { () -> Promise<Set<DiscoveredContactInfo>> in
             let discoveryOperation = createContactDiscoveryOperation()
-            return discoveryOperation.perform(on: queue)
+            return discoveryOperation.perform(on: workQueue)
 
-        }.map(on: queue) { (discoveredContacts) -> Set<SignalRecipient> in
+        }.map(on: workQueue) { (discoveredContacts) -> Set<SignalRecipient> in
             let discoveredIdentifiers = Set(discoveredContacts.compactMap { $0.e164 })
 
             let addressesToRegister = discoveredContacts
@@ -49,10 +56,13 @@ public class ContactDiscoveryTask: NSObject {
                                      unregistering: addressesToUnregister,
                                      database: database)
 
-        }.recover(on: queue) { error -> Promise<Set<SignalRecipient>> in
-            // Insert our log message then rethrow
-            Logger.warn("ContactDiscoveryTask failed: \(error)")
-            return Promise(error: error)
+        }.recover(on: workQueue) { error -> Promise<Set<SignalRecipient>> in
+            if IsNetworkConnectivityFailure(error) {
+                Logger.warn("ContactDiscoveryTask network failure: \(error)")
+            } else {
+                owsFailDebug("ContactDiscoverTask failure: \(error)")
+            }
+            throw error
         }
     }
 
@@ -71,6 +81,7 @@ public class ContactDiscoveryTask: NSObject {
                               database: SDSDatabaseStorage?) -> Set<SignalRecipient> {
         guard let database = database else {
             // Just return a set of in-memory SignalRecipients built from toRegister
+            owsAssertDebug(CurrentAppContext().isRunningTests)
             return Set(toRegister.map { SignalRecipient(address: $0) })
         }
 
@@ -90,15 +101,18 @@ public class ContactDiscoveryTask: NSObject {
 
 @objc public extension ContactDiscoveryTask {
 
-    @objc (performOnQueue:success:failure:)
-    func perform(on queue: DispatchQueue = .sharedUtility,
-                        success: @escaping (Set<SignalRecipient>) -> Void,
-                        failure: @escaping (Error) -> Void) {
-        firstly {
-            perform(on: queue)
-        }.done(on: queue) { (results) in
+    @objc (performAtQoS:callbackQueue:success:failure:)
+    func perform(at rawQoS: qos_class_t,
+                 callbackQueue: DispatchQueue,
+                 success: @escaping (Set<SignalRecipient>) -> Void,
+                 failure: @escaping (Error) -> Void) {
+        firstly { () -> Promise<Set<SignalRecipient>> in
+            let qosClass = DispatchQoS.QoSClass(flooring: rawQoS)
+            let qos = DispatchQoS(qosClass: qosClass, relativePriority: 0)
+            return perform(at: qos)
+        }.done(on: callbackQueue) { (results) in
             success(results)
-        }.catch(on: queue) { error in
+        }.catch(on: callbackQueue) { error in
             failure(error)
         }
     }

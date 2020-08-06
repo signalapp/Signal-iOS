@@ -1353,7 +1353,7 @@ public class GroupManager: NSObject {
         if isBlocking {
             // Block on the outcome.
             let discoveryTask = ContactDiscoveryTask(identifiers: Set(phoneNumbersWithoutUuids))
-            return discoveryTask.perform(on: .main).asVoid()
+            return discoveryTask.perform(at: .userInitiated).asVoid()
         } else {
             // This will throttle, de-bounce, etc.
             self.bulkUUIDLookup.lookupUuids(phoneNumbers: phoneNumbersWithoutUuids)

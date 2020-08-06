@@ -133,9 +133,9 @@ public class UUIDBackfillTask: NSObject {
         let e164Numbers = Set(phoneNumbersToFetch.compactMap { $0.e164 })
 
         attemptCount += 1
-        Logger.info("Beginning ContactDiscoery for UUID backfill")
+        Logger.info("Beginning ContactDiscovery for UUID backfill")
         ContactDiscoveryTask(identifiers: e164Numbers)
-            .perform(on: queue)
+            .perform()
             .done(on: queue) { _ in self.onqueue_complete() }
             .recover(on: queue) { error in self.onqueue_handleError(error: error) }
     }
