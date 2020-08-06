@@ -175,6 +175,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         reload()
         // Clear all data if this is a secondary device
         if UserDefaults.standard[.masterHexEncodedPublicKey] != nil {
+            UserDefaults.standard[.wasUnlinked] = true
             NotificationCenter.default.post(name: .dataNukeRequested, object: nil, userInfo: nil)
         }
     }
