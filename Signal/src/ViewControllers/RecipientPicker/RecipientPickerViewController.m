@@ -582,9 +582,14 @@ const NSUInteger kMinimumSearchLength = 2;
     self.tableViewController.contents = contents;
 }
 
+- (NSArray<SignalAccount *> *)allSignalAccounts
+{
+    return [self.contactsViewHelper signalAccountsWithShouldHideLocalUser:self.shouldHideLocalRecipient];
+}
+
 - (NSArray<OWSTableSection *> *)contactsSection
 {
-    if (self.contactsViewHelper.signalAccounts.count < 1) {
+    if (self.allSignalAccounts.count < 1) {
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
@@ -632,7 +637,7 @@ const NSUInteger kMinimumSearchLength = 2;
         for (NSUInteger i = 0; i < self.collation.sectionTitles.count; i++) {
             collatedSignalAccounts[i] = [NSMutableArray new];
         }
-        for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
+        for (SignalAccount *signalAccount in self.allSignalAccounts) {
             NSInteger section = [self.collation sectionForObject:signalAccount
                                          collationStringSelector:@selector(stringForCollation)];
 
@@ -664,7 +669,7 @@ const NSUInteger kMinimumSearchLength = 2;
             [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
                                             @"Table section header for contact listing when composing a new message")];
 
-        for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
+        for (SignalAccount *signalAccount in self.allSignalAccounts) {
             [contactsSection
                 addItem:[self itemForRecipient:[PickedRecipient forAddress:signalAccount.recipientAddress]]];
         }
@@ -934,7 +939,7 @@ const NSUInteger kMinimumSearchLength = 2;
 - (void)showContactAppropriateViews
 {
     if (self.contactsManager.isSystemContactsAuthorized) {
-        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.contactsViewHelper.signalAccounts.count < 1
+        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.allSignalAccounts.count < 1
             && ![Environment.shared.preferences hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;
         } else {

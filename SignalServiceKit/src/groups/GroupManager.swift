@@ -1325,13 +1325,13 @@ public class GroupManager: NSObject {
             }
             return Promise.value(())
         }.then(on: .global()) { _ -> Promise<Void> in
-            return self.tryToFillInMissingUuuids(for: addresses, isBlocking: isBlocking)
+            return self.tryToFillInMissingUuids(for: addresses, isBlocking: isBlocking)
         }.then(on: .global()) { _ -> Promise<Void> in
             return self.tryToEnableGroupsV2Capability(for: addresses, isBlocking: isBlocking)
         }
     }
 
-    public static func tryToFillInMissingUuuids(for addresses: [SignalServiceAddress],
+    public static func tryToFillInMissingUuids(for addresses: [SignalServiceAddress],
                                                 isBlocking: Bool) -> Promise<Void> {
         guard RemoteConfig.modernContactDiscovery else {
                 // Can't fill in UUIDs using legacy contact intersections.

@@ -14,22 +14,23 @@ class MemberActionSheet: NSObject {
         return Environment.shared.contactsManager
     }
 
+    private var contactsViewHelper: ContactsViewHelper {
+        return Environment.shared.contactsViewHelper
+    }
+
     // MARK: -
 
     @objc
     let address: SignalServiceAddress
-
-    private weak var contactsViewHelper: ContactsViewHelper?
 
     public var canMakeGroupAdmin = false
 
     public var groupViewHelper: GroupViewHelper?
 
     @objc
-    init(address: SignalServiceAddress, contactsViewHelper: ContactsViewHelper, groupViewHelper: GroupViewHelper?) {
+    init(address: SignalServiceAddress, groupViewHelper: GroupViewHelper?) {
         assert(address.isValid)
         self.address = address
-        self.contactsViewHelper = contactsViewHelper
         self.groupViewHelper = groupViewHelper
     }
 
@@ -44,9 +45,7 @@ class MemberActionSheet: NSObject {
             return owsFailDebug("Must be presented within a nav controller")
         }
 
-        guard let contactsViewHelper = contactsViewHelper else {
-            return owsFailDebug("unexpectedly missing contactsViewHelper")
-        }
+        let contactsViewHelper = self.contactsViewHelper
 
         let actionSheet = ActionSheetController()
         actionSheet.customHeader = MemberHeader(address: address) { [weak actionSheet] in
