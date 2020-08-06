@@ -62,13 +62,15 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         var thread: TSThread
         var newNotificationBody = ""
         let masterPublicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
-        var displayName = masterPublicKey
+        var displayName = OWSUserProfile.fetch(uniqueId: masterPublicKey, transaction: transaction)?.profileName ?? SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: masterPublicKey)
         if let groupID = contentProto?.dataMessage?.group?.id {
             thread = TSGroupThread.getOrCreateThread(withGroupId: groupID, groupType: .closedGroup, transaction: transaction)
-            displayName = thread.name()
-            if displayName.count < 1 {
-                displayName = MessageStrings.newGroupDefaultTitle
+            var groupName = thread.name()
+            if groupName.count < 1 {
+                groupName = MessageStrings.newGroupDefaultTitle
             }
+            let senderName = OWSUserProfile.fetch(uniqueId: masterPublicKey, transaction: transaction)?.profileName ?? SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: masterPublicKey)
+            displayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
             let group: SSKProtoGroupContext = contentProto!.dataMessage!.group!
             let oldGroupModel = (thread as! TSGroupThread).groupModel
             let removedMembers = NSMutableSet(array: oldGroupModel.groupMemberIds)
@@ -93,16 +95,21 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             }
         } else {
             thread = TSContactThread.getOrCreateThread(withContactId: result.source, transaction: transaction)
-            displayName = contentProto?.dataMessage?.profile?.displayName ?? displayName
         }
         let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : thread.uniqueId!, NotificationServiceExtension.isFromRemoteKey : true ]
         notificationContent.title = displayName
         notificationContent.userInfo = userInfo
         notificationContent.badge = 1
-        if newNotificationBody.count < 1 {
-            let rawMessageBody = contentProto?.dataMessage?.body ?? "You've got a new message"
-            newNotificationBody = handleMentionIfNecessary(rawMessageBody: rawMessageBody, threadID: thread.uniqueId!, transaction: transaction)
+        if let attachment = contentProto?.dataMessage?.attachments.last {
+            newNotificationBody = TSAttachment.emoji(forMimeType: attachment.contentType!) + "Attachment"
+            if let rawMessageBody = contentProto?.dataMessage?.body, rawMessageBody.count > 0 {
+                newNotificationBody += ": \(rawMessageBody)"
+            }
         }
+        if newNotificationBody.count < 1 {
+            newNotificationBody = contentProto?.dataMessage?.body ?? "You've got a new message"
+        }
+        newNotificationBody = handleMentionIfNecessary(rawMessageBody: newNotificationBody, threadID: thread.uniqueId!, transaction: transaction)
         notificationContent.body = newNotificationBody
         if notificationContent.body.count < 1 {
             self.completeWithFailure(content: notificationContent)
