@@ -58,13 +58,16 @@ public extension GroupV2Params {
         assert(ciphertext != plaintext)
         assert(ciphertext.count > 0)
 
-        let cacheKey = (groupSecretParamsData + ciphertext) as NSData
-        Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+        if plaintext.count <= Self.decryptBlobCacheMaxSize {
+            let cacheKey = (groupSecretParamsData + ciphertext) as NSData
+            Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+        }
 
         return ciphertext
     }
 
     private static let decryptBlobCache = NSCache<NSData, NSData>()
+    private static let decryptBlobCacheMaxSize: UInt = 4 * 1024
 
     fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
         let cacheKey = (groupSecretParamsData + ciphertext) as NSData
@@ -76,7 +79,9 @@ public extension GroupV2Params {
         let plaintext = try clientZkGroupCipher.decryptBlob(blobCiphertext: [UInt8](ciphertext)).asData
         assert(ciphertext != plaintext)
 
-        Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+        if plaintext.count <= Self.decryptBlobCacheMaxSize {
+            Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+        }
         return plaintext
     }
 
