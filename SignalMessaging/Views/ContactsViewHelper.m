@@ -252,7 +252,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
     self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
-    self.signalAccounts = [signalAccounts sortedArrayUsingComparator:self.contactsManager.signalAccountComparator];
+    self.signalAccounts = [self.contactsManager sortSignalAccountsWithSneakyTransaction:signalAccounts];
     self.nonSignalContacts = nil;
 
     // Don't fire delegate "change" events during initialization.
