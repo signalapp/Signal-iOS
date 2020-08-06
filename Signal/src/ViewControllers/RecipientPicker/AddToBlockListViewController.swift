@@ -59,18 +59,27 @@ class AddToBlockListViewController: OWSViewController {
 }
 
 extension AddToBlockListViewController: RecipientPickerDelegate {
+
+    // MARK: - Dependencies
+
+    private var contactsViewHelper: ContactsViewHelper {
+        return Environment.shared.contactsViewHelper
+    }
+
+    // MARK: -
+
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         canSelectRecipient recipient: PickedRecipient
     ) -> RecipientPickerRecipientState {
         switch recipient.identifier {
         case .address(let address):
-            guard !recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address) else {
+            guard !contactsViewHelper.isSignalServiceAddressBlocked(address) else {
                 return .userAlreadyInBlocklist
             }
             return .canBeSelected
         case .group(let thread):
-            guard !recipientPicker.contactsViewHelper.isThreadBlocked(thread) else {
+            guard !contactsViewHelper.isThreadBlocked(thread) else {
                 return .conversationAlreadyInBlocklist
             }
             return .canBeSelected
@@ -111,10 +120,10 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):
-            guard recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
+            guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard recipientPicker.contactsViewHelper.isThreadBlocked(thread) else { return nil }
+            guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

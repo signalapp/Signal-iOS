@@ -2250,7 +2250,6 @@ typedef enum : NSUInteger {
     GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
     groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:incomingMessage.authorAddress
-                                                             contactsViewHelper:self.contactsViewHelper
                                                                 groupViewHelper:groupViewHelper];
     [actionSheet presentFromViewController:self];
 }
@@ -2519,7 +2518,6 @@ typedef enum : NSUInteger {
     GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
     groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:mention.address
-                                                             contactsViewHelper:self.contactsViewHelper
                                                                 groupViewHelper:groupViewHelper];
     [actionSheet presentFromViewController:self];
 }
