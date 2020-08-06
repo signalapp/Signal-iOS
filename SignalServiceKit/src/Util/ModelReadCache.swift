@@ -55,23 +55,6 @@ private struct ModelCacheKey<KeyType: AnyObject> {
     let isCachable: Bool
 }
 
-private func buildCacheKey(forAddress address: SignalServiceAddress) -> ModelCacheKey<SignalServiceAddress> {
-    let isCachable: Bool = {
-        if address.uuid != nil {
-            return true
-        }
-        if address.phoneNumber == kLocalProfileInvariantPhoneNumber {
-            owsAssertDebug(address.uuid == nil)
-            return true
-        }
-        #if TESTABLE_BUILD
-        Logger.warn("Skipping cache for: \(address)")
-        #endif
-        return false
-    }()
-    return ModelCacheKey(key: address, isCachable: isCachable)
-}
-
 // MARK: -
 
 private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
@@ -98,6 +81,33 @@ private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseMo
     func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
                           nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
         notImplemented()
+    }
+
+    let cacheName: String
+
+    init(cacheName: String) {
+        self.cacheName = cacheName
+    }
+}
+
+// MARK: -
+
+extension ModelCacheAdapter where KeyType: SignalServiceAddress {
+    fileprivate func buildCacheKey(forAddress address: SignalServiceAddress) -> ModelCacheKey<SignalServiceAddress> {
+        let isCachable: Bool = {
+            if address.uuid != nil {
+                return true
+            }
+            if address.phoneNumber == kLocalProfileInvariantPhoneNumber {
+                owsAssertDebug(address.uuid == nil)
+                return true
+            }
+            #if TESTABLE_BUILD
+            Logger.warn("Skipping cache for: \(address), \(cacheName)")
+            #endif
+            return false
+        }()
+        return ModelCacheKey(key: address, isCachable: isCachable)
     }
 }
 
@@ -137,7 +147,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
     private let mode: Mode
 
-    private let cacheName: String
+    private var cacheName: String {
+        adapter.cacheName
+    }
 
     fileprivate var logName: String {
         return "\(cacheName) \(mode)"
@@ -166,9 +178,8 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     }
     private var isObservingUIDatabaseSnapshots = false
 
-    init(mode: Mode, cacheName: String, adapter: ModelCacheAdapter<KeyType, ValueType>) {
+    init(mode: Mode, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         self.mode = mode
-        self.cacheName = cacheName
         self.adapter = adapter
 
         switch mode {
@@ -563,13 +574,9 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
     private let uiReadCache: ModelReadCache<KeyType, ValueType>
     private let readCache: ModelReadCache<KeyType, ValueType>
 
-    init(cacheName: String, adapter: ModelCacheAdapter<KeyType, ValueType>) {
-        uiReadCache = ModelReadCache(mode: .uiRead,
-                                     cacheName: cacheName,
-                                     adapter: adapter)
-        readCache = ModelReadCache(mode: .read,
-                                   cacheName: cacheName,
-                                   adapter: adapter)
+    init(adapter: ModelCacheAdapter<KeyType, ValueType>) {
+        uiReadCache = ModelReadCache(mode: .uiRead, adapter: adapter)
+        readCache = ModelReadCache(mode: .read, adapter: adapter)
     }
 
     func getValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> ValueType? {
@@ -647,11 +654,11 @@ public class UserProfileReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter()
+    private let adapter = Adapter(cacheName: "UserProfile")
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "UserProfile", adapter: adapter)
+        cache = ModelReadCacheWrapper(adapter: adapter)
     }
 
     @objc
@@ -716,11 +723,11 @@ public class SignalAccountReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter()
+    private let adapter = Adapter(cacheName: "SignalAccount")
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "SignalAccount", adapter: adapter)
+        cache = ModelReadCacheWrapper(adapter: adapter)
     }
 
     @objc
@@ -784,11 +791,11 @@ public class SignalRecipientReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter()
+    private let adapter = Adapter(cacheName: "SignalRecipient")
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "SignalRecipient", adapter: adapter)
+        cache = ModelReadCacheWrapper(adapter: adapter)
     }
 
     @objc(getSignalRecipientForAddress:transaction:)
@@ -849,11 +856,11 @@ public class ThreadReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter()
+    private let adapter = Adapter(cacheName: "TSThread")
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "TSThread", adapter: adapter)
+        cache = ModelReadCacheWrapper(adapter: adapter)
     }
 
     @objc(getThreadForUniqueId:transaction:)
@@ -923,11 +930,11 @@ public class InteractionReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter()
+    private let adapter = Adapter(cacheName: "TSInteraction")
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "TSInteraction", adapter: adapter)
+        cache = ModelReadCacheWrapper(adapter: adapter)
     }
 
     @objc(getInteractionForUniqueId:transaction:)
@@ -997,11 +1004,11 @@ public class AttachmentReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter()
+    private let adapter = Adapter(cacheName: "TSAttachment")
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "TSAttachment", adapter: adapter)
+        cache = ModelReadCacheWrapper(adapter: adapter)
     }
 
     @objc(getAttachmentForUniqueId:transaction:)
@@ -1061,11 +1068,11 @@ public class InstalledStickerCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter()
+    private let adapter = Adapter(cacheName: "InstalledSticker")
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "InstalledSticker", adapter: adapter)
+        cache = ModelReadCacheWrapper(adapter: adapter)
     }
 
     @objc(getInstalledStickerForUniqueId:transaction:)
