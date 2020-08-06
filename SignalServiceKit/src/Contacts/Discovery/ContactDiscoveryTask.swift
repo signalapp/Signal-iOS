@@ -46,11 +46,11 @@ public class ContactDiscoveryTask: NSObject {
             let discoveredIdentifiers = Set(discoveredContacts.compactMap { $0.e164 })
 
             let addressesToRegister = discoveredContacts
-                .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164) }
+                .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164, trustLevel: .high) }
 
             let addressesToUnregister = self.identifiersToFetch
                 .subtracting(discoveredIdentifiers)
-                .map { SignalServiceAddress(uuid: nil, phoneNumber: $0)}
+                .map { SignalServiceAddress(uuid: nil, phoneNumber: $0, trustLevel: .high)}
 
             return self.storeResults(registering: addressesToRegister,
                                      unregistering: addressesToUnregister,
