@@ -59,9 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSBlockListCache *blockListCache;
 
-@property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
-@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
-
 @end
 
 #pragma mark -
@@ -90,6 +87,11 @@ NS_ASSUME_NONNULL_BEGIN
     return Environment.shared.contactsManager;
 }
 
+- (FullTextSearcher *)fullTextSearcher
+{
+    return FullTextSearcher.shared;
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -100,19 +102,35 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _delegates = [NSMutableArray new];
-
     _blockListCache = [OWSBlockListCache new];
-    [_blockListCache startObservingAndSyncStateWithDelegate:self];
 
-    _fullTextSearcher = FullTextSearcher.shared;
-
-    // We don't want to notify the delegate in the `updateContacts`.
-    [self updateContacts];
-    self.shouldNotifyDelegateOfUpdatedContacts = YES;
-
-    [self observeNotifications];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        // setup() - especially updateContacts() - can
+        // be expensive, so we want to running that
+        // directly in runNowOrWhenAppDidBecomeReady().
+        //
+        // On the other hand, the user might quickly
+        // open a view that uses this helper.
+        // Therefore, we can't use
+        // runNowOrWhenAppDidBecomeReadyPolite()
+        // which might not run for many seconds after
+        // app becomes ready.
+        //
+        // Therefore we dispatch async to the main queue.
+        // We'll run very soon after app becomes ready,
+        // without introducing the risk of a 0x8badf00d
+        // crash.
+        dispatch_async(dispatch_get_main_queue(), ^{ [self setup]; });
+    }];
 
     return self;
+}
+
+- (void)setup
+{
+    [self.blockListCache startObservingAndSyncStateWithDelegate:self];
+    [self updateContacts];
+    [self observeNotifications];
 }
 
 - (void)observeNotifications
@@ -277,10 +295,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.signalAccounts = [self.contactsManager sortSignalAccountsWithSneakyTransaction:signalAccounts];
     self.nonSignalContacts = nil;
 
-    // Don't fire delegate "change" events during initialization.
-    if (self.shouldNotifyDelegateOfUpdatedContacts) {
-        [self fireDidUpdateContacts];
-    }
+    [self fireDidUpdateContacts];
 }
 
 - (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText
