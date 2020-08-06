@@ -33,6 +33,7 @@ public extension TSGroupModelV2 {
 // MARK: -
 
 public extension GroupV2Params {
+
     fileprivate func encryptString(_ value: String) throws -> Data {
         guard let plaintext: Data = value.data(using: .utf8) else {
             throw OWSAssertionError("Could not encrypt value.")
@@ -56,13 +57,26 @@ public extension GroupV2Params {
         let ciphertext = try clientZkGroupCipher.encryptBlob(plaintext: [UInt8](plaintext)).asData
         assert(ciphertext != plaintext)
         assert(ciphertext.count > 0)
+
+        let cacheKey = (groupSecretParamsData + ciphertext) as NSData
+        Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+
         return ciphertext
     }
 
+    private static let decryptBlobCache = NSCache<NSData, NSData>()
+
     fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
+        let cacheKey = (groupSecretParamsData + ciphertext) as NSData
+        if let plaintext = Self.decryptBlobCache.object(forKey: cacheKey) {
+            return plaintext as Data
+        }
+
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         let plaintext = try clientZkGroupCipher.decryptBlob(blobCiphertext: [UInt8](ciphertext)).asData
         assert(ciphertext != plaintext)
+
+        Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
         return plaintext
     }
 
@@ -71,25 +85,51 @@ public extension GroupV2Params {
         return try uuid(forUuidCiphertext: uuidCiphertext)
     }
 
+    private static let decryptUuidCache = NSCache<NSData, NSUUID>()
+
     func uuid(forUuidCiphertext uuidCiphertext: UuidCiphertext) throws -> UUID {
+        let cacheKey = (groupSecretParamsData + uuidCiphertext.serialize().asData) as NSData
+        if let plaintext = Self.decryptUuidCache.object(forKey: cacheKey) {
+            return plaintext as UUID
+        }
+
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
         let zkgUuid = try clientZkGroupCipher.decryptUuid(uuidCiphertext: uuidCiphertext)
-        return zkgUuid.asUUID()
+        let uuid = zkgUuid.asUUID()
+
+        Self.decryptUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
+        return uuid
     }
 
     func userId(forUuid uuid: UUID) throws -> Data {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
         let uuidCiphertext = try clientZkGroupCipher.encryptUuid(uuid: try uuid.asZKGUuid())
-        return uuidCiphertext.serialize().asData
+        let userId = uuidCiphertext.serialize().asData
+
+        let cacheKey = (groupSecretParamsData + userId) as NSData
+        Self.decryptUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
+
+        return userId
     }
+
+    private static let decryptProfileKeyCache = NSCache<NSData, NSData>()
 
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
                     uuid: UUID) throws -> Data {
         let zkgUuid = try uuid.asZKGUuid()
+
+        let cacheKey = (groupSecretParamsData + profileKeyCiphertext.serialize().asData + zkgUuid.serialize().asData) as NSData
+        if let plaintext = Self.decryptProfileKeyCache.object(forKey: cacheKey) {
+            return plaintext as Data
+        }
+
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
         let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext,
                                                                    uuid: zkgUuid)
-        return profileKey.serialize().asData
+        let plaintext = profileKey.serialize().asData
+
+        Self.decryptProfileKeyCache.setObject(plaintext as NSData, forKey: cacheKey)
+        return plaintext
     }
 }
 
