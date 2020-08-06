@@ -1212,6 +1212,7 @@ const NSUInteger kMinimumSearchLength = 2;
         asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             searchResults =
                 [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
+                                                              omitLocalUser:self.shouldHideLocalRecipient
                                                                  maxResults:FullTextSearcher.kDefaultMaxResults
                                                                 transaction:transaction];
         }

@@ -256,6 +256,14 @@ public class GroupMembership: MTLModel {
         }
 
         public func build() -> GroupMembership {
+            var memberStateMap = self.memberStateMap
+
+            let localProfileInvariantAddress = SignalServiceAddress(phoneNumber: kLocalProfileInvariantPhoneNumber)
+            if memberStateMap[localProfileInvariantAddress] != nil {
+                owsFailDebug("Removing localProfileInvariantAddress.")
+                memberStateMap.removeValue(forKey: localProfileInvariantAddress)
+            }
+
             return GroupMembership(memberStateMap: memberStateMap,
                                    invalidInviteMap: invalidInviteMap)
         }
