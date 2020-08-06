@@ -6,6 +6,9 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
+/* Most of this code was moved into ContactsUpdater
+ TODO: IOS-715: Remove UUIDBackfillTask or fix its tests
+
 class UUIDBackfillTaskTest: SSKBaseTestSwift {
     private var dut: UUIDBackfillTask! = nil
     private var readiness: MockReadiness! = nil
@@ -518,3 +521,4 @@ extension DispatchTimeInterval: Comparable {
         return lhs.normalizedNanoseconds < rhs.normalizedNanoseconds
     }
 }
+*/

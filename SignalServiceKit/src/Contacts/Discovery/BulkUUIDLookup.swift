@@ -17,10 +17,6 @@ public class BulkUUIDLookup: NSObject {
         return SSKEnvironment.shared.reachabilityManager
     }
 
-    private var contactsUpdater: ContactsUpdater {
-        return SSKEnvironment.shared.contactsUpdater
-    }
-
     // MARK: - 
 
     private let serialQueue = DispatchQueue(label: "BulkUUIDLookup")
@@ -126,64 +122,62 @@ public class BulkUUIDLookup: NSObject {
 
         // Perform update.
         isUpdateInFlight = true
-        firstly {
-            return contactsUpdater.lookupIdentifiersPromise(phoneNumbers: Array(phoneNumbers)).asVoid()
-        }.done {
-            self.serialQueue.async {
-                self.isUpdateInFlight = false
-                let outcome = UpdateOutcome(.success)
-                for phoneNumber in phoneNumbers {
-                    self.lastOutcomeMap[phoneNumber] = outcome
-                }
-                self.process()
+        firstly { () -> Promise<Void> in
+            let discoveryTask = ContactDiscoveryTask(identifiers: phoneNumbers)
+            let promise = discoveryTask.perform(targetQueue: self.serialQueue)
+            return promise.asVoid()
+        }.done(on: self.serialQueue) {
+            self.isUpdateInFlight = false
+            let outcome = UpdateOutcome(.success)
+            for phoneNumber in phoneNumbers {
+                self.lastOutcomeMap[phoneNumber] = outcome
             }
-        }.catch { error in
-            self.serialQueue.async {
-                self.isUpdateInFlight = false
+            self.process()
+        }.catch(on: self.serialQueue) { error in
+            self.isUpdateInFlight = false
 
-                let outcome: UpdateOutcome
-                let nsError = error as NSError
-                if nsError.domain == OWSSignalServiceKitErrorDomain &&
-                    nsError.code == OWSErrorCode.contactsUpdaterRateLimit.rawValue {
+            let outcome: UpdateOutcome
+            let nsError = error as NSError
+            if nsError.domain == OWSSignalServiceKitErrorDomain &&
+                nsError.code == OWSErrorCode.contactDiscoveryRateLimit.rawValue {
+                Logger.error("Error: \(error)")
+                outcome = UpdateOutcome(.retryLimit)
+                self.lastRateLimitErrorDate = Date()
+            } else {
+                switch error {
+                case ContactDiscoveryService.ServiceError.error4xx,
+                     ContactDiscoveryService.ServiceError.error5xx:
+                    owsFailDebug("Error: \(error)")
+                    outcome = UpdateOutcome(.serviceError)
+                case ContactDiscoveryService.ServiceError.tooManyRequests:
                     Logger.error("Error: \(error)")
                     outcome = UpdateOutcome(.retryLimit)
                     self.lastRateLimitErrorDate = Date()
-                } else {
-                    switch error {
-                    case ContactDiscoveryService.ServiceError.error4xx,
-                         ContactDiscoveryService.ServiceError.error5xx:
-                        owsFailDebug("Error: \(error)")
-                        outcome = UpdateOutcome(.serviceError)
-                    case ContactDiscoveryService.ServiceError.tooManyRequests:
+                default:
+                    if IsNetworkConnectivityFailure(error) {
+                        Logger.warn("Error: \(error)")
+                        outcome = UpdateOutcome(.networkFailure)
+                    } else if error.httpStatusCode == 413 {
                         Logger.error("Error: \(error)")
                         outcome = UpdateOutcome(.retryLimit)
                         self.lastRateLimitErrorDate = Date()
-                    default:
-                        if IsNetworkConnectivityFailure(error) {
-                            Logger.warn("Error: \(error)")
-                            outcome = UpdateOutcome(.networkFailure)
-                        } else if error.httpStatusCode == 413 {
-                            Logger.error("Error: \(error)")
-                            outcome = UpdateOutcome(.retryLimit)
-                            self.lastRateLimitErrorDate = Date()
-                        } else if let httpStatusCode = error.httpStatusCode,
-                            httpStatusCode >= 400,
-                            httpStatusCode <= 599 {
-                            owsFailDebug("Error: \(error)")
-                            outcome = UpdateOutcome(.serviceError)
-                        } else {
-                            owsFailDebug("Error: \(error)")
-                            outcome = UpdateOutcome(.unknownError)
-                        }
+                    } else if let httpStatusCode = error.httpStatusCode,
+                        httpStatusCode >= 400,
+                        httpStatusCode <= 599 {
+                        owsFailDebug("Error: \(error)")
+                        outcome = UpdateOutcome(.serviceError)
+                    } else {
+                        owsFailDebug("Error: \(error)")
+                        outcome = UpdateOutcome(.unknownError)
                     }
                 }
-
-                for phoneNumber in phoneNumbers {
-                    self.lastOutcomeMap[phoneNumber] = outcome
-                }
-
-                self.process()
             }
+
+            for phoneNumber in phoneNumbers {
+                self.lastOutcomeMap[phoneNumber] = outcome
+            }
+
+            self.process()
         }
     }
 

@@ -20,32 +20,28 @@ public class UUIDBackfillTask: NSObject {
     // MARK: - Properies (External Dependencies)
     private let readiness: ReadinessProvider
     private let persistence: PersistenceProvider
-    private let network: NetworkProvider
 
     // MARK: - Lifecycle
 
     public convenience init(targetQueue: DispatchQueue = .sharedUtility) {
         self.init(targetQueue: targetQueue,
                   persistence: .default,
-                  network: .default,
                   readiness: .default)
     }
 
     init(targetQueue: DispatchQueue = .sharedUtility,
          persistence: PersistenceProvider = .default,
-         network: NetworkProvider = .default,
          readiness: ReadinessProvider = .default) {
 
         self.queue = DispatchQueue(label: "org.whispersystems.signal.\(type(of: self))", target: targetQueue)
         self.persistence = persistence
-        self.network = network
         self.readiness = readiness
         super.init()
     }
 
     // MARK: - Public
 
-    func perform(completion: @escaping () -> Void = {}) {
+    func performWithCompletion(_ completion: @escaping () -> Void = {}) {
         readiness.runNowOrWhenAppDidBecomeReady {
             self.queue.async {
                 self.onqueue_start(with: completion)
@@ -134,56 +130,20 @@ public class UUIDBackfillTask: NSObject {
 
     private func onqueue_performCDSFetch() {
         assertOnQueue(queue)
+        let e164Numbers = Set(phoneNumbersToFetch.compactMap { $0.e164 })
 
         attemptCount += 1
-        firstly { () throws -> Promise<Set<CDSRegisteredContact>> in
-            return Promise { resolver in
-                Logger.info("Beginning CDS fetch for UUID backfill")
-                let e164Numbers = self.phoneNumbersToFetch.compactMap { $0.e164 }
-                network.fetchServiceAddress(for: e164Numbers) { (contacts, error) in
-                    resolver.resolve(contacts, error)
-                }
-            }
-        }.done(on: queue) { (result) in
-            self.onqueue_handleResults(results: result)
-        }.catch(on: queue) { (error) in
-            self.onqueue_handleError(error: error)
-        }
+        Logger.info("Beginning ContactDiscovery for UUID backfill")
+        ContactDiscoveryTask(identifiers: e164Numbers)
+            .perform()
+            .done(on: queue) { _ in self.onqueue_complete() }
+            .recover(on: queue) { error in self.onqueue_handleError(error: error) }
     }
 
     func onqueue_handleError(error: Error) {
         assertOnQueue(queue)
         Logger.error("UUID Backfill failed: \(error). Scheduling retry...")
         onqueue_schedule()
-    }
-
-    func onqueue_handleResults(results: Set<CDSRegisteredContact>) {
-        assertOnQueue(queue)
-
-        let resultMap = results.reduce(into: [:]) { (dict, contact) in
-            dict[contact.e164PhoneNumber] = contact.signalUuid
-        }
-        let addresses = phoneNumbersToFetch.map { (numberTuple) -> SignalServiceAddress in
-            if let e164 = numberTuple.e164, let uuid = resultMap[e164] {
-                return SignalServiceAddress(uuid: uuid, phoneNumber: numberTuple.persisted, trustLevel: .high)
-            } else {
-                return SignalServiceAddress(uuid: nil, phoneNumber: numberTuple.persisted, trustLevel: .high)
-            }
-        }
-
-        let toRegister = addresses.filter { $0.uuid != nil }
-        let toUnregister = addresses.filter { $0.uuid == nil }
-
-        assert({
-            let registeredNumberSet = Set(toRegister.map { $0.phoneNumber })
-            let unregisteredNumberSet = Set(toUnregister.map { $0.phoneNumber })
-            return registeredNumberSet.isDisjoint(with: unregisteredNumberSet)
-        }(), "The same number is being both registered an unregistered")
-        Logger.info("Updating \(toRegister.count) recipients with UUID")
-        Logger.info("Unregistering \(toUnregister.count) recipients")
-
-        persistence.updateSignalRecipients(registering: toRegister, unregistering: toUnregister)
-        onqueue_complete()
     }
 
     func onqueue_complete() {
@@ -201,43 +161,12 @@ extension UUIDBackfillTask {
     // Default versions of these structs are passed in at init(), but they can be customized
     // and overridden to shim out any dependencies for testing.
 
-    class NetworkProvider {
-        static var `default`: NetworkProvider { return NetworkProvider() }
-
-        func fetchServiceAddress(for phoneNumbers: [String],
-                                 completion: @escaping (Set<CDSRegisteredContact>, Error?) -> Void) {
-            let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbers)
-            operation.completionBlock = {
-                guard let results = operation.registeredContacts else {
-                    // This is only hit if the operation is cancelled. Force an error so we don't try and unregister everyone
-                    let error = operation.failingError ?? OWSAssertionError("Operation unexpectedly cancelled")
-                    completion(Set(), error)
-                    return
-                }
-                completion(results, nil)
-            }
-            operation.perform()
-        }
-    }
-
     class PersistenceProvider {
         static var `default`: PersistenceProvider { return PersistenceProvider() }
 
         func fetchRegisteredRecipientsWithoutUUID() -> [SignalRecipient] {
             SDSDatabaseStorage.shared.read { (readTx) in
                 return AnySignalRecipientFinder().registeredRecipientsWithoutUUID(transaction: readTx)
-            }
-        }
-
-        func updateSignalRecipients(registering addressesToRegister: [SignalServiceAddress],
-                                    unregistering addressesToUnregister: [SignalServiceAddress]) {
-            SDSDatabaseStorage.shared.write { (writeTx) in
-                addressesToRegister.forEach { (toRegister) in
-                    SignalRecipient.mark(asRegisteredAndGet: toRegister, trustLevel: .high, transaction: writeTx)
-                }
-                addressesToUnregister.forEach { (toUnregister) in
-                    SignalRecipient.mark(asUnregistered: toUnregister, transaction: writeTx)
-                }
             }
         }
     }

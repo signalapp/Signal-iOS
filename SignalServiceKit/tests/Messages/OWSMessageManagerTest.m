@@ -3,7 +3,6 @@
 //
 
 #import "ContactsManagerProtocol.h"
-#import "ContactsUpdater.h"
 #import "MockSSKEnvironment.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeMessageSender.h"

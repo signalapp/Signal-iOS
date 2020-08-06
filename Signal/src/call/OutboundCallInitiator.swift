@@ -23,10 +23,6 @@ import SignalMessaging
         return Environment.shared.contactsManager
     }
 
-    private var contactsUpdater: ContactsUpdater {
-        return SSKEnvironment.shared.contactsUpdater
-    }
-
     private var tsAccountManager: TSAccountManager {
         return .sharedInstance()
     }

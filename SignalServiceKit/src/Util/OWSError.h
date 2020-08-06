@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeMessageSendDisabledDueToPreKeyUpdateFailures = 777405,
     OWSErrorCodeMessageSendFailedToBlockList = 777406,
     OWSErrorCodeMessageSendNoValidRecipients = 777407,
-    OWSErrorCodeContactsUpdaterRateLimit = 777408,
+    OWSErrorCodeContactDiscoveryRateLimit = 777408,
     OWSErrorCodeCouldNotWriteAttachmentData = 777409,
     OWSErrorCodeMessageDeletedBeforeSent = 777410,
     OWSErrorCodeDatabaseConversionFatalError = 777411,

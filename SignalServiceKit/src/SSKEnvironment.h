@@ -7,7 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class AccountServiceClient;
 @class BulkProfileFetch;
 @class BulkUUIDLookup;
-@class ContactsUpdater;
 @class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
 @class MessageFetcherJob;
@@ -70,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
              pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
-                        contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
@@ -131,7 +129,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueue;
 @property (nonatomic, readonly) id<PendingReadReceiptRecorder> pendingReadReceiptRecorder;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
-@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSMessageManager *messageManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;

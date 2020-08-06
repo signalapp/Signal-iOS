@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public protocol FindByPhoneNumberDelegate: class {
@@ -189,7 +190,12 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
         if requiresRegisteredNumber {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { [weak self] modal in
-                ContactsUpdater.shared().lookupIdentifiers(phoneNumbers.map { $0.toE164() }, success: { recipients in
+                let discoverySet = Set(phoneNumbers.map { $0.toE164() })
+                let discoveryTask = ContactDiscoveryTask(identifiers: discoverySet)
+                firstly { () -> Promise<Set<SignalRecipient>> in
+                    discoveryTask.perform(at: .userInitiated)
+
+                }.done(on: .main) { recipients in
                     AssertIsOnMainThread()
 
                     guard !modal.wasCancelled else { return }
@@ -202,14 +208,15 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
                         self.delegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
                     }
-                }, failure: { error in
+
+                }.catch(on: .main) { error in
                     AssertIsOnMainThread()
                     guard !modal.wasCancelled else { return }
 
                     modal.dismiss {
                         OWSActionSheets.showErrorAlert(message: error.localizedDescription)
                     }
-                })
+                }
             }
         } else {
             delegate?.findByPhoneNumber(self, didSelectAddress: SignalServiceAddress(phoneNumber: phoneNumbers[0].toE164()))

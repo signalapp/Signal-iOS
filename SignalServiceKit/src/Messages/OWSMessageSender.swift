@@ -489,39 +489,14 @@ extension MessageSender {
         }
 
         let phoneNumbersToFetch = invalidRecipients.compactMap { $0.phoneNumber }
-        let operation = ContactDiscoveryOperation(phoneNumbersToLookup: phoneNumbersToFetch)
-        operation.completionBlock = {
-            guard let results = operation.registeredContacts else {
-                // This works around a tiny discrepancy between the two contact discovery operations
-                // It should only happen if an operation is cancelled, and even then it really shouldn't happen
-                // Force an error for now but this will probably be removed in the next week
-                let error = (operation.failingError ?? OWSAssertionError("Unexpectedly received nil from discovery operation")) as NSError
-                error.isRetryable = true
-                completion(error)
-                return
-            }
 
-            let discoveredContactMap = results.reduce(into: [:], { (builder, contact) in
-                builder[contact.e164PhoneNumber] = contact.signalUuid
-            })
-
-            let fetchedAddresses: [SignalServiceAddress] = phoneNumbersToFetch.compactMap { rawNumber in
-                guard let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: rawNumber)?.toE164() else { return nil }
-                return SignalServiceAddress(uuid: discoveredContactMap[e164], phoneNumber: rawNumber, trustLevel: .high)
-            }
-
-            SDSDatabaseStorage.shared.write { (writeTx) in
-                fetchedAddresses.forEach { (address) in
-                    // This should be encapsulated somewhere else: IOS-668
-                    if address.uuid != nil {
-                        SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: writeTx)
-                    } else {
-                        SignalRecipient.mark(asUnregistered: address, transaction: writeTx)
-                    }
-                }
-            }
-            completion(nil)
+        ContactDiscoveryTask(identifiers: Set(phoneNumbersToFetch))
+            .perform()
+            .done(on: .sharedUtility) { _ in completion(nil) }
+            .catch(on: .sharedUtility) { error in
+                let nsError = error as NSError
+                nsError.isRetryable = true
+                completion(nsError)
         }
-        operation.perform()
     }
 }

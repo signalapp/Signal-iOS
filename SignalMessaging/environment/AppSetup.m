@@ -70,7 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
         TSNetworkManager *networkManager = [[TSNetworkManager alloc] initDefault];
         OWSContactsManager *contactsManager = [OWSContactsManager new];
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
-        ContactsUpdater *contactsUpdater = [ContactsUpdater new];
         OWSMessageSender *messageSender = [OWSMessageSender new];
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
         id<PendingReadReceiptRecorder> pendingReadReceiptRecorder = [MessageRequestReadReceipts new];
@@ -141,7 +140,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                        pendingReadReceiptRecorder:pendingReadReceiptRecorder
                                                                    profileManager:profileManager
                                                                    primaryStorage:primaryStorage
-                                                                  contactsUpdater:contactsUpdater
                                                                    networkManager:networkManager
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager

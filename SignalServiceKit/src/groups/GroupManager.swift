@@ -81,10 +81,6 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.bulkUUIDLookup
     }
 
-    private class var contactsUpdater: ContactsUpdater {
-        return SSKEnvironment.shared.contactsUpdater
-    }
-
     // MARK: -
 
     // Never instantiate this class.
@@ -1356,8 +1352,8 @@ public class GroupManager: NSObject {
 
         if isBlocking {
             // Block on the outcome.
-            return contactsUpdater.lookupIdentifiersPromise(phoneNumbers:
-                phoneNumbersWithoutUuids).asVoid()
+            let discoveryTask = ContactDiscoveryTask(identifiers: Set(phoneNumbersWithoutUuids))
+            return discoveryTask.perform(at: .userInitiated).asVoid()
         } else {
             // This will throttle, de-bounce, etc.
             self.bulkUUIDLookup.lookupUuids(phoneNumbers: phoneNumbersWithoutUuids)
