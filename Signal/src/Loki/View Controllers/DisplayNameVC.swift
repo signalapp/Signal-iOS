@@ -130,11 +130,6 @@ final class DisplayNameVC : BaseVC {
         guard !displayName.isEmpty else {
             return showError(title: NSLocalizedString("vc_display_name_display_name_missing_error", comment: ""))
         }
-        let allowedCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ ")
-        let hasInvalidCharacters = !displayName.allSatisfy { $0.unicodeScalars.allSatisfy { allowedCharacters.contains($0) } }
-        guard !hasInvalidCharacters else {
-            return showError(title: NSLocalizedString("vc_display_name_display_name_invalid_error", comment: ""))
-        }
         guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
             return showError(title: NSLocalizedString("vc_display_name_display_name_too_long_error", comment: ""))
         }

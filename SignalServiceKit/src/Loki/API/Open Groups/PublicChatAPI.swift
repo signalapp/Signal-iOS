@@ -114,9 +114,9 @@ public final class PublicChatAPI : DotNetAPI {
                 let url = URL(string: "\(server)/channels/\(channel)/messages?\(queryParameters)")!
                 let request = TSRequest(url: url)
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                    guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
-                        print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
+                    guard let rawMessages = json["data"] as? [JSON] else {
+                        print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
                         throw DotNetAPIError.parsingFailed
                     }
                     return rawMessages.flatMap { message in
@@ -207,13 +207,13 @@ public final class PublicChatAPI : DotNetAPI {
                         let request = TSRequest(url: url, method: "POST", parameters: parameters)
                         request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                         let displayName = userDisplayName
-                        return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
+                        return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
                             // ISO8601DateFormatter doesn't support milliseconds before iOS 11
                             let dateFormatter = DateFormatter()
                             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                            guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
+                            guard let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
                                 let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
-                                print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                                print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
                                 throw DotNetAPIError.parsingFailed
                             }
                             let timestamp = UInt64(date.timeIntervalSince1970) * 1000
@@ -244,9 +244,9 @@ public final class PublicChatAPI : DotNetAPI {
                 let url = URL(string: "\(server)/loki/v1/channel/\(channel)/deletes?\(queryParameters)")!
                 let request = TSRequest(url: url)
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                    guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
-                        print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
+                    guard let body = json["body"] as? JSON, let deletions = body["data"] as? [JSON] else {
+                        print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
                         throw DotNetAPIError.parsingFailed
                     }
                     return deletions.flatMap { deletion in
@@ -278,7 +278,7 @@ public final class PublicChatAPI : DotNetAPI {
                     let url = URL(string: urlAsString)!
                     let request = TSRequest(url: url, method: "DELETE", parameters: [:])
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false).done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
                         print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
                     }
                 }
@@ -297,9 +297,9 @@ public final class PublicChatAPI : DotNetAPI {
                 let queryParameters = "ids=\(publicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
                 let url = URL(string: "\(server)/users?\(queryParameters)")!
                 let request = TSRequest(url: url)
-                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                    guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
-                        print("[Loki] Couldn't parse display names for users: \(publicKeys) from: \(rawResponse).")
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
+                    guard let data = json["data"] as? [JSON] else {
+                        print("[Loki] Couldn't parse display names for users: \(publicKeys) from: \(json).")
                         throw DotNetAPIError.parsingFailed
                     }
                     try! Storage.writeSync { transaction in
@@ -424,9 +424,8 @@ public final class PublicChatAPI : DotNetAPI {
                     let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
                     let request = TSRequest(url: url)
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                        guard let json = rawResponse as? JSON,
-                            let data = json["data"] as? JSON,
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
+                        guard let data = json["data"] as? JSON,
                             let annotations = data["annotations"] as? [JSON],
                             let annotation = annotations.first,
                             let info = annotation["value"] as? JSON,
@@ -434,7 +433,7 @@ public final class PublicChatAPI : DotNetAPI {
                             let profilePictureURL = info["avatar"] as? String,
                             let countInfo = data["counts"] as? JSON,
                             let memberCount = countInfo["subscribers"] as? Int else {
-                            print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                            print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
                             throw DotNetAPIError.parsingFailed
                         }
                         let storage = OWSPrimaryStorage.shared()
@@ -457,7 +456,7 @@ public final class PublicChatAPI : DotNetAPI {
                     let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
                     let request = TSRequest(url: url, method: "POST", parameters: [:])
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
                         print("[Loki] Joined channel with ID: \(channel) on server: \(server).")
                     }
                 }
@@ -472,7 +471,7 @@ public final class PublicChatAPI : DotNetAPI {
                     let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
                     let request = TSRequest(url: url, method: "DELETE", parameters: [:])
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
+                    return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).done(on: DispatchQueue.global(qos: .default)) { _ -> Void in
                         print("[Loki] Left channel with ID: \(channel) on server: \(server).")
                     }
                 }
@@ -491,7 +490,7 @@ public final class PublicChatAPI : DotNetAPI {
         let request = TSRequest(url: url, method: "POST", parameters: [:])
         // Only used for the Loki Public Chat which doesn't require authentication
         return getOpenGroupServerPublicKey(for: server).then(on: DispatchQueue.global(qos: .default)) { serverPublicKey in
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { _ in}
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { _ in }
         }
     }
 
@@ -502,9 +501,9 @@ public final class PublicChatAPI : DotNetAPI {
                 let url = URL(string: "\(server)/loki/v1/channel/\(channel)/get_moderators")!
                 let request = TSRequest(url: url)
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
-                    guard let json = rawResponse as? JSON, let moderators = json["moderators"] as? [String] else {
-                        print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
+                return OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey).map(on: DispatchQueue.global(qos: .default)) { json in
+                    guard let moderators = json["moderators"] as? [String] else {
+                        print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(json).")
                         throw DotNetAPIError.parsingFailed
                     }
                     let moderatorsAsSet = Set(moderators);
