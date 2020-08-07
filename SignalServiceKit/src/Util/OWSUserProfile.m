@@ -698,6 +698,25 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                  completion:nil];
 }
 
+- (void)updateWithUsername:(nullable NSString *)username
+             isUuidCapable:(BOOL)isUuidCapable
+             lastFetchDate:(nullable NSDate *)lastFetchDate
+               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(username == nil || username.length > 0);
+
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   userProfile.username = username;
+                   userProfile.isUuidCapable = isUuidCapable;
+                   userProfile.lastFetchDate = lastFetchDate;
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:YES
+                transaction:transaction
+                 completion:nil];
+}
+
 - (void)updateWithLastMessagingDate:(NSDate *)lastMessagingDate transaction:(SDSAnyWriteTransaction *)transaction
 {
     // We use wasLocallyInitiated = NO because we don't need
