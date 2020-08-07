@@ -430,10 +430,14 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 - (nullable UIImage *)stillForWebpData
 {
-    OWSAssertDebug([self ows_guessImageFormat] == ImageFormat_Webp);
-    
+    if ([self ows_guessImageFormat] != ImageFormat_Webp) {
+        OWSFailDebug(@"Invalid webp image.");
+        return nil;
+    }
+
     CGImageRef _Nullable cgImage = YYCGImageCreateWithWebPData((__bridge CFDataRef)self, NO, NO, NO, NO);
     if (!cgImage) {
+        OWSFailDebug(@"Could not generate still for webp image.");
         return nil;
     }
 
