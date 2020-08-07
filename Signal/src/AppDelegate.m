@@ -1242,8 +1242,6 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [self.messageManager startObserving];
 
-    [self.udManager setup];
-
     [ViewOnceMessages appDidBecomeReady];
 }
 

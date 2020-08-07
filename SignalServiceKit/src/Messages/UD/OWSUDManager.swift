@@ -86,8 +86,6 @@ public class OWSUDSendingAccess: NSObject {
     @objc
     var uuidAccessStore: SDSKeyValueStore { get }
 
-    @objc func setup()
-
     @objc func trustRoot() -> ECPublicKey
 
     @objc func isUDVerboseLoggingEnabled() -> Bool
@@ -155,6 +153,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     var certificateValidator: SMKCertificateValidator
 
+    // To avoid deadlock, never open a database transaction while
+    // unfairLock is acquired.
+    private let unfairLock = UnfairLock()
+
+    // These two caches should only be accessed using unfairLock.
+    private var phoneNumberAccessCache = [String: UnidentifiedAccessMode]()
+    private var uuidAccessCache = [UUID: UnidentifiedAccessMode]()
+
     @objc
     public required override init() {
         self.certificateValidator = SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot())
@@ -162,18 +168,53 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         super.init()
 
         SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.warmCaches()
+        }
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.setup()
+        }
     }
 
-    @objc public func setup() {
-        // TODO: Should we use runNowOrWhenAppDidBecomeReadyPolite?
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard self.tsAccountManager.isRegistered else {
-                return
+    private func warmCaches() {
+        let parseUnidentifiedAccessMode = { (anyValue: Any) -> UnidentifiedAccessMode? in
+            guard let nsNumber = anyValue as? NSNumber else {
+                owsFailDebug("Invalid value.")
+                return nil
             }
-
-            // Any error is silently ignored on startup.
-            _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
+            guard let value = UnidentifiedAccessMode(rawValue: nsNumber.intValue) else {
+                owsFailDebug("Couldn't parse mode value: (nsNumber.intValue).")
+                return nil
+            }
+            return value
         }
+
+        databaseStorage.read { transaction in
+            self.unfairLock.withLock {
+                self.phoneNumberAccessStore.enumerateKeysAndObjects(transaction: transaction) { (phoneNumber: String, anyValue: Any, _) in
+                    guard let mode = parseUnidentifiedAccessMode(anyValue) else {
+                        return
+                    }
+                    self.phoneNumberAccessCache[phoneNumber] = mode
+                }
+                self.uuidAccessStore.enumerateKeysAndObjects(transaction: transaction) { (uuidString: String, anyValue: Any, _) in
+                    guard let uuid = UUID(uuidString: uuidString) else {
+                        owsFailDebug("Invalid uuid: \(uuidString)")
+                        return
+                    }
+                    guard let mode = parseUnidentifiedAccessMode(anyValue) else {
+                        return
+                    }
+                    self.uuidAccessCache[uuid] = mode
+                }
+            }
+        }
+    }
+
+    private func setup() {
+        owsAssertDebug(AppReadiness.isAppReady)
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
                                                name: .registrationStateDidChange,
@@ -182,32 +223,32 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                                                selector: #selector(didBecomeActive),
                                                name: .OWSApplicationDidBecomeActive,
                                                object: nil)
+
+        // We can fill in any missing sender certificate "polite";
+        // message sending will fill in the sender certificate sooner
+        // if it needs it.
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+            // Any error is silently ignored.
+            _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
+        }
     }
 
     @objc
     func registrationStateDidChange() {
         AssertIsOnMainThread()
+        owsAssertDebug(AppReadiness.isAppReady)
 
-        guard tsAccountManager.isRegisteredAndReady else {
-            return
-        }
-
-        // Any error is silently ignored
+        // Any error is silently ignored.
         _ = ensureSenderCertificate(certificateExpirationPolicy: .strict)
     }
 
-    @objc func didBecomeActive() {
+    @objc
+    func didBecomeActive() {
         AssertIsOnMainThread()
+        owsAssertDebug(AppReadiness.isAppReady)
 
-        // TODO: Should we use runNowOrWhenAppDidBecomeReadyPolite?
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard self.tsAccountManager.isRegistered else {
-                return
-            }
-
-            // Any error is silently ignored on startup.
-            _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
-        }
+        // Any error is silently ignored.
+        _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
     }
 
     // MARK: -
@@ -238,45 +279,30 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return SMKUDAccessKey(randomKeyData: ())
     }
 
-    private func unidentifiedAccessMode(forAddress address: SignalServiceAddress,
-                                        transaction: SDSAnyWriteTransaction) -> UnidentifiedAccessMode {
-        let defaultValue: UnidentifiedAccessMode =  address.isLocalAddress ? .enabled : .unknown
+    private func unidentifiedAccessMode(forAddress address: SignalServiceAddress) -> UnidentifiedAccessMode {
 
-        let existingUUIDValue: UnidentifiedAccessMode?
-        if let uuidString = address.uuidString,
-            let existingRawValue = uuidAccessStore.getInt(uuidString, transaction: transaction) {
-
-            guard let value = UnidentifiedAccessMode(rawValue: existingRawValue) else {
-                owsFailDebug("Couldn't parse mode value.")
-                return defaultValue
+        // Read from caches.
+        var existingUUIDValue: UnidentifiedAccessMode?
+        var existingPhoneNumberValue: UnidentifiedAccessMode?
+        unfairLock.withLock {
+            if let uuid = address.uuid {
+                existingUUIDValue = self.uuidAccessCache[uuid]
             }
-            existingUUIDValue = value
-        } else {
-            existingUUIDValue = nil
+            if let phoneNumber = address.phoneNumber {
+                existingPhoneNumberValue = self.phoneNumberAccessCache[phoneNumber]
+            }
         }
 
-        let existingPhoneNumberValue: UnidentifiedAccessMode?
-        if let phoneNumber = address.phoneNumber,
-            let existingRawValue = phoneNumberAccessStore.getInt(phoneNumber, transaction: transaction) {
-
-            guard let value = UnidentifiedAccessMode(rawValue: existingRawValue) else {
-                owsFailDebug("Couldn't parse mode value.")
-                return defaultValue
-            }
-            existingPhoneNumberValue = value
-        } else {
-            existingPhoneNumberValue = nil
-        }
-
+        // Resolve current value; determine if we need to update cache and database.
         let existingValue: UnidentifiedAccessMode?
-
+        var shouldUpdateValues = false
         if let existingUUIDValue = existingUUIDValue, let existingPhoneNumberValue = existingPhoneNumberValue {
 
             // If UUID and Phone Number setting don't align, defer to UUID and update phone number
             if existingPhoneNumberValue != existingUUIDValue {
                 owsFailDebug("UUID and Phone Number unexpectedly have different UD values")
                 Logger.info("Unexpected UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
-                phoneNumberAccessStore.setInt(existingUUIDValue.rawValue, key: address.phoneNumber!, transaction: transaction)
+                shouldUpdateValues = true
             }
 
             existingValue = existingUUIDValue
@@ -284,20 +310,25 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             existingValue = existingPhoneNumberValue
 
             // We had phone number entry but not UUID, update UUID value
-            if let uuidString = address.uuidString {
-                uuidAccessStore.setInt(existingPhoneNumberValue.rawValue, key: uuidString, transaction: transaction)
+            if nil != address.uuidString {
+                shouldUpdateValues = true
             }
         } else if let existingUUIDValue = existingUUIDValue {
             existingValue = existingUUIDValue
 
             // We had UUID entry but not phone number, update phone number value
-            if let phoneNumber = address.phoneNumber {
-                phoneNumberAccessStore.setInt(existingUUIDValue.rawValue, key: phoneNumber, transaction: transaction)
+            if nil != address.phoneNumber {
+                shouldUpdateValues = true
             }
         } else {
             existingValue = nil
         }
 
+        if let existingValue = existingValue, shouldUpdateValues {
+            setUnidentifiedAccessMode(existingValue, address: address)
+        }
+
+        let defaultValue: UnidentifiedAccessMode =  address.isLocalAddress ? .enabled : .unknown
         return existingValue ?? defaultValue
     }
 
@@ -306,20 +337,22 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         if address.isLocalAddress {
             Logger.info("Setting local UD access mode: \(string(forUnidentifiedAccessMode: mode))")
         }
-
-        databaseStorage.write { (transaction) in
-            let oldMode = self.unidentifiedAccessMode(forAddress: address, transaction: transaction)
-
-            if let uuidString = address.uuidString {
-                self.uuidAccessStore.setInt(mode.rawValue, key: uuidString, transaction: transaction)
+        // Update cache immediately.
+        self.unfairLock.withLock {
+            if let uuid = address.uuid {
+                self.uuidAccessCache[uuid] = mode
             }
-
+            if let phoneNumber = address.phoneNumber {
+                self.phoneNumberAccessCache[phoneNumber] = mode
+            }
+        }
+        // Update database async.
+        databaseStorage.asyncWrite { transaction in
+            if let uuid = address.uuid {
+                self.uuidAccessStore.setInt(mode.rawValue, key: uuid.uuidString, transaction: transaction)
+            }
             if let phoneNumber = address.phoneNumber {
                 self.phoneNumberAccessStore.setInt(mode.rawValue, key: phoneNumber, transaction: transaction)
-            }
-
-            if mode != oldMode {
-                Logger.info("Setting UD access mode for \(address): \(string(forUnidentifiedAccessMode: oldMode)) ->  \(string(forUnidentifiedAccessMode: mode))")
             }
         }
     }
@@ -505,6 +538,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
+        guard tsAccountManager.isRegisteredAndReady else {
+            // We don't want to assert but we should log and fail.
+            return Promise(error: OWSGenericError("Not registered and ready."))
+        }
+
         // If there is a valid cached sender certificate, use that.
         if let certificate = senderCertificate(certificateExpirationPolicy: certificateExpirationPolicy) {
             return Promise.value(certificate)
