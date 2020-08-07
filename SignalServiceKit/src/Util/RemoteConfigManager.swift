@@ -60,6 +60,13 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
+    public static var uuidSafetyNumbers: Bool {
+        guard modernCDS else { return false }
+        guard FeatureFlags.uuidSafetyNumbers else { return false }
+        return isEnabled(.uuidSafetyNumbers)
+    }
+
+    @objc
     public static var deleteForEveryone: Bool { isEnabled(.deleteForEveryone) }
 
     @objc
@@ -183,6 +190,7 @@ private struct Flags {
         case groupsV2GoodCitizen
         case versionedProfiles
         case modernCDS
+        case uuidSafetyNumbers
     }
 
     // We filter the received config down to just the supported flags.
@@ -198,6 +206,7 @@ private struct Flags {
         case versionedProfiles
         case modernCDS
         case mentions
+        case uuidSafetyNumbers
     }
 
     // Values defined in this array remain set once they are
