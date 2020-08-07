@@ -52,7 +52,6 @@ private class ModelCacheValueBox<ValueType: BaseModel> {
 
 private struct ModelCacheKey<KeyType: AnyObject> {
     let key: KeyType
-    let isCachable: Bool
 }
 
 // MARK: -
@@ -87,27 +86,6 @@ private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseMo
 
     init(cacheName: String) {
         self.cacheName = cacheName
-    }
-}
-
-// MARK: -
-
-extension ModelCacheAdapter where KeyType: SignalServiceAddress {
-    fileprivate func buildCacheKey(forAddress address: SignalServiceAddress) -> ModelCacheKey<SignalServiceAddress> {
-        let isCachable: Bool = {
-            if address.uuid != nil {
-                return true
-            }
-            if address.phoneNumber == kLocalProfileInvariantPhoneNumber {
-                owsAssertDebug(address.uuid == nil)
-                return true
-            }
-            #if TESTABLE_BUILD
-            Logger.warn("Skipping cache for: \(address), \(cacheName)")
-            #endif
-            return false
-        }()
-        return ModelCacheKey(key: address, isCachable: isCachable)
     }
 }
 
@@ -403,9 +381,26 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         }
     }
 
+    private func isCachable(cacheKey: ModelCacheKey<KeyType>) -> Bool {
+        guard let address = cacheKey.key as? SignalServiceAddress else {
+            return true
+        }
+        if address.uuid != nil {
+            return true
+        }
+        if address.phoneNumber == kLocalProfileInvariantPhoneNumber {
+            owsAssertDebug(address.uuid == nil)
+            return true
+        }
+        #if TESTABLE_BUILD
+        Logger.warn("Skipping cache for: \(address), \(cacheName)")
+        #endif
+        return false
+    }
+
     private func canUseCache(cacheKey: ModelCacheKey<KeyType>,
                              transaction: SDSAnyReadTransaction) -> Bool {
-        guard cacheKey.isCachable else {
+        guard isCachable(cacheKey: cacheKey) else {
             return false
         }
         guard isCacheReady else {
@@ -634,7 +629,7 @@ public class UserProfileReadCache: NSObject {
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
             // Resolve key for local user to the invariant key.
-            buildCacheKey(forAddress: OWSUserProfile.resolve(key))
+            ModelCacheKey(key: OWSUserProfile.resolve(key))
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -703,7 +698,7 @@ public class SignalAccountReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            buildCacheKey(forAddress: key)
+            ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -771,7 +766,7 @@ public class SignalRecipientReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            buildCacheKey(forAddress: key)
+            ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -839,7 +834,7 @@ public class ThreadReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return ModelCacheKey(key: key, isCachable: true)
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -913,7 +908,7 @@ public class InteractionReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return ModelCacheKey(key: key, isCachable: true)
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -987,7 +982,7 @@ public class AttachmentReadCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return ModelCacheKey(key: key, isCachable: true)
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -1052,7 +1047,7 @@ public class InstalledStickerCache: NSObject {
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return ModelCacheKey(key: key, isCachable: true)
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
