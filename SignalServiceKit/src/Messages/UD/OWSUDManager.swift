@@ -335,13 +335,23 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             Logger.info("Setting local UD access mode: \(string(forUnidentifiedAccessMode: mode))")
         }
         // Update cache immediately.
+        var didChange = false
         self.unfairLock.withLock {
             if let uuid = address.uuid {
+                if self.uuidAccessCache[uuid] != mode {
+                    didChange = true
+                }
                 self.uuidAccessCache[uuid] = mode
             }
             if let phoneNumber = address.phoneNumber {
+                if self.phoneNumberAccessCache[phoneNumber] != mode {
+                    didChange = true
+                }
                 self.phoneNumberAccessCache[phoneNumber] = mode
             }
+        }
+        guard didChange else {
+            return
         }
         // Update database async.
         databaseStorage.asyncWrite { transaction in
