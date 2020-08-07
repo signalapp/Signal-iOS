@@ -607,7 +607,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             dispatch_group_leave(group);
         }];
 
-    if (SSKFeatureFlags.modernContactDiscovery) {
+    if (RemoteConfig.modernContactDiscovery) {
         dispatch_group_enter(group);
         [self populateUUIDsForLegacyRecipientsOf:message
                                       completion:^(NSError *error) {
@@ -1246,7 +1246,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
 
-    if (SSKFeatureFlags.modernContactDiscovery) {
+    if (RemoteConfig.modernContactDiscovery) {
         // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
         // If we have no UUID, consider the recipient unregistered.
         BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);
