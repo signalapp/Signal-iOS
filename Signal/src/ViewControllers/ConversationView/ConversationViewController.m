@@ -3748,8 +3748,6 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment
 {
-    OWSLogError(@"");
-
     // If the thing we pasted is sticker-like, send it immediately
     // and render it borderless.
     if (attachment.isBorderless) {
@@ -3781,8 +3779,6 @@ typedef enum : NSUInteger {
 
 - (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageBody:(MessageBody *_Nullable)messageBody
 {
-    OWSLogError(@"");
-
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
         if ([self isBlockedConversation]) {
