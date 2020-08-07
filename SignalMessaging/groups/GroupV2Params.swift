@@ -58,20 +58,20 @@ public extension GroupV2Params {
         assert(ciphertext != plaintext)
         assert(ciphertext.count > 0)
 
-        if plaintext.count <= Self.decryptBlobCacheMaxSize {
+        if plaintext.count <= Self.decryptedBlobCacheMaxItemSize {
             let cacheKey = (groupSecretParamsData + ciphertext) as NSData
-            Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+            Self.decryptedBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
         }
 
         return ciphertext
     }
 
-    private static let decryptBlobCache = NSCache<NSData, NSData>()
-    private static let decryptBlobCacheMaxSize: UInt = 4 * 1024
+    private static let decryptedBlobCache = NSCache<NSData, NSData>()
+    private static let decryptedBlobCacheMaxItemSize: UInt = 4 * 1024
 
     fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
         let cacheKey = (groupSecretParamsData + ciphertext) as NSData
-        if let plaintext = Self.decryptBlobCache.object(forKey: cacheKey) {
+        if let plaintext = Self.decryptedBlobCache.object(forKey: cacheKey) {
             return plaintext as Data
         }
 
@@ -79,8 +79,8 @@ public extension GroupV2Params {
         let plaintext = try clientZkGroupCipher.decryptBlob(blobCiphertext: [UInt8](ciphertext)).asData
         assert(ciphertext != plaintext)
 
-        if plaintext.count <= Self.decryptBlobCacheMaxSize {
-            Self.decryptBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+        if plaintext.count <= Self.decryptedBlobCacheMaxItemSize {
+            Self.decryptedBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
         }
         return plaintext
     }
@@ -90,11 +90,11 @@ public extension GroupV2Params {
         return try uuid(forUuidCiphertext: uuidCiphertext)
     }
 
-    private static let decryptUuidCache = NSCache<NSData, NSUUID>()
+    private static let decryptedUuidCache = NSCache<NSData, NSUUID>()
 
     func uuid(forUuidCiphertext uuidCiphertext: UuidCiphertext) throws -> UUID {
         let cacheKey = (groupSecretParamsData + uuidCiphertext.serialize().asData) as NSData
-        if let plaintext = Self.decryptUuidCache.object(forKey: cacheKey) {
+        if let plaintext = Self.decryptedUuidCache.object(forKey: cacheKey) {
             return plaintext as UUID
         }
 
@@ -102,7 +102,7 @@ public extension GroupV2Params {
         let zkgUuid = try clientZkGroupCipher.decryptUuid(uuidCiphertext: uuidCiphertext)
         let uuid = zkgUuid.asUUID()
 
-        Self.decryptUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
+        Self.decryptedUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
         return uuid
     }
 
@@ -112,19 +112,19 @@ public extension GroupV2Params {
         let userId = uuidCiphertext.serialize().asData
 
         let cacheKey = (groupSecretParamsData + userId) as NSData
-        Self.decryptUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
+        Self.decryptedUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
 
         return userId
     }
 
-    private static let decryptProfileKeyCache = NSCache<NSData, NSData>()
+    private static let decryptedProfileKeyCache = NSCache<NSData, NSData>()
 
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
                     uuid: UUID) throws -> Data {
         let zkgUuid = try uuid.asZKGUuid()
 
         let cacheKey = (groupSecretParamsData + profileKeyCiphertext.serialize().asData + zkgUuid.serialize().asData) as NSData
-        if let plaintext = Self.decryptProfileKeyCache.object(forKey: cacheKey) {
+        if let plaintext = Self.decryptedProfileKeyCache.object(forKey: cacheKey) {
             return plaintext as Data
         }
 
@@ -133,7 +133,7 @@ public extension GroupV2Params {
                                                                    uuid: zkgUuid)
         let plaintext = profileKey.serialize().asData
 
-        Self.decryptProfileKeyCache.setObject(plaintext as NSData, forKey: cacheKey)
+        Self.decryptedProfileKeyCache.setObject(plaintext as NSData, forKey: cacheKey)
         return plaintext
     }
 }
