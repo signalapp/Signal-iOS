@@ -6,7 +6,7 @@ import Foundation
 
 extension OutgoingMessagePreparer {
     @objc
-    public convenience init(messageBody: MessageBody,
+    public convenience init(messageBody: MessageBody?,
                             mediaAttachments: [SignalAttachment],
                             thread: TSThread,
                             quotedReplyModel: OWSQuotedReplyModel?,
@@ -14,18 +14,19 @@ extension OutgoingMessagePreparer {
 
         var attachments = mediaAttachments
         let truncatedText: String?
-        if messageBody.text.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold {
-            truncatedText = messageBody.text
-        } else {
-            truncatedText = messageBody.text.truncated(toByteCount: kOversizeTextMessageSizeThreshold)
 
-            if let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text) {
+        if let messageText = messageBody?.text, messageText.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold {
+            truncatedText = messageText.truncated(toByteCount: kOversizeTextMessageSizeThreshold)
+
+            if let dataSource = DataSourceValue.dataSource(withOversizeText: messageText) {
                 let attachment = SignalAttachment.attachment(dataSource: dataSource,
                                                              dataUTI: kOversizeTextAttachmentUTI)
                 attachments.append(attachment)
             } else {
                 owsFailDebug("dataSource was unexpectedly nil")
             }
+        } else {
+            truncatedText = messageBody?.text
         }
 
         let expiresInSeconds: UInt32
@@ -67,7 +68,7 @@ extension OutgoingMessagePreparer {
 
         let message = TSOutgoingMessageBuilder(thread: thread,
                                                 messageBody: truncatedText,
-                                                bodyRanges: messageBody.ranges,
+                                                bodyRanges: messageBody?.ranges,
                                                 expiresInSeconds: expiresInSeconds,
                                                 isVoiceMessage: isVoiceMessage,
                                                 quotedMessage: quotedMessage,
