@@ -34,17 +34,18 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
         guard let thread = coder.decodeObject(forKey: "thread") as? TSThread,
             let timestamp = coder.decodeObject(forKey: "timestamp") as? UInt64,
             let groupPublicKey = coder.decodeObject(forKey: "groupPublicKey") as? Data,
-            let senderKeys = coder.decodeObject(forKey: "senderKeys") as? [ClosedGroupSenderKey],
             let rawKind = coder.decodeObject(forKey: "kind") as? String else { return nil }
         switch rawKind {
         case "new":
             guard let name = coder.decodeObject(forKey: "name") as? String,
                 let groupPrivateKey = coder.decodeObject(forKey: "groupPrivateKey") as? Data,
+                let senderKeys = coder.decodeObject(forKey: "senderKeys") as? [ClosedGroupSenderKey],
                 let members = coder.decodeObject(forKey: "members") as? [Data],
                 let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
             self.kind = .new(groupPublicKey: groupPublicKey, name: name, groupPrivateKey: groupPrivateKey, senderKeys: senderKeys, members: members, admins: admins)
         case "info":
             guard let name = coder.decodeObject(forKey: "name") as? String,
+                let senderKeys = coder.decodeObject(forKey: "senderKeys") as? [ClosedGroupSenderKey],
                 let members = coder.decodeObject(forKey: "members") as? [Data],
                 let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
             self.kind = .info(groupPublicKey: groupPublicKey, name: name, senderKeys: senderKeys, members: members, admins: admins)
@@ -52,7 +53,8 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
             guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
             self.kind = .senderKeyRequest(groupPublicKey: groupPublicKey)
         case "senderKey":
-            guard let senderKey = senderKeys.first else { return nil }
+            guard let senderKeys = coder.decodeObject(forKey: "senderKeys") as? [ClosedGroupSenderKey],
+                let senderKey = senderKeys.first else { return nil }
             self.kind = .senderKey(groupPublicKey: groupPublicKey, senderKey: senderKey)
         default: return nil
         }
