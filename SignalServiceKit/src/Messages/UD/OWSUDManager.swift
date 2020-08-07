@@ -221,10 +221,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                                                name: .OWSApplicationDidBecomeActive,
                                                object: nil)
 
-        // We can fill in any missing sender certificate "polite";
+        // We can fill in any missing sender certificate async;
         // message sending will fill in the sender certificate sooner
         // if it needs it.
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+        DispatchQueue.global().async {
             // Any error is silently ignored.
             _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
         }
