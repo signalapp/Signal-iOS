@@ -743,7 +743,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         [allAddresses addObject:signalAccount.recipientAddress];
     }
 
-    self.signalAccounts = [signalAccounts sortedArrayUsingComparator:self.signalAccountComparator];
+    self.signalAccounts = [self sortSignalAccountsWithSneakyTransaction:signalAccounts];
 
     [self.profileManager setContactAddresses:allAddresses];
 
@@ -1290,66 +1290,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     // Else try to use the image from their profile
     return [self.profileManager profileAvatarForAddress:address transaction:transaction];
-}
-
-- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right
-{
-    return self.signalAccountComparator(left, right);
-}
-
-- (NSComparisonResult (^)(SignalAccount *left, SignalAccount *right))signalAccountComparator
-{
-    return ^NSComparisonResult(SignalAccount *left, SignalAccount *right) {
-        NSString *leftName = [self comparableNameForSignalAccount:left];
-        NSString *rightName = [self comparableNameForSignalAccount:right];
-
-        NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
-        if (nameComparison == NSOrderedSame) {
-            return [left.recipientAddress.stringForDisplay compare:right.recipientAddress.stringForDisplay];
-        }
-
-        return nameComparison;
-    };
-}
-
-- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                                    transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [addresses sortedArrayUsingComparator:[self signalServiceAddressComparatorWithTransaction:transaction]];
-}
-
-- (NSComparisonResult (^)(SignalServiceAddress *left,
-    SignalServiceAddress *right))signalServiceAddressComparatorWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    // We want to sort E164 phone numbers _after_ names.
-    NSCharacterSet *e164PrefixSet = [NSCharacterSet characterSetWithCharactersInString:@"+"];
-    BOOL (^hasE164Prefix)(NSString *) = ^(NSString *string) {
-        if (string.length < 1) {
-            return NO;
-        }
-        unichar firstChar = [string characterAtIndex:0];
-        return [e164PrefixSet characterIsMember:firstChar];
-    };
-
-    return ^NSComparisonResult(SignalServiceAddress *left, SignalServiceAddress *right) {
-        NSString *leftName = [self comparableNameForAddress:left transaction:transaction];
-        NSString *rightName = [self comparableNameForAddress:right transaction:transaction];
-
-        BOOL leftHasE164Prefix = hasE164Prefix(leftName);
-        BOOL rightHasE164Prefix = hasE164Prefix(rightName);
-        if (leftHasE164Prefix && !rightHasE164Prefix) {
-            return NSOrderedDescending;
-        } else if (!leftHasE164Prefix && rightHasE164Prefix) {
-            return NSOrderedAscending;
-        }
-
-        NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
-        if (nameComparison == NSOrderedSame) {
-            return [left.stringForDisplay compare:right.stringForDisplay];
-        }
-
-        return nameComparison;
-    };
 }
 
 - (BOOL)shouldSortByGivenName
