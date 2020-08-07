@@ -106,15 +106,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         // setup() - especially updateContacts() - can
-        // be expensive, so we want to running that
+        // be expensive, so we don't want to run that
         // directly in runNowOrWhenAppDidBecomeReady().
+        // That could cause 0x8badf00d crashes.
         //
         // On the other hand, the user might quickly
-        // open a view that uses this helper.
-        // Therefore, we can't use
-        // runNowOrWhenAppDidBecomeReadyPolite()
+        // open a view (like the compose view) that uses
+        // this helper. If the helper hasn't completed
+        // setup, that view won't be able to display a
+        // list of users to pick from. Therefore, we
+        // can't use runNowOrWhenAppDidBecomeReadyPolite()
         // which might not run for many seconds after
-        // app becomes ready.
+        // the app becomes ready.
         //
         // Therefore we dispatch async to the main queue.
         // We'll run very soon after app becomes ready,
