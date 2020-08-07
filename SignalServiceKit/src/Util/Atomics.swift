@@ -12,8 +12,19 @@ public enum AtomicError: Int, Error {
 // MARK: -
 
 private class Atomics {
-    // All instances can share a single queue.
-    fileprivate static let serialQueue = DispatchQueue(label: "Atomics")
+    fileprivate static let fairQueue = DispatchQueue(label: "Atomics")
+    fileprivate static let unfairLock = UnfairLock()
+
+    // Never instantiate this class.
+    private init() {}
+
+    class func perform<T>(isFair: Bool = false, _ block: () throws -> T) rethrows -> T {
+        if isFair {
+            return try fairQueue.sync(execute: block)
+        } else {
+            return try unfairLock.withLock(block)
+        }
+    }
 }
 
 // MARK: -
@@ -107,18 +118,14 @@ public final class AtomicValue<T> {
         self.value = value
     }
 
-    fileprivate var serialQueue: DispatchQueue {
-        return Atomics.serialQueue
-    }
-
     public func get() -> T {
-        return serialQueue.sync {
+        Atomics.perform {
             return self.value
         }
     }
 
     public func set(_ value: T) {
-        serialQueue.sync {
+        Atomics.perform {
             self.value = value
         }
     }
@@ -126,7 +133,7 @@ public final class AtomicValue<T> {
     // Transform the current value using a block.
     @discardableResult
     public func map(_ block: @escaping (T) -> T) -> T {
-        return serialQueue.sync {
+        Atomics.perform {
             let newValue = block(self.value)
             self.value = newValue
             return newValue
@@ -154,7 +161,7 @@ extension AtomicValue where T: Equatable {
     // Sets value to "toValue" IFF it currently has "fromValue",
     // otherwise throws.
     public func transition(from fromValue: T, to toValue: T) throws {
-        return try serialQueue.sync {
+        try Atomics.perform {
             guard self.value == fromValue else {
                 throw AtomicError.invalidTransition
             }
@@ -209,25 +216,33 @@ extension AtomicOptional where T: Equatable {
 // MARK: -
 
 public class AtomicArray<T: AnyObject> {
-    private let serialQueue = DispatchQueue(label: "AtomicArray")
 
-    private var values = [T]()
+    private var values: [T]
 
-    public required init() {
-    }
-
-    public required init(_ values: [T]) {
+    public required init(_ values: [T] = []) {
         self.values = values
     }
 
+    public func get() -> [T] {
+        Atomics.perform {
+            return self.values
+        }
+    }
+
+    public func set(_ values: [T]) {
+        Atomics.perform {
+            self.values = values
+        }
+    }
+
     public func append(_ value: T) {
-        serialQueue.sync {
+        Atomics.perform {
             return self.values.append(value)
         }
     }
 
     public func remove(_ valueToRemove: T) {
-        serialQueue.sync {
+        Atomics.perform {
             self.values = self.values.filter { (value: T) -> Bool in
                 valueToRemove !== value
             }
@@ -235,7 +250,7 @@ public class AtomicArray<T: AnyObject> {
     }
 
     public var first: T? {
-        return serialQueue.sync {
+        Atomics.perform {
             return self.values.first
         }
     }
