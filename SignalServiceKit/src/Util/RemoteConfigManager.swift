@@ -95,6 +95,13 @@ public class RemoteConfig: BaseFlags {
         return uintValue
     }
 
+    @objc
+    public static var mentions: Bool {
+        guard FeatureFlags.mentions else { return false }
+        if DebugFlags.forceMentions { return true }
+        return isEnabled(.mentions)
+    }
+
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
             return defaultValue
@@ -190,6 +197,7 @@ private struct Flags {
         case deleteForEveryone
         case versionedProfiles
         case modernCDS
+        case mentions
     }
 
     // Values defined in this array remain set once they are

@@ -155,7 +155,7 @@
 
     [contents addSection:eventsSection];
 
-    if (SSKFeatureFlags.mentionsSend) {
+    if (RemoteConfig.mentions) {
         OWSTableSection *mentionsSection = [OWSTableSection new];
         mentionsSection.headerTitle
             = NSLocalizedString(@"SETTINGS_NOTIFICATION_MENTIONS_TITLE", @"table section header");
