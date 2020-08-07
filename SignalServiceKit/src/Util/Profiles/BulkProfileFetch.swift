@@ -316,8 +316,20 @@ public class BulkProfileFetch: NSObject {
             }
             return userProfiles
         }.map(on: .global()) { (userProfiles: [OWSUserProfile]) -> Void in
-            let addresses: [SignalServiceAddress] = userProfiles.map { $0.publicAddress }
-            self.fetchProfiles(addresses: addresses)
+            var addresses: [SignalServiceAddress] = userProfiles.map { $0.publicAddress }
+
+            // Limit how many profiles we try to update on launch.
+            let maxProfilesToUpdateCount: Int = 25
+            if addresses.count > maxProfilesToUpdateCount {
+                addresses.shuffle()
+                addresses = Array(addresses.prefix(maxProfilesToUpdateCount))
+            }
+
+            if !addresses.isEmpty {
+                Logger.verbose("Updating profiles: \(addresses.count)")
+                self.fetchProfiles(addresses: addresses)
+            }
+
             Logger.verbose("Complete.")
         }.catch(on: .global()) { (error: Error) -> Void in
             owsFailDebug("Error: \(error)")
