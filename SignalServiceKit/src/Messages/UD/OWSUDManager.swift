@@ -99,15 +99,12 @@ public class OWSUDSendingAccess: NSObject {
     func udAccessKey(forAddress address: SignalServiceAddress) -> SMKUDAccessKey?
 
     @objc
-    func udAccess(forAddress address: SignalServiceAddress,
-                  requireSyncAccess: Bool,
-                  transaction: SDSAnyWriteTransaction) -> OWSUDAccess?
+    func udAccess(forAddress address: SignalServiceAddress, requireSyncAccess: Bool) -> OWSUDAccess?
 
     @objc
     func udSendingAccess(forAddress address: SignalServiceAddress,
                          requireSyncAccess: Bool,
-                         senderCertificate: SMKSenderCertificate,
-                         transaction: SDSAnyWriteTransaction) -> OWSUDSendingAccess?
+                         senderCertificate: SMKSenderCertificate) -> OWSUDSendingAccess?
 
     // MARK: Sender Certificate
 
@@ -380,9 +377,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // Returns the UD access key for sending to a given recipient or fetching a profile
     @objc
-    public func udAccess(forAddress address: SignalServiceAddress,
-                         requireSyncAccess: Bool,
-                         transaction: SDSAnyWriteTransaction) -> OWSUDAccess? {
+    public func udAccess(forAddress address: SignalServiceAddress, requireSyncAccess: Bool) -> OWSUDAccess? {
         if requireSyncAccess {
             guard tsAccountManager.localAddress != nil else {
                 if isUDVerboseLoggingEnabled() {
@@ -392,7 +387,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 return nil
             }
             if address.isLocalAddress {
-                let selfAccessMode = unidentifiedAccessMode(forAddress: address, transaction: transaction)
+                let selfAccessMode = unidentifiedAccessMode(forAddress: address)
                 guard selfAccessMode != .disabled else {
                     if isUDVerboseLoggingEnabled() {
                         Logger.info("UD disabled for \(address), UD disabled for sync messages.")
@@ -402,7 +397,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
         }
 
-        let accessMode = unidentifiedAccessMode(forAddress: address, transaction: transaction)
+        let accessMode = unidentifiedAccessMode(forAddress: address)
 
         switch accessMode {
         case .unrestricted:
@@ -453,9 +448,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func udSendingAccess(forAddress address: SignalServiceAddress,
                                 requireSyncAccess: Bool,
-                                senderCertificate: SMKSenderCertificate,
-                                transaction: SDSAnyWriteTransaction) -> OWSUDSendingAccess? {
-        guard let udAccess = self.udAccess(forAddress: address, requireSyncAccess: requireSyncAccess, transaction: transaction) else {
+                                senderCertificate: SMKSenderCertificate) -> OWSUDSendingAccess? {
+        guard let udAccess = self.udAccess(forAddress: address, requireSyncAccess: requireSyncAccess) else {
             return nil
         }
         return OWSUDSendingAccess(udAccess: udAccess, senderCertificate: senderCertificate)

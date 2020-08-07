@@ -788,16 +788,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // 1. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificate != nil) {
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            for (SignalRecipient *recipient in recipients) {
-                if (!recipient.address.isLocalAddress) {
-                    sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
-                                                                                  requireSyncAccess:YES
-                                                                                  senderCertificate:senderCertificate
-                                                                                        transaction:transaction];
-                }
+        for (SignalRecipient *recipient in recipients) {
+            if (!recipient.address.isLocalAddress) {
+                sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
+                                                                              requireSyncAccess:YES
+                                                                              senderCertificate:senderCertificate];
             }
-        });
+        }
     }
 
     // 2. Build a "OWSMessageSend" for each recipient.
