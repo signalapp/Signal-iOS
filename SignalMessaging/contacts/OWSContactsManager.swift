@@ -58,34 +58,54 @@ public extension OWSContactsManager {
 
 // MARK: -
 
-fileprivate extension OWSContactsManager {
+private struct SortableValue<T> {
+    let value: T
+    let comparableName: String
+    let comparableAddress: String
 
-    struct SortableValue<T> {
-        let value: T
-        let comparableName: String
-        let comparableAddress: String
+    init (value: T, comparableName: String, comparableAddress: String) {
+        self.value = value
+        self.comparableName = comparableName.lowercased()
+        self.comparableAddress = comparableAddress.lowercased()
+    }
+}
+
+// MARK: -
+
+extension SortableValue: Equatable, Comparable {
+
+    // MARK: - Equatable
+
+    public static func == (lhs: SortableValue<T>, rhs: SortableValue<T>) -> Bool {
+        return (lhs.comparableName == rhs.comparableName &&
+            lhs.comparableAddress == rhs.comparableAddress)
     }
 
-    func sort<T>(_ values: [SortableValue<T>]) -> [T] {
+    // MARK: - Comparable
+
+    public static func < (left: SortableValue<T>, right: SortableValue<T>) -> Bool {
         // We want to sort E164 phone numbers _after_ names.
-        let hasE164Prefix = { (string: String) -> Bool in
-            string.hasPrefix("+")
+        let leftHasE164Prefix = left.comparableName.hasPrefix("+")
+        let rightHasE164Prefix = right.comparableName.hasPrefix("+")
+
+        if leftHasE164Prefix && !rightHasE164Prefix {
+            return false
+        } else if !leftHasE164Prefix && rightHasE164Prefix {
+            return true
         }
-        return values.sorted { (left: SortableValue<T>, right: SortableValue<T>) -> Bool in
-            let leftHasE164Prefix = hasE164Prefix(left.comparableName)
-            let rightHasE164Prefix = hasE164Prefix(right.comparableName)
 
-            if leftHasE164Prefix && !rightHasE164Prefix {
-                return false
-            } else if !leftHasE164Prefix && rightHasE164Prefix {
-                return true
-            }
+        if left.comparableName != right.comparableName {
+            return left.comparableName < right.comparableName
+        } else {
+            return left.comparableAddress < right.comparableAddress
+        }
+    }
+}
 
-            var comparisonResult = left.comparableName.compare(right.comparableName)
-            if comparisonResult == .orderedSame {
-                comparisonResult = left.comparableAddress.compare(right.comparableAddress)
-            }
-            return comparisonResult == .orderedAscending
-        }.map { $0.value }
+// MARK: -
+
+fileprivate extension OWSContactsManager {
+    func sort<T>(_ values: [SortableValue<T>]) -> [T] {
+        return values.sorted().map { $0.value }
     }
 }
