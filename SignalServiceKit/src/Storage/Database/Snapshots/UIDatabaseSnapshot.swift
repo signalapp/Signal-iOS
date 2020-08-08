@@ -441,8 +441,8 @@ extension UIDatabaseObserver: TransactionObserver {
         // Select the alpha of our chosen heuristic.
         let alpha: Double = displayLinkAlpha
 
-        let fastUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(20)
-        let slowUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(2)
+        let fastUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(5)
+        let slowUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(1)
         // Under light load, we want the fastest update frequency.
         // Under heavy load, we want the slowest update frequency.
         let targetUpdateFrequencySeconds = alpha.lerp(fastUpdateFrequencySeconds, slowUpdateFrequencySeconds)
