@@ -15,20 +15,11 @@ public extension OWSFileSystem {
     }
 
     class func deleteFile(_ filePath: String) -> Bool {
-        do {
-            try FileManager.default.removeItem(atPath: filePath)
-            return true
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return false
-        }
+        deleteFile(filePath, ignoreIfMissing: false)
     }
 
     class func deleteFileIfExists(_ filePath: String) -> Bool {
-        guard FileManager.default.fileExists(atPath: filePath) else {
-            return true
-        }
-        return deleteFile(filePath)
+        return deleteFile(filePath, ignoreIfMissing: true)
     }
 
     class func deleteFile(url: URL) throws {
@@ -65,5 +56,27 @@ public extension OWSFileSystem {
         }
         let filePath = (tempDirPath as NSString).appendingPathComponent(fileName)
         return filePath
+    }
+}
+
+// MARK: -
+
+public extension OWSFileSystem {
+    class func deleteFile(_ filePath: String, ignoreIfMissing: Bool = false) -> Bool {
+        do {
+            try FileManager.default.removeItem(atPath: filePath)
+            return true
+        } catch {
+            let nsError = error as NSError
+            if ignoreIfMissing,
+                nsError.domain == NSPOSIXErrorDomain,
+                nsError.code == ENOENT {
+                // Ignore "No such file or directory" error.
+                return true
+            } else {
+                owsFailDebug("Error: \(error)")
+            }
+            return false
+        }
     }
 }
