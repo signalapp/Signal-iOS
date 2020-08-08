@@ -68,9 +68,13 @@ public extension OWSFileSystem {
             return true
         } catch {
             let nsError = error as NSError
+
+            let isPosixNoSuchFileError = (nsError.domain == NSPOSIXErrorDomain &&
+                nsError.code == ENOENT)
+            let isCocoaNoSuchFileError = (nsError.domain == NSCocoaErrorDomain &&
+                nsError.code == NSFileNoSuchFileError)
             if ignoreIfMissing,
-                nsError.domain == NSPOSIXErrorDomain,
-                nsError.code == ENOENT {
+                isPosixNoSuchFileError || isCocoaNoSuchFileError {
                 // Ignore "No such file or directory" error.
                 return true
             } else {
