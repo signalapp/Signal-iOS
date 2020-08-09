@@ -225,6 +225,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let admins = closedGroupUpdate.admins.map { $0.toHexString() }
         // Persist the ratchets
         senderKeys.forEach { senderKey in
+            guard members.contains(senderKey.publicKey.toHexString()) else { return } // TODO: This currently doesn't take into account multi device
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey.toHexString(), ratchet: ratchet, using: transaction)
         }
@@ -258,7 +259,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // Get the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            return print("[Loki] Ignoring closed group update for nonexistent group.")
+            return print("[Loki] Ignoring closed group info message for nonexistent group.")
         }
         let group = thread.groupModel
         // Check that the sender is a member of the group (before the update)
@@ -272,6 +273,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         // Store the ratchets for any new members (it's important that this happens before the code below)
         senderKeys.forEach { senderKey in
+            guard membersAndLinkedDevices.contains(senderKey.publicKey.toHexString()) else { return }
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey.toHexString(), ratchet: ratchet, using: transaction)
         }
@@ -316,7 +318,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let groupThread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            return print("[Loki] Ignoring closed group update for nonexistent group.")
+            return print("[Loki] Ignoring closed group sender key request for nonexistent group.")
         }
         let group = groupThread.groupModel
         // Check that the requesting user is a member of the group
@@ -345,11 +347,11 @@ public final class ClosedGroupsProtocol : NSObject {
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            return print("[Loki] Ignoring closed group update for nonexistent group.")
+            return print("[Loki] Ignoring closed group sender key for nonexistent group.")
         }
         let group = thread.groupModel
         guard let senderKey = closedGroupUpdate.senderKeys.first else {
-            return print("[Loki] Ignoring invalid closed group update.")
+            return print("[Loki] Ignoring invalid closed group sender key.")
         }
         // Check that the requesting user is a member of the group
         var membersAndLinkedDevices: Set<String> = []
@@ -359,6 +361,9 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         guard membersAndLinkedDevices.contains(senderPublicKey) else {
             return print("[Loki] Ignoring closed group sender key from non-member.")
+        }
+        guard senderKey.publicKey.toHexString() == senderPublicKey else {
+            return print("[Loki] Ignoring invalid closed group sender key.")
         }
         // Store the sender key
         let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
