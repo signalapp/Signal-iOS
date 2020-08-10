@@ -48,9 +48,17 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var modernContactDiscovery: Bool {
-        let isAvailable = FeatureFlags.modernContactDiscovery
-        let shouldEnable = DebugFlags.forceModernContactDiscovery || isEnabled(.modernContactDiscovery)
-        return isAvailable && shouldEnable
+        let allEnableConditions = [
+            // If the remote config flag is set, we're enabled
+            isEnabled(.modernContactDiscovery),
+
+            // These flags force modern CDS on, even if the remote config is switched off
+            // Groups v2 implies modern CDS, so when it's enabled modern CDS mst be enabled.
+            DebugFlags.forceModernContactDiscovery,
+            isEnabled(.groupsV2GoodCitizen),
+        ]
+
+        return allEnableConditions.contains(true)
     }
 
     @objc

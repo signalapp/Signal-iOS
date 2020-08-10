@@ -113,7 +113,7 @@ public class FeatureFlags: BaseFlags {
     }
 
     @objc
-    public static let uuidCapabilities = (allowUUIDOnlyContacts && RemoteConfig.modernContactDiscovery) || groupsV2
+    public static let uuidCapabilities = groupsV2
 
     @objc
     public static var storageModeDescription: String {
@@ -135,13 +135,10 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static let allowUUIDOnlyContacts = RemoteConfig.modernContactDiscovery || groupsV2
+    public static let allowUUIDOnlyContacts = groupsV2
 
     @objc
     public static let uuidSafetyNumbers = allowUUIDOnlyContacts
-
-    @objc
-    public static let modernContactDiscovery = build.includes(.qa)
 
     @objc
     public static let phoneNumberPrivacy = false
