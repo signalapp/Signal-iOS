@@ -954,6 +954,10 @@ public class InteractionReadCache: NSObject {
 
     @objc(didUpdateInteraction:transaction:)
     public func didUpdate(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+        guard interaction.sortId > 0 else {
+            // Only cache interactions that have been read from the database.
+            return
+        }
         cache.didInsertOrUpdate(value: interaction, transaction: transaction)
     }
 
