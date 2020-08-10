@@ -20,9 +20,8 @@ public class UserNotificationActionHandler: NSObject {
         }.done {
             completionHandler()
         }.catch { error in
-            completionHandler()
             owsFailDebug("error: \(error)")
-            Logger.error("error: \(error)")
+            completionHandler()
         }
     }
 

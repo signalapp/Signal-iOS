@@ -337,7 +337,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
     [fetchedThread updateWithInsertedMessage:self transaction:transaction];
 
-    [self.interactionReadCache didInsertOrUpdateInteraction:self transaction:transaction];
+    // Don't update interactionReadCache; this instance's sortId isn't
+    // populated yet.
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -347,7 +348,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
     [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
 
-    [self.interactionReadCache didInsertOrUpdateInteraction:self transaction:transaction];
+    [self.interactionReadCache didUpdateInteraction:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
