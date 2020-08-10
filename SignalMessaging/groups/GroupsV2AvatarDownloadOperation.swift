@@ -26,8 +26,8 @@ class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
     }
 
     override public func run() {
-        firstly {
-            return try tryToDownload(urlPath: urlPath, maxDownloadSize: maxDownloadSize)
+        firstly(on: .global()) {
+            return try self.tryToDownload(urlPath: self.urlPath, maxDownloadSize: self.maxDownloadSize)
         }.done(on: .global()) { [weak self] data in
             guard let self = self else {
                 return

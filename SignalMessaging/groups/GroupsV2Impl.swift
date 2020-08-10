@@ -67,7 +67,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     return
             }
 
-            firstly {
+            firstly(on: .global()) {
                 GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
             }.catch { error in
                 Logger.warn("Local profile update failed with error: \(error)")
@@ -125,7 +125,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             if RemoteConfig.versionedProfileUpdate,
                 self.tsAccountManager.isRegisteredAndReady {
-                firstly {
+                firstly(on: .global()) {
                     self.reuploadLocalProfilePromise()
                 }.catch { error in
                     Logger.warn("Error: \(error)")
@@ -200,7 +200,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            return DispatchQueue.global().async(.promise) { () -> [UUID] in
+            return firstly(on: .global()) { () -> [UUID] in
                 // Gather the UUIDs for all members.
                 // We cannot gather profile key credentials for pending members, by definition.
                 let uuids = self.uuids(for: groupModel.groupMembers)
@@ -303,8 +303,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
         }
 
-        return firstly {
-            return self.performServiceRequest(requestBuilder: requestBuilder,
+        return firstly(on: .global()) {
+            self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
                                               behavior403: .fetchGroupUpdates)
         }.then(on: .global()) { (response: ServiceResponse) -> Promise<UpdatedV2Group> in
@@ -369,7 +369,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                               ignoreSignature: Bool,
                                               groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
 
-        return firstly {
+        return firstly(on: .global()) {
             self.fetchAllAvatarData(changeActionsProto: changeActionsProto,
                                     justUploadedAvatars: justUploadedAvatars,
                                     ignoreSignature: ignoreSignature,
@@ -388,7 +388,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func uploadGroupAvatar(avatarData: Data,
                                   groupSecretParamsData: Data) -> Promise<String> {
-        return firstly { () -> Promise<String> in
+        firstly(on: .global()) { () -> Promise<String> in
             let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
             return self.uploadGroupAvatar(avatarData: avatarData, groupV2Params: groupV2Params)
         }
@@ -402,14 +402,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
+            return firstly(on: .global()) { () -> NSURLRequest in
                 return try StorageService.buildGroupAvatarUploadFormRequest(groupV2Params: groupV2Params,
                                                                             sessionManager: sessionManager,
                                                                             authCredential: authCredential)
             }
         }
 
-        return firstly { () -> Promise<ServiceResponse> in
+        return firstly(on: .global()) { () -> Promise<ServiceResponse> in
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
@@ -449,7 +449,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise<GroupV2Snapshot>(error: OWSAssertionError("Missing localUuid."))
         }
-        return DispatchQueue.global().async(.promise) { () -> GroupV2Params in
+        return firstly(on: .global()) { () -> GroupV2Params in
             return try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
         }.then(on: .global()) { (groupV2Params: GroupV2Params) -> Promise<GroupV2Snapshot> in
             return self.fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params,
@@ -462,14 +462,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                              localUuid: UUID,
                                              justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
+            return firstly(on: .global()) { () -> NSURLRequest in
                 return try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
                                                                                   sessionManager: sessionManager,
                                                                                   authCredential: authCredential)
             }
         }
 
-        return firstly { () -> Promise<ServiceResponse> in
+        return firstly(on: .global()) { () -> Promise<ServiceResponse> in
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
@@ -503,7 +503,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
-        return DispatchQueue.global().async(.promise) { () -> (Data, GroupV2Params) in
+        return firstly(on: .global()) { () -> (Data, GroupV2Params) in
             let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
             let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
             return (groupId, groupV2Params)
@@ -523,7 +523,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                          firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
 
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
+            return firstly(on: .global()) { () -> NSURLRequest in
                 let (fromRevision, requireSnapshotForFirstChange) =
                     try self.databaseStorage.read { (transaction) throws -> (UInt32, Bool) in
                         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -552,7 +552,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
         }
 
-        return firstly { () -> Promise<ServiceResponse> in
+        return firstly(on: .global()) { () -> Promise<ServiceResponse> in
             // We can't remove the local user from the group on 403.
             // For example, user might just be joining the group
             // using an invite OR have just been re-added after leaving.
@@ -604,7 +604,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             downloadedAvatars.merge(justUploadedAvatars)
         }
 
-        return DispatchQueue.global().async(.promise) { () throws -> Void in
+        return firstly(on: .global()) { () throws -> Void in
             // First step - try to skip downloading the current group avatar.
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             guard let groupThread = (self.databaseStorage.read { transaction in
@@ -704,13 +704,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func updateGroupV2(groupModel: TSGroupModelV2,
                               changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
+        firstly(on: .global()) { () throws -> GroupsV2ChangeSet in
             let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
                                                   groupSecretParamsData: groupModel.secretParamsData)
             changeSetBlock(changeSet)
             return changeSet
         }.then(on: .global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(changeSet: changeSet)
+            self.updateExistingGroupOnService(changeSet: changeSet)
         }
     }
 
@@ -761,7 +761,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
         let sessionManager = self.sessionManager
 
-        return firstly {
+        return firstly(on: .global()) {
             self.ensureTemporalCredentials(localUuid: localUuid)
         }.then(on: .global()) { (authCredential: AuthCredential) -> Promise<NSURLRequest> in
             return requestBuilder(authCredential, sessionManager)
@@ -942,7 +942,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return
         }
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-        firstly {
+        firstly(on: .global()) {
             self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupId,
                                                           groupSecretParamsData: groupModelV2.secretParamsData,
                                                           groupUpdateMode: groupUpdateMode)
@@ -996,38 +996,41 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         var promises = [Promise<UUID>]()
         for uuid in uuidsWithoutCredentials {
             let address = SignalServiceAddress(uuid: uuid)
-            let promise = ProfileFetcherJob.fetchProfilePromise(address: address,
-                                                                mainAppOnly: false,
-                                                                ignoreThrottling: true,
-                                                                fetchType: .versioned)
-                .map(on: .global()) { (_: SignalServiceProfile) -> (UUID) in
-                    // Ideally we'd pull the credential off of SignalServiceProfile here,
-                    // but the credential response needs to be parsed and verified
-                    // which requires the VersionedProfileRequest.
-                    return uuid
+            let promise = firstly(on: .global()) {
+                ProfileFetcherJob.fetchProfilePromise(address: address,
+                                                      mainAppOnly: false,
+                                                      ignoreThrottling: true,
+                                                      fetchType: .versioned)
+            }.map(on: .global()) { (_: SignalServiceProfile) -> (UUID) in
+                // Ideally we'd pull the credential off of SignalServiceProfile here,
+                // but the credential response needs to be parsed and verified
+                // which requires the VersionedProfileRequest.
+                return uuid
             }
             promises.append(promise)
         }
-        return when(fulfilled: promises)
-            .map(on: .global()) { _ in
-                // Since we've just successfully fetched versioned profiles
-                // for all of the UUIDs without credentials, we _should_ be
-                // able to load a credential.
-                //
-                // If we change how credentials are cleared, we'll need to
-                // revisit this to avoid races.
-                try self.databaseStorage.read { transaction in
-                    for uuid in uuids {
-                        let address = SignalServiceAddress(uuid: uuid)
-                        guard let credential = try self.versionedProfiles.profileKeyCredential(for: address,
-                                                                                               transaction: transaction) else {
-                                                                                                throw OWSAssertionError("Could not load credential.")
-                        }
-                        credentialMap[uuid] = credential
-                    }
-                }
 
-                return credentialMap
+        return firstly(on: .global()) {
+            when(fulfilled: promises)
+        }.map(on: .global()) { _ in
+            // Since we've just successfully fetched versioned profiles
+            // for all of the UUIDs without credentials, we _should_ be
+            // able to load a credential.
+            //
+            // If we change how credentials are cleared, we'll need to
+            // revisit this to avoid races.
+            try self.databaseStorage.read { transaction in
+                for uuid in uuids {
+                    let address = SignalServiceAddress(uuid: uuid)
+                    guard let credential = try self.versionedProfiles.profileKeyCredential(for: address,
+                                                                                           transaction: transaction) else {
+                                                                                            throw OWSAssertionError("Could not load credential.")
+                    }
+                    credentialMap[uuid] = credential
+                }
+            }
+
+            return credentialMap
         }
     }
 
@@ -1102,7 +1105,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return "\(redemptionTime)"
         }
 
-        return DispatchQueue.global().async(.promise) { () -> AuthCredential? in
+        return firstly(on: .global()) { () -> AuthCredential? in
             do {
                 let data = self.databaseStorage.read { (transaction) -> Data? in
                     let key = authCredentialCacheKey(redemptionTime)
@@ -1152,8 +1155,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         let todayPlus7 = today + 7
         let request = OWSRequestFactory.groupAuthenticationCredentialRequest(fromRedemptionDays: today,
                                                                              toRedemptionDays: todayPlus7)
-        return firstly {
-            networkManager.makePromise(request: request)
+        return firstly(on: .global()) {
+            self.networkManager.makePromise(request: request)
         }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> AuthCredentialMap in
             let temporalCredentials = try self.parseCredentialResponse(responseObject: responseObject)
             let localZKGUuid = try localUuid.asZKGUuid()

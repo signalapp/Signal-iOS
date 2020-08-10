@@ -237,7 +237,7 @@ class GroupsV2ProfileKeyUpdater {
             return Promise(error: GroupsV2Error.shouldDiscard)
         }
 
-        return firstly {
+        return firstly(on: .global()) {
             self.messageProcessing.allMessageFetchingAndProcessingPromise()
         }.map(on: .global()) { () throws -> TSGroupThread in
             return try self.databaseStorage.read { transaction in

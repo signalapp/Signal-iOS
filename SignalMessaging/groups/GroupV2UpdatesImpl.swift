@@ -85,15 +85,15 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func tryToRefreshV2GroupThread(_ groupThread: TSGroupThread,
                                            groupUpdateMode: GroupUpdateMode) {
-        firstly { () -> Promise<Void> in
+        firstly(on: .global()) { () -> Promise<Void> in
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 return Promise.value(())
             }
             let groupId = groupModel.groupId
             let groupSecretParamsData = groupModel.secretParamsData
-            return tryToRefreshV2GroupThread(groupId: groupId,
-                                             groupSecretParamsData: groupSecretParamsData,
-                                             groupUpdateMode: groupUpdateMode)
+            return self.tryToRefreshV2GroupThread(groupId: groupId,
+                                                  groupSecretParamsData: groupSecretParamsData,
+                                                  groupUpdateMode: groupUpdateMode)
         }.catch(on: .global()) { error in
             Logger.warn("Group refresh failed: \(error).")
         }
@@ -124,7 +124,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                groupId: groupId,
                                                groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode)
-        operation.promise.done(on: .global()) { _ in
+        firstly {
+            operation.promise
+        }.done(on: .global()) { _ in
             Logger.verbose("Group refresh succeeded.")
 
             self.serialQueue.sync {
@@ -299,7 +301,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func refreshGroupFromService(groupSecretParamsData: Data,
                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
 
-        return firstly {
+        return firstly(on: .global()) {
             return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
@@ -385,7 +387,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func fetchAndApplyChangeActionsFromService(groupSecretParamsData: Data,
                                                        groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<[GroupV2Change]> in
+        return firstly(on: .global()) { () -> Promise<[GroupV2Change]> in
             self.fetchChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode)
         }.then(on: .global()) { (groupChanges: [GroupV2Change]) throws -> Promise<TSGroupThread> in
@@ -494,7 +496,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
         let cacheKey = groupSecretParamsData.hexadecimalString as NSString
 
-        return DispatchQueue.global().async(.promise) { () -> [GroupV2Change]? in
+        return firstly(on: .global()) { () -> [GroupV2Change]? in
             // Try to use group changes from the cache.
             return self.cachedGroupChanges(forCacheKey: cacheKey,
                                            groupSecretParamsData: groupSecretParamsData,
@@ -519,7 +521,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                    groupSecretParamsData: Data,
                                                    groupChanges: [GroupV2Change],
                                                    groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<Void> in
+        firstly(on: .global()) { () -> Promise<Void> in
             if groupUpdateMode.shouldBlockOnMessageProcessing {
                 return self.messageProcessing.allMessageFetchingAndProcessingPromise()
             } else {
@@ -772,7 +774,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func fetchAndApplyCurrentGroupV2SnapshotFromService(groupSecretParamsData: Data,
                                                                 groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        return firstly {
+        return firstly(on: .global()) {
             self.groupsV2.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
         }.then(on: .global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
@@ -785,7 +787,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: GroupV2Snapshot,
                                                              groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<Void> in
+        return firstly(on: .global()) { () -> Promise<Void> in
             if groupUpdateMode.shouldBlockOnMessageProcessing {
                 return self.messageProcessing.allMessageFetchingAndProcessingPromise()
             } else {

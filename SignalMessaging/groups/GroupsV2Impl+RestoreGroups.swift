@@ -238,7 +238,7 @@ public extension GroupsV2Impl {
         }
 
         public override func run() {
-            firstly {
+            firstly(on: .global()) {
                 GroupsV2Impl.tryToRestoreNextGroup()
             }.done(on: .global()) { outcome in
                 Logger.verbose("Group restore complete.")
