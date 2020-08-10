@@ -269,6 +269,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return SDSDatabaseStorage.shared
     }
 
+    private var bulkProfileFetch: BulkProfileFetch {
+        return SSKEnvironment.shared.bulkProfileFetch
+    }
+
     // MARK: - Recipient state
 
     @objc
@@ -297,12 +301,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
             // If UUID and Phone Number setting don't align, defer to UUID and update phone number
             if existingPhoneNumberValue != existingUUIDValue {
-                owsFailDebug("UUID and Phone Number unexpectedly have different UD values")
-                Logger.info("Unexpected UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
+                Logger.warn("Unexpected UD value mismatch; updating UD state.")
                 shouldUpdateValues = true
-            }
+                existingValue = .disabled
 
-            existingValue = existingUUIDValue
+                // Fetch profile for this user to determine current UD state.
+                DispatchQueue.global().async {
+                    self.bulkProfileFetch.fetchProfile(address: address)
+                }
+            } else {
+                existingValue = existingUUIDValue
+            }
         } else if let existingPhoneNumberValue = existingPhoneNumberValue {
             existingValue = existingPhoneNumberValue
 
