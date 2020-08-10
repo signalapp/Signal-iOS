@@ -5462,7 +5462,7 @@ typedef enum : NSUInteger {
     void (^adjustInsets)(void) = ^(void) {
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {
-            [self scrollToDefaultPositionAnimated:NO];
+            // Do nothing.
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];
