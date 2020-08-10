@@ -385,7 +385,7 @@ extension UIDatabaseObserver: TransactionObserver {
         if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
             let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
             // Don't update UI more often than Nx/second.
-            guard secondsSinceLastUpdate >= targetUpdateFrequencySeconds else {
+            guard secondsSinceLastUpdate >= targetUpdateInterval else {
                 // Don't update the snapshot yet; we've updated the snapshot recently.
                 return
             }
@@ -401,7 +401,7 @@ extension UIDatabaseObserver: TransactionObserver {
         updateSnapshot()
     }
 
-    private var targetUpdateFrequencySeconds: Double {
+    private var targetUpdateInterval: Double {
         AssertIsOnMainThread()
 
         // We want the UI to feel snappy and responsive, which means
@@ -441,12 +441,13 @@ extension UIDatabaseObserver: TransactionObserver {
         // Select the alpha of our chosen heuristic.
         let alpha: Double = displayLinkAlpha
 
-        let fastUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(20)
-        let slowUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(2)
+        // These intervals control update frequency.
+        let fastUpdateInterval: TimeInterval = 1 / TimeInterval(5)
+        let slowUpdateInterval: TimeInterval = 1 / TimeInterval(1)
         // Under light load, we want the fastest update frequency.
         // Under heavy load, we want the slowest update frequency.
-        let targetUpdateFrequencySeconds = alpha.lerp(fastUpdateFrequencySeconds, slowUpdateFrequencySeconds)
-        return targetUpdateFrequencySeconds
+        let targetUpdateInterval = alpha.lerp(fastUpdateInterval, slowUpdateInterval)
+        return targetUpdateInterval
     }
 
     // NOTE: This should only be used in exceptional circumstances,
