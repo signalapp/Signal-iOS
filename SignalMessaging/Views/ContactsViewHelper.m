@@ -178,11 +178,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    // Notify delegates & cull stale delegates.
     NSMutableArray<ContactsViewHelperDelegateBox *> *delegates = [NSMutableArray new];
     for (ContactsViewHelperDelegateBox *box in self.delegates) {
         id<ContactsViewHelperDelegate> _Nullable delegate = box.delegate;
         if (delegate) {
-            [delegates addObject:delegate];
+            [delegates addObject:box];
             [delegate contactsViewHelperDidUpdateContacts];
         }
     }
