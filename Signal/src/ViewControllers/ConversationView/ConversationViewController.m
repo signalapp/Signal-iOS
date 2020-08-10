@@ -124,9 +124,6 @@ typedef enum : NSUInteger {
     LocationPickerDelegate,
     InputAccessoryViewPlaceholderDelegate>
 
-@property (nonatomic) TSThread *thread;
-@property (nonatomic) ThreadViewModel *threadViewModel;
-
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
@@ -236,7 +233,6 @@ typedef enum : NSUInteger {
     self.inputAccessoryPlaceholder.delegate = self;
 
     _threadViewModel = threadViewModel;
-    _thread = threadViewModel.threadRecord;
 
     self.actionOnOpen = action;
     _cellMediaCache = [NSCache new];
@@ -424,6 +420,10 @@ typedef enum : NSUInteger {
     return self.thread.isGroupThread;
 }
 
+- (TSThread *)thread {
+    OWSAssertDebug(self.threadViewModel);
+    return self.threadViewModel.threadRecord;
+}
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
@@ -546,7 +546,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)userLeftGroup
 {
-    if (![_thread isKindOfClass:[TSGroupThread class]]) {
+    if (![self.thread isKindOfClass:[TSGroupThread class]]) {
         return NO;
     }
 
@@ -3702,7 +3702,7 @@ typedef enum : NSUInteger {
 - (void)saveDraft
 {
     if (!self.inputToolbar.hidden) {
-        TSThread *thread = _thread;
+        TSThread *thread = self.thread;
         MessageBody *currentDraft = [self.inputToolbar messageBody];
 
         DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -4044,7 +4044,7 @@ typedef enum : NSUInteger {
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug([_thread isKindOfClass:[TSGroupThread class]]);
+    OWSAssertDebug([self.thread isKindOfClass:[TSGroupThread class]]);
     OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
@@ -4799,8 +4799,7 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
-    [self.thread anyReloadWithTransaction:transaction];
-    self.threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
+    _threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
     [self updateNavigationBarSubtitleLabel];
     [self updateBarButtonItems];
 
