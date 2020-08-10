@@ -952,8 +952,8 @@ public class InteractionReadCache: NSObject {
         cache.didRemove(value: interaction, transaction: transaction)
     }
 
-    @objc(didInsertOrUpdateInteraction:transaction:)
-    public func didInsertOrUpdate(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+    @objc(didUpdateInteraction:transaction:)
+    public func didUpdate(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
         cache.didInsertOrUpdate(value: interaction, transaction: transaction)
     }
 
