@@ -279,7 +279,7 @@ class GroupsV2ProfileKeyUpdater {
                                                       groupSecretParamsData: groupSecretParamsData)
                 changeSet.setShouldUpdateLocalProfileKey()
                 return changeSet
-            }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
+            }.then(on: .global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
                 return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
             }.asVoid()
         }

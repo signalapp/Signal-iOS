@@ -295,7 +295,7 @@ public class GroupManager: NSObject {
                 return try builder.build(transaction: transaction)
             }
             return groupModel
-        }.then(on: DispatchQueue.global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
+        }.then(on: .global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
             guard let proposedGroupModelV2 = proposedGroupModel as? TSGroupModelV2 else {
                 // We don't need to upload avatars for v1 groups.
                 return Promise.value(proposedGroupModel)
@@ -308,7 +308,7 @@ public class GroupManager: NSObject {
             return firstly {
                 self.groupsV2.uploadGroupAvatar(avatarData: avatarData,
                                                 groupSecretParamsData: proposedGroupModelV2.secretParamsData)
-            }.map(on: DispatchQueue.global()) { (avatarUrlPath: String) -> TSGroupModel in
+            }.map(on: .global()) { (avatarUrlPath: String) -> TSGroupModel in
                 // Fill in the avatarUrl on the group model.
                 return try self.databaseStorage.read { transaction in
                     var builder = proposedGroupModel.asBuilder
@@ -797,7 +797,7 @@ public class GroupManager: NSObject {
             return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allUsers), isBlocking: true, ignoreErrors: true)
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
+        }.then(on: .global()) { () -> Promise<String?> in
             guard let avatarData = proposedGroupModel.groupAvatarData else {
                 // No avatar to upload.
                 return Promise.value(nil)

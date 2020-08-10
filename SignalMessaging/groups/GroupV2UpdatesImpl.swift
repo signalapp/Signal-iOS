@@ -301,7 +301,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
         return firstly {
             return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
+        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
             return firstly(on: .global()) {
                 self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
@@ -388,7 +388,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return firstly { () -> Promise<[GroupV2Change]> in
             self.fetchChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode)
-        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) throws -> Promise<TSGroupThread> in
+        }.then(on: .global()) { (groupChanges: [GroupV2Change]) throws -> Promise<TSGroupThread> in
             let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
             return self.tryToApplyGroupChangesFromService(groupId: groupId,
                                                           groupSecretParamsData: groupSecretParamsData,
@@ -499,7 +499,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return self.cachedGroupChanges(forCacheKey: cacheKey,
                                            groupSecretParamsData: groupSecretParamsData,
                                            upToRevision: upToRevision)
-        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]?) -> Promise<[GroupV2Change]> in
+        }.then(on: .global()) { (groupChanges: [GroupV2Change]?) -> Promise<[GroupV2Change]> in
             if let groupChanges = groupChanges {
                 return Promise.value(groupChanges)
             }
@@ -507,7 +507,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 return self.groupsV2.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
                                                              includeCurrentRevision: includeCurrentRevision,
                                                              firstKnownRevision: upToRevision)
-            }.map(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) -> [GroupV2Change] in
+            }.map(on: .global()) { (groupChanges: [GroupV2Change]) -> [GroupV2Change] in
                 self.addGroupChangesToCache(groupChanges: groupChanges, cacheKey: cacheKey)
 
                 return groupChanges

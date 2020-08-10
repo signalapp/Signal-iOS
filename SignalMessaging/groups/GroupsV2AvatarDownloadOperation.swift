@@ -28,14 +28,14 @@ class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
     override public func run() {
         firstly {
             return try tryToDownload(urlPath: urlPath, maxDownloadSize: maxDownloadSize)
-        }.done(on: DispatchQueue.global()) { [weak self] data in
+        }.done(on: .global()) { [weak self] data in
             guard let self = self else {
                 return
             }
 
             self.resolver.fulfill(data)
             self.reportSuccess()
-        }.catch(on: DispatchQueue.global()) { [weak self] error in
+        }.catch(on: .global()) { [weak self] error in
             guard let self = self else {
                 return
             }
