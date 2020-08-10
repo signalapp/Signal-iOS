@@ -63,7 +63,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var uuidSafetyNumbers: Bool {
-        guard modernCDS else { return false }
+        guard modernContactDiscovery else { return false }
         guard FeatureFlags.uuidSafetyNumbers else { return false }
         return isEnabled(.uuidSafetyNumbers)
     }
