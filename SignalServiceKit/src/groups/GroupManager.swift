@@ -1885,6 +1885,10 @@ public class GroupManager: NSObject {
                                                     value: Bool,
                                                     transaction: SDSAnyWriteTransaction) {
         if let uuid = address.uuid {
+            let didChange = value != groupsV2CapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
+            guard didChange else {
+                return
+            }
             groupsV2CapabilityStore.setBool(value, key: uuid.uuidString, transaction: transaction)
         }
     }

@@ -396,11 +396,7 @@ public class ProfileFetcherJob: NSObject {
             // Don't use UD for "self" profile fetches.
             udAccess = nil
         } else {
-            udAccess = databaseStorage.write { transaction in
-                return self.udManager.udAccess(forAddress: address,
-                                               requireSyncAccess: false,
-                                               transaction: transaction)
-            }
+            udAccess = udManager.udAccess(forAddress: address, requireSyncAccess: false)
         }
 
         let canFailoverUDAuth = true
