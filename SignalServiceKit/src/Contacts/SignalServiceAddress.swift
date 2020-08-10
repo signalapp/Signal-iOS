@@ -39,6 +39,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
                 return nil
             }
             backingUuid.set(cachedUuid)
+            observeMappingChanges()
             return cachedUuid
         }
 
@@ -136,7 +137,10 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         // There might be multiple instances in this aray that represent the same address.
         //
         // weakAddresses should only be accessed within unfairLock.
-        private var weakAddresses = WeakArray<SignalServiceAddress>()
+        private var weakAddresses = NSHashTable<SignalServiceAddress>(options: [
+            .weakMemory,
+            .objectPointerPersonality
+        ])
 
         init(uuid: UUID) {
             self.uuid = uuid
@@ -144,16 +148,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             registerForMappingChangeNotification()
         }
 
-        private static let kCullFrequency = 32
-
         func add(address: SignalServiceAddress) {
             unfairLock.withLock {
-                weakAddresses.append(address)
-
-                let shouldCull = weakAddresses.weakReferenceCount % Self.kCullFrequency == 0
-                if shouldCull {
-                    weakAddresses.cullExpired()
-                }
+                weakAddresses.add(address)
             }
         }
 
@@ -173,7 +170,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
                 else { return }
 
             let addresses = unfairLock.withLock {
-                weakAddresses.elements
+                weakAddresses.allObjects
             }
             for address in addresses {
                 address.backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: uuid))
@@ -181,20 +178,29 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         }
     }
 
-    private var mappingObserver: AddressMappingObserver?
+    private var mappingObserver = AtomicOptional<AddressMappingObserver>(nil)
     private static let mappingObserverCache = NSCache<NSUUID, AddressMappingObserver>()
 
     private func observeMappingChanges() {
         guard let uuid = backingUuid.get() else {
             return
         }
-        if let mappingObserver = Self.mappingObserverCache.object(forKey: uuid as NSUUID) {
-            mappingObserver.add(address: self)
-        } else {
-            let mappingObserver = AddressMappingObserver(uuid: uuid)
-            mappingObserver.add(address: self)
-            Self.mappingObserverCache.setObject(mappingObserver, forKey: uuid as NSUUID)
+        guard mappingObserver.get() == nil else {
+            owsFailDebug("There's shouldn't be an existing observer.")
+            return
         }
+        let observer: AddressMappingObserver
+        if let cachedObserver = Self.mappingObserverCache.object(forKey: uuid as NSUUID) {
+            observer = cachedObserver
+        } else {
+            observer = AddressMappingObserver(uuid: uuid)
+            Self.mappingObserverCache.setObject(observer, forKey: uuid as NSUUID)
+        }
+        observer.add(address: self)
+        // We could race in this method, but in practice it should never happen.
+        // If it did, it wouldn't have any adverse side effects.
+        owsAssertDebug(mappingObserver.get() == nil)
+        mappingObserver.set(observer)
     }
 
     // MARK: - Codable

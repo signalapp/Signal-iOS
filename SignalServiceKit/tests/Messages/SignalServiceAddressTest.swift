@@ -74,4 +74,58 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertNotEqual(SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
                           SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2))
     }
+
+    func test_mappingChanges() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = "+13213214321"
+        let phoneNumber2 = "+13213214322"
+        let phoneNumber3 = "+13213214323"
+
+        autoreleasepool {
+            let address1a = SignalServiceAddress(uuid: uuid1, phoneNumber: nil)
+            let address1b = SignalServiceAddress(uuid: uuid1, phoneNumber: nil)
+            let address1c = SignalServiceAddress(uuid: uuid1, phoneNumber: nil)
+            let address2a = SignalServiceAddress(uuid: uuid2, phoneNumber: nil)
+            let address2b = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2)
+
+            XCTAssertEqual(address1a.uuid, uuid1)
+            XCTAssertNil(address1a.phoneNumber)
+            XCTAssertEqual(address1b.uuid, uuid1)
+            XCTAssertNil(address1b.phoneNumber)
+            XCTAssertEqual(address1c.uuid, uuid1)
+            XCTAssertNil(address1c.phoneNumber)
+            XCTAssertEqual(address2a.uuid, uuid2)
+            XCTAssertNil(address2a.phoneNumber)
+            XCTAssertEqual(address2b.uuid, uuid2)
+            XCTAssertEqual(address2b.uuid, uuid2)
+
+            SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
+
+            XCTAssertEqual(address1a.uuid, uuid1)
+            XCTAssertEqual(address1a.phoneNumber, phoneNumber1)
+            XCTAssertEqual(address1b.uuid, uuid1)
+            // Consulting address1b.phoneNumber will fill in the missing value.
+            XCTAssertEqual(address1b.phoneNumber, phoneNumber1)
+            XCTAssertEqual(address1c.uuid, uuid1)
+            // Do not consult address1c.phoneNumber.
+            XCTAssertEqual(address2a.uuid, uuid2)
+            XCTAssertNil(address2a.phoneNumber)
+            XCTAssertEqual(address2b.uuid, uuid2)
+            XCTAssertEqual(address2b.uuid, uuid2)
+
+            SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber3)
+
+            XCTAssertEqual(address1a.uuid, uuid1)
+            XCTAssertEqual(address1a.phoneNumber, phoneNumber3)
+            XCTAssertEqual(address1b.uuid, uuid1)
+            XCTAssertEqual(address1b.phoneNumber, phoneNumber3)
+            XCTAssertEqual(address1c.uuid, uuid1)
+            XCTAssertEqual(address1c.phoneNumber, phoneNumber3)
+            XCTAssertEqual(address2a.uuid, uuid2)
+            XCTAssertNil(address2a.phoneNumber)
+            XCTAssertEqual(address2b.uuid, uuid2)
+            XCTAssertEqual(address2b.uuid, uuid2)
+        }
+    }
 }
