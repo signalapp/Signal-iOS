@@ -213,9 +213,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let uuid: UUID? = (container.contains(.backingUuid)
-            ? try container.decode(UUID.self, forKey: .backingUuid)
-            : nil)
+        let uuid: UUID? = try container.decodeIfPresent(UUID.self, forKey: .backingUuid)
 
         // Only decode the backingPhoneNumber if we don't know the UUID, otherwise
         // pull the phone number from the cache.
@@ -223,9 +221,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         if let decodedUuid = uuid {
             phoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: decodedUuid)
         } else {
-            phoneNumber = (container.contains(.backingPhoneNumber)
-                ? try container.decode(String.self, forKey: .backingPhoneNumber)
-                : nil)
+            phoneNumber = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber)
         }
 
         backingUuid = AtomicOptional(uuid)
