@@ -96,7 +96,7 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         guard RemoteConfig.groupsV2CreateGroups else {
             return false
         }
-        return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.maxGroupMemberCount
+        return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.maxGroupsV2MemberCount
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {

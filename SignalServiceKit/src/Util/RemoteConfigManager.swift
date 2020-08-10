@@ -82,13 +82,13 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var groupsV2maxMemberCount: UInt {
+    public static var maxGroupsV2MemberCount: UInt {
         let defaultValue: UInt = 151
         guard AppReadiness.isAppReady else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
         }
-        guard let rawValue: AnyObject = value(.groupsV2memberCountMax) else {
+        guard let rawValue: AnyObject = value(.maxGroupsV2MemberCount) else {
             return defaultValue
         }
         guard let stringValue = rawValue as? String else {
@@ -212,7 +212,7 @@ private struct Flags {
     // Values defined in this array remain set once they are
     // set regardless of the remote state.
     enum StickyValuesFlags: String, FlagType {
-        case groupsV2memberCountMax
+        case maxGroupsV2MemberCount
     }
 
     // We filter the received config down to just the supported values.
@@ -220,7 +220,7 @@ private struct Flags {
     // set because we cached a value before it went public. e.g. if we set
     // a sticky value to X in beta then remove it before going to production.
     enum SupportedValuesFlags: String, FlagType {
-        case groupsV2memberCountMax
+        case maxGroupsV2MemberCount
     }
 }
 
@@ -235,7 +235,14 @@ private protocol FlagType: CaseIterable {
 // MARK: -
 
 private extension FlagType {
-    var rawFlag: String { Flags.prefix + rawValue }
+    var rawFlag: String {
+        if rawValue == "maxGroupsV2MemberCount" {
+            return "all.groupsv2.capacity"
+        } else {
+            return Flags.prefix + rawValue
+        }
+    }
+
     static var allRawFlags: [String] { allCases.map { $0.rawFlag } }
 }
 

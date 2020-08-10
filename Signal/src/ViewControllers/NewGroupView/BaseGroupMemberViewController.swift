@@ -162,7 +162,7 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         memberCountLabel.text = String(format: format,
                                        OWSFormat.formatInt(memberCount),
-                                       OWSFormat.formatUInt(GroupManager.maxGroupMemberCount))
+                                       OWSFormat.formatUInt(GroupManager.maxGroupsV2MemberCount))
     }
 
     public func removeRecipient(_ recipient: PickedRecipient) {

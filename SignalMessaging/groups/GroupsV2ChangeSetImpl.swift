@@ -474,7 +474,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 continue
             }
 
-            guard allMemberCount <= GroupManager.maxGroupMemberCount else {
+            guard allMemberCount <= GroupManager.maxGroupsV2MemberCount else {
                 throw GroupsV2Error.tooManyMembers
             }
 

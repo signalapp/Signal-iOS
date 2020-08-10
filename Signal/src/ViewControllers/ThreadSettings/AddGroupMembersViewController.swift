@@ -256,12 +256,12 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         guard groupThread.isGroupV2Thread else {
             return false
         }
-        return groupMemberViewGroupMemberCountForDisplay() >= GroupManager.maxGroupMemberCount
+        return groupMemberViewGroupMemberCountForDisplay() >= GroupManager.maxGroupsV2MemberCount
     }
 
     func groupMemberViewMaxMemberCount() -> UInt? {
         return (groupThread.isGroupV2Thread
-        ? GroupManager.maxGroupMemberCount
+        ? GroupManager.maxGroupsV2MemberCount
         : nil)
     }
 
