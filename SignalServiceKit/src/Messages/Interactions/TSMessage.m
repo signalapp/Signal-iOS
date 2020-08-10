@@ -77,8 +77,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     _schemaVersion = OWSMessageSchemaVersion;
 
-    _body = messageBuilder.messageBody;
-    _bodyRanges = messageBuilder.bodyRanges;
+    if (messageBuilder.messageBody.length > 0) {
+        _body = messageBuilder.messageBody;
+        _bodyRanges = messageBuilder.bodyRanges;
+    } else if (messageBuilder.messageBody != nil) {
+        OWSFailDebug(@"Empty message body.");
+    }
     _attachmentIds = messageBuilder.attachmentIds;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;
