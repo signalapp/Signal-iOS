@@ -91,8 +91,8 @@ public class GroupManager: NSObject {
     // GroupsV2 TODO: Finalize this value with the designers.
     public static let groupUpdateTimeoutDuration: TimeInterval = 30
 
-    public static var maxGroupMemberCount: UInt {
-        return RemoteConfig.groupsV2maxMemberCount
+    public static var maxGroupsV2MemberCount: UInt {
+        return RemoteConfig.maxGroupsV2MemberCount
     }
 
     public static let maxGroupNameLength: Int = 32
