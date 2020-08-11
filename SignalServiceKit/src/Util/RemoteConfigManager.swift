@@ -30,7 +30,7 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var groupsV2CreateGroups: Bool {
         guard modernContactDiscovery || DebugFlags.groupsV2assumeModernCDS else { return false }
-        guard FeatureFlags.groupsV2 else { return false }
+        guard FeatureFlags.groupsV2Supported else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
@@ -41,7 +41,7 @@ public class RemoteConfig: BaseFlags {
             return true
         }
         guard modernContactDiscovery || DebugFlags.groupsV2assumeModernCDS else { return false }
-        guard FeatureFlags.groupsV2 else { return false }
+        guard FeatureFlags.groupsV2Supported else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
@@ -105,7 +105,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var mentions: Bool {
-        guard FeatureFlags.mentions else { return false }
+        guard FeatureFlags.mentionsSupported else { return false }
         if DebugFlags.forceMentions { return true }
         return isEnabled(.mentions)
     }
@@ -122,7 +122,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var usernames: Bool {
-        modernContactDiscovery && FeatureFlags.canUseUsernames
+        modernContactDiscovery && FeatureFlags.usernamesSupported
     }
 
     // MARK: -
