@@ -19,11 +19,20 @@ fileprivate extension NetworkManagerError {
         }
     }
 
-    // NOTE: This function should only be called from TSNetworkManager.swiftStatusCodeForError.
+    // NOTE: This function should only be called from TSNetworkManager.swiftHTTPStatusCodeForError.
     var statusCode: Int {
         switch self {
         case .taskError(let task, _):
             return task.statusCode()
+        }
+    }
+
+
+    // NOTE: This function should only be called from TSNetworkManager.swiftHTTPRetryAfterDateForError.
+    var retryAfterDate: Date? {
+        switch self {
+        case .taskError(let task, _):
+            return task.retryAfterDate()
         }
     }
 
@@ -113,6 +122,24 @@ public extension TSNetworkManager {
             return nil
         }
     }
+
+    // NOTE: This function should only be called from HTTPRetryAfterDate().
+    static func swiftHTTPRetryAfterDateForError(_ error: Error?) -> Date? {
+        guard let error = error else {
+            return nil
+        }
+        switch error {
+        case let networkManagerError as NetworkManagerError:
+            return networkManagerError.retryAfterDate
+
+        case RequestMakerError.websocketRequestError(_, _, _):
+            // TODO: Plumb retry afters through websocket errors
+            return nil
+
+        default:
+            return nil
+        }
+    }
 }
 
 // MARK: -
@@ -120,5 +147,9 @@ public extension TSNetworkManager {
 public extension Error {
     var httpStatusCode: Int? {
         HTTPStatusCodeForError(self)?.intValue
+    }
+
+    var retryAfterDate: Date? {
+        HTTPRetryAfterDateForError(self)
     }
 }

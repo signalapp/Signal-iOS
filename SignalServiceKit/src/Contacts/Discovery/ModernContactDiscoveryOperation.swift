@@ -37,6 +37,8 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                     DiscoveredContactInfo(e164: $0.e164PhoneNumber, uuid: $0.signalUuid)
                 })
             }
+        }.recover(on: queue) { error -> Promise<Set<DiscoveredContactInfo>> in
+            throw Self.prepareExternalError(from: error)
         }
     }
 
@@ -48,64 +50,70 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
 
         return firstly { () -> Promise<RemoteAttestation.CDSAttestation> in
             RemoteAttestation.performForCDS()
-        }.then(on: .global()) { (attestation: RemoteAttestation.CDSAttestation) -> Promise<Set<CDSRegisteredContact>> in
-            return firstly { () -> Promise<ContactDiscoveryService.IntersectionResponse> in
-                let query = try self.buildIntersectionQuery(phoneNumbersToLookup: phoneNumbersToLookup,
-                                                            remoteAttestations: attestation.remoteAttestations)
-                return ContactDiscoveryService().getRegisteredSignalUsers(query: query,
-                                                                          cookies: attestation.cookies,
-                                                                          authUsername: attestation.auth.username,
-                                                                          authPassword: attestation.auth.password,
-                                                                          enclaveName: attestation.enclaveConfig.enclaveName,
-                                                                          host: attestation.enclaveConfig.host,
-                                                                          censorshipCircumventionPrefix: attestation.enclaveConfig.censorshipCircumventionPrefix)
-            }.map(on: .global()) { response -> Set<CDSRegisteredContact> in
-                let allEnclaveAttestations = attestation.remoteAttestations
-                let respondingEnclaveAttestation = allEnclaveAttestations.first(where: { $1.requestId == response.requestId })
-                guard let responseAttestion = respondingEnclaveAttestation?.value else {
-                    throw OWSAssertionError("unable to find responseAttestation for requestId: \(response.requestId)")
-                }
 
-                guard let plaintext = Cryptography.decryptAESGCM(withInitializationVector: response.iv,
-                                                                 ciphertext: response.data,
-                                                                 additionalAuthenticatedData: nil,
-                                                                 authTag: response.mac,
-                                                                 key: responseAttestion.keys.serverKey) else {
-                                                                    throw ContactDiscoveryError.parseError(description: "decryption failed")
-                }
+        }.then(on: .global()) { (attestation: RemoteAttestation.CDSAttestation) -> Promise<(RemoteAttestation.CDSAttestation, ContactDiscoveryService.IntersectionResponse)> in
+            let service = ContactDiscoveryService()
+            let query = try self.buildIntersectionQuery(phoneNumbersToLookup: phoneNumbersToLookup,
+                                                        remoteAttestations: attestation.remoteAttestations)
+            return service.getRegisteredSignalUsers(
+                query: query,
+                cookies: attestation.cookies,
+                authUsername: attestation.auth.username,
+                authPassword: attestation.auth.password,
+                enclaveName: attestation.enclaveConfig.enclaveName,
+                host: attestation.enclaveConfig.host,
+                censorshipCircumventionPrefix: attestation.enclaveConfig.censorshipCircumventionPrefix
+            ).map {(attestation, $0)}
 
-                // 16 bytes per UUID
-                assert(plaintext.count == contactCount * 16)
-                let dataParser = OWSDataParser(data: plaintext)
-                let uuidsData = try dataParser.nextData(length: contactCount * 16, name: "uuids")
+        }.map(on: .global()) { attestation, response -> Set<CDSRegisteredContact> in
+            let allEnclaveAttestations = attestation.remoteAttestations
+            let respondingEnclaveAttestation = allEnclaveAttestations.first(where: { $1.requestId == response.requestId })
 
-                guard dataParser.isEmpty else {
-                    throw OWSAssertionError("failed check: dataParse.isEmpty")
-                }
-
-                let uuids = type(of: self).uuidArray(from: uuidsData)
-
-                guard uuids.count == contactCount else {
-                    throw OWSAssertionError("failed check: uuids.count == contactCount")
-                }
-
-                let unregisteredUuid = UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-
-                var registeredContacts: Set<CDSRegisteredContact> = Set()
-
-                for (index, e164PhoneNumber) in phoneNumbersToLookup.enumerated() {
-                    guard uuids[index] != unregisteredUuid else {
-                        Logger.verbose("not a signal user: \(e164PhoneNumber)")
-                        continue
-                    }
-
-                    Logger.verbose("signal user: \(e164PhoneNumber)")
-                    registeredContacts.insert(CDSRegisteredContact(signalUuid: uuids[index],
-                                                                   e164PhoneNumber: e164PhoneNumber))
-                }
-
-                return registeredContacts
+            guard let responseAttestion = respondingEnclaveAttestation?.value else {
+                throw ContactDiscoveryError.assertionError(description: "Invalid responding enclave for requestId: \(response.requestId)")
             }
+            guard let plaintext = Cryptography.decryptAESGCM(
+                withInitializationVector: response.iv,
+                ciphertext: response.data,
+                additionalAuthenticatedData: nil,
+                authTag: response.mac,
+                key: responseAttestion.keys.serverKey) else {
+                throw ContactDiscoveryError.assertionError(description: "decryption failed")
+            }
+
+            // 16 bytes per UUID
+            guard plaintext.count == contactCount * 16 else {
+                throw ContactDiscoveryError.assertionError(description: "failed check: invalid byte count")
+            }
+            let dataParser = OWSDataParser(data: plaintext)
+            let uuidsData = try dataParser.nextData(length: contactCount * 16, name: "uuids")
+
+            guard dataParser.isEmpty else {
+                throw ContactDiscoveryError.assertionError(description: "failed check: dataParse.isEmpty")
+            }
+
+            let uuids = type(of: self).uuidArray(from: uuidsData)
+
+            guard uuids.count == contactCount else {
+                throw ContactDiscoveryError.assertionError(description: "failed check: uuids.count == contactCount")
+            }
+
+            let unregisteredUuid = UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+
+            var registeredContacts: Set<CDSRegisteredContact> = Set()
+
+            for (index, e164PhoneNumber) in phoneNumbersToLookup.enumerated() {
+                guard uuids[index] != unregisteredUuid else {
+                    Logger.verbose("not a signal user: \(e164PhoneNumber)")
+                    continue
+                }
+
+                Logger.verbose("signal user: \(e164PhoneNumber)")
+                registeredContacts.insert(CDSRegisteredContact(signalUuid: uuids[index],
+                                                               e164PhoneNumber: e164PhoneNumber))
+            }
+
+            return registeredContacts
         }
     }
 
@@ -128,7 +136,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                                                                  initializationVectorLength: kAESGCM256_DefaultIVLength,
                                                                  additionalAuthenticatedData: remoteAttestation.requestId,
                                                                  key: remoteAttestation.keys.clientKey) else {
-                                                                    throw OWSAssertionError("failed to encrypt perEnclaveKey")
+                                                                    throw ContactDiscoveryError.assertionError(description: "failed to encrypt perEnclaveKey")
             }
 
             return ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope(requestId: remoteAttestation.requestId,
@@ -138,7 +146,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
         }
 
         guard let commitment = Cryptography.computeSHA256Digest(queryData) else {
-            throw OWSAssertionError("commitment was unexpectedly nil")
+            throw ContactDiscoveryError.assertionError(description: "commitment was unexpectedly nil")
         }
 
         return ContactDiscoveryService.IntersectionQuery(addressCount: UInt(phoneNumbersToLookup.count),
@@ -178,6 +186,74 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             [uuid_t]($0.bindMemory(to: uuid_t.self))
         }.map {
             UUID(uuid: $0)
+        }
+    }
+
+    /// Parse the error and, if appropriate, construct an error appropriate to return upwards
+    /// May return the provided error unchanged.
+    class func prepareExternalError(from error: Error) -> Error {
+        // Network connectivity failures should never be re-wrapped
+        if IsNetworkConnectivityFailure(error) {
+            return error
+        }
+
+        if let statusCode = error.httpStatusCode {
+            switch statusCode {
+            case 401:
+                return ContactDiscoveryError(
+                    kind: .unauthorized,
+                    debugDescription: "User is unauthorized",
+                    retryable: false,
+                    retryAfterDate: error.retryAfterDate)
+            case 404:
+                return ContactDiscoveryError(
+                    kind: .unexpectedResponse,
+                    debugDescription: "Unknown enclaveID",
+                    retryable: false,
+                    retryAfterDate: error.retryAfterDate)
+            case 408:
+                return ContactDiscoveryError(
+                    kind: .timeout,
+                    debugDescription: "Server rejected due to a timeout",
+                    retryable: true,
+                    retryAfterDate: error.retryAfterDate)
+            case 409:
+                // Conflict on a discovery request indicates that the requestId specified by the client
+                // has been dropped due to a delay or high request rate since the preceding corresponding
+                // attestation request. The client should not retry the request automatically
+                return ContactDiscoveryError(
+                    kind: .genericClientError,
+                    debugDescription: "RequestID conflict",
+                    retryable: false,
+                    retryAfterDate: error.retryAfterDate)
+            case 429:
+                return ContactDiscoveryError(
+                    kind: .rateLimit,
+                    debugDescription: "Rate limit",
+                    retryable: true,
+                    retryAfterDate: error.retryAfterDate)
+            case 400..<500:
+                return ContactDiscoveryError(
+                    kind: .genericClientError,
+                    debugDescription: "Client error (\(statusCode)): \(error.localizedDescription)",
+                    retryable: false,
+                    retryAfterDate: error.retryAfterDate)
+            case 500..<600:
+                return ContactDiscoveryError(
+                    kind: .genericServerError,
+                    debugDescription: "Server error (\(statusCode)): \(error.localizedDescription)",
+                    retryable: true,
+                    retryAfterDate: error.retryAfterDate)
+            default:
+                return ContactDiscoveryError(
+                    kind: .generic,
+                    debugDescription: "Unknown error (\(statusCode)): \(error.localizedDescription)",
+                    retryable: false,
+                    retryAfterDate: error.retryAfterDate)
+            }
+
+        } else {
+            return error
         }
     }
 }
