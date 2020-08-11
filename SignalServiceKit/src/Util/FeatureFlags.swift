@@ -113,9 +113,6 @@ public class FeatureFlags: BaseFlags {
     }
 
     @objc
-    public static let uuidCapabilities = groupsV2
-
-    @objc
     public static var storageModeDescription: String {
         return "\(storageMode)"
     }
@@ -135,19 +132,13 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static let allowUUIDOnlyContacts = groupsV2
-
-    @objc
-    public static let uuidSafetyNumbers = allowUUIDOnlyContacts
-
-    @objc
     public static let phoneNumberPrivacy = false
 
     @objc
     public static let complainAboutSlowDBWrites = true
 
-    @objc
-    public static let usernames = allowUUIDOnlyContacts && build.includes(.dev)
+    // Don't consult this flags; consult RemoteConfig.usernames.
+    static let usernamesSupported = build.includes(.dev)
 
     @objc
     public static var calling: Bool {
@@ -163,8 +154,8 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let answerCallsOnSecondaryDevice: Bool = true
 
-    @objc
-    public static let groupsV2 = build.includes(.qa)
+    // Don't consult this flags; consult RemoteConfig.groupsV2...
+    static let groupsV2Supported = true
 
     @objc
     public static let groupsV2embedProtosInGroupUpdates = true
@@ -196,8 +187,8 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let deviceTransferThrowAway = false
 
-    @objc
-    public static let mentions = groupsV2
+    // Don't consult this flags; consult RemoteConfig.mentions.
+    static let mentionsSupported = groupsV2Supported
 
     @objc
     public static let attachmentUploadV3 = build.includes(.qa)
@@ -275,7 +266,7 @@ public class DebugFlags: BaseFlags {
     }
 
     @objc
-    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
@@ -311,8 +302,7 @@ public class DebugFlags: BaseFlags {
     }
 
     // This flag auto-enables the groupv2 flags in RemoteConfig.
-    @objc
-    public static let groupsV2ForceEnableRemoteConfig = FeatureFlags.groupsV2 && build.includes(.qa)
+    static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     // If set, client will invite instead of adding other users.
     private static let _groupsV2forceInvites = AtomicBool(false)
@@ -362,13 +352,12 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2ignoreCorruptInvites = false
 
     @objc
-    public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     @objc
     public static let groupsV2editMemberAccess = build.includes(.qa)
 
-    @objc
-    public static let groupsV2assumeModernCDS = build.includes(.qa)
+    static let groupsV2forceModernCDS = build.includes(.qa)
 
     @objc
     public static let isMessageProcessingVerbose = false
@@ -381,8 +370,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let logCurlOnSuccess = false
 
-    @objc
-    public static let forceModernContactDiscovery = build.includes(.dev)
+    static let forceModernContactDiscovery = build.includes(.dev)
 
     // Our "group update" info messages should be robust to
     // various situations that shouldn't occur in production,
@@ -407,14 +395,12 @@ public class DebugFlags: BaseFlags {
 
     // We currently want to force-enable versioned profiles for
     // all beta users, but not production.
-    @objc
-    public static let forceVersionedProfiles = build.includes(.beta)
+    static let forceVersionedProfiles = build.includes(.beta)
 
     @objc
     public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
 
-    @objc
-    public static let forceMentions = build.includes(.dev)
+    static let forceMentions = build.includes(.dev)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

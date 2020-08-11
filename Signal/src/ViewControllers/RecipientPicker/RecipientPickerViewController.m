@@ -138,7 +138,7 @@ const NSUInteger kMinimumSearchLength = 2;
     UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
-    if (SSKFeatureFlags.usernames) {
+    if (RemoteConfig.usernames) {
         searchBar.placeholder = NSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
             @"Placeholder text indicating the user can search for contacts by name, username, or phone number.");
     } else {
@@ -825,7 +825,7 @@ const NSUInteger kMinimumSearchLength = 2;
     }
 
     // Username lookup
-    if (SSKFeatureFlags.usernames) {
+    if (RemoteConfig.usernames) {
         NSString *usernameMatch = self.searchText;
         NSString *_Nullable localUsername = self.profileManager.localUsername;
 

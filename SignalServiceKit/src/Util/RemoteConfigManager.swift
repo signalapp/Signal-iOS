@@ -29,9 +29,9 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2CreateGroups: Bool {
-        guard modernContactDiscovery || DebugFlags.groupsV2assumeModernCDS else { return false }
-        guard FeatureFlags.groupsV2 else { return false }
-        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
+        guard modernContactDiscovery || DebugFlags.groupsV2forceModernCDS else { return false }
+        guard FeatureFlags.groupsV2Supported else { return false }
+        if DebugFlags.groupsV2ForceEnable { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
@@ -40,9 +40,9 @@ public class RemoteConfig: BaseFlags {
         if groupsV2CreateGroups {
             return true
         }
-        guard modernContactDiscovery || DebugFlags.groupsV2assumeModernCDS else { return false }
-        guard FeatureFlags.groupsV2 else { return false }
-        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
+        guard modernContactDiscovery || DebugFlags.groupsV2forceModernCDS else { return false }
+        guard FeatureFlags.groupsV2Supported else { return false }
+        if DebugFlags.groupsV2ForceEnable { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
@@ -53,7 +53,7 @@ public class RemoteConfig: BaseFlags {
             isEnabled(.modernContactDiscovery),
 
             // These flags force modern CDS on, even if the remote config is switched off
-            // Groups v2 implies modern CDS, so when it's enabled modern CDS mst be enabled.
+            // Groups v2 implies modern CDS, so when it's enabled modern CDS must be enabled.
             DebugFlags.forceModernContactDiscovery,
             isEnabled(.groupsV2GoodCitizen)
         ]
@@ -64,7 +64,6 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var uuidSafetyNumbers: Bool {
         guard modernContactDiscovery else { return false }
-        guard FeatureFlags.uuidSafetyNumbers else { return false }
         return isEnabled(.uuidSafetyNumbers)
     }
 
@@ -106,10 +105,27 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var mentions: Bool {
-        guard FeatureFlags.mentions else { return false }
+        guard FeatureFlags.mentionsSupported else { return false }
         if DebugFlags.forceMentions { return true }
         return isEnabled(.mentions)
     }
+
+    @objc
+    public static var uuidCapabilities: Bool {
+        modernContactDiscovery
+    }
+
+    @objc
+    public static var allowUUIDOnlyContacts: Bool {
+        modernContactDiscovery
+    }
+
+    @objc
+    public static var usernames: Bool {
+        modernContactDiscovery && FeatureFlags.usernamesSupported
+    }
+
+    // MARK: -
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
