@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -73,7 +73,7 @@ public extension SignalClient {
     }
 
     var address: SignalServiceAddress {
-        if FeatureFlags.allowUUIDOnlyContacts {
+        if RemoteConfig.allowUUIDOnlyContacts {
             return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
         } else {
             return SignalServiceAddress(phoneNumber: e164Identifier!)

@@ -639,7 +639,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         if (localUUID) {
             [whitelistedUUIDS removeObject:localUUID];
         } else {
-            if (SSKFeatureFlags.allowUUIDOnlyContacts) {
+            if (RemoteConfig.allowUUIDOnlyContacts) {
                 OWSFailDebug(@"Missing localUUID");
             }
         }

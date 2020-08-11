@@ -746,7 +746,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         case ProfileViewMode_Registration:
             return false;
         case ProfileViewMode_AppSettings:
-            return SSKFeatureFlags.usernames;
+            return RemoteConfig.usernames;
     }
 }
 

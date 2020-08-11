@@ -113,9 +113,6 @@ public class FeatureFlags: BaseFlags {
     }
 
     @objc
-    public static let uuidCapabilities = groupsV2
-
-    @objc
     public static var storageModeDescription: String {
         return "\(storageMode)"
     }
@@ -135,19 +132,12 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static let allowUUIDOnlyContacts = groupsV2
-
-    @objc
-    public static let uuidSafetyNumbers = allowUUIDOnlyContacts
-
-    @objc
     public static let phoneNumberPrivacy = false
 
     @objc
     public static let complainAboutSlowDBWrites = true
 
-    @objc
-    public static let usernames = allowUUIDOnlyContacts && build.includes(.dev)
+    static let canUseUsernames = build.includes(.dev)
 
     @objc
     public static var calling: Bool {

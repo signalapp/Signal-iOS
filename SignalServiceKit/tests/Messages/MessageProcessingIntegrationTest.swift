@@ -126,7 +126,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     }
 
     func test_contactMessage_UUIDEnvelope() {
-        guard FeatureFlags.allowUUIDOnlyContacts else {
+        guard RemoteConfig.allowUUIDOnlyContacts else {
             // This test is known to be failing.
             // It's intended as TDD for the upcoming UUID work.
             return
