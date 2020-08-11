@@ -85,36 +85,51 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         autoreleasepool {
             let address1a = SignalServiceAddress(uuid: uuid1, phoneNumber: nil)
             let address1b = SignalServiceAddress(uuid: uuid1, phoneNumber: nil)
-            let address1c = SignalServiceAddress(uuid: uuid1, phoneNumber: nil)
+            let address1c = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1)
             let address2a = SignalServiceAddress(uuid: uuid2, phoneNumber: nil)
             let address2b = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2)
 
-            XCTAssertEqual(address1a.uuid, uuid1)
-            XCTAssertNil(address1a.phoneNumber)
-            XCTAssertEqual(address1b.uuid, uuid1)
-            XCTAssertNil(address1b.phoneNumber)
-            XCTAssertEqual(address1c.uuid, uuid1)
-            XCTAssertNil(address1c.phoneNumber)
-            XCTAssertEqual(address2a.uuid, uuid2)
-            XCTAssertNil(address2a.phoneNumber)
-            XCTAssertEqual(address2b.uuid, uuid2)
-            XCTAssertEqual(address2b.uuid, uuid2)
+            // We use the "unresolved" accessors unresolvedUuid(), unresolvedPhoneNumber()
+            // to avoid filling in the backing values.
+
+            XCTAssertEqual(address1a.unresolvedUuid, uuid1)
+            XCTAssertNil(address1a.unresolvedPhoneNumber)
+            XCTAssertEqual(address1b.unresolvedUuid, uuid1)
+            XCTAssertNil(address1b.unresolvedPhoneNumber)
+            XCTAssertEqual(address1c.unresolvedUuid, uuid1)
+            XCTAssertEqual(address1c.unresolvedPhoneNumber, phoneNumber1)
+            XCTAssertEqual(address2a.unresolvedUuid, uuid2)
+            XCTAssertNil(address2a.unresolvedPhoneNumber)
+            XCTAssertEqual(address2b.unresolvedUuid, uuid2)
+            XCTAssertEqual(address2b.unresolvedPhoneNumber, phoneNumber2)
 
             SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
 
-            XCTAssertEqual(address1a.uuid, uuid1)
-            XCTAssertEqual(address1a.phoneNumber, phoneNumber1)
-            XCTAssertEqual(address1b.uuid, uuid1)
-            // Consulting address1b.phoneNumber will fill in the missing value.
-            XCTAssertEqual(address1b.phoneNumber, phoneNumber1)
-            XCTAssertEqual(address1c.uuid, uuid1)
-            // Do not consult address1c.phoneNumber.
-            XCTAssertEqual(address2a.uuid, uuid2)
-            XCTAssertNil(address2a.phoneNumber)
-            XCTAssertEqual(address2b.uuid, uuid2)
-            XCTAssertEqual(address2b.uuid, uuid2)
+            XCTAssertEqual(address1a.unresolvedUuid, uuid1)
+            XCTAssertEqual(address1a.unresolvedPhoneNumber, phoneNumber1)
+            XCTAssertEqual(address1b.unresolvedUuid, uuid1)
+            XCTAssertEqual(address1b.unresolvedPhoneNumber, phoneNumber1)
+            XCTAssertEqual(address1c.unresolvedUuid, uuid1)
+            XCTAssertEqual(address1c.unresolvedPhoneNumber, phoneNumber1)
+            XCTAssertEqual(address2a.unresolvedUuid, uuid2)
+            XCTAssertNil(address2a.unresolvedPhoneNumber)
+            XCTAssertEqual(address2b.unresolvedUuid, uuid2)
+            XCTAssertEqual(address2b.unresolvedPhoneNumber, phoneNumber2)
 
             SSKEnvironment.shared.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber3)
+
+            XCTAssertEqual(address1a.unresolvedUuid, uuid1)
+            XCTAssertEqual(address1a.unresolvedPhoneNumber, phoneNumber3)
+            XCTAssertEqual(address1b.unresolvedUuid, uuid1)
+            XCTAssertEqual(address1b.unresolvedPhoneNumber, phoneNumber3)
+            XCTAssertEqual(address1c.unresolvedUuid, uuid1)
+            XCTAssertEqual(address1c.unresolvedPhoneNumber, phoneNumber3)
+            XCTAssertEqual(address2a.unresolvedUuid, uuid2)
+            XCTAssertNil(address2a.unresolvedPhoneNumber)
+            XCTAssertEqual(address2b.unresolvedUuid, uuid2)
+            XCTAssertEqual(address2b.unresolvedPhoneNumber, phoneNumber2)
+
+            // MARK: - Resolved values
 
             XCTAssertEqual(address1a.uuid, uuid1)
             XCTAssertEqual(address1a.phoneNumber, phoneNumber3)
@@ -125,7 +140,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
             XCTAssertEqual(address2a.uuid, uuid2)
             XCTAssertNil(address2a.phoneNumber)
             XCTAssertEqual(address2b.uuid, uuid2)
-            XCTAssertEqual(address2b.uuid, uuid2)
+            XCTAssertEqual(address2b.phoneNumber, phoneNumber2)
         }
     }
 }
