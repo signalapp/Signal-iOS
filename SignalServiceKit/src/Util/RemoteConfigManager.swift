@@ -55,7 +55,7 @@ public class RemoteConfig: BaseFlags {
             // These flags force modern CDS on, even if the remote config is switched off
             // Groups v2 implies modern CDS, so when it's enabled modern CDS mst be enabled.
             DebugFlags.forceModernContactDiscovery,
-            isEnabled(.groupsV2GoodCitizen),
+            isEnabled(.groupsV2GoodCitizen)
         ]
 
         return allEnableConditions.contains(true)
