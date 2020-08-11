@@ -198,14 +198,22 @@ public extension ContactDiscoveryTask {
 
 // MARK: - Retry After tracking
 
-fileprivate extension ContactDiscoveryTask {
+extension ContactDiscoveryTask {
 
-    static let rateLimiter = RateLimiter()
+    private static let rateLimiter = RateLimiter()
 
-    class RateLimiter {
-        var lock: UnfairLock = UnfairLock()
-        var standardRetryAfter: Date = .distantPast
-        var criticalRetryAfter: Date = .distantPast
+    // Declared `internal` to expose to tests
+    internal final class RateLimiter {
+        private var lock: UnfairLock = UnfairLock()
+        private var standardRetryAfter: Date = .distantPast
+        private var criticalRetryAfter: Date = .distantPast
+
+        fileprivate init() {}
+        static internal func createForTesting() -> RateLimiter {
+            owsAssertDebug(CurrentAppContext().isRunningTests, "`createForTesting` not intended to be used outside of tests")
+            return RateLimiter()
+
+        }
 
         func updateRetryAfter(with date: Date, criticalPriority: Bool) {
             lock.withLock {
