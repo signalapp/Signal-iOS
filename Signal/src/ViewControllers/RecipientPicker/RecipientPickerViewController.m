@@ -584,7 +584,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
 - (NSArray<SignalAccount *> *)allSignalAccounts
 {
-    return [self.contactsViewHelper signalAccountsWithShouldHideLocalUser:self.shouldHideLocalRecipient];
+    return [self.contactsViewHelper signalAccountsIncludingLocalUser:!self.shouldHideLocalRecipient];
 }
 
 - (NSArray<OWSTableSection *> *)contactsSection

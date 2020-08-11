@@ -6,11 +6,14 @@ import Foundation
 
 @objc
 public extension ContactsViewHelper {
-    func signalAccounts(shouldHideLocalUser: Bool) -> [SignalAccount] {
-        guard shouldHideLocalUser else {
+    @objc(signalAccountsIncludingLocalUser:)
+    func signalAccounts(includingLocalUser: Bool) -> [SignalAccount] {
+        guard !includingLocalUser else {
             return allSignalAccounts
         }
-        let localNumber = TSAccountManager.localNumber
+        guard let localNumber = TSAccountManager.localNumber else {
+            return allSignalAccounts
+        }
         return allSignalAccounts.filter { signalAccount in
             if signalAccount.recipientAddress.isLocalAddress {
                 return false

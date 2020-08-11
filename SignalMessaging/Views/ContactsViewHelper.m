@@ -18,36 +18,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactsViewHelperDelegateBox : NSObject
-
-@property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
-
-@end
-
-#pragma mark -
-
-@implementation ContactsViewHelperDelegateBox
-
-- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    OWSAssertDebug(delegate);
-    _delegate = delegate;
-
-    return self;
-}
-
-@end
-
-#pragma mark -
-
 @interface ContactsViewHelper () <OWSBlockListCacheDelegate>
 
-@property (nonatomic, nullable) NSMutableArray<ContactsViewHelperDelegateBox *> *delegates;
+@property (nonatomic, nullable) NSHashTable<id<ContactsViewHelperDelegate>> *delegates;
 
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
@@ -101,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _delegates = [NSMutableArray new];
+    _delegates = NSHashTable.weakObjectsHashTable;
     _blockListCache = [OWSBlockListCache new];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -171,23 +144,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [self.delegates addObject:[[ContactsViewHelperDelegateBox alloc] initWithDelegate:delegate]];
+    [self.delegates addObject:delegate];
 }
 
 - (void)fireDidUpdateContacts
 {
     OWSAssertIsOnMainThread();
 
-    // Notify delegates & cull stale delegates.
-    NSMutableArray<ContactsViewHelperDelegateBox *> *delegates = [NSMutableArray new];
-    for (ContactsViewHelperDelegateBox *box in self.delegates) {
-        id<ContactsViewHelperDelegate> _Nullable delegate = box.delegate;
-        if (delegate) {
-            [delegates addObject:box];
-            [delegate contactsViewHelperDidUpdateContacts];
-        }
+    for (id<ContactsViewHelperDelegate> delegate in self.delegates.allObjects) {
+        [delegate contactsViewHelperDidUpdateContacts];
     }
-    _delegates = delegates;
 }
 
 #pragma mark - Contacts
