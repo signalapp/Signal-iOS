@@ -35,6 +35,14 @@ public extension NSDate {
 }
 
 public extension Date {
+    static func ows_parseFromHTTPDateString(_ string: String) -> Date? {
+        return NSDate.ows_parseFromHTTPDateString(string) as Date?
+    }
+
+    static func ows_parseFromISO8601String(_ string: String) -> Date? {
+        return NSDate.ows_parseFromISO8601String(string) as Date?
+    }
+
     var ows_millisecondsSince1970: UInt64 {
         return (self as NSDate).ows_millisecondsSince1970
     }

@@ -6,7 +6,7 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
-#import "NSURLSessionDataTask+StatusCode.h"
+#import "NSURLSessionDataTask+OWS_HTTP.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
 #import "ProfileManagerProtocol.h"

@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSURLSessionTask (HTTP)
+@interface NSURLSessionTask (OWS_HTTP)
 
 /// Returns the status code of the underlying response
 /// Note, returns 0 in cases where the task's response is nil or not an NSHTTPURLResponse
@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface NSHTTPURLResponse (Headers)
+
+@interface NSHTTPURLResponse (HTTPHeaders)
 
 /// Parses the retry-after date from the HTTP response header
 /// If the retry-after value is an HTTP date (rfc5322) or an ISO8601 internet date (rfc3339), that date is returned
@@ -23,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// If a retry-after existed but could not be parsed, a fallback retry-after date of 60s from now is returned.
 /// If the response isn't valid, hasn't finished, or did not return a retry-after, nil is returned.
 - (nullable NSDate *)retryAfterDate;
++ (nullable NSDate *)parseRetryAfterHeaderValue:(nullable NSString *)headerValue
+    NS_SWIFT_NAME(parseRetryAfter(from:));
 
 @end
 

@@ -5,7 +5,7 @@
 #import "TSNetworkManager.h"
 #import "AppContext.h"
 #import "NSError+OWSOperation.h"
-#import "NSURLSessionDataTask+StatusCode.h"
+#import "NSURLSessionDataTask+OWS_HTTP.h"
 #import "OWSError.h"
 #import "OWSQueues.h"
 #import "OWSSignalService.h"
