@@ -250,7 +250,15 @@ NS_ASSUME_NONNULL_BEGIN
         [accountsToProcess addObject:[[SignalAccount alloc] initWithSignalServiceAddress:address]];
     }
 
+    NSMutableSet<SignalServiceAddress *> *addressSet = [NSMutableSet new];
     for (SignalAccount *signalAccount in accountsToProcess) {
+        if ([addressSet containsObject:signalAccount.recipientAddress]) {
+            OWSLogVerbose(@"Ignoring duplicate: %@", signalAccount.recipientAddress);
+            // We prefer the copy from contactsManager which will appear first
+            // in accountsToProcess; don't overwrite it.
+            continue;
+        }
+        [addressSet addObject:signalAccount.recipientAddress];
         if (signalAccount.recipientPhoneNumber) {
             phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
         }
