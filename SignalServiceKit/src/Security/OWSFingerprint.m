@@ -95,7 +95,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (uint32_t)scannableFingerprintVersion
 {
-    if (!SSKFeatureFlags.uuidSafetyNumbers) {
+    if (!RemoteConfig.uuidSafetyNumbers) {
         return OWSFingerprintPreUUIDScannableFormatVersion;
     }
 

@@ -498,7 +498,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
         if (localUuid == nil) {
-            OWSAssert(!SSKFeatureFlags.allowUUIDOnlyContacts);
+            OWSAssert(!RemoteConfig.allowUUIDOnlyContacts);
         } else {
             [self.keyValueStore setString:localUuid.UUIDString
                                       key:TSAccountManager_RegisteredUUIDKey

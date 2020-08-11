@@ -66,7 +66,7 @@ public class SignalServiceProfile: NSObject {
             if let value: Bool = try capabilities.optional(key: "uuid") {
                 self.supportsUUID = value
             } else {
-                if FeatureFlags.uuidCapabilities {
+                if RemoteConfig.uuidCapabilities {
                     owsFailDebug("Missing uuid capability.")
                 }
                 // The capability has been retired from the service.

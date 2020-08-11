@@ -64,7 +64,6 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var uuidSafetyNumbers: Bool {
         guard modernContactDiscovery else { return false }
-        guard FeatureFlags.uuidSafetyNumbers else { return false }
         return isEnabled(.uuidSafetyNumbers)
     }
 
@@ -110,6 +109,23 @@ public class RemoteConfig: BaseFlags {
         if DebugFlags.forceMentions { return true }
         return isEnabled(.mentions)
     }
+
+    @objc
+    public static var uuidCapabilities: Bool {
+        modernContactDiscovery
+    }
+
+    @objc
+    public static var allowUUIDOnlyContacts: Bool {
+        modernContactDiscovery
+    }
+
+    @objc
+    public static var usernames: Bool {
+        modernContactDiscovery && FeatureFlags.canUseUsernames
+    }
+
+    // MARK: -
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
