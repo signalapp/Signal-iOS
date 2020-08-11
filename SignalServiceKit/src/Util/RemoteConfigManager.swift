@@ -238,7 +238,7 @@ private protocol FlagType: CaseIterable {
 private extension FlagType {
     var rawFlag: String {
         if rawValue == "maxGroupsV2MemberCount" {
-            return "all.groupsv2.capacity"
+            return "global.maxGroupSize"
         } else {
             return Flags.prefix + rawValue
         }
