@@ -10,13 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAccount;
 @class TSThread;
 
-@protocol ContactsViewHelperDelegate <NSObject>
+@protocol ContactsViewHelperObserver <NSObject>
 
 - (void)contactsViewHelperDidUpdateContacts;
-
-@optional
-
-- (BOOL)shouldHideLocalNumber;
 
 @end
 
@@ -26,13 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CNContactViewController;
 @class SignalServiceAddress;
 
-// TODO: This class does some expensive work and isn't stateful.
-//       It probably makes sense to make it a singleton.
 @interface ContactsViewHelper : NSObject
-
-@property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
-
-@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
 @property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
@@ -41,10 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 // previously denied contact access.
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
+- (void)addObserver:(id<ContactsViewHelperObserver>)observer NS_SWIFT_NAME(addObserver(_:));
 
-- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;
+
+@property (nonatomic, readonly) NSArray<SignalAccount *> *allSignalAccounts;
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;

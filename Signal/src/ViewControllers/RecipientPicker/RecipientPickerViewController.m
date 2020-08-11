@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 const NSUInteger kMinimumSearchLength = 2;
 
 @interface RecipientPickerViewController () <UISearchBarDelegate,
-    ContactsViewHelperDelegate,
+    ContactsViewHelperObserver,
     OWSTableViewControllerDelegate,
     FindByPhoneNumberDelegate,
     MFMessageComposeViewControllerDelegate>
@@ -100,6 +100,11 @@ const NSUInteger kMinimumSearchLength = 2;
     return [OWSProfileManager sharedManager];
 }
 
+- (ContactsViewHelper *)contactsViewHelper
+{
+    return Environment.shared.contactsViewHelper;
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -130,7 +135,7 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.signalContactsStackView autoPinEdgesToSuperviewEdges];
 
     _searchResults = nil;
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    [self.contactsViewHelper addObserver:self];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
 
@@ -577,9 +582,14 @@ const NSUInteger kMinimumSearchLength = 2;
     self.tableViewController.contents = contents;
 }
 
+- (NSArray<SignalAccount *> *)allSignalAccounts
+{
+    return [self.contactsViewHelper signalAccountsIncludingLocalUser:!self.shouldHideLocalRecipient];
+}
+
 - (NSArray<OWSTableSection *> *)contactsSection
 {
-    if (self.contactsViewHelper.signalAccounts.count < 1) {
+    if (self.allSignalAccounts.count < 1) {
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
@@ -627,7 +637,7 @@ const NSUInteger kMinimumSearchLength = 2;
         for (NSUInteger i = 0; i < self.collation.sectionTitles.count; i++) {
             collatedSignalAccounts[i] = [NSMutableArray new];
         }
-        for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
+        for (SignalAccount *signalAccount in self.allSignalAccounts) {
             NSInteger section = [self.collation sectionForObject:signalAccount
                                          collationStringSelector:@selector(stringForCollation)];
 
@@ -659,7 +669,7 @@ const NSUInteger kMinimumSearchLength = 2;
             [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
                                             @"Table section header for contact listing when composing a new message")];
 
-        for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
+        for (SignalAccount *signalAccount in self.allSignalAccounts) {
             [contactsSection
                 addItem:[self itemForRecipient:[PickedRecipient forAddress:signalAccount.recipientAddress]]];
         }
@@ -929,7 +939,7 @@ const NSUInteger kMinimumSearchLength = 2;
 - (void)showContactAppropriateViews
 {
     if (self.contactsManager.isSystemContactsAuthorized) {
-        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.contactsViewHelper.signalAccounts.count < 1
+        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.allSignalAccounts.count < 1
             && ![Environment.shared.preferences hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;
         } else {
@@ -1114,18 +1124,13 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.delegate recipientPickerTableViewWillBeginDragging:self];
 }
 
-#pragma mark - ContactsViewHelperDelegate
+#pragma mark - ContactsViewHelperObserver
 
 - (void)contactsViewHelperDidUpdateContacts
 {
     [self updateTableContents];
 
     [self showContactAppropriateViews];
-}
-
-- (BOOL)shouldHideLocalNumber
-{
-    return self.shouldHideLocalRecipient;
 }
 
 #pragma mark - FindByPhoneNumberDelegate

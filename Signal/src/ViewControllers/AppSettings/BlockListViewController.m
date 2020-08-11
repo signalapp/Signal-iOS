@@ -18,9 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BlockListViewController () <ContactsViewHelperDelegate, AddToBlockListDelegate>
-
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
+@interface BlockListViewController () <ContactsViewHelperObserver, AddToBlockListDelegate>
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
@@ -30,16 +28,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation BlockListViewController
 
+#pragma mark - Dependencies
+
 - (OWSBlockingManager *)blockingManager
 {
     return OWSBlockingManager.sharedManager;
 }
 
+- (ContactsViewHelper *)contactsViewHelper
+{
+    return Environment.shared.contactsViewHelper;
+}
+
+#pragma mark -
+
 - (void)loadView
 {
     [super loadView];
 
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    [self.contactsViewHelper addObserver:self];
 
     self.title
         = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
@@ -161,16 +168,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.contents = contents;
 }
 
-#pragma mark - ContactsViewHelperDelegate
+#pragma mark - ContactsViewHelperObserver
 
 - (void)contactsViewHelperDidUpdateContacts
 {
     [self updateTableContents];
-}
-
-- (BOOL)shouldHideLocalNumber
-{
-    return YES;
 }
 
 #pragma mark - AddToBlockListDelegate

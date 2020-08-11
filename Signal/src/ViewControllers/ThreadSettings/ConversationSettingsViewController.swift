@@ -59,6 +59,10 @@ class ConversationSettingsViewController: OWSTableViewController {
         return SSKEnvironment.shared.identityManager
     }
 
+    var contactsViewHelper: ContactsViewHelper {
+        return Environment.shared.contactsViewHelper
+    }
+
     // MARK: -
 
     @objc
@@ -75,8 +79,6 @@ class ConversationSettingsViewController: OWSTableViewController {
     var currentGroupModel: TSGroupModel?
 
     public var showVerificationOnAppear = false
-
-    var contactsViewHelper: ContactsViewHelper?
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration!
     var avatarView: UIImageView?
@@ -99,7 +101,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         super.init()
 
-        contactsViewHelper = ContactsViewHelper(delegate: self)
+        contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
     }
 
@@ -290,11 +292,7 @@ class ConversationSettingsViewController: OWSTableViewController {
             owsFailDebug("Invalid address.")
             return
         }
-        guard let helper = self.contactsViewHelper else {
-            owsFailDebug("Missing contactsViewHelper.")
-            return
-        }
-        let memberActionSheet = MemberActionSheet(address: memberAddress, contactsViewHelper: helper, groupViewHelper: groupViewHelper)
+        let memberActionSheet = MemberActionSheet(address: memberAddress, groupViewHelper: groupViewHelper)
         memberActionSheet.present(fromViewController: self)
     }
 
@@ -607,7 +605,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         }
 
         guard let contactViewController =
-            contactsViewHelper?.contactViewController(for: contactThread.contactAddress, editImmediately: true) else {
+            contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true) else {
                 owsFailDebug("Unexpectedly missing contact VC")
                 return
         }
@@ -625,7 +623,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         }
 
         if !contactsManager.isSystemContactsAuthorized {
-            contactsViewHelper?.presentMissingContactAccessAlertController(from: self)
+            contactsViewHelper.presentMissingContactAccessAlertController(from: self)
             return
         }
 
@@ -1028,7 +1026,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
 // MARK: -
 
-extension ConversationSettingsViewController: ContactsViewHelperDelegate {
+extension ConversationSettingsViewController: ContactsViewHelperObserver {
 
     func contactsViewHelperDidUpdateContacts() {
         updateTableContents()

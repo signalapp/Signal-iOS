@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsViewHelper () <OWSBlockListCacheDelegate>
 
+@property (nonatomic) NSHashTable<id<ContactsViewHelperObserver>> *observers;
+
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
 
@@ -29,9 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) OWSBlockListCache *blockListCache;
-
-@property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
-@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 
 @end
 
@@ -61,30 +60,53 @@ NS_ASSUME_NONNULL_BEGIN
     return Environment.shared.contactsManager;
 }
 
+- (FullTextSearcher *)fullTextSearcher
+{
+    return FullTextSearcher.shared;
+}
+
 #pragma mark -
 
-- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
+- (instancetype)init
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    OWSAssertDebug(delegate);
-    _delegate = delegate;
-
+    _observers = [NSHashTable weakObjectsHashTable];
     _blockListCache = [OWSBlockListCache new];
-    [_blockListCache startObservingAndSyncStateWithDelegate:self];
 
-    _fullTextSearcher = FullTextSearcher.shared;
-
-    // We don't want to notify the delegate in the `updateContacts`.
-    [self updateContacts];
-    self.shouldNotifyDelegateOfUpdatedContacts = YES;
-
-    [self observeNotifications];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        // setup() - especially updateContacts() - can
+        // be expensive, so we don't want to run that
+        // directly in runNowOrWhenAppDidBecomeReady().
+        // That could cause 0x8badf00d crashes.
+        //
+        // On the other hand, the user might quickly
+        // open a view (like the compose view) that uses
+        // this helper. If the helper hasn't completed
+        // setup, that view won't be able to display a
+        // list of users to pick from. Therefore, we
+        // can't use runNowOrWhenAppDidBecomeReadyPolite()
+        // which might not run for many seconds after
+        // the app becomes ready.
+        //
+        // Therefore we dispatch async to the main queue.
+        // We'll run very soon after app becomes ready,
+        // without introducing the risk of a 0x8badf00d
+        // crash.
+        dispatch_async(dispatch_get_main_queue(), ^{ [self setup]; });
+    }];
 
     return self;
+}
+
+- (void)setup
+{
+    [self.blockListCache startObservingAndSyncStateWithDelegate:self];
+    [self updateContacts];
+    [self observeNotifications];
 }
 
 - (void)observeNotifications
@@ -118,6 +140,22 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateContacts];
 }
 
+- (void)addObserver:(id<ContactsViewHelperObserver>)observer
+{
+    OWSAssertIsOnMainThread();
+
+    [self.observers addObject:observer];
+}
+
+- (void)fireDidUpdateContacts
+{
+    OWSAssertIsOnMainThread();
+
+    for (id<ContactsViewHelperObserver> delegate in self.observers) {
+        [delegate contactsViewHelperDidUpdateContacts];
+    }
+}
+
 #pragma mark - Contacts
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
@@ -146,35 +184,9 @@ NS_ASSUME_NONNULL_BEGIN
     return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
 }
 
-- (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
+- (NSArray<SignalAccount *> *)allSignalAccounts
 {
-    OWSAssertIsOnMainThread();
-
-    if ([self.delegate respondsToSelector:@selector(shouldHideLocalNumber)] && [self.delegate shouldHideLocalNumber] &&
-        [self isCurrentUser:signalAccount]) {
-
-        return YES;
-    }
-
-    return NO;
-}
-
-- (BOOL)isCurrentUser:(SignalAccount *)signalAccount
-{
-    OWSAssertIsOnMainThread();
-
-    if (signalAccount.recipientAddress.isLocalAddress) {
-        return YES;
-    }
-
-    NSString *localNumber = [TSAccountManager localNumber];
-    for (PhoneNumber *phoneNumber in signalAccount.contact.parsedPhoneNumbers) {
-        if ([[phoneNumber toE164] isEqualToString:localNumber]) {
-            return YES;
-        }
-    }
-
-    return NO;
+    return self.signalAccounts;
 }
 
 - (SignalServiceAddress *)localAddress
@@ -239,15 +251,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (SignalAccount *signalAccount in accountsToProcess) {
-        if (![self isSignalAccountHidden:signalAccount]) {
-            if (signalAccount.recipientPhoneNumber) {
-                phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
-            }
-            if (signalAccount.recipientUUID) {
-                uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
-            }
-            [signalAccounts addObject:signalAccount];
+        if (signalAccount.recipientPhoneNumber) {
+            phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
         }
+        if (signalAccount.recipientUUID) {
+            uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
+        }
+        [signalAccounts addObject:signalAccount];
     }
 
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
@@ -255,10 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.signalAccounts = [self.contactsManager sortSignalAccountsWithSneakyTransaction:signalAccounts];
     self.nonSignalContacts = nil;
 
-    // Don't fire delegate "change" events during initialization.
-    if (self.shouldNotifyDelegateOfUpdatedContacts) {
-        [self.delegate contactsViewHelperDidUpdateContacts];
-    }
+    [self fireDidUpdateContacts];
 }
 
 - (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText

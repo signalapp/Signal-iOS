@@ -56,6 +56,15 @@ class ComposeViewController: OWSViewController {
 }
 
 extension ComposeViewController: RecipientPickerDelegate {
+
+    // MARK: - Dependencies
+
+    private var contactsViewHelper: ContactsViewHelper {
+        return Environment.shared.contactsViewHelper
+    }
+
+    // MARK: -
+
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         canSelectRecipient recipient: PickedRecipient
@@ -102,10 +111,10 @@ extension ComposeViewController: RecipientPickerDelegate {
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):
-            guard recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
+            guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard recipientPicker.contactsViewHelper.isThreadBlocked(thread) else { return nil }
+            guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

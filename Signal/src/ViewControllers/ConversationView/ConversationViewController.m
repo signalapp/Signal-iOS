@@ -105,7 +105,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
-    ContactsViewHelperDelegate,
+    ContactsViewHelperObserver,
     LongTextViewDelegate,
     MessageDetailViewDelegate,
     OWSMessageBubbleViewDelegate,
@@ -155,8 +155,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) ConversationViewAction actionOnOpen;
 
 @property (nonatomic, getter=isInPreviewPlatter) BOOL inPreviewPlatter;
-
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic, nullable) NSDate *lastMessageSentDate;
@@ -225,7 +223,7 @@ typedef enum : NSUInteger {
         focusMessageId = threadViewModel.lastVisibleInteraction.uniqueId;
     }
 
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    [self.contactsViewHelper addObserver:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
 
@@ -358,6 +356,11 @@ typedef enum : NSUInteger {
 - (id<SyncManagerProtocol>)syncManager
 {
     return SSKEnvironment.shared.syncManager;
+}
+
+- (ContactsViewHelper *)contactsViewHelper
+{
+    return Environment.shared.contactsViewHelper;
 }
 
 #pragma mark -
@@ -2247,7 +2250,6 @@ typedef enum : NSUInteger {
     GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
     groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:incomingMessage.authorAddress
-                                                             contactsViewHelper:self.contactsViewHelper
                                                                 groupViewHelper:groupViewHelper];
     [actionSheet presentFromViewController:self];
 }
@@ -2516,7 +2518,6 @@ typedef enum : NSUInteger {
     GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
     groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:mention.address
-                                                             contactsViewHelper:self.contactsViewHelper
                                                                 groupViewHelper:groupViewHelper];
     [actionSheet presentFromViewController:self];
 }
@@ -2769,7 +2770,7 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
-#pragma mark - ContactsViewHelperDelegate
+#pragma mark - ContactsViewHelperObserver
 
 - (void)contactsViewHelperDidUpdateContacts
 {
