@@ -5462,14 +5462,13 @@ typedef enum : NSUInteger {
 
     void (^adjustInsets)(void) = ^(void) {
         // Adjust content offset to prevent the presented keyboard from obscuring content.
-        if (!self.viewHasEverAppeared) {
-            // We need to update the scroll state if viewWillAppear() or
-            // viewDidAppear() has ever been called.
-            if (self.isViewVisible) {
-                [self scrollToDefaultPositionAnimated:NO];
-            } else {
-                // Do nothing.
-            }
+        BOOL hasViewBeenPresented = self.viewHasEverAppeared || self.isViewVisible;
+        if (!hasViewBeenPresented) {
+            // Do nothing.
+        } else if (!self.viewHasEverAppeared) {
+            // We need to apply the default scroll state between the first
+            // viewWillAppear() and viewDidAppear().
+            [self scrollToDefaultPositionAnimated:NO];
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];
