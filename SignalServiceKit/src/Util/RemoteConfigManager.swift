@@ -29,7 +29,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2CreateGroups: Bool {
-        guard modernCDS || DebugFlags.groupsV2assumeModernCDS else { return false }
+        guard modernContactDiscovery || DebugFlags.groupsV2assumeModernCDS else { return false }
         guard FeatureFlags.groupsV2 else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
@@ -40,28 +40,30 @@ public class RemoteConfig: BaseFlags {
         if groupsV2CreateGroups {
             return true
         }
-        guard modernCDS || DebugFlags.groupsV2assumeModernCDS else { return false }
+        guard modernContactDiscovery || DebugFlags.groupsV2assumeModernCDS else { return false }
         guard FeatureFlags.groupsV2 else { return false }
         if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
-    // TODO: There's more work to be done around feature flags and
-    //       remote configuration for modern CDS:
-    //
-    // * Modify most usage of FeatureFlags.modernContactDiscovery
-    //   and FeatureFlags.compareLegacyContactDiscoveryAgainstModern to
-    //   consult this remote config flag.
     @objc
-    public static var modernCDS: Bool {
-        let isModernCDSAvailable = FeatureFlags.modernContactDiscovery
-        guard isModernCDSAvailable else { return false }
-        return isEnabled(.modernCDS)
+    public static var modernContactDiscovery: Bool {
+        let allEnableConditions = [
+            // If the remote config flag is set, we're enabled
+            isEnabled(.modernContactDiscovery),
+
+            // These flags force modern CDS on, even if the remote config is switched off
+            // Groups v2 implies modern CDS, so when it's enabled modern CDS mst be enabled.
+            DebugFlags.forceModernContactDiscovery,
+            isEnabled(.groupsV2GoodCitizen)
+        ]
+
+        return allEnableConditions.contains(true)
     }
 
     @objc
     public static var uuidSafetyNumbers: Bool {
-        guard modernCDS else { return false }
+        guard modernContactDiscovery else { return false }
         guard FeatureFlags.uuidSafetyNumbers else { return false }
         return isEnabled(.uuidSafetyNumbers)
     }
@@ -189,7 +191,6 @@ private struct Flags {
     enum StickyIsEnabledFlags: String, FlagType {
         case groupsV2GoodCitizen
         case versionedProfiles
-        case modernCDS
         case uuidSafetyNumbers
     }
 
@@ -204,9 +205,9 @@ private struct Flags {
         case groupsV2GoodCitizen
         case deleteForEveryone
         case versionedProfiles
-        case modernCDS
         case mentions
         case uuidSafetyNumbers
+        case modernContactDiscovery
     }
 
     // Values defined in this array remain set once they are

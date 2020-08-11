@@ -483,7 +483,7 @@ extension MessageSender {
         let sendingRecipients = message.sendingRecipientAddresses()
         let invalidRecipients = sendingRecipients.filter { $0.uuid == nil }
 
-        guard invalidRecipients.count > 0 && FeatureFlags.modernContactDiscovery else {
+        guard invalidRecipients.count > 0 && RemoteConfig.modernContactDiscovery else {
             completion(nil)
             return
         }
