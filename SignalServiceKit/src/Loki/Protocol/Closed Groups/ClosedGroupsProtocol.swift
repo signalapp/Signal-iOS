@@ -206,12 +206,23 @@ public final class ClosedGroupsProtocol : NSObject {
     public static func handleSharedSenderKeysUpdateIfNeeded(_ dataMessage: SSKProtoDataMessage, from publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Note that `publicKey` is either the public key of the group or the public key of the
         // sender, depending on how the message was sent
-        guard let closedGroupUpdate = dataMessage.closedGroupUpdate else { return }
+        guard let closedGroupUpdate = dataMessage.closedGroupUpdate, isValid(closedGroupUpdate) else { return }
         switch closedGroupUpdate.type {
         case .new: handleNewGroupMessage(closedGroupUpdate, using: transaction)
         case .info: handleInfoMessage(closedGroupUpdate, from: publicKey, using: transaction)
         case .senderKeyRequest: handleSenderKeyRequestMessage(closedGroupUpdate, from: publicKey, using: transaction)
         case .senderKey: handleSenderKeyMessage(closedGroupUpdate, from: publicKey, using: transaction)
+        }
+    }
+
+    private static func isValid(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate) -> Bool {
+        guard !closedGroupUpdate.groupPublicKey.isEmpty else { return false }
+        switch closedGroupUpdate.type {
+        case .new: return !(closedGroupUpdate.name ?? "").isEmpty && !(closedGroupUpdate.groupPrivateKey ?? Data()).isEmpty && !closedGroupUpdate.senderKeys.isEmpty
+            && !closedGroupUpdate.members.isEmpty && !closedGroupUpdate.admins.isEmpty
+        case .info: return !(closedGroupUpdate.name ?? "").isEmpty && !closedGroupUpdate.members.isEmpty && !closedGroupUpdate.admins.isEmpty // senderKeys may be empty
+        case .senderKey: return true
+        case .senderKeyRequest: return !closedGroupUpdate.senderKeys.isEmpty
         }
     }
 
