@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAccount;
 @class TSThread;
 
-@protocol ContactsViewHelperDelegate <NSObject>
+@protocol ContactsViewHelperObserver <NSObject>
 
 - (void)contactsViewHelperDidUpdateContacts;
 
@@ -31,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 // previously denied contact access.
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
-- (void)addDelegate:(id<ContactsViewHelperDelegate>)delegate NS_SWIFT_NAME(addDelegate(_:));
+- (void)addObserver:(id<ContactsViewHelperObserver>)observer NS_SWIFT_NAME(addObserver(_:));
+
 
 @property (nonatomic, readonly) NSArray<SignalAccount *> *allSignalAccounts;
 

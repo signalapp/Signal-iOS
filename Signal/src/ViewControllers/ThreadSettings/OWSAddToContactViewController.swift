@@ -30,7 +30,7 @@ public class OWSAddToContactViewController: OWSViewController {
     @objc public init(address: SignalServiceAddress) {
         self.address = address
         super.init()
-        contactsViewHelper.addDelegate(self)
+        contactsViewHelper.addObserver(self)
     }
 
     public override func loadView() {
@@ -127,7 +127,7 @@ extension OWSAddToContactViewController: UITableViewDataSource {
 
 }
 
-extension OWSAddToContactViewController: ContactsViewHelperDelegate {
+extension OWSAddToContactViewController: ContactsViewHelperObserver {
     public func contactsViewHelperDidUpdateContacts() {
         updateData()
         tableView.reloadData()

@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 const NSUInteger kMinimumSearchLength = 2;
 
 @interface RecipientPickerViewController () <UISearchBarDelegate,
-    ContactsViewHelperDelegate,
+    ContactsViewHelperObserver,
     OWSTableViewControllerDelegate,
     FindByPhoneNumberDelegate,
     MFMessageComposeViewControllerDelegate>
@@ -135,7 +135,7 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.signalContactsStackView autoPinEdgesToSuperviewEdges];
 
     _searchResults = nil;
-    [self.contactsViewHelper addDelegate:self];
+    [self.contactsViewHelper addObserver:self];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
 
@@ -1124,7 +1124,7 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.delegate recipientPickerTableViewWillBeginDragging:self];
 }
 
-#pragma mark - ContactsViewHelperDelegate
+#pragma mark - ContactsViewHelperObserver
 
 - (void)contactsViewHelperDidUpdateContacts
 {

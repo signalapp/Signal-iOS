@@ -105,7 +105,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
-    ContactsViewHelperDelegate,
+    ContactsViewHelperObserver,
     LongTextViewDelegate,
     MessageDetailViewDelegate,
     OWSMessageBubbleViewDelegate,
@@ -223,7 +223,7 @@ typedef enum : NSUInteger {
         focusMessageId = threadViewModel.lastVisibleInteraction.uniqueId;
     }
 
-    [self.contactsViewHelper addDelegate:self];
+    [self.contactsViewHelper addObserver:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
 
@@ -2770,7 +2770,7 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
-#pragma mark - ContactsViewHelperDelegate
+#pragma mark - ContactsViewHelperObserver
 
 - (void)contactsViewHelperDidUpdateContacts
 {

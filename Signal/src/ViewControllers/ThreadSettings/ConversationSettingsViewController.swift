@@ -101,7 +101,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         super.init()
 
-        contactsViewHelper.addDelegate(self)
+        contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
     }
 
@@ -1026,7 +1026,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
 // MARK: -
 
-extension ConversationSettingsViewController: ContactsViewHelperDelegate {
+extension ConversationSettingsViewController: ContactsViewHelperObserver {
 
     func contactsViewHelperDidUpdateContacts() {
         updateTableContents()
