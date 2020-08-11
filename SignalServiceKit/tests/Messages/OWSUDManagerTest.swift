@@ -67,9 +67,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         XCTAssert(localAddress.isValid)
 
         do {
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: localAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: localAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.enabled, udAccess.udAccessMode)
             XCTAssertFalse(udAccess.isRandomKey)
@@ -77,9 +75,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.unknown, address: aliceAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: localAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: localAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unknown, udAccess.udAccessMode)
             XCTAssertFalse(udAccess.isRandomKey)
@@ -87,17 +83,13 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.disabled, address: aliceAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: localAddress, requireSyncAccess: false, transaction: $0)
-            }
+            let udAccess = udManager.udAccess(forAddress: localAddress, requireSyncAccess: false)
             XCTAssertNil(udAccess)
         }
 
         do {
             udManager.setUnidentifiedAccessMode(.enabled, address: aliceAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: localAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: localAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.enabled, udAccess.udAccessMode)
             XCTAssertFalse(udAccess.isRandomKey)
@@ -105,9 +97,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.unrestricted, address: aliceAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: localAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: localAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unrestricted, udAccess.udAccessMode)
             XCTAssert(udAccess.isRandomKey)
@@ -134,9 +124,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         do {
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unknown, udAccess.udAccessMode)
             XCTAssert(udAccess.isRandomKey)
@@ -144,9 +132,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.unknown, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unknown, udAccess.udAccessMode)
             XCTAssert(udAccess.isRandomKey)
@@ -154,26 +140,20 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.disabled, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)
             XCTAssertNil(udAccess)
         }
 
         do {
             udManager.setUnidentifiedAccessMode(.enabled, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)
             XCTAssertNil(udAccess)
         }
 
         do {
             // Bob should work in unrestricted mode, even if he doesn't have a profile key.
             udManager.setUnidentifiedAccessMode(.unrestricted, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unrestricted, udAccess.udAccessMode)
             XCTAssert(udAccess.isRandomKey)
@@ -203,9 +183,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         do {
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unknown, udAccess.udAccessMode)
             XCTAssertFalse(udAccess.isRandomKey)
@@ -213,9 +191,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.unknown, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unknown, udAccess.udAccessMode)
             XCTAssertFalse(udAccess.isRandomKey)
@@ -224,17 +200,13 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.disabled, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)
             XCTAssertNil(udAccess)
         }
 
         do {
             udManager.setUnidentifiedAccessMode(.enabled, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.enabled, udAccess.udAccessMode)
             XCTAssertFalse(udAccess.isRandomKey)
@@ -242,9 +214,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         do {
             udManager.setUnidentifiedAccessMode(.unrestricted, address: bobRecipientAddress)
-            let udAccess = write {
-                return self.udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, transaction: $0)!
-            }
+            let udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
             XCTAssertNotNil(udAccess)
             XCTAssertEqual(.unrestricted, udAccess.udAccessMode)
             XCTAssert(udAccess.isRandomKey)
@@ -276,9 +246,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         let completed = self.expectation(description: "completed")
         udManager.ensureSenderCertificate(certificateExpirationPolicy: .strict).done { senderCertificate in
             do {
-                let sendingAccess = self.write {
-                    return self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificate: senderCertificate, transaction: $0)!
-                }
+                let sendingAccess = self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificate: senderCertificate)!
                 XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
                 XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
                 XCTAssertEqual(sendingAccess.senderCertificate.serializedData, self.senderCertificate.serializedData)
