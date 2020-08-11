@@ -555,7 +555,7 @@
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "Hapana iCloud Account.Pinda mu iCloud Account muma iOS setting app kuti upfimbike data re Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal yanyimwa mvumo ku homwe ye iCloud kuti ipfimbike.Ipa mvumo kuhomwe ye iCloud muma iOS seting kuti upfimbike data re Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Sarudza ruvara rwe tsamba dzinobuda munhaurwa ino.";
@@ -822,7 +822,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Ruvara rwe nhaurirano";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Anogona kushandura nezve Boka";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Vatariri chete";
@@ -837,7 +837,7 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Shandura";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Ndiani anokwanisa kushandura nhengo.";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Wedzera nhengo";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Vatariri chete";
@@ -852,7 +852,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Ita Mutariri";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ achagona kubvisa nhengo dze boka nnne kuita vamwe Vatariri.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Nhengo";
@@ -862,6 +862,27 @@
 
 /* Footer for the 'membership access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Sarudza anoshandura nhengo dze boka:";
+
+/* label for 'always' option for mention notifications in conversation settings */
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify Me";
+
+/* label for 'default' option for mention notifications in conversation settings when global mention notifications are off */
+"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_OFF" = "Default (Don’t Notify Me)";
+
+/* label for 'default' option for mention notifications in conversation settings when global mention notifications are on */
+"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_ON" = "Default (Notify Me)";
+
+/* label for 'never' option for mention notifications in conversation settings */
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+
+/* Explanation of the 'mention notification mode' action sheet. */
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_MESSAGE" = "You will be notified even while muted.";
+
+/* Title of the 'mention notification mode' action sheet. */
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Notify me when I am mentioned";
+
+/* label for 'mentions' cell in conversation settings */
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Nyararidza";
@@ -1092,7 +1113,7 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Tumira nhoroondo ye homwe yako ne tsamba kubva kumudziyo we iOS mutsaru";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Tamisa homwe ne nhoroondo ye tsamba dzako kubva ku iPad tsaru";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Tumira kubva kune imwe iPad";
@@ -1104,16 +1125,16 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Kuenderera kuchavhara Signal pane mimwe midziyo yakanyoreswa ne nhamba ye runhare ino.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Watadza kutsinhira mudziyo mutsva,edzazve";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Kutumira kwagumira panzira,ita midziyo ive pedyo woedzazve";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Kuti unyorese iPad ino se mudziyo wakabatanidzwa,unofanirwa kuskana ne mudziyo mutsaru";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Kuti utamise homwe ,uno skana ne iPhone yako ";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Hakuna nzvimbo yekupedzesa kutumira";
@@ -1128,7 +1149,7 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Tumira Homwe";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Vhura Signal pamudziyo mutsaru,unza pedyo,uye iva ne idi kuti Wi-Fi ne Bluetooth dzakabatidzwa pamidziyo yese.";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
@@ -1221,10 +1242,10 @@
 "EMAIL_INVITE_SUBJECT" = "Ngati tame kuenda kuSignal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Mudziyo wako hauna kunyoreswa kutumira tsamba.Kutumira chikumbiro cherubatsiro,nyoresa tsamba pamudziyo wako kana kunyorera ku support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "Hakuna Tsambambozha";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Zviitiko";
@@ -1269,7 +1290,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Nhare yakundikana.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Maficha e Signal haashande pavhezheni ino ye iOS.Tapota wedzera mudziyo uno kuti ugamuchire dzimwe tsamba dze Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "MaKontakt haasi kubatika.";
@@ -1281,7 +1302,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Tatadza kutumira tsamba.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Yatadza kuvhura app ye Tsambambozha";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
@@ -1490,6 +1511,42 @@
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Hadzisi nhengo dzese dzakwanisa kuwedzerwa.Bata kuti uzame.";
 
+/* Message indicating that 1 invalid invite was added to the group. */
+"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+
+/* Message indicating that 1 invalid invite was added by the local user. */
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+
+/* Message indicating that multiple invalid invites were added by the local user. */
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+
+/* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+
+/* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+
+/* Message indicating that multiple invalid invites were added to the group. */
+"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+
+/* Message indicating that 1 invalid invite was revoked. */
+"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+
+/* Message indicating that 1 invalid invite was revoked by the local user. */
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+
+/* Message indicating that multiple invalid invites were revoked by the local user. */
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+
+/* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+
+/* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+
+/* Message indicating that multiple invalid invites were revoked. */
+"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@haakwanise kungowedzerwa newe.Akokwa kuti apinde,uye haagone kuona tsamba dzeboka kana asina kubvuma.";
 
@@ -1637,6 +1694,9 @@
 /* Message indicating that a single remote user was invited to the group. */
 "GROUP_REMOTE_USER_INVITED_1" = "Munhu 1 akokwa kuboka.";
 
+/* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Wakoka %@ kuboka.";
 
@@ -1736,6 +1796,45 @@
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Vharira %@";
 
+/* Body text for the first section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
+
+/* Title for the first section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "What are Legacy Groups?";
+
+/* Body text for the second section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can’t be converted into New Groups, but you can create a New Group with the same members.";
+
+/* Title for the second section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+
+/* Body text for the third section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
+
+/* Title for the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. New Groups";
+
+/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+
+/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+
+/* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
+
+/* Label indicating a legacy group. */
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+
+/* A \"learn more\" link with more information about legacy groups. */
+"GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Ziva zvakawanda";
+
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Usati wabuda,sarudza mutariri mutsva weboka rino.";
 
@@ -1746,7 +1845,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Sarudza mutariri mutsva";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "Tibate";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Support Center";
@@ -1857,7 +1956,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Nhare yapotswabekuti nhamba yekuchengetedzwa yashanduka.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Unogona kutumira kana kuenzanisa tsamba kubva kunhare kana iPad.Kuitira kuchengetedzwa kwako,nhoroondo ye nhaurwa haitamiswe kuenda kumudziyo wakabatanidzwa mutsva.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ aripa Signal!";
@@ -1950,13 +2049,13 @@
 "LEAVE_GROUP_FAILED" = "Paikanganisika pawange uchibuda muboka.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "QR kodhi ino haina kururama.Tapota iva ne idi kuti uri kuskana QR kodhi iri kuratidzwapamudziyo wauri kuda kubatanidza.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Kukochekera muchina kwaramba";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your conversations, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Mudziyo uno unenge uchiona mapoka ne makontakt ako,kupinda kunhaurwa dzako,uye kutumira tsamba muzita rako.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Batanidza mudziyo uyu?";
@@ -2159,6 +2258,9 @@
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Vhurira boka nekugova zita ne mufanidzo nenhengo dze boka?Haugamuchire tsamba kusvika wavavhurira.";
 
+/* A prompt notifying that the user must unblock this group to continue. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Dzima";
 
@@ -2176,6 +2278,9 @@
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Batana neboka rino ubva wagovera zita ne mufananidzo nenhengo dzaro?Havazive kuti waona tsamba dzavo kusvika wabvuma.";
+
+/* A prompt asking if the user wants to accept a group invite. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Govera profile";
@@ -2442,7 +2547,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Nzvenga uite PIN Itsva";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Kana usingatondere PIN yako,unogona kuita itsva.\unogona kunyoresa ne kushandisa homwe asi ucharasikirwa ne ma seting akachengetwa se zviri mu  homwe yako.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Siya kuita PIN?";
@@ -2576,9 +2681,6 @@
 /* info message recorded in conversation history when local user tries and fails to call another user. */
 "OUTGOING_MISSED_CALL" = "Runhare ruri kubuda rusina kupindurwa";
 
-/* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
-
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF ratadza kuratidzwa";
 
@@ -2599,6 +2701,12 @@
 
 /* Title of 're-send invites' button. */
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Tumirazve kuKokwa";
+
+/* Format for 'revoke invalid 1 invite' item. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+
+/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Dzora kuKokwa";
@@ -2624,6 +2732,9 @@
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
 
+/* Title for the 'invalid invites' section of the 'pending group members' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
 
@@ -2634,7 +2745,7 @@
 "PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
 
 /* Label for view-once messages that have invalid content. */
-"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Pakanganiswa pa tsamba iri kuuya";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
 "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Medhiya ye kuona kamwe";
@@ -2784,13 +2895,13 @@
 "PIN_CREATION_WEAK_ERROR" = "Sarudza PIN yakasimba";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "PIN yako haina kubviswa.Tichakubvunza zvekare.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Kudzima PIN kwaramba";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "Kuti urangarire PIN yako,tichakubvunza kuti ugare uchiishandisa.Tichaita tichibvunza zvishoma nekufamba kwenguva.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Wakanganwa PIN?";
@@ -2895,10 +3006,10 @@
 "PROCEED_BUTTON" = "Yenderera";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ashandura zita re homwe kubva %@ kuita %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ashandura zita re homwe kuve %@.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Ita mufananidzo we Homwe";
@@ -2947,6 +3058,9 @@
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Tara seyaverengwa";
+
+/* Notification action button title for 'react with thumbs up.' */
+"PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
 
 /* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Pindura";
@@ -3060,10 +3174,10 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Wasarwa ne mukana 1.Kana wapererwa homwe yakoichasungwa.Kwapera mazuva 7 usingashandise,unogona kunyoresazve pasina PIN.Homwe yako ichatsvairwa uye zvese zvirimo zvodzimwa.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Wasarwa ne mukana 1.Kana wapererwa ne mukana,unogona kuita PIN itsva.Unogona kunyoresa ne kushandisa homwe asi unorasikirwa ne ma seting akachengetwa akaita se zviri muhomwe.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN haisiriyo";
@@ -3156,7 +3270,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Tumira zvakadaro";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Vanhu vanoteera vanenge vaisazve Signal kana kushandura midziyo.Tsinhira nhamba yekuchengetedza navo kuti uve nekuchengetedzwa.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Yakamboongororwa";
@@ -3327,7 +3441,7 @@
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "Pane runyararo.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "She’s walking a cat on a leash...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "Ari kufamba ne katsi iri pa tambo...";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "Mangwanani!";
@@ -3474,7 +3588,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Kunzvenga kuvharirwa kwabatidzwa maererano nenhamba yerunhare iri paaccount yako.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Wadzima kunzvenga kuvharirwa.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Kunzvenga kuvharirwa kunogona kutangwa kana wakabatira paInternet.";
@@ -3656,6 +3770,15 @@
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Zvirikuitika";
 
+/* table section footer */
+"SETTINGS_NOTIFICATION_MENTIONS_FOOTER" = "Get notified whenever you are mentioned in a chat, even if the chat is muted.";
+
+/* Title for an option that indicates whether the user wishes to receive notifications for messages that mention them. */
+"SETTINGS_NOTIFICATION_MENTIONS_NOTIFY_ME" = "Notify Me";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_MENTIONS_TITLE" = "Mentions";
+
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Zviziviso";
 
@@ -3669,7 +3792,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Tsinhira PIN yako ye Signal";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Rangaridzo ichakubatsira kurangarira PIN sezvo usingagone kuiwanazve.Uchabvunzwa zhishoma nekufamba kwenguva.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Rangaridzo yema PIN";
@@ -3753,7 +3876,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registration Lock";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Kuti uwane kuchengetedzwa kwakadzama,batidza kuchengetedza kwe kunyoresa ,kuchada PIN yako ye Signal kuti unyoresezve nhamba dze nhare ne Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Zviratidza kunyora";
@@ -3849,7 +3972,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "MaStika awa gamuchira";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Mamwe masvinga ema Stika atadza kutorwa";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "MaStika aripo";
@@ -3861,7 +3984,7 @@
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Hapana maStika aripo";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "MaStika etsamba dzirikupinda anoonekwa pano";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Mastika";
@@ -3888,28 +4011,28 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Nhamba yekuchengetedza iri kuenderana!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "Tibate";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tiudze zviri kuitika";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Tapota tumira chikumbiro cherubatsiro ku support@signal.org";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "Chikumbiro cherubatsiro che Signal iOS";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";
+"SUPPORT_EMOJI_PROMPT" = "Ukunzwa sei? (Haimanikidzwe)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Have you read our FAQ yet?";
+"SUPPORT_FAQ_PROMPT" = "Wati waverenga FAQ here?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Batanidza ne Debug Log";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Ari kutumirwa";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Cherechedza nhamba yeku chengetedza";
@@ -3965,14 +4088,26 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "Mineti %@";
 
+/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "Masvondo %@ ";
+
+/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "Masvonda %@";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+
+/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+
+/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Kanzura";
@@ -4056,7 +4191,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Muchina wako hautsigire chimiro ichi.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Shandura kontakt";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Boka ratadza kushandurwa.";

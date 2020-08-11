@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Vaigista";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ saab sinult sõnumisoovi. Saad talle helista, kui sinu sõnumisoov on tema poolt vastu võetud. ";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Vaheta kaamera suunda";
@@ -822,7 +822,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Vestluse värv";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Kes saavad muuta grupi infot";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Ainult administraatorid";
@@ -837,7 +837,7 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Muuda";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Kes saavad liikmelisust muuta";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Lisa liikmeid";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Ainult administraatorid";
@@ -852,7 +852,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Tee administraatoriks";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ saab õiguse eemaldada grupi liikmeid ja teha teisi administraatoriks.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Liikmed";
@@ -862,6 +862,27 @@
 
 /* Footer for the 'membership access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Vali, kes saavad grupi liikmeid muuta.";
+
+/* label for 'always' option for mention notifications in conversation settings */
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify Me";
+
+/* label for 'default' option for mention notifications in conversation settings when global mention notifications are off */
+"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_OFF" = "Default (Don’t Notify Me)";
+
+/* label for 'default' option for mention notifications in conversation settings when global mention notifications are on */
+"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_ON" = "Default (Notify Me)";
+
+/* label for 'never' option for mention notifications in conversation settings */
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+
+/* Explanation of the 'mention notification mode' action sheet. */
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_MESSAGE" = "You will be notified even while muted.";
+
+/* Title of the 'mention notification mode' action sheet. */
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Notify me when I am mentioned";
+
+/* label for 'mentions' cell in conversation settings */
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mainimised";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Vaigista";
@@ -1029,7 +1050,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Ümbersuunamine GitHubi";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "Teave silumislogide kohta";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Kas kustutada kõik selle vestluse sõnumid?";
@@ -1221,10 +1242,10 @@
 "EMAIL_INVITE_SUBJECT" = "Lülitume Signal-ile";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Sinu seade pole seadistatud e-kirjasid saatma. Kasutajatoesoovi saatmiseks seadista oma seadmes e-kirjade saatmine või saada kiri aadressile support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "E-post pole saadaval";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Hobitegevused";
@@ -1281,13 +1302,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Sõnumi saatmine ei õnnestunud.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "E-posti rakenduse avamine ei õnnestunud";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Kasutajatoesoovi loomine ei õnnestunud";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Logide üleslaadimine ei õnnestunud.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Saatmine pole eelvõtme andmete aegumise tõttu võimalik.";
@@ -1490,6 +1511,42 @@
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Kõiki liikmeid polnud võimalik gruppi lisada. Klõpsa uuesti proovimiseks.";
 
+/* Message indicating that 1 invalid invite was added to the group. */
+"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+
+/* Message indicating that 1 invalid invite was added by the local user. */
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+
+/* Message indicating that multiple invalid invites were added by the local user. */
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+
+/* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+
+/* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+
+/* Message indicating that multiple invalid invites were added to the group. */
+"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+
+/* Message indicating that 1 invalid invite was revoked. */
+"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+
+/* Message indicating that 1 invalid invite was revoked by the local user. */
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+
+/* Message indicating that multiple invalid invites were revoked by the local user. */
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+
+/* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+
+/* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+
+/* Message indicating that multiple invalid invites were revoked. */
+"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Sa ei saa kasutajat %@ automaatselt gruppi lisada. Nad on kutsutud grupiga liituma ja ei näe grupi sõnumeid enne kui on nõusoleku andnud.";
 
@@ -1637,6 +1694,9 @@
 /* Message indicating that a single remote user was invited to the group. */
 "GROUP_REMOTE_USER_INVITED_1" = "1 isik kutsuti gruppi.";
 
+/* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Sa kutsusid kasutaja %@ gruppi.";
 
@@ -1736,6 +1796,45 @@
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokeeri %@";
 
+/* Body text for the first section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Vanad grupid on need grupid, mis pole ühilduvad uute gruppide funktsionaalsustega nagu administraatorid ja rohkem kirjeldavad grupi muudatused.";
+
+/* Title for the first section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mis on vanad grupid?";
+
+/* Body text for the second section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vanu gruppe ei saa uuteks gruppideks teisendada, aga sa saad luua samade liikmetega uue grupi.";
+
+/* Title for the second section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+
+/* Body text for the third section of the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Uue grupi loomiseks peavad kõik liikmed uuendama enda Signal-i uusimale versioonile.";
+
+/* Title for the 'legacy group' alert view. */
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Vanad vs uued grupid";
+
+/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+
+/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+
+/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+
+/* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
+
+/* Label indicating a legacy group. */
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Vana grupp";
+
+/* A \"learn more\" link with more information about legacy groups. */
+"GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Uuri täpsemalt";
+
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Vali enne lahkumist sellele grupile uus administraator.";
 
@@ -1749,7 +1848,7 @@
 "HELP_CONTACT_US" = "Võta meiega ühendust";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "Kasutajatugi";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arhiveeritud vestlused";
@@ -2159,6 +2258,9 @@
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Kas eemaldada sellelt grupilt blokeering ja jagada enda nime ning fotot selle liikmetele? Sa ei saa enne ühtegi sõnumit kuni eemaldad blokeeringu.";
 
+/* A prompt notifying that the user must unblock this group to continue. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Kustuta";
 
@@ -2176,6 +2278,9 @@
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Kas liitud grupiga ja jagad enda nime ning fotot sellele liikmetele? Nad ei tea, et sa oled nende sõnumeid näinud, kuni nõustud.";
+
+/* A prompt asking if the user wants to accept a group invite. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Jaga profiili";
@@ -2576,9 +2681,6 @@
 /* info message recorded in conversation history when local user tries and fails to call another user. */
 "OUTGOING_MISSED_CALL" = "Vastamata väljaminev kõne";
 
-/* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
-
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF-i näitamine ei õnnestunud";
 
@@ -2599,6 +2701,12 @@
 
 /* Title of 're-send invites' button. */
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Saada kutsed uuesti";
+
+/* Format for 'revoke invalid 1 invite' item. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+
+/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Tühista kutse";
@@ -2623,6 +2731,9 @@
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Teiste grupiliikmete poolt kutsutud inimeste üksikasju ei kuvata. Kui kutsutud soovivad liituda, jagatakse nende kohta grupile teavet pärast liitumist. Enne liitumist ei näe nad ühtegi grupi sõnumit.";
+
+/* Title for the 'invalid invites' section of the 'pending group members' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Kutsed teiste grupi liikmete poolt";
@@ -2730,7 +2841,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Keela PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Kui keelad PIN-koodi, siis kaotad kõik andmed, kui eemaldad Signal rakenduse ja pole seda teisaldanud teise iOS seadmesse. Registreerimislukku pole võimalik sisse lülitada, kui PIN-kood on keelatud.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Hoiatus";
@@ -2742,10 +2853,10 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN-koodi loomine ei õnnestunud";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koodid pole samad. Proovi uuesti.";
@@ -2769,7 +2880,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Lülita välja";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "PIN-koodi keelamiseks pead esmalt keelama registreerimisluku.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Kas lülitada registreerimislukk välja?";
@@ -2784,10 +2895,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Vali tugevam PIN-kood";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "PIN-koodi keelamine ei õnnestunud. Teavitame sind hiljem uuesti.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "PIN-koodi keelamine ei õnnestunud";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "PIN-koodi meeldejätmise aitamiseks palume me sul seda aeg-ajalt sisestada. Aja möödudes küsime seda järjest harvemini.";
@@ -2841,7 +2952,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN-kood loodud. Saad seda sätetes muuta.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN-kood keelatud.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mängi meediafaili";
@@ -2895,10 +3006,10 @@
 "PROCEED_BUTTON" = "Jätka";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ muutis enda profiilinime %@-> %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ muutis enda profiilinimeks %@.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Määra profiili foto";
@@ -2934,7 +3045,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profiili saab uuendada ainult siis, kui oled Internetti ühendatud.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Sinu profiil on otspunktkrüptitud. Sinu profiil ja selle muudatused on nähtavad sinu kontaktidele, kui algatad või nõustud uute vestlustega ja liitud uute gruppidega.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Salvesta";
@@ -2947,6 +3058,9 @@
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Märgi loetuks";
+
+/* Notification action button title for 'react with thumbs up.' */
+"PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
 
 /* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Vasta";
@@ -3489,10 +3603,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Luba silumislogi";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Täpsemad PIN-koodi seaded";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Täpsemad PIN-koodi seaded";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Keela PIN";
@@ -3639,10 +3753,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Sätted";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Arvesta vaigistatud vestlusi";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Sõnumite arv";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Helistamise ja sõnumite märguanded ilmuvad siis, kui telefon on lukustatud. Sul on võimalik piirata, mida nendes teavitustes näidatakse.";
@@ -3655,6 +3769,15 @@
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Sündmused";
+
+/* table section footer */
+"SETTINGS_NOTIFICATION_MENTIONS_FOOTER" = "Get notified whenever you are mentioned in a chat, even if the chat is muted.";
+
+/* Title for an option that indicates whether the user wishes to receive notifications for messages that mention them. */
+"SETTINGS_NOTIFICATION_MENTIONS_NOTIFY_ME" = "Notify Me";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_MENTIONS_TITLE" = "Mainimised";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Märguanded";
@@ -3894,10 +4017,10 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Räägi meile, mis toimub";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Palun saada kasutajatoesoov aadressile support@signal.org";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "Signal-i IOS versiooni kasutajatoesoov";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Kuidas sa end tunned? (valikuline)";
@@ -3906,7 +4029,7 @@
 "SUPPORT_FAQ_PROMPT" = "Kas oled juba meie KKK-d lugenud?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Lisa silumislogi";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Laadimine";
@@ -3921,7 +4044,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Gruppide %@, %@ ja %lu muu grupi liige";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Selles vestluses saate enda jaoks märkmeid lisada. Kui su kontol on lingitud seadmeid, sünkroonitakse uued märkmed.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Saad selles vestluses enda jaoks märkmeid lisada. Kui su kontol on lingitud seadmeid, sünkroonitakse uued märkmed.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Grupi %@ liige";
@@ -3965,14 +4088,26 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ minut";
 
+/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ nädal";
+
+/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ nädalat";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@n";
+
+/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+
+/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Loobu";
@@ -4056,22 +4191,22 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Sinu seade ei toeta seda funktsiooni.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Uuenda kontakti";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Grupi uuendamine ei õnnestunud.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupi uuendamine ei õnnestunud. Kontrolli enda internetiühendust ja proovi uuesti.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Loo enda PIN-kood";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse. Rakenduse avamiseks pole PIN-koodi vaja.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Tutvustame PIN-koode";
