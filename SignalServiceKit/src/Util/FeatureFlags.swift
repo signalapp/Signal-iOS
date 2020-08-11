@@ -302,8 +302,7 @@ public class DebugFlags: BaseFlags {
     }
 
     // This flag auto-enables the groupv2 flags in RemoteConfig.
-    @objc
-    public static let groupsV2ForceEnableRemoteConfig = FeatureFlags.groupsV2Supported && build.includes(.qa)
+    static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     // If set, client will invite instead of adding other users.
     private static let _groupsV2forceInvites = AtomicBool(false)
@@ -358,8 +357,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let groupsV2editMemberAccess = build.includes(.qa)
 
-    @objc
-    public static let groupsV2assumeModernCDS = build.includes(.qa)
+    static let groupsV2forceModernCDS = build.includes(.qa)
 
     @objc
     public static let isMessageProcessingVerbose = false
@@ -372,8 +370,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let logCurlOnSuccess = false
 
-    @objc
-    public static let forceModernContactDiscovery = build.includes(.dev)
+    static let forceModernContactDiscovery = build.includes(.dev)
 
     // Our "group update" info messages should be robust to
     // various situations that shouldn't occur in production,
@@ -398,14 +395,12 @@ public class DebugFlags: BaseFlags {
 
     // We currently want to force-enable versioned profiles for
     // all beta users, but not production.
-    @objc
-    public static let forceVersionedProfiles = build.includes(.beta)
+    static let forceVersionedProfiles = build.includes(.beta)
 
     @objc
     public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
 
-    @objc
-    public static let forceMentions = build.includes(.dev)
+    static let forceMentions = build.includes(.dev)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
