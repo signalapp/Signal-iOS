@@ -74,8 +74,7 @@ public extension DebugUIStress {
     // other members. This can be used to test "group info requests", etc.
     class func cloneAsV2Group(_ groupThread: TSGroupThread) {
         firstly { () -> Promise<TSGroupThread> in
-            guard FeatureFlags.groupsV2,
-                RemoteConfig.groupsV2CreateGroups,
+            guard RemoteConfig.groupsV2CreateGroups,
                 GroupManager.defaultGroupsVersion == .V2 else {
                     throw OWSAssertionError("Groups v2 not enabled.")
             }
