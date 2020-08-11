@@ -76,8 +76,9 @@ extension ConversationViewController {
                 return
         }
 
+        let thread = self.thread
         databaseStorage.asyncWrite { transaction in
-            self.thread.update(
+            thread.update(
                 withLastVisibleSortId: sortIdToSave,
                 onScreenPercentage: onScreenPercentageToSave,
                 transaction: transaction

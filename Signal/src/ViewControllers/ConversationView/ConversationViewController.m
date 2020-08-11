@@ -3294,8 +3294,9 @@ typedef enum : NSUInteger {
     OWSLogVerbose(@"Sending contact share.");
 
     __block BOOL didAddToProfileWhitelist;
+    TSThread *thread = self.thread;
     DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-        didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
+        didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:thread
                                                                                       transaction:transaction];
 
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
@@ -3306,7 +3307,7 @@ typedef enum : NSUInteger {
 
         [transaction addAsyncCompletion:^{
             TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord
-                                                                             thread:self.thread];
+                                                                             thread:thread];
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
@@ -3324,11 +3325,11 @@ typedef enum : NSUInteger {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      NSError *error;
+                      NSError *dataSourceError;
                       id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:movieURL
                                                          shouldDeleteOnDeallocation:NO
-                                                                              error:&error];
-                      if (error != nil) {
+                                                                              error:&dataSourceError];
+                      if (dataSourceError != nil) {
                           [self showErrorAlertForAttachment:nil];
                           return;
                       }
@@ -4253,9 +4254,9 @@ typedef enum : NSUInteger {
         [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
     });
 
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.thread updateWithDraft:nil transaction:transaction];
-    });
+    TSThread *thread = self.thread;
+    DatabaseStorageAsyncWrite(self.databaseStorage,
+        ^(SDSAnyWriteTransaction *transaction) { [thread updateWithDraft:nil transaction:transaction]; });
 
     if (didAddToProfileWhitelist) {
         [self ensureBannerState];
@@ -5463,7 +5464,13 @@ typedef enum : NSUInteger {
     void (^adjustInsets)(void) = ^(void) {
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {
-            // Do nothing.
+            // We need to update the scroll state if viewWillAppear() or
+            // viewDidAppear() has ever been called.
+            if (self.isViewVisible) {
+                [self scrollToDefaultPositionAnimated:NO];
+            } else {
+                // Do nothing.
+            }
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];
