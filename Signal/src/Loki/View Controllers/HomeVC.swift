@@ -383,6 +383,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     @objc func show(_ thread: TSThread, with action: ConversationViewAction, highlightedMessageID: String?, animated: Bool) {
         DispatchMainThreadSafe {
+            if let presentedVC = self.presentedViewController {
+                presentedVC.dismiss(animated: false, completion: nil)
+            }
             let conversationVC = ConversationViewController()
             conversationVC.configure(for: thread, action: action, focusMessageId: highlightedMessageID)
             self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
