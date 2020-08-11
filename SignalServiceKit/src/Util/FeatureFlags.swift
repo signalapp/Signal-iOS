@@ -155,7 +155,7 @@ public class FeatureFlags: BaseFlags {
     public static let answerCallsOnSecondaryDevice: Bool = true
 
     // Don't consult this flags; consult RemoteConfig.groupsV2...
-    static let groupsV2Supported = build.includes(.qa)
+    static let groupsV2Supported = true
 
     @objc
     public static let groupsV2embedProtosInGroupUpdates = true
