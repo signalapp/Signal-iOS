@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsViewHelper () <OWSBlockListCacheDelegate>
 
-@property (nonatomic, nullable) NSHashTable<id<ContactsViewHelperObserver>> *observers;
+@property (nonatomic) NSHashTable<id<ContactsViewHelperObserver>> *observers;
 
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _observers = NSHashTable.weakObjectsHashTable;
+    _observers = [NSHashTable weakObjectsHashTable];
     _blockListCache = [OWSBlockListCache new];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    for (id<ContactsViewHelperObserver> delegate in self.observers.allObjects) {
+    for (id<ContactsViewHelperObserver> delegate in self.observers) {
         [delegate contactsViewHelperDidUpdateContacts];
     }
 }
