@@ -23,23 +23,28 @@ protocol ContactDiscovering {
 /// A wrapper around some of the potential errors that could be returned by a ContactDiscoveryService.
 /// These could be provided by the server or the client. An error of this type will not be returned for network connectivity related reasons.
 /// Usually the code doesn't matter, the accessor properties should provide the info you need.
-public struct ContactDiscoveryError: Error {
+@objc(OWSContactDiscoveryError)
+public class ContactDiscoveryError: NSError {
+    static let domain: String = "ContactDiscoveryErrorDomain"
 
     /// The reason for the error. You probably don't need to consult this directly.
-    public let kind: Kind
-
-    /// Loggable description of the error
-    public let debugDescription: String?
+    public var kind: Kind {
+        guard let kind = Kind(rawValue: code) else {
+            owsFailDebug("Invalid error code")
+            return .generic
+        }
+        return kind
+    }
 
     /// Whether or not it's suggested you retry the discovery task.
     /// This is hardcoded based on server suggestions on what errors are retryable.
     ///
     /// There are cases where an error may be marked as unretryable, but still have a retryAfterDate provided
     /// This is because the retryable flag is more of a server suggestion, where retryAfter is a server requirement.
-    public let retryable: Bool
+    @objc public let retrySuggested: Bool
 
     /// Provided by the server. Clients should make every effort to respect the retryAfterDate.
-    public let retryAfterDate: Date?
+    @objc public let retryAfterDate: Date?
 
 
     // MARK: - Constructors
@@ -52,8 +57,18 @@ public struct ContactDiscoveryError: Error {
         return ContactDiscoveryError(kind: .rateLimit, debugDescription: "Rate Limited", retryable: true, retryAfterDate: expiryDate)
     }
 
+    init(kind: Kind, debugDescription: String, retryable: Bool, retryAfterDate: Date?) {
+        self.retrySuggested = retryable
+        self.retryAfterDate = retryAfterDate
+
+        super.init(domain: Self.domain, code: kind.rawValue, userInfo: [
+            NSDebugDescriptionErrorKey: debugDescription
+        ])
+    }
+
     // MARK: - Variants
 
+    @objc(OWSContactDiscoveryErrorCode)
     public enum Kind: Int, RawRepresentable {
         case generic = 1
         case assertion
@@ -71,5 +86,19 @@ public struct ContactDiscoveryError: Error {
         case genericClientError
         /// Any generic 5xx error that doesn't fit in the above categories
         case genericServerError
+    }
+
+    // MARK: - <NSCoding>
+
+    @objc override public func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(retrySuggested, forKey: "retrySuggested")
+        aCoder.encode((retryAfterDate as NSDate?), forKey: "retryAfterDate")
+    }
+
+    @objc required public init?(coder aDecoder: NSCoder) {
+        retrySuggested = aDecoder.decodeBool(forKey: "retrySuggested")
+        retryAfterDate = (aDecoder.decodeObject(of: NSDate.self, forKey: "retryAfterDate")) as Date?
+        super.init(coder: aDecoder)
     }
 }

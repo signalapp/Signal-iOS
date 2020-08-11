@@ -698,6 +698,7 @@ extension MessageSending {
 
         return firstly(on: .global()) { () -> Promise<Set<SignalRecipient>> in
             return ContactDiscoveryTask(identifiers: Set(phoneNumbersToFetch)).perform()
+
         }.map(on: .sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [SignalServiceAddress] in
             for signalRecipient in signalRecipients {
                 owsAssertDebug(signalRecipient.address.phoneNumber != nil)
@@ -706,6 +707,15 @@ extension MessageSending {
             var validRecipients = Set(addresses).subtracting(invalidRecipients)
             validRecipients.formUnion(signalRecipients.compactMap { $0.address })
             return Array(validRecipients)
+
+        }.recover(on: .sharedUtility) { error -> Promise<[SignalServiceAddress]> in
+            let nsError = error as NSError
+            if let cdsError = nsError as? ContactDiscoveryError {
+                nsError.isRetryable = cdsError.retrySuggested
+            } else {
+                nsError.isRetryable = true
+            }
+            throw nsError
         }
     }
 }
