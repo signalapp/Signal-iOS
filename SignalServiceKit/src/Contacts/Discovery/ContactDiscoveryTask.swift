@@ -69,7 +69,7 @@ public class ContactDiscoveryTask: NSObject {
     // MARK: - Private
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
-        if FeatureFlags.modernContactDiscovery {
+        if RemoteConfig.modernContactDiscovery {
             return ModernContactDiscoveryOperation(phoneNumbersToLookup: identifiersToFetch)
         } else {
             return LegacyContactDiscoveryOperation(phoneNumbersToLookup: identifiersToFetch)

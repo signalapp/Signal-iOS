@@ -1,0 +1,8 @@
+NSAppleMusicUsageDescription = "Signal media əlavələrini oxutmaq üçün \"Apple Music\"dən istifadə etməlidir.";
+NSCameraUsageDescription = "Signal şəkil çəkmək və videozənglər etmək üçün kameranızdan istifadə edir.";
+NSContactsUsageDescription = "Signal tanıdığınız istifadəçiləri tapmaq üçün kontaktlarınızı istifadə edir. Sizin kontaktlarınızı öz serverlərimizdə saxlamırıq.";
+NSFaceIDUsageDescription = "\"Signal\"ın Erkan Kilidi Face ID texnologiyasından istifadə edir.";
+NSLocationWhenInUseUsageDescription = "Signal hazırki məkanınızı öyrənmək üçün cihazınızın məkan funksiyasından istifadə etməlidir.";
+NSMicrophoneUsageDescription = "Signal telefon zəngləri etmək və səs yazmaq üçün mikrofonunuza keçid icazəsi almalıdır.";
+NSPhotoLibraryAddUsageDescription = "Signal şəkilləri qalereyanızda saxlayacaq.";
+NSPhotoLibraryUsageDescription = "Signal göndərəcəyiniz şəkilləri seçməyə imkan verəcək.";

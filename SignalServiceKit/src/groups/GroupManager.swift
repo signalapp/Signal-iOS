@@ -91,8 +91,8 @@ public class GroupManager: NSObject {
     // GroupsV2 TODO: Finalize this value with the designers.
     public static let groupUpdateTimeoutDuration: TimeInterval = 30
 
-    public static var maxGroupMemberCount: UInt {
-        return RemoteConfig.groupsV2maxMemberCount
+    public static var maxGroupsV2MemberCount: UInt {
+        return RemoteConfig.maxGroupsV2MemberCount
     }
 
     public static let maxGroupNameLength: Int = 32
@@ -1332,15 +1332,15 @@ public class GroupManager: NSObject {
             }
             return Promise.value(())
         }.then(on: .global()) { _ -> Promise<Void> in
-            return self.tryToFillInMissingUuuids(for: addresses, isBlocking: isBlocking)
+            return self.tryToFillInMissingUuids(for: addresses, isBlocking: isBlocking)
         }.then(on: .global()) { _ -> Promise<Void> in
             return self.tryToEnableGroupsV2Capability(for: addresses, isBlocking: isBlocking)
         }
     }
 
-    public static func tryToFillInMissingUuuids(for addresses: [SignalServiceAddress],
+    public static func tryToFillInMissingUuids(for addresses: [SignalServiceAddress],
                                                 isBlocking: Bool) -> Promise<Void> {
-        guard FeatureFlags.modernContactDiscovery else {
+        guard RemoteConfig.modernContactDiscovery else {
                 // Can't fill in UUIDs using legacy contact intersections.
                 return Promise.value(())
         }
@@ -1437,47 +1437,60 @@ public class GroupManager: NSObject {
                 let avatarData = groupModel.groupAvatarData,
                 avatarData.count > 0 {
                 if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "png") {
-                    // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
-                    // which causes this code to be called. Once we're more aggressive about durable sending retry,
-                    // we could get rid of this "retryable tappable error message".
-                    return firstly {
-                        self.messageSender.sendTemporaryAttachment(.promise,
-                                                                   dataSource: dataSource,
-                                                                   contentType: OWSMimeTypeImagePng,
-                                                                   message: message)
-                    }.done(on: .global()) { _ in
-                        Logger.debug("Successfully sent group update with avatar")
-                    }.recover(on: .global()) { error in
-                        Logger.error("Error sending v1 group avatar update: \(error)")
-                        if message.wasSentToAnyRecipient {
-                            // If a v1 group update was successfully sent to any
-                            // group member, consider it a success.
-                        } else {
-                            throw error
-                        }
-                    }
+                    let attachment = GroupUpdateMessageAttachment(contentType: OWSMimeTypeImagePng, dataSource: dataSource)
+                    return self.sendGroupUpdateMessage(message, thread: thread, attachment: attachment)
                 }
             }
 
-            // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
-            // which causes this code to be called. Once we're more aggressive about durable sending retry,
-            // we could get rid of this "retryable tappable error message".
-            return firstly {
-                return self.messageSender.sendMessage(.promise, message.asPreparer)
-            }.recover(on: .global()) { error in
-                if thread.isGroupV1Thread {
-                    Logger.error("Error sending v1 group update: \(error)")
-                    if message.wasSentToAnyRecipient {
-                        // If a v1 group update was successfully sent to any
-                        // group member, consider it a success.
-                    } else {
-                        throw error
-                    }
+            return self.sendGroupUpdateMessage(message, thread: thread)
+        }
+    }
+
+    private struct GroupUpdateMessageAttachment {
+        let contentType: String
+        let dataSource: DataSource
+    }
+
+    // v1 group update messages should be non-durable and have specific error handling.
+    // v2 group update messages should be durable.
+    private static func sendGroupUpdateMessage(_ message: TSOutgoingMessage,
+                                               thread: TSGroupThread,
+                                               attachment: GroupUpdateMessageAttachment? = nil) -> Promise<Void> {
+        if thread.isGroupV1Thread {
+            return firstly(on: .global()) { () -> Promise<Void> in
+                if let attachment = attachment {
+                    // v1 group update with avatar.
+                    return self.messageSender.sendTemporaryAttachment(.promise,
+                                                               dataSource: attachment.dataSource,
+                                                               contentType: attachment.contentType,
+                                                               message: message)
                 } else {
-                    // Failure to send a "group update" message should not
-                    // be considered a failure when updating a v2 group.
-                    Logger.error("Error sending v2 group update: \(error)")
+                    // v1 group update without avatar.
+                    return self.messageSender.sendMessage(.promise, message.asPreparer)
                 }
+            }.recover(on: .global()) { error in
+                if isNetworkFailureOrTimeout(error) {
+                    Logger.error("Error sending v1 group update: \(error)")
+                } else {
+                    owsFailDebug("Error sending v1 group update: \(error)")
+                }
+                if message.wasSentToAnyRecipient {
+                    // If a v1 group update was successfully sent to any
+                    // group member, consider it a success. The group update
+                    // is "out in the wild". If some members did not receive
+                    // the update, we rely on other mechanisms for group state
+                    // to converge.
+                } else {
+                    throw error
+                }
+            }
+        } else {
+            // v2 group update.
+            //
+            // Enqueue the message for a durable send.
+            return databaseStorage.write(.promise) { transaction in
+                self.messageSenderJobQueue.add(message: message.asPreparer,
+                                               transaction: transaction)
             }
         }
     }
@@ -1872,6 +1885,10 @@ public class GroupManager: NSObject {
                                                     value: Bool,
                                                     transaction: SDSAnyWriteTransaction) {
         if let uuid = address.uuid {
+            let didChange = value != groupsV2CapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
+            guard didChange else {
+                return
+            }
             groupsV2CapabilityStore.setBool(value, key: uuid.uuidString, transaction: transaction)
         }
     }

@@ -114,7 +114,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     }
 
     OWSAssertDebug(recipientPhoneNumber != nil || recipientUUID != nil);
-    OWSAssertDebug(recipientPhoneNumber != nil || SSKFeatureFlags.allowUUIDOnlyContacts);
+    OWSAssertDebug(recipientPhoneNumber != nil || RemoteConfig.allowUUIDOnlyContacts);
 
     _contact = contact;
     _contactAvatarHash = contactAvatarHash;

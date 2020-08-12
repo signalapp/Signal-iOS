@@ -153,6 +153,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
              isUuidCapable:(BOOL)isUuidCapable
                transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)updateWithUsername:(nullable NSString *)username
+             isUuidCapable:(BOOL)isUuidCapable
+             lastFetchDate:(nullable NSDate *)lastFetchDate
+               transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (void)updateWithLastMessagingDate:(NSDate *)lastMessagingDate transaction:(SDSAnyWriteTransaction *)transaction;
 
 #if TESTABLE_BUILD

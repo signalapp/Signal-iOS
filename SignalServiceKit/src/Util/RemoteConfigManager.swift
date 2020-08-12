@@ -29,9 +29,9 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2CreateGroups: Bool {
-        guard modernCDS || DebugFlags.groupsV2assumeModernCDS else { return false }
-        guard FeatureFlags.groupsV2 else { return false }
-        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
+        guard modernContactDiscovery || DebugFlags.groupsV2forceModernCDS else { return false }
+        guard FeatureFlags.groupsV2Supported else { return false }
+        if DebugFlags.groupsV2ForceEnable { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
@@ -40,23 +40,31 @@ public class RemoteConfig: BaseFlags {
         if groupsV2CreateGroups {
             return true
         }
-        guard modernCDS || DebugFlags.groupsV2assumeModernCDS else { return false }
-        guard FeatureFlags.groupsV2 else { return false }
-        if DebugFlags.groupsV2ForceEnableRemoteConfig { return true }
+        guard modernContactDiscovery || DebugFlags.groupsV2forceModernCDS else { return false }
+        guard FeatureFlags.groupsV2Supported else { return false }
+        if DebugFlags.groupsV2ForceEnable { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
 
-    // TODO: There's more work to be done around feature flags and
-    //       remote configuration for modern CDS:
-    //
-    // * Modify most usage of FeatureFlags.modernContactDiscovery
-    //   and FeatureFlags.compareLegacyContactDiscoveryAgainstModern to
-    //   consult this remote config flag.
     @objc
-    public static var modernCDS: Bool {
-        let isModernCDSAvailable = FeatureFlags.modernContactDiscovery
-        guard isModernCDSAvailable else { return false }
-        return isEnabled(.modernCDS)
+    public static var modernContactDiscovery: Bool {
+        let allEnableConditions = [
+            // If the remote config flag is set, we're enabled
+            isEnabled(.modernContactDiscovery),
+
+            // These flags force modern CDS on, even if the remote config is switched off
+            // Groups v2 implies modern CDS, so when it's enabled modern CDS must be enabled.
+            DebugFlags.forceModernContactDiscovery,
+            isEnabled(.groupsV2GoodCitizen)
+        ]
+
+        return allEnableConditions.contains(true)
+    }
+
+    @objc
+    public static var uuidSafetyNumbers: Bool {
+        guard modernContactDiscovery else { return false }
+        return isEnabled(.uuidSafetyNumbers)
     }
 
     @objc
@@ -75,13 +83,13 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var groupsV2maxMemberCount: UInt {
+    public static var maxGroupsV2MemberCount: UInt {
         let defaultValue: UInt = 151
         guard AppReadiness.isAppReady else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
         }
-        guard let rawValue: AnyObject = value(.groupsV2memberCountMax) else {
+        guard let rawValue: AnyObject = value(.maxGroupsV2MemberCount) else {
             return defaultValue
         }
         guard let stringValue = rawValue as? String else {
@@ -94,6 +102,30 @@ public class RemoteConfig: BaseFlags {
         }
         return uintValue
     }
+
+    @objc
+    public static var mentions: Bool {
+        guard FeatureFlags.mentionsSupported else { return false }
+        if DebugFlags.forceMentions { return true }
+        return isEnabled(.mentions)
+    }
+
+    @objc
+    public static var uuidCapabilities: Bool {
+        modernContactDiscovery
+    }
+
+    @objc
+    public static var allowUUIDOnlyContacts: Bool {
+        modernContactDiscovery
+    }
+
+    @objc
+    public static var usernames: Bool {
+        modernContactDiscovery && FeatureFlags.usernamesSupported
+    }
+
+    // MARK: -
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
@@ -175,7 +207,7 @@ private struct Flags {
     enum StickyIsEnabledFlags: String, FlagType {
         case groupsV2GoodCitizen
         case versionedProfiles
-        case modernCDS
+        case uuidSafetyNumbers
     }
 
     // We filter the received config down to just the supported flags.
@@ -189,13 +221,15 @@ private struct Flags {
         case groupsV2GoodCitizen
         case deleteForEveryone
         case versionedProfiles
-        case modernCDS
+        case mentions
+        case uuidSafetyNumbers
+        case modernContactDiscovery
     }
 
     // Values defined in this array remain set once they are
     // set regardless of the remote state.
     enum StickyValuesFlags: String, FlagType {
-        case groupsV2memberCountMax
+        case maxGroupsV2MemberCount
     }
 
     // We filter the received config down to just the supported values.
@@ -203,7 +237,7 @@ private struct Flags {
     // set because we cached a value before it went public. e.g. if we set
     // a sticky value to X in beta then remove it before going to production.
     enum SupportedValuesFlags: String, FlagType {
-        case groupsV2memberCountMax
+        case maxGroupsV2MemberCount
     }
 }
 
@@ -218,7 +252,14 @@ private protocol FlagType: CaseIterable {
 // MARK: -
 
 private extension FlagType {
-    var rawFlag: String { Flags.prefix + rawValue }
+    var rawFlag: String {
+        if rawValue == "maxGroupsV2MemberCount" {
+            return "global.maxGroupSize"
+        } else {
+            return Flags.prefix + rawValue
+        }
+    }
+
     static var allRawFlags: [String] { allCases.map { $0.rawFlag } }
 }
 

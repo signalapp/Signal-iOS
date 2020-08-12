@@ -149,7 +149,7 @@ public class AccountManager: NSObject {
         return firstly {
             self.registerForTextSecure(verificationCode: verificationCode, pin: pin, checkForAvailableTransfer: checkForAvailableTransfer)
         }.then { response -> Promise<Void> in
-            assert(!FeatureFlags.allowUUIDOnlyContacts || response.uuid != nil)
+            assert(!RemoteConfig.allowUUIDOnlyContacts || response.uuid != nil)
             self.tsAccountManager.uuidAwaitingVerification = response.uuid
 
             self.databaseStorage.write { transaction in
@@ -469,7 +469,7 @@ public class AccountManager: NSObject {
             _ = self.ensureUuid().catch { error in
                 // Until we're in a UUID-only world, don't require a
                 // local UUID.
-                if FeatureFlags.allowUUIDOnlyContacts {
+                if RemoteConfig.allowUUIDOnlyContacts {
                     owsFailDebug("error: \(error)")
                 }
                 Logger.warn("error: \(error)")

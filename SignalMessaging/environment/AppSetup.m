@@ -121,6 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
         EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
         OWSMessagePipelineSupervisor *messagePipelineSupervisor =
             [OWSMessagePipelineSupervisor createStandardSupervisor];
+        ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -129,7 +130,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
                                                                   sounds:sounds
-                                                           windowManager:windowManager]];
+                                                           windowManager:windowManager
+                                                      contactsViewHelper:contactsViewHelper]];
 
         [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
 

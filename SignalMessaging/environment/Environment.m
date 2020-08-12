@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "Environment.h"
@@ -18,6 +18,7 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) OWSWindowManager *windowManager;
 @property (nonatomic) LaunchJobs *launchJobs;
+@property (nonatomic) ContactsViewHelper *contactsViewHelper;
 
 @end
 
@@ -57,6 +58,7 @@ static Environment *sharedEnvironment = nil;
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                               sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager
+                  contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
 {
     self = [super init];
     if (!self) {
@@ -71,6 +73,7 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(proximityMonitoringManager);
     OWSAssertDebug(sounds);
     OWSAssertDebug(windowManager);
+    OWSAssertDebug(contactsViewHelper);
 
     _audioSession = audioSession;
     _incomingContactSyncJobQueue = incomingContactSyncJobQueue;
@@ -80,6 +83,7 @@ static Environment *sharedEnvironment = nil;
     _proximityMonitoringManager = proximityMonitoringManager;
     _sounds = sounds;
     _windowManager = windowManager;
+    _contactsViewHelper = contactsViewHelper;
 
     OWSSingletonAssert();
 

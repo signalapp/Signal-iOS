@@ -26,12 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SelectThreadViewController () <OWSTableViewControllerDelegate,
     ThreadViewHelperDelegate,
-    ContactsViewHelperDelegate,
+    ContactsViewHelperObserver,
     UISearchBarDelegate,
     FindByPhoneNumberDelegate,
     UIDatabaseSnapshotDelegate>
 
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
 
@@ -52,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
+- (ContactsViewHelper *)contactsViewHelper
+{
+    return Environment.shared.contactsViewHelper;
+}
+
 #pragma mark -
 
 - (void)loadView
@@ -65,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = Theme.backgroundColor;
 
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    [self.contactsViewHelper addObserver:self];
     _fullTextSearcher = FullTextSearcher.shared;
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
@@ -409,16 +413,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-#pragma mark - ContactsViewHelperDelegate
+#pragma mark - ContactsViewHelperObserver
 
 - (void)contactsViewHelperDidUpdateContacts
 {
     [self updateTableContents];
-}
-
-- (BOOL)shouldHideLocalNumber
-{
-    return NO;
 }
 
 #pragma mark - FindByPhoneNumberDelegate

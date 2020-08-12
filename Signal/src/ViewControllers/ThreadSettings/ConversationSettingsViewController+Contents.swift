@@ -620,10 +620,7 @@ extension ConversationSettingsViewController {
             owsFailDebug("Missing localAddress.")
             return section
         }
-        guard let helper = self.contactsViewHelper else {
-            owsFailDebug("Missing contactsViewHelper.")
-            return section
-        }
+        let helper = contactsViewHelper
 
         // "Add Members" cell.
         if canEditConversationMembership {

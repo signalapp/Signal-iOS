@@ -109,7 +109,7 @@ public class UUIDBackfillTask: NSObject {
             .compactMap { $0.recipientPhoneNumber }
             .map { (persisted: $0, e164: PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: $0)?.toE164()) }
 
-        if !FeatureFlags.modernContactDiscovery && !testing_skipModernCDSFlagCheck {
+        if !RemoteConfig.modernContactDiscovery && !testing_skipModernCDSFlagCheck {
             Logger.info("Modern CDS is not available. Completing early.")
             self.onqueue_complete()
 

@@ -389,7 +389,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
                                    // self might be the latest instance, so take a "before" snapshot
                                    // before any changes have been made.
-                                   NSDictionary *beforeSnapshot = [profile.dictionaryValue copy];
+                                   NSDictionary *beforeSnapshot = [profile.dictionaryValue
+                                       mtl_dictionaryByRemovingValuesForKeys:@[ @"lastFetchDate" ]];
                                    NSDictionary *beforeSnapshotWithoutAvatar =
                                        [beforeSnapshot mtl_dictionaryByRemovingValuesForKeys:avatarKeys];
 
@@ -440,8 +441,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                            profile.avatarUrlPath != nil);
                                    }
 
-
-                                   NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
+                                   NSDictionary *afterSnapshot = [profile.dictionaryValue
+                                       mtl_dictionaryByRemovingValuesForKeys:@[ @"lastFetchDate" ]];
                                    NSDictionary *afterSnapshotWithoutAvatar =
                                        [afterSnapshot mtl_dictionaryByRemovingValuesForKeys:avatarKeys];
 
@@ -690,6 +691,25 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                applyChanges:^(OWSUserProfile *userProfile) {
                    userProfile.username = username;
                    userProfile.isUuidCapable = isUuidCapable;
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:YES
+                transaction:transaction
+                 completion:nil];
+}
+
+- (void)updateWithUsername:(nullable NSString *)username
+             isUuidCapable:(BOOL)isUuidCapable
+             lastFetchDate:(nullable NSDate *)lastFetchDate
+               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(username == nil || username.length > 0);
+
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   userProfile.username = username;
+                   userProfile.isUuidCapable = isUuidCapable;
+                   userProfile.lastFetchDate = lastFetchDate;
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES

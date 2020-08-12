@@ -639,7 +639,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         if (localUUID) {
             [whitelistedUUIDS removeObject:localUUID];
         } else {
-            if (SSKFeatureFlags.allowUUIDOnlyContacts) {
+            if (RemoteConfig.allowUUIDOnlyContacts) {
                 OWSFailDebug(@"Missing localUUID");
             }
         }
@@ -1802,7 +1802,10 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
 
             if (!userProfile.profileKey) {
-                [userProfile updateWithUsername:username isUuidCapable:isUuidCapable transaction:transaction];
+                [userProfile updateWithUsername:username
+                                  isUuidCapable:isUuidCapable
+                                  lastFetchDate:lastFetchDate
+                                    transaction:transaction];
                 return;
             }
 

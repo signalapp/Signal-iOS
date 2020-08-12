@@ -313,7 +313,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (NSArray<SignalServiceAddress *> *)attachmentApprovalMentionableAddresses
 {
-    if (!SSKFeatureFlags.mentionsSend) {
+    if (!RemoteConfig.mentions) {
         return @[];
     }
 

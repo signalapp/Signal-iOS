@@ -10,13 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAccount;
 @class TSThread;
 
-@protocol ContactsViewHelperDelegate <NSObject>
+@protocol ContactsViewHelperObserver <NSObject>
 
 - (void)contactsViewHelperDidUpdateContacts;
-
-@optional
-
-- (BOOL)shouldHideLocalNumber;
 
 @end
 
@@ -28,10 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsViewHelper : NSObject
 
-@property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
-
-@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
-
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
 @property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
 
@@ -39,10 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 // previously denied contact access.
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
+- (void)addObserver:(id<ContactsViewHelperObserver>)observer NS_SWIFT_NAME(addObserver(_:));
 
-- (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;
+
+@property (nonatomic, readonly) NSArray<SignalAccount *> *allSignalAccounts;
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
@@ -55,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 // is only safe to be called on the main thread.
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 
-// NOTE: This method uses a transaction.
 - (SignalServiceAddress *)localAddress;
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText

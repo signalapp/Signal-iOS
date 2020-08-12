@@ -607,7 +607,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             dispatch_group_leave(group);
         }];
 
-    if (SSKFeatureFlags.modernContactDiscovery) {
+    if (RemoteConfig.modernContactDiscovery) {
         dispatch_group_enter(group);
         [self populateUUIDsForLegacyRecipientsOf:message
                                       completion:^(NSError *error) {
@@ -788,16 +788,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // 1. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificate != nil) {
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            for (SignalRecipient *recipient in recipients) {
-                if (!recipient.address.isLocalAddress) {
-                    sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
-                                                                                  requireSyncAccess:YES
-                                                                                  senderCertificate:senderCertificate
-                                                                                        transaction:transaction];
-                }
+        for (SignalRecipient *recipient in recipients) {
+            if (!recipient.address.isLocalAddress) {
+                sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
+                                                                              requireSyncAccess:YES
+                                                                              senderCertificate:senderCertificate];
             }
-        });
+        }
     }
 
     // 2. Build a "OWSMessageSend" for each recipient.
@@ -1249,7 +1246,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
 
-    if (SSKFeatureFlags.modernContactDiscovery) {
+    if (RemoteConfig.modernContactDiscovery) {
         // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
         // If we have no UUID, consider the recipient unregistered.
         BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);

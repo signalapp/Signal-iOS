@@ -498,7 +498,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 + (NSDictionary<NSString *, NSNumber *> *)deviceCapabilities
 {
     NSMutableDictionary<NSString *, NSNumber *> *capabilities = [NSMutableDictionary new];
-    if (SSKFeatureFlags.uuidCapabilities) {
+    if (RemoteConfig.uuidCapabilities) {
         capabilities[@"uuid"] = @(YES);
     }
     if (RemoteConfig.groupsV2GoodCitizen) {

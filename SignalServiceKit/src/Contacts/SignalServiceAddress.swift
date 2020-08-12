@@ -39,6 +39,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
                 return nil
             }
             backingUuid.set(cachedUuid)
+            observeMappingChanges()
             return cachedUuid
         }
 
@@ -125,29 +126,46 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             owsFailDebug("Unexpectedly initialized address with no identifier")
         }
 
-        registerForMappingChangeNotification()
+        observeMappingChanges()
     }
 
-    private func registerForMappingChangeNotification() {
-        NotificationCenter.default.addObserver(
-            self, selector:
-            #selector(mappingDidChange),
-            name: SignalServiceAddressCache.mappingDidChangeNotification,
-            object: nil
-        )
+    // MARK: - Codable
+
+    private enum CodingKeys: String, CodingKey {
+        case backingUuid, backingPhoneNumber
     }
 
-    @objc
-    func mappingDidChange(notification: Notification) {
-        guard let backingUuid = backingUuid.get(),
-            let updatedUuid = notification.userInfo?[SignalServiceAddressCache.mappingDidChangeNotificationUUIDKey] as? UUID,
-            backingUuid == updatedUuid
-            else { return }
-
-        backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid))
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(backingUuid.get(), forKey: .backingUuid)
+        // Only encode the backingPhoneNumber if we don't know the UUID
+        try container.encode(backingUuid.get() == nil ? backingPhoneNumber.get() : nil, forKey: .backingPhoneNumber)
     }
 
-    // MARK: -
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        let uuid: UUID? = try container.decodeIfPresent(UUID.self, forKey: .backingUuid)
+
+        // Only decode the backingPhoneNumber if we don't know the UUID, otherwise
+        // pull the phone number from the cache.
+        let phoneNumber: String?
+        if let decodedUuid = uuid {
+            phoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: decodedUuid)
+        } else {
+            phoneNumber = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber)
+        }
+
+        backingUuid = AtomicOptional(uuid)
+        backingPhoneNumber = AtomicOptional(phoneNumber)
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get(), trustLevel: .low)
+
+        super.init()
+
+        observeMappingChanges()
+    }
+
+    // MARK: - NSSecureCoding
 
     public func encode(with aCoder: NSCoder) {
         aCoder.encode(backingUuid.get(), forKey: "backingUuid")
@@ -168,6 +186,10 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         }
 
         backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get(), trustLevel: .low)
+
+        super.init()
+
+        observeMappingChanges()
     }
 
     // MARK: -
@@ -251,7 +273,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var serviceIdentifier: String? {
-        if FeatureFlags.allowUUIDOnlyContacts,
+        if RemoteConfig.allowUUIDOnlyContacts,
             uuid != nil {
             guard let uuidString = uuidString else {
                 owsFailDebug("uuidString was unexpectedly nil")
@@ -275,7 +297,90 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     override public var description: String {
         return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(uuid?.uuidString ?? "nil")>"
     }
+
+    // MARK: - Mapping Changes
+
+    // The "observer" is a weak array of addresses with the
+    // same UUID observing changes to that UUID.
+    private typealias AddressMappingObserver = NSHashTable<SignalServiceAddress>
+
+    // Every address retains a strong reference to its observer.
+    private var mappingObserver = AtomicOptional<AddressMappingObserver>(nil)
+
+    private static let unfairLock = UnfairLock()
+    private static let mappingObserverCache = NSMapTable<NSUUID, AddressMappingObserver>(keyOptions: .strongMemory,
+                                                                                         valueOptions: .weakMemory)
+
+    private func observeMappingChanges() {
+        guard let uuid = backingUuid.get() else {
+            return
+        }
+        guard mappingObserver.get() == nil else {
+            owsFailDebug("There's shouldn't be an existing observer.")
+            return
+        }
+        let observer = Self.unfairLock.withLock { () -> AddressMappingObserver in
+            let observer = { () -> AddressMappingObserver in
+                if let observer = Self.mappingObserverCache.object(forKey: uuid as NSUUID) {
+                    return observer
+                } else {
+                    // * Use weak references to addresses.
+                    // * Use .objectPointerPersonality; this NSHashTable will contain
+                    //   a list of addresses that are all "equal".
+                    let observer = NSHashTable<SignalServiceAddress>(options: [
+                        .weakMemory,
+                        .objectPointerPersonality
+                    ])
+                    Self.mappingObserverCache.setObject(observer, forKey: uuid as NSUUID)
+                    return observer
+                }
+            }()
+            observer.add(self)
+            return observer
+        }
+        // We could race in this method, but in practice it should never happen.
+        // If it did, it wouldn't have any adverse side effects.
+        owsAssertDebug(mappingObserver.get() == nil)
+        mappingObserver.set(observer)
+    }
+
+    fileprivate static func notifyMappingDidChange(forUuid uuid: UUID) {
+        guard let addresses = (Self.unfairLock.withLock { () -> [SignalServiceAddress]? in
+            guard let observer = Self.mappingObserverCache.object(forKey: uuid as NSUUID) else {
+                return nil
+            }
+            return observer.allObjects
+        }) else {
+            return
+        }
+        for address in addresses {
+            address.mappingDidChange(uuid: uuid)
+        }
+    }
+
+    fileprivate func mappingDidChange(uuid: UUID) {
+        owsAssertDebug(uuid == self.uuid)
+        backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: uuid))
+    }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+extension SignalServiceAddress {
+    var unresolvedUuid: UUID? {
+        backingUuid.get()
+    }
+
+    var unresolvedPhoneNumber: String? {
+        backingPhoneNumber.get()
+    }
+}
+
+#endif
+
+// MARK: -
 
 @objc
 public class SignalServiceAddressCache: NSObject {
@@ -366,9 +471,6 @@ public class SignalServiceAddressCache: NSObject {
         return serialQueue.sync { uuidToPhoneNumberCache[uuid] }
     }
 
-    static let mappingDidChangeNotification = Notification.Name("SignalServiceAddressCacheMappingDidChange")
-    static let mappingDidChangeNotificationUUIDKey = "mappingDidChangeNotificationUUIDKey"
-
     @objc
     func updateMapping(uuid: UUID, phoneNumber: String?) {
         serialQueue.sync {
@@ -409,10 +511,6 @@ public class SignalServiceAddressCache: NSObject {
         }
 
         // Notify any existing address objects to update their backing phone number
-        NotificationCenter.default.post(
-            name: SignalServiceAddressCache.mappingDidChangeNotification,
-            object: nil,
-            userInfo: [SignalServiceAddressCache.mappingDidChangeNotificationUUIDKey: uuid]
-        )
+        SignalServiceAddress.notifyMappingDidChange(forUuid: uuid)
     }
 }

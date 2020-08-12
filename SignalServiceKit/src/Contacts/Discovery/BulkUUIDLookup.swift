@@ -98,7 +98,7 @@ public class BulkUUIDLookup: NSObject {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
-        guard FeatureFlags.modernContactDiscovery else {
+        guard RemoteConfig.modernContactDiscovery else {
             // Can't fill in UUIDs using legacy contact intersections.
             return
         }

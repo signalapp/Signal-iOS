@@ -55,6 +55,10 @@ public class BaseGroupMemberViewController: OWSViewController {
         return .sharedInstance()
     }
 
+    private var contactsViewHelper: ContactsViewHelper {
+        return Environment.shared.contactsViewHelper
+    }
+
     // MARK: -
 
     // This delegate is the subclass.
@@ -121,13 +125,13 @@ public class BaseGroupMemberViewController: OWSViewController {
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
 
         updateMemberCount()
-        tryToFillInMissingUuuids()
+        tryToFillInMissingUuids()
     }
 
-    private func tryToFillInMissingUuuids() {
-        let addresses = recipientPicker.contactsViewHelper.signalAccounts.map { $0.recipientAddress }
+    private func tryToFillInMissingUuids() {
+        let addresses = contactsViewHelper.allSignalAccounts.map { $0.recipientAddress }
         firstly {
-            GroupManager.tryToFillInMissingUuuids(for: addresses, isBlocking: false)
+            GroupManager.tryToFillInMissingUuids(for: addresses, isBlocking: false)
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }
@@ -162,7 +166,7 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         memberCountLabel.text = String(format: format,
                                        OWSFormat.formatInt(memberCount),
-                                       OWSFormat.formatUInt(GroupManager.maxGroupMemberCount))
+                                       OWSFormat.formatUInt(GroupManager.maxGroupsV2MemberCount))
     }
 
     public func removeRecipient(_ recipient: PickedRecipient) {
@@ -360,7 +364,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
 
         let addRecipientCompletion = { [weak self] in
             guard let self = self else {
@@ -500,7 +504,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
 
         if isCurrentMember {
             return nil
@@ -527,7 +531,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
         let isPreExistingMember = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient)
 
         let imageView = UIImageView()

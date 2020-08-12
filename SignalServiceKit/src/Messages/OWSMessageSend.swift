@@ -21,17 +21,14 @@ public class OWSMessageSend: NSObject {
     @objc
     public let recipient: SignalRecipient
 
-    private var _deviceIds = AtomicValue<[NSNumber]>([])
+    private var _deviceIds = AtomicArray<NSNumber>()
     @objc
     public var deviceIds: [NSNumber] {
         get { return _deviceIds.get() }
     }
     @objc
     public func removeDeviceId(_ deviceId: NSNumber) {
-        _deviceIds.map { deviceIds in
-            assert(deviceIds.contains(deviceId))
-            return deviceIds.filter { $0 != deviceId }
-        }
+        _deviceIds.remove(deviceId)
     }
 
     private static let kMaxRetriesPerRecipient: Int = 3

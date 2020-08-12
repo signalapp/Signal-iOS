@@ -105,7 +105,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
-    ContactsViewHelperDelegate,
+    ContactsViewHelperObserver,
     LongTextViewDelegate,
     MessageDetailViewDelegate,
     OWSMessageBubbleViewDelegate,
@@ -123,9 +123,6 @@ typedef enum : NSUInteger {
     ConversationViewModelDelegate,
     LocationPickerDelegate,
     InputAccessoryViewPlaceholderDelegate>
-
-@property (nonatomic) TSThread *thread;
-@property (nonatomic) ThreadViewModel *threadViewModel;
 
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
 
@@ -155,8 +152,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) ConversationViewAction actionOnOpen;
 
 @property (nonatomic, getter=isInPreviewPlatter) BOOL inPreviewPlatter;
-
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic, nullable) NSDate *lastMessageSentDate;
@@ -225,7 +220,7 @@ typedef enum : NSUInteger {
         focusMessageId = threadViewModel.lastVisibleInteraction.uniqueId;
     }
 
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    [self.contactsViewHelper addObserver:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
 
@@ -238,7 +233,6 @@ typedef enum : NSUInteger {
     self.inputAccessoryPlaceholder.delegate = self;
 
     _threadViewModel = threadViewModel;
-    _thread = threadViewModel.threadRecord;
 
     self.actionOnOpen = action;
     _cellMediaCache = [NSCache new];
@@ -360,6 +354,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.syncManager;
 }
 
+- (ContactsViewHelper *)contactsViewHelper
+{
+    return Environment.shared.contactsViewHelper;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -421,6 +420,10 @@ typedef enum : NSUInteger {
     return self.thread.isGroupThread;
 }
 
+- (TSThread *)thread {
+    OWSAssertDebug(self.threadViewModel);
+    return self.threadViewModel.threadRecord;
+}
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
@@ -543,7 +546,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)userLeftGroup
 {
-    if (![_thread isKindOfClass:[TSGroupThread class]]) {
+    if (![self.thread isKindOfClass:[TSGroupThread class]]) {
         return NO;
     }
 
@@ -2247,7 +2250,6 @@ typedef enum : NSUInteger {
     GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
     groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:incomingMessage.authorAddress
-                                                             contactsViewHelper:self.contactsViewHelper
                                                                 groupViewHelper:groupViewHelper];
     [actionSheet presentFromViewController:self];
 }
@@ -2516,7 +2518,6 @@ typedef enum : NSUInteger {
     GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
     groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:mention.address
-                                                             contactsViewHelper:self.contactsViewHelper
                                                                 groupViewHelper:groupViewHelper];
     [actionSheet presentFromViewController:self];
 }
@@ -2769,7 +2770,7 @@ typedef enum : NSUInteger {
     [self.navigationController popToViewController:self animated:YES];
 }
 
-#pragma mark - ContactsViewHelperDelegate
+#pragma mark - ContactsViewHelperObserver
 
 - (void)contactsViewHelperDidUpdateContacts
 {
@@ -3293,8 +3294,9 @@ typedef enum : NSUInteger {
     OWSLogVerbose(@"Sending contact share.");
 
     __block BOOL didAddToProfileWhitelist;
+    TSThread *thread = self.thread;
     DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-        didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
+        didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:thread
                                                                                       transaction:transaction];
 
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
@@ -3305,7 +3307,7 @@ typedef enum : NSUInteger {
 
         [transaction addAsyncCompletion:^{
             TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord
-                                                                             thread:self.thread];
+                                                                             thread:thread];
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
@@ -3323,11 +3325,11 @@ typedef enum : NSUInteger {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      NSError *error;
+                      NSError *dataSourceError;
                       id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:movieURL
                                                          shouldDeleteOnDeallocation:NO
-                                                                              error:&error];
-                      if (error != nil) {
+                                                                              error:&dataSourceError];
+                      if (dataSourceError != nil) {
                           [self showErrorAlertForAttachment:nil];
                           return;
                       }
@@ -3700,7 +3702,7 @@ typedef enum : NSUInteger {
 - (void)saveDraft
 {
     if (!self.inputToolbar.hidden) {
-        TSThread *thread = _thread;
+        TSThread *thread = self.thread;
         MessageBody *currentDraft = [self.inputToolbar messageBody];
 
         DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -3748,8 +3750,6 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment
 {
-    OWSLogError(@"");
-
     // If the thing we pasted is sticker-like, send it immediately
     // and render it borderless.
     if (attachment.isBorderless) {
@@ -3781,8 +3781,6 @@ typedef enum : NSUInteger {
 
 - (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageBody:(MessageBody *_Nullable)messageBody
 {
-    OWSLogError(@"");
-
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
         if ([self isBlockedConversation]) {
@@ -4046,7 +4044,7 @@ typedef enum : NSUInteger {
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug([_thread isKindOfClass:[TSGroupThread class]]);
+    OWSAssertDebug([self.thread isKindOfClass:[TSGroupThread class]]);
     OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
@@ -4256,9 +4254,9 @@ typedef enum : NSUInteger {
         [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
     });
 
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.thread updateWithDraft:nil transaction:transaction];
-    });
+    TSThread *thread = self.thread;
+    DatabaseStorageAsyncWrite(self.databaseStorage,
+        ^(SDSAnyWriteTransaction *transaction) { [thread updateWithDraft:nil transaction:transaction]; });
 
     if (didAddToProfileWhitelist) {
         [self ensureBannerState];
@@ -4801,8 +4799,7 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
-    [self.thread anyReloadWithTransaction:transaction];
-    self.threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
+    _threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
     [self updateNavigationBarSubtitleLabel];
     [self updateBarButtonItems];
 
@@ -5465,7 +5462,12 @@ typedef enum : NSUInteger {
 
     void (^adjustInsets)(void) = ^(void) {
         // Adjust content offset to prevent the presented keyboard from obscuring content.
-        if (!self.viewHasEverAppeared) {
+        BOOL hasViewBeenPresented = self.viewHasEverAppeared || self.isViewVisible;
+        if (!hasViewBeenPresented) {
+            // Do nothing.
+        } else if (!self.viewHasEverAppeared) {
+            // We need to apply the default scroll state between the first
+            // viewWillAppear() and viewDidAppear().
             [self scrollToDefaultPositionAnimated:NO];
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
