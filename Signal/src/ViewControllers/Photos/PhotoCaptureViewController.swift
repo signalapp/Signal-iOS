@@ -372,7 +372,9 @@ class PhotoCaptureViewController: OWSViewController {
     
     @objc
     func didSwipe(swipeGesture: UISwipeGestureRecognizer) {
-        didTapClose()
+        if swipeGesture.state == .ended {
+            didTapClose()
+        }
     }
 
     @objc
