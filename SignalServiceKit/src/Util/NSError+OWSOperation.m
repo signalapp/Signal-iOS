@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOperation.h"
@@ -27,6 +27,9 @@ static void *kNSError_MessageSender_IsFatal = &kNSError_MessageSender_IsFatal;
 
     // This value should always be set for all errors by the time OWSOperation
     // queries it's value.  If not, default to retrying in production.
+    if (value == nil) {
+        OWSLogVerbose(@"Error without retry behavior specified: %@", self);
+    }
     OWSAssertDebug(value);
     return value ? [value boolValue] : YES;
 }
