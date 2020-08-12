@@ -80,13 +80,13 @@ extension RemoteAttestation {
     }
 
     private static func performAttestation(for service: RemoteAttestationService, auth: RemoteAttestationAuth? = nil) -> Promise<AttestationResponse> {
-        firstly { () -> Promise<RemoteAttestationAuth> in
+        firstly(on: .global()) { () -> Promise<RemoteAttestationAuth> in
             if let auth = auth {
                 return Promise.value(auth)
             } else {
                 return getAuth(for: service)
             }
-        }.then { auth -> Promise<AttestationResponse> in
+        }.then(on: .global()) { auth -> Promise<AttestationResponse> in
             let config = enclaveConfig(for: service)
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()
 
