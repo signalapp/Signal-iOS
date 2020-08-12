@@ -111,6 +111,7 @@ class PhotoCaptureViewController: OWSViewController {
         updateNavigationItems()
         updateFlashModeControl()
 
+        view.addGestureRecognizer(swipeGesture)
         view.addGestureRecognizer(pinchZoomGesture)
         view.addGestureRecognizer(tapToFocusGesture)
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
@@ -301,6 +302,12 @@ class PhotoCaptureViewController: OWSViewController {
             self?.didTapFlashMode()
         }
     }()
+    
+    lazy var swipeGesture: UISwipeGestureRecognizer = {
+        let swipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe(swipeGesture:)))
+        swipe.direction = [.up, .down]
+        return swipe
+    }()
 
     lazy var pinchZoomGesture: UIPinchGestureRecognizer = {
         return UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:)))
@@ -361,6 +368,11 @@ class PhotoCaptureViewController: OWSViewController {
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }
+    }
+    
+    @objc
+    func didSwipe(swipeGesture: UISwipeGestureRecognizer) {
+        didTapClose()
     }
 
     @objc
