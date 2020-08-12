@@ -422,6 +422,37 @@ extension SignalCall: CallManagerCallReference { }
 
     // MARK: - Signaling Functions
 
+    private func allowsInboundCallsInThread(_ thread: TSContactThread) -> Bool {
+        return databaseStorage.read { transaction in
+            // IFF one of the following things is true, we can handle inbound call offers
+            // * The thread is in our profile whitelist
+            // * The thread belongs to someone in our system contacts
+            // * The thread existed before messages requests
+            return SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
+                || self.contactsManager.isSystemContact(address: thread.contactAddress)
+                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead)
+        }
+    }
+
+    private struct CallIdentityKeys {
+      let localIdentityKey: Data
+      let contactIdentityKey: Data
+    }
+
+    private func getIdentityKeys(thread: TSContactThread) -> CallIdentityKeys? {
+        return databaseStorage.read { transaction -> CallIdentityKeys? in
+            guard let localIdentityKey = OWSIdentityManager.shared().identityKeyPair(with: transaction)?.publicKey else {
+                Logger.warn("missing localIdentityKey")
+                return nil
+            }
+            guard let contactIdentityKey = OWSIdentityManager.shared().identityKey(for: thread.contactAddress, transaction: transaction) else {
+                Logger.warn("missing contactIdentityKey")
+                return nil
+            }
+            return CallIdentityKeys(localIdentityKey: localIdentityKey, contactIdentityKey: contactIdentityKey)
+        }
+    }
+
     /**
      * Received an incoming call Offer from call initiator.
      */
@@ -505,6 +536,21 @@ extension SignalCall: CallManagerCallReference { }
             return
         }
 
+        guard let identityKeys = getIdentityKeys(thread: thread) else {
+            owsFailDebug("missing identity keys, skipping call.")
+            let callRecord = TSCall(callType: .incomingMissed, thread: thread, sentAtTimestamp: sentAtTimestamp)
+            assert(newCall.callRecord == nil)
+            newCall.callRecord = callRecord
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
+
+            newCall.state = .localFailure
+            terminate(call: newCall)
+
+            return
+        }
+
         guard allowsInboundCallsInThread(thread) else {
             Logger.info("Ignoring call offer from \(thread.contactAddress) due to insufficient permissions.")
 
@@ -572,21 +618,9 @@ extension SignalCall: CallManagerCallReference { }
         let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
-        }
-    }
-
-    private func allowsInboundCallsInThread(_ thread: TSContactThread) -> Bool {
-        return databaseStorage.read { transaction in
-            // IFF one of the following things is true, we can handle inbound call offers
-            // * The thread is in our profile whitelist
-            // * The thread belongs to someone in our system contacts
-            // * The thread existed before messages requests
-            return SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
-                || self.contactsManager.isSystemContact(address: thread.contactAddress)
-                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead)
         }
     }
 
@@ -597,8 +631,15 @@ extension SignalCall: CallManagerCallReference { }
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
+        guard let identityKeys = getIdentityKeys(thread: thread) else {
+            if let currentCall = currentCall, currentCall.callId == callId {
+                handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"))
+            }
+            return
+        }
+
         do {
-            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing)
+            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = currentCall, currentCall.callId == callId {
