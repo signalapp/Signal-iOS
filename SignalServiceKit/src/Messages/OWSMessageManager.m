@@ -1352,7 +1352,7 @@ NS_ASSUME_NONNULL_BEGIN
                 oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
                 [oldGroupThread saveWithTransaction:transaction];
 
-                NSString *nameString =
+                NSString *nameString = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:senderMasterPublicKey transaction:transaction] ?: 
                     [self.contactsManager displayNameForPhoneIdentifier:senderMasterPublicKey transaction:transaction];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
