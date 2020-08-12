@@ -568,8 +568,7 @@ public extension OWSProfileManager {
                                                                                            error: &requestError)
             if let error = requestError {
                 owsFailDebug("Could not create request failed: \(error)")
-                error.isRetryable = false
-                throw error
+                throw error.asUnretryableError
             }
 
             let (promise, resolver) = Promise<Data>.pending()
@@ -583,9 +582,7 @@ public extension OWSProfileManager {
                                                       completionHandler: { (_, completionUrl, error) in
                                                         if let error = error {
                                                             Logger.warn("Download failed: \(error)")
-                                                            let errorCopy = error as NSError
-                                                            errorCopy.isRetryable = error.isNetworkFailureOrTimeout
-                                                            return resolver.reject(errorCopy)
+                                                            return resolver.reject(error.withDefaultRetry)
                                                         }
                                                         guard completionUrl == tempFileURL else {
                                                             return resolver.reject(OWSAssertionError("Unexpected file URL."))
@@ -594,11 +591,10 @@ public extension OWSProfileManager {
                                                         do {
                                                             let data = try Data(contentsOf: tempFileURL)
                                                             resolver.fulfill(data)
-                                                        } catch let error as NSError {
+                                                        } catch {
                                                             owsFailDebug("Could not load data failed: \(error)")
                                                             // Fail immediately; do not retry.
-                                                            error.isRetryable = false
-                                                            return resolver.reject(error)
+                                                            return resolver.reject(error.asUnretryableError)
                                                         }
             })
             task.resume()

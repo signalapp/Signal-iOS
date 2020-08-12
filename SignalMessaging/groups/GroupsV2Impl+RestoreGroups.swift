@@ -259,9 +259,7 @@ public extension GroupsV2Impl {
             }.catch(on: .global()) { (error) in
                 // tryToRestoreNextGroup() should never fail.
                 owsFailDebug("Group restore failed: \(error)")
-                let nsError: NSError = error as NSError
-                nsError.isRetryable = false
-                self.reportError(nsError)
+                self.reportError(error.asUnretryableError)
             }
         }
 

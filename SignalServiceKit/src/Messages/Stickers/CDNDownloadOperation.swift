@@ -58,8 +58,7 @@ open class CDNDownloadOperation: OWSOperation {
                                                                   error: &requestError)
         if let error = requestError {
             owsFailDebug("Could not create request failed: \(error)")
-            error.isRetryable = false
-            throw error
+            throw error.asUnretryableError
         }
         request.setValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
 
@@ -165,12 +164,10 @@ open class CDNDownloadOperation: OWSOperation {
                                                     do {
                                                         let data = try Data(contentsOf: tempFileURL)
                                                         resolver.fulfill(data)
-                                                    } catch let error as NSError {
+                                                    } catch {
                                                         owsFailDebug("Could not load data failed: \(error)")
-
                                                         // Fail immediately; do not retry.
-                                                        error.isRetryable = false
-                                                        return resolver.reject(error)
+                                                        return resolver.reject(error.asUnretryableError)
                                                     }
         })
         self.task = task
