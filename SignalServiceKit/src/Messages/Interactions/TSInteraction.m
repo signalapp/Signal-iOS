@@ -228,7 +228,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Thread
 
-- (TSThread *)threadWithSneakyTransaction
+- (nullable TSThread *)threadWithSneakyTransaction
 {
     if (self.uniqueThreadId == nil) {
         // This might be a true for a few legacy interactions enqueued in
@@ -238,7 +238,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         return nil;
     }
 
-    __block TSThread *thread;
+    __block TSThread *_Nullable thread;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         thread = [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
         OWSAssertDebug(thread);

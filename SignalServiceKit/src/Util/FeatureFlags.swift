@@ -196,6 +196,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let attachmentUploadV3ForV1GroupAvatars = false
 
+    @objc
+    public static let ignoreCDSUnregisteredUsersInMessageSends = true
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
