@@ -489,7 +489,6 @@ fileprivate extension MessageSending {
 
 @objc
 public class MessageSendInfo: NSObject {
-    // These recipients have already received the message.
     @objc
     public let thread: TSThread
 
@@ -556,6 +555,7 @@ extension MessageSending {
             }
 
             if message.isSyncMessage {
+                // Sync messages are just sent to the local user.
                 return MessageSendInfo(thread: thread,
                                        recipients: [localAddress],
                                        senderCertificate: senderCertificate)
@@ -584,10 +584,10 @@ extension MessageSending {
             // * Recipient is unregistered.
             //
             // Elsewhere, we skip recipient if their Signal account has been deactivated.
-            let skippedRecipientAddresses = Set(message.sendingRecipientAddresses()).subtracting(sendInfo.recipients)
-            if !skippedRecipientAddresses.isEmpty {
+            let skippedRecipients = Set(message.sendingRecipientAddresses()).subtracting(sendInfo.recipients)
+            if !skippedRecipients.isEmpty {
                 self.databaseStorage.write { transaction in
-                    for address in skippedRecipientAddresses {
+                    for address in skippedRecipients {
                         // Mark this recipient as "skipped".
                         message.update(withSkippedRecipient: address, transaction: transaction)
                     }
@@ -628,9 +628,11 @@ extension MessageSending {
             // they should not receive the message.
             recipientAddresses.formIntersection(groupThread.groupModel.groupMembers)
 
-            // We need to send group update messages for v2 groups to pending members.
+            // ...or latest known list of "additional recipients".
+            //
+            // This is used to send group update messages for v2 groups to
+            // pending members who are not included in .sendingRecipientAddresses().
             if GroupManager.shouldMessageHaveAdditionalRecipients(message, groupThread: groupThread) {
-                // ...or latest known list of "additional recipients".
                 let additionalRecipients = Set(groupThread.groupModel.groupMembership.pendingMembers)
                 recipientAddresses.formUnion(additionalRecipients)
             }
