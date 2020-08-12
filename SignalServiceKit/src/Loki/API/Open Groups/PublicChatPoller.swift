@@ -8,6 +8,7 @@ public final class PublicChatPoller : NSObject {
     private var pollForModeratorsTimer: Timer? = nil
     private var pollForDisplayNamesTimer: Timer? = nil
     private var hasStarted = false
+    private var isPolling = false
     
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
@@ -54,9 +55,12 @@ public final class PublicChatPoller : NSObject {
     }
     
     public func pollForNewMessages() -> Promise<Void> {
+        guard !self.isPolling else { return Promise.value(()) }
+        self.isPolling = true
         let publicChat = self.publicChat
         let userPublicKey = getUserHexEncodedPublicKey()
         return PublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { messages in
+            self.isPolling = false
             let uniquePublicKeys = Set(messages.map { $0.senderPublicKey })
             func proceed() {
                 let storage = OWSPrimaryStorage.shared()
