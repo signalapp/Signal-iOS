@@ -1077,7 +1077,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             isUserLinkedDevice = [LKDatabaseUtilities isUserLinkedDevice:targetPublicKey in:transaction];
         }];
-        if ([targetPublicKey isEqual:userPublicKey]) {
+        BOOL isSSKBasedClosedGroup = [messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys;
+        if (isSSKBasedClosedGroup) {
+            [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to SSK based closed group.", message.class]];
+        } else if ([targetPublicKey isEqual:userPublicKey]) {
             [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to self.", message.class]];
         } else if (isUserLinkedDevice) {
             [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to %@ (one of the current user's linked devices).", message.class, recipient.recipientId]];
@@ -1086,14 +1089,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         NSDictionary *signalMessageInfo = deviceMessages.firstObject;
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
-        if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
+        if (isSSKBasedClosedGroup) {
             type = SSKProtoEnvelopeTypeClosedGroupCiphertext;
         }
         uint64_t timestamp = message.timestamp;
-        NSString *senderID = (type == SSKProtoEnvelopeTypeUnidentifiedSender) ? @"" : userPublicKey;
-        if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
+        NSString *senderID;
+        if (isSSKBasedClosedGroup) {
             senderID = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)messageSend.thread).groupModel.groupId];
+        } else if (type == SSKProtoEnvelopeTypeUnidentifiedSender) {
+            senderID = @"";
         } else {
+            senderID = userPublicKey;
             [LKLogger print:@"[Loki] Non-UD send"];
         }
         uint32_t senderDeviceID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? 0 : OWSDevicePrimaryDeviceId;
@@ -1385,7 +1391,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     @try {
         __block BOOL isSessionRequired;
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            isSessionRequired = ![LKSessionManagementProtocol shouldUseFallbackEncryptionForMessage:messageSend.message recipientID:recipientID transaction:transaction];
+            isSessionRequired = [LKSessionManagementProtocol isSessionRequiredForMessage:messageSend.message recipientID:recipientID transaction:transaction];
         } error:nil];
         if (isSessionRequired) {
             BOOL hasSession = [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
