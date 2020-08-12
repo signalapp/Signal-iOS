@@ -60,9 +60,18 @@ public final class SessionManagementProtocol : NSObject {
 
     // MARK: - Sending
 
+    @objc(isSessionRequiredForMessage:recipientID:transaction:)
+    public static func isSessionRequired(for message: TSOutgoingMessage, recipientID: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
+        if SharedSenderKeysImplementation.shared.isClosedGroup(recipientID) {
+            return false
+        } else {
+            return !shouldUseFallbackEncryption(for: message, recipientID: recipientID, transaction: transaction)
+        }
+    }
+
     @objc(shouldUseFallbackEncryptionForMessage:recipientID:transaction:)
     public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage, recipientID: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
-        if SharedSenderKeysImplementation.shared.isClosedGroup(recipientID) { return true } // We don't actually use fallback encryption but this indicates that we don't need a session
+        if SharedSenderKeysImplementation.shared.isClosedGroup(recipientID) { return false }
         else if message is SessionRequestMessage { return true }
         else if let message = message as? DeviceLinkMessage, message.kind == .request { return true }
         else if message is OWSOutgoingNullMessage { return false }
