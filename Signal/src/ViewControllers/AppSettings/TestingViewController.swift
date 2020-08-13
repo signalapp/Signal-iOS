@@ -86,6 +86,16 @@ class TestingViewController: OWSTableViewController {
             contents.addSection(section)
         }
 
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("If CDS has recently indicated that a user is unregistered, message sending will automatically skip these recipients.")
+            section.add(OWSTableItem.switch(withText: LocalizationNotNeeded("CDS: Ignore unregistered users in message sends"),
+                                            isOn: { FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends },
+                                            target: self,
+                                            selector: #selector(didToggleIgnoreCDSUnregisteredUsersInMessageSends)))
+            contents.addSection(section)
+        }
+
         self.contents = contents
     }
 
@@ -117,5 +127,10 @@ class TestingViewController: OWSTableViewController {
     @objc
     func didToggleGroupsV2corruptAvatarUrlPaths(_ sender: UISwitch) {
         DebugFlags.groupsV2corruptAvatarUrlPaths = sender.isOn
+    }
+
+    @objc
+    func didToggleIgnoreCDSUnregisteredUsersInMessageSends(_ sender: UISwitch) {
+        FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends = sender.isOn
     }
 }

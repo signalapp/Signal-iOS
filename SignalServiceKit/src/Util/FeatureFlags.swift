@@ -196,6 +196,20 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let attachmentUploadV3ForV1GroupAvatars = false
 
+    private static let _ignoreCDSUnregisteredUsersInMessageSends = AtomicBool(true)
+    @objc
+    public static var ignoreCDSUnregisteredUsersInMessageSends: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return true
+            }
+            return _ignoreCDSUnregisteredUsersInMessageSends.get()
+        }
+        set {
+            _ignoreCDSUnregisteredUsersInMessageSends.set(newValue)
+        }
+    }
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)

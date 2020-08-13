@@ -584,146 +584,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendMessage:outgoingMessagePreparer success:success failure:failure];
 }
 
-- (void)prepareMessage:(TSOutgoingMessage *)message
-               success:(void (^)(SMKSenderCertificate *))success
-               failure:(RetryableFailureHandler)failure
-{
-    dispatch_group_t group = dispatch_group_create();
-    __block NSError *certError = nil;
-    __block SMKSenderCertificate *certificate = nil;
-    __block NSError *uuidError = nil;
-
-    dispatch_group_enter(group);
-    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive
-        success:^(SMKSenderCertificate *retrievedCert) {
-            certificate = retrievedCert;
-            dispatch_group_leave(group);
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Could not obtain UD sender certificate: %@", error);
-            // The existing behavior was to only care about connectivity errors
-            // Only persist the error if it's connectivity related
-            certError = IsNetworkConnectivityFailure(error) ? error : nil;
-            dispatch_group_leave(group);
-        }];
-
-    if (RemoteConfig.modernContactDiscovery) {
-        dispatch_group_enter(group);
-        [self populateUUIDsForLegacyRecipientsOf:message
-                                      completion:^(NSError *error) {
-                                          if (error) {
-                                              OWSLogError(@"Failed CDS lookup with error: %@", error);
-                                              uuidError = error;
-                                          }
-                                          dispatch_group_leave(group);
-                                      }];
-    }
-
-    dispatch_group_notify(group, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
-        // We should only expect retryable errors here
-        OWSAssertDebug(certError == nil || certError.isRetryable);
-        OWSAssertDebug(uuidError == nil || uuidError.isRetryable);
-
-        if (certError || uuidError) {
-            // Pick one, it really doesn't matter
-            failure(certError ?: uuidError);
-        } else {
-            success(certificate);
-        }
-    });
-}
-
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                      success:(void (^)(void))success
                      failure:(RetryableFailureHandler)failure
 {
     OWSAssertDebug(!NSThread.isMainThread);
 
-    [self prepareMessage:message
-                 success:^(SMKSenderCertificate *senderCertificate) {
-                     [self sendMessageToService:message
-                              senderCertificate:senderCertificate
-                                        success:success
-                                        failure:failure];
-                 }
-                 failure:failure];
-}
-
-- (nullable NSArray<SignalServiceAddress *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
-                                                                  thread:(TSThread *)thread
-                                                                   error:(NSError **)errorHandle
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(message);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(errorHandle);
-
-    NSMutableSet<SignalServiceAddress *> *recipientAddresses = [NSMutableSet new];
-    if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        [recipientAddresses addObject:self.tsAccountManager.localAddress];
-    } else if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-
-        // Send to the intersection of:
-        //
-        // * "sending" recipients of the message.
-        // * members of the group.
-        //
-        // I.e. try to send a message IFF:
-        //
-        // * The recipient was in the group when the message was first tried to be sent.
-        // * The recipient is still in the group.
-        // * The recipient is in the "sending" state.
-
-        [recipientAddresses addObjectsFromArray:message.sendingRecipientAddresses];
-
-        // Only send to members in the latest known group member list...
-        NSMutableSet<SignalServiceAddress *> *currentThreadRecipients = [NSMutableSet new];
-        [currentThreadRecipients addObjectsFromArray:groupThread.groupModel.groupMembers];
-        if ([GroupManager shouldMessageHaveAdditionalRecipients:message groupThread:groupThread]) {
-            // ...or latest known list of "additional recipients".
-            NSSet<SignalServiceAddress *> *additionalRecipients = groupThread.groupModel.groupMembership.pendingMembers;
-            [currentThreadRecipients unionSet:additionalRecipients];
-        }
-        [recipientAddresses intersectSet:currentThreadRecipients];
-
-        if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
-            OWSFailDebug(@"Message send recipients should not include self.");
-        }
-    } else if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        SignalServiceAddress *recipientAddress = contactThread.contactAddress;
-
-        // Treat 1:1 sends to blocked contacts as failures.
-        // If we block a user, don't send 1:1 messages to them. The UI
-        // should prevent this from occurring, but in some edge cases
-        // you might, for example, have a pending outgoing message when
-        // you block them.
-        OWSAssertDebug(recipientAddress);
-        if ([self.blockingManager isAddressBlocked:recipientAddress]) {
-            OWSLogInfo(@"skipping 1:1 send to blocked contact: %@", recipientAddress);
-            NSError *error = OWSErrorMakeMessageSendFailedDueToBlockListError();
-            [error setIsRetryable:NO];
-            *errorHandle = error;
-            return nil;
-        }
-
-        [recipientAddresses addObject:recipientAddress];
-
-        if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
-            OWSFailDebug(@"Message send recipients should not include self.");
-        }
-    } else {
-        // Neither a group nor contact thread? This should never happen.
-        OWSFailDebug(@"Unknown message type: %@", [message class]);
-        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        [error setIsRetryable:NO];
-        *errorHandle = error;
-        return nil;
-    }
-
-    [recipientAddresses minusSet:self.blockingManager.blockedAddresses];
-    return recipientAddresses.allObjects;
+    [MessageSending prepareForSendOf:message
+                             success:^(MessageSendInfo *sendInfo) {
+                                 [self sendMessageToService:message sendInfo:sendInfo success:success failure:failure];
+                             }
+                             failure:failure];
 }
 
 - (NSArray<SignalRecipient *> *)recipientsForAddresses:(NSArray<SignalServiceAddress *> *)addresses
@@ -832,7 +703,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
-           senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
+                    sendInfo:(MessageSendInfo *)sendInfo
                      success:(void (^)(void))successHandlerParam
                      failure:(RetryableFailureHandler)failureHandlerParam
 {
@@ -871,68 +742,26 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         failureHandlerParam(error);
     };
 
-    // This should not be nil, even for legacy queued messages.
-    TSThread *_Nullable thread = [self threadForMessageWithSneakyTransaction:message];
-    OWSAssertDebug(thread != nil);
+    TSThread *thread = sendInfo.thread;
+    NSArray<SignalServiceAddress *> *recipientAddresses = sendInfo.recipients;
+    SMKSenderCertificate *senderCertificate = sendInfo.senderCertificate;
 
-    if (!thread) {
-        OWSFailDebug(@"Missing thread.");
-
-        // This thread has been deleted since the message was enqueued.
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageSendNoValidRecipients,
-            NSLocalizedString(@"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
-                @"Error indicating that an outgoing message had no valid recipients."));
-        [error setIsRetryable:NO];
-        return failureHandler(error);
-    }
-
-    TSContactThread *_Nullable contactThread;
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        contactThread = (TSContactThread *)thread;
-    }
-
-    // In the "self-send" aka "Note to Self" special case, we only
-    // need to send a sync message with a delivery receipt.
-    BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
-    if (contactThread && contactThread.contactAddress.isLocalAddress && !isSyncMessage) {
-        // Send to self.
-        OWSAssertDebug(message.recipientAddresses.count == 1);
-        // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
-        successHandler();
-        return;
-    }
-
-    NSError *error;
-    NSArray<SignalServiceAddress *> *_Nullable recipientAddresses = [self unsentRecipientsForMessage:message
-                                                                                              thread:thread
-                                                                                               error:&error];
-    if (error || !recipientAddresses) {
-        error = SSKEnsureError(
-            error, OWSErrorCodeMessageSendNoValidRecipients, @"Could not build recipients list for message.");
-        [error setIsRetryable:NO];
-        return failureHandler(error);
-    }
-
-    // Mark skipped recipients as such.  We skip because:
-    //
-    // * Recipient is no longer in the group.
-    // * Recipient is blocked.
-    //
-    // Elsewhere, we skip recipient if their Signal account has been deactivated.
-    NSMutableSet<SignalServiceAddress *> *obsoleteRecipientAddresses =
-        [NSMutableSet setWithArray:message.sendingRecipientAddresses];
-    [obsoleteRecipientAddresses minusSet:[NSSet setWithArray:recipientAddresses]];
-    if (obsoleteRecipientAddresses.count > 0) {
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            for (SignalServiceAddress *obsoleteAddress in obsoleteRecipientAddresses) {
-                // Mark this recipient as "skipped".
-                [message updateWithSkippedRecipient:obsoleteAddress transaction:transaction];
-            }
-        });
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        // In the "self-send" aka "Note to Self" special case, we only
+        // need to send a sync message with a delivery receipt.
+        if (contactThread.contactAddress.isLocalAddress && !message.isSyncMessage) {
+            // Send to self.
+            OWSAssertDebug(sendInfo.recipients.count == 1);
+            // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
+            successHandler();
+            return;
+        }
     }
 
     if (recipientAddresses.count < 1) {
         // All recipients are already sent or can be skipped.
+        // NOTE: We might still need to send a sync transcript.
         successHandler();
         return;
     }

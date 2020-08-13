@@ -29,16 +29,18 @@ public enum UnidentifiedAccessMode: Int {
     case unrestricted
 }
 
-private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> String {
-    switch mode {
-    case .unknown:
-        return "unknown"
-    case .enabled:
-        return "enabled"
-    case .disabled:
-        return "disabled"
-    case .unrestricted:
-        return "unrestricted"
+extension UnidentifiedAccessMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .unknown:
+            return "unknown"
+        case .enabled:
+            return "enabled"
+        case .disabled:
+            return "disabled"
+        case .unrestricted:
+            return "unrestricted"
+        }
     }
 }
 
@@ -339,8 +341,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, address: SignalServiceAddress) {
         if address.isLocalAddress {
-            Logger.info("Setting local UD access mode: \(string(forUnidentifiedAccessMode: mode))")
+            Logger.info("Setting local UD access mode: \(mode)")
         }
+
         // Update cache immediately.
         var didChange = false
         self.unfairLock.withLock {

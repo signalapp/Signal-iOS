@@ -79,6 +79,9 @@ public class ContactDiscoveryTask: NSObject {
     private func storeResults(registering toRegister: [SignalServiceAddress],
                               unregistering toUnregister: [SignalServiceAddress],
                               database: SDSDatabaseStorage?) -> Set<SignalRecipient> {
+
+        Self.markUsersAsRecentlyKnownToBeUnregistered(toUnregister)
+
         guard let database = database else {
             // Just return a set of in-memory SignalRecipients built from toRegister
             owsAssertDebug(CurrentAppContext().isRunningTests)
@@ -114,6 +117,59 @@ public class ContactDiscoveryTask: NSObject {
             success(results)
         }.catch(on: callbackQueue) { error in
             failure(error)
+        }
+    }
+}
+
+// MARK: - Unregistered Users
+
+@objc
+public extension ContactDiscoveryTask {
+
+    private static let unfairLock = UnfairLock()
+    private static let unregisteredUserCache = NSCache<NSString, NSDate>()
+
+    fileprivate static func markUsersAsRecentlyKnownToBeUnregistered(_ addresses: [SignalServiceAddress]) {
+        guard !addresses.isEmpty else {
+            return
+        }
+        guard FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends else {
+            return
+        }
+        Logger.verbose("Marking users as known to be unregistered: \(addresses.count)")
+
+        let markAsUnregisteredDate = Date() as NSDate
+        unfairLock.withLock {
+            for address in addresses {
+                guard let phoneNumber = address.phoneNumber else {
+                    owsFailDebug("Address missing phoneNumber.")
+                    continue
+                }
+                Self.unregisteredUserCache.setObject(markAsUnregisteredDate, forKey: phoneNumber as NSString)
+            }
+        }
+    }
+
+    static func addressesRecentlyMarkedAsUnregistered(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
+        guard FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends else {
+            return []
+        }
+        return unfairLock.withLock {
+            addresses.filter { address in
+                guard let phoneNumber = address.phoneNumber else {
+                    // We should only be consulting this cache for numbers with a phone number but without a UUID.
+                    owsFailDebug("Address missing phone number.")
+                    return false
+                }
+                guard let markAsUnregisteredDate = Self.unregisteredUserCache.object(forKey: phoneNumber as NSString) else {
+                    // Not marked as unregistered.
+                    return false
+                }
+                // Consider the user as unregistered if CDS indicated they were
+                // unregistered in the last N minutes.
+                let acceptableInterval: TimeInterval = kHourInterval
+                return abs(markAsUnregisteredDate.timeIntervalSinceNow) <= acceptableInterval
+            }
         }
     }
 }
