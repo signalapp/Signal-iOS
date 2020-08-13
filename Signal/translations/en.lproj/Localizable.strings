@@ -1914,6 +1914,12 @@
 "IN_CALL_RINGING" = "Ringing…";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "Answered. Securing…";
 
 /* Call setup status label */

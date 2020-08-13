@@ -24,11 +24,14 @@ typedef NS_ENUM(NSUInteger, RPRecentCallType) {
     RPRecentCallTypeIncomingBusyElsewhere
 };
 
+typedef NS_ENUM(NSUInteger, TSRecentCallOfferType) { TSRecentCallOfferTypeAudio, TSRecentCallOfferTypeVideo };
+
 NSString *NSStringFromCallType(RPRecentCallType callType);
 
 @interface TSCall : TSInteraction <OWSReadTracking, OWSPreviewText>
 
 @property (nonatomic, readonly) RPRecentCallType callType;
+@property (nonatomic, readonly) TSRecentCallOfferType offerType;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
@@ -48,6 +51,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCallType:(RPRecentCallType)callType
+                       offerType:(TSRecentCallOfferType)offerType
                           thread:(TSContactThread *)thread
                  sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
 
@@ -64,8 +68,9 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                         callType:(RPRecentCallType)callType
+                       offerType:(TSRecentCallOfferType)offerType
                             read:(BOOL)read
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callType:read:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callType:offerType:read:));
 
 // clang-format on
 

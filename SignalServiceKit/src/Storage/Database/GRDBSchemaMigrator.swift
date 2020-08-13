@@ -82,6 +82,7 @@ public class GRDBSchemaMigrator: NSObject {
         case trackUserProfileFetches
         case addMentions
         case addMentionNotificationMode
+        case addOfferTypeToCalls
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -114,7 +115,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 11
+    public static let grdbSchemaVersionLatest: UInt = 12
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -785,6 +786,19 @@ public class GRDBSchemaMigrator: NSObject {
                         .notNull()
                         .defaults(to: 0)
                 }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addOfferTypeToCalls.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "offerType", .integer)
+                }
+
+                // Backfill all existing calls as "audio" calls.
+                try db.execute(sql: "UPDATE model_TSInteraction SET offerType = 0 WHERE recordType IS \(SDSRecordType.call.rawValue)")
             } catch {
                 owsFail("Error: \(error)")
             }

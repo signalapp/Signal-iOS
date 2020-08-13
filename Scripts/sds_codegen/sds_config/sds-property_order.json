@@ -84,6 +84,7 @@
     "InteractionRecord.messageSticker": 33, 
     "InteractionRecord.messageType": 34, 
     "InteractionRecord.mostRecentFailureText": 35, 
+    "InteractionRecord.offerType": 53, 
     "InteractionRecord.preKeyBundle": 36, 
     "InteractionRecord.protocolVersion": 37, 
     "InteractionRecord.quotedMessage": 38, 

@@ -36,7 +36,7 @@ public struct AudioSource: Hashable {
         let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
 
         self.init(localizedName: localizedName,
-                  image: #imageLiteral(resourceName: "button_phone_white"), // TODO
+                  image: Theme.iconImage(.audioCall), // TODO
                   isBuiltInSpeaker: false,
                   isBuiltInEarPiece: isBuiltInEarPiece,
                   portDescription: portDescription)
@@ -45,7 +45,7 @@ public struct AudioSource: Hashable {
     // Speakerphone is handled separately from the other audio routes as it doesn't appear as an "input"
     public static var builtInSpeaker: AudioSource {
         return self.init(localizedName: NSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
-                         image: #imageLiteral(resourceName: "button_phone_white"), //TODO
+                         image: Theme.iconImage(.audioCall), //TODO
                          isBuiltInSpeaker: true,
                          isBuiltInEarPiece: false)
     }

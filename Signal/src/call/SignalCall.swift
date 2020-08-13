@@ -23,6 +23,10 @@ public enum CallState: String {
     case busyElsewhere // terminal
 }
 
+public enum CallOfferMediaType {
+    case audio, video
+}
+
 public enum CallDirection {
     case outgoing, incoming
 }
@@ -174,6 +178,8 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
             }
         }
     }
+
+    public var offerMediaType: CallOfferMediaType = .audio
 
     public var isMuted = false {
         didSet {

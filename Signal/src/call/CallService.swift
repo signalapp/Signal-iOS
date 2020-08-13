@@ -209,7 +209,12 @@ extension SignalCall: CallManagerCallReference { }
         }
 
         // Create a callRecord for outgoing calls immediately.
-        let callRecord = TSCall(callType: .outgoingIncomplete, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+        let callRecord = TSCall(
+            callType: .outgoingIncomplete,
+            offerType: call.offerMediaType.recentOfferType,
+            thread: call.thread,
+            sentAtTimestamp: call.sentAtTimestamp
+        )
         databaseStorage.write { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
@@ -219,8 +224,7 @@ extension SignalCall: CallManagerCallReference { }
         let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
 
         do {
-            // TODO - once the "call as type" feature lands, set the type appropriately
-            try callManager.placeCall(call: call, callMediaType: .audioCall, localDevice: localDeviceId)
+            try callManager.placeCall(call: call, callMediaType: call.offerMediaType.callMediaType, localDevice: localDeviceId)
         } catch {
             self.handleFailedCall(failedCall: call, error: error)
         }
@@ -244,7 +248,12 @@ extension SignalCall: CallManagerCallReference { }
             return
         }
 
-        let callRecord = TSCall(callType: .incomingIncomplete, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+        let callRecord = TSCall(
+            callType: .incomingIncomplete,
+            offerType: call.offerMediaType.recentOfferType,
+            thread: call.thread,
+            sentAtTimestamp: call.sentAtTimestamp
+        )
         databaseStorage.write { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
@@ -268,13 +277,14 @@ extension SignalCall: CallManagerCallReference { }
         }
     }
 
-    func buildOutgoingCallIfAvailable(address: SignalServiceAddress) -> SignalCall? {
+    func buildOutgoingCallIfAvailable(address: SignalServiceAddress, hasVideo: Bool) -> SignalCall? {
         AssertIsOnMainThread()
         guard !hasCallInProgress else {
             return nil
         }
 
         let call = SignalCall.outgoingCall(localId: UUID(), remoteAddress: address)
+        call.offerMediaType = hasVideo ? .video : .audio
         calls.insert(call)
 
         return call
@@ -297,7 +307,12 @@ extension SignalCall: CallManagerCallReference { }
                 callRecord.updateCallType(.outgoingMissed)
             }
         } else if call.state == .localRinging {
-            let callRecord = TSCall(callType: .incomingDeclined, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingDeclined,
+                offerType: call.offerMediaType.recentOfferType,
+                thread: call.thread,
+                sentAtTimestamp: call.sentAtTimestamp
+            )
             databaseStorage.write { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
@@ -386,9 +401,24 @@ extension SignalCall: CallManagerCallReference { }
         calls.insert(newCall)
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
+        let callMediaType: CallMediaType
+        switch callType {
+        case .offerAudioCall:
+            callMediaType = .audioCall
+            newCall.offerMediaType = .audio
+        case .offerVideoCall:
+            callMediaType = .videoCall
+            newCall.offerMediaType = .video
+        }
+
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("user is not onboarded, skipping call.")
-            let callRecord = TSCall(callType: .incomingMissed, thread: thread, sentAtTimestamp: sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingMissed,
+                offerType: newCall.offerMediaType.recentOfferType,
+                thread: thread,
+                sentAtTimestamp: sentAtTimestamp
+            )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -416,7 +446,12 @@ extension SignalCall: CallManagerCallReference { }
                 self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
             }
 
-            let callRecord = TSCall(callType: .incomingMissedBecauseOfChangedIdentity, thread: thread, sentAtTimestamp: sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingMissedBecauseOfChangedIdentity,
+                offerType: newCall.offerMediaType.recentOfferType,
+                thread: thread,
+                sentAtTimestamp: sentAtTimestamp
+            )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -446,7 +481,12 @@ extension SignalCall: CallManagerCallReference { }
             // Store the call as a missed call for the local user. They will see it in the conversation
             // along with the message request dialog. When they accept the dialog, they can call back
             // or the caller can try again.
-            let callRecord = TSCall(callType: .incomingMissed, thread: thread, sentAtTimestamp: sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingMissed,
+                offerType: newCall.offerMediaType.recentOfferType,
+                thread: thread,
+                sentAtTimestamp: sentAtTimestamp
+            )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -480,12 +520,6 @@ extension SignalCall: CallManagerCallReference { }
 
         // TODO - Need to calculate the "message age" when ready
         let messageAgeSec: UInt64 = 0
-
-        let callMediaType: CallMediaType
-        switch callType {
-        case .offerAudioCall: callMediaType = .audioCall
-        case .offerVideoCall: callMediaType = .videoCall
-        }
 
         // Get the current local device Id, must be valid for lifetime of the call.
         let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
@@ -815,7 +849,12 @@ extension SignalCall: CallManagerCallReference { }
                 }
             } else {
                 assert(call.direction == .incoming)
-                let callRecord = TSCall(callType: .incomingMissed, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+                let callRecord = TSCall(
+                    callType: .incomingMissed,
+                    offerType: call.offerMediaType.recentOfferType,
+                    thread: call.thread,
+                    sentAtTimestamp: call.sentAtTimestamp
+                )
                 databaseStorage.write { callRecord.anyInsert(transaction: $0) }
                 call.callRecord = callRecord
                 callUIAdapter.reportMissedCall(call)
@@ -1073,7 +1112,12 @@ extension SignalCall: CallManagerCallReference { }
         if let existingCallRecord = call.callRecord {
             callRecord = existingCallRecord
         } else {
-            callRecord = TSCall(callType: .incomingMissed, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            callRecord = TSCall(
+                callType: .incomingMissed,
+                offerType: call.offerMediaType.recentOfferType,
+                thread: call.thread,
+                sentAtTimestamp: call.sentAtTimestamp
+            )
             call.callRecord = callRecord
         }
 
@@ -1108,7 +1152,12 @@ extension SignalCall: CallManagerCallReference { }
             // devices call.
             existingCallRecord.updateCallType(.incomingAnsweredElsewhere)
         } else {
-            let callRecord = TSCall(callType: .incomingAnsweredElsewhere, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingAnsweredElsewhere,
+                offerType: call.offerMediaType.recentOfferType,
+                thread: call.thread,
+                sentAtTimestamp: call.sentAtTimestamp
+            )
             call.callRecord = callRecord
             databaseStorage.write { callRecord.anyInsert(transaction: $0) }
         }
@@ -1128,7 +1177,12 @@ extension SignalCall: CallManagerCallReference { }
             // devices call.
             existingCallRecord.updateCallType(.incomingDeclinedElsewhere)
         } else {
-            let callRecord = TSCall(callType: .incomingDeclinedElsewhere, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingDeclinedElsewhere,
+                offerType: call.offerMediaType.recentOfferType,
+                thread: call.thread,
+                sentAtTimestamp: call.sentAtTimestamp
+            )
             call.callRecord = callRecord
             databaseStorage.write { callRecord.anyInsert(transaction: $0) }
         }
@@ -1148,7 +1202,12 @@ extension SignalCall: CallManagerCallReference { }
             // devices call.
             existingCallRecord.updateCallType(.incomingBusyElsewhere)
         } else {
-            let callRecord = TSCall(callType: .incomingBusyElsewhere, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingBusyElsewhere,
+                offerType: call.offerMediaType.recentOfferType,
+                thread: call.thread,
+                sentAtTimestamp: call.sentAtTimestamp
+            )
             call.callRecord = callRecord
             databaseStorage.write { callRecord.anyInsert(transaction: $0) }
         }
@@ -1630,5 +1689,21 @@ extension NSNumber {
     convenience init?(value: UInt32?) {
         guard let value = value else { return nil }
         self.init(value: value)
+    }
+}
+
+extension CallOfferMediaType {
+    var callMediaType: CallMediaType {
+        switch self {
+        case .audio: return .audioCall
+        case .video: return .videoCall
+        }
+    }
+
+    var recentOfferType: TSRecentCallOfferType {
+        switch self {
+        case .audio: return .audio
+        case .video: return .video
+        }
     }
 }

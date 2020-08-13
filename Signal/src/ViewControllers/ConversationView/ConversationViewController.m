@@ -1365,54 +1365,27 @@ typedef enum : NSUInteger {
                 self.navigationItem.rightBarButtonItems = @[];
                 return;
             }
-            const CGFloat kBarButtonSize = 44;
             NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
             if ([self canCall]) {
-                // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
-                // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
-                // The contents of the navigation bar are cramped in this view.
-                UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-                UIImage *image =
-                    [[Theme iconImage:ThemeIconPhone] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                [callButton setImage:image forState:UIControlStateNormal];
-
-                if (OWSWindowManager.sharedManager.hasCall) {
-                    callButton.enabled = NO;
-                    callButton.userInteractionEnabled = NO;
-                    callButton.tintColor = [Theme.primaryIconColor colorWithAlphaComponent:0.7];
-                } else {
-                    callButton.enabled = YES;
-                    callButton.userInteractionEnabled = YES;
-                    callButton.tintColor = Theme.primaryIconColor;
-                }
-
-                UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-
-                // We normally would want to use left and right insets that ensure the button
-                // is square and the icon is centered.  However UINavigationBar doesn't offer us
-                // control over the margins and spacing of its content, and the buttons end up
-                // too far apart and too far from the edge of the screen. So we use a smaller
-                // right inset tighten up the layout.
-                BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-                if (!hasCompactHeader) {
-                    imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-                    imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-                    imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-                    imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-                }
-                callButton.imageEdgeInsets = imageEdgeInsets;
-                callButton.accessibilityLabel
+                UIBarButtonItem *audioCallButton =
+                    [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconAudioCall]
+                                                     style:UIBarButtonItemStylePlain
+                                                    target:self
+                                                    action:@selector(startAudioCall)];
+                audioCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
+                audioCallButton.accessibilityLabel
                     = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
-                [callButton addTarget:self
-                               action:@selector(startAudioCall)
-                     forControlEvents:UIControlEventTouchUpInside];
-                callButton.frame = CGRectMake(0,
-                    0,
-                    round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-                    round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-                [barButtons addObject:[[UIBarButtonItem alloc]
-                                               initWithCustomView:callButton
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
+                [barButtons addObject:audioCallButton];
+
+                UIBarButtonItem *videoCallButton =
+                    [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconVideoCall]
+                                                     style:UIBarButtonItemStylePlain
+                                                    target:self
+                                                    action:@selector(startVideoCall)];
+                videoCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
+                videoCallButton.accessibilityLabel
+                    = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
+                [barButtons addObject:videoCallButton];
             }
 
             if (self.disappearingMessagesConfiguration.isEnabled && !self.threadViewModel.hasPendingMessageRequest) {
@@ -1957,7 +1930,14 @@ typedef enum : NSUInteger {
                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")
                                            style:ActionSheetActionStyleDefault
                                          handler:^(ActionSheetAction *action) {
-                                             [weakSelf startAudioCall];
+                                             switch (call.offerType) {
+                                                 case TSRecentCallOfferTypeAudio:
+                                                     [weakSelf startAudioCall];
+                                                     break;
+                                                 case TSRecentCallOfferTypeVideo:
+                                                     [weakSelf startVideoCall];
+                                                     break;
+                                             }
                                          }];
     [alert addAction:callAction];
     [alert addAction:[OWSActionSheets cancelAction]];

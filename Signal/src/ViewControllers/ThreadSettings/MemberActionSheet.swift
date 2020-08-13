@@ -103,7 +103,7 @@ class MemberActionSheet: NSObject {
             ) { _ in
                 SignalApp.shared().presentConversation(for: self.address, action: .audioCall, animated: true)
             }
-            callAction.leadingIcon = .call
+            callAction.leadingIcon = .audioCall
             actionSheet.addAction(callAction)
         }
 

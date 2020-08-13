@@ -393,7 +393,15 @@ typedef void (^SystemMessageActionBlock)(void);
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        result = [Theme iconImage:ThemeIconPhone];
+        TSCall *call = (TSCall *)interaction;
+        switch (call.offerType) {
+            case TSRecentCallOfferTypeAudio:
+                result = [Theme iconImage:ThemeIconAudioCall];
+                break;
+            case TSRecentCallOfferTypeVideo:
+                result = [Theme iconImage:ThemeIconVideoCall];
+                break;
+        }
     } else {
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;
