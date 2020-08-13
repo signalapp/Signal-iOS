@@ -377,7 +377,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
-        if (message.attachmentIds.count > 0) {
+        if (message.allAttachmentIds.count > 0) {
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [allAttachmentIds addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
             } error:nil];
