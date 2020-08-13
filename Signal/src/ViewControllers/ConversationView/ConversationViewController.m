@@ -2517,6 +2517,8 @@ typedef enum : NSUInteger {
 
 - (void)didTapMention:(Mention *)mention
 {
+    [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
+
     GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
     groupViewHelper.delegate = self;
     MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:mention.address

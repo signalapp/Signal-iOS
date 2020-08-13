@@ -89,6 +89,26 @@ class ExperienceUpgradeManager: NSObject {
         lastPresented?.dismiss(animated: false, completion: nil)
     }
 
+    static func clearExperienceUpgradeWithSneakyTransaction(_ experienceUpgradeId: ExperienceUpgradeId) {
+        // Check if we need to do a write, we'll skip opening a write
+        // transaction if we're able.
+        let hasIncomplete = databaseStorage.read { transaction in
+            ExperienceUpgradeFinder.hasIncomplete(
+                experienceUpgradeId: experienceUpgradeId,
+                transaction: transaction.unwrapGrdbRead
+            )
+        }
+
+        guard hasIncomplete else {
+            // If it's currently being presented, dismiss it.
+            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            lastPresented?.dismiss(animated: false, completion: nil)
+            return
+        }
+
+        databaseStorage.asyncWrite { clearExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
+    }
+
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
     static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
@@ -131,7 +151,8 @@ class ExperienceUpgradeManager: NSObject {
         case .introducingPins,
              .pinReminder,
              .notificationPermissionReminder,
-             .contactPermissionReminder:
+             .contactPermissionReminder,
+             .mentions:
             return true
         case .messageRequests:
             // no need to annoy user with banner for message requests. They are self explanatory.
@@ -151,6 +172,8 @@ class ExperienceUpgradeManager: NSObject {
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .mentions:
+            return MentionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }
