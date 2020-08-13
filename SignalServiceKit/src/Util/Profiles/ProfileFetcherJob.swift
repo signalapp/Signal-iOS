@@ -496,9 +496,7 @@ public class ProfileFetcherJob: NSObject {
                     // To avoid these conflicts we treat "partial"
                     // profile fetches (where we download the profile
                     // but not the associated avatar) as failures.
-                    let nsError = error as NSError
-                    nsError.isRetryable = false
-                    throw nsError
+                    throw error.asUnretryableError
                 }
             } else {
                 // This should be very rare. It might reflect:

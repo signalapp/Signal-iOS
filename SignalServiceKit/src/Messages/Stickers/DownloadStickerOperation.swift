@@ -92,14 +92,13 @@ class DownloadStickerOperation: CDNDownloadOperation {
                 self.success(plaintext)
 
                 self.reportSuccess()
-            } catch let error as NSError {
+            } catch {
                 owsFailDebug("Decryption failed: \(error)")
 
                 self.markUrlPathAsCorrupt(urlPath)
 
                 // Fail immediately; do not retry.
-                error.isRetryable = false
-                return self.reportError(error)
+                return self.reportError(error.asUnretryableError)
             }
         }.catch(on: DispatchQueue.global()) { [weak self] error in
             guard let self = self else {

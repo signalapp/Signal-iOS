@@ -718,13 +718,3 @@ public extension TSMessage {
         nil != self as? OWSOutgoingSyncMessage
     }
 }
-
-// MARK: -
-
-public extension Error {
-    var asUnretryableError: NSError {
-        let nsError = self as NSError
-        nsError.isRetryable = false
-        return nsError
-    }
-}

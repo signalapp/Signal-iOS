@@ -60,16 +60,14 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
                     if IsNetworkConnectivityFailure(error) {
                         responseResolver.reject(error)
                     } else {
-                        let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
-                        responseError.isRetryable = true
+                        let responseError = OWSErrorMakeUnableToProcessServerResponseError().asRetryableError
                         responseResolver.reject(responseError)
                     }
                     return
                 }
 
                 guard response.statusCode != 413 else {
-                    let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactDiscoveryRateLimit, "Contacts Intersection Rate Limit") as NSError
-                    nsError.isRetryable = false
+                    let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactDiscoveryRateLimit, "Contacts Intersection Rate Limit").asUnretryableError
                     responseResolver.reject(nsError)
                     return
                 }
@@ -80,17 +78,11 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
 
     private func parse(response: Any?, phoneNumbersByHashes: [String: String]) throws -> Set<String> {
         guard let responseDict = response as? [String: AnyObject] else {
-            let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
-            responseError.isRetryable = true
-
-            throw responseError
+            throw OWSErrorMakeUnableToProcessServerResponseError().asRetryableError
         }
 
         guard let contactDicts = responseDict["contacts"] as? [[String: AnyObject]] else {
-            let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
-            responseError.isRetryable = true
-
-            throw responseError
+            throw OWSErrorMakeUnableToProcessServerResponseError().asRetryableError
         }
 
         var registeredRecipientIds: Set<String> = Set()

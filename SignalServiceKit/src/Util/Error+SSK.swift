@@ -101,3 +101,31 @@ extension OWSOperation {
         __reportError(error)
     }
 }
+
+// MARK: -
+
+public extension Error {
+
+    // This only only handles the common case wherein:
+    //
+    // * Only network failures should be retried.
+    // * Network failures can be discriminated using IsNetworkConnectivityFailure().
+    //
+    // There are some cases where those assumptions don't hold
+    // and withDefaultRetry() should not be used in those cases.
+    var withDefaultRetry: NSError {
+        IsNetworkConnectivityFailure(self) ? asRetryableError : asUnretryableError
+    }
+
+    var asRetryableError: NSError {
+        let nsError = self as NSError
+        nsError.isRetryable = true
+        return nsError
+    }
+
+    var asUnretryableError: NSError {
+        let nsError = self as NSError
+        nsError.isRetryable = false
+        return nsError
+    }
+}

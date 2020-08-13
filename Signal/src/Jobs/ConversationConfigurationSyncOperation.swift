@@ -51,8 +51,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private func reportAssertionError(description: String) {
-        let error: NSError = ColorSyncOperationError.assertionError(description: description) as NSError
-        error.isRetryable = false
+        let error = ColorSyncOperationError.assertionError(description: description).asRetryableError
         self.reportError(error)
     }
 
