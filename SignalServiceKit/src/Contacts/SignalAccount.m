@@ -163,6 +163,18 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 
 // --- CODE GENERATION MARKER
 
+- (nullable NSString *)contactPreferredDisplayName {
+    if (self.contact.nickname.filterStringForDisplay.length > 0) {
+        // put the nickname in quotes to indicate that its not true full name
+        NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
+        return [NSString stringWithFormat: @"%@%@%@",
+                [locale quotationBeginDelimiter],
+                self.contact.nickname.filterStringForDisplay,
+                [locale quotationEndDelimiter]];
+    }
+    return self.contact.fullName.filterStringForDisplay;
+}
+
 - (nullable NSString *)contactFullName
 {
     return self.contact.fullName.filterStringForDisplay;

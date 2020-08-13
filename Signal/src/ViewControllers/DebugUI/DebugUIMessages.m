@@ -2995,6 +2995,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                              linkPreview:nil
                                                           messageSticker:nil
                                                              transaction:transaction];
+                                    (void)message; // silence dead store warning
                                  }];
 }
 

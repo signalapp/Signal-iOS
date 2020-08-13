@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 // this is a label for the account.
 @property (nonatomic, readonly) NSString *multipleAccountLabelText;
 
+- (nullable NSString *)contactPreferredDisplayName;
 - (nullable NSString *)contactFullName;
 - (nullable NSString *)contactFirstName;
 - (nullable NSString *)contactLastName;

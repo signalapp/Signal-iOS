@@ -106,6 +106,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 @property (nonatomic, nullable) NSString *nameSuffix;
 @property (nonatomic, nullable) NSString *namePrefix;
 @property (nonatomic, nullable) NSString *middleName;
+@property (nonatomic, nullable) NSString *nickname;
 
 @property (nonatomic, nullable) NSString *organizationName;
 

@@ -819,7 +819,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nonSignalContact.fullName;
     }
 
-    NSString *fullName = signalAccount.contactFullName;
+    // Name may be either the nickname or the full name of the contact
+    NSString *fullName = signalAccount.contactPreferredDisplayName;
     if (fullName.length == 0) {
         return nil;
     }
@@ -869,6 +870,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             return nil;
         }
         nameComponents.givenName = nonSignalContact.firstName;
+        nameComponents.nickname = nonSignalContact.nickname;
         nameComponents.familyName = nonSignalContact.lastName;
         return nameComponents;
     }

@@ -606,6 +606,7 @@ public class ContactFactory {
                        cnContactId: cnContactIdBuilder(),
                        firstName: firstNameBuilder(),
                        lastName: lastNameBuilder(),
+                       nickname: nicknameBuilder(),
                        fullName: fullNameBuilder(),
                        userTextPhoneNumbers: userTextPhoneNumbers,
                        phoneNumberNameMap: phoneNumberNameMap,
@@ -630,6 +631,10 @@ public class ContactFactory {
 
     public var lastNameBuilder: () -> String? = {
         return CommonGenerator.lastName()
+    }
+    
+    public var nicknameBuilder: () -> String? = {
+        return CommonGenerator.nickname()
     }
 
     public var fullNameBuilder: () -> String = {
@@ -1749,6 +1754,17 @@ public class CommonGenerator: NSObject {
         "Zamora",
         "Zimmerman"
     ]
+    
+    @objc
+    static public let nicknames = [
+        "AAAA",
+        "BBBB"
+    ]
+
+    @objc
+    static public func nickname() -> String {
+        return nicknames.randomElement()!
+    }
 
     @objc
     static public func firstName() -> String {

@@ -1008,6 +1008,7 @@ public extension DebugUIScreenshots {
                        cnContactId: nil,
                        firstName: nil,
                        lastName: nil,
+                       nickname: nil,
                        fullName: fullName,
                        userTextPhoneNumbers: userTextPhoneNumbers,
                        phoneNumberNameMap: phoneNumberNameMap,
