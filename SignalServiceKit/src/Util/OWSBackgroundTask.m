@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackgroundTask.h"
@@ -31,11 +31,13 @@ typedef NSNumber *OWSTaskId;
 
 // We use this timer to provide continuity and reduce churn,
 // so that if one OWSBackgroundTask ends right before another
-// begins, we use a single uninterrupted background that
+// begins, we use a single uninterrupted background task that
 // spans their lifetimes.
 //
-// This property should only be accessed while synchronized on this instance.
+// This property should only be accessed on the main thread.
 @property (nonatomic, nullable) NSTimer *continuityTimer;
+// This property should only be accessed while synchronized on this instance.
+@property (nonatomic) BOOL isMaintainingContinuity;
 
 @end
 
@@ -141,9 +143,6 @@ typedef NSNumber *OWSTaskId;
             return nil;
         }
 
-        [self.continuityTimer invalidate];
-        self.continuityTimer = nil;
-
         return taskId;
     }
 }
@@ -152,26 +151,26 @@ typedef NSNumber *OWSTaskId;
 {
     OWSAssertDebug(taskId);
 
+    BOOL shouldMaintainContinuity = NO;
+
     @synchronized(self)
     {
         OWSAssertDebug(self.expirationMap[taskId] != nil);
 
         [self.expirationMap removeObjectForKey:taskId];
 
-        // This timer will ensure that we keep the background task active (if necessary)
-        // for an extra fraction of a second to provide continuity between tasks.
-        // This makes it easier and safer to use background tasks, since most code
-        // should be able to ensure background tasks by "narrowly" wrapping
-        // their core logic with a OWSBackgroundTask and not worrying about "hand off"
-        // between OWSBackgroundTasks.
-        [self.continuityTimer invalidate];
-        self.continuityTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.25f
-                                                                    target:self
-                                                                  selector:@selector(timerDidFire)
-                                                                  userInfo:nil
-                                                                   repeats:NO];
+        // If expirationMap has just been emptied, try to maintain continuity.
+        // See: scheduleCleanupOfContinuity().
+        shouldMaintainContinuity = [self.expirationMap count] == 0;
+        if (shouldMaintainContinuity) {
+            self.isMaintainingContinuity = YES;
+        }
 
         [self ensureBackgroundTaskState];
+    }
+
+    if (shouldMaintainContinuity) {
+        [self scheduleCleanupOfContinuity];
     }
 }
 
@@ -189,7 +188,8 @@ typedef NSNumber *OWSTaskId;
         // a) "not active" AND
         // b1) there is one or more active instance of OWSBackgroundTask OR...
         // b2) ...there _was_ an active instance recently.
-        BOOL shouldHaveBackgroundTask = (!self.isAppActive && (self.expirationMap.count > 0 || self.continuityTimer));
+        BOOL shouldHaveBackgroundTask
+            = (!self.isAppActive && (self.expirationMap.count > 0 || self.isMaintainingContinuity));
         BOOL hasBackgroundTask = self.backgroundTaskId != UIBackgroundTaskInvalid;
 
         if (shouldHaveBackgroundTask == hasBackgroundTask) {
@@ -271,12 +271,33 @@ typedef NSNumber *OWSTaskId;
     });
 }
 
-- (void)timerDidFire
+- (void)scheduleCleanupOfContinuity
 {
-    @synchronized(self)
-    {
+    // This timer will ensure that we keep the background task active (if necessary)
+    // for an extra fraction of a second to provide continuity between tasks.
+    // This makes it easier and safer to use background tasks, since most code
+    // should be able to ensure background tasks by "narrowly" wrapping
+    // their core logic with a OWSBackgroundTask and not worrying about "hand off"
+    // between OWSBackgroundTasks.
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self.continuityTimer invalidate];
-        self.continuityTimer = nil;
+        self.continuityTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.25f
+                                                                    target:self
+                                                                  selector:@selector(continuityTimerDidFire)
+                                                                  userInfo:nil
+                                                                   repeats:NO];
+    });
+}
+
+- (void)continuityTimerDidFire
+{
+    OWSAssertIsOnMainThread();
+
+    [self.continuityTimer invalidate];
+    self.continuityTimer = nil;
+
+    @synchronized(self) {
+        self.isMaintainingContinuity = NO;
 
         [self ensureBackgroundTaskState];
     }
