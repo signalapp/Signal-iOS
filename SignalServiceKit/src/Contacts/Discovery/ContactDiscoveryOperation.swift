@@ -88,6 +88,10 @@ public class ContactDiscoveryError: NSError {
         case genericServerError
     }
 
+    public override var localizedDescription: String {
+        NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
+    }
+
     // MARK: - <NSCoding>
 
     @objc override public func encode(with aCoder: NSCoder) {

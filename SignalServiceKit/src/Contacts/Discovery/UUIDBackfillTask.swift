@@ -155,7 +155,7 @@ public class UUIDBackfillTask: NSObject {
     func onqueue_handleError(error: Error) {
         assertOnQueue(queue)
         Logger.error("UUID Backfill failed: \(error). Scheduling retry...")
-        onqueue_schedule(for: error.retryAfterDate)
+        onqueue_schedule(for: (error as? ContactDiscoveryError)?.retryAfterDate)
     }
 
     func onqueue_complete() {

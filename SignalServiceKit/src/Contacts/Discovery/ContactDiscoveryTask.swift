@@ -79,9 +79,9 @@ public class ContactDiscoveryTask: NSObject {
             if IsNetworkConnectivityFailure(error) {
                 Logger.warn("ContactDiscoveryTask network failure: \(error)")
             } else {
-                owsFailDebug("ContactDiscoverTask failure: \(error)")
+                Logger.error("ContactDiscoverTask failure: \(error)")
             }
-            if let retryAfterDate = error.retryAfterDate {
+            if let retryAfterDate = (error as? ContactDiscoveryError)?.retryAfterDate {
                 Self.rateLimiter.updateRetryAfter(with: retryAfterDate, criticalPriority: self.criticalPriority)
             }
             throw error

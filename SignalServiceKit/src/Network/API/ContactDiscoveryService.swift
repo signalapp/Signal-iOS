@@ -6,12 +6,6 @@ import Foundation
 import PromiseKit
 
 public struct ContactDiscoveryService {
-    enum ServiceError: Error {
-        case error5xx(httpCode: Int)
-        case tooManyRequests(httpCode: Int)
-        case error4xx(httpCode: Int)
-        case invalidResponse(_ description: String)
-    }
 
     public struct IntersectionQuery: Codable {
         public let addressCount: UInt

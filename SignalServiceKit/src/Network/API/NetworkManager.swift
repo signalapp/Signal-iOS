@@ -149,7 +149,7 @@ public extension Error {
         HTTPStatusCodeForError(self)?.intValue
     }
 
-    var retryAfterDate: Date? {
+    var httpRetryAfterDate: Date? {
         HTTPRetryAfterDateForError(self)
     }
 }

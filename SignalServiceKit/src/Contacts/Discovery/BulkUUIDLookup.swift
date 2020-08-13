@@ -48,7 +48,8 @@ public class BulkUUIDLookup: NSObject {
     private var lastOutcomeMap = [String: UpdateOutcome]()
 
     // This property should only be accessed on serialQueue.
-    private var lastRateLimitErrorDate: Date?
+    // Next CDS fetch may be performed on or after this date
+    private var rateLimitExpirationDate: Date = .distantPast
 
     @objc
     public required override init() {
@@ -137,40 +138,29 @@ public class BulkUUIDLookup: NSObject {
             self.isUpdateInFlight = false
 
             let outcome: UpdateOutcome
-            let nsError = error as NSError
-            if nsError.domain == OWSSignalServiceKitErrorDomain &&
-                nsError.code == OWSErrorCode.contactDiscoveryRateLimit.rawValue {
-                Logger.error("Error: \(error)")
-                outcome = UpdateOutcome(.retryLimit)
-                self.lastRateLimitErrorDate = Date()
-            } else {
-                switch error {
-                case ContactDiscoveryService.ServiceError.error4xx,
-                     ContactDiscoveryService.ServiceError.error5xx:
-                    owsFailDebug("Error: \(error)")
-                    outcome = UpdateOutcome(.serviceError)
-                case ContactDiscoveryService.ServiceError.tooManyRequests:
-                    Logger.error("Error: \(error)")
-                    outcome = UpdateOutcome(.retryLimit)
-                    self.lastRateLimitErrorDate = Date()
-                default:
-                    if IsNetworkConnectivityFailure(error) {
-                        Logger.warn("Error: \(error)")
-                        outcome = UpdateOutcome(.networkFailure)
-                    } else if error.httpStatusCode == 413 {
-                        Logger.error("Error: \(error)")
-                        outcome = UpdateOutcome(.retryLimit)
-                        self.lastRateLimitErrorDate = Date()
-                    } else if let httpStatusCode = error.httpStatusCode,
-                        httpStatusCode >= 400,
-                        httpStatusCode <= 599 {
-                        owsFailDebug("Error: \(error)")
-                        outcome = UpdateOutcome(.serviceError)
-                    } else {
-                        owsFailDebug("Error: \(error)")
-                        outcome = UpdateOutcome(.unknownError)
-                    }
+            if IsNetworkConnectivityFailure(error) {
+                Logger.warn("Error: \(error)")
+                outcome = UpdateOutcome(.networkFailure)
+
+            } else if let cdsError = error as? ContactDiscoveryError {
+                if let nextRetryDate = cdsError.retryAfterDate {
+                    self.rateLimitExpirationDate = max(nextRetryDate, self.rateLimitExpirationDate)
                 }
+
+                switch cdsError.kind {
+                case .rateLimit:
+                    Logger.warn("Error: \(error)")
+                    outcome = UpdateOutcome(.retryLimit)
+                case .genericClientError, .genericServerError, .timeout, .unauthorized:
+                    Logger.error("Error: \(error)")
+                    outcome = UpdateOutcome(.serviceError)
+                default:
+                    owsFailDebug("Error: \(error)")
+                    outcome = UpdateOutcome(.unknownError)
+                }
+            } else {
+                owsFailDebug("Error: \(error)")
+                outcome = UpdateOutcome(.unknownError)
             }
 
             for phoneNumber in phoneNumbers {
@@ -188,13 +178,9 @@ public class BulkUUIDLookup: NSObject {
             return false
         }
 
-        // Skip if we've recently had a rate limit error.
-        if let lastRateLimitErrorDate = self.lastRateLimitErrorDate {
-            let minElapsedSeconds = 5 * kMinuteInterval
-            let elapsedSeconds = lastRateLimitErrorDate.timeIntervalSinceNow
-            guard elapsedSeconds >= minElapsedSeconds else {
-                return false
-            }
+        // Skip if we're rate limited
+        if rateLimitExpirationDate.timeIntervalSinceNow > 0 {
+            return false
         }
 
         guard let lastOutcome = lastOutcomeMap[phoneNumber] else {

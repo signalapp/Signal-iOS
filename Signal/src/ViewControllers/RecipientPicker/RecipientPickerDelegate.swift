@@ -140,7 +140,7 @@ extension RecipientPickerViewController {
                 AssertIsOnMainThread()
                 owsFailDebug("Error: \(error)")
                 modalActivityIndicator.dismiss {
-                    delegate.recipientPicker(self, showInvalidRecipientAlert: recipient)
+                    OWSActionSheets.showErrorAlert(message: error.localizedDescription)
                 }
             }
         }
