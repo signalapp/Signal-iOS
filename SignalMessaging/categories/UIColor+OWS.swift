@@ -195,6 +195,11 @@ public extension UIColor {
         return UIColor(white: 1.0, alpha: 0.3)
     }
 
+    @objc(ows_whiteAlpha40Color)
+    class var ows_whiteAlpha40: UIColor {
+        return UIColor(white: 1.0, alpha: 0.4)
+    }
+
     @objc(ows_whiteAlpha60Color)
     class var ows_whiteAlpha60: UIColor {
         return UIColor(white: 1.0, alpha: 0.6)

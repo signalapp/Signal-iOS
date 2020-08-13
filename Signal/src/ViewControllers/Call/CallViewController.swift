@@ -18,10 +18,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return AppEnvironment.shared.callService.callUIAdapter
     }
 
-    var proximityMonitoringManager: OWSProximityMonitoringManager {
-        return Environment.shared.proximityMonitoringManager
-    }
-
     // Feature Flag
     @objc public static let kShowCallViewOnSeparateWindow = true
 
@@ -35,41 +31,99 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Views
 
-    var hasConstraints = false
-    var backgroundAvatarView: UIImageView!
-    var blurView: UIVisualEffectView!
-    var dateFormatter: DateFormatter?
+    private lazy var backgroundAvatarView = UIImageView()
+    private lazy var dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm:ss"
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")!
+        return dateFormatter
+    }()
+
+    private var callDurationTimer: Timer?
 
     // MARK: - Contact Views
 
-    var contactNameLabel: MarqueeLabel!
-    var contactAvatarView: AvatarImageView!
-    var contactAvatarContainerView: UIView!
-    var callStatusLabel: UILabel!
-    var callDurationTimer: Timer?
-    var leaveCallViewButton: UIButton!
+    private lazy var contactNameLabel = MarqueeLabel()
+    private lazy var contactAvatarView = AvatarImageView()
+    private lazy var contactAvatarContainerView = UIView.container()
+    private lazy var callStatusLabel = UILabel()
+    private lazy var backButton = UIButton()
 
-    // MARK: - Ongoing Call Controls
+    // MARK: - Ongoing Audio Call Controls
 
-    var ongoingCallControls: UIStackView!
+    private lazy var ongoingAudioCallControls = UIStackView(
+        arrangedSubviews: [
+            UIView.hStretchingSpacer(),
+            audioModeSourceButton,
+            audioModeVideoButton,
+            audioModeMuteButton,
+            audioModeHangUpButton,
+            UIView.hStretchingSpacer()
+        ]
+    )
 
-    var ongoingAudioCallControls: UIStackView!
-    var ongoingVideoCallControls: UIStackView!
+    private lazy var audioModeHangUpButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressHangup))
+    private lazy var audioModeSourceButton = createButton(iconName: "speaker-solid-28", action: #selector(didPressAudioSource))
+    private lazy var audioModeMuteButton = createButton(iconName: "mic-solid-28", action: #selector(didPressMute))
+    private lazy var audioModeVideoButton = createButton(iconName: "video-solid-28", action: #selector(didPressVideo))
 
-    var hangUpButton: UIButton!
-    var audioSourceButton: UIButton!
-    var audioModeMuteButton: UIButton!
-    var audioModeVideoButton: UIButton!
-    var videoModeMuteButton: UIButton!
-    var videoModeVideoButton: UIButton!
-    var videoModeFlipCameraButton: UIButton!
+    // MARK: - Ongoing Video Call Controls
 
-    // MARK: - Incoming Call Controls
+    private lazy var ongoingVideoCallControls = UIStackView(
+        arrangedSubviews: [
+            UIView.hStretchingSpacer(),
+            videoModeAudioSourceButton,
+            videoModeFlipCameraButton,
+            videoModeVideoButton,
+            videoModeMuteButton,
+            videoModeHangUpButton,
+            UIView.hStretchingSpacer()
+        ]
+    )
 
-    var incomingCallControls: UIStackView!
+    private lazy var videoModeHangUpButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressHangup))
+    private lazy var videoModeAudioSourceButton = createButton(iconName: "speaker-solid-28", action: #selector(didPressAudioSource))
+    private lazy var videoModeMuteButton = createButton(iconName: "mic-solid-28", action: #selector(didPressMute))
+    private lazy var videoModeVideoButton = createButton(iconName: "video-solid-28", action: #selector(didPressVideo))
+    private lazy var videoModeFlipCameraButton = createButton(iconName: "switch-camera-28", action: #selector(didPressFlipCamera))
 
-    var acceptIncomingButton: UIButton!
-    var declineIncomingButton: UIButton!
+    // MARK: - Incoming Audio Call Controls
+
+    private lazy var incomingAudioCallControls = UIStackView(
+        arrangedSubviews: [
+            UIView.hStretchingSpacer(),
+            audioDeclineIncomingButton,
+            UIView.spacer(withWidth: 124),
+            audioAnswerIncomingButton,
+            UIView.hStretchingSpacer()
+        ]
+    )
+
+    private lazy var audioAnswerIncomingButton = createButton(iconName: "phone-solid-28", action: #selector(didPressAnswerCall))
+    private lazy var audioDeclineIncomingButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressDeclineCall))
+
+    // MARK: - Incoming Video Call Controls
+
+    private lazy var incomingVideoCallControls = UIStackView(
+        arrangedSubviews: [
+            videoAnswerIncomingAudioOnlyButton,
+            incomingVideoCallBottomControls
+        ]
+    )
+
+    private lazy var incomingVideoCallBottomControls = UIStackView(
+        arrangedSubviews: [
+            UIView.hStretchingSpacer(),
+            videoDeclineIncomingButton,
+            UIView.spacer(withWidth: 124),
+            videoAnswerIncomingButton,
+            UIView.hStretchingSpacer()
+        ]
+    )
+
+    private lazy var videoAnswerIncomingButton = createButton(iconName: "video-solid-28", action: #selector(didPressAnswerCall))
+    private lazy var videoAnswerIncomingAudioOnlyButton = createButton(iconName: "video-off-solid-28", action: #selector(didPressAnswerCall))
+    private lazy var videoDeclineIncomingButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressDeclineCall))
 
     // MARK: - Video Views
 
@@ -131,12 +185,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.shouldUseTheme = false
     }
 
-    deinit {
-        Logger.info("")
-        NotificationCenter.default.removeObserver(self)
-        self.proximityMonitoringManager.remove(lifetime: self)
-    }
-
     @objc func didBecomeActive() {
         if self.isViewLoaded {
             shouldRemoteVideoControlsBeHidden = false
@@ -154,8 +202,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        ensureProximityMonitoring()
 
         updateCallUI()
     }
@@ -209,19 +255,15 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                               action: #selector(didTouchRootView)))
 
-        videoHintView.delegate = self
-
         // The callee's avatar is rendered behind the blurred background.
-        backgroundAvatarView = UIImageView()
         backgroundAvatarView.contentMode = .scaleAspectFill
         backgroundAvatarView.isUserInteractionEnabled = false
-        backgroundAvatarView.backgroundColor = .blue
         view.addSubview(backgroundAvatarView)
         backgroundAvatarView.autoPinEdgesToSuperviewEdges()
 
         // Dark blurred background.
         let blurEffect = UIBlurEffect(style: .dark)
-        blurView = UIVisualEffectView(effect: blurEffect)
+        let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
@@ -254,14 +296,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func createContactViews() {
 
-        leaveCallViewButton = UIButton()
         let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-        leaveCallViewButton.setImage(backButtonImage, for: .normal)
-        leaveCallViewButton.autoSetDimensions(to: CGSize(square: 40))
-        leaveCallViewButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
-        self.view.addSubview(leaveCallViewButton)
-
-        contactNameLabel = MarqueeLabel()
+        backButton.setImage(backButtonImage, for: .normal)
+        backButton.autoSetDimensions(to: CGSize(square: 40))
+        backButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
+        self.view.addSubview(backButton)
 
         // marquee config
         contactNameLabel.type = .continuous
@@ -283,7 +322,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         self.view.addSubview(contactNameLabel)
 
-        callStatusLabel = UILabel()
         callStatusLabel.font = UIFont.ows_dynamicTypeBody
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
@@ -293,84 +331,65 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         self.view.addSubview(callStatusLabel)
 
-        contactAvatarContainerView = UIView.container()
         self.view.addSubview(contactAvatarContainerView)
-        contactAvatarView = AvatarImageView()
         contactAvatarContainerView.addSubview(contactAvatarView)
 
-        leaveCallViewButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "leaveCallViewButton")
+        backButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "leaveCallViewButton")
         contactNameLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactNameLabel")
         callStatusLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "callStatusLabel")
         contactAvatarView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactAvatarView")
     }
 
-    func buttonSize() -> CGFloat {
-        return ScaleFromIPhone5To7Plus(84, 108)
-    }
-
-    func buttonInset() -> CGFloat {
-        return ScaleFromIPhone5To7Plus(7, 9)
-    }
-
     func createOngoingCallControls() {
-
-        audioSourceButton = createButton(image: #imageLiteral(resourceName: "audio-call-speaker-inactive"),
-                                          action: #selector(didPressAudioSource))
-        audioSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
+        audioModeSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
                                                                  comment: "Accessibility label for selection the audio source")
 
-        hangUpButton = createButton(image: #imageLiteral(resourceName: "hangup-active-wide"),
-                                    action: #selector(didPressHangup))
-        hangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
-                                                            comment: "Accessibility label for hang up call")
+        audioModeHangUpButton.unselectedBackgroundColor = .ows_accentRed
+        audioModeHangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
+                                                                 comment: "Accessibility label for hang up call")
 
-        audioModeMuteButton = createButton(image: #imageLiteral(resourceName: "audio-call-mute-inactive"),
-                                           action: #selector(didPressMute))
-        audioModeMuteButton.setImage(#imageLiteral(resourceName: "audio-call-mute-active"), for: .selected)
-
+        audioModeMuteButton.selectedIconName = "mic-off-solid-28"
         audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL",
                                                                    comment: "Accessibility label for muting the microphone")
 
-        audioModeVideoButton = createButton(image: #imageLiteral(resourceName: "audio-call-video-inactive"),
-                                            action: #selector(didPressVideo))
-        audioModeVideoButton.setImage(#imageLiteral(resourceName: "audio-call-video-active"), for: .selected)
         audioModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call")
 
-        videoModeMuteButton = createButton(image: #imageLiteral(resourceName: "video-mute-unselected"),
-                                           action: #selector(didPressMute))
-        videoModeMuteButton.setImage(#imageLiteral(resourceName: "video-mute-selected"), for: .selected)
+        videoModeAudioSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
+                                                                      comment: "Accessibility label for selection the audio source")
+
+        videoModeHangUpButton.unselectedBackgroundColor = .ows_accentRed
+        videoModeHangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
+                                                                 comment: "Accessibility label for hang up call")
+
+        videoModeMuteButton.selectedIconName = "mic-off-solid-28"
         videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
         videoModeMuteButton.alpha = 0.9
 
-        videoModeFlipCameraButton = createButton(image: #imageLiteral(resourceName: "video-switch-camera-unselected"),
-                                                 action: #selector(didPressFlipCamera))
-
+        videoModeFlipCameraButton.selectedIconColor = videoModeFlipCameraButton.iconColor
+        videoModeFlipCameraButton.selectedBackgroundColor = videoModeFlipCameraButton.unselectedBackgroundColor
         videoModeFlipCameraButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_CAMERA_DIRECTION", comment: "Accessibility label to toggle front- vs. rear-facing camera")
         videoModeFlipCameraButton.alpha = 0.9
 
-        videoModeVideoButton = createButton(image: #imageLiteral(resourceName: "video-video-unselected"),
-                                            action: #selector(didPressVideo))
-        videoModeVideoButton.setImage(#imageLiteral(resourceName: "video-video-selected"), for: .selected)
         videoModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only")
         videoModeVideoButton.alpha = 0.9
 
-        ongoingCallControls = UIStackView(arrangedSubviews: [hangUpButton])
-        ongoingCallControls.axis = .vertical
-        ongoingCallControls.alignment = .center
-        view.addSubview(ongoingCallControls)
-
-        ongoingAudioCallControls = UIStackView(arrangedSubviews: [audioModeMuteButton, audioSourceButton, audioModeVideoButton])
         ongoingAudioCallControls.distribution = .equalSpacing
         ongoingAudioCallControls.axis = .horizontal
 
-        ongoingVideoCallControls = UIStackView(arrangedSubviews: [videoModeMuteButton, videoModeFlipCameraButton, videoModeVideoButton])
-        ongoingAudioCallControls.distribution = .equalSpacing
+        view.addSubview(ongoingAudioCallControls)
+
+        ongoingVideoCallControls.distribution = .equalSpacing
         ongoingVideoCallControls.axis = .horizontal
 
-        audioSourceButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioSourceButton")
-        hangUpButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "hangUpButton")
+        view.addSubview(ongoingVideoCallControls)
+
+        audioModeHangUpButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioHangUpButton")
+        audioModeSourceButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioSourceButton")
         audioModeMuteButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioModeMuteButton")
         audioModeVideoButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioModeVideoButton")
+
+        videoModeHangUpButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoHangUpButton")
+        videoModeAudioSourceButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoAudioSourceButton")
         videoModeMuteButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoModeMuteButton")
         videoModeFlipCameraButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoModeFlipCameraButton")
         videoModeVideoButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoModeVideoButton")
@@ -410,37 +429,56 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createIncomingCallControls() {
-
-        acceptIncomingButton = createButton(image: #imageLiteral(resourceName: "call-active-wide"),
-                                            action: #selector(didPressAnswerCall))
-        acceptIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+        audioAnswerIncomingButton.text = "Answer"
+        audioAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
+        audioAnswerIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
                                                                     comment: "Accessibility label for accepting incoming calls")
-        declineIncomingButton = createButton(image: #imageLiteral(resourceName: "hangup-active-wide"),
-                                             action: #selector(didPressDeclineCall))
-        declineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+
+        audioDeclineIncomingButton.text = "Decline"
+        audioDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
+        audioDeclineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
                                                                      comment: "Accessibility label for declining incoming calls")
 
-        incomingCallControls = UIStackView(arrangedSubviews: [acceptIncomingButton, declineIncomingButton])
-        incomingCallControls.axis = .horizontal
-        incomingCallControls.alignment = .center
-        incomingCallControls.distribution = .equalSpacing
+        incomingAudioCallControls.axis = .horizontal
+        incomingAudioCallControls.alignment = .center
+        incomingAudioCallControls.distribution = .equalSpacing
 
-        view.addSubview(incomingCallControls)
+        view.addSubview(incomingAudioCallControls)
 
-        acceptIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "acceptIncomingButton")
-        declineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "declineIncomingButton")
+        audioAnswerIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioAnswerIncomingButton")
+        audioDeclineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioDeclineIncomingButton")
+
+        videoAnswerIncomingButton.text = "Answer"
+        videoAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
+        videoAnswerIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+                                                                         comment: "Accessibility label for accepting incoming calls")
+
+        videoAnswerIncomingAudioOnlyButton.text = "Answer without video"
+        videoAnswerIncomingAudioOnlyButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
+                                                                                comment: "Accessibility label for accepting incoming video calls as audio  only")
+
+        videoDeclineIncomingButton.text = "Decline"
+        videoDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
+        videoDeclineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+                                                                          comment: "Accessibility label for declining incoming calls")
+
+        incomingVideoCallBottomControls.axis = .horizontal
+        incomingVideoCallBottomControls.alignment = .center
+        incomingVideoCallBottomControls.distribution = .equalSpacing
+
+        incomingVideoCallControls.axis = .vertical
+        incomingVideoCallControls.spacing = 20
+
+        view.addSubview(incomingVideoCallControls)
+
+        videoAnswerIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoAnswerIncomingButton")
+        videoAnswerIncomingAudioOnlyButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoAnswerIncomingAudioOnlyButton")
+        videoDeclineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoDeclineIncomingButton")
     }
 
-    func createButton(image: UIImage, action: Selector) -> UIButton {
-        let button = UIButton()
-        button.setImage(image, for: .normal)
-        button.imageEdgeInsets = UIEdgeInsets(top: buttonInset(),
-                                              left: buttonInset(),
-                                              bottom: buttonInset(),
-                                              right: buttonInset())
+    private func createButton(iconName: String, action: Selector) -> CallButton {
+        let button = CallButton(iconName: iconName)
         button.addTarget(self, action: action, for: .touchUpInside)
-        button.autoSetDimension(.width, toSize: buttonSize())
-        button.autoSetDimension(.height, toSize: buttonSize())
         return button
     }
 
@@ -463,12 +501,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // although the view is square, it will be used
         let videoPreviewHMargin = CGFloat(0)
 
-        leaveCallViewButton.autoPinEdge(toSuperviewEdge: .leading)
+        backButton.autoPinEdge(toSuperviewEdge: .leading)
 
-        leaveCallViewButton.autoPinEdge(toSuperviewMargin: .top)
+        backButton.autoPinEdge(toSuperviewMargin: .top)
         contactNameLabel.autoPinEdge(toSuperviewMargin: .top)
 
-        contactNameLabel.autoPinEdge(.leading, to: .trailing, of: leaveCallViewButton, withOffset: 8, relation: .greaterThanOrEqual)
+        contactNameLabel.autoPinEdge(.leading, to: .trailing, of: backButton, withOffset: 8, relation: .greaterThanOrEqual)
         contactNameLabel.autoHCenterInSuperview()
         contactNameLabel.setContentHuggingVerticalHigh()
         contactNameLabel.setCompressionResistanceHigh()
@@ -489,33 +527,18 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         remoteVideoView.autoPinEdgesToSuperviewEdges()
 
         contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarTopSpacing)
-        contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingCallControls, withOffset: -avatarBottomSpacing)
+        contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingAudioCallControls, withOffset: -avatarBottomSpacing)
         contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarTopSpacing)
 
         contactAvatarView.autoCenterInSuperview()
+        contactAvatarView.autoSetDimensions(to: CGSize(square: 200))
 
-        // Ensure ContacAvatarView gets as close as possible to it's superview edges while maintaining
-        // aspect ratio.
-        contactAvatarView.autoPinToSquareAspectRatio()
-        contactAvatarView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        contactAvatarView.autoPinEdge(toSuperviewEdge: .right, withInset: 0, relation: .greaterThanOrEqual)
-        contactAvatarView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
-        contactAvatarView.autoPinEdge(toSuperviewEdge: .left, withInset: 0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
-            contactAvatarView.autoPinEdgesToSuperviewMargins()
+        for controls in [incomingVideoCallControls, incomingAudioCallControls, ongoingAudioCallControls, ongoingVideoCallControls] {
+            controls.autoPinEdge(toSuperviewEdge: .bottom, withInset: ongoingBottomMargin)
+            controls.autoPinLeadingToSuperviewMargin()
+            controls.autoPinTrailingToSuperviewMargin()
+            controls.setContentHuggingVerticalHigh()
         }
-
-        // Ongoing call controls
-        ongoingCallControls.autoPinEdge(toSuperviewEdge: .bottom, withInset: ongoingBottomMargin)
-        ongoingCallControls.autoPinLeadingToSuperviewMargin()
-        ongoingCallControls.autoPinTrailingToSuperviewMargin()
-        ongoingCallControls.setContentHuggingVerticalHigh()
-
-        // Incoming call controls
-        incomingCallControls.autoPinEdge(toSuperviewEdge: .bottom, withInset: incomingBottomMargin)
-        incomingCallControls.autoPinLeadingToSuperviewMargin(withInset: incomingHMargin)
-        incomingCallControls.autoPinTrailingToSuperviewMargin(withInset: incomingHMargin)
-        incomingCallControls.setContentHuggingVerticalHigh()
     }
 
     override func updateViewConstraints() {
@@ -529,8 +552,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         remoteVideoView.isHidden = !self.hasRemoteVideoTrack
         updateCallUI()
     }
-
-    let videoHintView = CallVideoHintView()
 
     internal func updateLocalVideoLayout() {
         if !localVideoView.isHidden {
@@ -571,12 +592,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         case .connected:
             let callDuration = call.connectionDuration()
             let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
-            if dateFormatter == nil {
-                dateFormatter = DateFormatter()
-                dateFormatter!.dateFormat = "HH:mm:ss"
-                dateFormatter!.timeZone = TimeZone(identifier: "UTC")!
-            }
-            var formattedDate = dateFormatter!.string(from: callDurationDate)
+            var formattedDate = dateFormatter.string(from: callDurationDate)
             if formattedDate.hasPrefix("00:") {
                 // Don't show the "hours" portion of the date format unless the
                 // call duration is at least 1 hour.
@@ -659,49 +675,39 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         videoModeVideoButton.isSelected = call.hasLocalVideo
 
         // Show Incoming vs. Ongoing call controls
-        let isRinging = call.state == .localRinging
-        incomingCallControls.isHidden = !isRinging
-        incomingCallControls.isUserInteractionEnabled = isRinging
-        ongoingCallControls.isHidden = isRinging
-        ongoingCallControls.isUserInteractionEnabled = !isRinging
+        if call.state == .localRinging {
+            let isVideoOffer = call.offerMediaType == .video
+            incomingVideoCallControls.isHidden = !isVideoOffer
+            incomingAudioCallControls.isHidden = isVideoOffer
+            ongoingVideoCallControls.isHidden = true
+            ongoingAudioCallControls.isHidden = true
+        } else {
+            incomingVideoCallControls.isHidden = true
+            incomingAudioCallControls.isHidden = true
+            ongoingVideoCallControls.isHidden = !call.hasLocalVideo
+            ongoingAudioCallControls.isHidden = call.hasLocalVideo
+        }
 
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteVideoView.isHidden
         contactAvatarView.isHidden = hasRemoteVideo
 
-        // Rework control state if local video is available.
-        let hasLocalVideo = !localVideoView.isHidden
-
-        if hasLocalVideo {
-            ongoingAudioCallControls.removeFromSuperview()
-            ongoingCallControls.insertArrangedSubview(ongoingVideoCallControls, at: 0)
-        } else {
-            ongoingVideoCallControls.removeFromSuperview()
-            ongoingCallControls.insertArrangedSubview(ongoingAudioCallControls, at: 0)
+        // Layout controls immediately to avoid spurious animation.
+        for controls in [incomingVideoCallControls, incomingAudioCallControls, ongoingAudioCallControls, ongoingVideoCallControls] {
+            controls.layoutIfNeeded()
         }
-        // Layout immediately to avoid spurious animation.
-        ongoingCallControls.layoutIfNeeded()
 
         // Also hide other controls if user has tapped to hide them.
         if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
-            leaveCallViewButton.isHidden = true
+            backButton.isHidden = true
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
-            ongoingCallControls.isHidden = true
-            videoHintView.isHidden = true
+            ongoingVideoCallControls.isHidden = true
+            ongoingAudioCallControls.isHidden = true
         } else {
-            leaveCallViewButton.isHidden = false
+            backButton.isHidden = false
             contactNameLabel.isHidden = false
             callStatusLabel.isHidden = false
-
-            if hasRemoteVideo && !hasLocalVideo && !hasShownLocalVideo && !hasUserDismissedVideoHint {
-                view.addSubview(videoHintView)
-                videoHintView.isHidden = false
-                videoHintView.autoPinEdge(.bottom, to: .top, of: audioModeVideoButton)
-                videoHintView.autoPinEdge(.trailing, to: .leading, of: audioModeVideoButton, withOffset: buttonSize() / 2 + videoHintView.kTailHMargin + videoHintView.kTailWidth / 2)
-            } else {
-                videoHintView.removeFromSuperview()
-            }
         }
 
         let doLocalVideoLayout = {
@@ -717,28 +723,43 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             doLocalVideoLayout()
         }
 
+        let videoControls = [videoModeAudioSourceButton, videoModeFlipCameraButton, videoModeVideoButton, videoModeMuteButton, videoModeHangUpButton]
+
         // Audio Source Handling (bluetooth)
         if self.hasAlternateAudioSources {
-            // With bluetooth, button does not stay selected. Pressing it pops an actionsheet
-            // and the button should immediately "unselect".
-            audioSourceButton.isSelected = false
+            videoModeAudioSourceButton.isHidden = !call.hasLocalVideo
+            videoModeAudioSourceButton.showDropdownArrow = true
+            audioModeSourceButton.isHidden = call.hasLocalVideo
+            audioModeSourceButton.showDropdownArrow = true
 
-            if hasLocalVideo {
-                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .normal)
-                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .selected)
+            // Use small controls, because we have 5 buttons now.
+            videoControls.forEach { $0.isSmall = true }
+
+            if let audioSource = callUIAdapter.audioService.currentAudioSource(call: call) {
+                if audioSource.isBuiltInEarPiece {
+                    audioModeSourceButton.iconName = "phone-solid-28"
+                    videoModeAudioSourceButton.iconName = "phone-solid-28"
+                } else if audioSource.isBuiltInSpeaker {
+                    audioModeSourceButton.iconName = "speaker-solid-28"
+                    videoModeAudioSourceButton.iconName = "speaker-solid-28"
+                } else {
+                    audioModeSourceButton.iconName = "speaker-bt-solid-28"
+                    videoModeAudioSourceButton.iconName = "speaker-bt-solid-28"
+                }
             } else {
-                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .normal)
-                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .selected)
+                owsFailDebug("missing current audio source")
             }
-            audioSourceButton.isHidden = false
+
         } else {
             // No bluetooth audio detected
-            audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-inactive"), for: .normal)
-            audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-active"), for: .selected)
+            audioModeSourceButton.iconName = "speaker-solid-28"
+            audioModeSourceButton.showDropdownArrow = false
 
-            // If there's no bluetooth, we always use speakerphone, so no need for
-            // a button, giving more screen back for the video.
-            audioSourceButton.isHidden = hasLocalVideo
+            videoModeAudioSourceButton.iconName = "speaker-solid-28"
+            videoModeAudioSourceButton.showDropdownArrow = false
+
+            videoControls.forEach { $0.isSmall = false }
+            videoModeAudioSourceButton.isHidden = true
         }
 
         // Dismiss Handling
@@ -779,10 +800,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         contactNameLabel.removeFromSuperview()
         callStatusLabel.removeFromSuperview()
-        incomingCallControls.removeFromSuperview()
-        ongoingCallControls.removeFromSuperview()
-        videoHintView.removeFromSuperview()
-        leaveCallViewButton.removeFromSuperview()
+        incomingAudioCallControls.removeFromSuperview()
+        incomingVideoCallControls.removeFromSuperview()
+        ongoingAudioCallControls.removeFromSuperview()
+        ongoingVideoCallControls.removeFromSuperview()
+        backButton.removeFromSuperview()
 
         let needPermissionStack = UIStackView()
         needPermissionStack.axis = .vertical
@@ -793,7 +815,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         needPermissionStack.autoVCenterInSuperview()
 
         needPermissionStack.addArrangedSubview(contactAvatarContainerView)
-        contactAvatarContainerView.autoSetDimension(.height, toSize: 100)
+        contactAvatarContainerView.autoSetDimension(.height, toSize: 200)
 
         let shortName = SDSDatabaseStorage.shared.uiRead {
             return self.contactsManager.shortDisplayName(
@@ -849,19 +871,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // - we want to give immediate UI feedback by marking the pressed button as selected
     //   before the operation completes.
     func updateAudioSourceButtonIsSelected() {
-        guard callUIAdapter.audioService.isSpeakerphoneEnabled else {
-            self.audioSourceButton.isSelected = false
-            return
+        guard let audioSource = callUIAdapter.audioService.currentAudioSource(call: call) else {
+            audioModeSourceButton.isSelected = false
+            videoModeAudioSourceButton.isSelected = false
+            return owsFailDebug("missing current audio source")
         }
 
-        // VideoChat mode enables the output speaker, but we don't
-        // want to highlight the speaker button in that case.
-        guard !call.hasLocalVideo else {
-            self.audioSourceButton.isSelected = false
-            return
-        }
-
-        self.audioSourceButton.isSelected = true
+        audioModeSourceButton.isSelected = !audioSource.isBuiltInEarPiece
+        videoModeAudioSourceButton.isSelected = !audioSource.isBuiltInEarPiece
     }
 
     // MARK: - Actions
@@ -911,6 +928,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         Logger.info("")
 
         callUIAdapter.answerCall(call)
+
+        // Answer with video.
+        if sender == videoAnswerIncomingButton {
+            callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: true)
+        }
     }
 
     @objc func didPressVideo(sender: UIButton) {
@@ -1011,6 +1033,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // pretty well in practice.
         let availableInputs = callAudioService.availableInputs
         self.allAudioSources.formUnion(availableInputs)
+        updateCallUI()
     }
 
     // MARK: - Video
@@ -1042,8 +1065,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var hasRemoteVideoTrack: Bool {
         return self.remoteVideoTrack != nil
     }
-
-    var hasUserDismissedVideoHint: Bool = false
 
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
@@ -1125,48 +1146,143 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateLocalVideo(captureSession: localCaptureSession)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
     }
-
-    // MARK: - Proximity Monitoring
-
-    func ensureProximityMonitoring() {
-        if #available(iOS 11, *) {
-            // BUG: Adding `self` as a Weak reference to the proximityMonitoringManager results in
-            // the CallViewController never being deallocated, which, besides being a memory leak
-            // can interfere with subsequent video capture - presumably because the old capture
-            // session is still retained via the callViewController.localVideoView.
-            //
-            // A code audit has not revealed a retain cycle.
-            //
-            // Using the XCode memory debugger shows that a strong reference is held by
-            // windowManager.callNavigationController->_childViewControllers.
-            // Even though, when inspecting via the debugger, the CallViewController is not shown as
-            // a childViewController.
-            //
-            //     (lldb) po [[[OWSWindowManager sharedManager] callNavigationController] childViewControllers]
-            //     <__NSSingleObjectArrayI 0x1c0418bd0>(
-            //       <OWSWindowRootViewController: 0x13de37550>
-            //     )
-            //
-            // Weirder still, when presenting another CallViewController, the old one remains unallocated
-            // and inspecting it in the memory debugger shows _no_ strong references to it (yet it
-            // is not deallocated). Some weak references do remain - from the proximityMonitoringManager
-            // and the callObserver, both of which use the Weak<T> struct, which could be related.
-            //
-            // In any case, we can apparently avoid this behavior by not adding self as a Weak lifetime
-            // and as of iOS11, the system automatically managages proximityMonitoring
-            // via CallKit and AudioSessions. Proximity monitoring will be enabled whenever a call
-            // is active, unless we switch to VideoChat audio mode (which is actually desirable
-            // behavior), so the proximityMonitoringManager is redundant for calls on iOS11+.
-        } else {
-            // before iOS11, manually enable proximityMonitoring while we're on a call.
-            self.proximityMonitoringManager.add(lifetime: self)
-        }
-    }
 }
 
-extension CallViewController: CallVideoHintViewDelegate {
-    func didTapCallVideoHintView(_ videoHintView: CallVideoHintView) {
-        self.hasUserDismissedVideoHint = true
-        updateRemoteVideoLayout()
+private class CallButton: UIButton {
+    var iconName: String { didSet { updateAppearance() } }
+    var selectedIconName: String? { didSet { updateAppearance() } }
+
+    var currentIconName: String {
+        if isSelected, let selectedImageName = selectedIconName {
+            return selectedImageName
+        }
+        return iconName
+    }
+
+    var iconColor: UIColor = .ows_white { didSet { updateAppearance() } }
+    var selectedIconColor: UIColor = .ows_gray75 { didSet { updateAppearance() } }
+    var currentIconColor: UIColor { isSelected ? selectedIconColor : iconColor }
+
+    var unselectedBackgroundColor = UIColor.ows_whiteAlpha40 { didSet { updateAppearance() } }
+    var selectedBackgroundColor = UIColor.ows_white { didSet { updateAppearance() } }
+
+    var currentBackgroundColor: UIColor {
+        return isSelected ? selectedBackgroundColor : unselectedBackgroundColor
+    }
+
+    var text: String? { didSet { updateAppearance() } }
+
+    override var isSelected: Bool { didSet { updateAppearance() } }
+    override var isHighlighted: Bool { didSet { updateAppearance() } }
+
+    var showDropdownArrow = false { didSet { updateDropdownArrow() } }
+
+    var isSmall = false { didSet { updateSizing() } }
+
+    private var currentConstraints = [NSLayoutConstraint]()
+
+    private var currentIconSize: CGFloat { isSmall ? 48 : 56 }
+    private var currentIconInsets: UIEdgeInsets {
+        var insets: UIEdgeInsets
+        if isSmall {
+            insets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        } else {
+            insets = UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14)
+        }
+
+        if showDropdownArrow {
+            if CurrentAppContext().isRTL {
+                insets.left += 3
+                insets.right -= 3
+            } else {
+                insets.left -= 3
+                insets.right += 3
+            }
+        }
+
+        return insets
+    }
+
+    private lazy var iconView = UIImageView()
+    private var dropdownIconView: UIImageView?
+    private lazy var circleView = CircleView()
+    private lazy var label = UILabel()
+
+    init(iconName: String) {
+        self.iconName = iconName
+
+        super.init(frame: .zero)
+
+        let circleViewContainer = UIView.container()
+        circleViewContainer.addSubview(circleView)
+        circleView.autoPinHeightToSuperview()
+        circleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 0, relation: .greaterThanOrEqual)
+        circleView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0, relation: .greaterThanOrEqual)
+        circleView.autoHCenterInSuperview()
+
+        let stackView = UIStackView(arrangedSubviews: [circleViewContainer, label])
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        stackView.isUserInteractionEnabled =  false
+
+        addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+
+        label.font = .ows_dynamicTypeSubheadline
+        label.textColor = Theme.darkThemePrimaryColor
+        label.textAlignment = .center
+
+        circleView.addSubview(iconView)
+
+        updateAppearance()
+        updateSizing()
+    }
+
+    private func updateAppearance() {
+        circleView.backgroundColor = currentBackgroundColor
+        iconView.setTemplateImageName(currentIconName, tintColor: currentIconColor)
+        dropdownIconView?.setTemplateImageName("arrow-down-12", tintColor: currentIconColor)
+
+        if let text = text {
+            label.isHidden = false
+            label.text = text
+        } else {
+            label.isHidden = true
+        }
+
+        alpha = isHighlighted ? 0.6 : 1
+    }
+
+    private func updateSizing() {
+        NSLayoutConstraint.deactivate(currentConstraints)
+        currentConstraints.removeAll()
+
+        currentConstraints += circleView.autoSetDimensions(to: CGSize(square: currentIconSize))
+        currentConstraints += iconView.autoPinEdgesToSuperviewEdges(with: currentIconInsets)
+        if let dropdownIconView = dropdownIconView {
+            currentConstraints.append(dropdownIconView.autoPinEdge(.leading, to: .trailing, of: iconView, withOffset: isSmall ? 0 : 2))
+        }
+    }
+
+    private func updateDropdownArrow() {
+        if showDropdownArrow {
+            if dropdownIconView?.superview != nil { return }
+            let dropdownIconView = UIImageView()
+            self.dropdownIconView = dropdownIconView
+            circleView.addSubview(dropdownIconView)
+
+            dropdownIconView.autoSetDimensions(to: CGSize(square: 12))
+            dropdownIconView.autoVCenterInSuperview()
+
+            updateSizing()
+            updateAppearance()
+        } else {
+            dropdownIconView?.removeFromSuperview()
+            dropdownIconView = nil
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
