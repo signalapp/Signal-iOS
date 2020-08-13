@@ -8,6 +8,7 @@ class MentionPicker: UIView {
     private let tableView = UITableView()
     private let hairlineView = UIView()
     private let resizingScrollView = ResizingScrollView<UITableView>()
+    private var blurView: UIVisualEffectView?
 
     let mentionableUsers: [MentionableUser]
     struct MentionableUser {
@@ -161,8 +162,21 @@ class MentionPicker: UIView {
             tableView.backgroundColor = UIColor.ows_gray95
             hairlineView.backgroundColor = .ows_gray65
         } else {
-            tableView.backgroundColor = Theme.backgroundColor
-            hairlineView.backgroundColor = Theme.actionSheetHairlineColor
+            blurView?.removeFromSuperview()
+            blurView = nil
+
+            if UIAccessibility.isReduceTransparencyEnabled {
+                tableView.backgroundColor = Theme.backgroundColor
+            } else {
+                tableView.backgroundColor = .clear
+
+                let blurView = UIVisualEffectView(effect: Theme.barBlurEffect)
+                self.blurView = blurView
+                insertSubview(blurView, belowSubview: tableView)
+                blurView.autoPinEdgesToSuperviewEdges()
+            }
+
+            hairlineView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray05
         }
         tableView.reloadData()
     }
