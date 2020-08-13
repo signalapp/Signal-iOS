@@ -191,9 +191,6 @@ public class FeatureFlags: BaseFlags {
     static let mentionsSupported = groupsV2Supported
 
     @objc
-    public static let attachmentUploadV3 = build.includes(.qa)
-
-    @objc
     public static let attachmentUploadV3ForV1GroupAvatars = false
 
     private static let _ignoreCDSUnregisteredUsersInMessageSends = AtomicBool(true)
@@ -415,6 +412,8 @@ public class DebugFlags: BaseFlags {
     public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
 
     static let forceMentions = build.includes(.dev)
+
+    static let forceAttachmentUploadV3 = build.includes(.qa)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
