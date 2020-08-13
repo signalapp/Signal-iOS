@@ -5,7 +5,7 @@
 #import "TSNetworkManager.h"
 #import "AppContext.h"
 #import "NSError+OWSOperation.h"
-#import "NSURLSessionDataTask+StatusCode.h"
+#import "NSURLSessionDataTask+OWS_HTTP.h"
 #import "OWSError.h"
 #import "OWSQueues.h"
 #import "OWSSignalService.h"
@@ -20,6 +20,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSErrorDomain const TSNetworkManagerErrorDomain = @"SignalServiceKit.TSNetworkManager";
+NSString *const TSNetworkManagerErrorRetryAfterKey = @"TSNetworkManagerError.RetryAfter";
 
 BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
 {
@@ -62,6 +63,17 @@ NSNumber *_Nullable HTTPStatusCodeForError(NSError *_Nullable error)
         return swiftStatusCode;
     }
     return nil;
+}
+
+NSDate *_Nullable HTTPRetryAfterDateForError(NSError *_Nullable error)
+{
+    NSDate *retryAfterDate = nil;
+
+    // Different errors may represent a retry after in different ways
+    retryAfterDate = retryAfterDate ?: error.afRetryAfterDate;
+    retryAfterDate = retryAfterDate ?: [TSNetworkManager swiftHTTPRetryAfterDateForError:error];
+    retryAfterDate = retryAfterDate ?: error.userInfo[TSNetworkManagerErrorRetryAfterKey];
+    return retryAfterDate;
 }
 
 dispatch_queue_t NetworkManagerQueue()
@@ -494,6 +506,7 @@ dispatch_queue_t NetworkManagerQueue()
     OWSAssertDebug(networkError);
 
     NSInteger statusCode = [task statusCode];
+    NSDate *retryAfterDate = [task retryAfterDate];
 
 #if TESTABLE_BUILD
     [TSNetworkManager logCurlForTask:task];
@@ -505,6 +518,7 @@ dispatch_queue_t NetworkManagerQueue()
                                  description:nil
                                failureReason:nil
                           recoverySuggestion:nil
+                                  retryAfter:retryAfterDate
                                fallbackError:networkError];
 
     switch (statusCode) {
@@ -515,6 +529,7 @@ dispatch_queue_t NetworkManagerQueue()
                                             @"Generic error used whenever Signal can't contact the server")
                           failureReason:networkError.localizedFailureReason
                      recoverySuggestion:NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil)
+                             retryAfter:nil
                           fallbackError:networkError];
             connectivityError.isRetryable = YES;
 
@@ -566,6 +581,7 @@ dispatch_queue_t NetworkManagerQueue()
                                              failureReason:networkError.localizedFailureReason
                                         recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY",
                                                                @"alert body: cannot link - reached max linked devices")
+                                                retryAfter:retryAfterDate
                                              fallbackError:networkError];
             customError.isRetryable = NO;
             failureBlock(task, customError);
@@ -577,6 +593,7 @@ dispatch_queue_t NetworkManagerQueue()
                                                description:NSLocalizedString(@"REGISTER_RATE_LIMITING_ERROR", nil)
                                              failureReason:networkError.localizedFailureReason
                                         recoverySuggestion:NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", nil)
+                                                retryAfter:retryAfterDate
                                              fallbackError:networkError];
             customError.isRetryable = NO;
             failureBlock(task, customError);
@@ -589,6 +606,7 @@ dispatch_queue_t NetworkManagerQueue()
                                                description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
                                              failureReason:networkError.localizedFailureReason
                                         recoverySuggestion:NSLocalizedString(@"RELAY_REGISTERED_ERROR_RECOVERY", nil)
+                                                retryAfter:retryAfterDate
                                              fallbackError:networkError];
             customError.isRetryable = NO;
             failureBlock(task, customError);
@@ -646,6 +664,7 @@ dispatch_queue_t NetworkManagerQueue()
                    description:(nullable NSString *)description
                  failureReason:(nullable NSString *)failureReason
             recoverySuggestion:(nullable NSString *)recoverySuggestion
+                    retryAfter:(nullable NSDate *)retryAfterDate
                  fallbackError:(NSError *)fallbackError
 {
     OWSAssertDebug(fallbackError);
@@ -676,6 +695,9 @@ dispatch_queue_t NetworkManagerQueue()
 
     if (failureData) {
         [dict setObject:failureData forKey:AFNetworkingOperationFailingURLResponseDataErrorKey];
+    }
+    if (retryAfterDate) {
+        [dict setObject:retryAfterDate forKey:TSNetworkManagerErrorRetryAfterKey];
     }
 
     dict[NSUnderlyingErrorKey] = fallbackError;

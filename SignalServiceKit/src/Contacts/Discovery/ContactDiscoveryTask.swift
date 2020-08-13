@@ -16,6 +16,22 @@ public class ContactDiscoveryTask: NSObject {
         self.identifiersToFetch = identifiers
     }
 
+    // MARK: - Modifiers
+
+    /// Tags this ContactDiscoveryTask as "critical priority". Modifies retry-after behavior to resolve a tiny risk of starvation around contact discovery tasks
+    ///
+    /// Some ContactDiscoveryTasks are opportunistic, e.g. discovering a user's contacts. Other ContactDiscoveryTasks are important,
+    /// e.g. user initiated Find By Phone Number flow. Neither of these are considered "critical priority".
+    /// Occassionally, a ContactDiscoveryTask is so important that all message processing in Signal is hung. In this state, we need a successful
+    /// CDS lookup in order to resume message processing.
+    ///
+    /// To reduce the risk of these less critical discovery tasks starving out more critical tasks, a critical task may set this flag true. Critical priority tasks
+    /// get an extra retry-after slot.
+    /// Example:
+    /// User contacts lookup starts, fails with retry-after of 30 minutes. UUIDBackfill starts shortly after. Instead of being blocked for 30 minutes it's allowed to proceed.
+    /// If UUIDBackfill fails, the global retry-after counter will be set to the greater of the two failures and it will now affect both critical and non-critical tasks.
+    @objc var isCriticalPriority = false
+
     // MARK: - Public
 
     /// Returns a promise that will perform contact discovery and return SignalRecipients
@@ -31,12 +47,15 @@ public class ContactDiscoveryTask: NSObject {
         guard identifiersToFetch.count > 0 else {
             return .value(Set())
         }
+        if let retryAfterDate = Self.rateLimiter.currentRetryAfterDate(forCriticalPriority: isCriticalPriority) {
+            return Promise(error: ContactDiscoveryError.rateLimit(expiryDate: retryAfterDate))
+        }
+
         let workQueue = DispatchQueue(
             label: "org.whispersystems.signal.\(type(of: self))",
             qos: qos,
             autoreleaseFrequency: .workItem,
-            target: targetQueue ?? .sharedQueue(at: qos)
-        )
+            target: targetQueue ?? .sharedQueue(at: qos))
 
         return firstly { () -> Promise<Set<DiscoveredContactInfo>> in
             let discoveryOperation = createContactDiscoveryOperation()
@@ -60,7 +79,10 @@ public class ContactDiscoveryTask: NSObject {
             if IsNetworkConnectivityFailure(error) {
                 Logger.warn("ContactDiscoveryTask network failure: \(error)")
             } else {
-                owsFailDebug("ContactDiscoverTask failure: \(error)")
+                Logger.error("ContactDiscoverTask failure: \(error)")
+            }
+            if let retryAfterDate = (error as? ContactDiscoveryError)?.retryAfterDate {
+                Self.rateLimiter.updateRetryAfter(with: retryAfterDate, criticalPriority: self.isCriticalPriority)
             }
             throw error
         }
@@ -169,6 +191,43 @@ public extension ContactDiscoveryTask {
                 // unregistered in the last N minutes.
                 let acceptableInterval: TimeInterval = kHourInterval
                 return abs(markAsUnregisteredDate.timeIntervalSinceNow) <= acceptableInterval
+            }
+        }
+    }
+}
+
+// MARK: - Retry After tracking
+
+extension ContactDiscoveryTask {
+
+    private static let rateLimiter = RateLimiter()
+
+    // Declared `internal` to expose to tests
+    internal final class RateLimiter {
+        private var lock: UnfairLock = UnfairLock()
+        private var standardRetryAfter: Date = .distantPast
+        private var criticalRetryAfter: Date = .distantPast
+
+        fileprivate init() {}
+        static internal func createForTesting() -> RateLimiter {
+            owsAssertDebug(CurrentAppContext().isRunningTests, "`createForTesting` not intended to be used outside of tests")
+            return RateLimiter()
+
+        }
+
+        func updateRetryAfter(with date: Date, criticalPriority: Bool) {
+            lock.withLock {
+                if criticalPriority {
+                    criticalRetryAfter = max(criticalRetryAfter, date)
+                }
+                standardRetryAfter = max(standardRetryAfter, date)
+            }
+        }
+
+        func currentRetryAfterDate(forCriticalPriority: Bool) -> Date? {
+            lock.withLock {
+                let date = forCriticalPriority ? criticalRetryAfter : standardRetryAfter
+                return (date > Date()) ? date : nil
             }
         }
     }

@@ -123,9 +123,18 @@ public class UUIDBackfillTask: NSObject {
         }
     }
 
-    private func onqueue_schedule() {
+    private func onqueue_schedule(for date: Date? = nil) {
         assertOnQueue(queue)
-        queue.asyncAfter(deadline: .now() + backoffInterval, execute: onqueue_performCDSFetch)
+
+        let delay: DispatchTimeInterval
+        if let date = date {
+            let msDelay = max(date.timeIntervalSinceNow * 1000, 0)
+            delay = .milliseconds(Int(msDelay))
+        } else {
+            delay = backoffInterval
+        }
+
+        queue.asyncAfter(deadline: .now() + delay, execute: onqueue_performCDSFetch)
     }
 
     private func onqueue_performCDSFetch() {
@@ -134,8 +143,11 @@ public class UUIDBackfillTask: NSObject {
 
         attemptCount += 1
         Logger.info("Beginning ContactDiscovery for UUID backfill")
-        ContactDiscoveryTask(identifiers: e164Numbers)
-            .perform()
+
+        let discoveryTask = ContactDiscoveryTask(identifiers: e164Numbers)
+        discoveryTask.isCriticalPriority = true
+
+        discoveryTask.perform()
             .done(on: queue) { _ in self.onqueue_complete() }
             .recover(on: queue) { error in self.onqueue_handleError(error: error) }
     }
@@ -143,7 +155,7 @@ public class UUIDBackfillTask: NSObject {
     func onqueue_handleError(error: Error) {
         assertOnQueue(queue)
         Logger.error("UUID Backfill failed: \(error). Scheduling retry...")
-        onqueue_schedule()
+        onqueue_schedule(for: (error as? ContactDiscoveryError)?.retryAfterDate)
     }
 
     func onqueue_complete() {
