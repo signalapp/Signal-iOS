@@ -159,11 +159,13 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        if let latestThread = (databaseStorage.read { transaction in
+        guard let latestThread = (databaseStorage.read { transaction in
             TSThread.anyFetch(uniqueId: self.thread.uniqueId, transaction: transaction)
-        }) {
-            self.thread = latestThread
+        }) else {
+            owsFailDebug("Missing thread.")
+            return
         }
+        self.thread = latestThread
 
         self.updateImage()
     }

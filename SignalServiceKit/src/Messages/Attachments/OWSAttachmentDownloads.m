@@ -594,8 +594,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reloadAndTouchLatestVersionOfMessage:(TSMessage *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
+    TSMessage *messageToNotify;
     if (message.sortId > 0) {
-        [self.databaseStorage touchInteraction:message transaction:transaction];
+        messageToNotify = message;
     } else {
         // Ensure relevant sortId is loaded for touch to succeed.
         TSMessage *_Nullable latestMessage = [TSMessage anyFetchMessageWithUniqueId:message.uniqueId
@@ -605,8 +606,9 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Message has been deleted.");
             return;
         }
-        [self.databaseStorage touchInteraction:latestMessage transaction:transaction];
+        messageToNotify = latestMessage;
     }
+    [self.databaseStorage touchInteraction:messageToNotify transaction:transaction];
 }
 
 #pragma mark -
