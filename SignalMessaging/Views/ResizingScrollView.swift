@@ -105,8 +105,12 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
         let newInset = new.maximumHeight - new.minimumHeight
 
         let newHeight: CGFloat
-        if currentHeight < new.minimumHeight {
+        if currentHeight >= new.minimumHeight && currentHeight <= new.maximumHeight {
+            newHeight = currentHeight
+        } else if currentHeight < new.minimumHeight {
             newHeight = new.minimumHeight
+        } else if currentHeight > new.maximumHeight {
+            newHeight = new.maximumHeight
         } else if new.maximumHeight > current.maximumHeight {
             // If the amount of space we can take up is growing,
             // grow to fill the new space.
