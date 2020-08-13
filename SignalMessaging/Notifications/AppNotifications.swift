@@ -374,9 +374,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         guard mentionedAddresses.contains(localAddress) else { return false }
 
         switch thread.mentionNotificationMode {
-        case .default:
-            return preferences.areMentionNotificationsEnabled()
-        case .always:
+        case .default, .always:
             return true
         case .never:
             return false
