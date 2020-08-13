@@ -11,6 +11,8 @@ public enum MessageSenderError: Int, Error {
     case prekeyRateLimit
     case untrustedIdentity
     case missingDevice
+    case blockedContactRecipient
+    case threadMissing
 }
 
 // MARK: -
@@ -20,28 +22,36 @@ public class MessageSending: NSObject {
 
     // MARK: - Dependencies
 
-    private class var databaseStorage: SDSDatabaseStorage {
+    fileprivate static var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
-    private class var sessionStore: SSKSessionStore {
+    fileprivate static var sessionStore: SSKSessionStore {
         return SSKEnvironment.shared.sessionStore
     }
 
-    private class var preKeyStore: SSKPreKeyStore {
+    fileprivate static var preKeyStore: SSKPreKeyStore {
         return SSKEnvironment.shared.preKeyStore
     }
 
-    private class var signedPreKeyStore: SSKSignedPreKeyStore {
+    fileprivate static var signedPreKeyStore: SSKSignedPreKeyStore {
         return SSKEnvironment.shared.signedPreKeyStore
     }
 
-    private class var identityManager: OWSIdentityManager {
+    fileprivate static var identityManager: OWSIdentityManager {
         return OWSIdentityManager.shared()
     }
 
-    private class var tsAccountManager: TSAccountManager {
+    fileprivate static var tsAccountManager: TSAccountManager {
         return .sharedInstance()
+    }
+
+    fileprivate static var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
+    fileprivate static var udManager: OWSUDManager {
+        return SSKEnvironment.shared.udManager
     }
 
     // MARK: -
@@ -206,11 +216,11 @@ public class MessageSending: NSObject {
 
         guard isDeviceNotMissing(recipientAddress: recipientAddress,
                                  deviceId: deviceId) else {
-                                // We don't want to retry prekey requests if we've recently gotten
-                                // a "404 missing device" for the same recipient/device.  Fail immediately
-                                // as though we hit the "404 missing device" error again.
-                                Logger.info("Skipping prekey request to avoid missing device error.")
-                                return failure(MessageSenderError.missingDevice)
+                                    // We don't want to retry prekey requests if we've recently gotten
+                                    // a "404 missing device" for the same recipient/device.  Fail immediately
+                                    // as though we hit the "404 missing device" error again.
+                                    Logger.info("Skipping prekey request to avoid missing device error.")
+                                    return failure(MessageSenderError.missingDevice)
         }
 
         if let accountId = messageSend.recipient.accountId {
@@ -475,28 +485,246 @@ fileprivate extension MessageSending {
     }
 }
 
-// MARK: - SignalServiceAddress fetching
+// MARK: - Recipient Preparation
 
-extension MessageSender {
+@objc
+public class MessageSendInfo: NSObject {
+    @objc
+    public let thread: TSThread
 
-    @objc func populateUUIDsForLegacyRecipients(of message: TSOutgoingMessage, completion: @escaping (Error?) -> Void) {
-        let sendingRecipients = message.sendingRecipientAddresses()
-        let invalidRecipients = sendingRecipients.filter { $0.uuid == nil }
+    // These recipients should be sent to during this cycle of send attempts.
+    @objc
+    public let recipients: [SignalServiceAddress]
 
-        guard invalidRecipients.count > 0 && RemoteConfig.modernContactDiscovery else {
-            completion(nil)
-            return
+    @objc
+    public let senderCertificate: SMKSenderCertificate
+
+    required init(thread: TSThread,
+                  recipients: [SignalServiceAddress],
+                  senderCertificate: SMKSenderCertificate) {
+        self.thread = thread
+        self.recipients = recipients
+        self.senderCertificate = senderCertificate
+    }
+}
+
+// MARK: -
+
+extension MessageSending {
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public static func prepareForSend(of message: TSOutgoingMessage,
+                                      success: @escaping (MessageSendInfo) -> Void,
+                                      failure: @escaping (Error?) -> Void) {
+        firstly {
+            prepareSend(of: message)
+        }.done(on: .global()) { messageSendRecipients in
+            success(messageSendRecipients)
+        }.catch(on: .global()) { error in
+            failure(error)
+        }
+    }
+
+    private static func prepareSend(of message: TSOutgoingMessage) -> Promise<MessageSendInfo> {
+        firstly(on: .global()) { () -> Promise<SMKSenderCertificate> in
+            let (promise, resolver) = Promise<SMKSenderCertificate>.pending()
+            self.udManager.ensureSenderCertificate(certificateExpirationPolicy: .permissive,
+                                                   success: { senderCertificate in
+                                                    resolver.fulfill(senderCertificate)
+            },
+                                                   failure: { error in
+                                                    resolver.reject(error)
+            })
+            return promise
+        }.then(on: .global()) { senderCertificate in
+            self.prepareRecipients(of: message, senderCertificate: senderCertificate)
+        }
+    }
+
+    private static func prepareRecipients(of message: TSOutgoingMessage,
+                                          senderCertificate: SMKSenderCertificate) -> Promise<MessageSendInfo> {
+
+        firstly(on: .global()) { () -> MessageSendInfo in
+            guard let localAddress = tsAccountManager.localAddress else {
+                throw OWSAssertionError("Missing localAddress.").asUnretryableError
+            }
+            guard let thread = message.threadWithSneakyTransaction else {
+                Logger.warn("Skipping send due to missing thread.")
+                throw MessageSenderError.threadMissing.asUnretryableError
+            }
+
+            if message.isSyncMessage {
+                // Sync messages are just sent to the local user.
+                return MessageSendInfo(thread: thread,
+                                       recipients: [localAddress],
+                                       senderCertificate: senderCertificate)
+            }
+
+            let proposedRecipients = try self.unsentRecipients(of: message, thread: thread)
+            return MessageSendInfo(thread: thread,
+                                   recipients: proposedRecipients,
+                                   senderCertificate: senderCertificate)
+        }.then(on: .global()) { (sendInfo: MessageSendInfo) -> Promise<MessageSendInfo> in
+            // We might need to use CDS to fill in missing UUIDs and/or identify
+            // which recipients are unregistered.
+            return firstly(on: .global()) { () -> Promise<[SignalServiceAddress]> in
+                Self.ensureRecipientAddresses(sendInfo.recipients, message: message)
+            }.map { (validRecipients: [SignalServiceAddress]) in
+                // Replace recipients with validRecipients.
+                MessageSendInfo(thread: sendInfo.thread,
+                                recipients: validRecipients,
+                                senderCertificate: sendInfo.senderCertificate)
+            }
+        }.map(on: .global()) { (sendInfo: MessageSendInfo) -> MessageSendInfo in
+            // Mark skipped recipients as such.  We skip because:
+            //
+            // * Recipient is no longer in the group.
+            // * Recipient is blocked.
+            // * Recipient is unregistered.
+            //
+            // Elsewhere, we skip recipient if their Signal account has been deactivated.
+            let skippedRecipients = Set(message.sendingRecipientAddresses()).subtracting(sendInfo.recipients)
+            if !skippedRecipients.isEmpty {
+                self.databaseStorage.write { transaction in
+                    for address in skippedRecipients {
+                        // Mark this recipient as "skipped".
+                        message.update(withSkippedRecipient: address, transaction: transaction)
+                    }
+                }
+            }
+
+            return sendInfo
+        }
+    }
+
+    private static func unsentRecipients(of message: TSOutgoingMessage, thread: TSThread) throws -> [SignalServiceAddress] {
+        guard let localAddress = tsAccountManager.localAddress else {
+            throw OWSAssertionError("Missing localAddress.").asUnretryableError
+        }
+        guard !message.isSyncMessage else {
+            // Sync messages should not reach this code path.
+            throw OWSAssertionError("Unexpected sync message.").asUnretryableError
+        }
+
+        if let groupThread = thread as? TSGroupThread {
+            // Send to the intersection of:
+            //
+            // * "sending" recipients of the message.
+            // * members of the group.
+            //
+            // I.e. try to send a message IFF:
+            //
+            // * The recipient was in the group when the message was first tried to be sent.
+            // * The recipient is still in the group.
+            // * The recipient is in the "sending" state.
+
+            var recipientAddresses = Set<SignalServiceAddress>()
+
+            recipientAddresses.formUnion(message.sendingRecipientAddresses())
+
+            // Only send to members in the latest known group member list.
+            // If a member has left the group since this message was enqueued,
+            // they should not receive the message.
+            recipientAddresses.formIntersection(groupThread.groupModel.groupMembers)
+
+            // ...or latest known list of "additional recipients".
+            //
+            // This is used to send group update messages for v2 groups to
+            // pending members who are not included in .sendingRecipientAddresses().
+            if GroupManager.shouldMessageHaveAdditionalRecipients(message, groupThread: groupThread) {
+                let additionalRecipients = Set(groupThread.groupModel.groupMembership.pendingMembers)
+                recipientAddresses.formUnion(additionalRecipients)
+            }
+
+            recipientAddresses.subtract(self.blockingManager.blockedAddresses)
+
+            if recipientAddresses.contains(localAddress) {
+                owsFailDebug("Message send recipients should not include self.")
+            }
+            return Array(recipientAddresses)
+        } else if let contactThread = thread as? TSContactThread {
+            let contactAddress = contactThread.contactAddress
+            if contactAddress.isLocalAddress {
+                return [contactAddress]
+            }
+
+            // Treat 1:1 sends to blocked contacts as failures.
+            // If we block a user, don't send 1:1 messages to them. The UI
+            // should prevent this from occurring, but in some edge cases
+            // you might, for example, have a pending outgoing message when
+            // you block them.
+            guard !self.blockingManager.isAddressBlocked(contactAddress) else {
+                Logger.info("Skipping 1:1 send to blocked contact: \(contactAddress).")
+                throw MessageSenderError.blockedContactRecipient.asUnretryableError
+            }
+            return [contactAddress]
+        } else {
+            throw OWSAssertionError("Invalid thread.").asUnretryableError
+        }
+    }
+
+    private static func ensureRecipientAddresses(_ addresses: [SignalServiceAddress],
+                                                 message: TSOutgoingMessage) -> Promise<[SignalServiceAddress]> {
+        guard RemoteConfig.modernContactDiscovery else {
+            // Until CDS is enabled, allow sending to recipients without UUIDs.
+            return Promise.value(addresses)
+        }
+
+        let invalidRecipients = addresses.filter { $0.uuid == nil }
+        guard !invalidRecipients.isEmpty else {
+            // All recipients are already valid.
+            return Promise.value(addresses)
+        }
+
+        let knownUnregistered = ContactDiscoveryTask.addressesRecentlyMarkedAsUnregistered(invalidRecipients)
+        if Set(knownUnregistered) == Set(invalidRecipients) {
+            // If CDS has recently indicated that all of the invalid recipients are unregistered,
+            // assume they are still unregistered and skip them.
+            //
+            // If _any_ invalid recipient isn't known to be unregistered,
+            // use CDS to look up all invalid recipients.
+            Logger.warn("Skipping invalid recipient(s) which are known to be unregistered: \(invalidRecipients.count)")
+            let validRecipients = Set(addresses).subtracting(invalidRecipients)
+            return Promise.value(Array(validRecipients))
         }
 
         let phoneNumbersToFetch = invalidRecipients.compactMap { $0.phoneNumber }
-
-        ContactDiscoveryTask(identifiers: Set(phoneNumbersToFetch))
-            .perform()
-            .done(on: .sharedUtility) { _ in completion(nil) }
-            .catch(on: .sharedUtility) { error in
-                let nsError = error as NSError
-                nsError.isRetryable = true
-                completion(nsError)
+        guard !phoneNumbersToFetch.isEmpty else {
+            owsFailDebug("Invalid recipients have neither phone number nor UUID.")
+            let validRecipients = Set(addresses).subtracting(invalidRecipients)
+            return Promise.value(Array(validRecipients))
         }
+
+        return firstly(on: .global()) { () -> Promise<Set<SignalRecipient>> in
+            return ContactDiscoveryTask(identifiers: Set(phoneNumbersToFetch)).perform()
+        }.map(on: .sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [SignalServiceAddress] in
+            for signalRecipient in signalRecipients {
+                owsAssertDebug(signalRecipient.address.phoneNumber != nil)
+                owsAssertDebug(signalRecipient.address.uuid != nil)
+            }
+            var validRecipients = Set(addresses).subtracting(invalidRecipients)
+            validRecipients.formUnion(signalRecipients.compactMap { $0.address })
+            return Array(validRecipients)
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public extension TSMessage {
+    var isSyncMessage: Bool {
+        nil != self as? OWSOutgoingSyncMessage
+    }
+}
+
+// MARK: -
+
+public extension Error {
+    var asUnretryableError: NSError {
+        let nsError = self as NSError
+        nsError.isRetryable = false
+        return nsError
     }
 }

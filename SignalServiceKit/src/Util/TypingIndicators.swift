@@ -354,7 +354,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         }
 
         private func sendTypingMessageIfNecessary(forThread thread: TSThread, action: TypingIndicatorAction) {
-            Logger.verbose("\(TypingIndicatorMessage.string(forTypingIndicatorAction: action))")
+            Logger.verbose("\(action)")
 
             guard let delegate = delegate else {
                 owsFailDebug("Missing delegate.")
