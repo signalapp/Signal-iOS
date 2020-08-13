@@ -23,7 +23,7 @@ public protocol MentionTextViewDelegate: UITextViewDelegate {
 open class MentionTextView: OWSTextView {
     @objc
     public weak var mentionDelegate: MentionTextViewDelegate? {
-        didSet { updateMentionStateAfterCursorMove() }
+        didSet { updateMentionState() }
     }
 
     public override var delegate: UITextViewDelegate? {
@@ -190,6 +190,12 @@ open class MentionTextView: OWSTextView {
     @objc
     public func stopTypingMention() {
         state = .notTypingMention
+    }
+
+    @objc
+    public func reloadMentionState() {
+        stopTypingMention()
+        updateMentionState()
     }
 
     // MARK: - Mention State
@@ -395,7 +401,7 @@ open class MentionTextView: OWSTextView {
         return true
     }
 
-    private func updateMentionStateAfterCursorMove() {
+    private func updateMentionState() {
         // If we don't yet have a delegate, we can ignore any updates.
         // We'll check again when the delegate is assigned.
         guard mentionDelegate != nil else { return }
@@ -544,12 +550,12 @@ extension MentionTextView: UITextViewDelegate {
 
     open func textViewDidChangeSelection(_ textView: UITextView) {
         mentionDelegate?.textViewDidChangeSelection?(textView)
-        updateMentionStateAfterCursorMove()
+        updateMentionState()
     }
 
     open func textViewDidChange(_ textView: UITextView) {
         mentionDelegate?.textViewDidChange?(textView)
-        if textStorage.length == 0 { updateMentionStateAfterCursorMove() }
+        if textStorage.length == 0 { updateMentionState() }
     }
 
     open func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {

@@ -1568,6 +1568,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         [UIView setAnimationsEnabled:NO];
         [self.inputTextView becomeFirstResponder];
         [self.inputTextView resignFirstResponder];
+        [self.inputTextView reloadMentionState];
         [UIView setAnimationsEnabled:YES];
     }
 }
