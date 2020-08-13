@@ -47,16 +47,24 @@ public class ContactDiscoveryError: NSError {
     /// Provided by the server. Clients should make every effort to respect the retryAfterDate.
     @objc public let retryAfterDate: Date?
 
-
     // MARK: - Constructors
 
     static func assertionError(description: String) -> ContactDiscoveryError {
         owsFailDebug(description)
-        return ContactDiscoveryError(kind: .assertion, debugDescription: description, retryable: false, retryAfterDate: nil)
+
+        return ContactDiscoveryError(
+            kind: .assertion,
+            debugDescription: description,
+            retryable: false,
+            retryAfterDate: nil)
     }
 
     static func rateLimit(expiryDate: Date) -> ContactDiscoveryError {
-        return ContactDiscoveryError(kind: .rateLimit, debugDescription: "Rate Limited", retryable: true, retryAfterDate: expiryDate)
+        return ContactDiscoveryError(
+            kind: .rateLimit,
+            debugDescription: "Rate Limited",
+            retryable: true,
+            retryAfterDate: expiryDate)
     }
 
     init(kind: Kind, debugDescription: String, retryable: Bool, retryAfterDate: Date?) {

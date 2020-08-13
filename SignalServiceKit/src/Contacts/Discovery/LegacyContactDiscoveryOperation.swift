@@ -45,8 +45,8 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
     }
 
     private func makeRequest(for hashes: [String],
-                     on queue: DispatchQueue,
-                     responseResolver: Resolver<Any?>) {
+                             on queue: DispatchQueue,
+                             responseResolver: Resolver<Any?>) {
         let request = OWSRequestFactory.contactsIntersectionRequest(withHashesArray: hashes)
 
         self.networkManager.makeRequest(

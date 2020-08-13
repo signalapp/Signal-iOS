@@ -27,7 +27,6 @@ fileprivate extension NetworkManagerError {
         }
     }
 
-
     // NOTE: This function should only be called from TSNetworkManager.swiftHTTPRetryAfterDateForError.
     var retryAfterDate: Date? {
         switch self {

@@ -16,7 +16,7 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             "Wed, 21 Oct 2015 07:28:01 GMT",
             "Thu, 22 Oct 2015 07:28:00 GMT",
             "Thu, 22 Oct 2015 07:28:01 GMT",
-            "Tue, 11 Aug 2020 05:54:39 GMT",
+            "Tue, 11 Aug 2020 05:54:39 GMT"
         ]
         strings.forEach { string in
             XCTAssertEqual(HTTPURLResponse.parseRetryAfter(from: string), Date.ows_parseFromHTTPDateString(string)!)
@@ -33,7 +33,7 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             "2015-10-22T07:28:00+0000",
             "2015-10-22T07:28:01+0000",
             "2020-08-10T21:54:39-0800",
-            "2020-08-11T05:54:39+0000",
+            "2020-08-11T05:54:39+0000"
         ]
         strings.forEach { string in
             XCTAssertEqual(HTTPURLResponse.parseRetryAfter(from: string), Date.ows_parseFromISO8601String(string)!)
@@ -51,7 +51,7 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             "1200.1",
             "86400.000",
             "   86400.000    ",
-            " \t  \t86400.000\t  \t  ",
+            " \t  \t86400.000\t  \t  "
         ]
         delayStrings.forEach { (string) in
             let date = HTTPURLResponse.parseRetryAfter(from: string)
@@ -69,7 +69,7 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             "blahhh",
             "one",
             "soon",
-            "later",
+            "later"
         ]
         invalidStrings.forEach { (string) in
             let date = HTTPURLResponse.parseRetryAfter(from: string)

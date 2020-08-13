@@ -4,7 +4,7 @@
 
 import Foundation
 
-fileprivate let httpDateFormatter: DateFormatter = {
+private let httpDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.timeZone = TimeZone(secondsFromGMT: 0)
@@ -12,7 +12,7 @@ fileprivate let httpDateFormatter: DateFormatter = {
     return formatter
 }()
 
-fileprivate let internetDateFormatter: ISO8601DateFormatter = {
+private let internetDateFormatter: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = .withInternetDateTime
     formatter.timeZone = TimeZone(secondsFromGMT: 0)
