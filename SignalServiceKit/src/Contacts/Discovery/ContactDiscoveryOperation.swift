@@ -80,6 +80,10 @@ public class ContactDiscoveryError: NSError {
         ])
     }
 
+    required init?(coder: NSCoder) {
+        notImplemented()
+    }
+
     // MARK: - Variants
 
     @objc(OWSContactDiscoveryErrorCode)
@@ -104,19 +108,5 @@ public class ContactDiscoveryError: NSError {
 
     public override var localizedDescription: String {
         NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
-    }
-
-    // MARK: - <NSCoding>
-
-    @objc override public func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(retrySuggested, forKey: "retrySuggested")
-        aCoder.encode((retryAfterDate as NSDate?), forKey: "retryAfterDate")
-    }
-
-    @objc required public init?(coder aDecoder: NSCoder) {
-        retrySuggested = aDecoder.decodeBool(forKey: "retrySuggested")
-        retryAfterDate = (aDecoder.decodeObject(of: NSDate.self, forKey: "retryAfterDate")) as Date?
-        super.init(coder: aDecoder)
     }
 }

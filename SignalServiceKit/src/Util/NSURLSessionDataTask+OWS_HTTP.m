@@ -16,6 +16,9 @@ static NSString *const kOWSRetryAfterHeaderKey = @"Retry-After";
 - (nullable NSHTTPURLResponse *)httpResponse {
     if ([self.response isKindOfClass:[NSHTTPURLResponse class]]) {
         return (NSHTTPURLResponse *)self.response;
+    } else if (self.response) {
+        OWSFailDebug(@"Invalid response type");
+        return nil;
     } else {
         return nil;
     }
@@ -24,11 +27,6 @@ static NSString *const kOWSRetryAfterHeaderKey = @"Retry-After";
 - (NSInteger)statusCode {
     if (self.httpResponse) {
         return self.httpResponse.statusCode;
-
-    } else if (self.response) {
-        OWSFailDebug(@"Invalid response type");
-        return 0;
-
     } else {
         OWSLogInfo(@"Retrieving status code from incomplete task.");
         return 0;
