@@ -97,16 +97,4 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     public override var debugDescription: String {
         return "typingIndicatorMessage"
     }
-
-    // MARK: 
-
-    @objc(stringForTypingIndicatorAction:)
-    public class func string(forTypingIndicatorAction action: TypingIndicatorAction) -> String {
-        switch action {
-        case .started:
-            return "started"
-        case .stopped:
-            return "stopped"
-        }
-    }
 }

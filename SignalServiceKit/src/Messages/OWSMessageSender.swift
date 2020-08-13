@@ -646,7 +646,7 @@ extension MessageSending {
         } else if let contactThread = thread as? TSContactThread {
             let contactAddress = contactThread.contactAddress
             if contactAddress.isLocalAddress {
-                owsFailDebug("Message send recipients should not include self.")
+                return [contactAddress]
             }
 
             // Treat 1:1 sends to blocked contacts as failures.

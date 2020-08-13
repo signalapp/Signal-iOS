@@ -597,83 +597,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                              failure:failure];
 }
 
-- (nullable NSArray<SignalServiceAddress *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
-                                                                  thread:(TSThread *)thread
-                                                                   error:(NSError **)errorHandle
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-    OWSAssertDebug(message);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(errorHandle);
-
-    NSMutableSet<SignalServiceAddress *> *recipientAddresses = [NSMutableSet new];
-    if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        [recipientAddresses addObject:self.tsAccountManager.localAddress];
-    } else if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-
-        // Send to the intersection of:
-        //
-        // * "sending" recipients of the message.
-        // * members of the group.
-        //
-        // I.e. try to send a message IFF:
-        //
-        // * The recipient was in the group when the message was first tried to be sent.
-        // * The recipient is still in the group.
-        // * The recipient is in the "sending" state.
-
-        [recipientAddresses addObjectsFromArray:message.sendingRecipientAddresses];
-
-        // Only send to members in the latest known group member list...
-        NSMutableSet<SignalServiceAddress *> *currentThreadRecipients = [NSMutableSet new];
-        [currentThreadRecipients addObjectsFromArray:groupThread.groupModel.groupMembers];
-        if ([GroupManager shouldMessageHaveAdditionalRecipients:message groupThread:groupThread]) {
-            // ...or latest known list of "additional recipients".
-            NSSet<SignalServiceAddress *> *additionalRecipients = groupThread.groupModel.groupMembership.pendingMembers;
-            [currentThreadRecipients unionSet:additionalRecipients];
-        }
-        [recipientAddresses intersectSet:currentThreadRecipients];
-
-        if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
-            OWSFailDebug(@"Message send recipients should not include self.");
-        }
-    } else if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        SignalServiceAddress *recipientAddress = contactThread.contactAddress;
-
-        // Treat 1:1 sends to blocked contacts as failures.
-        // If we block a user, don't send 1:1 messages to them. The UI
-        // should prevent this from occurring, but in some edge cases
-        // you might, for example, have a pending outgoing message when
-        // you block them.
-        OWSAssertDebug(recipientAddress);
-        if ([self.blockingManager isAddressBlocked:recipientAddress]) {
-            OWSLogInfo(@"skipping 1:1 send to blocked contact: %@", recipientAddress);
-            NSError *error = OWSErrorMakeMessageSendFailedDueToBlockListError();
-            [error setIsRetryable:NO];
-            *errorHandle = error;
-            return nil;
-        }
-
-        [recipientAddresses addObject:recipientAddress];
-
-        if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
-            OWSFailDebug(@"Message send recipients should not include self.");
-        }
-    } else {
-        // Neither a group nor contact thread? This should never happen.
-        OWSFailDebug(@"Unknown message type: %@", [message class]);
-        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        [error setIsRetryable:NO];
-        *errorHandle = error;
-        return nil;
-    }
-
-    [recipientAddresses minusSet:self.blockingManager.blockedAddresses];
-    return recipientAddresses.allObjects;
-}
-
 - (NSArray<SignalRecipient *> *)recipientsForAddresses:(NSArray<SignalServiceAddress *> *)addresses
 {
     OWSAssertDebug(!NSThread.isMainThread);
@@ -827,7 +750,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         TSContactThread *contactThread = (TSContactThread *)thread;
         // In the "self-send" aka "Note to Self" special case, we only
         // need to send a sync message with a delivery receipt.
-        if (contactThread && contactThread.contactAddress.isLocalAddress && !message.isSyncMessage) {
+        if (contactThread.contactAddress.isLocalAddress && !message.isSyncMessage) {
             // Send to self.
             OWSAssertDebug(sendInfo.recipients.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
