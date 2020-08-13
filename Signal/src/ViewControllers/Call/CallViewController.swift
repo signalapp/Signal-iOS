@@ -874,7 +874,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         guard let audioSource = callUIAdapter.audioService.currentAudioSource(call: call) else {
             audioModeSourceButton.isSelected = false
             videoModeAudioSourceButton.isSelected = false
-            return owsFailDebug("missing current audio source")
+            return
         }
 
         audioModeSourceButton.isSelected = !audioSource.isBuiltInEarPiece

@@ -98,7 +98,6 @@ typedef enum : NSUInteger {
     CNContactViewControllerDelegate,
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
-    DisappearingTimerConfigurationViewDelegate,
     ConversationSettingsViewDelegate,
     ConversationHeaderViewDelegate,
     ConversationViewLayoutDelegate,
@@ -1388,19 +1387,6 @@ typedef enum : NSUInteger {
                 [barButtons addObject:videoCallButton];
             }
 
-            if (self.disappearingMessagesConfiguration.isEnabled && !self.threadViewModel.hasPendingMessageRequest) {
-                DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
-                    initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
-                timerView.delegate = self;
-                timerView.tintColor = Theme.primaryIconColor;
-
-                [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
-
-                [barButtons addObject:[[UIBarButtonItem alloc]
-                                               initWithCustomView:timerView
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"timer")]];
-            }
-
             self.navigationItem.rightBarButtonItems = [barButtons copy];
             return;
         }
@@ -1416,8 +1402,12 @@ typedef enum : NSUInteger {
     }
 
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
-
     UIColor *subtitleColor = [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
+    NSDictionary *attributes = @{
+        NSFontAttributeName : self.headerView.subtitleFont,
+        NSForegroundColorAttributeName : subtitleColor,
+    };
+
     if (self.thread.isMuted) {
         // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
         [subtitleText appendAttributedString:[[NSAttributedString alloc]
@@ -1428,6 +1418,16 @@ typedef enum : NSUInteger {
                                                      }]];
     }
 
+    BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
+    if (hasTimer) {
+        [subtitleText appendTemplatedImageNamed:@"timer-60-12" bounds:CGRectMake(0, -1, 12, 12)];
+        [subtitleText append:@" " attributes:attributes];
+        [subtitleText append:[NSString formatDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds
+                                              useShortFormat:YES]
+                  attributes:attributes];
+    }
+
+
     BOOL isVerified = YES;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
         if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address] != OWSVerificationStateVerified) {
@@ -1436,26 +1436,16 @@ typedef enum : NSUInteger {
         }
     }
     if (isVerified) {
-        // Show a "checkmark" icon before the navigation bar subtitle if this thread is verified.
-        [subtitleText appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
-                                                     attributes:@{
-                                                         NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                                                         NSForegroundColorAttributeName : subtitleColor,
-                                                     }]];
+        if (hasTimer) {
+            [subtitleText append:@"   " attributes:attributes];
+        }
+
+        [subtitleText appendTemplatedImageNamed:@"check-12" bounds:CGRectMake(0, -1, 12, 12)];
+        [subtitleText append:@" " attributes:attributes];
+        [subtitleText append:NSLocalizedString(
+                                 @"PRIVACY_IDENTITY_IS_VERIFIED_BADGE", @"Badge indicating that the user is verified.")
+                  attributes:attributes];
     }
-
-
-    [subtitleText
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
-                                                      @"The subtitle for the messages view title indicates that the "
-                                                      @"title can be tapped to access settings for this conversation.")
-                                       attributes:@{
-                                           NSFontAttributeName : self.headerView.subtitleFont,
-                                           NSForegroundColorAttributeName : subtitleColor,
-                                       }]];
-
 
     self.headerView.attributedSubtitle = subtitleText;
 }
@@ -1642,14 +1632,6 @@ typedef enum : NSUInteger {
     return [viewControllers subarrayWithRange:NSMakeRange(0, index + 1)];
 }
 
-#pragma mark - DisappearingTimerConfigurationViewDelegate
-
-- (void)disappearingTimerConfigurationViewWasTapped:(DisappearingTimerConfigurationView *)disappearingTimerView
-{
-    OWSLogDebug(@"Tapped timer in navbar");
-    [self showConversationSettings];
-}
-
 #pragma mark - Load More
 
 - (void)autoLoadMoreIfNecessary
@@ -1737,7 +1719,7 @@ typedef enum : NSUInteger {
     }
 
     _disappearingMessagesConfiguration = disappearingMessagesConfiguration;
-    [self updateBarButtonItems];
+    [self updateNavigationBarSubtitleLabel];
 }
 
 #pragma mark Bubble User Actions

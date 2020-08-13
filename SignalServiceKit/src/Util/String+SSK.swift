@@ -109,6 +109,30 @@ public extension NSMutableAttributedString {
         append(NSAttributedString(string: string, attributes: attributes))
     }
 
+    @objc(appendTemplatedImageNamed:bounds:)
+    func appendTemplatedImage(named imageName: String, bounds: CGRect) {
+        guard let image = UIImage(named: imageName) else {
+            return owsFailDebug("missing image named \(imageName)")
+        }
+        appendImage(image.withRenderingMode(.alwaysTemplate), bounds: bounds)
+    }
+
+    @objc(appendImageNamed:bounds:)
+    func appendImage(named imageName: String, bounds: CGRect) {
+        guard let image = UIImage(named: imageName) else {
+            return owsFailDebug("missing image named \(imageName)")
+        }
+        appendImage(image, bounds: bounds)
+    }
+
+    @objc(appendImage:bounds:)
+    func appendImage(_ image: UIImage, bounds: CGRect) {
+        let attachment = NSTextAttachment()
+        attachment.image = image
+        attachment.bounds = bounds
+        append(.init(attachment: attachment))
+    }
+
     @objc
     func ows_strip() {
         guard length > 0 else { return }

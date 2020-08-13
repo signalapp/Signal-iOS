@@ -243,11 +243,8 @@ extension ConversationSettingsViewController {
         let isVerified = identityManager.verificationState(for: recipientAddress) == .verified
         if isVerified {
             let subtitle = NSMutableAttributedString()
-            // "checkmark"
-            subtitle.append("\u{f00c} ",
-                            attributes: [
-                                .font: UIFont.ows_fontAwesomeFont(subtitlePointSize)
-            ])
+            subtitle.appendTemplatedImage(named: "check-12", bounds: CGRect(x: 0, y: -1, width: 12, height: 12))
+            subtitle.append(" ")
             subtitle.append(NSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                               comment: "Badge indicating that the user is verified."))
             builder.addSubtitleLabel(attributedText: subtitle)

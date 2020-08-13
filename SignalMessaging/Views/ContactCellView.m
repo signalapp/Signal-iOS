@@ -281,16 +281,11 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 - (NSAttributedString *)verifiedSubtitle
 {
     NSMutableAttributedString *text = [NSMutableAttributedString new];
-    // "checkmark"
-    [text appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:@"\uf00c "
-                                         attributes:@{
-                                             NSFontAttributeName :
-                                                 [UIFont ows_fontAwesomeFont:self.subtitleLabel.font.pointSize],
-                                         }]];
-    [text appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                                        @"Badge indicating that the user is verified.")]];
+    [text appendTemplatedImageNamed:@"check-12" bounds:CGRectMake(0, -1, 11, 11)];
+    [text append:@" " attributes:@{}];
+    [text append:NSLocalizedString(
+                     @"PRIVACY_IDENTITY_IS_VERIFIED_BADGE", @"Badge indicating that the user is verified.")
+        attributes:@{}];
     return [text copy];
 }
 
