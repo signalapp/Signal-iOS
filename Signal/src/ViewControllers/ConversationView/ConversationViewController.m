@@ -254,11 +254,12 @@ typedef enum : NSUInteger {
     OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
     _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
 
-    self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
-                                                            target:self
-                                                          selector:@selector(reloadTimerDidFire)
-                                                          userInfo:nil
-                                                           repeats:YES];
+    self.reloadTimer = [NSTimer weakTimerWithTimeInterval:1.f
+                                                   target:self
+                                                 selector:@selector(reloadTimerDidFire)
+                                                 userInfo:nil
+                                                  repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:self.reloadTimer forMode:NSRunLoopCommonModes];
 
     [self updateV2GroupIfNecessary];
 
@@ -1108,11 +1109,12 @@ typedef enum : NSUInteger {
 - (void)startReadTimer
 {
     [self.readTimer invalidate];
-    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
-                                                          target:self
-                                                        selector:@selector(readTimerDidFire)
-                                                        userInfo:nil
-                                                         repeats:YES];
+    self.readTimer = [NSTimer weakTimerWithTimeInterval:0.1f
+                                                 target:self
+                                               selector:@selector(readTimerDidFire)
+                                               userInfo:nil
+                                                repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:self.readTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)readTimerDidFire

@@ -168,11 +168,12 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 {
     [self clearAnimation];
 
-    self.animationTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
-                                                               target:self
-                                                             selector:@selector(updateProgress12)
-                                                             userInfo:nil
-                                                              repeats:YES];
+    self.animationTimer = [NSTimer weakTimerWithTimeInterval:0.1f
+                                                      target:self
+                                                    selector:@selector(updateProgress12)
+                                                    userInfo:nil
+                                                     repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:self.animationTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)clearAnimation
