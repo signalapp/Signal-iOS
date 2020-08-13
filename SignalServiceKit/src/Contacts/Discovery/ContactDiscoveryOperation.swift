@@ -26,6 +26,7 @@ protocol ContactDiscovering {
 @objc(OWSContactDiscoveryError)
 public class ContactDiscoveryError: NSError {
     static let domain: String = "ContactDiscoveryErrorDomain"
+    static let maxRetryAfterInterval = 60 * kMinuteInterval
 
     /// The reason for the error. You probably don't need to consult this directly.
     public var kind: Kind {
@@ -50,6 +51,7 @@ public class ContactDiscoveryError: NSError {
     // MARK: - Constructors
 
     static func assertionError(description: String) -> ContactDiscoveryError {
+        owsFailDebug(description)
         return ContactDiscoveryError(kind: .assertion, debugDescription: description, retryable: false, retryAfterDate: nil)
     }
 
@@ -59,7 +61,11 @@ public class ContactDiscoveryError: NSError {
 
     init(kind: Kind, debugDescription: String, retryable: Bool, retryAfterDate: Date?) {
         self.retrySuggested = retryable
-        self.retryAfterDate = retryAfterDate
+        if let retryAfterDate = retryAfterDate {
+            self.retryAfterDate = min(retryAfterDate, Date(timeIntervalSinceNow: Self.maxRetryAfterInterval))
+        } else {
+            self.retryAfterDate = nil
+        }
 
         super.init(domain: Self.domain, code: kind.rawValue, userInfo: [
             NSDebugDescriptionErrorKey: debugDescription

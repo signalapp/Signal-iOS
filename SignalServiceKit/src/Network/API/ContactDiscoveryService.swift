@@ -44,18 +44,18 @@ public struct ContactDiscoveryService {
                                          host: String,
                                          censorshipCircumventionPrefix: String) -> Promise<IntersectionResponse> {
 
-        let request = buildIntersectionRequest(query: query,
-                                               cookies: cookies,
-                                               authUsername: authUsername,
-                                               authPassword: authPassword,
-                                               enclaveName: enclaveName,
-                                               host: host,
-                                               censorshipCircumventionPrefix: censorshipCircumventionPrefix)
+        firstly(on: .sharedUtility) { () -> Promise<TSNetworkManager.Response> in
+            self.networkManager.makePromise(request: self.buildIntersectionRequest(
+                query: query,
+                cookies: cookies,
+                authUsername: authUsername,
+                authPassword: authPassword,
+                enclaveName: enclaveName,
+                host: host,
+                censorshipCircumventionPrefix: censorshipCircumventionPrefix)
+            )
 
-        return firstly { () -> Promise<TSNetworkManager.Response> in
-            self.networkManager.makePromise(request: request)
-
-        }.map { (_: URLSessionDataTask, responseObject: Any?) throws -> IntersectionResponse in
+        }.map(on: .sharedUtility) { (_: URLSessionDataTask, responseObject: Any?) throws -> IntersectionResponse in
             guard let params = ParamParser(responseObject: responseObject) else {
                 throw ContactDiscoveryError.assertionError(description: "missing response dict")
             }

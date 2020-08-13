@@ -30,7 +30,7 @@ public class ContactDiscoveryTask: NSObject {
     /// Example:
     /// User contacts lookup starts, fails with retry-after of 30 minutes. UUIDBackfill starts shortly after. Instead of being blocked for 30 minutes it's allowed to proceed.
     /// If UUIDBackfill fails, the global retry-after counter will be set to the greater of the two failures and it will now affect both critical and non-critical tasks.
-    @objc var criticalPriority = false
+    @objc var isCriticalPriority = false
 
     // MARK: - Public
 
@@ -47,7 +47,7 @@ public class ContactDiscoveryTask: NSObject {
         guard identifiersToFetch.count > 0 else {
             return .value(Set())
         }
-        if let retryAfterDate = Self.rateLimiter.currentRetryAfterDate(forCriticalPriority: criticalPriority) {
+        if let retryAfterDate = Self.rateLimiter.currentRetryAfterDate(forCriticalPriority: isCriticalPriority) {
             return Promise(error: ContactDiscoveryError.rateLimit(expiryDate: retryAfterDate))
         }
 
@@ -82,7 +82,7 @@ public class ContactDiscoveryTask: NSObject {
                 Logger.error("ContactDiscoverTask failure: \(error)")
             }
             if let retryAfterDate = (error as? ContactDiscoveryError)?.retryAfterDate {
-                Self.rateLimiter.updateRetryAfter(with: retryAfterDate, criticalPriority: self.criticalPriority)
+                Self.rateLimiter.updateRetryAfter(with: retryAfterDate, criticalPriority: self.isCriticalPriority)
             }
             throw error
         }

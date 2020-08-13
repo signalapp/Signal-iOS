@@ -26,7 +26,7 @@ static NSString *const kOWSRetryAfterHeaderKey = @"Retry-After";
         return self.httpResponse.statusCode;
 
     } else if (self.response) {
-        OWSAssertDebug("Invalid response type");
+        OWSFailDebug(@"Invalid response type");
         return 0;
 
     } else {
@@ -52,7 +52,7 @@ static NSString *const kOWSRetryAfterHeaderKey = @"Retry-After";
     NSCharacterSet *whitespace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     NSString *trimmedValue = [rawValue stringByTrimmingCharactersInSet:whitespace];
 
-    NSDate *retval = nil;
+    NSDate *_Nullable retval = nil;
     if (trimmedValue.length > 0) {
         retval = retval ?: [NSDate ows_parseFromHTTPDateString:trimmedValue];
         retval = retval ?: [NSDate ows_parseFromISO8601String:trimmedValue];
@@ -69,7 +69,8 @@ static NSString *const kOWSRetryAfterHeaderKey = @"Retry-After";
             // Only return the delay if we've made it to the end
             // Helps to prevent things like: 8/11/1994 being interpreted as delay: 8.
             if (foundDelayInterval && scanner.isAtEnd) {
-                return [NSDate dateWithTimeIntervalSinceNow:delay];
+                double clampedDelay = MAX(delay, 0);
+                return [NSDate dateWithTimeIntervalSinceNow:clampedDelay];
             } else {
                 return nil;
             }
