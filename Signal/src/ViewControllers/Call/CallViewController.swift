@@ -64,7 +64,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     private lazy var audioModeHangUpButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressHangup))
     private lazy var audioModeSourceButton = createButton(iconName: "speaker-solid-28", action: #selector(didPressAudioSource))
-    private lazy var audioModeMuteButton = createButton(iconName: "mic-solid-28", action: #selector(didPressMute))
+    private lazy var audioModeMuteButton = createButton(iconName: "mic-off-solid-28", action: #selector(didPressMute))
     private lazy var audioModeVideoButton = createButton(iconName: "video-solid-28", action: #selector(didPressVideo))
 
     // MARK: - Ongoing Video Call Controls
@@ -83,7 +83,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     private lazy var videoModeHangUpButton = createButton(iconName: "phone-down-solid-28", action: #selector(didPressHangup))
     private lazy var videoModeAudioSourceButton = createButton(iconName: "speaker-solid-28", action: #selector(didPressAudioSource))
-    private lazy var videoModeMuteButton = createButton(iconName: "mic-solid-28", action: #selector(didPressMute))
+    private lazy var videoModeMuteButton = createButton(iconName: "mic-off-solid-28", action: #selector(didPressMute))
     private lazy var videoModeVideoButton = createButton(iconName: "video-solid-28", action: #selector(didPressVideo))
     private lazy var videoModeFlipCameraButton = createButton(iconName: "switch-camera-28", action: #selector(didPressFlipCamera))
 
@@ -348,7 +348,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         audioModeHangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
                                                                  comment: "Accessibility label for hang up call")
 
-        audioModeMuteButton.selectedIconName = "mic-off-solid-28"
         audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL",
                                                                    comment: "Accessibility label for muting the microphone")
 
@@ -361,7 +360,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         videoModeHangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
                                                                  comment: "Accessibility label for hang up call")
 
-        videoModeMuteButton.selectedIconName = "mic-off-solid-28"
         videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
         videoModeMuteButton.alpha = 0.9
 
@@ -495,13 +493,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func createViewConstraints() {
 
         let contactVSpacing = CGFloat(3)
-        let ongoingBottomMargin = ScaleFromIPhone5To7Plus(23, 41)
-        let incomingHMargin = ScaleFromIPhone5To7Plus(30, 56)
-        let incomingBottomMargin = CGFloat(41)
-        let avatarTopSpacing = ScaleFromIPhone5To7Plus(25, 50)
-        // The buttons have built-in 10% margins, so to appear centered
-        // the avatar's bottom spacing should be a bit less.
-        let avatarBottomSpacing = ScaleFromIPhone5To7Plus(18, 41)
+        let bottomMargin = ScaleFromIPhone5To7Plus(23, 41)
+        let avatarMargin = ScaleFromIPhone5To7Plus(25, 50)
         // Layout of the local video view is a bit unusual because
         // although the view is square, it will be used
         let videoPreviewHMargin = CGFloat(0)
@@ -531,15 +524,15 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         remoteVideoView.autoPinEdgesToSuperviewEdges()
 
-        contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarTopSpacing)
-        contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingAudioCallControls, withOffset: -avatarBottomSpacing)
-        contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarTopSpacing)
+        contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarMargin)
+        contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingAudioCallControls, withOffset: -avatarMargin)
+        contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarMargin)
 
         contactAvatarView.autoCenterInSuperview()
         contactAvatarView.autoSetDimensions(to: CGSize(square: 200))
 
         for controls in [incomingVideoCallControls, incomingAudioCallControls, ongoingAudioCallControls, ongoingVideoCallControls] {
-            controls.autoPinEdge(toSuperviewEdge: .bottom, withInset: ongoingBottomMargin)
+            controls.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomMargin)
             controls.autoPinLeadingToSuperviewMargin()
             controls.autoPinTrailingToSuperviewMargin()
             controls.setContentHuggingVerticalHigh()
