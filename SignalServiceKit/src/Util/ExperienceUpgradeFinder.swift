@@ -12,6 +12,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case pinReminder // Never saved, used to periodically prompt the user for their PIN
     case notificationPermissionReminder
     case contactPermissionReminder
+    case mentions
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -52,6 +53,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             }
         case .contactPermissionReminder:
             return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
+        case .mentions:
+            return RemoteConfig.mentions
         }
     }
 
@@ -100,6 +103,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return .medium
         case .contactPermissionReminder:
             return .medium
+        case .mentions:
+            return .low
         }
     }
 

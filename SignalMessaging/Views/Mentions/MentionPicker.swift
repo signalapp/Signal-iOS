@@ -62,7 +62,7 @@ class MentionPicker: UIView {
 
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.estimatedRowHeight = 48
+        tableView.estimatedRowHeight = cellHeight
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         tableView.isScrollEnabled = false
