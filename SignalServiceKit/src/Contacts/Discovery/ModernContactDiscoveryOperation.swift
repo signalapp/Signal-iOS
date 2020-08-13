@@ -15,18 +15,18 @@ struct CDSRegisteredContact: Hashable {
 class ModernContactDiscoveryOperation: ContactDiscovering {
     static let batchSize = 2048
 
-    private let phoneNumbersToLookup: Set<String>
-    required init(phoneNumbersToLookup: Set<String>) {
-        self.phoneNumbersToLookup = phoneNumbersToLookup
-        Logger.debug("with phoneNumbersToLookup.count: \(phoneNumbersToLookup.count)")
+    private let e164sToLookup: Set<String>
+    required init(e164sToLookup: Set<String>) {
+        self.e164sToLookup = e164sToLookup
+        Logger.debug("with e164sToLookup.count: \(e164sToLookup.count)")
     }
 
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {
         firstly { () -> Promise<[Set<CDSRegisteredContact>]> in
             // First, build a bunch of batch Promises
-            let batchOperationPromises = Array(phoneNumbersToLookup)
+            let batchOperationPromises = Array(e164sToLookup)
                 .chunked(by: Self.batchSize)
-                .map { makeContactDiscoveryRequest(phoneNumbersToLookup: $0) }
+                .map { makeContactDiscoveryRequest(e164sToLookup: $0) }
 
             // Then, wait for them all to be fulfilled before joining the subsets together
             return when(fulfilled: batchOperationPromises)
@@ -45,15 +45,13 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
     // Below, we have a bunch of then blocks being performed on a global concurrent queue
     // It might be worthwhile to audit and see if we can move these onto the queue passed into `perform(on:)`
 
-    private func makeContactDiscoveryRequest(phoneNumbersToLookup: [String]) -> Promise<Set<CDSRegisteredContact>> {
-        let contactCount = UInt(phoneNumbersToLookup.count)
-
-        return firstly { () -> Promise<RemoteAttestation.CDSAttestation> in
+    private func makeContactDiscoveryRequest(e164sToLookup: [String]) -> Promise<Set<CDSRegisteredContact>> {
+        firstly { () -> Promise<RemoteAttestation.CDSAttestation> in
             RemoteAttestation.performForCDS()
 
         }.then(on: .global()) { (attestation: RemoteAttestation.CDSAttestation) -> Promise<(RemoteAttestation.CDSAttestation, ContactDiscoveryService.IntersectionResponse)> in
             let service = ContactDiscoveryService()
-            let query = try self.buildIntersectionQuery(phoneNumbersToLookup: phoneNumbersToLookup,
+            let query = try self.buildIntersectionQuery(e164sToLookup: e164sToLookup,
                                                         remoteAttestations: attestation.remoteAttestations)
             return service.getRegisteredSignalUsers(
                 query: query,
@@ -82,6 +80,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             }
 
             // 16 bytes per UUID
+            let contactCount = UInt(e164sToLookup.count)
             guard plaintext.count == contactCount * 16 else {
                 throw ContactDiscoveryError.assertionError(description: "failed check: invalid byte count")
             }
@@ -102,7 +101,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
 
             var registeredContacts: Set<CDSRegisteredContact> = Set()
 
-            for (index, e164PhoneNumber) in phoneNumbersToLookup.enumerated() {
+            for (index, e164PhoneNumber) in e164sToLookup.enumerated() {
                 guard uuids[index] != unregisteredUuid else {
                     Logger.verbose("not a signal user: \(e164PhoneNumber)")
                     continue
@@ -117,9 +116,9 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
         }
     }
 
-    func buildIntersectionQuery(phoneNumbersToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
+    func buildIntersectionQuery(e164sToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
         let noncePlainTextData = Randomness.generateRandomBytes(32)
-        let addressPlainTextData = try type(of: self).encodePhoneNumbers(phoneNumbersToLookup)
+        let addressPlainTextData = try type(of: self).encodePhoneNumbers(e164sToLookup)
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
         let key = OWSAES256Key.generateRandom()
@@ -129,7 +128,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                                                                 key: key) else {
                                                                     throw ContactDiscoveryError.assertionError(description: "Encryption failure")
         }
-        assert(encryptionResult.ciphertext.count == phoneNumbersToLookup.count * 8 + 32)
+        assert(encryptionResult.ciphertext.count == e164sToLookup.count * 8 + 32)
 
         let queryEnvelopes: [RemoteAttestation.CDSAttestation.Id: ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope] = try remoteAttestations.mapValues { remoteAttestation in
             guard let perEnclaveKey = Cryptography.encryptAESGCM(plainTextData: key.keyData,
@@ -149,7 +148,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             throw ContactDiscoveryError.assertionError(description: "commitment was unexpectedly nil")
         }
 
-        return ContactDiscoveryService.IntersectionQuery(addressCount: UInt(phoneNumbersToLookup.count),
+        return ContactDiscoveryService.IntersectionQuery(addressCount: UInt(e164sToLookup.count),
                                                          commitment: commitment,
                                                          data: encryptionResult.ciphertext,
                                                          iv: encryptionResult.initializationVector,

@@ -191,7 +191,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         if requiresRegisteredNumber {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { [weak self] modal in
                 let discoverySet = Set(phoneNumbers.map { $0.toE164() })
-                let discoveryTask = ContactDiscoveryTask(identifiers: discoverySet)
+                let discoveryTask = ContactDiscoveryTask(phoneNumbers: discoverySet)
                 firstly { () -> Promise<Set<SignalRecipient>> in
                     discoveryTask.perform(at: .userInitiated)
 

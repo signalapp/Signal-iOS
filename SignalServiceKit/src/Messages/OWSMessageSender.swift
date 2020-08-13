@@ -697,7 +697,7 @@ extension MessageSending {
         }
 
         return firstly(on: .global()) { () -> Promise<Set<SignalRecipient>> in
-            return ContactDiscoveryTask(identifiers: Set(phoneNumbersToFetch)).perform()
+            return ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersToFetch)).perform()
 
         }.map(on: .sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [SignalServiceAddress] in
             for signalRecipient in signalRecipients {
