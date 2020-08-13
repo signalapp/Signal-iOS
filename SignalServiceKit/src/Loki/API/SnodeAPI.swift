@@ -335,8 +335,9 @@ public final class SnodeAPI : NSObject {
             } else {
                 print("[Loki] Failed to update proof of work difficulty.")
             }
-            break
-        default: break
+        default:
+            handleBadSnode()
+            print("[Loki] Unhandled response code: \(statusCode).")
         }
         return nil
     }
