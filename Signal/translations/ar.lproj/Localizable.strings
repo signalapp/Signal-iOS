@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "حجب المكرفون.";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "سيتلقى %@طلب للتراسل منك. ويمكنك الاتصال بهم عندما يقبل طلب المراسلة الخاص بك.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "تغير اتجاه العدسة.";
@@ -822,7 +822,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "لون المحادثة";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "تعديل معلومات المجموعة";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "المشرفون فقط";
@@ -852,7 +852,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "اجعل مشرفا";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "سيستطيع %@ تعديل خصائص وأعضاء هذه المجموعة";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "الأعضاء";
@@ -864,25 +864,16 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "اختر من يمكنه تحرير عضوية المجموعة.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify Me";
-
-/* label for 'default' option for mention notifications in conversation settings when global mention notifications are off */
-"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_OFF" = "Default (Don’t Notify Me)";
-
-/* label for 'default' option for mention notifications in conversation settings when global mention notifications are on */
-"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_ON" = "Default (Notify Me)";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
-
-/* Explanation of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_MESSAGE" = "You will be notified even while muted.";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "لا تنبّهني إذا كان صامتاً";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Notify me when I am mentioned";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "تلقي الإشعارات عندما يذكر اسمك في المحادثات المصمتة؟";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "الرسائل التي ذكر فيها اسمك";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم";
@@ -1050,7 +1041,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "إعادة التوجيه إلى GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل الفحص";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "حذف كل الرسائل التي في المحادثة ؟";
@@ -1242,10 +1233,10 @@
 "EMAIL_INVITE_SUBJECT" = "لنستخدم Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "لم يتم تجهيز جهازك لإرسال البريد الإلكتروني. لإرسال طلب دعم، قم بإعداد البريد إلكتروني على جهازك أو ارسل بريد إلكتروني إلى support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "البريد إلكتروني غير متاح";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "أنشطة";
@@ -1302,13 +1293,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "فشل إرسال الرسالة.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "فشل فتح تطبيق البريد إلكتروني";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "لم يتم إنشاء طلب دعم";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "فشل تحميل السجلات.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "تعذر الإرسال بسبب تلف بيانات المفتاح قصير الأمد.";
@@ -1512,40 +1503,40 @@
 "GROUP_CREATION_FAILED" = "لا يمكن إضافة بعض الأعضاء إلى المجموعة. انقر لإعادة المحاولة.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "تمت إضافة دعوة غير صحيحة.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "لقد قمت بإضافة دعوة غير صحيحة.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "لقد قمت بإضافة دعوات غير صحيحة.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "أضاف %@دعوة غير صحيحة.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "أضاف %@دعوات غير صحيحة.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "تمت إضافة دعوات غير صحيحة.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "تم سحب دعوة غير صحيحة";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "لقد سحبت دعوة غير صحيحة";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "لقد سحبت دعوات غير صحيحة";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "سحب %@دعوة غير صحيحة.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "سحب %@ الدعوات الغير صحيحة";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "تم سحب الدعوات الغير صحيحة.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "لا يمكنك إضافة %@ تلقائيا إلى هذه المجموعة. لقد دُعي للانضمام حقا، لكنه لن يرى أي رسالة في المجموعة حتى يقبل الانضمام إليها.";
@@ -1695,7 +1686,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "دُعي شخص واحد إلى المجموعة.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "تمت دعوة %@ للمجموعة";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "لقد دعوت %@ إلى المجموعة.";
@@ -1743,7 +1734,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "أزال %@الصورة.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "تم تحديث صورة المجموعة.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "لقد حدثت الصورة.";
@@ -1806,7 +1797,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "المجموعات من الطراز القديم لا يمكن تحويلها إلى الطراز الجديد، ولكن يمكنك أن تنشأ مجموعة جديدة بنفس الأعضاء ولكن من الطراز الجديد.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "كيف أقوم بتطوير مجموعة من الطراز القديم؟";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "عندما تنشئ مجموعة من الطراز الجديد، جميع الأعضاء يتوجب عليهم تحديث Signal لأحدث نسخة.";
@@ -1815,19 +1806,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "المجموعات من الطراز القديم مقارنة بالمجموعات من الطراز القديم";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "سيتم إنشاء مجموعة من الطراز القديم لأن عضو واحد يستخدم نسخة قديمة من Signal، يمكنك إنشاء مجموعة من الطراز الجديد بعد أن يقوم بتحديث Signal، أو قم بإزالته قبل إنشاء المجموعة.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "سيتم إنشاء مجموعة من الطراز القديم لأن %@ أعضاء يستخدمون نسخة قديمة من Signal، يمكنك إنشاء مجموعة من الطراز الجديد بعد أن يقومون بتحديث Signal، أو قم بإزالتهم قبل إنشاء المجموعة.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "هناك عضوٌ واحد لا يدعم المجموعات من الطراز الجديد، لذا ستكون هذه المجموعة من الطراز القديم. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@أعضاء لا يدعمون المجموعات من الطراز الجديد، لذا ستكون المجموعة من الطراز القديم. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. للحصول على ميزات مثل مشرفين المجموعة، قم بإنشاء مجموعة جديدة.%@ذ";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "مجموعة من الطراز القديم";
@@ -1848,7 +1839,7 @@
 "HELP_CONTACT_US" = "وسائل الأتصال";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "مركز الدعم";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "أرشيف المحادثة";
@@ -2123,6 +2114,12 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "سوف نذكِّرك لاحقا";
 
+/* Body for mentions megaphone */
+"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+
+/* Title for mentions megaphone */
+"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "نسخ نص الرسالة";
 
@@ -2259,7 +2256,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "إزالة الحظر عن هذه المجموعة ومشاركة اسمك وصورة حسابك مع أعضاءها؟ لن تتمكن من استقبال أي رسائل من المجموعة حتى تقوم بإزالة الحظر عنها.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "إلغاء حظر هذه المجموعة؟ لن يعرفوا أنك قرأت رسائلهم حتى تقوم بإزالة الحظر عنهم.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "أحذف  ";
@@ -2280,7 +2277,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "الإنضمام لهذه المجموعة ومشاركة اسمك وصورة حسابك الشخصية؟ لن يعلموا أنك شاهدت رسائلهم حتى تقبل دعوة الإنضمام.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "هل تود الانضمام إلى هذه المجموعة؟ لن يعرفوا أنك قرأت رسائلهم إلّا إذا وافقت.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "مشاركة الملف الشخصي";
@@ -2703,10 +2700,10 @@
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "اعادة إرسال الدعوات";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "سحب دعوة غير صحيحة";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "سحب %@ دعوات غير صحيحة";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "أبطِل الدعوة";
@@ -2733,7 +2730,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا تظهر تفاصيل الأشخاص المدعوين من قبل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام ،حينها سيتم مشاركة معلوماتهم مع المجموعة. لن يروا أي رسائل في المجموعة حتى ينضموا.";
 
 /* Title for the 'invalid invites' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوات غير صحيحة";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "دعوات من أعضاء المجموعة الآخرين";
@@ -2841,7 +2838,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "إلغاء الرقم التعريفي الشخصي";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا قمت بتعطيل الرمز التعريفي الشخصي، ستفقد جميع البيانات عندما تقوم بإعادة التسجيل إلى Signal إلّا إذا قمت بنقلها من جهاز  iOS آخر. لا يمكنك تفعيل قفل التسجيل أثناء تعطيل الرمز التعريفي الشخصي.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "تحذير";
@@ -2853,10 +2850,10 @@
 "PIN_CREATION_ERROR_TITLE" = "فشل إنشاء الرقم التعريفي الشخصي";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "الرموز التعريفي الشخصية تبقي المعلومات المحفوظة في Signal مشفرة حتى لا يستطيع أحدٌ غيرك الوصول إليها. سيتم استرجاع صفحة حسابك الشخصي، إعداداتك، وجهات اتصالك عندما تعيد تثبيت التطبيق. لن تحتاج إلى الرمز التعريفي الشخصي لفتح التطبيق.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "تعرف أكثر على الرقم التعريفي الشخصي";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "الرقمان التعريفيان الشخصيان غير متوافقين. حاول مرة أخرى.";
@@ -2880,7 +2877,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "أطفيء";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "لتعطيل الرقم التعريفي الشخصي الخاص بك، عليك أولاً تعطيل قفل الانخراط.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "هل أطفيء قفل الانخراط ؟";
@@ -2895,10 +2892,10 @@
 "PIN_CREATION_WEAK_ERROR" = "اختر رقما تعريفيا شخصيا أمتن.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "لم يتم تعطيل الرقم التعريفي الشخصي الخاص بك. سنطالبك مرة أخرى لاحقاً.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "فشل تعطيل الرقم التعريفي الشخصي";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "لمساعدتك في تذكُّر رقمك التعريفي الشخصي، سوف نسألك إدخاله من حين لآخر. سوف نسألك في كل مرة أقل مع مرور الزمن.";
@@ -2952,7 +2949,7 @@
 "PINS_MEGAPHONE_TOAST" = "أُنشيء الرقم التعريفي الشخصي. يمكنك تغييره في الإعدادات.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "تم تعطيل الرقم التعريفي الشخصي";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "شغِّل الوسائط";
@@ -3006,10 +3003,10 @@
 "PROCEED_BUTTON" = "تقدم";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "غيّر %@اسمه من %@إلى %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "غيّر %@ اسمه إلى %@.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "ضع صورة شخصية";
@@ -3603,10 +3600,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "تفعيل سجل التصحيح";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "إعدادات الرقم التعريفي الشخصي المتقدمة";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "إعدادات الرقم التعريفي الشخصي المتقدمة";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "إلغاء الرقم التعريفي الشخصي";
@@ -3756,7 +3753,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "عدد المحادثات المصمتة";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "عدد الشارة";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "إشعارات المكالمات والرسائل قد تظهر عندما يكون هاتفك مقفلا. قد تود تحديد ما الذي يجب أن يظهر في هذه الإشعارات.";
@@ -3769,15 +3766,6 @@
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "الأحداث";
-
-/* table section footer */
-"SETTINGS_NOTIFICATION_MENTIONS_FOOTER" = "Get notified whenever you are mentioned in a chat, even if the chat is muted.";
-
-/* Title for an option that indicates whether the user wishes to receive notifications for messages that mention them. */
-"SETTINGS_NOTIFICATION_MENTIONS_NOTIFY_ME" = "Notify Me";
-
-/* table section header */
-"SETTINGS_NOTIFICATION_MENTIONS_TITLE" = "Mentions";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "الإشعارات";
@@ -4017,10 +4005,10 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "أخبرنا بالذي يجري";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "يُرجى إرسال طلب الدعم عبر البريد الإلكتروني إلى support@signal.org";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "طلب دعم Signal لنظام تشغيل iOS";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "كيف تشعر ؟ (اختياري)";
@@ -4029,7 +4017,7 @@
 "SUPPORT_FAQ_PROMPT" = "هل قرأت قسم الأسئلة الشائعة لدينا ؟";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "تضمين سِجل الفحص";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "جارٍ التحميل";
@@ -4089,13 +4077,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ دقيقة";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ثانية";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ أسبوع";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ سنة";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ أسابيع";
@@ -4104,10 +4092,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ أسابيع";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ سنوات";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 ثانية";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "إلغاء";
@@ -4191,22 +4179,22 @@
 "UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الخاصية";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "تحديث جهة الاتصال";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "لا يمكن تحديث المجموعات.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لم يتم تديث المجموعة. تحقق من اتصالك بالانترنت ثم حاول مرة أخرى.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "إنشاء الرقم التعريفي الشخصي الخاص بك";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "تعرف أكثر على الرقم التعريفي الشخصي";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "الرموز التعريفي الشخصية تبقي المعلومات المحفوظة في Signal مشفرة حتى لا يستطيع أحدٌ غيرك الوصول إليها. سيتم استرجاع صفحة حسابك الشخصي، إعداداتك، وجهات اتصالك عندما تعيد تثبيت التطبيق. لن تحتاج إلى الرمز التعريفي الشخصي لفتح التطبيق.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "نقدم لكم الأرقام التعريفية الشخصية PINs";

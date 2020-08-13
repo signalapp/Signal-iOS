@@ -822,7 +822,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "உரையாடல் வண்ணம்";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "குழு தகவலைத் திருத்து";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "நிர்வாகிகள் மட்டுமே";
@@ -852,7 +852,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "நிர்வாகியை உருவாக்குங்கள்";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@  இந்த குழுவையும் அதன் உறுப்பினர்களையும் திருத்த முடியும்.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "உறுப்பினர்கள்";
@@ -864,25 +864,16 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "யாரால் முடியும் என்பதைத் தேர்வுசெய்க தொகு குழு உறுப்பினர்.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify Me";
-
-/* label for 'default' option for mention notifications in conversation settings when global mention notifications are off */
-"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_OFF" = "Default (Don’t Notify Me)";
-
-/* label for 'default' option for mention notifications in conversation settings when global mention notifications are on */
-"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_ON" = "Default (Notify Me)";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
-
-/* Explanation of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_MESSAGE" = "You will be notified even while muted.";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "முடக்கப்பட்டிருந்தால் அறிவிக்க வேண்டாம்";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Notify me when I am mentioned";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "முடக்கிய அரட்டைகளில் மற்றவர்களால் நீங்கள் குறிப்பிடப்படும்போது அறிவிப்புகளைப் பெறவா?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "குறிப்பிடுகிறது";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "முடக்கு";
@@ -1512,40 +1503,40 @@
 "GROUP_CREATION_FAILED" = "அனைத்து உறுப்பினர்களையும் குழுவில் சேர்க்க முடியாது. மீண்டும் முயற்சிக்க தட்டவும்.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "தவறான அழைப்பு சேர்க்கப்பட்டது.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "தவறான அழைப்பைச் சேர்த்துள்ளீர்கள்.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "தவறான அழைப்புகளைச் சேர்த்துள்ளீர்கள்.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ அவர்கள் தவறான அழைப்பைச் சேர்த்துள்ளனர்.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ தவறான அழைப்புகளைச் சேர்த்தது.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "தவறான அழைப்புகள் சேர்க்கப்பட்டன.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "தவறான அழைப்பு ரத்து செய்யப்பட்டது.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "தவறான அழைப்பை நீங்கள் ரத்து செய்துள்ளீர்கள்.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "தவறான அழைப்புகளை நீங்கள் ரத்து செய்துள்ளீர்கள்.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ அவர் தவறான அழைப்பை ரத்து செய்தார்.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ அவர் தவறான அழைப்புகளை ரத்து செய்தார்.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "தவறான அழைப்புகள் ரத்து செய்யப்பட்டன.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ இந்த குழுவில் தானாக சேர்க்க முடியாது நீங்கள். அவர்கள் அழைக்கப்பட்டுள்ளனர்சேர, மற்றும் எந்த குழு செய்திகளையும் அவர்கள் பார்க்கும் வரை பார்க்க மாட்டார்கள் ஏற்றுக்கொள்.";
@@ -1695,7 +1686,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "1 நபர் இருந்தது குழுவிற்கு அழைக்கப்பட்டார்.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@அவர்கள் குழுவிற்கு அழைக்கப்பட்டனர்.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "நீங்கள் அழைக்கப்பட்டார் %@ குழுவிற்கு.";
@@ -1806,7 +1797,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "மரபு குழுக்களை புதிய குழுக்களாக மாற்ற முடியாது, ஆனால் அதே உறுப்பினர்களுடன் புதிய குழுவை உருவாக்கலாம்.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "பழைய மரபு குழுவை எவ்வாறு \"புதுப்பிப்பது\"?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "புதிய குழுவை உருவாக்க, அனைத்து உறுப்பினர்களும் சிக்னலின் சமீபத்திய பதிப்பிற்கு புதுப்பிக்க Signal Update வேண்டும்.";
@@ -1815,19 +1806,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "மரபு vs புதிய குழுக்கள்";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "1 உறுப்பினர் Signal சிக்னலின் பழைய பதிப்பைப் பயன்படுத்துவதால் ஒரு மரபு குழு உருவாக்கப்படும். அவர்கள் Signal சிக்னலைப் புதுப்பித்த பிறகு அவர்களுடன் ஒரு புதிய பாணி குழுவை உருவாக்கலாம் அல்லது குழுவை உருவாக்கும் முன் அந்த உறுப்பினரை அகற்றலாம்.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "%@ உறுப்பினர்கள் சிக்னலின் பழைய பதிப்பைப் Signal old version பயன்படுத்துவதால் ஒரு மரபு குழு உருவாக்கப்படும். அவர்கள் சிக்னலைப் புதுப்பித்த Signal update பிறகு அவர்களுடன் ஒரு புதிய பாணி குழுவை உருவாக்கலாம் அல்லது குழுவை உருவாக்கும் முன் அவற்றை அகற்றலாம்.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 உறுப்பினரின்  signal version  புதிய குழுக்களை ஆதரிக்கவில்லை, எனவே இது ஒரு மரபு குழுவாக இருக்கும். %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ இந்த உறுப்பினர்கள் புதிய குழுக்களை ஆதரிக்கவில்லை, எனவே இது ஒரு மரபு குழுவாக இருக்கும். %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "இது ஒரு பழைய மரபு குழு. குழு நிர்வாகிகள் போன்ற அம்சங்களை அணுக, புதிய குழுவை உருவாக்கவும். %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "பழைய மரபு குழு";
@@ -2123,6 +2114,12 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "நாங்கள் நினைவூட்டுவோம் நீங்கள் பின்னர்.";
 
+/* Body for mentions megaphone */
+"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+
+/* Title for mentions megaphone */
+"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "செய்தி உரையை நகலெடுக்கவும்";
 
@@ -2259,7 +2256,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "இந்த குழுவைத் தடைசெய்து, உங்கள் பெயரையும் புகைப்படத்தையும் அதன் உறுப்பினர்களுடன் பகிர்ந்து கொள்ளலாமா? நீங்கள் அவற்றைத் தடைநீக்கு செய்யும் வரை எந்த செய்திகளையும் பெற மாட்டீர்கள்.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "இந்த குழுவைத் தடைசெய்யவா? நீங்கள் அவர்களின் செய்திகளைத் தடைசெய்யும் வரை நீங்கள் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "அழி";
@@ -2280,7 +2277,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "இந்த குழுவில் சேர்ந்து உங்கள் பெயரையும் புகைப்படத்தையும் அதன் உறுப்பினர்களுடன் பகிர்ந்து கொள்ளலாமா? குழு அழைப்பை நீங்கள் ஏற்றுக்கொள்ளும் வரை அவர்களின் செய்திகளைப் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "இந்த குழுவில் சேரவா? நீங்கள் ஏற்றுக்கொள்ளும் வரை அவர்களின் செய்திகளைப் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "சுயவிவரத்தைப் பகிரவும்";
@@ -2703,10 +2700,10 @@
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "அழைப்புகளை மீண்டும் அனுப்புங்கள்";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "தவறான அழைப்பைத் திரும்பப்பெறுங்கள்";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "தவறான %@அழைப்புகளைத் திரும்பப் பெறுங்கள்.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "அழைப்பைத் திரும்பப்பெறு";
@@ -2733,7 +2730,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "விவரங்கள் அழைக்கப்பட்ட நபர்களின் மற்றவை குழு உறுப்பினர்கள் காட்டப்படவில்லை. என்றால் அழைப்பாளர்கள் தேர்வு சேர, அவர்களது தகவல்அந்த நேரத்தில் குழுவுடன் பகிரப்படும். அவர்கள் குழுவில் எந்த செய்திகளையும் அவர்கள் பார்க்க மாட்டார்கள்சேர.";
 
 /* Title for the 'invalid invites' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "தவறான அழைப்புகள்";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "மூலம் அழைக்கிறது மற்றவை குழு உறுப்பினர்கள்";
@@ -3108,40 +3105,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "அனைத்தும் ·%@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@க்கு உங்கள் செய்தி";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "உங்கள் செய்தி %@க்கு என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது%@ க்கு உங்கள்ஆல்பம்";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "உங்கள் ஆல்பத்திற்கு %@ என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@க்கு உங்கள் ஆடியோ";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "உங்கள் ஒலி செய்திக்கு %@ என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள் தொடர்பு பங்கு";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள் கோப்பு";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "உங்கள் கோப்பிற்கு %@  என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள்GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "உங்கள் GIF படத்திற்கு %@ என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள் புகைப்படம்";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "உங்கள் புகைப்படத்திற்கு %@ என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது%@ க்கு உங்கள் ஓட்டி";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "உங்கள் ஓட்டிக்கு %@ என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = " \"%@\" க்கு %@ என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள் வீடியோ";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "உங்கள் வீடியோக்கு %@  என உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள் காண்க-ஒருமுறை முறை மீடியா";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "உங்கள் ஒரு முறை மட்டுமே  பார்க்கக்கூடிய ஊடகத்திற்கு %@ உணர்வினை வெளிப்படுத்தினார்";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள்குரல் செய்தி";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "உங்கள் குரல் செய்திக்கு %@ என உணர்வினை வெளிப்படுத்தினார்";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "நீங்கள்";
@@ -3363,7 +3360,7 @@
 "SCREENSHOT_NAME_GROUP_ONE" = "புத்தக மன்றம்";
 
 /* This is group chat name for members talking about cats. Please include the emoji. */
-"SCREENSHOT_NAME_GROUP_SIX" = "பூனை அரட்டை 🐈 🐱";
+"SCREENSHOT_NAME_GROUP_SIX" = "பூனை உரையாடல் 🐈 🐱";
 
 /* Please include emoji. This is a group name for people who climb rocks/climb trees/hike mountains/outside mountaineering. */
 "SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ பாறை ஏறுபவர்கள்";
@@ -3770,15 +3767,6 @@
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "நிகழ்வுகள்";
 
-/* table section footer */
-"SETTINGS_NOTIFICATION_MENTIONS_FOOTER" = "Get notified whenever you are mentioned in a chat, even if the chat is muted.";
-
-/* Title for an option that indicates whether the user wishes to receive notifications for messages that mention them. */
-"SETTINGS_NOTIFICATION_MENTIONS_NOTIFY_ME" = "Notify Me";
-
-/* table section header */
-"SETTINGS_NOTIFICATION_MENTIONS_TITLE" = "Mentions";
-
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "அறிவிப்புகள்";
 
@@ -4089,13 +4077,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@நிமிடம் ";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ வினாடி ";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@வாரம் ";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ வருடம்";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ வாரங்கள்";
@@ -4104,10 +4092,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@வாரம்";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ ஆண்டுகள்";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 விநாடிகள்";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "ரத்து";

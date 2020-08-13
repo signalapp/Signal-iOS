@@ -501,7 +501,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Balbhaigh";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "Gheobhaidh %@ iarratas teachtaireachta uait. Beidh tú in ann glaoch a chur tar éis dó/di glacadh leis an iarratas.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Athraigh Treo an Cheamara";
@@ -822,7 +822,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Dath an Chomhrá";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Cuir Eolas an Ghrúpa in Eagar";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Riarthóirí Amháin";
@@ -837,7 +837,7 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Eagar";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Baill Nua";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Cuir Baill Leis";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Riarthóirí Amháin";
@@ -852,7 +852,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Déan Riarthóir De/Di";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "Beidh %@ in ann an grúpa agus ballraíocht an ghrúpa a chur in eagar.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Baill";
@@ -864,25 +864,16 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Roghnaigh na daoine atá in ann ballraíocht an ghrúpa a chur in eagar.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify Me";
-
-/* label for 'default' option for mention notifications in conversation settings when global mention notifications are off */
-"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_OFF" = "Default (Don’t Notify Me)";
-
-/* label for 'default' option for mention notifications in conversation settings when global mention notifications are on */
-"CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_ON" = "Default (Notify Me)";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
-
-/* Explanation of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_MESSAGE" = "You will be notified even while muted.";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Ná cuir scéal chugam más balbhaithe";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Notify me when I am mentioned";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Nuair a luaitear mé";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Balbhú";
@@ -1050,7 +1041,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Atreorú GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "Maidir leis na logchomhaid dífhabhtaithe";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "An bhfuil fonn ort gach teachtaireacht sa chomhrá a scriosadh?";
@@ -1245,7 +1236,7 @@
 "EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "Níl ríomhphost ar fáil";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Gníomhaíochtaí";
@@ -1302,13 +1293,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Níorbh fhéidir an teachtaireacht a sheoladh.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Níorbh fhéidir aip ríomhphoist a oscailt";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Níorbh fhéidir iarratas tacaíochta a chruthú";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Níorbh fhéidir na logchomhaid a uaslódáil.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Níorbh fhéidir an teachtaireacht a sheoladh mar gheall ar sheansonraí réamheochrach.";
@@ -1512,40 +1503,40 @@
 "GROUP_CREATION_FAILED" = "Níorbh fhéidir gach duine nua a chur leis an ngrúpa. Tapáil chun triail eile a bhaint as.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "Tugadh cuireadh neamhbhailí don ghrúpa.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Thug tú cuireadh neamhbhailí don ghrúpa.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Thug tú cuirí neamhbhailí don ghrúpa.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "Thug %@ cuireadh neamhbhailí don ghrúpa.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "Thug %@ cuirí neamhbhailí don ghrúpa.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "Tugadh cuirí neamhbhailí don ghrúpa.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "Cealaíodh cuireadh amháin neamhbhailí.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Chealaigh tú cuireadh amháin neamhbhailí.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Chealaigh tú cuirí neamhbhailí.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "Chealaigh %@ cuireadh amháin neamhbhailí.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "Chealaigh %@ cuirí neamhbhailí.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "Cealaíodh cuirí neamhbhailí.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Ní féidir leat %@ a chur leis an ngrúpa go huathoibríoch. Tugadh cuireadh dó/dí páirt a ghlacadh, agus caithfidh sé/sí glacadh leis an gcuireadh chun teachtaireachtaí an ghrúpa a fheiceáil.";
@@ -1695,7 +1686,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "Tugadh cuireadh do 1 duine amháin chun páirt a ghlacadh sa ghrúpa.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "Tugadh cuireadh do %@ chun páirt a ghlacadh sa ghrúpa.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Thug tú cuireadh do %@ chun páirt a ghlacadh sa ghrúpa.";
@@ -1743,7 +1734,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "Bhain %@ an pictiúr.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Nuashonraíodh pictiúr an ghrúpa.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Nuashonraigh tú an pictiúr.";
@@ -1845,10 +1836,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Roghnaigh riarthóir nua";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "Déan teagmháil linn";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "Lárionad Tacaíochta";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Comhráite sa Chartlann";
@@ -2123,6 +2114,12 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Meabhróimid duit níos déanaí.";
 
+/* Body for mentions megaphone */
+"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+
+/* Title for mentions megaphone */
+"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Cóipeáil Téacs na Teachtaireachta";
 
@@ -2259,7 +2256,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "An bhfuil fonn ort d'ainm agus do phictiúr a roinnt leis an ngrúpa seo agus an bac a bhaint de? Ní bhfaighidh tú aon teachtaireacht go dtí go mbainfidh tú an bac de.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "An bhfuil fonn ort an bac a bhaint den ghrúpa seo? Ní bheidh a fhios acu go bhfaca tú a gcuid teachtaireachtaí go dtí go mbainfidh tú an bac.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Scrios";
@@ -2280,7 +2277,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "An bhfuil fonn ort páirt a ghlacadh sa ghrúpa seo agus d'ainm agus do phictiúr a roinnt le baill den ghrúpa? Ní bheidh a fhios acu go bhfaca tú a gcuid teachtaireachtaí go dtí go nglacfaidh tú leis.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "An bhfuil fonn ort páirt a ghlacadh sa ghrúpa seo? Ní bheidh a fhios acu go bhfaca tú a gcuid teachtaireachtaí go dtí go nglacfaidh tú leis.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Comhroinn mo Phróifíl";
@@ -2313,7 +2310,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Teipthe";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Leathsheolta. Tapáil chun mionsonraí a fháil";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Léite";
@@ -2703,10 +2700,10 @@
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Seol na Cuirí Arís";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Cealaigh cuireadh neamhbhailí";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Cealaigh %@ cuireadh neamhbhailí";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Cealaigh an Cuireadh";
@@ -2733,7 +2730,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Ní thaispeántar na sonraí pearsanta do dhaoine a fuair cuireadh ó bhaill eile den ghrúpa. Má ghlacann siad leis an gcuireadh, comhroinnfear a gcuid sonraí leis an ngrúpa ag an bpointe sin. Ní fheicfidh siad teachtaireachtaí ón ghrúpa go dtí go nglacfaidh siad leis an gcuireadh.";
 
 /* Title for the 'invalid invites' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Cuirí neamhbhailí";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Cuirí ó bhaill eile den ghrúpa";
@@ -2838,13 +2835,13 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Cruthaigh UAP uimhriúil";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Díchumasaigh an UAP";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Rabhadh";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "Níor sábháladh an UAP. Meabhróimid duit UAP a chruthú ar ball.";
@@ -2856,7 +2853,7 @@
 "PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Tuilleadh eolais faoi UAPanna";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Ní ionann iad na UAPanna. Bain triail eile as.";
@@ -2886,7 +2883,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "An bhfuil fonn ort an Glas Clárúcháin a mhúchadh?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "Díchumasaigh an UAP";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Cruthaigh d'UAP";
@@ -2895,10 +2892,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Ba chóir duit UAP níos láidre a roghnú";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Níorbh fhéidir an UAP a dhíchumasú. Iarrfaimid ort ar ball.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "Theip ar dhíchumasú an UAP";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Chun cabhrú leat d'UAP a chur de ghlanmheabhair, iarrfaimid ort í a chur isteach anois is arís, níos annaimhe de réir a chéile.";
@@ -2952,7 +2949,7 @@
 "PINS_MEGAPHONE_TOAST" = "Cruthaíodh an UAP. Is féidir leat í a athrú sna socruithe.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "Díchumasaíodh an UAP.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Seinn an Comhad Meáin";
@@ -3006,7 +3003,7 @@
 "PROCEED_BUTTON" = "Ar Aghaidh";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "D'athraigh %@ a ainm/hainm ó %@ go %@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
@@ -3273,7 +3270,7 @@
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Deimhnithe Roimhe Seo";
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
@@ -3603,13 +3600,13 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Cumasaigh an Logchomhad Dífhabhtaithe";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Ardroghanna UAP";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Ardroghanna UAP";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Díchumasaigh UAP";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
@@ -3769,15 +3766,6 @@
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Imeachtaí";
-
-/* table section footer */
-"SETTINGS_NOTIFICATION_MENTIONS_FOOTER" = "Get notified whenever you are mentioned in a chat, even if the chat is muted.";
-
-/* Title for an option that indicates whether the user wishes to receive notifications for messages that mention them. */
-"SETTINGS_NOTIFICATION_MENTIONS_NOTIFY_ME" = "Notify Me";
-
-/* table section header */
-"SETTINGS_NOTIFICATION_MENTIONS_TITLE" = "Mentions";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Fógraí";
@@ -4011,16 +3999,16 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sin an uimhir shábháilteachta cheart!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "Déan teagmháil linn";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what's going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Céard atá ag tarlú";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Seol d'iarratas chuig support@signal.org";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "Iarratas Tacaíocht Signal iOS";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Cén chaoi a bhfuil tú? (Roghnach)";
@@ -4029,10 +4017,10 @@
 "SUPPORT_FAQ_PROMPT" = "An bhfuil ár gCeisteanna Coitianta léite agat fós?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Cuir an logchomhad dífhabhtaithe san áireamh";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Ag luchtú";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Ag Lódáil";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Deimhnigh an Uimhir Shábháilteachta";
@@ -4089,13 +4077,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ nóiméad";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ soicind";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ seachtain";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ bhliain";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ seachtain";
@@ -4104,10 +4092,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@7n";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ bliana";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 soicind";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cealaigh";
@@ -4191,19 +4179,19 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Ní thacaíonn do ghléas leis seo.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Nuashonraigh an Teagmhálaí";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Níorbh fhéidir an grúpa a nuashonrú.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Níorbh fhéidir an grúpa a nuashonrú. Deimhnigh go bhfuil tú ceangailte leis an Idirlíon agus bain triail eile as.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Cruthaigh d'UAP";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Tuilleadh eolais faoi UAPanna";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
@@ -4212,7 +4200,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Seo dhuit UAPanna";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Díchumasaigh an UAP";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Beidh iOS 11 nó leagan níos déanaí ag teastáil go luath chun Signal a úsáid. Ba chóir duit nuashonrú a dhéanamh i Socruithe iOS >> General >> Software Update.";
