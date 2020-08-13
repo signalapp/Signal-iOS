@@ -484,7 +484,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+            strongSelf.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
         }
     }
 
@@ -494,7 +494,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.cancelRequest(withError: ShareViewControllerError.obsoleteShare)
+            strongSelf.extensionContext?.cancelRequest(withError: ShareViewControllerError.obsoleteShare)
         }
     }
 
@@ -504,7 +504,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.cancelRequest(withError: error)
+            strongSelf.extensionContext?.cancelRequest(withError: error)
         }
     }
 
