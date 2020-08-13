@@ -52,7 +52,6 @@ NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWa
 NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
     = @"OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown";
 NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlurTooltipShown";
-NSString *const OWSPreferencesKeyMentionNotificationsEnabled = @"OWSPreferencesKeyMentionNotificationsEnabled";
 
 @interface OWSPreferences ()
 
@@ -495,25 +494,6 @@ NSString *const OWSPreferencesKeyMentionNotificationsEnabled = @"OWSPreferencesK
             OWSLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
-}
-
-- (BOOL)areMentionNotificationsEnabled
-{
-    NSNumber *_Nullable cachedValue = self.mentionNotificationsEnabledCache;
-    if (cachedValue != nil) {
-        return cachedValue.boolValue;
-    }
-
-    BOOL result = [self boolForKey:OWSPreferencesKeyMentionNotificationsEnabled defaultValue:YES];
-    self.mentionNotificationsEnabledCache = @(result);
-    return result;
-}
-
-- (void)setMentionNotificationsEnabled:(BOOL)value
-{
-    [self setBool:value forKey:OWSPreferencesKeyMentionNotificationsEnabled];
-
-    self.mentionNotificationsEnabledCache = @(value);
 }
 
 #pragma mark - Push Tokens

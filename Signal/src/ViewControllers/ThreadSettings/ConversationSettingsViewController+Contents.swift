@@ -453,15 +453,7 @@ extension ConversationSettingsViewController {
 
     func nameForMentionMode(_ mode: TSThreadMentionNotificationMode) -> String {
         switch mode {
-        case .default:
-            if Environment.shared.preferences.areMentionNotificationsEnabled() {
-                return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_ON",
-                                         comment: "label for 'default' option for mention notifications in conversation settings when global mention notifications are on")
-            } else {
-                return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_DEFAULT_OFF",
-                                         comment: "label for 'default' option for mention notifications in conversation settings when global mention notifications are off")
-            }
-        case .always:
+        case .default, .always:
             return NSLocalizedString("CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS",
                                      comment: "label for 'always' option for mention notifications in conversation settings")
         case .never:
