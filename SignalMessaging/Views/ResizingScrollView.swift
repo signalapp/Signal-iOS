@@ -55,22 +55,31 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
         fatalError("init(coder:) has not been implemented")
     }
 
-    private var currentMinimumHeight = CGFloat.zero
-    private var currentMaximumHeight = CGFloat.zero
+    private var current: State = .zero
+    private struct State: Equatable {
+        let minimumHeight: CGFloat
+        let maximumHeight: CGFloat
+        let contentSize: CGSize
+
+        static var zero: Self { .init(minimumHeight: 0, maximumHeight: 0, contentSize: .zero) }
+    }
 
     /// Call to notify the resizing scroll view that it's minimum and/or maximum
     /// bound has changed.
     public func refreshHeightConstraints() {
         guard let resizingView = resizingView, let delegate = delegate else { return }
 
-        let minimumHeight = delegate.resizingViewMinimumHeight
-        let maximumHeight = delegate.resizingViewMaximumHeight
+        let new = State(
+            minimumHeight: delegate.resizingViewMinimumHeight,
+            maximumHeight: delegate.resizingViewMaximumHeight,
+            contentSize: resizingView.contentSize
+        )
 
-        guard maximumHeight >= minimumHeight else {
+        guard new.maximumHeight >= new.minimumHeight else {
             return owsFailDebug("Unexpectedly had a minimum height that is larger than the maximum height")
         }
 
-        guard maximumHeight > 0, minimumHeight > 0 else {
+        guard new.maximumHeight >= 0, new.minimumHeight >= 0 else {
             return owsFailDebug("Unexpectedly had a negative height value")
         }
 
@@ -82,7 +91,7 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
         // when this change occurs by calling `refreshHeightConstraints`,
         // but we also do our best to proactively update since doing so
         // should be cheap.
-        guard minimumHeight != currentMinimumHeight || maximumHeight != currentMaximumHeight else { return }
+        guard new != current else { return }
 
         layoutIfNeeded()
 
@@ -93,28 +102,28 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
         // and max sizes. When the scroll view's offset is less
         // than 0 (in the inset range) we're resizing the view.
         // When it's >= 0, we're scrolling the view.
-        let newInset = maximumHeight - minimumHeight
+        let newInset = new.maximumHeight - new.minimumHeight
 
         let newHeight: CGFloat
-        if currentHeight < minimumHeight {
-            newHeight = minimumHeight
-        } else if maximumHeight > currentMaximumHeight {
+        if currentHeight < new.minimumHeight {
+            newHeight = new.minimumHeight
+        } else if new.maximumHeight > current.maximumHeight {
             // If the amount of space we can take up is growing,
             // grow to fill the new space.
-            newHeight = min(currentHeight + (maximumHeight - currentMaximumHeight), maximumHeight)
+            newHeight = min(currentHeight + (new.maximumHeight - current.maximumHeight), new.maximumHeight)
         } else {
             // If the amount of space we can take up is shrinking,
             // shrink to accomdate the new space.
-            newHeight = max(currentHeight - (currentMaximumHeight - maximumHeight), minimumHeight)
+            newHeight = max(currentHeight - (current.maximumHeight - new.maximumHeight), new.minimumHeight)
         }
 
         let newOffset: CGFloat
-        if newHeight < maximumHeight {
+        if newHeight < new.maximumHeight {
             // If we're less than the maximum height, our
             // offset is always a representation of the
             // difference between the maximum height and
             // our current height.
-            newOffset = newHeight - maximumHeight
+            newOffset = newHeight - new.maximumHeight
         } else {
             // If we're above the maximum height, the offset
             // represents the current scroll position.
@@ -123,12 +132,11 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
 
         heightConstraint.constant = newHeight
 
-        gestureScrollView.contentSize = resizingView.contentSize
+        gestureScrollView.contentSize = new.contentSize
         gestureScrollView.contentInset.top = newInset
         gestureScrollView.bounds.origin.y = newOffset
 
-        currentMinimumHeight = minimumHeight
-        currentMaximumHeight = maximumHeight
+        current = new
     }
 
     public override func layoutSubviews() {
