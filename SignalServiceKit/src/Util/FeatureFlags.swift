@@ -413,6 +413,9 @@ public class DebugFlags: BaseFlags {
 
     static let forceAttachmentUploadV3 = build.includes(.qa)
 
+    @objc
+    public static let messageDetailsExtraInfo = build.includes(.qa)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)
