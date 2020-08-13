@@ -125,6 +125,12 @@ public class RemoteConfig: BaseFlags {
         modernContactDiscovery && FeatureFlags.usernamesSupported
     }
 
+    @objc
+    public static var attachmentUploadV3: Bool {
+        if DebugFlags.forceAttachmentUploadV3 { return true }
+        return isEnabled(.attachmentUploadV3)
+    }
+
     // MARK: -
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
@@ -224,6 +230,7 @@ private struct Flags {
         case mentions
         case uuidSafetyNumbers
         case modernContactDiscovery
+        case attachmentUploadV3
     }
 
     // Values defined in this array remain set once they are
