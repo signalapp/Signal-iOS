@@ -155,7 +155,15 @@ extension SignalCall: CallManagerCallReference { }
     }
 
     private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
+        return .shared
+    }
+
+    private var profileManager: OWSProfileManager {
+        return .shared()
+    }
+
+    private var identityManager: OWSIdentityManager {
+        return .shared()
     }
 
     // MARK: - Notifications
@@ -213,7 +221,7 @@ extension SignalCall: CallManagerCallReference { }
         call.callRecord = callRecord
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
+        let localDeviceId = tsAccountManager.storedDeviceId()
 
         do {
             try callManager.placeCall(call: call, callMediaType: call.offerMediaType.asCallMediaType, localDevice: localDeviceId)
@@ -428,7 +436,7 @@ extension SignalCall: CallManagerCallReference { }
             // * The thread is in our profile whitelist
             // * The thread belongs to someone in our system contacts
             // * The thread existed before messages requests
-            return SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
+            return self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
                 || self.contactsManager.isSystemContact(address: thread.contactAddress)
                 || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead)
         }
@@ -441,12 +449,12 @@ extension SignalCall: CallManagerCallReference { }
 
     private func getIdentityKeys(thread: TSContactThread) -> CallIdentityKeys? {
         return databaseStorage.read { transaction -> CallIdentityKeys? in
-            guard let localIdentityKey = OWSIdentityManager.shared().identityKeyPair(with: transaction)?.publicKey else {
-                Logger.warn("missing localIdentityKey")
+            guard let localIdentityKey = self.identityManager.identityKeyPair(with: transaction)?.publicKey else {
+                owsFailDebug("missing localIdentityKey")
                 return nil
             }
-            guard let contactIdentityKey = OWSIdentityManager.shared().identityKey(for: thread.contactAddress, transaction: transaction) else {
-                Logger.warn("missing contactIdentityKey")
+            guard let contactIdentityKey = self.identityManager.identityKey(for: thread.contactAddress, transaction: transaction) else {
+                owsFailDebug("missing contactIdentityKey")
                 return nil
             }
             return CallIdentityKeys(localIdentityKey: localIdentityKey, contactIdentityKey: contactIdentityKey)
@@ -503,7 +511,7 @@ extension SignalCall: CallManagerCallReference { }
             return
         }
 
-        if let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(to: thread.contactAddress) {
+        if let untrustedIdentity = self.identityManager.untrustedIdentityForSending(to: thread.contactAddress) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
             let callerName = self.contactsManager.displayName(for: thread.contactAddress)
@@ -538,7 +546,12 @@ extension SignalCall: CallManagerCallReference { }
 
         guard let identityKeys = getIdentityKeys(thread: thread) else {
             owsFailDebug("missing identity keys, skipping call.")
-            let callRecord = TSCall(callType: .incomingMissed, thread: thread, sentAtTimestamp: sentAtTimestamp)
+            let callRecord = TSCall(
+                callType: .incomingMissed,
+                offerType: newCall.offerMediaType,
+                thread: thread,
+                sentAtTimestamp: sentAtTimestamp
+            )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -614,8 +627,8 @@ extension SignalCall: CallManagerCallReference { }
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
-        let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
+        let localDeviceId = tsAccountManager.storedDeviceId()
+        let isPrimaryDevice = tsAccountManager.isPrimaryDevice
 
         do {
             try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
@@ -1450,8 +1463,9 @@ extension SignalCall: CallManagerCallReference { }
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
 
-        return self.accountManager.getTurnServerInfo()
-        .map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
+        return firstly {
+            accountManager.getTurnServerInfo()
+        }.map(on: .global()) { turnServerInfo -> [RTCIceServer] in
             Logger.debug("got turn server urls: \(turnServerInfo.urls)")
 
             return turnServerInfo.urls.map { url in
