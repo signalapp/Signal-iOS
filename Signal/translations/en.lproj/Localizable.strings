@@ -2115,7 +2115,7 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a New Group by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
 
 /* Title for mentions megaphone */
 "MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
