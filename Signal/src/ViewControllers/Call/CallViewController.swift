@@ -36,6 +36,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - Views
 
     var hasConstraints = false
+    var backgroundAvatarView: UIImageView!
     var blurView: UIVisualEffectView!
     var dateFormatter: DateFormatter?
 
@@ -210,11 +211,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         videoHintView.delegate = self
 
+        // The callee's avatar is rendered behind the blurred background.
+        backgroundAvatarView = UIImageView()
+        backgroundAvatarView.contentMode = .scaleAspectFill
+        backgroundAvatarView.isUserInteractionEnabled = false
+        backgroundAvatarView.backgroundColor = .blue
+        view.addSubview(backgroundAvatarView)
+        backgroundAvatarView.autoPinEdgesToSuperviewEdges()
+
         // Dark blurred background.
         let blurEffect = UIBlurEffect(style: .dark)
         blurView = UIVisualEffectView(effect: blurEffect)
         blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
+        blurView.autoPinEdgesToSuperviewEdges()
 
         // Create the video views first, as they are under the other views.
         createVideoViews()
@@ -396,6 +406,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func updateAvatarImage() {
         contactAvatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: 400)
+        backgroundAvatarView.image = contactsManager.imageForAddress(withSneakyTransaction: thread.contactAddress)
     }
 
     func createIncomingCallControls() {
@@ -451,9 +462,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Layout of the local video view is a bit unusual because
         // although the view is square, it will be used
         let videoPreviewHMargin = CGFloat(0)
-
-        // Dark blurred background.
-        blurView.autoPinEdgesToSuperviewEdges()
 
         leaveCallViewButton.autoPinEdge(toSuperviewEdge: .leading)
 
