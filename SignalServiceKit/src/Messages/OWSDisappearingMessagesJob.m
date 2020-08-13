@@ -283,11 +283,12 @@ void AssertIsOnDisappearingMessagesQueue()
             (int)round(MAX(0, [newTimerScheduleDate timeIntervalSinceDate:[NSDate new]])));
         [self resetNextDisappearanceTimer];
         self.nextDisappearanceDate = newTimerScheduleDate;
-        self.nextDisappearanceTimer = [NSTimer weakScheduledTimerWithTimeInterval:delaySeconds
-                                                                           target:self
-                                                                         selector:@selector(disappearanceTimerDidFire)
-                                                                         userInfo:nil
-                                                                          repeats:NO];
+        self.nextDisappearanceTimer = [NSTimer weakTimerWithTimeInterval:delaySeconds
+                                                                  target:self
+                                                                selector:@selector(disappearanceTimerDidFire)
+                                                                userInfo:nil
+                                                                 repeats:NO];
+        [[NSRunLoop mainRunLoop] addTimer:self.nextDisappearanceTimer forMode:NSRunLoopCommonModes];
     });
 }
 

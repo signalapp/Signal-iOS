@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,6 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
                                        selector:(SEL)selector
                                        userInfo:(nullable id)userInfo
                                         repeats:(BOOL)repeats;
+
++ (NSTimer *)weakTimerWithTimeInterval:(NSTimeInterval)timeInterval
+                                target:(id)target
+                              selector:(SEL)selector
+                              userInfo:(nullable id)userInfo
+                               repeats:(BOOL)repeats;
 
 @end
 
