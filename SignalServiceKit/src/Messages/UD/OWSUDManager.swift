@@ -306,9 +306,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 existingValue = .disabled
 
                 // Fetch profile for this user to determine current UD state.
-                DispatchQueue.global().async {
-                    self.bulkProfileFetch.fetchProfile(address: address)
-                }
+                self.bulkProfileFetch.fetchProfile(address: address)
             } else {
                 existingValue = existingUUIDValue
             }
@@ -451,9 +449,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 }
                 self.setUnidentifiedAccessMode(.unknown, address: address)
                 // Fetch profile for this user to determine current UD state.
-                DispatchQueue.global().async {
-                    self.bulkProfileFetch.fetchProfile(address: address)
-                }
+                self.bulkProfileFetch.fetchProfile(address: address)
                 return nil
             }
             if isUDVerboseLoggingEnabled() {
