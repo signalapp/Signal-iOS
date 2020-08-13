@@ -429,15 +429,17 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createIncomingCallControls() {
-        audioAnswerIncomingButton.text = "Answer"
+        audioAnswerIncomingButton.text = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+                                                           comment: "label for accepting incoming calls")
         audioAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
         audioAnswerIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                                    comment: "Accessibility label for accepting incoming calls")
+                                                                    comment: "label for accepting incoming calls")
 
-        audioDeclineIncomingButton.text = "Decline"
+        audioDeclineIncomingButton.text = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+                                                            comment: "label for declining incoming calls")
         audioDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
         audioDeclineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                                     comment: "Accessibility label for declining incoming calls")
+                                                                     comment: "label for declining incoming calls")
 
         incomingAudioCallControls.axis = .horizontal
         incomingAudioCallControls.alignment = .center
@@ -448,19 +450,22 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         audioAnswerIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioAnswerIncomingButton")
         audioDeclineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioDeclineIncomingButton")
 
-        videoAnswerIncomingButton.text = "Answer"
+        videoAnswerIncomingButton.text = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+                                                           comment: "label for accepting incoming calls")
         videoAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
         videoAnswerIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                                         comment: "Accessibility label for accepting incoming calls")
+                                                                         comment: "label for accepting incoming calls")
 
-        videoAnswerIncomingAudioOnlyButton.text = "Answer without video"
+        videoAnswerIncomingAudioOnlyButton.text = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
+                                                                    comment: "label for accepting incoming video calls as audio  only")
         videoAnswerIncomingAudioOnlyButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
-                                                                                comment: "Accessibility label for accepting incoming video calls as audio  only")
+                                                                                comment: "label for accepting incoming video calls as audio  only")
 
-        videoDeclineIncomingButton.text = "Decline"
+        videoDeclineIncomingButton.text = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+                                                            comment: "label for declining incoming calls")
         videoDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
         videoDeclineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                                          comment: "Accessibility label for declining incoming calls")
+                                                                          comment: "label for declining incoming calls")
 
         incomingVideoCallBottomControls.axis = .horizontal
         incomingVideoCallBottomControls.alignment = .center
