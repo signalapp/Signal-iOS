@@ -262,7 +262,7 @@ extension MentionPicker: UITableViewDelegate, UITableViewDataSource {
 private class MentionableUserCell: UITableViewCell {
     static let reuseIdentifier = "MentionPickerCell"
 
-    static let avatarHeight: CGFloat = 28
+    static let avatarHeight: CGFloat = 36
     static let vSpacing: CGFloat = 10
     static let hSpacing: CGFloat = 12
 
