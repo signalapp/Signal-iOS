@@ -281,7 +281,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 - (NSAttributedString *)verifiedSubtitle
 {
     NSMutableAttributedString *text = [NSMutableAttributedString new];
-    [text appendTemplatedImageNamed:@"check-12" bounds:CGRectMake(0, -1, 11, 11)];
+    [text appendTemplatedImageNamed:@"check-12" font:self.subtitleLabel.font];
     [text append:@" " attributes:@{}];
     [text append:NSLocalizedString(
                      @"PRIVACY_IDENTITY_IS_VERIFIED_BADGE", @"Badge indicating that the user is verified.")

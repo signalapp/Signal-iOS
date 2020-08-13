@@ -435,7 +435,7 @@ private class SafetyNumberCell: ContactTableViewCell {
 
         if let verificationState = item.verificationState, verificationState == .noLongerVerified {
             let previouslyVerified = NSMutableAttributedString()
-            previouslyVerified.appendTemplatedImage(named: "check-12", bounds: CGRect(x: 0, y: -1, width: 11, height: 11))
+            previouslyVerified.appendTemplatedImage(named: "check-12", font: UIFont.ows_regularFont(withSize: 11))
             previouslyVerified.append(" ")
             previouslyVerified.append(
                 NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED",

@@ -1402,25 +1402,27 @@ typedef enum : NSUInteger {
     }
 
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
-    UIColor *subtitleColor = [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
+    UIFont *subtitleFont = self.headerView.subtitleFont;
     NSDictionary *attributes = @{
-        NSFontAttributeName : self.headerView.subtitleFont,
-        NSForegroundColorAttributeName : subtitleColor,
+        NSFontAttributeName : subtitleFont,
+        NSForegroundColorAttributeName : [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9],
     };
 
-    if (self.thread.isMuted) {
-        // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
-        [subtitleText appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\ue067  ")
-                                                     attributes:@{
-                                                         NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
-                                                         NSForegroundColorAttributeName : subtitleColor
-                                                     }]];
+    BOOL isMuted = self.thread.isMuted;
+    if (isMuted) {
+        [subtitleText appendTemplatedImageNamed:@"bell-disabled-outline-24" font:subtitleFont];
+        [subtitleText append:@" " attributes:attributes];
+        [subtitleText append:NSLocalizedString(@"MUTED_BADGE", @"Badge indicating that the user is muted.")
+                  attributes:attributes];
     }
 
     BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
     if (hasTimer) {
-        [subtitleText appendTemplatedImageNamed:@"timer-60-12" bounds:CGRectMake(0, -1, 12, 12)];
+        if (isMuted) {
+            [subtitleText append:@"   " attributes:attributes];
+        }
+
+        [subtitleText appendTemplatedImageNamed:@"timer-60-12" font:subtitleFont];
         [subtitleText append:@" " attributes:attributes];
         [subtitleText append:[NSString formatDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds
                                               useShortFormat:YES]
@@ -1436,11 +1438,11 @@ typedef enum : NSUInteger {
         }
     }
     if (isVerified) {
-        if (hasTimer) {
+        if (hasTimer || isMuted) {
             [subtitleText append:@"   " attributes:attributes];
         }
 
-        [subtitleText appendTemplatedImageNamed:@"check-12" bounds:CGRectMake(0, -1, 12, 12)];
+        [subtitleText appendTemplatedImageNamed:@"check-12" font:subtitleFont];
         [subtitleText append:@" " attributes:attributes];
         [subtitleText append:NSLocalizedString(
                                  @"PRIVACY_IDENTITY_IS_VERIFIED_BADGE", @"Badge indicating that the user is verified.")

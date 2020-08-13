@@ -101,7 +101,7 @@ public extension NSAttributedString {
     }
 }
 
-// MARK: - 
+// MARK: -
 
 public extension NSMutableAttributedString {
     @objc
@@ -109,28 +109,57 @@ public extension NSMutableAttributedString {
         append(NSAttributedString(string: string, attributes: attributes))
     }
 
-    @objc(appendTemplatedImageNamed:bounds:)
-    func appendTemplatedImage(named imageName: String, bounds: CGRect) {
+    @objc(appendTemplatedImageNamed:font:)
+    func appendTemplatedImage(named imageName: String, font: UIFont) {
+        appendTemplatedImage(named: imageName, font: font, attributes: nil)
+    }
+
+    @objc(appendTemplatedImageNamed:font:attributes:)
+    func appendTemplatedImage(named imageName: String, font: UIFont, attributes: [NSAttributedString.Key: Any]?) {
         guard let image = UIImage(named: imageName) else {
             return owsFailDebug("missing image named \(imageName)")
         }
-        appendImage(image.withRenderingMode(.alwaysTemplate), bounds: bounds)
+        appendImage(image.withRenderingMode(.alwaysTemplate), font: font, attributes: attributes)
     }
 
-    @objc(appendImageNamed:bounds:)
-    func appendImage(named imageName: String, bounds: CGRect) {
+    @objc(appendImageNamed:font:)
+    func appendImage(named imageName: String, font: UIFont) {
+        appendImage(named: imageName, font: font, attributes: nil)
+    }
+
+    @objc(appendImageNamed:font:attributes:)
+    func appendImage(named imageName: String, font: UIFont, attributes: [NSAttributedString.Key: Any]?) {
         guard let image = UIImage(named: imageName) else {
             return owsFailDebug("missing image named \(imageName)")
         }
-        appendImage(image, bounds: bounds)
+        appendImage(image, font: font, attributes: attributes)
     }
 
-    @objc(appendImage:bounds:)
-    func appendImage(_ image: UIImage, bounds: CGRect) {
+    @objc(appendImage:font:)
+    func appendImage(_ image: UIImage, font: UIFont) {
+        appendImage(image, font: font, attributes: nil)
+    }
+
+    @objc(appendImage:font:attributes:)
+    func appendImage(_ image: UIImage, font: UIFont, attributes: [NSAttributedString.Key: Any]?) {
         let attachment = NSTextAttachment()
         attachment.image = image
-        attachment.bounds = bounds
-        append(.init(attachment: attachment))
+
+        // Match the image's height to the font's height while preserving
+        // the image's aspect ratio, and vertically center.
+        let imageHeight = font.pointSize
+        let imageWidth = (imageHeight / image.size.height) * image.size.width
+        attachment.bounds = CGRect(x: 0, y: (font.capHeight - imageHeight) / 2, width: imageWidth, height: imageHeight)
+
+        let attachmentString = NSAttributedString(attachment: attachment)
+
+        if let attributes = attributes {
+            let mutableString = NSMutableAttributedString(attributedString: attachmentString)
+            mutableString.addAttributes(attributes, range: NSRange(location: 0, length: mutableString.length))
+            append(mutableString)
+        } else {
+            append(attachmentString)
+        }
     }
 
     @objc
