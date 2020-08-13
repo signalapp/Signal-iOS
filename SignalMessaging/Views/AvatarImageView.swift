@@ -55,7 +55,7 @@ public class ConversationAvatarImageView: AvatarImageView {
 
     // MARK: -
 
-    let thread: TSThread
+    var thread: TSThread
     let diameter: UInt
     let contactsManager: OWSContactsManager
 
@@ -159,9 +159,13 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        databaseStorage.read { transaction in
-            self.thread.anyReload(transaction: transaction)
+        guard let latestThread = (databaseStorage.read { transaction in
+            TSThread.anyFetch(uniqueId: self.thread.uniqueId, transaction: transaction)
+        }) else {
+            owsFailDebug("Missing thread.")
+            return
         }
+        self.thread = latestThread
 
         self.updateImage()
     }
