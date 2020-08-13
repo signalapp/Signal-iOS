@@ -181,7 +181,7 @@ import Foundation
     public class var empty: DisplayableText {
         return DisplayableText(
             fullContent: .init(attributedText: .init(string: ""), naturalAlignment: .natural),
-            truncatedContent: .init(attributedText: .init(string: ""), naturalAlignment: .natural)
+            truncatedContent: nil
         )
     }
 
@@ -189,7 +189,7 @@ import Foundation
     public class func displayableTextForTests(_ text: String) -> DisplayableText {
         return DisplayableText(
             fullContent: .init(attributedText: .init(string: text), naturalAlignment: text.naturalTextAlignment),
-            truncatedContent: .init(attributedText: .init(string: text), naturalAlignment: text.naturalTextAlignment)
+            truncatedContent: nil
         )
     }
 

@@ -4,17 +4,17 @@
 
 import Foundation
 
-class SelectionHapticFeedback {
+public class SelectionHapticFeedback {
     let selectionFeedbackGenerator: UISelectionFeedbackGenerator
 
-    init() {
+    public init() {
         AssertIsOnMainThread()
 
         selectionFeedbackGenerator = UISelectionFeedbackGenerator()
         selectionFeedbackGenerator.prepare()
     }
 
-    func selectionChanged() {
+    public func selectionChanged() {
         DispatchQueue.main.async {
             self.selectionFeedbackGenerator.selectionChanged()
             self.selectionFeedbackGenerator.prepare()
@@ -23,17 +23,17 @@ class SelectionHapticFeedback {
 }
 
 @objc
-class NotificationHapticFeedback: NSObject {
+public class NotificationHapticFeedback: NSObject {
     let feedbackGenerator = UINotificationFeedbackGenerator()
 
-    override init() {
+    public override init() {
         AssertIsOnMainThread()
 
         feedbackGenerator.prepare()
     }
 
     @objc
-    func notificationOccurred(_ notificationType: UINotificationFeedbackGenerator.FeedbackType) {
+    public func notificationOccurred(_ notificationType: UINotificationFeedbackGenerator.FeedbackType) {
         DispatchQueue.main.async {
             self.feedbackGenerator.notificationOccurred(notificationType)
             self.feedbackGenerator.prepare()
@@ -42,9 +42,9 @@ class NotificationHapticFeedback: NSObject {
 }
 
 @objc
-class ImpactHapticFeedback: NSObject {
+public class ImpactHapticFeedback: NSObject {
     @objc
-    class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+    public class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle) {
         DispatchQueue.main.async {
             let generator = UIImpactFeedbackGenerator(style: style)
             generator.prepare()

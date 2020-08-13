@@ -173,6 +173,11 @@ class ConversationInputTextView: MentionTextView {
 
         inputTextViewDelegate?.textViewDidChange(self)
         textViewToolbarDelegate?.textViewDidChange(self)
+
+        // If the user typed a mention, clear the mentions experience upgrade.
+        if messageBody?.ranges.hasMentions == true {
+            ExperienceUpgradeManager.clearExperienceUpgradeWithSneakyTransaction(.mentions)
+        }
     }
 
     override func textViewDidChangeSelection(_ textView: UITextView) {
