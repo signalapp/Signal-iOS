@@ -262,6 +262,8 @@ open class MentionTextView: OWSTextView {
                 return
         }
 
+        ImpactHapticFeedback.impactOccured(style: .light)
+
         let style = mentionDelegate.textViewMentionStyle(self)
         if style == .composingAttachment {
             pickerView.alpha = 0
