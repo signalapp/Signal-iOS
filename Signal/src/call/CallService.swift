@@ -385,7 +385,7 @@ extension SignalCall: CallManagerCallReference { }
     func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         AssertIsOnMainThread()
 
-        callManager.setCameraSource(isUsingFrontCamera: isUsingFrontCamera)
+        call.videoCaptureController.switchCamera(isUsingFrontCamera: isUsingFrontCamera)
     }
 
     // MARK: - Signaling Functions
@@ -664,7 +664,7 @@ extension SignalCall: CallManagerCallReference { }
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
             // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly)
+            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController)
         }.catch { error in
             owsFailDebug("\(error)")
             guard call === self.currentCall else {
@@ -1357,9 +1357,7 @@ extension SignalCall: CallManagerCallReference { }
         }
 
         call.hasLocalVideo = hasLocalVideo
-        if call.state == .connected {
-            callManager.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack(), call: call)
-        }
+        updateIsVideoEnabled()
     }
 
     @objc
@@ -1543,6 +1541,16 @@ extension SignalCall: CallManagerCallReference { }
 
         if call.state == .connected || call.state == .reconnecting {
             callManager.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack(), call: call)
+        } else {
+            // If we're not yet connected, just enable the camera but don't tell RingRTC
+            // to start sending video. This allows us to show a "vanity" view while connecting.
+            if !Platform.isSimulator && call.hasLocalVideo {
+                call.videoCaptureController.startCapture()
+                callManager.delegate?.callManager(callManager, onUpdateLocalVideoSession: call, session: call.videoCaptureController.captureSession)
+            } else {
+                call.videoCaptureController.stopCapture()
+                callManager.delegate?.callManager(callManager, onUpdateLocalVideoSession: call, session: nil)
+            }
         }
     }
 

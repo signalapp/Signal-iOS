@@ -487,6 +487,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Layout
 
+    lazy var localVideoVanityConstraints = localVideoView.autoPinEdgesToSuperviewEdges()
     var localVideoViewTopConstraintDefault: NSLayoutConstraint!
     var localVideoViewTopConstraintHidden: NSLayoutConstraint!
 
@@ -552,10 +553,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     internal func updateLocalVideoLayout() {
-        if !localVideoView.isHidden {
-            localVideoView.superview?.bringSubviewToFront(localVideoView)
-        }
-
         updateCallUI()
     }
 
@@ -686,9 +683,18 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             ongoingAudioCallControls.isHidden = call.hasLocalVideo
         }
 
+        let isRenderingVanityVideo = [.idle, .dialing, .remoteRinging].contains(call.state) && !localVideoView.isHidden
+
+        // We want the vanity video to be full screen, so we change it to "aspect fill".
+        if let previewLayer = localVideoView.layer as? AVCaptureVideoPreviewLayer {
+            previewLayer.videoGravity = isRenderingVanityVideo ? .resizeAspectFill : .resizeAspect
+        } else {
+            owsFailDebug("unexpected preview layer class \(type(of: localVideoView.layer))")
+        }
+
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteVideoView.isHidden
-        contactAvatarView.isHidden = hasRemoteVideo
+        contactAvatarView.isHidden = hasRemoteVideo || isRenderingVanityVideo
 
         // Layout controls immediately to avoid spurious animation.
         for controls in [incomingVideoCallControls, incomingAudioCallControls, ongoingAudioCallControls, ongoingVideoCallControls] {
@@ -709,8 +715,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
 
         let doLocalVideoLayout = {
-            self.localVideoViewTopConstraintDefault.isActive = !self.contactNameLabel.isHidden
-            self.localVideoViewTopConstraintHidden.isActive = self.contactNameLabel.isHidden
+            self.localVideoViewTopConstraintDefault.isActive = !isRenderingVanityVideo && !self.contactNameLabel.isHidden
+            self.localVideoViewTopConstraintHidden.isActive = !isRenderingVanityVideo && self.contactNameLabel.isHidden
+            self.localVideoVanityConstraints.forEach { $0.isActive = isRenderingVanityVideo }
             self.localVideoView.superview?.layoutIfNeeded()
         }
         if hasShownLocalVideo {

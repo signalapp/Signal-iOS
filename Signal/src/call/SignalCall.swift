@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalRingRTC
 
 public enum CallState: String {
     case idle
@@ -73,6 +74,8 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
             Logger.info("")
         }
     }
+
+    let videoCaptureController = VideoCaptureController()
 
     weak var localCaptureSession: AVCaptureSession? {
         didSet {
