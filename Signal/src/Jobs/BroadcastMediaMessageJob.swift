@@ -87,9 +87,10 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
     // MARK: -
 
     public override func run() {
-        NotificationCenter.default.addObserver(forName: .attachmentUploadProgress, object: nil, queue: nil) { [weak self] notification in
-            self?.attachmentUploadNotification(notification)
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(attachmentUploadProgressNotification),
+                                               name: .attachmentUploadProgress,
+                                               object: nil)
 
         let uploadOperations = jobRecord.attachmentIdMap.keys.map { attachmentId in
             // This is only used for media attachments, so we can always use v3.
@@ -171,7 +172,10 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
         reportSuccess()
     }
 
-    private func attachmentUploadNotification(_ notification: Notification) {
+    // MARK: - Notifications
+
+    @objc
+    func attachmentUploadProgressNotification(_ notification: Notification) {
         guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
@@ -193,6 +197,8 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
             ])
         }
     }
+
+    // MARK: -
 
     public override func didSucceed() {
         self.databaseStorage.write { transaction in
