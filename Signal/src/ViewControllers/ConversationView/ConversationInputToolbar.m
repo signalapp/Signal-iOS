@@ -1339,9 +1339,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     // It's key that we use the *raw/unstripped* text, so we can reconcile cursor position with the
     // selectedRange.
-    NSString *_Nullable previewUrl =
-        [self.linkPreviewManager previewUrlForRawBodyText:self.inputTextView.text
-                                            selectedRange:self.inputTextView.selectedRange];
+    NSString *_Nullable previewUrl = [self.linkPreviewManager previewUrlForRawBodyText:self.inputTextView.text
+                                                                         selectedRange:self.inputTextView.selectedRange
+                                                                       whitelistedOnly:YES];
     if (previewUrl.length < 1) {
         [self clearLinkPreviewStateAndView];
         return;

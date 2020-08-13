@@ -138,15 +138,9 @@ public class OWSLinkPreview: MTLModel {
             Logger.error("Preview for message without body.")
             throw LinkPreviewError.invalidInput
         }
-        let previewUrls = OWSLinkPreviewManager.allPreviewUrls(forMessageBodyText: body)
+        let previewUrls = OWSLinkPreviewManager.allPreviewUrls(forMessageBodyText: body, whitelistedOnly: false)
         guard previewUrls.contains(urlString) else {
             Logger.error("URL not present in body.")
-            throw LinkPreviewError.invalidInput
-        }
-
-        guard OWSLinkPreviewManager.isValidLink(url: url) else {
-            Logger.verbose("Invalid link URL \(urlString).")
-            Logger.error("Invalid link URL.")
             throw LinkPreviewError.invalidInput
         }
 
@@ -353,17 +347,11 @@ public class OWSLinkPreviewManager: NSObject {
         if StickerPackInfo.isStickerPackShare(url) {
             return stickerPackShareDomain(forUrl: url)
         }
-        guard let result = whitelistedDomain(forUrl: url,
-                                             domainWhitelist: linkDomainWhitelist,
-                                             allowSubdomains: false) else {
-                                                Logger.error("Missing domain.")
-                                                return nil
-        }
-        return result
+        return url.host
     }
 
     @objc
-    public class func isValidLink(url: URL) -> Bool {
+    public class func isWhitelistedLink(url: URL) -> Bool {
         if StickerPackInfo.isStickerPackShare(url) {
             return true
         }
@@ -373,7 +361,7 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     @objc
-    public class func isValidMedia(url: URL) -> Bool {
+    public class func isWhitelistedMedia(url: URL) -> Bool {
         return whitelistedDomain(forUrl: url,
                                  domainWhitelist: mediaDomainWhitelist,
                                  allowSubdomains: true) != nil
@@ -433,11 +421,11 @@ public class OWSLinkPreviewManager: NSObject {
     private var previewUrlCache: NSCache<NSString, NSString> = NSCache()
 
     @objc
-    public func previewUrl(forRawBodyText body: String?, selectedRange: NSRange) -> String? {
-        return previewUrl(forMessageBodyText: body, selectedRange: selectedRange)
+    public func previewUrl(forRawBodyText body: String?, selectedRange: NSRange, whitelistedOnly: Bool) -> String? {
+        return previewUrl(forMessageBodyText: body, selectedRange: selectedRange, whitelistedOnly: whitelistedOnly)
     }
 
-    public func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
+    public func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?, whitelistedOnly: Bool) -> String? {
         AssertIsOnMainThread()
 
         let areLinkPreviewsEnabled = databaseStorage.read { transaction in
@@ -460,7 +448,7 @@ public class OWSLinkPreviewManager: NSObject {
             }
             return cachedUrl
         }
-        let previewUrlMatches = OWSLinkPreviewManager.allPreviewUrlMatches(forMessageBodyText: body)
+        let previewUrlMatches = OWSLinkPreviewManager.allPreviewUrlMatches(forMessageBodyText: body, whitelistedOnly: whitelistedOnly)
         guard let urlMatch = previewUrlMatches.first else {
             // Use empty string to indicate "no preview URL" in the cache.
             previewUrlCache.setObject("", forKey: body as NSString)
@@ -489,11 +477,11 @@ public class OWSLinkPreviewManager: NSObject {
         let matchRange: NSRange
     }
 
-    class func allPreviewUrls(forMessageBodyText body: String) -> [String] {
-        return allPreviewUrlMatches(forMessageBodyText: body).map { $0.urlString }
+    class func allPreviewUrls(forMessageBodyText body: String, whitelistedOnly: Bool) -> [String] {
+        return allPreviewUrlMatches(forMessageBodyText: body, whitelistedOnly: whitelistedOnly).map { $0.urlString }
     }
 
-    class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
+    class func allPreviewUrlMatches(forMessageBodyText body: String, whitelistedOnly: Bool) -> [URLMatchResult] {
         let areLinkPreviewsEnabled = databaseStorage.read { transaction in
             SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
@@ -516,7 +504,8 @@ public class OWSLinkPreviewManager: NSObject {
                 owsFailDebug("Match missing url")
                 continue
             }
-            if isValidLink(url: matchURL) {
+
+            if !whitelistedOnly || isWhitelistedLink(url: matchURL) {
                 let matchResult = URLMatchResult(urlString: matchURL.absoluteString, matchRange: match.range)
                 urlMatches.append(matchResult)
             }
@@ -637,7 +626,7 @@ public class OWSLinkPreviewManager: NSObject {
                 return nil
             }
 
-            guard OWSLinkPreviewManager.isValidLink(url: redirectURL) else {
+            guard OWSLinkPreviewManager.isWhitelistedLink(url: redirectURL) else {
                 Logger.debug("Ignoring redirect to non-whitelisted URL: \(redirectURL)")
                 return nil
             }
@@ -780,7 +769,7 @@ public class OWSLinkPreviewManager: NSObject {
                 Logger.error("Invalid imageUrlString.")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-            guard OWSLinkPreviewManager.isValidMedia(url: imageUrl) else {
+            guard OWSLinkPreviewManager.isWhitelistedMedia(url: imageUrl) else {
                 Logger.error("Invalid image URL.")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
@@ -951,7 +940,7 @@ extension OWSLinkPreviewManager: ProxiedContentDownloaderDelegate {
             return nil
         }
 
-        guard OWSLinkPreviewManager.isValidMedia(url: url) else {
+        guard OWSLinkPreviewManager.isWhitelistedMedia(url: url) else {
             return nil
         }
 
