@@ -121,18 +121,18 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     func handleMentionIfNecessary(rawMessageBody: String, threadID: String, transaction: YapDatabaseReadWriteTransaction) -> String {
         var string = rawMessageBody
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
-        var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.count))
+        var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.utf16.count))
         while let match = outerMatch {
-            let hexEncodedPublicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
+            let publicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
-            let displayName: String? = OWSProfileManager.shared().profileNameForRecipient(withID: hexEncodedPublicKey, transaction: transaction)
+            let displayName: String? = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey, transaction: transaction)
             if let displayName = displayName {
                 string = (string as NSString).replacingCharacters(in: match.range, with: "@\(displayName)")
-                matchEnd = match.range.location + displayName.count
+                matchEnd = match.range.location + displayName.utf16.count
             } else {
                 matchEnd = match.range.location + match.range.length
             }
-            outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: matchEnd, length: string.count - matchEnd))
+            outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: matchEnd, length: string.utf16.count - matchEnd))
         }
         return string
     }
