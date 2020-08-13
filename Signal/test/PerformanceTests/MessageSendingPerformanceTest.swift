@@ -178,7 +178,9 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
             // Each is intentionally in a separate transaction, to be closer to the app experience
             // of sending each message
             self.read { transaction in
-                ThreadUtil.enqueueMessage(withText: CommonGenerator.paragraph,
+                let messageBody = MessageBody(text: CommonGenerator.paragraph,
+                                              ranges: MessageBodyRanges(mentions: [:]))
+                ThreadUtil.enqueueMessage(with: messageBody,
                                           thread: thread,
                                           quotedReplyModel: nil,
                                           linkPreviewDraft: nil,

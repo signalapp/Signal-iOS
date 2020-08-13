@@ -4,11 +4,11 @@
 
 import Foundation
 
-extension UnfairLock {
+public extension UnfairLock {
 
     /// Acquires and releases the lock around the provided closure. Blocks the current thread until the lock can be
     /// acquired.
-    func withLock<T>(_ criticalSection: () throws -> T) rethrows -> T {
+    final func withLock<T>(_ criticalSection: () throws -> T) rethrows -> T {
         lock()
         defer { unlock() }
 
@@ -19,7 +19,8 @@ extension UnfairLock {
     /// can not be acquired.
     /// - Returns: `true` if the lock was acquired and the closure was invoked. `false` if the lock could not be
     /// acquired.
-    @discardableResult func tryWithLock(_ criticalSection: () throws -> Void) rethrows -> Bool {
+    @discardableResult
+    final func tryWithLock(_ criticalSection: () throws -> Void) rethrows -> Bool {
         guard tryLock() else { return false }
         defer { unlock() }
 
@@ -31,7 +32,8 @@ extension UnfairLock {
     /// can not be acquired.
     /// - Returns: nil if the lock could not be acquired. Otherwise, returns the returns the result of the provided
     ///   closure
-    @discardableResult func tryWithLock<T>(_ criticalSection: () throws -> T) rethrows -> T? {
+    @discardableResult
+    final func tryWithLock<T>(_ criticalSection: () throws -> T) rethrows -> T? {
         guard tryLock() else { return nil }
         defer { unlock() }
 

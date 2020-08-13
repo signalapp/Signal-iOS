@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -167,7 +167,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
                 XCTFail("Missing thread.")
             }
 
-            contactThread.archiveThread(with: transaction)
+            contactThread.archiveThread(updateStorageService: false, transaction: transaction)
 
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
