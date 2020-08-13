@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service
 @objc(OWSContactDiscoveryTask)
@@ -16,16 +17,10 @@ public class ContactDiscoveryTask: NSObject {
     public let e164FetchSet: Set<String>
 
     /// - Parameter phoneNumbers: A set of strings representing phone numbers. These should be e164.
-    /// If they're not e164, `ContactDiscoveryTask` will attempt to map them to e164 format before assigning to
-    /// `fetchSet`
+    /// Any non-e164 numbers will be filtered out
     @objc
     public init(phoneNumbers: Set<String>) {
-        // Reduce into a set to dedupe the e164ed representation
-        e164FetchSet = phoneNumbers.reduce(into: Set()) {
-            if let e164 = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: $1)?.toE164() {
-                $0.insert(e164)
-            }
-        }
+        e164FetchSet = phoneNumbers.filter { $0.isValidE164() }
     }
 
     // MARK: - Modifiers
