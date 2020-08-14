@@ -357,7 +357,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // it must be escaped.
         // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
         // for more details.
-        let messageText = MentionUtilities.highlightMentions(in: DisplayableText.filterNotificationText(rawMessageText)!, threadID: thread.uniqueId!)
+        let messageText = DisplayableText.filterNotificationText(rawMessageText)
 
         let senderName = OWSUserProfile.fetch(uniqueId: incomingMessage.authorId, transaction: transaction)?.profileName ?? contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
 
@@ -383,7 +383,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             }
         }
 
-        let notificationBody: String?
+        var notificationBody: String?
         switch previewType {
         case .noNameNoPreview, .nameNoPreview:
             notificationBody = NotificationStrings.incomingMessageBody
@@ -413,6 +413,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         DispatchQueue.main.async {
+            notificationBody = MentionUtilities.highlightMentions(in: notificationBody!, threadID: thread.uniqueId!)
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
