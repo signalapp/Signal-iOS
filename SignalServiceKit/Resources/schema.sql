@@ -102,6 +102,7 @@ CREATE
             ,"infoMessageUserInfo" BLOB
             ,"wasRemotelyDeleted" BOOLEAN
             ,"bodyRanges" BLOB
+            ,"offerType" INTEGER
         )
 ;
 
