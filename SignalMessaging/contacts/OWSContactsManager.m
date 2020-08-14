@@ -473,9 +473,26 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         successParameter(registeredRecipients);
     };
     void (^failure)(NSError *) = ^(NSError *error) {
-        if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
-            && error.code == OWSErrorCodeContactDiscoveryRateLimit) {
+        double delay = retryDelaySeconds;
+        BOOL isRateLimitingError = NO;
+        BOOL shouldRetry = YES;
+
+        if ([error isKindOfClass:[OWSContactDiscoveryError class]]) {
+            OWSContactDiscoveryError *cdsError = (OWSContactDiscoveryError *)error;
+            isRateLimitingError = (cdsError.code == OWSContactDiscoveryErrorCodeRateLimit);
+            shouldRetry = cdsError.retrySuggested;
+            if (cdsError.retryAfterDate) {
+                delay = MAX(cdsError.retryAfterDate.timeIntervalSinceNow, delay);
+            }
+        }
+
+        if (isRateLimitingError) {
             OWSLogError(@"Contact intersection hit rate limit with error: %@", error);
+            failureParameter(error);
+            return;
+        }
+        if (!shouldRetry) {
+            OWSLogError(@"ContactDiscoveryError suggests not to retry. Aborting without rescheduling.");
             failureParameter(error);
             return;
         }
@@ -485,13 +502,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         // Retry with exponential backoff.
         //
         // TODO: Abort if another contact intersection succeeds in the meantime.
-        dispatch_after(
-            dispatch_time(DISPATCH_TIME_NOW, (int64_t)(retryDelaySeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self intersectContacts:phoneNumbers
-                      retryDelaySeconds:retryDelaySeconds * 2.0
-                                success:successParameter
-                                failure:failureParameter];
-            });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self intersectContacts:phoneNumbers
+                  retryDelaySeconds:retryDelaySeconds * 2.0
+                            success:successParameter
+                            failure:failureParameter];
+        });
     };
     OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithIdentifiers:phoneNumbers];
     [discoveryTask performAtQoS:QOS_CLASS_USER_INITIATED

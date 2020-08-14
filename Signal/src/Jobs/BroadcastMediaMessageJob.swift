@@ -87,6 +87,11 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
     // MARK: -
 
     public override func run() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(attachmentUploadProgressNotification),
+                                               name: .attachmentUploadProgress,
+                                               object: nil)
+
         let uploadOperations = jobRecord.attachmentIdMap.keys.map { attachmentId in
             // This is only used for media attachments, so we can always use v3.
             return OWSUploadOperation(attachmentId: attachmentId, canUseV3: true)
@@ -166,6 +171,38 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
 
         reportSuccess()
     }
+
+    // MARK: - Notifications
+
+    @objc
+    func attachmentUploadProgressNotification(_ notification: Notification) {
+        guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
+            owsFailDebug("Missing notificationAttachmentId.")
+            return
+        }
+        guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
+            owsFailDebug("Missing progress.")
+            return
+        }
+        guard let correspondingAttachments = self.jobRecord.attachmentIdMap[notificationAttachmentId] else {
+            return
+        }
+        // Forward upload progress notifications to the corresponding attachments.
+        for correspondingId in correspondingAttachments {
+            guard correspondingId != notificationAttachmentId else {
+                owsFailDebug("Unexpected attachment id.")
+                continue
+            }
+            NotificationCenter.default.post(name: .attachmentUploadProgress,
+                                            object: nil,
+                                            userInfo: [
+                                                kAttachmentUploadAttachmentIDKey: correspondingId,
+                                                kAttachmentUploadProgressKey: progress
+            ])
+        }
+    }
+
+    // MARK: -
 
     public override func didSucceed() {
         self.databaseStorage.write { transaction in

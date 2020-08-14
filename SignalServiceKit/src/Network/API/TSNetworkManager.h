@@ -5,6 +5,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSErrorDomain const TSNetworkManagerErrorDomain;
+extern NSString *const TSNetworkManagerErrorRetryAfterKey;
+
 typedef NS_ERROR_ENUM(TSNetworkManagerErrorDomain, TSNetworkManagerError){
     // It's a shame to use 0 as an enum value for anything other than something like default or unknown, because it's
     // indistinguishable from "not set" in Objc.
@@ -16,6 +18,7 @@ typedef NS_ERROR_ENUM(TSNetworkManagerErrorDomain, TSNetworkManagerError){
 
 BOOL IsNetworkConnectivityFailure(NSError *_Nullable error);
 NSNumber *_Nullable HTTPStatusCodeForError(NSError *_Nullable error);
+NSDate *_Nullable HTTPRetryAfterDateForError(NSError *_Nullable error);
 
 typedef void (^TSNetworkManagerSuccess)(NSURLSessionDataTask *task, _Nullable id responseObject);
 typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *error);

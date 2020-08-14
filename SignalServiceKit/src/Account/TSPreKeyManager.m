@@ -4,7 +4,7 @@
 
 #import "TSPreKeyManager.h"
 #import "AppContext.h"
-#import "NSURLSessionDataTask+StatusCode.h"
+#import "NSURLSessionDataTask+OWS_HTTP.h"
 #import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"
 #import "SSKSignedPreKeyStore.h"

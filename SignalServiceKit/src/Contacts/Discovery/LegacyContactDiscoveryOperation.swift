@@ -45,8 +45,8 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
     }
 
     private func makeRequest(for hashes: [String],
-                     on queue: DispatchQueue,
-                     responseResolver: Resolver<Any?>) {
+                             on queue: DispatchQueue,
+                             responseResolver: Resolver<Any?>) {
         let request = OWSRequestFactory.contactsIntersectionRequest(withHashesArray: hashes)
 
         self.networkManager.makeRequest(
@@ -56,33 +56,33 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
                 responseResolver.fulfill(responseDict)
             },
             failure: { (task, error) in
-                guard let response = task.response as? HTTPURLResponse else {
-                    if IsNetworkConnectivityFailure(error) {
-                        responseResolver.reject(error)
-                    } else {
-                        let responseError = OWSErrorMakeUnableToProcessServerResponseError().asRetryableError
-                        responseResolver.reject(responseError)
-                    }
-                    return
-                }
+                if IsNetworkConnectivityFailure(error) {
+                    responseResolver.reject(error)
 
-                guard response.statusCode != 413 else {
-                    let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactDiscoveryRateLimit, "Contacts Intersection Rate Limit").asUnretryableError
-                    responseResolver.reject(nsError)
-                    return
+                } else if (task.response as? HTTPURLResponse)?.statusCode == 413 {
+                    responseResolver.reject(ContactDiscoveryError(
+                        kind: .rateLimit,
+                        debugDescription: "Rate limited",
+                        retryable: true,
+                        retryAfterDate: error.httpRetryAfterDate
+                    ))
+
+                } else {
+                    responseResolver.reject(ContactDiscoveryError(
+                        kind: .genericServerError,
+                        debugDescription: "Unexpected response code",
+                        retryable: true,
+                        retryAfterDate: error.httpRetryAfterDate
+                    ))
                 }
-                responseResolver.reject(error)
             }
         )
     }
 
     private func parse(response: Any?, phoneNumbersByHashes: [String: String]) throws -> Set<String> {
-        guard let responseDict = response as? [String: AnyObject] else {
-            throw OWSErrorMakeUnableToProcessServerResponseError().asRetryableError
-        }
-
-        guard let contactDicts = responseDict["contacts"] as? [[String: AnyObject]] else {
-            throw OWSErrorMakeUnableToProcessServerResponseError().asRetryableError
+        guard let responseDict = response as? [String: AnyObject],
+              let contactDicts = responseDict["contacts"] as? [[String: AnyObject]] else {
+            throw ContactDiscoveryError.assertionError(description: "Couldn't parse server response")
         }
 
         var registeredRecipientIds: Set<String> = Set()

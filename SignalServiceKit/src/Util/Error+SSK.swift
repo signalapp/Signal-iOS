@@ -11,13 +11,10 @@ extension NSError {
     // Use HTTPStatusCodeForError() instead.
     @objc
     public func afHttpStatusCode() -> NSNumber? {
-        guard domain == AFURLResponseSerializationErrorDomain else {
+        guard let statusCode = afFailingHTTPURLResponse?.statusCode else {
             return nil
         }
-        guard let response = userInfo[AFNetworkingOperationFailingURLResponseErrorKey] as? HTTPURLResponse else {
-            return nil
-        }
-        return NSNumber(value: response.statusCode)
+        return NSNumber(value: statusCode)
     }
 
     @objc
@@ -30,6 +27,18 @@ extension NSError {
             return false
         }
         return 400 <= statusCode && statusCode <= 499
+    }
+
+    @objc
+    public func afRetryAfterDate() -> Date? {
+        return afFailingHTTPURLResponse?.retryAfterDate()
+    }
+
+    private var afFailingHTTPURLResponse: HTTPURLResponse? {
+        guard domain == AFURLResponseSerializationErrorDomain else {
+            return nil
+        }
+        return userInfo[AFNetworkingOperationFailingURLResponseErrorKey] as? HTTPURLResponse
     }
 }
 
