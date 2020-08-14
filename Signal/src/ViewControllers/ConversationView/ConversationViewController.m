@@ -3617,6 +3617,10 @@ typedef enum : NSUInteger {
     self.scrollDownButton.hidden = YES;
 
     self.hasUnreadMessages = NO;
+    
+    if (lastVisibleViewItem != NULL && self.lastVisibleSortId > 0) {
+        [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
+    }
 }
 
 - (void)updateLastVisibleSortId

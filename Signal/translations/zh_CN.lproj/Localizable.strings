@@ -8,7 +8,7 @@
 "ACTION_AUDIO_CALL" = "Session 通话";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "邀请其使用 Session";
+"ACTION_INVITE" = "邀请朋友使用 Session";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -60,7 +60,7 @@
 "APN_Message" = "新消息！";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Session 无法启动。恳请您将调试输出发送至 support@signal.org，以助我们解决此问题。";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Session 无法启动。恳请您将调试日志发送至 support@signal.org，以助我们解决此问题。";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "错误";
@@ -90,7 +90,7 @@
 "ATTACHMENT" = "附件";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "注释字符数已达上限。";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "注释字数已达上限。";
 
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "添加注释...";
@@ -129,7 +129,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "无法识别图片。";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "无法清除图片的元数据。";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "无法清除图片元数据。";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "无法调整图像大小。";
@@ -147,7 +147,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "无附件。";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "选择或者新拍摄图片并发送";
+"ATTACHMENT_HINT" = "选择或拍摄图片并发送";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "附件";
@@ -159,7 +159,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "文件选取失败。";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "请将此文件或目录压缩成文档后再发送。";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "请将此文件或目录压缩后再发送。";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "不支持的文件";
@@ -267,7 +267,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "已屏蔽 %@。";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "用户加入黑名单了";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "该用户已被加入黑名单";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "群组已屏蔽";
@@ -318,7 +318,7 @@
 "CALL_INCOMING_NOTIFICATION_BODY" = "来电";
 
 /* Accessibility label for placing call button */
-"CALL_LABEL" = "打电话";
+"CALL_LABEL" = "呼叫";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "未接来电，因为对方的安全码发生了变化。";
@@ -336,10 +336,10 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "拨号";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "您要打电话给 %@ 吗？";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "您要呼叫 %@ 吗？";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "打电话？";
+"CALL_USER_ALERT_TITLE" = "呼叫？";
 
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "接听来电";
@@ -366,7 +366,7 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "您可在 Session 隐私设置中启用 iOS 呼叫整合，以便查看 Session 来电人的名称和号码。";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "以后";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "下次再说";
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "显示隐私设置";
@@ -408,7 +408,7 @@
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "错误";
 
 /* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "还原";
+"CHECK_FOR_BACKUP_RESTORE" = "恢复";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session无法确定您的iCloud账户状态。请在iOS设置中登陆iCloud账户来备份您在Session中的数据。";
@@ -441,10 +441,10 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "邀请";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "您可在 iOS 设置中启用联系人读取权限，以便查看哪些联系人使用了 Session。";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "您可在 iOS 设置中启用联系人访问权限，以便查看哪些联系人使用了 Session。";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "这个重置操作将删除您的消息，并从服务器上注销您的账户。应用将在操作完成后自动关闭。";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "重置操作将删除您的消息，并从服务器上注销您的账户。应用将在操作完成后自动关闭。";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "您确定要删除您的账号吗？";
@@ -459,7 +459,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "连接新设备";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ 可能重新安装了程序或者更换了设备。让他们验证您的安全码以确保安全。";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ 可能重新安装了APP或者更换了设备。请让其验证您的安全码以确保安全。";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ 的安全码改变了";
@@ -528,10 +528,10 @@
 "CONTACT_PHONE" = "电话";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "无可用 E-mail";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "无可用的 E-mail";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "无可用手机号码";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "无可用的手机号码";
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "选择联系人";
@@ -546,7 +546,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "无效联系人。";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "没有选中任何联系人字段。";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "未选择任何联系人。";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "在地图中打开";
@@ -558,7 +558,7 @@
 "CONTACT_WITHOUT_NAME" = "未命名的联系人";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "这个操作无法撤销。";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "该操作无法撤销。";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "删除会话？";
@@ -570,7 +570,7 @@
 "CONVERSATION_SEARCH_ONE_RESULT" = "1个结果";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d中的%d条结果";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d条结果(共%d条)";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "会话设置";
@@ -591,7 +591,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "对话颜色";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "组信息";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "群组信息";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "静音";
@@ -666,7 +666,7 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "屏蔽该用户";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "重置此 session 后可以收到来自 %@的消息, 但是无法恢复已经被破坏的消息.";
+"CORRUPTED_SESSION_DESCRIPTION" = "重置此 session 后可以收到来自 %@的消息, 但是无法恢复已损坏的消息.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "选择国家编码";
@@ -678,7 +678,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "移动与缩放";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "这需要耗费 1 分钟左右。";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "这需要几分钟的时间。";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "正在优化数据库";
@@ -690,7 +690,7 @@
 "DATE_MINUTES_AGO_FORMAT" = "%@分钟前";
 
 /* The present; the current time. */
-"DATE_NOW" = "此刻";
+"DATE_NOW" = "现在";
 
 /* The current day. */
 "DATE_TODAY" = "今日";
@@ -766,13 +766,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "此对话中的消息将在%@后消失。";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "如果设置了该选项，该群聊里面发送和接收的消息将在阅读后消失。";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "开启阅后即焚后，该群聊里面发送和接收的消息将在阅读后消失。";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "当前消息会在 %@ 之后消失";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "阅后即焚消息设置";
+"DISAPPEARING_MESSAGES_LABEL" = "阅后即焚设置";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "清除";
@@ -781,7 +781,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "执行审查规避的地点";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Session contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "您可在 iOS 设置中启用此权限。";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "您可在 iOS 系统设置中启用此权限。";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Session contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Session 需要联系人访问权限来修改联系人信息";
@@ -820,7 +820,7 @@
 "EDIT_TXT" = "编辑";
 
 /* body of email sent to contacts when inviting to install Session. Embeds {{link to install Session}} and {{link to the Session home page}} */
-"EMAIL_INVITE_BODY" = "你好,\n\n最近我在使用 Session 以保持 iPhone 上的对话私密. 我希望你也能装上, 这样我们可以有信心只有我和你可以看到我们发的消息或者听到我们打的电话.\n\nSession可以在iPhone和Android上使用. 可以在以下的链接下载: %@\n\nSession像你用过的聊天软件一样工作. 我们可以发照片或者视频, 打电话, 也可以群聊. 最好的地方在于, 没任何其它人可以看到这些内容, 即使是做出Session软件的人!\n\n你可以在以下的链接了解更多关于制作 Session 的 Open Whisper Systems:  %@";
+"EMAIL_INVITE_BODY" = "你好,\n\n最近我在使用Session来保护iPhone聊天的私密性。 我希望你也可以安装Session, 这样我们可以有确保只有你我可以看到我们发的消息, 听到我们打的电话。\n\nSession可以在iPhone和Android上使用。可以在以下的链接下载: %@\n\nSession像你用过的聊天软件一样工作。我们可以发照片或者视频, 打电话, 也可以群聊。 最好的地方在于, 没任何其它人可以看到这些内容, 即使是开发Session的人也不能!\n\n你可以在以下的链接了解更多关于开发Session的Open Whisper Systems:  %@";
 
 /* subject of email sent to contacts when inviting to install Session */
 "EMAIL_INVITE_SUBJECT" = "切换到 Session";
@@ -829,7 +829,7 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "暂时没有联系人使用 Session.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "为什么不邀请你的朋友?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "为什么不邀请你的朋友呢?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "确认您的PIN码。";
@@ -2548,50 +2548,50 @@
 // MARK: - Session
 "continue_2" = "继续";
 "copy" = "复制";
-"invalid_url" = "无效的网址";
+"invalid_url" = "无效的链接";
 "copied_to_clipboard" = "复制到剪贴板";
 "device_linking_failed" = "无法链接设备。";
 "next" = "下一步";
-"share" = "分享";
+"share" = "共享";
 "invalid_session_id" = "无效的Session ID";
 "cancel" = "取消";
 "your_session_id" = "您的Session ID";
 
 "vc_landing_title_2" = "您的Session从这里开始...";
-"vc_landing_register_button_title" = "注册Session ID";
+"vc_landing_register_button_title" = "创建Session ID";
 "vc_landing_restore_button_title" = "继续使用您的Session ID";
-"vc_landing_link_button_title" = "链接到现有帐号";
-"vc_landing_device_unlinked_modal_title" = "您的设备已成功断开链接";
+"vc_landing_link_button_title" = "关联现有帐号";
+"vc_landing_device_unlinked_modal_title" = "您的设备已成功取消关联";
 
 "view_fake_chat_bubble_1" = "什么是Session？";
 "view_fake_chat_bubble_2" = "Session是一个去中心化的加密消息应用。";
-"view_fake_chat_bubble_3" = "所以Session不会收集我的个人信息或对话原始数据？怎么做到的？。";
+"view_fake_chat_bubble_3" = "所以Session不会收集我的个人信息或者对话元数据？怎么做到的？";
 "view_fake_chat_bubble_4" = "通过结合高效的匿名路由和端到端的加密技术。";
-"view_fake_chat_bubble_5" = "好朋友就要与朋友使用能够保证信息安全的聊天工具，不用谢啦";
+"view_fake_chat_bubble_5" = "好朋友之间就要使用能够保证信息安全的聊天工具，不用谢啦！";
 
-"vc_register_title" = "向您的新Session ID打个招呼吧";
-"vc_register_explanation" = "Session ID是其他用户需要与您聊天时使用的独一无二的地址。与您的真实身份无关，Session ID的设计是完全是匿名和私有的。";
+"vc_register_title" = "向您的Session ID打个招呼吧";
+"vc_register_explanation" = "您的Session ID是其他用户在与您聊天时使用的独一无二的地址。Session ID与您的真实身份无关，它在设计上完全是匿名且私密的。";
 "vc_register_public_key_copied_message" = "复制到剪贴板";
 
 "vc_restore_title" = "恢复您的帐号";
 "vc_restore_explanation" = "在您重新登陆并需要恢复账户时，请输入您注册帐号时的恢复口令。";
 "vc_restore_seed_text_field_hint" = "输入您的恢复口令";
 
-"vc_link_device_title" = "链接设备";
+"vc_link_device_title" = "关联设备";
 "vc_link_device_enter_session_id_tab_title" = "输入Session ID";
 "vc_link_device_scan_qr_code_tab_title" = "扫描二维码";
-"vc_link_device_scan_qr_code_explanation" = "在您的设备上导航到“设置”>“设备”>“链接设备”，然后扫描出现的二维码以开始链接过程。";
+"vc_link_device_scan_qr_code_explanation" = "在您的设备上导航到“设置”>“设备”>“链接设备”，然后扫描出现的二维码以开始关联。";
 
-"vc_enter_session_id_title" = "链接您的设备";
-"vc_enter_session_id_explanation" = "在您的另一个设备上导航到“设置”>“设备” >“链接设备”，然后在此处输入Session ID以开始链接过程。";
+"vc_enter_session_id_title" = "关联您的设备";
+"vc_enter_session_id_explanation" = "在您的另一个设备上导航到“设置”>“设备” >“链接设备”，然后在此处输入Session ID以开始关联。";
 "vc_enter_session_id_text_field_hint" = "输入Session ID";
 
-"vc_display_name_title_2" = "选择您的显示名称";
-"vc_display_name_explanation" = "使用Session时，这就是您的名字。它可以是您的真实姓名，别名或您喜欢的其他任何名称。";
-"vc_display_name_text_field_hint" = "输入显示名称";
-"vc_display_name_display_name_missing_error" = "请选择一个显示名称";
-"vc_display_name_display_name_invalid_error" = "请选择一个仅包含 az，AZ，0-9 和_字符的显示名称";
-"vc_display_name_display_name_too_long_error" = "请选择一个较短的显示名称";
+"vc_display_name_title_2" = "选择您想显示的名称";
+"vc_display_name_explanation" = "这就是您在使用Session时的名字。它可以是您的真实姓名，别名或您喜欢的其他任何名称。";
+"vc_display_name_text_field_hint" = "输入您想显示的名称";
+"vc_display_name_display_name_missing_error" = "请设定一个名称";
+"vc_display_name_display_name_invalid_error" = "请设定一个仅包含 a-z，A-Z，0-9 和 _ 的名称";
+"vc_display_name_display_name_too_long_error" = "请设定一个较短的名称";
 
 "vc_pn_mode_recommended_option_tag" = "推荐的选项";
 "vc_pn_mode_no_option_picked_modal_title" = "请选择一个选项";
@@ -2605,15 +2605,15 @@
 
 "vc_seed_title" = "您的恢复口令";
 "vc_seed_title_2" = "这里是您的恢复口令";
-"vc_seed_explanation" = "您的恢复口令是Session ID的主密钥 - 如果您无法访问您的现有设备，则可以使用它在其他设备上恢复Session ID。将您的恢复口令存储在安全的地方，不要将其提供给任何人。";
+"vc_seed_explanation" = "您的恢复口令是Session ID的主密钥 - 如果您无法访问您的现有设备，则可以使用它在其他设备上恢复您的Session ID。请将您的恢复口令存储在安全的地方，不要将其提供给任何人。";
 "vc_seed_reveal_button_title" = "长按显示内容";
 
-"view_seed_reminder_subtitle_1" = "保存恢复短语以保护您的帐号安全";
-"view_seed_reminder_subtitle_2" = "点击并按住遮盖住的单词以显示您的恢复短语，然后安全地存储它以保护Session ID。";
-"view_seed_reminder_subtitle_3" = "确保将恢复短语存储在安全的地方";
+"view_seed_reminder_subtitle_1" = "保存恢复口令以保护您的帐号安全";
+"view_seed_reminder_subtitle_2" = "点击并按住遮盖住的单词以显示您的恢复口令，请将它安全地存储以保护您的Session ID。";
+"view_seed_reminder_subtitle_3" = "请确保将恢复口令存储在安全的地方";
 
 "vc_path_title" = "路径";
-"vc_path_explanation" = "Session会通过Session的分散网络中的多个服务节点跳转消息以隐藏IP。以下是国家您目前的消息连接跳转服务节点所在地：";
+"vc_path_explanation" = "Session会通过其去中心化网络中的多个服务节点跳转消息以隐藏IP。以下国家是您目前的消息连接跳转服务节点所在地：";
 "vc_path_device_row_title" = "您";
 "vc_path_guard_node_row_title" = "入口节点";
 "vc_path_service_node_row_title" = "服务节点";
@@ -2623,38 +2623,38 @@
 "vc_create_private_chat_title" = "新建私人聊天";
 "vc_create_private_chat_enter_session_id_tab_title" = "输入Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "扫描二维码";
-"vc_create_private_chat_scan_qr_code_explanation" = "扫描另一用户的二维码以开始使用Session。您可以在帐号设置中点击二维码图标找到二维码。";
+"vc_create_private_chat_scan_qr_code_explanation" = "扫描其他用户的二维码来发起对话。您可以在帐号设置中点击二维码图标找到二维码。";
 
 "vc_enter_public_key_text_field_hint" = "输入对方的Session ID";
-"vc_enter_public_key_explanation" = "用户可以通过进入帐号设置并点击共享Session ID来分享自己的Session ID，或通过共享其二维码来分享其Session ID。";
+"vc_enter_public_key_explanation" = "用户可以通过进入帐号设置并点击\"共享Session ID\"来分享自己的Session ID，或通过共享其二维码来分享其Session ID。";
 
 "vc_scan_qr_code_camera_access_explanation" = "Session需要摄像头访问权限才能扫描二维码";
 "vc_scan_qr_code_grant_camera_access_button_title" = "授予摄像头访问权限";
 
 "vc_create_closed_group_title" = "创建私密群组";
 "vc_create_closed_group_text_field_hint" = "输入群组名称";
-"vc_create_closed_group_explanation" = "私密群组最多支持 10 位成员，并提供与一对一对话相同的隐私保护。";
+"vc_create_closed_group_explanation" = "私密群组最多支持10位成员，并提供与一对一对话相同的隐私保护。";
 "vc_create_closed_group_empty_state_message" = "您还没有任何联系人";
 "vc_create_closed_group_empty_state_button_title" = "开始对话";
 "vc_create_closed_group_group_name_missing_error" = "请输入群组名称";
 "vc_create_closed_group_group_name_too_long_error" = "请输入较短的群组名称";
-"vc_create_closed_group_not_enough_group_members_error" = "请选择至少 2 位小组成员";
-"vc_create_closed_group_too_many_group_members_error" = "私密群组成员不得超过 10 个";
+"vc_create_closed_group_not_enough_group_members_error" = "请选择至少2位群组成员";
+"vc_create_closed_group_too_many_group_members_error" = "私密群组成员不得超过10个";
 "vc_create_closed_group_invalid_session_id_error" = "您群组中的一位成员的Session ID无效";
 
 "vc_join_public_chat_title" = "加入公开群组";
 "vc_join_public_chat_error" = "无法加入群组";
-"vc_join_public_chat_enter_group_url_tab_title" = "公开群组网址";
+"vc_join_public_chat_enter_group_url_tab_title" = "公开群组链接";
 "vc_join_public_chat_scan_qr_code_tab_title" = "扫描二维码";
 "vc_join_public_chat_scan_qr_code_explanation" = "扫描您想加入的公开群组的二维码";
 
-"vc_enter_chat_url_text_field_hint" = "输入一个公开群组网址";
+"vc_enter_chat_url_text_field_hint" = "输入公开群组链接";
 
 "vc_settings_title" = "设置";
-"vc_settings_display_name_text_field_hint" = "输入显示的名称";
-"vc_settings_display_name_missing_error" = "请选择一个显示名称";
-"vc_settings_invalid_display_name_error" = "请选择一个仅包含 az，AZ，0-9 和 _ 字符的显示名称";
-"vc_settings_display_name_too_long_error" = "请选择一个较短的显示名称";
+"vc_settings_display_name_text_field_hint" = "输入您想显示的名称";
+"vc_settings_display_name_missing_error" = "请设定一个名称";
+"vc_settings_invalid_display_name_error" = "请设定一个仅包含 a-z，A-Z，0-9 和 _ 的名称";
+"vc_settings_display_name_too_long_error" = "请设定一个较短的名称";
 "vc_settings_privacy_button_title" = "隐私";
 "vc_settings_notifications_button_title" = "通知";
 "vc_settings_chats_button_title" = "聊天";
@@ -2663,44 +2663,44 @@
 "vc_settings_clear_all_data_button_title" = "清除数据";
 
 "vc_notification_settings_title" = "通知";
-"vc_notification_settings_style_section_title" = "通知风格类型";
+"vc_notification_settings_style_section_title" = "通知风格";
 "vc_notification_settings_content_section_title" = "通知内容";
 
 "vc_privacy_settings_title" = "隐私";
 
-"vc_chat_settings_title" = "聊天";
+"vc_chat_settings_title" = "会话";
 
 "vc_linked_devices_title" = "设备";
 "vc_linked_devices_multi_device_limit_reached_modal_title" = "达到设备限制";
-"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "当前不允许链接多个设备。";
-"vc_linked_devices_unlinking_failed_message" = "无法断开链接设备。";
-"vc_linked_devices_unlinking_successful_message" = "您的设备已成功断开链接";
-"vc_linked_devices_linking_failed_message" = "无法链接设备。";
-"vc_linked_devices_empty_state_message" = "您尚未链接任何设备";
-"vc_linked_devices_empty_state_button_title" = "链接设备（测试版）";
+"vc_linked_devices_multi_device_limit_reached_modal_explanation" = "当前不允许关联多个设备。";
+"vc_linked_devices_unlinking_failed_message" = "无法断开关联设备。";
+"vc_linked_devices_unlinking_successful_message" = "您的设备已成功取消关联";
+"vc_linked_devices_linking_failed_message" = "无法关联设备。";
+"vc_linked_devices_empty_state_message" = "您尚未关联任何设备";
+"vc_linked_devices_empty_state_button_title" = "关联设备（测试版）";
 
 "preferences_notifications_strategy_category_title" = "通知选项";
 
 "modal_link_device_slave_mode_title_1" = "等待授权";
-"modal_link_device_slave_mode_title_2" = "设备链接授权";
+"modal_link_device_slave_mode_title_2" = "设备关联已授权";
 "modal_link_device_slave_mode_explanation_1" = "请检查以下单词是否与您其他设备上显示的单词匹配。";
-"modal_link_device_slave_mode_explanation_2" = "您的设备已成功链接";
+"modal_link_device_slave_mode_explanation_2" = "您的设备已成功关联";
 
 "modal_link_device_master_mode_title_1" = "等待设备";
-"modal_link_device_master_mode_title_2" = "收到链接请求";
-"modal_link_device_master_mode_title_3" = "授权设备链接";
-"modal_link_device_master_mode_explanation_1" = "在其他设备上下载Session，然后点击登陆页面屏幕底部的“链接到现有帐号”。如果您的其他设备上已有一个帐号，则必须先删除已有帐号。";
+"modal_link_device_master_mode_title_2" = "收到关联请求";
+"modal_link_device_master_mode_title_3" = "授权设备关联";
+"modal_link_device_master_mode_explanation_1" = "在其他设备上下载Session，然后点击登陆页面屏幕底部的“关联到现有帐号”。如果您的其他设备上已有一个帐号，则必须先删除已有帐号。";
 "modal_link_device_master_mode_explanation_2" = "请检查以下单词是否与您其他设备上显示的单词匹配。";
-"modal_link_device_master_mode_explanation_3" = "创建设备关联时，请耐心等待。这可能需要一分钟的时间。";
+"modal_link_device_master_mode_explanation_3" = "创建设备关联时，请耐心等待。这可能需要一分钟左右的时间。";
 "modal_link_device_master_mode_authorize_button_title" = "授权";
 
-"vc_device_list_bottom_sheet_change_name_button_title" = "更换名字";
-"vc_device_list_bottom_sheet_unlink_device_button_title" = "断开设备链接";
+"vc_device_list_bottom_sheet_change_name_button_title" = "更换名称";
+"vc_device_list_bottom_sheet_unlink_device_button_title" = "断开设备关联";
 
-"modal_edit_device_name_text_field_hint" = "输入名字";
+"modal_edit_device_name_text_field_hint" = "输入名称";
 
 "modal_seed_title" = "您的恢复口令";
-"modal_seed_explanation" = "这是您的恢复口令。有了它，您可以将Session ID还原或迁移到新设备上。";
+"modal_seed_explanation" = "这是您的恢复口令。您可以通过该口令将Session ID还原或迁移到新设备上。";
 
 "modal_clear_all_data_title" = "清除所有数据";
 "modal_clear_all_data_explanation" = "这将永久删除您的消息、对话和联系人。";
@@ -2708,13 +2708,13 @@
 "vc_qr_code_title" = "二维码";
 "vc_qr_code_view_my_qr_code_tab_title" = "查看我的二维码";
 "vc_qr_code_view_scan_qr_code_tab_title" = "扫描二维码";
-"vc_qr_code_view_scan_qr_code_explanation" = "扫描对方的二维码，与他们开始对话";
+"vc_qr_code_view_scan_qr_code_explanation" = "扫描对方的二维码以发起对话";
 
-"vc_view_my_qr_code_explanation" = "这是您的二维码。其他用户可以对其进行扫描以开始对话。";
+"vc_view_my_qr_code_explanation" = "这是您的二维码。其他用户可以对其进行扫描以发起与您的对话。";
 "vc_view_my_qr_code_share_title" = "分享二维码";
 
 "session_reset_banner_message" = "您要恢复与%@的对话吗？";
-"session_reset_banner_dismiss_button_title" = "解散";
+"session_reset_banner_dismiss_button_title" = "取消";
 "session_reset_banner_restore_button_title" = "恢复";
 
 "vc_contact_selection_contacts_title" = "联系人";

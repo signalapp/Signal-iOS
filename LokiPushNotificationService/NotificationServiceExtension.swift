@@ -62,24 +62,26 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         var thread: TSThread
         var newNotificationBody = ""
         let masterPublicKey = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
-        var displayName = masterPublicKey
+        var displayName = OWSUserProfile.fetch(uniqueId: masterPublicKey, transaction: transaction)?.profileName ?? SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: masterPublicKey)
         if let groupID = contentProto?.dataMessage?.group?.id {
             thread = TSGroupThread.getOrCreateThread(withGroupId: groupID, groupType: .closedGroup, transaction: transaction)
-            displayName = thread.name()
-            if displayName.count < 1 {
-                displayName = MessageStrings.newGroupDefaultTitle
+            var groupName = thread.name()
+            if groupName.count < 1 {
+                groupName = MessageStrings.newGroupDefaultTitle
             }
+            let senderName = OWSUserProfile.fetch(uniqueId: masterPublicKey, transaction: transaction)?.profileName ?? SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: masterPublicKey)
+            displayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
             let group: SSKProtoGroupContext = contentProto!.dataMessage!.group!
             let oldGroupModel = (thread as! TSGroupThread).groupModel
-            var removedMembers = Set(arrayLiteral: oldGroupModel.groupMemberIds)
+            let removedMembers = NSMutableSet(array: oldGroupModel.groupMemberIds)
             let newGroupModel = TSGroupModel.init(title: group.name,
                                                   memberIds:group.members,
                                                   image: oldGroupModel.groupImage,
                                                   groupId: group.id,
                                                   groupType: oldGroupModel.groupType,
                                                   adminIds: group.admins)
-            removedMembers.subtract(Set(arrayLiteral: newGroupModel.groupMemberIds))
-            newGroupModel.removedMembers = NSMutableSet(set: removedMembers)
+            removedMembers.minus(Set(newGroupModel.groupMemberIds))
+            newGroupModel.removedMembers = removedMembers
             switch contentProto?.dataMessage?.group?.type {
             case .update:
                 newNotificationBody = oldGroupModel.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: SSKEnvironment.shared.contactsManager)
@@ -93,21 +95,46 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             }
         } else {
             thread = TSContactThread.getOrCreateThread(withContactId: result.source, transaction: transaction)
-            displayName = contentProto?.dataMessage?.profile?.displayName ?? displayName
         }
         let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : thread.uniqueId!, NotificationServiceExtension.isFromRemoteKey : true ]
         notificationContent.title = displayName
         notificationContent.userInfo = userInfo
         notificationContent.badge = 1
+        if let attachment = contentProto?.dataMessage?.attachments.last {
+            newNotificationBody = TSAttachment.emoji(forMimeType: attachment.contentType!) + "Attachment"
+            if let rawMessageBody = contentProto?.dataMessage?.body, rawMessageBody.count > 0 {
+                newNotificationBody += ": \(rawMessageBody)"
+            }
+        }
         if newNotificationBody.count < 1 {
             newNotificationBody = contentProto?.dataMessage?.body ?? "You've got a new message"
         }
+        newNotificationBody = handleMentionIfNecessary(rawMessageBody: newNotificationBody, threadID: thread.uniqueId!, transaction: transaction)
         notificationContent.body = newNotificationBody
         if notificationContent.body.count < 1 {
             self.completeWithFailure(content: notificationContent)
         } else {
             self.contentHandler!(notificationContent)
         }
+    }
+    
+    func handleMentionIfNecessary(rawMessageBody: String, threadID: String, transaction: YapDatabaseReadWriteTransaction) -> String {
+        var string = rawMessageBody
+        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
+        var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.utf16.count))
+        while let match = outerMatch {
+            let publicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
+            let matchEnd: Int
+            let displayName: String? = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey, transaction: transaction)
+            if let displayName = displayName {
+                string = (string as NSString).replacingCharacters(in: match.range, with: "@\(displayName)")
+                matchEnd = match.range.location + displayName.utf16.count
+            } else {
+                matchEnd = match.range.location + match.range.length
+            }
+            outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: matchEnd, length: string.utf16.count - matchEnd))
+        }
+        return string
     }
 
     func setUpIfNecessary(completion: @escaping () -> Void) {
