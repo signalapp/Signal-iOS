@@ -49,17 +49,7 @@ class MemberActionSheet: NSObject {
 
         let actionSheet = ActionSheetController()
         actionSheet.customHeader = MemberHeader(address: address) { [weak actionSheet] in
-            actionSheet?.dismiss(animated: true, completion: {
-                // If we can edit contacts, present the contact for this user when tapping the header.
-                guard self.contactsManager.supportsContactEditing else { return }
-
-                guard let contactVC = contactsViewHelper.contactViewController(for: self.address, editImmediately: true) else {
-                    return owsFailDebug("unexpectedly failed to present contact view")
-                }
-                self.strongSelf = self
-                contactVC.delegate = self
-                navController.pushViewController(contactVC, animated: true)
-            })
+            actionSheet?.dismiss(animated: true)
         }
 
         actionSheet.contentAlignment = .leading
@@ -85,28 +75,6 @@ class MemberActionSheet: NSObject {
             return
         }
 
-        let messageAction = ActionSheetAction(
-            title: NSLocalizedString("GROUP_MEMBERS_SEND_MESSAGE",
-                                     comment: "Button label for the 'send message to group member' button"),
-            accessibilityIdentifier: "MemberActionSheet.send_message"
-        ) { _ in
-            SignalApp.shared().presentConversation(for: self.address, action: .compose, animated: true)
-        }
-        messageAction.leadingIcon = .message
-        actionSheet.addAction(messageAction)
-
-        if FeatureFlags.calling {
-            let callAction = ActionSheetAction(
-                title: NSLocalizedString("GROUP_MEMBERS_CALL",
-                                         comment: "Button label for the 'call group member' button"),
-                accessibilityIdentifier: "MemberActionSheet.call"
-            ) { _ in
-                SignalApp.shared().presentConversation(for: self.address, action: .audioCall, animated: true)
-            }
-            callAction.leadingIcon = .audioCall
-            actionSheet.addAction(callAction)
-        }
-
         let blockAction = ActionSheetAction(
             title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON",
                                      comment: "Button label for the 'block' button"),
@@ -120,6 +88,23 @@ class MemberActionSheet: NSObject {
         }
         blockAction.leadingIcon = .settingsBlock
         actionSheet.addAction(blockAction)
+
+        if contactsManager.supportsContactEditing && !contactsManager.isSystemContact(address: address) {
+            let addToContactsAction = ActionSheetAction(
+                title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
+                                         comment: "button in conversation settings view."),
+                accessibilityIdentifier: "MemberActionSheet.block"
+            ) { _ in
+                guard let contactVC = contactsViewHelper.contactViewController(for: self.address, editImmediately: true) else {
+                     return owsFailDebug("unexpectedly failed to present contact view")
+                 }
+                 self.strongSelf = self
+                 contactVC.delegate = self
+                 navController.pushViewController(contactVC, animated: true)
+            }
+            addToContactsAction.leadingIcon = .settingsAddToContacts
+            actionSheet.addAction(addToContactsAction)
+        }
 
         let addToGroupAction = ActionSheetAction(
             title: NSLocalizedString("ADD_TO_GROUP",
@@ -202,10 +187,10 @@ private class MemberHeader: UIStackView {
         return .shared()
     }
 
-    private var releaseAction: () -> Void
+    private var dismiss: () -> Void
 
-    init(address: SignalServiceAddress, releaseAction: @escaping () -> Void) {
-        self.releaseAction = releaseAction
+    init(address: SignalServiceAddress, dismiss: @escaping () -> Void) {
+        self.dismiss = dismiss
 
         super.init(frame: .zero)
 
@@ -216,13 +201,6 @@ private class MemberHeader: UIStackView {
         layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
 
         createViews(address: address)
-
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        addGestureRecognizer(tapGestureRecognizer)
-    }
-
-    @objc func didTap() {
-        releaseAction()
     }
 
     func createViews(address: SignalServiceAddress) {
@@ -303,6 +281,66 @@ private class MemberHeader: UIStackView {
             detailsLabel.text = detailText
             addArrangedSubview(detailsLabel)
         }
+
+        let actionsStackView = UIStackView()
+        actionsStackView.axis = .horizontal
+        actionsStackView.spacing = 36
+        actionsStackView.isLayoutMarginsRelativeArrangement = true
+        actionsStackView.layoutMargins = UIEdgeInsets(top: 14, leading: 0, bottom: 18, trailing: 0)
+        addArrangedSubview(actionsStackView)
+
+        let messageButton = createActionButton(
+            icon: .message,
+            accessibilityLabel: NSLocalizedString("GROUP_MEMBERS_SEND_MESSAGE",
+                                                  comment: "Accessibility label for the 'send message to group member' button"),
+            accessibilityIdentifier: "MemberActionSheet.send_message"
+        ) { SignalApp.shared().presentConversation(for: address, action: .compose, animated: true) }
+        actionsStackView.addArrangedSubview(messageButton)
+
+        let videoCallButton = createActionButton(
+            icon: .videoCall,
+            accessibilityLabel: NSLocalizedString("GROUP_MEMBERS_VIDEO_CALL",
+                                                  comment: "Accessibility label for the 'call group member' button"),
+            accessibilityIdentifier: "MemberActionSheet.video_call"
+        ) { SignalApp.shared().presentConversation(for: address, action: .videoCall, animated: true) }
+        actionsStackView.addArrangedSubview(videoCallButton)
+
+        let audioCallButton = createActionButton(
+            icon: .audioCall,
+            accessibilityLabel: NSLocalizedString("GROUP_MEMBERS_CALL",
+                                                  comment: "Accessibility label for the 'call group member' button"),
+            accessibilityIdentifier: "MemberActionSheet.audio_call"
+        ) { SignalApp.shared().presentConversation(for: address, action: .audioCall, animated: true) }
+        actionsStackView.addArrangedSubview(audioCallButton)
+
+        let leftSpacer = UIView.hStretchingSpacer()
+        let rightSpacer = UIView.hStretchingSpacer()
+        actionsStackView.insertArrangedSubview(leftSpacer, at: 0)
+        actionsStackView.addArrangedSubview(rightSpacer)
+        leftSpacer.autoMatch(.width, to: .width, of: rightSpacer)
+
+    }
+
+    private func createActionButton(
+        icon: ThemeIcon,
+        accessibilityLabel: String?,
+        accessibilityIdentifier: String?,
+        action: @escaping () -> Void
+    ) -> UIButton {
+        let button = OWSButton { [weak self] in
+            guard let self = self else { return }
+            action()
+            self.dismiss()
+        }
+        button.accessibilityLabel = accessibilityLabel
+        button.accessibilityIdentifier = accessibilityIdentifier
+        button.autoSetDimensions(to: CGSize(square: 48))
+        button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray02
+        button.layer.cornerRadius = 24
+        button.clipsToBounds = true
+        button.imageEdgeInsets = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+        button.setTemplateImageName(Theme.iconName(icon), tintColor: Theme.accentBlueColor)
+        return button
     }
 
     required init(coder: NSCoder) {
