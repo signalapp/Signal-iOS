@@ -189,6 +189,10 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
         }
         // Forward upload progress notifications to the corresponding attachments.
         for correspondingId in correspondingAttachments {
+            guard correspondingId != notificationAttachmentId else {
+                owsFailDebug("Unexpected attachment id.")
+                continue
+            }
             NotificationCenter.default.post(name: .attachmentUploadProgress,
                                             object: nil,
                                             userInfo: [
