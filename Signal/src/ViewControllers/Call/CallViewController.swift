@@ -385,15 +385,21 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         videoModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only")
         videoModeVideoButton.alpha = 0.9
 
-        ongoingAudioCallControls.distribution = .equalSpacing
+        ongoingAudioCallControls.spacing = 16
         ongoingAudioCallControls.axis = .horizontal
-
         view.addSubview(ongoingAudioCallControls)
 
-        ongoingVideoCallControls.distribution = .equalSpacing
+        ongoingVideoCallControls.spacing = 16
         ongoingVideoCallControls.axis = .horizontal
-
         view.addSubview(ongoingVideoCallControls)
+
+        // Ensure that the controls are always horizontally centered
+        for stackView in [ongoingAudioCallControls, ongoingVideoCallControls] {
+            guard let leadingSpacer = stackView.arrangedSubviews.first, let trailingSpacer = stackView.arrangedSubviews.last else {
+                return owsFailDebug("failed to get spacers")
+            }
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        }
 
         audioModeHangUpButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioHangUpButton")
         audioModeSourceButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioSourceButton")
@@ -455,8 +461,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         incomingAudioCallControls.axis = .horizontal
         incomingAudioCallControls.alignment = .center
-        incomingAudioCallControls.distribution = .equalSpacing
-
         view.addSubview(incomingAudioCallControls)
 
         audioAnswerIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioAnswerIncomingButton")
@@ -481,12 +485,18 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         incomingVideoCallBottomControls.axis = .horizontal
         incomingVideoCallBottomControls.alignment = .center
-        incomingVideoCallBottomControls.distribution = .equalSpacing
 
         incomingVideoCallControls.axis = .vertical
         incomingVideoCallControls.spacing = 20
-
         view.addSubview(incomingVideoCallControls)
+
+        // Ensure that the controls are always horizontally centered
+        for stackView in [incomingAudioCallControls, incomingVideoCallBottomControls] {
+            guard let leadingSpacer = stackView.arrangedSubviews.first, let trailingSpacer = stackView.arrangedSubviews.last else {
+                return owsFailDebug("failed to get spacers")
+            }
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        }
 
         videoAnswerIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoAnswerIncomingButton")
         videoAnswerIncomingAudioOnlyButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoAnswerIncomingAudioOnlyButton")
@@ -496,6 +506,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     private func createButton(iconName: String, action: Selector) -> CallButton {
         let button = CallButton(iconName: iconName)
         button.addTarget(self, action: action, for: .touchUpInside)
+        button.setContentHuggingHorizontalHigh()
+        button.setCompressionResistanceHorizontalLow()
         return button
     }
 
