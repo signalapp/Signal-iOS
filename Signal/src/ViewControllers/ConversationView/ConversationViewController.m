@@ -1532,10 +1532,6 @@ typedef enum : NSUInteger {
 
 - (BOOL)canCall
 {
-    if (!SSKFeatureFlags.calling) {
-        return NO;
-    }
-
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         return NO;
     }

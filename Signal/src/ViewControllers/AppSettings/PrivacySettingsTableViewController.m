@@ -280,7 +280,6 @@ NS_ASSUME_NONNULL_BEGIN
                     selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
 
-    if (SSKFeatureFlags.calling) {
         // Allow calls to connect directly vs. using TURN exclusively
         OWSTableSection *callingSection = [OWSTableSection new];
         callingSection.headerTitle
@@ -326,7 +325,6 @@ NS_ASSUME_NONNULL_BEGIN
                 @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
             [contents addSection:callKitSection];
         }
-    }
 
     OWSTableSection *historyLogsSection = [OWSTableSection new];
     historyLogsSection.headerTitle = NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");

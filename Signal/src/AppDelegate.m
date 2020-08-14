@@ -844,11 +844,6 @@ void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            if (!SSKFeatureFlags.calling) {
-                OWSLogInfo(@"Ignoring unsupported activity.");
-                return;
-            }
-
             SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
             if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
@@ -902,11 +897,6 @@ void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            if (!SSKFeatureFlags.calling) {
-                OWSLogInfo(@"Ignoring unsupported activity.");
-                return;
-            }
-
             SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
             if (!address.isValid) {
                 OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
@@ -951,11 +941,6 @@ void uncaughtExceptionHandler(NSException *exception)
         [AppReadiness runNowOrWhenAppDidBecomeReady:^{
             if (![self.tsAccountManager isRegisteredAndReady]) {
                 OWSLogInfo(@"Ignoring user activity; app not ready.");
-                return;
-            }
-
-            if (!SSKFeatureFlags.calling) {
-                OWSLogInfo(@"Ignoring unsupported activity.");
                 return;
             }
 
@@ -1263,13 +1248,6 @@ void uncaughtExceptionHandler(NSException *exception)
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];
-
-        if (!SSKFeatureFlags.answerCallsOnSecondaryDevice) {
-            // Currently, we only build the CallUIAdapter for the primary device, which we can't determine
-            // until *after* the user has registered. Once we create calling on all devices, we can
-            // create the callUIAdapter unconditionally, on all devices, and get rid of this.
-            [AppEnvironment.shared.callService createCallUIAdapter];
-        }
     }
 }
 

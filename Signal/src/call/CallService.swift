@@ -176,14 +176,6 @@ extension SignalCall: CallManagerCallReference { }
     @objc public func createCallUIAdapter() {
         AssertIsOnMainThread()
 
-        guard FeatureFlags.calling else {
-            // The CallUIAdapter creates the callkit adaptee which in turn adds calling buttons
-            // to the contacts app. They don't do anything, but it seems like they shouldn't be
-            // there.
-            Logger.info("not creating call UI adapter for device that doesn't support calling")
-            return
-        }
-
         if let call = self.currentCall {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
             self.terminate(call: call)
@@ -630,11 +622,6 @@ extension SignalCall: CallManagerCallReference { }
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
-        guard FeatureFlags.calling else {
-            owsFailDebug("ignoring call event on unsupported device")
-            return
-        }
-
         guard self.currentCall == nil else {
             handleFailedCall(failedCall: call, error: OWSAssertionError("a current call is already set"))
             return
@@ -682,11 +669,6 @@ extension SignalCall: CallManagerCallReference { }
     public func callManager(_ callManager: CallManager<SignalCall, CallService>, onEvent call: SignalCall, event: CallManagerEvent) {
         AssertIsOnMainThread()
         Logger.info("call: \(call), onEvent: \(event)")
-
-        guard FeatureFlags.calling else {
-            owsFailDebug("ignoring call event on unsupported device")
-            return
-        }
 
         switch event {
         case .ringingLocal:
