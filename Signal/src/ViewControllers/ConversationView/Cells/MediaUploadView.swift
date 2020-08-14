@@ -28,19 +28,24 @@ public class MediaUploadView: UIView {
         layer.addSublayer(shapeLayer2)
 
         NotificationCenter.default.addObserver(forName: .attachmentUploadProgress, object: nil, queue: nil) { [weak self] notification in
-            guard let strongSelf = self else { return }
-            guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
-                return
-            }
-            guard notificationAttachmentId == strongSelf.attachmentId else {
-                return
-            }
-            guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
-                return
-            }
-            strongSelf.lastProgress = CGFloat(progress.floatValue)
-            strongSelf.updateLayers()
+            self?.attachmentUploadNotification(notification)
         }
+    }
+
+    private func attachmentUploadNotification(_ notification: Notification) {
+        guard let notificationAttachmentId = notification.userInfo?[kAttachmentUploadAttachmentIDKey] as? String else {
+            owsFailDebug("Missing notificationAttachmentId.")
+            return
+        }
+        guard notificationAttachmentId == attachmentId else {
+            return
+        }
+        guard let progress = notification.userInfo?[kAttachmentUploadProgressKey] as? NSNumber else {
+            owsFailDebug("Missing progress.")
+            return
+        }
+        lastProgress = CGFloat(progress.floatValue)
+        updateLayers()
     }
 
     @available(*, unavailable, message: "use other init() instead.")
