@@ -368,8 +368,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let groupsV2editMemberAccess = build.includes(.qa)
 
-    static let groupsV2forceModernCDS = build.includes(.qa)
-
     @objc
     public static let isMessageProcessingVerbose = false
 
@@ -381,7 +379,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let logCurlOnSuccess = false
 
-    static let forceModernContactDiscovery = build.includes(.dev)
+    static let forceModernContactDiscovery = build.includes(.beta)
 
     // Our "group update" info messages should be robust to
     // various situations that shouldn't occur in production,

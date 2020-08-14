@@ -29,7 +29,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2CreateGroups: Bool {
-        guard modernContactDiscovery || DebugFlags.groupsV2forceModernCDS else { return false }
+        guard modernContactDiscovery else { return false }
         guard FeatureFlags.groupsV2Supported else { return false }
         if DebugFlags.groupsV2ForceEnable { return true }
         return isEnabled(.groupsV2GoodCitizen)
@@ -40,7 +40,7 @@ public class RemoteConfig: BaseFlags {
         if groupsV2CreateGroups {
             return true
         }
-        guard modernContactDiscovery || DebugFlags.groupsV2forceModernCDS else { return false }
+        guard modernContactDiscovery else { return false }
         guard FeatureFlags.groupsV2Supported else { return false }
         if DebugFlags.groupsV2ForceEnable { return true }
         return isEnabled(.groupsV2GoodCitizen)
@@ -61,8 +61,11 @@ public class RemoteConfig: BaseFlags {
         return allEnableConditions.contains(true)
     }
 
+    private static let forceDisableUuidSafetyNumbers = true
+
     @objc
     public static var uuidSafetyNumbers: Bool {
+        guard !forceDisableUuidSafetyNumbers else { return false }
         guard modernContactDiscovery else { return false }
         return isEnabled(.uuidSafetyNumbers)
     }
