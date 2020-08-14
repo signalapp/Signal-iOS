@@ -201,7 +201,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Anhang";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Herunterladen gescheitert. Für erneuten Versuch antippen.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Für erneuten Versuch antippen.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fehler beim Senden des Anhangs";
@@ -864,7 +864,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Wähle, wer die Gruppenmitgliedschaft bearbeiten kann.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Immer benachrichtigen";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nicht benachrichtigen wenn stumm geschaltet";
@@ -2115,10 +2115,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Wir erinnern dich später.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Lenke die Aufmerksamkeit von jemandem in einer \"Neuen Gruppe\" auf dich, indem Du @ tippst";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "Einführung von @Erwähnungen";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Nachrichtentext kopieren";

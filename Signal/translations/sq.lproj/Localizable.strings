@@ -864,7 +864,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Zgjidhni cilët mund të përpunojnë anëtarësi grupi.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Njofto Përherë";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Mos Njofto, Në Qoftë e Heshtuar";
@@ -2115,10 +2115,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Do t’jua kujtojmë më vonë.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Tërhiqini vëmendjen dikujt në një “Grup të Ri” duke shtypur @";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "Ju paraqesim @Përmendjet";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopjoni Tekstin e Mesazhit";

@@ -48,10 +48,10 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "メンバーを追加";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "メンバーを「%2$@」へ追加しますか?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "メンバーを「%2$@」へ追加しますか？";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "%1$@人のメンバーを「%2$@」へ追加しますか?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "%1$@人のメンバーを「%2$@」へ追加しますか？";
 
 /* Title for the 'add group member' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "新しいメンバーを追加";
@@ -75,19 +75,19 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "グループに追加";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@をこのグループに追加しますか?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@ をこのグループに追加しますか？";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@に追加";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@ に追加";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@はすでに%@のメンバーです。";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ はすでに %@ のメンバーです";
 
 /* The title for the 'add to group' view's recents section */
 "ADD_TO_GROUP_RECENTS_TITLE" = "最近のグループ";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@は%@に追加されました。";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ が %@ に追加されました";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "別のグループに追加";
@@ -864,7 +864,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "グループメンバーシップを編集できるメンバーを選択します。";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "常に通知";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "ミュート中は通知を受け取らない";
@@ -1812,13 +1812,13 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "古いバージョンのSignalを使用しているメンバーが%@人いるため、レガシーグループが作成されます。当該メンバーのSignalをアップデートするか対象から外せば、新しいバージョンのグループを作成できます。";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "新しいグループをサポートしないメンバーが1人いるため、このグループはレガシーグループになります。%@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "新グループをサポートしないメンバーが1人いるため、このグループはレガシーグループになります。%@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "新しいグループをサポートしないメンバーが%1$@人いるため、このグループはレガシーグループになります。%2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "新グループをサポートしないメンバーが%1$@人いるため、このグループはレガシーグループになります。%2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "これはレガシーグループです。グループの管理機能などの新機能を利用するには、新しいグループを作成してください。%@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "これはレガシーグループです。グループの管理機能などの新機能を利用するには、新グループを作成してください。%@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "レガシーグループ";
@@ -2004,7 +2004,7 @@
 "KEY_COMMAND_GIF_SEARCH" = "GIF検索";
 
 /* A keyboard command to present the new group dialog. */
-"KEY_COMMAND_NEW_GROUP" = "新しいグループ";
+"KEY_COMMAND_NEW_GROUP" = "新グループ";
 
 /* A keyboard command to present the new message dialog. */
 "KEY_COMMAND_NEW_MESSAGE" = "新しいメッセージ";
@@ -2115,10 +2115,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "あとで通知します。";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "@を入力すると新グループで通知";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "@メンションのご紹介";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "メッセージ内容をコピー";
@@ -2397,7 +2397,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "グループのアイコンを設定";
 
 /* Label for the 'create new group' button. */
-"NEW_GROUP_BUTTON" = "新しいグループ";
+"NEW_GROUP_BUTTON" = "新グループ";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "作成";
@@ -2406,7 +2406,7 @@
 "NEW_GROUP_CREATION_FAILED" = "新しいグループを作成できませんでした。";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "新しいグループを作成できませんでした。インターネット接続を確認し再度試してください。";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "新グループが作成できませんでした。インターネット接続を確認し再度試してください。";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "グループ名は必須です。";
@@ -2415,7 +2415,7 @@
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "グループ名がありません";
 
 /* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "新しいグループ";
+"NEW_GROUP_DEFAULT_TITLE" = "新グループ";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ から %@";
@@ -3786,7 +3786,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PINリマインダー";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINを使えば、Signalに保管する情報は暗号化され、あなたしかアクセスできなくなります。あなたのプロフィール・設定・連絡先は、Signalを再インストールすると復元されます。";
+"SETTINGS_PINS_FOOTER" = "Signal内に保存された情報は、PINにより暗号化を保持されるため、あなたのみアクセスできます。PINを使うことで、Signalの再インストール時にあなたのプロフィール、設定および連絡先が復元されます。";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "PINを変更";
@@ -3939,7 +3939,7 @@
 "SMS_INVITE_BODY" = "Signalのインストールをお勧めします! このリンクから入手してください:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "音声なし";
+"SOUNDS_NONE" = "なし";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ステッカーメッセージ";
@@ -4008,10 +4008,10 @@
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "サポートリクエストを support@signal.org へメールで送ってください。";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS サポートリクエスト";
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOSサポートリクエスト";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "気分はどうですか? (任意)";
+"SUPPORT_EMOJI_PROMPT" = "どう感じていますか？ (任意)";
 
 /* Label in support request informing user about Signal FAQ */
 "SUPPORT_FAQ_PROMPT" = "よくある質問を見る";
@@ -4155,7 +4155,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "リンクを解除すると、この端末はメッセージの送受信ができなくなります。";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "「%@」のリンクを解除しますか?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "「%@」のリンクを解除しますか？";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "この端末はリンクされていません。メッセージを送受信するには、リンクし直してください。";
@@ -4242,7 +4242,7 @@
 "USERNAME_TOO_SHORT_ERROR" = "ユーザ名は4文字以上にしてください。";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@は使用されています。";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ は使用されています。";
 
 /* Error moessage shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "ユーザ名の更新に失敗しました。";
@@ -4305,7 +4305,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "消えるメッセージを無効にしました。";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "セットアップを終了しないと先に進めません。";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "セットアップを完了しないと先に進めません。";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "消えるメッセージのタイマーを%@に設定しました。";
