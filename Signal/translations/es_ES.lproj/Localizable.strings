@@ -864,13 +864,13 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Selecciona quién puede modificar la lista de participantes.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Notificar siempre";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "No notificar en modo silencioso";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Recibir notificaciones de menciones, incluso en chats silenciados";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Menciones";
@@ -2115,10 +2115,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Te lo recordaremos más tarde.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Llama la atención de alguien en un grupo del nuevo sistema escribiendo @";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "¡Las @Menciones en chats de grupo han llegado!";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensaje";

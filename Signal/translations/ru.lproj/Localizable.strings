@@ -864,7 +864,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Выберите, кто может редактировать членство в группе.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Всегда уведомлять";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не уведомлять, если выключен звук";
@@ -2115,10 +2115,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Мы напомним вам позже.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Привлеките чьё-нибудь внимание в «Новой группе», набрав @";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "Представляем @упоминания";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Копировать текст сообщения";

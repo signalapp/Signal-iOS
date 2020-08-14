@@ -864,7 +864,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Vælg hvem der kan redigere medlemskab af gruppen";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Altid underret";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Underret ikke hvis udsat";
@@ -2115,10 +2115,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Vi minder dig om det senere";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Få andres opmærksomhed i en \"Ny gruppe\" ved at skrive @";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "Introducerer @Omtaler";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopiér tekst";

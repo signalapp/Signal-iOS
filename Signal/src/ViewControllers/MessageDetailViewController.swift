@@ -443,7 +443,7 @@ class MessageDetailViewController: OWSViewController {
                                      value: sourceFilename))
             }
 
-            if _isDebugAssertConfiguration() {
+            if DebugFlags.messageDetailsExtraInfo {
                 let contentType = attachment.contentType
                 rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
                                                              comment: "Label for the MIME type of attachments in the 'message metadata' view."),
