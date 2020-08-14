@@ -896,6 +896,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             callDurationTimer?.invalidate()
             callDurationTimer = nil
         }
+
+        scheduleControlTimeoutIfNecessary()
     }
 
     func displayNeedPermissionErrorAndDismiss() {
@@ -986,6 +988,34 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         audioModeSourceButton.isSelected = !audioSource.isBuiltInEarPiece
         videoModeAudioSourceButton.isSelected = !audioSource.isBuiltInEarPiece
+    }
+
+    // MARK: - Video control timeout
+
+    private var controlTimeoutTimer: Timer?
+    private func scheduleControlTimeoutIfNecessary() {
+        if remoteVideoView.isHidden || shouldRemoteVideoControlsBeHidden {
+            controlTimeoutTimer?.invalidate()
+            controlTimeoutTimer = nil
+        }
+
+        guard controlTimeoutTimer == nil else { return }
+        controlTimeoutTimer = .weakScheduledTimer(
+            withTimeInterval: 5,
+            target: self,
+            selector: #selector(timeoutControls),
+            userInfo: nil,
+            repeats: false
+        )
+    }
+
+    @objc
+    private func timeoutControls() {
+        controlTimeoutTimer?.invalidate()
+        controlTimeoutTimer = nil
+
+        guard !remoteVideoView.isHidden && !shouldRemoteVideoControlsBeHidden else { return }
+        shouldRemoteVideoControlsBeHidden = true
     }
 
     // MARK: - Actions
