@@ -127,11 +127,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Video Views
 
-    var remoteVideoView: RemoteVideoView!
-    var localVideoView: RTCCameraPreviewView!
-    var hasShownLocalVideo = false
-    weak var localCaptureSession: AVCaptureSession?
-    weak var remoteVideoTrack: RTCVideoTrack?
+    private lazy var remoteVideoView = RemoteVideoView()
+    private weak var remoteVideoTrack: RTCVideoTrack?
+
+    private lazy var localVideoView = RTCCameraPreviewView()
+    private weak var localCaptureSession: AVCaptureSession?
+
+    // MARK: - Gestures
+
+    lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
+    lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleLocalVideoPan))
 
     var shouldRemoteVideoControlsBeHidden = false {
         didSet {
@@ -207,9 +212,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     override func loadView() {
-        self.view = UIView()
-        self.view.backgroundColor = UIColor.black
-        self.view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+        view = UIView()
+        view.backgroundColor = UIColor.black
+        view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
 
         createViews()
         createViewConstraints()
@@ -251,9 +256,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - Create Views
 
     func createViews() {
-        self.view.isUserInteractionEnabled = true
-        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                              action: #selector(didTouchRootView)))
+        view.isUserInteractionEnabled = true
+
+        tapGesture.delegate = self
+        view.addGestureRecognizer(tapGesture)
+
+        panGesture.delegate = self
+        view.addGestureRecognizer(panGesture)
 
         // The callee's avatar is rendered behind the blurred background.
         backgroundAvatarView.contentMode = .scaleAspectFill
@@ -265,7 +274,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let blurEffect = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.isUserInteractionEnabled = false
-        self.view.addSubview(blurView)
+        view.addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
 
         // Create the video views first, as they are under the other views.
@@ -282,16 +291,21 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createVideoViews() {
-        remoteVideoView = RemoteVideoView()
         remoteVideoView.isUserInteractionEnabled = false
-        localVideoView = RTCCameraPreviewView()
         remoteVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "remoteVideoView")
+        remoteVideoView.isHidden = true
+        view.addSubview(remoteVideoView)
+
+        // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".
+        if let previewLayer = localVideoView.layer as? AVCaptureVideoPreviewLayer {
+            previewLayer.videoGravity = .resizeAspectFill
+        } else {
+            owsFailDebug("unexpected preview layer class \(type(of: localVideoView.layer))")
+        }
         localVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "localVideoView")
 
-        remoteVideoView.isHidden = true
         localVideoView.isHidden = true
-        self.view.addSubview(remoteVideoView)
-        self.view.addSubview(localVideoView)
+        view.addSubview(localVideoView)
     }
 
     func createContactViews() {
@@ -300,7 +314,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         backButton.setImage(backButtonImage, for: .normal)
         backButton.autoSetDimensions(to: CGSize(square: 40))
         backButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
-        self.view.addSubview(backButton)
+        view.addSubview(backButton)
 
         // marquee config
         contactNameLabel.type = .continuous
@@ -320,7 +334,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.layer.shadowOpacity = 0.35
         contactNameLabel.layer.shadowRadius = 4
 
-        self.view.addSubview(contactNameLabel)
+        view.addSubview(contactNameLabel)
 
         callStatusLabel.font = UIFont.ows_dynamicTypeBody
         callStatusLabel.textAlignment = .center
@@ -329,10 +343,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         callStatusLabel.layer.shadowOpacity = 0.35
         callStatusLabel.layer.shadowRadius = 4
 
-        self.view.addSubview(callStatusLabel)
+        view.addSubview(callStatusLabel)
 
-        self.view.addSubview(contactAvatarContainerView)
         contactAvatarContainerView.addSubview(contactAvatarView)
+        view.insertSubview(contactAvatarContainerView, belowSubview: localVideoView)
 
         backButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "leaveCallViewButton")
         contactNameLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactNameLabel")
@@ -487,18 +501,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Layout
 
-    lazy var localVideoVanityConstraints = localVideoView.autoPinEdgesToSuperviewEdges()
-    var localVideoViewTopConstraintDefault: NSLayoutConstraint!
-    var localVideoViewTopConstraintHidden: NSLayoutConstraint!
-
     func createViewConstraints() {
 
-        let contactVSpacing = CGFloat(3)
+        let contactVSpacing: CGFloat = 3
         let bottomMargin = ScaleFromIPhone5To7Plus(23, 41)
         let avatarMargin = ScaleFromIPhone5To7Plus(25, 50)
-        // Layout of the local video view is a bit unusual because
-        // although the view is square, it will be used
-        let videoPreviewHMargin = CGFloat(0)
 
         backButton.autoPinEdge(toSuperviewEdge: .leading)
 
@@ -514,14 +521,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         callStatusLabel.autoHCenterInSuperview()
         callStatusLabel.setContentHuggingVerticalHigh()
         callStatusLabel.setCompressionResistanceHigh()
-
-        localVideoView.autoPinTrailingToSuperviewMargin(withInset: videoPreviewHMargin)
-
-        self.localVideoViewTopConstraintDefault = localVideoView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: 4)
-        self.localVideoViewTopConstraintHidden = localVideoView.autoPinEdge(toSuperviewMargin: .top)
-        let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
-        localVideoView.autoSetDimension(.width, toSize: localVideoSize)
-        localVideoView.autoSetDimension(.height, toSize: localVideoSize)
 
         remoteVideoView.autoPinEdgesToSuperviewEdges()
 
@@ -542,8 +541,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func updateViewConstraints() {
         updateRemoteVideoLayout()
-        updateLocalVideoLayout()
-
         super.updateViewConstraints()
     }
 
@@ -552,8 +549,124 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateCallUI()
     }
 
-    internal func updateLocalVideoLayout() {
-        updateCallUI()
+    private var localVideoBoundingRect: CGRect {
+        view.layoutIfNeeded()
+
+        var rect = view.frame
+        rect.origin.x += view.layoutMargins.left
+        rect.size.width -= view.layoutMargins.left + view.layoutMargins.right
+
+        let topInset = contactNameLabel.isHidden
+            ? view.layoutMargins.top
+            : contactNameLabel.frame.maxY + view.layoutMargins.top
+        let bottomInset = ongoingVideoCallControls.isHidden
+            ? view.layoutMargins.bottom
+            : view.frame.maxY - (ongoingVideoCallControls.frame.minY - view.layoutMargins.bottom)
+        rect.origin.y += topInset
+        rect.size.height -= topInset + bottomInset
+
+        return rect
+    }
+
+    private var isRenderingLocalVanityVideo: Bool {
+        return [.idle, .dialing, .remoteRinging].contains(call.state) && !localVideoView.isHidden
+    }
+
+    private func nearestValidLocalVideoFrame(for origin: CGPoint) -> CGRect {
+        var newFrame = CGRect(
+            origin: origin,
+            // The PIP has a fixed size for iPhone and iPad
+            size: CGSize(
+                width: UIDevice.current.isIPad ? 272 : 90,
+                height: UIDevice.current.isIPad ? 154 : 160
+            )
+        )
+
+        let boundingRect = localVideoBoundingRect
+
+        // If the origin is zero, we always want to position
+        // the pip in the top right
+        let hasZeroOrigin = newFrame.origin == .zero
+
+        // If we're positioned outside of the vertical bounds, we
+        // want to position the pip at the nearest bound
+        let positionedOutOfVerticalBounds = newFrame.minY < boundingRect.minY || newFrame.maxY > boundingRect.maxY
+
+        // If we're position anywhere but exactly at the horizontal
+        // edges, we want to position the pip at the nearest edge
+        let positionedAwayFromHorizontalEdges = boundingRect.minX != newFrame.minX && boundingRect.maxX != newFrame.maxX
+
+        if positionedOutOfVerticalBounds {
+            if newFrame.minY < boundingRect.minY || hasZeroOrigin {
+                newFrame.origin.y = boundingRect.minY
+            } else {
+                newFrame.origin.y = boundingRect.maxY - newFrame.height
+            }
+        }
+
+        if positionedAwayFromHorizontalEdges {
+            let distanceFromLeading = newFrame.minX - boundingRect.minX
+            let distanceFromTrailing = boundingRect.maxX - newFrame.maxX
+
+            if distanceFromLeading > distanceFromTrailing || hasZeroOrigin {
+                newFrame.origin.x = boundingRect.maxX - newFrame.width
+            } else {
+                newFrame.origin.x = boundingRect.minX
+            }
+        }
+
+        return newFrame
+    }
+
+    private func updateLocalVideoLayout() {
+        guard !isRenderingLocalVanityVideo else {
+            view.layoutIfNeeded()
+            localVideoView.frame = view.frame
+            return
+        }
+
+        let newFrame: CGRect
+        if !localVideoView.isHidden {
+            newFrame = nearestValidLocalVideoFrame(for: localVideoView.frame.origin)
+        } else {
+            newFrame = .zero
+        }
+
+        UIView.animate(withDuration: 0.25) { self.localVideoView.frame = newFrame }
+    }
+
+    private var startingTranslation: CGPoint?
+    @objc func handleLocalVideoPan(sender: UIPanGestureRecognizer) {
+        switch sender.state {
+        case .began, .changed:
+            let translation = sender.translation(in: view)
+            sender.setTranslation(.zero, in: view)
+
+            localVideoView.frame.origin.y += translation.y
+            localVideoView.frame.origin.x += translation.x
+        case .ended, .cancelled, .failed:
+            let velocity = sender.velocity(in: view)
+
+            // TODO: maybe do more sophisticated deceleration
+
+            let duration: CGFloat = 0.35
+
+            let additionalDistanceX = velocity.x * duration
+            let additionalDistanceY = velocity.y * duration
+
+            let finalDestination = CGPoint(
+                x: localVideoView.frame.origin.x + additionalDistanceX,
+                y: localVideoView.frame.origin.y + additionalDistanceY
+            )
+
+            let finalFrame = nearestValidLocalVideoFrame(for: finalDestination)
+
+            UIView.animate(withDuration: TimeInterval(duration)) {
+                self.localVideoView.frame = finalFrame
+            }
+        default:
+            break
+        }
     }
 
     // MARK: - Methods
@@ -683,18 +796,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             ongoingAudioCallControls.isHidden = call.hasLocalVideo
         }
 
-        let isRenderingVanityVideo = [.idle, .dialing, .remoteRinging].contains(call.state) && !localVideoView.isHidden
-
-        // We want the vanity video to be full screen, so we change it to "aspect fill".
-        if let previewLayer = localVideoView.layer as? AVCaptureVideoPreviewLayer {
-            previewLayer.videoGravity = isRenderingVanityVideo ? .resizeAspectFill : .resizeAspect
-        } else {
-            owsFailDebug("unexpected preview layer class \(type(of: localVideoView.layer))")
-        }
-
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteVideoView.isHidden
-        contactAvatarView.isHidden = hasRemoteVideo || isRenderingVanityVideo
+        contactAvatarView.isHidden = hasRemoteVideo || isRenderingLocalVanityVideo
 
         // Layout controls immediately to avoid spurious animation.
         for controls in [incomingVideoCallControls, incomingAudioCallControls, ongoingAudioCallControls, ongoingVideoCallControls] {
@@ -712,20 +816,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             backButton.isHidden = false
             contactNameLabel.isHidden = false
             callStatusLabel.isHidden = false
-        }
-
-        let doLocalVideoLayout = {
-            self.localVideoViewTopConstraintDefault.isActive = !isRenderingVanityVideo && !self.contactNameLabel.isHidden
-            self.localVideoViewTopConstraintHidden.isActive = !isRenderingVanityVideo && self.contactNameLabel.isHidden
-            self.localVideoVanityConstraints.forEach { $0.isActive = isRenderingVanityVideo }
-            self.localVideoView.superview?.layoutIfNeeded()
-        }
-        if hasShownLocalVideo {
-            // Animate.
-            UIView.animate(withDuration: 0.25, animations: doLocalVideoLayout)
-        } else {
-            // Don't animate.
-            doLocalVideoLayout()
         }
 
         let videoControls = [videoModeAudioSourceButton, videoModeFlipCameraButton, videoModeVideoButton, videoModeMuteButton, videoModeHangUpButton]
@@ -766,6 +856,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             videoControls.forEach { $0.isSmall = false }
             videoModeAudioSourceButton.isHidden = true
         }
+
+        // Update local video
+        localVideoView.layer.cornerRadius = isRenderingLocalVanityVideo ? 0 : 8
+        updateLocalVideoLayout()
 
         // Dismiss Handling
         switch call.state {
@@ -1058,13 +1152,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         Logger.info("isHidden: \(isHidden)")
         localVideoView.isHidden = isHidden
 
-        updateLocalVideoLayout()
+        updateCallUI()
         updateAudioSourceButtonIsSelected()
-
-        // Don't animate layout of local video view until it has been presented.
-        if !isHidden {
-            hasShownLocalVideo = true
-        }
     }
 
     var hasRemoteVideoTrack: Bool {
@@ -1289,5 +1378,18 @@ private class CallButton: UIButton {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension CallViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let isInLocalVideoView = localVideoView.bounds.contains(gestureRecognizer.location(in: localVideoView))
+
+        if gestureRecognizer == panGesture {
+            guard !localVideoView.isHidden, call.state == .connected else { return false }
+            return isInLocalVideoView
+        } else {
+            return !isInLocalVideoView
+        }
     }
 }
