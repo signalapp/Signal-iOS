@@ -821,7 +821,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let videoControls = [videoModeAudioSourceButton, videoModeFlipCameraButton, videoModeVideoButton, videoModeMuteButton, videoModeHangUpButton]
 
         // Audio Source Handling (bluetooth)
-        if self.hasAlternateAudioSources {
+        if self.hasAlternateAudioSources, let audioSource = callUIAdapter.audioService.currentAudioSource(call: call) {
             videoModeAudioSourceButton.isHidden = !call.hasLocalVideo
             videoModeAudioSourceButton.showDropdownArrow = true
             audioModeSourceButton.isHidden = call.hasLocalVideo
@@ -830,19 +830,15 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             // Use small controls, because we have 5 buttons now.
             videoControls.forEach { $0.isSmall = true }
 
-            if let audioSource = callUIAdapter.audioService.currentAudioSource(call: call) {
-                if audioSource.isBuiltInEarPiece {
-                    audioModeSourceButton.iconName = "phone-solid-28"
-                    videoModeAudioSourceButton.iconName = "phone-solid-28"
-                } else if audioSource.isBuiltInSpeaker {
-                    audioModeSourceButton.iconName = "speaker-solid-28"
-                    videoModeAudioSourceButton.iconName = "speaker-solid-28"
-                } else {
-                    audioModeSourceButton.iconName = "speaker-bt-solid-28"
-                    videoModeAudioSourceButton.iconName = "speaker-bt-solid-28"
-                }
+            if audioSource.isBuiltInEarPiece {
+                audioModeSourceButton.iconName = "phone-solid-28"
+                videoModeAudioSourceButton.iconName = "phone-solid-28"
+            } else if audioSource.isBuiltInSpeaker {
+                audioModeSourceButton.iconName = "speaker-solid-28"
+                videoModeAudioSourceButton.iconName = "speaker-solid-28"
             } else {
-                owsFailDebug("missing current audio source")
+                audioModeSourceButton.iconName = "speaker-bt-solid-28"
+                videoModeAudioSourceButton.iconName = "speaker-bt-solid-28"
             }
 
         } else {
