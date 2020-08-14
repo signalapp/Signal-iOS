@@ -144,7 +144,7 @@ public class UUIDBackfillTask: NSObject {
         attemptCount += 1
         Logger.info("Beginning ContactDiscovery for UUID backfill")
 
-        let discoveryTask = ContactDiscoveryTask(identifiers: e164Numbers)
+        let discoveryTask = ContactDiscoveryTask(phoneNumbers: e164Numbers)
         discoveryTask.isCriticalPriority = true
 
         discoveryTask.perform()

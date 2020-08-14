@@ -9,39 +9,39 @@ import PromiseKit
 /// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
 class LegacyContactDiscoveryOperation: ContactDiscovering {
 
-    private let phoneNumbersToLookup: Set<String>
-    required init(phoneNumbersToLookup: Set<String>) {
-        self.phoneNumbersToLookup = phoneNumbersToLookup
-        Logger.debug("with phoneNumbersToLookup: \(phoneNumbersToLookup.count)")
+    private let e164sToLookup: Set<String>
+    required init(e164sToLookup: Set<String>) {
+        self.e164sToLookup = e164sToLookup
+        Logger.debug("with e164sToLookup.count: \(e164sToLookup.count)")
     }
 
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>> {
-        let phoneNumberByHashes = mapHashToPhoneNumber()
+        let e164sByHash = mapHashToE164()
 
         return Promise<Any?> { (resolver) in
-            let hashes = Array(phoneNumberByHashes.keys)
+            let hashes = Array(e164sByHash.keys)
             self.makeRequest(for: hashes, on: queue, responseResolver: resolver)
 
         }.map(on: queue) { (response) -> Set<DiscoveredContactInfo> in
-            let discoveredNumbers = try self.parse(response: response, phoneNumbersByHashes: phoneNumberByHashes)
+            let discoveredNumbers = try self.parse(response: response, e164sByHash: e164sByHash)
             return Set(discoveredNumbers.map { DiscoveredContactInfo(e164: $0, uuid: nil) })
         }
     }
 
     // MARK: - Private
 
-    private func mapHashToPhoneNumber() -> [String: String] {
-        var phoneNumbersByHashes: [String: String] = [:]
+    private func mapHashToE164() -> [String: String] {
+        var e164sByHash: [String: String] = [:]
 
-        for phoneNumber in phoneNumbersToLookup {
-            guard let hash = Cryptography.truncatedSHA1Base64EncodedWithoutPadding(phoneNumber) else {
-                owsFailDebug("could not hash recipient id: \(phoneNumber)")
+        for e164 in e164sToLookup {
+            guard let hash = Cryptography.truncatedSHA1Base64EncodedWithoutPadding(e164) else {
+                owsFailDebug("could not hash recipient id: \(e164)")
                 continue
             }
-            assert(phoneNumbersByHashes[hash] == nil)
-            phoneNumbersByHashes[hash] = phoneNumber
+            assert(e164sByHash[hash] == nil)
+            e164sByHash[hash] = e164
         }
-        return phoneNumbersByHashes
+        return e164sByHash
     }
 
     private func makeRequest(for hashes: [String],
@@ -79,7 +79,7 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
         )
     }
 
-    private func parse(response: Any?, phoneNumbersByHashes: [String: String]) throws -> Set<String> {
+    private func parse(response: Any?, e164sByHash: [String: String]) throws -> Set<String> {
         guard let responseDict = response as? [String: AnyObject],
               let contactDicts = responseDict["contacts"] as? [[String: AnyObject]] else {
             throw ContactDiscoveryError.assertionError(description: "Couldn't parse server response")
@@ -93,17 +93,17 @@ class LegacyContactDiscoveryOperation: ContactDiscovering {
                 continue
             }
 
-            guard let phoneNumber = phoneNumbersByHashes[hash], phoneNumber.count > 0 else {
+            guard let e164 = e164sByHash[hash], e164.count > 0 else {
                 owsFailDebug("phoneNumber was unexpectedly nil")
                 continue
             }
 
-            guard phoneNumbersToLookup.contains(phoneNumber) else {
+            guard e164sToLookup.contains(e164) else {
                 owsFailDebug("unexpected phoneNumber")
                 continue
             }
 
-            registeredRecipientIds.insert(phoneNumber)
+            registeredRecipientIds.insert(e164)
         }
 
         return registeredRecipientIds

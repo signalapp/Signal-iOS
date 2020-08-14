@@ -1328,7 +1328,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
     __weak RecipientPickerViewController *weakSelf = self;
 
-    OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithIdentifiers:unknownPhoneNumbers];
+    OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithPhoneNumbers:unknownPhoneNumbers];
     [discoveryTask performAtQoS:QOS_CLASS_USER_INITIATED
                   callbackQueue:dispatch_get_main_queue()
                         success:^(NSSet<SignalRecipient *> *resultSet) {

@@ -1352,7 +1352,7 @@ public class GroupManager: NSObject {
 
         if isBlocking {
             // Block on the outcome.
-            let discoveryTask = ContactDiscoveryTask(identifiers: Set(phoneNumbersWithoutUuids))
+            let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
             return discoveryTask.perform(at: .userInitiated).asVoid()
         } else {
             // This will throttle, de-bounce, etc.

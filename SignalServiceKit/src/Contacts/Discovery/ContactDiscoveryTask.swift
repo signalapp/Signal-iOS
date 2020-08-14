@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service
 @objc(OWSContactDiscoveryTask)
@@ -11,9 +12,15 @@ public class ContactDiscoveryTask: NSObject {
 
     // MARK: - Lifecycle
 
-    @objc public let identifiersToFetch: Set<String>
-    @objc public init(identifiers: Set<String>) {
-        self.identifiersToFetch = identifiers
+    /// The set of e164s that will be queried against CDS
+    @objc
+    public let e164FetchSet: Set<String>
+
+    /// - Parameter phoneNumbers: A set of strings representing phone numbers. These should be e164.
+    /// Any non-e164 numbers will be filtered out
+    @objc
+    public init(phoneNumbers: Set<String>) {
+        e164FetchSet = phoneNumbers.filter { $0.isValidE164() }
     }
 
     // MARK: - Modifiers
@@ -44,7 +51,7 @@ public class ContactDiscoveryTask: NSObject {
     public func perform(at qos: DispatchQoS = .utility,
                         targetQueue: DispatchQueue? = nil,
                         database: SDSDatabaseStorage? = SDSDatabaseStorage.shared) -> Promise<Set<SignalRecipient>> {
-        guard identifiersToFetch.count > 0 else {
+        guard e164FetchSet.count > 0 else {
             return .value(Set())
         }
         if let retryAfterDate = Self.rateLimiter.currentRetryAfterDate(forCriticalPriority: isCriticalPriority) {
@@ -67,7 +74,7 @@ public class ContactDiscoveryTask: NSObject {
             let addressesToRegister = discoveredContacts
                 .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164, trustLevel: .high) }
 
-            let addressesToUnregister = self.identifiersToFetch
+            let addressesToUnregister = self.e164FetchSet
                 .subtracting(discoveredIdentifiers)
                 .map { SignalServiceAddress(uuid: nil, phoneNumber: $0, trustLevel: .high)}
 
@@ -92,9 +99,9 @@ public class ContactDiscoveryTask: NSObject {
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
         if RemoteConfig.modernContactDiscovery {
-            return ModernContactDiscoveryOperation(phoneNumbersToLookup: identifiersToFetch)
+            return ModernContactDiscoveryOperation(e164sToLookup: e164FetchSet)
         } else {
-            return LegacyContactDiscoveryOperation(phoneNumbersToLookup: identifiersToFetch)
+            return LegacyContactDiscoveryOperation(e164sToLookup: e164FetchSet)
         }
     }
 
@@ -124,7 +131,8 @@ public class ContactDiscoveryTask: NSObject {
 
 // MARK: - ObjC Support
 
-@objc public extension ContactDiscoveryTask {
+@objc
+public extension ContactDiscoveryTask {
 
     @objc (performAtQoS:callbackQueue:success:failure:)
     func perform(at rawQoS: qos_class_t,

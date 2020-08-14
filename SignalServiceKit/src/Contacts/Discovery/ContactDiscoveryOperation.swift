@@ -14,7 +14,7 @@ struct DiscoveredContactInfo: Hashable {
 /// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
 protocol ContactDiscovering {
     /// Constructs a ContactDiscovering object from a set of e164 phone numbers
-    init(phoneNumbersToLookup: Set<String>)
+    init(e164sToLookup: Set<String>)
 
     /// Returns a promise that performs ContactDiscovery on the provided queue
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>>
