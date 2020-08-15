@@ -2983,7 +2983,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     return [DebugUIMessagesSingleAction actionWithLabel:[NSString stringWithFormat:@"Fake Contact Share (%@)", label]
                                  unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
                                      OWSContact *contact = contactBlock(transaction);
-                                     TSOutgoingMessage *message =
+                                     __unused TSOutgoingMessage *message =
                                          [self createFakeOutgoingMessage:thread
                                                              messageBody:nil
                                                          fakeAssetLoader:nil
@@ -2995,7 +2995,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                              linkPreview:nil
                                                           messageSticker:nil
                                                              transaction:transaction];
-                                    (void)message; // silence dead store warning
                                  }];
 }
 
