@@ -24,8 +24,8 @@ public enum CallState: String {
     case busyElsewhere // terminal
 }
 
-public enum CallOfferMediaType {
-    case audio, video
+public enum CallAdapterType {
+    case `default`, nonCallKit
 }
 
 public enum CallDirection {
@@ -74,6 +74,8 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
             Logger.info("")
         }
     }
+
+    var callAdapterType: CallAdapterType?
 
     let videoCaptureController = VideoCaptureController()
 
@@ -182,7 +184,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
         }
     }
 
-    public var offerMediaType: CallOfferMediaType = .audio
+    public var offerMediaType: TSRecentCallOfferType = .audio
 
     public var isMuted = false {
         didSet {

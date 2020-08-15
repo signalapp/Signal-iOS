@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,17 +13,19 @@ public class AudioActivity: NSObject {
 
     @objc public var supportsBackgroundPlayback: Bool {
         // Currently, only audio messages support background playback
-        return behavior == .audioMessagePlayback
+        return [.audioMessagePlayback, .call].contains(behavior)
     }
 
-    @objc public var backgroundPlaybackName: String {
+    @objc public var backgroundPlaybackName: String? {
         switch behavior {
         case .audioMessagePlayback:
             return NSLocalizedString("AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE",
                                      comment: "A string indicating that an audio message is playing.")
+        case .call:
+            return nil
         default:
             owsFailDebug("unexpectedly fetched background name for type that doesn't support background playback")
-            return ""
+            return nil
         }
     }
 

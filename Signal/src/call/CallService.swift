@@ -203,7 +203,7 @@ extension SignalCall: CallManagerCallReference { }
         // Create a callRecord for outgoing calls immediately.
         let callRecord = TSCall(
             callType: .outgoingIncomplete,
-            offerType: call.offerMediaType.recentOfferType,
+            offerType: call.offerMediaType,
             thread: call.thread,
             sentAtTimestamp: call.sentAtTimestamp
         )
@@ -216,7 +216,7 @@ extension SignalCall: CallManagerCallReference { }
         let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
 
         do {
-            try callManager.placeCall(call: call, callMediaType: call.offerMediaType.callMediaType, localDevice: localDeviceId)
+            try callManager.placeCall(call: call, callMediaType: call.offerMediaType.asCallMediaType, localDevice: localDeviceId)
         } catch {
             self.handleFailedCall(failedCall: call, error: error)
         }
@@ -242,7 +242,7 @@ extension SignalCall: CallManagerCallReference { }
 
         let callRecord = TSCall(
             callType: .incomingIncomplete,
-            offerType: call.offerMediaType.recentOfferType,
+            offerType: call.offerMediaType,
             thread: call.thread,
             sentAtTimestamp: call.sentAtTimestamp
         )
@@ -301,7 +301,7 @@ extension SignalCall: CallManagerCallReference { }
         } else if call.state == .localRinging {
             let callRecord = TSCall(
                 callType: .incomingDeclined,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
@@ -407,7 +407,7 @@ extension SignalCall: CallManagerCallReference { }
             Logger.warn("user is not onboarded, skipping call.")
             let callRecord = TSCall(
                 callType: .incomingMissed,
-                offerType: newCall.offerMediaType.recentOfferType,
+                offerType: newCall.offerMediaType,
                 thread: thread,
                 sentAtTimestamp: sentAtTimestamp
             )
@@ -440,7 +440,7 @@ extension SignalCall: CallManagerCallReference { }
 
             let callRecord = TSCall(
                 callType: .incomingMissedBecauseOfChangedIdentity,
-                offerType: newCall.offerMediaType.recentOfferType,
+                offerType: newCall.offerMediaType,
                 thread: thread,
                 sentAtTimestamp: sentAtTimestamp
             )
@@ -475,7 +475,7 @@ extension SignalCall: CallManagerCallReference { }
             // or the caller can try again.
             let callRecord = TSCall(
                 callType: .incomingMissed,
-                offerType: newCall.offerMediaType.recentOfferType,
+                offerType: newCall.offerMediaType,
                 thread: thread,
                 sentAtTimestamp: sentAtTimestamp
             )
@@ -833,7 +833,7 @@ extension SignalCall: CallManagerCallReference { }
                 assert(call.direction == .incoming)
                 let callRecord = TSCall(
                     callType: .incomingMissed,
-                    offerType: call.offerMediaType.recentOfferType,
+                    offerType: call.offerMediaType,
                     thread: call.thread,
                     sentAtTimestamp: call.sentAtTimestamp
                 )
@@ -1096,7 +1096,7 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             callRecord = TSCall(
                 callType: .incomingMissed,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
@@ -1136,7 +1136,7 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             let callRecord = TSCall(
                 callType: .incomingAnsweredElsewhere,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
@@ -1161,7 +1161,7 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             let callRecord = TSCall(
                 callType: .incomingDeclinedElsewhere,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
@@ -1186,7 +1186,7 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             let callRecord = TSCall(
                 callType: .incomingBusyElsewhere,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
@@ -1682,18 +1682,11 @@ extension NSNumber {
     }
 }
 
-extension CallOfferMediaType {
-    var callMediaType: CallMediaType {
+extension TSRecentCallOfferType {
+    var asCallMediaType: CallMediaType {
         switch self {
         case .audio: return .audioCall
         case .video: return .videoCall
-        }
-    }
-
-    var recentOfferType: TSRecentCallOfferType {
-        switch self {
-        case .audio: return .audio
-        case .video: return .video
         }
     }
 }
