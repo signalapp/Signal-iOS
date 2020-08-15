@@ -247,7 +247,7 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
 
 - (BOOL)screenSecurityIsEnabled
 {
-    return [self boolForKey:OWSPreferencesKeyScreenSecurity defaultValue:YES];
+    return [self boolForKey:OWSPreferencesKeyScreenSecurity defaultValue:NO];
 }
 
 - (void)setScreenSecurity:(BOOL)value
