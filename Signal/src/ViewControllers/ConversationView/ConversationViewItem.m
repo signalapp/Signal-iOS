@@ -163,6 +163,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize shouldHideFooter = _shouldHideFooter;
 @synthesize audioPlaybackState = _audioPlaybackState;
 @synthesize needsUpdate = _needsUpdate;
+@synthesize shouldCollapseSystemMessageAction = _shouldCollapseSystemMessageAction;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                              thread:(TSThread *)thread
@@ -494,6 +495,17 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     [self clearCachedLayoutState];
 }
 
+- (void)setShouldCollapseSystemMessageAction:(BOOL)shouldCollapseSystemMessageAction
+{
+    if (_shouldCollapseSystemMessageAction == shouldCollapseSystemMessageAction) {
+        return;
+    }
+
+    _shouldCollapseSystemMessageAction = shouldCollapseSystemMessageAction;
+
+    [self clearCachedLayoutState];
+}
+
 - (void)clearCachedLayoutState
 {
     self.cachedCellSize = nil;
@@ -589,7 +601,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     switch (self.interaction.interactionType) {
         case OWSInteractionType_DateHeader:
         case OWSInteractionType_UnreadIndicator:
-            return self.conversationStyle.headerViewDateHeaderVMargin;
+            return ConversationStyle.defaultMessageSpacing;
         case OWSInteractionType_IncomingMessage:
             if (previousLayoutItem.interaction.interactionType == self.interaction.interactionType) {
                 TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
@@ -606,6 +618,17 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             }
 
             return ConversationStyle.defaultMessageSpacing;
+        case OWSInteractionType_Call:
+        case OWSInteractionType_Info:
+        case OWSInteractionType_Error:
+            switch (previousLayoutItem.interaction.interactionType) {
+                case OWSInteractionType_Call:
+                case OWSInteractionType_Info:
+                case OWSInteractionType_Error:
+                    return ConversationStyle.compactMessageSpacing;
+                default:
+                    return ConversationStyle.defaultMessageSpacing;
+            }
         default:
             return ConversationStyle.defaultMessageSpacing;
     }

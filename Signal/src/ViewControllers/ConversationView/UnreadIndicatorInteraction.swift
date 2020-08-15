@@ -32,11 +32,8 @@ public class UnreadIndicatorInteraction: TSInteraction {
         notImplemented()
     }
 
-    public let shouldShowDate: Bool
-
     @objc
-    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64, shouldShowDate: Bool) {
-        self.shouldShowDate = shouldShowDate
+    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64) {
         super.init(uniqueId: UnreadIndicatorInteraction.UnreadIndicatorInteractionId,
                    timestamp: timestamp,
                    receivedAtTimestamp: receivedAtTimestamp,

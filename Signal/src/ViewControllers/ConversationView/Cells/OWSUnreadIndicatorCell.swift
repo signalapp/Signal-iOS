@@ -4,7 +4,7 @@
 
 import Foundation
 
-private let strokeHeight: CGFloat = 4
+private let strokeHeight: CGFloat = 1
 
 @objc(OWSUnreadIndicatorCell)
 public class UnreadIndicatorCell: ConversationViewCell {
@@ -30,9 +30,14 @@ public class UnreadIndicatorCell: ConversationViewCell {
 
         self.stackView = UIStackView(arrangedSubviews: [strokeView, titleLabel])
         stackView.axis = .vertical
-        stackView.spacing = 2
+        stackView.spacing = 12
         contentView.addSubview(stackView)
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+
+        titleLabel.text = NSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR",
+                                            comment: "Indicator that separates read from unread messages.")
+        titleLabel.numberOfLines = 0
+        titleLabel.font = UIFont.ows_dynamicTypeFootnote.ows_semibold()
     }
 
     var stackView: UIStackView!
@@ -47,43 +52,13 @@ public class UnreadIndicatorCell: ConversationViewCell {
     let strokeView: UIView = {
         let stroke = UIView()
         stroke.autoSetDimension(.height, toSize: strokeHeight)
-        stroke.layer.cornerRadius = strokeHeight / 2
+        stroke.backgroundColor = UIColor.ows_gray45
         return stroke
     }()
 
     override public func loadForDisplay() {
-        guard let viewItem = viewItem else {
-            owsFailDebug("viewItem was unexpectedly nil")
-            return
-        }
-        guard let conversationStyle = conversationStyle else {
-            owsFailDebug("conversationStyle was unexpectedly nil")
-            return
-        }
-        guard let interaction = viewItem.interaction as? UnreadIndicatorInteraction else {
-            owsFailDebug("unexpected interaction type")
-            return
-        }
-
-        titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.numberOfLines = 0
-
-        let date = Date(millisecondsSince1970: viewItem.interaction.timestamp)
-        let dateString = DateUtil.formatDate(forConversationDateBreaks: date)
-
-        var title = NSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR", comment: "Indicator that separates read from unread messages.")
-        if interaction.shouldShowDate {
-            title = dateString.appending(" \u{00B7} ").appending(title)
-        }
-        titleLabel.text = title.localizedUppercase
-
-        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
-
-        self.contentView.layoutMargins = UIEdgeInsets(top: conversationStyle.headerViewDateHeaderVMargin/2,
-                                                      leading: conversationStyle.headerGutterLeading,
-                                                      bottom: conversationStyle.headerViewDateHeaderVMargin/2,
-                                                      trailing: conversationStyle.headerGutterTrailing)
+        contentView.layoutMargins = UIEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
     }
 
     @objc

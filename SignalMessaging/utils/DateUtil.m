@@ -283,7 +283,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     }
 
-    return dateTimeString.localizedUppercaseString;
+    return dateTimeString;
 }
 
 + (NSString *)formatDateForConversationDateBreaks:(NSDate *)date
@@ -315,7 +315,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     OWSAssertDebug(date);
 
     NSString *dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
-    return dateTimeString.localizedUppercaseString;
+    return dateTimeString;
 }
 
 + (NSDateFormatter *)otherYearMessageFormatter
@@ -423,7 +423,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (NSString *)exemplaryNowTimeFormat
 {
-    return NSLocalizedString(@"DATE_NOW", @"The present; the current time.").localizedUppercaseString;
+    return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
 }
 
 + (NSString *)exemplaryMinutesTimeFormat

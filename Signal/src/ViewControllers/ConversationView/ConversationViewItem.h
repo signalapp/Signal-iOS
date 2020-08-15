@@ -155,6 +155,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @property (nonatomic, readonly) ViewOnceMessageState viewOnceMessageState;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
+@property (nonatomic) BOOL shouldCollapseSystemMessageAction;
 
 // NOTE: This property is only set for incoming messages, typing indicators, and thread details.
 @property (nonatomic, readonly, nullable) NSString *authorConversationColorName;

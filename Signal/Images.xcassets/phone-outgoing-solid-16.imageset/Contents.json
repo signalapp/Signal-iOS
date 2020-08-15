@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "phone-outgoing-solid-16.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -372,6 +372,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
     var mutualGroupNames: [String]?
     var reactionState: InteractionReactionState?
+    var shouldCollapseSystemMessageAction: Bool = false
 
     init(interaction: TSInteraction, thread: TSThread) {
         self.interaction = interaction
