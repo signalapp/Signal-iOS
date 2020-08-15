@@ -495,11 +495,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSLogInfo(@"");
 
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [AppPreferences setHasDimissedFirstConversationCue:YES transaction:transaction];
-    });
-
-    [self updateViewState];
+    [self showNewConversationView];
 }
 
 - (NSArray<SignalAccount *> *)suggestedAccountsForFirstContact
@@ -1983,10 +1979,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateViewState
 {
-    if (self.shouldShowFirstConversationCue) {
+    if (self.shouldShowEmptyInboxView) {
         [_tableView setHidden:YES];
         [self.emptyInboxView setHidden:NO];
-        [self.firstConversationCueView setHidden:NO];
+        [self.firstConversationCueView setHidden:!self.shouldShowFirstConversationCue];
         [self updateFirstConversationLabel];
     } else {
         [_tableView setHidden:NO];
@@ -1997,15 +1993,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)shouldShowFirstConversationCue
 {
-    __block BOOL hasDimissedFirstConversationCue;
     __block BOOL hasSavedThread;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasDimissedFirstConversationCue = [AppPreferences hasDimissedFirstConversationCueWithTransaction:transaction];
         hasSavedThread = [SSKPreferences hasSavedThreadWithTransaction:transaction];
     }];
 
-    return (self.conversationListMode == ConversationListMode_Inbox && self.numberOfInboxThreads == 0
-        && self.numberOfArchivedThreads == 0 && !hasDimissedFirstConversationCue && !hasSavedThread);
+    return self.shouldShowEmptyInboxView && !hasSavedThread;
+}
+
+- (BOOL)shouldShowEmptyInboxView
+{
+    return self.conversationListMode == ConversationListMode_Inbox && self.numberOfInboxThreads == 0
+        && self.numberOfArchivedThreads == 0;
 }
 
 // We want to delay asking for a review until an opportune time.

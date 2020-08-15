@@ -225,6 +225,10 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 {
     [super anyDidUpdateWithTransaction:transaction];
 
+    if (self.shouldThreadBeVisible && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
+        [SSKPreferences setHasSavedThread:YES transaction:transaction];
+    }
+
     [self.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 }
 
