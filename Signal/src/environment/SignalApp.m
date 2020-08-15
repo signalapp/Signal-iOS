@@ -365,6 +365,11 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     [self.conversationSplitViewController showNewConversationView];
 }
 
+- (nullable UIView *)snapshotSplitViewControllerAfterScreenUpdates:(BOOL)afterScreenUpdates
+{
+    return [self.conversationSplitViewController.view snapshotViewAfterScreenUpdates:afterScreenUpdates];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

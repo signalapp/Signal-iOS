@@ -31,6 +31,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Views
 
+    private lazy var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     private lazy var backgroundAvatarView = UIImageView()
     private lazy var dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
@@ -190,6 +191,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.shouldUseTheme = false
     }
 
+    deinit {
+        // These views might be in the return to call PIP's hierarchy,
+        // we want to remove them so they are free'd when the call ends
+        remoteVideoView.removeFromSuperview()
+        localVideoView.removeFromSuperview()
+    }
+
     @objc func didBecomeActive() {
         if self.isViewLoaded {
             shouldRemoteVideoControlsBeHidden = false
@@ -213,6 +221,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func loadView() {
         view = UIView()
+        view.clipsToBounds = true
         view.backgroundColor = UIColor.black
         view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
 
@@ -271,8 +280,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         backgroundAvatarView.autoPinEdgesToSuperviewEdges()
 
         // Dark blurred background.
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.isUserInteractionEnabled = false
         view.addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
@@ -587,11 +594,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     private func nearestValidLocalVideoFrame(for origin: CGPoint) -> CGRect {
         var newFrame = CGRect(
             origin: origin,
-            // The PIP has a fixed size for iPhone and iPad
-            size: CGSize(
-                width: UIDevice.current.isIPad ? 272 : 90,
-                height: UIDevice.current.isIPad ? 154 : 160
-            )
+            size: ReturnToCallViewController.pipSize
         )
 
         let boundingRect = localVideoBoundingRect
@@ -631,6 +634,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     private func updateLocalVideoLayout() {
+        guard localVideoView.superview == view else { return }
+
         guard !isRenderingLocalVanityVideo else {
             view.layoutIfNeeded()
             localVideoView.frame = view.frame
@@ -1428,6 +1433,60 @@ extension CallViewController: UIGestureRecognizerDelegate {
             return isInLocalVideoView
         } else {
             return !isInLocalVideoView
+        }
+    }
+}
+
+extension CallViewController: CallViewControllerWindowReference {
+    var remoteVideoViewReference: UIView { remoteVideoView }
+    var localVideoViewReference: UIView { localVideoView }
+
+    @objc
+    public func returnFromPip(pipWindow: UIWindow) {
+        // The call "pip" uses our remote and local video views since only
+        // one `AVCaptureVideoPreviewLayer` per capture session is supported.
+        // We need to re-add them when we return to this view.
+        guard remoteVideoView.superview != view && localVideoView.superview != view else {
+            return owsFailDebug("unexpectedly returned to call while we own the video views")
+        }
+
+        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
+            return owsFailDebug("failed to snapshot rootViewController")
+        }
+
+        guard let pipSnapshot = pipWindow.snapshotView(afterScreenUpdates: false) else {
+            return owsFailDebug("failed to snapshot pip")
+        }
+
+        view.insertSubview(remoteVideoView, aboveSubview: blurView)
+        remoteVideoView.autoPinEdgesToSuperviewEdges()
+
+        view.insertSubview(localVideoView, aboveSubview: contactAvatarContainerView)
+
+        shouldRemoteVideoControlsBeHidden = false
+
+        animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
+    }
+
+    private func animateReturnFromPip(pipSnapshot: UIView, pipFrame: CGRect, splitViewSnapshot: UIView) {
+        guard let window = view.window else { return owsFailDebug("missing window") }
+        view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
+        splitViewSnapshot.autoPinEdgesToSuperviewEdges()
+
+        view.frame = pipFrame
+        view.addSubview(pipSnapshot)
+        pipSnapshot.autoPinEdgesToSuperviewEdges()
+
+        view.layoutIfNeeded()
+
+        UIView.animate(withDuration: 0.2, animations: {
+            pipSnapshot.alpha = 0
+            self.view.frame = window.frame
+            self.view.layoutIfNeeded()
+        }) { _ in
+            self.updateCallUI()
+            splitViewSnapshot.removeFromSuperview()
+            pipSnapshot.removeFromSuperview()
         }
     }
 }

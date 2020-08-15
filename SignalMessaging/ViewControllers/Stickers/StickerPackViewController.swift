@@ -37,7 +37,6 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
@@ -407,13 +406,6 @@ public class StickerPackViewController: OWSViewController {
         }
 
         StickerSharingViewController.shareStickerPack(stickerPack.info, from: self)
-    }
-
-    @objc
-    public func callDidChange() {
-        Logger.debug("")
-
-        updateContent()
     }
 
     @objc

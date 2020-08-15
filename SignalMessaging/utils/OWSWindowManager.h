@@ -16,9 +16,9 @@ extern NSString *const IsScreenBlockActiveDidChangeNotification;
 
 #pragma mark -
 
-const CGFloat OWSWindowManagerCallBannerHeight(void);
-
 extern const UIWindowLevel UIWindowLevel_Background;
+
+@protocol CallViewControllerWindowReference;
 
 @interface OWSWindowManager : NSObject
 
@@ -36,15 +36,14 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (BOOL)isAppWindow:(UIWindow *)window;
 
 - (void)updateWindowFrames;
-- (void)ensureReturnToCallWindowFrame;
 
 #pragma mark - Calls
 
 @property (nonatomic, readonly) BOOL shouldShowCallView;
 @property (nonatomic, readonly) UIWindow *callViewWindow;
 
-- (void)startCall:(UIViewController *)callViewController;
-- (void)endCall:(UIViewController *)callViewController;
+- (void)startCall:(UIViewController<CallViewControllerWindowReference> *)callViewController;
+- (void)endCall:(UIViewController<CallViewControllerWindowReference> *)callViewController;
 - (void)leaveCallView;
 @property (nonatomic, readonly) BOOL hasCall;
 

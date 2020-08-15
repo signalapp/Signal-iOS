@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UINavigationController (OWSNavigationController) <UINavigationBarDelegate, NavBarLayoutDelegate>
+@interface UINavigationController (OWSNavigationController) <UINavigationBarDelegate>
 
 @end
 
@@ -30,7 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-    [self setupNavbar];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
 
     return self;
 }
@@ -75,24 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
         return self.ows_prefersStatusBarHidden.boolValue;
     }
     return [super prefersStatusBarHidden];
-}
-
-#pragma mark - UINavigationBarDelegate
-
-- (void)setupNavbar
-{
-    if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-        OWSFailDebug(@"navigationBar was unexpected class: %@", self.navigationBar);
-        return;
-    }
-    OWSNavigationBar *navbar = (OWSNavigationBar *)self.navigationBar;
-    navbar.navBarLayoutDelegate = self;
-    [self updateLayoutForNavbar:navbar];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
 }
 
 // All OWSNavigationController serve as the UINavigationBarDelegate for their navbar.
@@ -148,21 +134,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - NavBarLayoutDelegate
-
-- (void)navBarCallLayoutDidChangeWithNavbar:(OWSNavigationBar *)navbar
-{
-    [self updateLayoutForNavbar:navbar];
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     if (!CurrentAppContext().isMainApp) {
         return super.preferredStatusBarStyle;
-    } else if (OWSWindowManager.sharedManager.hasCall) {
-        // Status bar is overlaying the green "call banner"
-        return UIStatusBarStyleLightContent;
     } else {
         UIViewController *presentedViewController = self.presentedViewController;
         if (presentedViewController != nil && !presentedViewController.isBeingDismissed) {
@@ -171,26 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
             return (Theme.isDarkThemeEnabled ? UIStatusBarStyleLightContent : super.preferredStatusBarStyle);
         }
     }
-}
-
-- (void)updateLayoutForNavbar:(OWSNavigationBar *)navbar
-{
-    OWSLogDebug(@"");
-
-    [UIView setAnimationsEnabled:NO];
-
-    if (!CurrentAppContext().isMainApp) {
-        self.additionalSafeAreaInsets = UIEdgeInsetsZero;
-    } else if (OWSWindowManager.sharedManager.hasCall) {
-        self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
-    } else {
-        self.additionalSafeAreaInsets = UIEdgeInsetsZero;
-    }
-
-    // we have to ensure the navbar frame *in* layoutSubviews.
-    [navbar layoutSubviews];
-
-    [UIView setAnimationsEnabled:YES];
 }
 
 #pragma mark - Orientation
