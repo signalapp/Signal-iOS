@@ -46,6 +46,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 @property (nonatomic, readonly) NSUInteger callSchemaVersion;
 
 @property (nonatomic) RPRecentCallType callType;
+@property (nonatomic) TSRecentCallOfferType offerType;
 
 @end
 
@@ -54,6 +55,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 @implementation TSCall
 
 - (instancetype)initWithCallType:(RPRecentCallType)callType
+                       offerType:(TSRecentCallOfferType)offerType
                           thread:(TSContactThread *)thread
                  sentAtTimestamp:(uint64_t)sentAtTimestamp
 {
@@ -65,6 +67,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     _callSchemaVersion = TSCallCurrentSchemaVersion;
     _callType = callType;
+    _offerType = offerType;
 
     // Ensure users are notified of missed calls.
     BOOL isIncomingMissed = (_callType == RPRecentCallTypeIncomingMissed
@@ -91,6 +94,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                         callType:(RPRecentCallType)callType
+                       offerType:(TSRecentCallOfferType)offerType
                             read:(BOOL)read
 {
     self = [super initWithGrdbId:grdbId
@@ -105,6 +109,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     }
 
     _callType = callType;
+    _offerType = offerType;
     _read = read;
 
     return self;

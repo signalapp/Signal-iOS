@@ -54,10 +54,10 @@ public enum ThemeIcon: UInt {
     case composeFindByPhoneNumber
     case composeInvite
 
-    case phone
     case checkCircle
     case message
-    case call
+    case audioCall
+    case videoCall
     case info
     case groupMessage
     case profileChangeMessage
@@ -204,14 +204,14 @@ public extension Theme {
         case .composeInvite:
             return "invite-outline-256"
 
-        case .phone:
-            return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         case .checkCircle:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
         case .message:
             return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
-        case .call:
-            return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
+        case .audioCall:
+            return isDarkThemeEnabled ? "phone-solid-24" : "phone-outline-24"
+        case .videoCall:
+            return isDarkThemeEnabled ? "video-solid-24" : "video-outline-24"
         case .info:
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         case .groupMessage:

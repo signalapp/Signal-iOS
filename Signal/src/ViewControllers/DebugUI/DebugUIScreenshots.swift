@@ -711,6 +711,7 @@ public extension DebugUIScreenshots {
                 //                    RPRecentCallTypeOutgoingMissed,
                 //                };
                 let callRecord = TSCall(callType: .incomingMissed,
+                                        offerType: .audio,
                                         thread: thread,
                                         sentAtTimestamp: Date.ows_millisecondTimestamp())
                 callRecord.anyInsert(transaction: transaction)

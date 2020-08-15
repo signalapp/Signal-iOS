@@ -156,16 +156,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         if showNamesOnCallScreen {
             update.localizedCallerName = self.contactsManager.displayName(for: call.remoteAddress)
-            let type: CXHandle.HandleType
-            let value: String
             if let phoneNumber = call.remoteAddress.phoneNumber {
-                type = .phoneNumber
-                value = phoneNumber
-            } else {
-                type = .generic
-                value = call.remoteAddress.stringForDisplay
+                update.remoteHandle = CXHandle(type: .phoneNumber, value: phoneNumber)
             }
-            update.remoteHandle = CXHandle(type: type, value: value)
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
@@ -173,7 +166,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         }
 
-        update.hasVideo = call.hasLocalVideo
+        update.hasVideo = call.offerMediaType == .video
 
         disableUnsupportedFeatures(callUpdate: update)
 

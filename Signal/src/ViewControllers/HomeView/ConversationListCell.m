@@ -403,9 +403,16 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         if ([thread isMuted]) {
-            [snippetText append:LocalizationNotNeeded(@"\ue067  ")
+            [snippetText
+                appendTemplatedImageNamed:@"bell-disabled-outline-24"
+                                     font:self.snippetFont
+                               attributes:@{
+                                   NSForegroundColorAttributeName :
+                                       (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
+                               }];
+            [snippetText append:@" "
                      attributes:@{
-                         NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
+                         NSFontAttributeName : self.snippetFont.ows_semibold,
                          NSForegroundColorAttributeName :
                              (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
                      }];

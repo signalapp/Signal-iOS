@@ -140,20 +140,6 @@ public class FeatureFlags: BaseFlags {
     // Don't consult this flags; consult RemoteConfig.usernames.
     static let usernamesSupported = build.includes(.dev)
 
-    @objc
-    public static var calling: Bool {
-        return answerCallsOnSecondaryDevice || TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
-    }
-
-    // We can't enable this in production until sending calls to all devices has
-    // rolled out on iOS and Android.
-    //
-    // Note: As well as exposing incoming calls on iPads, this also exposes the outgoing call button
-    // on iPads, because we don't want to allow outgoing calls from an iPad until we're also ready
-    // to receive them on iPad.
-    @objc
-    public static let answerCallsOnSecondaryDevice: Bool = true
-
     // Don't consult this flags; consult RemoteConfig.groupsV2...
     static let groupsV2Supported = true
 

@@ -85,17 +85,7 @@ import SignalMessaging
 
     @objc
     public func setup() {
-        if FeatureFlags.answerCallsOnSecondaryDevice {
-            callService.createCallUIAdapter()
-        } else {
-            AppReadiness.runNowOrWhenAppWillBecomeReady {
-                // Currently, we only build the CallUIAdapter for the primary device, which we can't
-                // determine until *after* storage has been setup. Once we create calling on all
-                // devices, we can create the callUIAdapter unconditionally, on all devices, and get
-                // rid of this.
-                self.callService.createCallUIAdapter()
-            }
-        }
+        callService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManager = notificationPresenter

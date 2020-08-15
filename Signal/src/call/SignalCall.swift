@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalRingRTC
 
 public enum CallState: String {
     case idle
@@ -21,6 +22,10 @@ public enum CallState: String {
     case answeredElsewhere // terminal
     case declinedElsewhere // terminal
     case busyElsewhere // terminal
+}
+
+public enum CallOfferMediaType {
+    case audio, video
 }
 
 public enum CallDirection {
@@ -69,6 +74,8 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
             Logger.info("")
         }
     }
+
+    let videoCaptureController = VideoCaptureController()
 
     weak var localCaptureSession: AVCaptureSession? {
         didSet {
@@ -174,6 +181,8 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
             }
         }
     }
+
+    public var offerMediaType: CallOfferMediaType = .audio
 
     public var isMuted = false {
         didSet {

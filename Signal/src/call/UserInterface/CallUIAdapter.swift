@@ -67,7 +67,7 @@ extension CallUIAdaptee {
     internal func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard let call = self.callService.buildOutgoingCallIfAvailable(address: address) else {
+        guard let call = self.callService.buildOutgoingCallIfAvailable(address: address, hasVideo: hasLocalVideo) else {
             // @integration This is not unexpected, it could happen if Bob tries
             // to start an outgoing call at the same moment Alice has already
             // sent him an Offer that is being processed.

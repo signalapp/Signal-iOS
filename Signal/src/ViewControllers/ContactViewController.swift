@@ -272,7 +272,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressSendMessage()
             }))
-            if FeatureFlags.calling {
                 stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_AUDIO_CALL",
                                                                                               comment: "Label for 'audio call' button in contact view."),
                                                                       imageName: "contact_view_audio_call",
@@ -287,7 +286,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                                         guard let strongSelf = self else { return }
                                                                         strongSelf.didPressVideoCall()
                 }))
-            }
             topView.addSubview(stackView)
             stackView.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
             stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)

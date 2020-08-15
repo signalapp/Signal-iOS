@@ -98,7 +98,6 @@ typedef enum : NSUInteger {
     CNContactViewControllerDelegate,
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
-    DisappearingTimerConfigurationViewDelegate,
     ConversationSettingsViewDelegate,
     ConversationHeaderViewDelegate,
     ConversationViewLayoutDelegate,
@@ -1365,67 +1364,27 @@ typedef enum : NSUInteger {
                 self.navigationItem.rightBarButtonItems = @[];
                 return;
             }
-            const CGFloat kBarButtonSize = 44;
             NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
             if ([self canCall]) {
-                // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
-                // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
-                // The contents of the navigation bar are cramped in this view.
-                UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-                UIImage *image =
-                    [[Theme iconImage:ThemeIconPhone] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                [callButton setImage:image forState:UIControlStateNormal];
-
-                if (OWSWindowManager.sharedManager.hasCall) {
-                    callButton.enabled = NO;
-                    callButton.userInteractionEnabled = NO;
-                    callButton.tintColor = [Theme.primaryIconColor colorWithAlphaComponent:0.7];
-                } else {
-                    callButton.enabled = YES;
-                    callButton.userInteractionEnabled = YES;
-                    callButton.tintColor = Theme.primaryIconColor;
-                }
-
-                UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-
-                // We normally would want to use left and right insets that ensure the button
-                // is square and the icon is centered.  However UINavigationBar doesn't offer us
-                // control over the margins and spacing of its content, and the buttons end up
-                // too far apart and too far from the edge of the screen. So we use a smaller
-                // right inset tighten up the layout.
-                BOOL hasCompactHeader = self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-                if (!hasCompactHeader) {
-                    imageEdgeInsets.left = round((kBarButtonSize - image.size.width) * 0.5f);
-                    imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + imageEdgeInsets.left)) * 0.5f);
-                    imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-                    imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-                }
-                callButton.imageEdgeInsets = imageEdgeInsets;
-                callButton.accessibilityLabel
+                UIBarButtonItem *audioCallButton =
+                    [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconAudioCall]
+                                                     style:UIBarButtonItemStylePlain
+                                                    target:self
+                                                    action:@selector(startAudioCall)];
+                audioCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
+                audioCallButton.accessibilityLabel
                     = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
-                [callButton addTarget:self
-                               action:@selector(startAudioCall)
-                     forControlEvents:UIControlEventTouchUpInside];
-                callButton.frame = CGRectMake(0,
-                    0,
-                    round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-                    round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-                [barButtons addObject:[[UIBarButtonItem alloc]
-                                               initWithCustomView:callButton
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
-            }
+                [barButtons addObject:audioCallButton];
 
-            if (self.disappearingMessagesConfiguration.isEnabled && !self.threadViewModel.hasPendingMessageRequest) {
-                DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
-                    initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
-                timerView.delegate = self;
-                timerView.tintColor = Theme.primaryIconColor;
-
-                [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
-
-                [barButtons addObject:[[UIBarButtonItem alloc]
-                                               initWithCustomView:timerView
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"timer")]];
+                UIBarButtonItem *videoCallButton =
+                    [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconVideoCall]
+                                                     style:UIBarButtonItemStylePlain
+                                                    target:self
+                                                    action:@selector(startVideoCall)];
+                videoCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
+                videoCallButton.accessibilityLabel
+                    = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
+                [barButtons addObject:videoCallButton];
             }
 
             self.navigationItem.rightBarButtonItems = [barButtons copy];
@@ -1443,17 +1402,33 @@ typedef enum : NSUInteger {
     }
 
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
+    UIFont *subtitleFont = self.headerView.subtitleFont;
+    NSDictionary *attributes = @{
+        NSFontAttributeName : subtitleFont,
+        NSForegroundColorAttributeName : [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9],
+    };
 
-    UIColor *subtitleColor = [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
-    if (self.thread.isMuted) {
-        // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
-        [subtitleText appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\ue067  ")
-                                                     attributes:@{
-                                                         NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
-                                                         NSForegroundColorAttributeName : subtitleColor
-                                                     }]];
+    BOOL isMuted = self.thread.isMuted;
+    if (isMuted) {
+        [subtitleText appendTemplatedImageNamed:@"bell-disabled-outline-24" font:subtitleFont];
+        [subtitleText append:@" " attributes:attributes];
+        [subtitleText append:NSLocalizedString(@"MUTED_BADGE", @"Badge indicating that the user is muted.")
+                  attributes:attributes];
     }
+
+    BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
+    if (hasTimer) {
+        if (isMuted) {
+            [subtitleText append:@"   " attributes:attributes];
+        }
+
+        [subtitleText appendTemplatedImageNamed:@"timer-60-12" font:subtitleFont];
+        [subtitleText append:@" " attributes:attributes];
+        [subtitleText append:[NSString formatDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds
+                                              useShortFormat:YES]
+                  attributes:attributes];
+    }
+
 
     BOOL isVerified = YES;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
@@ -1463,26 +1438,16 @@ typedef enum : NSUInteger {
         }
     }
     if (isVerified) {
-        // Show a "checkmark" icon before the navigation bar subtitle if this thread is verified.
-        [subtitleText appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
-                                                     attributes:@{
-                                                         NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                                                         NSForegroundColorAttributeName : subtitleColor,
-                                                     }]];
+        if (hasTimer || isMuted) {
+            [subtitleText append:@"   " attributes:attributes];
+        }
+
+        [subtitleText appendTemplatedImageNamed:@"check-12" font:subtitleFont];
+        [subtitleText append:@" " attributes:attributes];
+        [subtitleText append:NSLocalizedString(
+                                 @"PRIVACY_IDENTITY_IS_VERIFIED_BADGE", @"Badge indicating that the user is verified.")
+                  attributes:attributes];
     }
-
-
-    [subtitleText
-        appendAttributedString:[[NSAttributedString alloc]
-                                   initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
-                                                      @"The subtitle for the messages view title indicates that the "
-                                                      @"title can be tapped to access settings for this conversation.")
-                                       attributes:@{
-                                           NSFontAttributeName : self.headerView.subtitleFont,
-                                           NSForegroundColorAttributeName : subtitleColor,
-                                       }]];
-
 
     self.headerView.attributedSubtitle = subtitleText;
 }
@@ -1567,10 +1532,6 @@ typedef enum : NSUInteger {
 
 - (BOOL)canCall
 {
-    if (!SSKFeatureFlags.calling) {
-        return NO;
-    }
-
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         return NO;
     }
@@ -1669,14 +1630,6 @@ typedef enum : NSUInteger {
     return [viewControllers subarrayWithRange:NSMakeRange(0, index + 1)];
 }
 
-#pragma mark - DisappearingTimerConfigurationViewDelegate
-
-- (void)disappearingTimerConfigurationViewWasTapped:(DisappearingTimerConfigurationView *)disappearingTimerView
-{
-    OWSLogDebug(@"Tapped timer in navbar");
-    [self showConversationSettings];
-}
-
 #pragma mark - Load More
 
 - (void)autoLoadMoreIfNecessary
@@ -1764,7 +1717,7 @@ typedef enum : NSUInteger {
     }
 
     _disappearingMessagesConfiguration = disappearingMessagesConfiguration;
-    [self updateBarButtonItems];
+    [self updateNavigationBarSubtitleLabel];
 }
 
 #pragma mark Bubble User Actions
@@ -1957,7 +1910,14 @@ typedef enum : NSUInteger {
                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")
                                            style:ActionSheetActionStyleDefault
                                          handler:^(ActionSheetAction *action) {
-                                             [weakSelf startAudioCall];
+                                             switch (call.offerType) {
+                                                 case TSRecentCallOfferTypeAudio:
+                                                     [weakSelf startAudioCall];
+                                                     break;
+                                                 case TSRecentCallOfferTypeVideo:
+                                                     [weakSelf startVideoCall];
+                                                     break;
+                                             }
                                          }];
     [alert addAction:callAction];
     [alert addAction:[OWSActionSheets cancelAction]];

@@ -3457,27 +3457,35 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         TSContactThread *contactThread = (TSContactThread *)thread;
 
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncoming
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoing
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingMissed
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoingIncomplete
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingIncomplete
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingDeclined
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
         [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoingMissed
+                                                 offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
     }

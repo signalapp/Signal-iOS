@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,3 +40,6 @@ extension SSKJobRecordStatus: DatabaseValueConvertible { }
 
 extension SDSRecordType: Codable { }
 extension SDSRecordType: DatabaseValueConvertible { }
+
+extension TSRecentCallOfferType: Codable { }
+extension TSRecentCallOfferType: DatabaseValueConvertible { }
