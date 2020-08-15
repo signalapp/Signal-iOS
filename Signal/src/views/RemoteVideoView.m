@@ -14,12 +14,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RemoteVideoView () <RTCVideoViewDelegate>
+@interface RemoteVideoView ()
 
 @property (nonatomic, readonly) __kindof UIView<RTCVideoRenderer> *videoRenderer;
-
-// Used for legacy EAGLVideoView
-@property (nullable, nonatomic) NSArray<NSLayoutConstraint *> *remoteVideoConstraints;
 
 @end
 
@@ -32,48 +29,29 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _remoteVideoConstraints = @[];
-
-// Currently RTC only supports metal on 64bit machines
+    // Metal is only supported on ARM64 devices. We only support ARM64 devices,
+    // with the exception being the simulator.
 #if defined(__arm64__)
-    // On 64-bit, iOS9+: uses the MetalKit backed view for improved battery/rendering performance.
-    if (_videoRenderer == nil) {
-
-        // It is insufficient to check the RTC_SUPPORTS_METAL macro to determine Metal support.
-        // RTCMTLVideoView requires the MTKView class, available only in iOS9+
-        // So check that it exists before proceeding.
-        if ([MTKView class]) {
-            RTCMTLVideoView *rtcMetalView = [[RTCMTLVideoView alloc] initWithFrame:CGRectZero];
-            rtcMetalView.videoContentMode = UIViewContentModeScaleAspectFill;
-            _videoRenderer = rtcMetalView;
-            [self addSubview:_videoRenderer];
-            [_videoRenderer autoPinEdgesToSuperviewEdges];
-            // HACK: Although RTCMTLVideo view is positioned to the top edge of the screen
-            // It's inner (private) MTKView is below the status bar.
-            for (UIView *subview in [_videoRenderer subviews]) {
-                if ([subview isKindOfClass:[MTKView class]]) {
-                    [subview autoPinEdgesToSuperviewEdges];
-                } else {
-                    OWSFailDebug(@"New subviews added to MTLVideoView. Reconsider this hack.");
-                }
-            }
-        }
-    }
-#endif
-
-    // On 32-bit iOS9+ systems, use the legacy EAGL backed view.
-    if (_videoRenderer == nil) {
-        RTCEAGLVideoView *eaglVideoView = [RTCEAGLVideoView new];
-        eaglVideoView.delegate = self;
-        _videoRenderer = eaglVideoView;
-        [self addSubview:_videoRenderer];
-        // Pinning legacy RTCEAGL view discards aspect ratio.
-        // So we have a more verbose layout in the RTCEAGLVideoViewDelegate methods
-        // [_videoRenderer autoPinEdgesToSuperviewEdges];
-    }
-
+    RTCMTLVideoView *rtcMetalView = [[RTCMTLVideoView alloc] initWithFrame:CGRectZero];
+    rtcMetalView.videoContentMode = UIViewContentModeScaleAspectFill;
+    _videoRenderer = rtcMetalView;
+    [self addSubview:_videoRenderer];
+    [_videoRenderer autoPinEdgesToSuperviewEdges];
     // We want the rendered video to go edge-to-edge.
     _videoRenderer.layoutMargins = UIEdgeInsetsZero;
+    // HACK: Although RTCMTLVideo view is positioned to the top edge of the screen
+    // It's inner (private) MTKView is below the status bar.
+    for (UIView *subview in [_videoRenderer subviews]) {
+        if ([subview isKindOfClass:[MTKView class]]) {
+            [subview autoPinEdgesToSuperviewEdges];
+        } else {
+            OWSFailDebug(@"New subviews added to MTLVideoView. Reconsider this hack.");
+        }
+    }
+#else
+    // For simulators just set a solid background color.
+    self.backgroundColor = [UIColor.blueColor colorWithAlphaComponent:0.4];
+#endif
 
     return self;
 }
@@ -84,74 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setSize:(CGSize)size
 {
     [self.videoRenderer setSize:size];
-}
-
-#pragma mark - RTCVideoViewDelegate
-
-- (void)videoView:(id<RTCVideoRenderer>)videoRenderer didChangeVideoSize:(CGSize)remoteVideoSize
-{
-    OWSAssertIsOnMainThread();
-
-    if (![videoRenderer isKindOfClass:[RTCEAGLVideoView class]]) {
-        OWSFailDebug(@"Unexpected videoRenderer: %@", videoRenderer);
-        return;
-    }
-    RTCEAGLVideoView *videoView = (RTCEAGLVideoView *)videoRenderer;
-
-    if (remoteVideoSize.height <= 0) {
-        OWSFailDebug(@"Illegal video height: %f", remoteVideoSize.height);
-        return;
-    }
-
-    CGFloat aspectRatio = remoteVideoSize.width / remoteVideoSize.height;
-    OWSLogVerbose(@"Remote video size: width: %f height: %f ratio: %f",
-        remoteVideoSize.width,
-        remoteVideoSize.height,
-        aspectRatio);
-
-    UIView *containingView = self.superview;
-    if (containingView == nil) {
-        OWSLogDebug(@"Cannot layout video view without superview");
-        return;
-    }
-
-    [NSLayoutConstraint deactivateConstraints:self.remoteVideoConstraints];
-
-    NSMutableArray<NSLayoutConstraint *> *constraints = [NSMutableArray new];
-    if (remoteVideoSize.width > 0 && remoteVideoSize.height > 0 && containingView.bounds.size.width > 0
-        && containingView.bounds.size.height > 0) {
-
-        // to approximate "scale to fill" contentMode
-        // - Pin aspect ratio
-        // - Width and height is *at least* as wide as superview
-        [constraints addObject:[videoView autoPinToAspectRatioWithSize:remoteVideoSize]];
-        [constraints addObject:[videoView autoSetDimension:ALDimensionWidth
-                                                    toSize:containingView.width
-                                                  relation:NSLayoutRelationGreaterThanOrEqual]];
-        [constraints addObject:[videoView autoSetDimension:ALDimensionHeight
-                                                    toSize:containingView.height
-                                                  relation:NSLayoutRelationGreaterThanOrEqual]];
-        [constraints addObjectsFromArray:[videoView autoCenterInSuperview]];
-
-        // Low priority constraints force view to be no larger than necessary.
-        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
-                             forConstraints:^{
-                                 [constraints addObjectsFromArray:[videoView autoPinEdgesToSuperviewEdges]];
-                             }];
-
-    } else {
-        [constraints addObjectsFromArray:[videoView autoPinEdgesToSuperviewEdges]];
-    }
-
-    self.remoteVideoConstraints = [constraints copy];
-    // We need to force relayout to occur immediately (and not
-    // wait for a UIKit layout/render pass) or the remoteVideoView
-    // (which presumably is updating its CALayer directly) will
-    // ocassionally appear to have bad frames.
-    [videoView setNeedsLayout];
-    [[videoView superview] setNeedsLayout];
-    [videoView layoutIfNeeded];
-    [[videoView superview] layoutIfNeeded];
 }
 
 /** The frame to be displayed. */
