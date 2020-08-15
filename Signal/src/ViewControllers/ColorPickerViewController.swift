@@ -373,6 +373,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var mutualGroupNames: [String]?
     var reactionState: InteractionReactionState?
     var shouldCollapseSystemMessageAction: Bool = false
+    var systemMessageGroupUpdates: [GroupUpdateCopyItem]?
 
     init(interaction: TSInteraction, thread: TSThread) {
         self.interaction = interaction

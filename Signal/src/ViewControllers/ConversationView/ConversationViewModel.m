@@ -977,6 +977,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block BOOL shouldShowDateOnNextViewItem = YES;
     __block uint64_t previousViewItemTimestamp = 0;
+    __block id<ConversationViewItem> _Nullable previousViewItem;
     void (^addDateHeaderViewItemIfNecessary)(id<ConversationViewItem>) = ^(id<ConversationViewItem> viewItem) {
         uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
         OWSAssertDebug(viewItemTimestamp > 0);
@@ -1006,6 +1007,7 @@ NS_ASSUME_NONNULL_BEGIN
             id<ConversationViewItem> _Nullable headerViewItem = createViewItemForInteraction(interaction);
             [headerViewItem clearNeedsUpdate];
             [viewItems addObject:headerViewItem];
+            previousViewItem = headerViewItem;
         }
 
         previousViewItemTimestamp = viewItemTimestamp;
@@ -1032,11 +1034,11 @@ NS_ASSUME_NONNULL_BEGIN
             id<ConversationViewItem> _Nullable headerViewItem = createViewItemForInteraction(interaction);
             [headerViewItem clearNeedsUpdate];
             [viewItems addObject:headerViewItem];
+            previousViewItem = headerViewItem;
         }
     };
 
     __block BOOL hasError = NO;
-    __block id<ConversationViewItem> _Nullable previousViewItem;
     _Nullable id<ConversationViewItem> (^tryToAddViewItemForInteraction)(TSInteraction *)
         = ^_Nullable id<ConversationViewItem>(TSInteraction *interaction)
     {

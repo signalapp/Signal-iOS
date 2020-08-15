@@ -137,6 +137,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @property (nonatomic, nullable) TSAttachment *linkPreviewAttachment;
 @property (nonatomic, nullable) NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems;
 @property (nonatomic, nullable) NSString *systemMessageText;
+@property (nonatomic, nullable) NSArray<GroupUpdateCopyItem *> *systemMessageGroupUpdates;
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
 @property (nonatomic, nullable) NSString *authorConversationColorName;
 @property (nonatomic, nullable) ConversationStyle *conversationStyle;
@@ -227,6 +228,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     self.viewOnceMessageState = ViewOnceMessageState_Unknown;
     self.contactShare = nil;
     self.systemMessageText = nil;
+    self.systemMessageGroupUpdates = nil;
     self.authorConversationColorName = nil;
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
@@ -621,13 +623,33 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_Call:
         case OWSInteractionType_Info:
         case OWSInteractionType_Error:
-            switch (previousLayoutItem.interaction.interactionType) {
-                case OWSInteractionType_Call:
-                case OWSInteractionType_Info:
-                case OWSInteractionType_Error:
-                    return ConversationStyle.compactMessageSpacing;
-                default:
-                    return ConversationStyle.defaultMessageSpacing;
+            if (previousLayoutItem.interaction.interactionType == self.interaction.interactionType) {
+                switch (previousLayoutItem.interaction.interactionType) {
+                    case OWSInteractionType_Error: {
+                        TSErrorMessage *previousErrorMessage = (TSErrorMessage *)previousLayoutItem.interaction;
+                        TSErrorMessage *errorMessage = (TSErrorMessage *)self.interaction;
+                        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange
+                            || previousErrorMessage.errorType != errorMessage.errorType) {
+                            return ConversationStyle.defaultMessageSpacing;
+                        }
+                        return ConversationStyle.compactMessageSpacing;
+                    }
+                    case OWSInteractionType_Info: {
+                        TSInfoMessage *previousInfoMessage = (TSInfoMessage *)previousLayoutItem.interaction;
+                        TSInfoMessage *infoMessage = (TSInfoMessage *)self.interaction;
+                        if (infoMessage.messageType == TSInfoMessageVerificationStateChange
+                            || previousInfoMessage.messageType != infoMessage.messageType) {
+                            return ConversationStyle.defaultMessageSpacing;
+                        }
+                        return ConversationStyle.compactMessageSpacing;
+                    }
+                    case OWSInteractionType_Call:
+                        return ConversationStyle.compactMessageSpacing;
+                    default:
+                        break;
+                }
+            } else {
+                return ConversationStyle.defaultMessageSpacing;
             }
         default:
             return ConversationStyle.defaultMessageSpacing;
@@ -862,8 +884,18 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_UnreadIndicator:
         case OWSInteractionType_DateHeader:
             return;
+        case OWSInteractionType_Info: {
+            TSInfoMessage *infoMessage = (TSInfoMessage *)self.interaction;
+            if (infoMessage.messageType == TSInfoMessageTypeGroupUpdate) {
+                NSArray<GroupUpdateCopyItem *> *_Nullable groupUpdates =
+                    [infoMessage groupUpdateItemsWithTransaction:transaction];
+                if (groupUpdates.count > 0) {
+                    self.systemMessageGroupUpdates = groupUpdates;
+                    return;
+                }
+            }
+        }
         case OWSInteractionType_Error:
-        case OWSInteractionType_Info:
         case OWSInteractionType_Call:
             self.systemMessageText = [self systemMessageTextWithTransaction:transaction];
             OWSAssertDebug(self.systemMessageText.length > 0);

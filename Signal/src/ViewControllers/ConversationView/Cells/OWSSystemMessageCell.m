@@ -408,36 +408,115 @@ typedef void (^SystemMessageActionBlock)(void);
     return result;
 }
 
+- (NSString *)iconNameForGroupUpdate:(GroupUpdateType)type
+{
+    NSString *iconName;
+
+    switch (type) {
+        case GroupUpdateTypeUserMembershipState_left:
+            iconName = [Theme iconName:ThemeIconSettingsLeaveGroup];
+            break;
+        case GroupUpdateTypeUserMembershipState_removed:
+            iconName = @"removed-outline-32";
+            break;
+        case GroupUpdateTypeUserMembershipState_invited:
+        case GroupUpdateTypeUserMembershipState_added:
+            iconName = @"invite-outline-32";
+            break;
+        case GroupUpdateTypeGeneric:
+        case GroupUpdateTypeDebug:
+        case GroupUpdateTypeUserMembershipState:
+            iconName = [Theme iconName:ThemeIconGroupMessage];
+            break;
+        case GroupUpdateTypeUserMembershipState_invitesNew:
+        case GroupUpdateTypeUserMembershipState_invalidInvitesAdded:
+            iconName = [Theme iconName:ThemeIconSettingsViewPendingInvites];
+            break;
+        case GroupUpdateTypeUserMembershipState_invitesDeclined:
+        case GroupUpdateTypeUserMembershipState_invitesRevoked:
+        case GroupUpdateTypeUserMembershipState_invalidInvitesRemoved:
+            iconName = @"invites-removed-outline-24";
+            break;
+        case GroupUpdateTypeAccessAttributes:
+        case GroupUpdateTypeAccessMembers:
+        case GroupUpdateTypeUserRole:
+        case GroupUpdateTypeGroupCreated:
+            iconName = [Theme iconName:ThemeIconMegaphone];
+            break;
+        case GroupUpdateTypeGroupName:
+            iconName = [Theme iconName:ThemeIconCompose];
+            break;
+        case GroupUpdateTypeGroupAvatar:
+            iconName = [Theme iconName:ThemeIconPhoto];
+            break;
+        case GroupUpdateTypeDisappearingMessagesState:
+        case GroupUpdateTypeDisappearingMessagesState_enabled:
+            iconName = [Theme iconName:ThemeIconSettingsTimer];
+            break;
+        case GroupUpdateTypeDisappearingMessagesState_disabled:
+            iconName = [Theme iconName:ThemeIconSettingsTimerDisabled];
+            break;
+    }
+
+    return iconName;
+}
+
 - (void)applyTitleForInteraction:(TSInteraction *)interaction
                            label:(UILabel *)label
 {
     OWSAssertDebug(interaction);
     OWSAssertDebug(label);
-    OWSAssertDebug(self.viewItem.systemMessageText.length > 0);
 
     label.textColor = [self textColorForInteraction:interaction];
     NSMutableAttributedString *labelText = [NSMutableAttributedString new];
 
-    UIImage *_Nullable icon = [self iconForInteraction:interaction];
-    if (icon) {
-        [labelText appendImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] font:label.font];
-        [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:@"   "]];
-    }
+    if (self.viewItem.systemMessageGroupUpdates.count > 0) {
+        for (GroupUpdateCopyItem *update in self.viewItem.systemMessageGroupUpdates) {
+            NSString *iconName = [self iconNameForGroupUpdate:update.type];
 
-    [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:self.viewItem.systemMessageText]];
+            [labelText appendTemplatedImageNamed:iconName font:label.font];
+            [labelText append:@"  " attributes:@{}];
+            [labelText append:update.text attributes:@{}];
 
-    if (self.shouldShowTimestamp) {
-        static NSDateFormatter *dateFormatter = nil;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            dateFormatter = [NSDateFormatter new];
-            dateFormatter.dateFormat = @"MMM d, h:mm a";
-        });
+            if (![update isEqual:self.viewItem.systemMessageGroupUpdates.lastObject]) {
+                [labelText append:@"\n" attributes:@{}];
+            }
+        }
 
-        [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:LocalizationNotNeeded(@" · ")]];
-        NSString *timestampText =
-            [dateFormatter stringFromDate:[NSDate ows_dateWithMillisecondsSince1970:interaction.timestamp]];
-        [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:timestampText]];
+        if (self.viewItem.systemMessageGroupUpdates.count > 1) {
+            NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+            paragraphStyle.paragraphSpacing = 12;
+            paragraphStyle.alignment = NSTextAlignmentCenter;
+
+            [labelText addAttribute:NSParagraphStyleAttributeName
+                              value:paragraphStyle
+                              range:NSMakeRange(0, labelText.length)];
+        }
+    } else {
+        OWSAssertDebug(self.viewItem.systemMessageText.length > 0);
+
+        UIImage *_Nullable icon = [self iconForInteraction:interaction];
+        if (icon) {
+            [labelText appendImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] font:label.font];
+            [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:@"  "]];
+        }
+
+        [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:self.viewItem.systemMessageText]];
+
+        if (self.shouldShowTimestamp) {
+            static NSDateFormatter *dateFormatter = nil;
+            static dispatch_once_t onceToken;
+            dispatch_once(&onceToken, ^{
+                dateFormatter = [NSDateFormatter new];
+                dateFormatter.dateFormat = @"MMM d, h:mm a";
+            });
+
+            [labelText
+                appendAttributedString:[[NSAttributedString alloc] initWithString:LocalizationNotNeeded(@" · ")]];
+            NSString *timestampText =
+                [dateFormatter stringFromDate:[NSDate ows_dateWithMillisecondsSince1970:interaction.timestamp]];
+            [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:timestampText]];
+        }
     }
 
     label.attributedText = labelText;

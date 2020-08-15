@@ -41,6 +41,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
+@class GroupUpdateCopyItem;
 @class InteractionReactionState;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
@@ -156,6 +157,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 @property (nonatomic) BOOL shouldCollapseSystemMessageAction;
+@property (nonatomic, readonly, nullable) NSArray<GroupUpdateCopyItem *> *systemMessageGroupUpdates;
 
 // NOTE: This property is only set for incoming messages, typing indicators, and thread details.
 @property (nonatomic, readonly, nullable) NSString *authorConversationColorName;

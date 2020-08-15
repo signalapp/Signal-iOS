@@ -61,7 +61,8 @@ public enum ThemeIcon: UInt {
     case info
     case groupMessage
     case profileChangeMessage
-    case profilePhotoChangeMessage
+    case photo
+    case megaphone
 
     case transfer
     case register
@@ -218,8 +219,10 @@ public extension Theme {
             return "group-outline-20"
         case .profileChangeMessage:
             return isDarkThemeEnabled ? "profile-solid-20" : "profile-outline-20"
-        case .profilePhotoChangeMessage:
+        case .photo:
             return isDarkThemeEnabled ? "photo-solid-24" : "photo-outline-24"
+        case .megaphone:
+            return isDarkThemeEnabled ? "megaphone-solid-16" : "megaphone-outline-16"
 
         case .transfer:
             return "transfer-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
