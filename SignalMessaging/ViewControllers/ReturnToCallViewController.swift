@@ -187,13 +187,13 @@ public class ReturnToCallViewController: UIViewController {
 
         switch sender.state {
         case .began, .changed:
-            let translation = sender.translation(in: view)
-            sender.setTranslation(.zero, in: view)
+            let translation = sender.translation(in: window)
+            sender.setTranslation(.zero, in: window)
 
             window.frame.origin.y += translation.y
             window.frame.origin.x += translation.x
         case .ended, .cancelled, .failed:
-            let velocity = sender.velocity(in: view)
+            let velocity = sender.velocity(in: window)
 
             // TODO: maybe do more sophisticated deceleration
 

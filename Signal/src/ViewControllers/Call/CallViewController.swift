@@ -198,13 +198,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         localVideoView.removeFromSuperview()
     }
 
+    // MARK: - View Lifecycle
+
     @objc func didBecomeActive() {
         if self.isViewLoaded {
             shouldRemoteVideoControlsBeHidden = false
         }
     }
 
-    // MARK: - View Lifecycle
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { [weak self] _ in
+            self?.updateLocalVideoLayout()
+        }, completion: nil)
+    }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
