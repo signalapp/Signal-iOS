@@ -77,6 +77,7 @@ extension CallUIAdaptee {
 
         Logger.debug("")
 
+        call.callAdapterType = .default
         startOutgoingCall(call: call)
         call.hasLocalVideo = hasLocalVideo
         self.showCall(call)
