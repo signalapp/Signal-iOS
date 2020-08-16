@@ -171,7 +171,7 @@ public class LongTextViewController: OWSViewController {
         view.addSubview(footer)
         footer.autoPinWidthToSuperview()
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
-        footer.autoPinEdge(.bottom, to: .bottom, of: view)
+        footer.autoPinEdge(toSuperviewSafeArea: .bottom)
 
         footer.items = [
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
