@@ -75,7 +75,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
         }
     }
 
-    var callAdapterType: CallAdapterType?
+    let callAdapterType: CallAdapterType
 
     let videoCaptureController = VideoCaptureController()
 
@@ -236,7 +236,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, state: CallState, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64) {
+    init(direction: CallDirection, localId: UUID, state: CallState, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
         self.direction = direction
         self.localId = localId
         self.state = state
@@ -244,6 +244,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
         self.thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
         self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remoteAddress)", behavior: .call)
         self.sentAtTimestamp = sentAtTimestamp
+        self.callAdapterType = callAdapterType
     }
 
     deinit {
@@ -270,11 +271,25 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     }
 
     public class func outgoingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
-        return SignalCall(direction: .outgoing, localId: localId, state: .dialing, remoteAddress: remoteAddress, sentAtTimestamp: Date.ows_millisecondTimestamp())
+        return SignalCall(direction: .outgoing, localId: localId, state: .dialing, remoteAddress: remoteAddress, sentAtTimestamp: Date.ows_millisecondTimestamp(), callAdapterType: .default)
     }
 
-    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64) -> SignalCall {
-        return SignalCall(direction: .incoming, localId: localId, state: .answering, remoteAddress: remoteAddress, sentAtTimestamp: sentAtTimestamp)
+    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64, offerMediaType: TSRecentCallOfferType) -> SignalCall {
+        // If this is a video call, and the app is active, we want
+        // to use in the in app call screen because CallKit has poor
+        // support for video calls. We still use CallKit when the app
+        // is not active, because CallKit provides a much better
+        // background ringing experience.
+        let callAdapterType: CallAdapterType
+        if offerMediaType == .video && UIApplication.shared.applicationState == .active {
+            callAdapterType = .nonCallKit
+        } else {
+            callAdapterType = .default
+        }
+
+        let call = SignalCall(direction: .incoming, localId: localId, state: .answering, remoteAddress: remoteAddress, sentAtTimestamp: sentAtTimestamp, callAdapterType: callAdapterType)
+        call.offerMediaType = offerMediaType
+        return call
     }
 
     // -

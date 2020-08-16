@@ -77,7 +77,6 @@ extension CallUIAdaptee {
 
         Logger.debug("")
 
-        call.callAdapterType = .default
         startOutgoingCall(call: call)
         call.hasLocalVideo = hasLocalVideo
         self.showCall(call)
@@ -134,21 +133,7 @@ extension CallUIAdaptee {
     var defaultAdaptee: CallUIAdaptee { callKitAdaptee ?? nonCallKitAdaptee }
 
     func adaptee(for call: SignalCall) -> CallUIAdaptee {
-        guard let callAdapterType = call.callAdapterType else {
-            // If this is a video call, and the app is active, we want
-            // to use in the in app call screen because CallKit has poor
-            // support for video calls. We still use CallKit when the app
-            // is not active, because CallKit provides a much better
-            // background ringing experience.
-            if call.offerMediaType == .video && UIApplication.shared.applicationState == .active {
-                call.callAdapterType = .nonCallKit
-            } else {
-                call.callAdapterType = .default
-            }
-            return adaptee(for: call)
-        }
-
-        switch callAdapterType {
+        switch call.callAdapterType {
         case .nonCallKit: return nonCallKitAdaptee
         case .default: return defaultAdaptee
         }

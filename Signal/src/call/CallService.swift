@@ -389,19 +389,17 @@ extension SignalCall: CallManagerCallReference { }
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, sentAtTimestamp: sentAtTimestamp)
-        calls.insert(newCall)
-        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
-
-        let callMediaType: CallMediaType
+        let offerMediaType: TSRecentCallOfferType
         switch callType {
         case .offerAudioCall:
-            callMediaType = .audioCall
-            newCall.offerMediaType = .audio
+            offerMediaType = .audio
         case .offerVideoCall:
-            callMediaType = .videoCall
-            newCall.offerMediaType = .video
+            offerMediaType = .video
         }
+
+        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, sentAtTimestamp: sentAtTimestamp, offerMediaType: offerMediaType)
+        calls.insert(newCall)
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("user is not onboarded, skipping call.")
@@ -518,7 +516,7 @@ extension SignalCall: CallManagerCallReference { }
         let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: callMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }
