@@ -274,11 +274,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func createViews() {
         view.isUserInteractionEnabled = true
 
-        tapGesture.delegate = self
         view.addGestureRecognizer(tapGesture)
-
+        localVideoView.addGestureRecognizer(panGesture)
         panGesture.delegate = self
-        view.addGestureRecognizer(panGesture)
+        tapGesture.require(toFail: panGesture)
 
         // The callee's avatar is rendered behind the blurred background.
         backgroundAvatarView.contentMode = .scaleAspectFill
@@ -598,48 +597,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return [.idle, .dialing, .remoteRinging].contains(call.state) && !localVideoView.isHidden
     }
 
-    private func nearestValidLocalVideoFrame(for origin: CGPoint) -> CGRect {
-        var newFrame = CGRect(
-            origin: origin,
-            size: ReturnToCallViewController.pipSize
-        )
-
-        let boundingRect = localVideoBoundingRect
-
-        // If the origin is zero, we always want to position
-        // the pip in the top right
-        let hasZeroOrigin = newFrame.origin == .zero
-
-        // If we're positioned outside of the vertical bounds, we
-        // want to position the pip at the nearest bound
-        let positionedOutOfVerticalBounds = newFrame.minY < boundingRect.minY || newFrame.maxY > boundingRect.maxY
-
-        // If we're position anywhere but exactly at the horizontal
-        // edges, we want to position the pip at the nearest edge
-        let positionedAwayFromHorizontalEdges = boundingRect.minX != newFrame.minX && boundingRect.maxX != newFrame.maxX
-
-        if positionedOutOfVerticalBounds {
-            if newFrame.minY < boundingRect.minY || hasZeroOrigin {
-                newFrame.origin.y = boundingRect.minY
-            } else {
-                newFrame.origin.y = boundingRect.maxY - newFrame.height
-            }
-        }
-
-        if positionedAwayFromHorizontalEdges {
-            let distanceFromLeading = newFrame.minX - boundingRect.minX
-            let distanceFromTrailing = boundingRect.maxX - newFrame.maxX
-
-            if distanceFromLeading > distanceFromTrailing || hasZeroOrigin {
-                newFrame.origin.x = boundingRect.maxX - newFrame.width
-            } else {
-                newFrame.origin.x = boundingRect.minX
-            }
-        }
-
-        return newFrame
-    }
-
+    private var previousOrigin: CGPoint!
     private func updateLocalVideoLayout() {
         guard localVideoView.superview == view else { return }
 
@@ -649,12 +607,21 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             return
         }
 
-        let newFrame: CGRect
-        if !localVideoView.isHidden {
-            newFrame = nearestValidLocalVideoFrame(for: localVideoView.frame.origin)
-        } else {
-            newFrame = .zero
+        guard !localVideoView.isHidden else { return }
+
+        // Prefer to start in the top right
+        if previousOrigin == nil {
+            previousOrigin = CGPoint(
+                x: localVideoBoundingRect.maxX - ReturnToCallViewController.pipSize.width,
+                y: localVideoBoundingRect.minY
+            )
         }
+
+        let newFrame = CGRect(
+            origin: previousOrigin,
+            size: ReturnToCallViewController.pipSize
+        ).pinnedToVerticalEdge(of: localVideoBoundingRect)
+        previousOrigin = newFrame.origin
 
         UIView.animate(withDuration: 0.25) { self.localVideoView.frame = newFrame }
     }
@@ -663,31 +630,17 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     @objc func handleLocalVideoPan(sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began, .changed:
-            let translation = sender.translation(in: view)
-            sender.setTranslation(.zero, in: view)
+            let translation = sender.translation(in: localVideoView)
+            sender.setTranslation(.zero, in: localVideoView)
 
             localVideoView.frame.origin.y += translation.y
             localVideoView.frame.origin.x += translation.x
         case .ended, .cancelled, .failed:
-            let velocity = sender.velocity(in: view)
-
-            // TODO: maybe do more sophisticated deceleration
-
-            let duration: CGFloat = 0.35
-
-            let additionalDistanceX = velocity.x * duration
-            let additionalDistanceY = velocity.y * duration
-
-            let finalDestination = CGPoint(
-                x: localVideoView.frame.origin.x + additionalDistanceX,
-                y: localVideoView.frame.origin.y + additionalDistanceY
-            )
-
-            let finalFrame = nearestValidLocalVideoFrame(for: finalDestination)
-
-            UIView.animate(withDuration: TimeInterval(duration)) {
-                self.localVideoView.frame = finalFrame
-            }
+            localVideoView.animateDecelerationToVerticalEdge(
+                withDuration: 0.35,
+                velocity: sender.velocity(in: localVideoView),
+                boundingRect: localVideoBoundingRect
+            ) { _ in self.previousOrigin = self.localVideoView.frame.origin }
         default:
             break
         }
@@ -1433,14 +1386,7 @@ private class CallButton: UIButton {
 
 extension CallViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        let isInLocalVideoView = localVideoView.bounds.contains(gestureRecognizer.location(in: localVideoView))
-
-        if gestureRecognizer == panGesture {
-            guard !localVideoView.isHidden, call.state == .connected else { return false }
-            return isInLocalVideoView
-        } else {
-            return !isInLocalVideoView
-        }
+        return !localVideoView.isHidden && localVideoView.superview == view && call.state == .connected
     }
 }
 
@@ -1469,6 +1415,8 @@ extension CallViewController: CallViewControllerWindowReference {
         remoteVideoView.autoPinEdgesToSuperviewEdges()
 
         view.insertSubview(localVideoView, aboveSubview: contactAvatarContainerView)
+
+        updateLocalVideoLayout()
 
         shouldRemoteVideoControlsBeHidden = false
 

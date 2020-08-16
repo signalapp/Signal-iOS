@@ -9,7 +9,7 @@ public protocol CallViewControllerWindowReference: class {
     var localVideoViewReference: UIView { get }
     var remoteVideoViewReference: UIView { get }
     var thread: TSContactThread { get }
-    var view: UIView { get }
+    var view: UIView! { get }
 
     func returnFromPip(pipWindow: UIWindow)
 }
@@ -110,7 +110,10 @@ public class ReturnToCallViewController: UIViewController {
 
         UIView.animate(withDuration: 0.2, animations: {
             snapshot.alpha = 0
-            window.frame = self.nearestValidPipFrame(for: previousOrigin)
+            window.frame = CGRect(
+                origin: previousOrigin,
+                size: Self.pipSize
+            ).pinnedToVerticalEdge(of: self.pipBoundingRect)
             window.layoutIfNeeded()
         }) { _ in
             snapshot.removeFromSuperview()
@@ -136,52 +139,15 @@ public class ReturnToCallViewController: UIViewController {
         return rect
     }
 
-    private func nearestValidPipFrame(for origin: CGPoint) -> CGRect {
-        var newFrame = CGRect(origin: origin, size: Self.pipSize)
-
-        let boundingRect = pipBoundingRect
-
-        // If the origin is zero, we always want to position
-        // the pip in the top right
-        let hasZeroOrigin = newFrame.origin == .zero
-
-        // If we're positioned outside of the vertical bounds, we
-        // want to position the pip at the nearest bound
-        let positionedOutOfVerticalBounds = newFrame.minY < boundingRect.minY || newFrame.maxY > boundingRect.maxY
-
-        // If we're position anywhere but exactly at the horizontal
-        // edges, we want to position the pip at the nearest edge
-        let positionedAwayFromHorizontalEdges = boundingRect.minX != newFrame.minX && boundingRect.maxX != newFrame.maxX
-
-        if positionedOutOfVerticalBounds {
-            if newFrame.minY < boundingRect.minY || hasZeroOrigin {
-                newFrame.origin.y = boundingRect.minY
-            } else {
-                newFrame.origin.y = boundingRect.maxY - newFrame.height
-            }
-        }
-
-        if positionedAwayFromHorizontalEdges {
-            let distanceFromLeading = newFrame.minX - boundingRect.minX
-            let distanceFromTrailing = boundingRect.maxX - newFrame.maxX
-
-            if distanceFromLeading > distanceFromTrailing || hasZeroOrigin {
-                newFrame.origin.x = boundingRect.maxX - newFrame.width
-            } else {
-                newFrame.origin.x = boundingRect.minX
-            }
-        }
-
-        return newFrame
-    }
-
     private func updatePipLayout() {
         guard let window = view.window else { return owsFailDebug("missing window") }
-        let newFrame = nearestValidPipFrame(for: window.frame.origin)
+        let newFrame = CGRect(
+            origin: window.frame.origin,
+            size: Self.pipSize
+        ).pinnedToVerticalEdge(of: pipBoundingRect)
         UIView.animate(withDuration: 0.25) { window.frame = newFrame }
     }
 
-    private var startingTranslation: CGPoint?
     @objc func handlePan(sender: UIPanGestureRecognizer) {
         guard let window = view.window else { return owsFailDebug("missing window") }
 
@@ -193,23 +159,11 @@ public class ReturnToCallViewController: UIViewController {
             window.frame.origin.y += translation.y
             window.frame.origin.x += translation.x
         case .ended, .cancelled, .failed:
-            let velocity = sender.velocity(in: window)
-
-            // TODO: maybe do more sophisticated deceleration
-
-            let duration: CGFloat = 0.35
-
-            let additionalDistanceX = velocity.x * duration
-            let additionalDistanceY = velocity.y * duration
-
-            let finalDestination = CGPoint(
-                x: window.frame.origin.x + additionalDistanceX,
-                y: window.frame.origin.y + additionalDistanceY
+            window.animateDecelerationToVerticalEdge(
+                withDuration: 0.35,
+                velocity: sender.velocity(in: window),
+                boundingRect: pipBoundingRect
             )
-
-            let finalFrame = nearestValidPipFrame(for: finalDestination)
-
-            UIView.animate(withDuration: TimeInterval(duration)) { window.frame = finalFrame }
         default:
             break
         }

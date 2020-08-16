@@ -161,6 +161,81 @@ public extension UIView {
     func setAccessibilityIdentifier(in container: NSObject, name: String) {
         self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: container, name: name)
     }
+
+    func animateDecelerationToVerticalEdge(
+        withDuration duration: TimeInterval,
+        velocity: CGPoint,
+        velocityThreshold: CGFloat = 500,
+        boundingRect: CGRect,
+        completion: ((Bool) -> Void)? = nil
+    ) {
+        var velocity = velocity
+        if abs(velocity.x) < velocityThreshold { velocity.x = 0 }
+        if abs(velocity.y) < velocityThreshold { velocity.y = 0 }
+
+        let currentPosition = frame.origin
+
+        let referencePoint: CGPoint
+        if velocity != .zero {
+            // Calculate the time until we intersect with each edge with
+            // a constant velocity.
+
+            // time = (end position - start positon) / velocity
+
+            let timeUntilVerticalEdge: CGFloat
+            if velocity.x > 0 {
+                timeUntilVerticalEdge = ((boundingRect.maxX - width) - currentPosition.x) / velocity.x
+            } else if velocity.x < 0 {
+                timeUntilVerticalEdge = (boundingRect.minX - currentPosition.x) / velocity.x
+            } else {
+                timeUntilVerticalEdge = .greatestFiniteMagnitude
+            }
+
+            let timeUntilHorizontalEdge: CGFloat
+            if velocity.y > 0 {
+                timeUntilHorizontalEdge = ((boundingRect.maxY - height) - currentPosition.y) / velocity.y
+            } else if velocity.y < 0 {
+                timeUntilHorizontalEdge = (boundingRect.minY - currentPosition.y) / velocity.y
+            } else {
+                timeUntilHorizontalEdge = .greatestFiniteMagnitude
+            }
+
+            // See which edge we intersect with first and calculate the position
+            // on the other axis when we reach that intersection point.
+
+            // end position = (time * velocity) + start position
+
+            let intersectPoint: CGPoint
+            if timeUntilHorizontalEdge > timeUntilVerticalEdge {
+                intersectPoint = CGPoint(
+                    x: velocity.x > 0 ? (boundingRect.maxX - width) : boundingRect.minX,
+                    y: (timeUntilVerticalEdge * velocity.y) + currentPosition.y
+                )
+            } else {
+                intersectPoint = CGPoint(
+                    x: (timeUntilHorizontalEdge * velocity.x) + currentPosition.x,
+                    y: velocity.y > 0 ? (boundingRect.maxY - height) : boundingRect.minY
+                )
+            }
+
+            referencePoint = intersectPoint
+        } else {
+            referencePoint = currentPosition
+        }
+
+        let destinationFrame = CGRect(origin: referencePoint, size: frame.size).pinnedToVerticalEdge(of: boundingRect)
+        let distance = destinationFrame.origin.distance(currentPosition)
+
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            usingSpringWithDamping: 1,
+            initialSpringVelocity: abs(velocity.length / distance),
+            options: .curveEaseOut,
+            animations: { self.frame = destinationFrame },
+            completion: completion
+        )
+    }
 }
 
 // MARK: -
@@ -345,6 +420,43 @@ public extension CGRect {
 
     var bottomRight: CGPoint {
         return CGPoint(x: maxX, y: maxY)
+    }
+
+    func pinnedToVerticalEdge(of boundingRect: CGRect) -> CGRect {
+        var newRect = self
+
+        // If we're positioned outside of the vertical bounds,
+        // we need to move to the nearest bound
+        let positionedOutOfVerticalBounds = newRect.minY < boundingRect.minY || newRect.maxY > boundingRect.maxY
+
+        // If we're position anywhere but exactly at the vertical
+        // edges (left and right of bounding rect), we need to
+        // move to the nearest edge
+        let positionedAwayFromVerticalEdges = boundingRect.minX != newRect.minX && boundingRect.maxX != newRect.maxX
+
+        if positionedOutOfVerticalBounds {
+            let distanceFromTop = newRect.minY - boundingRect.minY
+            let distanceFromBottom = boundingRect.maxY - newRect.maxY
+
+            if distanceFromTop > distanceFromBottom {
+                newRect.origin.y = boundingRect.maxY - newRect.height
+            } else {
+                newRect.origin.y = boundingRect.minY
+            }
+        }
+
+        if positionedAwayFromVerticalEdges {
+            let distanceFromLeading = newRect.minX - boundingRect.minX
+            let distanceFromTrailing = boundingRect.maxX - newRect.maxX
+
+            if distanceFromLeading > distanceFromTrailing {
+                newRect.origin.x = boundingRect.maxX - newRect.width
+            } else {
+                newRect.origin.x = boundingRect.minX
+            }
+        }
+
+        return newRect
     }
 }
 
