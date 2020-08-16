@@ -23,7 +23,21 @@ public protocol ReturnToCallViewControllerDelegate: class {
 public class ReturnToCallViewController: UIViewController {
 
     @objc
-    public static var pipSize = UIDevice.current.isIPad ? CGSize(width: 272, height: 204) : CGSize(width: 90, height: 160)
+    public static var pipSize: CGSize {
+        let nineBySixteen = CGSize(width: 90, height: 160)
+        let fourByThree = CGSize(width: 272, height: 204)
+        let threeByFour = CGSize(width: 204, height: 272)
+
+        if UIDevice.current.isIPad && UIDevice.current.isFullScreen {
+            if CurrentAppContext().frame.size.width > CurrentAppContext().frame.size.height {
+                return fourByThree
+            } else {
+                return threeByFour
+            }
+        } else {
+            return nineBySixteen
+        }
+    }
 
     @objc
     public weak var delegate: ReturnToCallViewControllerDelegate?
@@ -45,15 +59,7 @@ public class ReturnToCallViewController: UIViewController {
 
         view.addSubview(callViewController.localVideoViewReference)
         callViewController.localVideoViewReference.layer.cornerRadius = 6
-
-        let localVideoSize = CGSizeScale(Self.pipSize, 0.3)
-        callViewController.localVideoViewReference.frame = CGRect(
-            origin: CGPoint(
-                x: Self.pipSize.width - 6 - localVideoSize.width,
-                y: Self.pipSize.height - 6 - localVideoSize.height
-            ),
-            size: localVideoSize
-        )
+        updateLocalVideoFrame()
 
         backgroundAvatarView.image = Environment.shared.contactsManager.profileImageForAddress(
             withSneakyTransaction: callViewController.thread.contactAddress
@@ -96,7 +102,23 @@ public class ReturnToCallViewController: UIViewController {
         }, completion: nil)
     }
 
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        updatePipLayout()
+    }
+
     // MARK: -
+
+    private func updateLocalVideoFrame() {
+        let localVideoSize = CGSizeScale(Self.pipSize, 0.3)
+        callViewController?.localVideoViewReference.frame = CGRect(
+            origin: CGPoint(
+                x: Self.pipSize.width - 6 - localVideoSize.width,
+                y: Self.pipSize.height - 6 - localVideoSize.height
+            ),
+            size: localVideoSize
+        )
+    }
 
     private func animatePipPresentation(snapshot: UIView) {
         guard let window = view.window else { return owsFailDebug("missing window") }
@@ -145,7 +167,10 @@ public class ReturnToCallViewController: UIViewController {
             origin: window.frame.origin,
             size: Self.pipSize
         ).pinnedToVerticalEdge(of: pipBoundingRect)
-        UIView.animate(withDuration: 0.25) { window.frame = newFrame }
+        UIView.animate(withDuration: 0.25) {
+            self.updateLocalVideoFrame()
+            window.frame = newFrame
+        }
     }
 
     @objc func handlePan(sender: UIPanGestureRecognizer) {
