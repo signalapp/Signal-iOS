@@ -207,7 +207,7 @@ extension SignalCall: CallManagerCallReference { }
             thread: call.thread,
             sentAtTimestamp: call.sentAtTimestamp
         )
-        databaseStorage.write { transaction in
+        databaseStorage.asyncWrite { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
         call.callRecord = callRecord
@@ -246,7 +246,7 @@ extension SignalCall: CallManagerCallReference { }
             thread: call.thread,
             sentAtTimestamp: call.sentAtTimestamp
         )
-        databaseStorage.write { transaction in
+        databaseStorage.asyncWrite { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
         call.callRecord = callRecord
@@ -305,7 +305,7 @@ extension SignalCall: CallManagerCallReference { }
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
             call.callRecord = callRecord
@@ -413,7 +413,7 @@ extension SignalCall: CallManagerCallReference { }
             )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
 
@@ -446,7 +446,7 @@ extension SignalCall: CallManagerCallReference { }
             )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
 
@@ -481,7 +481,7 @@ extension SignalCall: CallManagerCallReference { }
             )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
 
@@ -837,7 +837,7 @@ extension SignalCall: CallManagerCallReference { }
                     thread: call.thread,
                     sentAtTimestamp: call.sentAtTimestamp
                 )
-                databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+                databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
                 call.callRecord = callRecord
                 callUIAdapter.reportMissedCall(call)
             }
@@ -1105,7 +1105,7 @@ extension SignalCall: CallManagerCallReference { }
 
         switch callRecord.callType {
         case .incomingMissed:
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
             }
             callUIAdapter.reportMissedCall(call)
@@ -1116,11 +1116,11 @@ extension SignalCall: CallManagerCallReference { }
             callRecord.updateCallType(.outgoingMissed)
         case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
             }
         @unknown default:
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
             }
             owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
@@ -1141,7 +1141,7 @@ extension SignalCall: CallManagerCallReference { }
                 sentAtTimestamp: call.sentAtTimestamp
             )
             call.callRecord = callRecord
-            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
         }
 
         call.state = .answeredElsewhere
@@ -1166,7 +1166,7 @@ extension SignalCall: CallManagerCallReference { }
                 sentAtTimestamp: call.sentAtTimestamp
             )
             call.callRecord = callRecord
-            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
         }
 
         call.state = .declinedElsewhere
@@ -1191,7 +1191,7 @@ extension SignalCall: CallManagerCallReference { }
                 sentAtTimestamp: call.sentAtTimestamp
             )
             call.callRecord = callRecord
-            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
         }
 
         call.state = .busyElsewhere
