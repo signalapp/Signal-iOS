@@ -18,6 +18,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#if defined(__arm64__)
+#define DEVICE_SUPPORTS_METAL 1
+#else
+#define DEVICE_SUPPORTS_METAL 0
+#endif
+
 #pragma mark -
 
 @interface RemoteVideoView ()
@@ -26,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#if COREVIDEO_SUPPORTS_METAL
+#if DEVICE_SUPPORTS_METAL
 
 @interface RemoteVideoView (Metal) <RTCVideoViewDelegate>
 
@@ -109,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-#if COREVIDEO_SUPPORTS_METAL
+#if DEVICE_SUPPORTS_METAL
     [self setupMetalRenderer];
 #endif
 
@@ -141,6 +147,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (UIDevice.currentDevice.isIPad) {
         return;
     }
+
+    #if DEVICE_SUPPORTS_METAL
 
     // iPhones are locked to portrait mode. However, we want both
     // portrait and portrait upside-down to be right side up in portrait.
@@ -182,6 +190,8 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     });
+
+    #endif
 }
 
 @end
