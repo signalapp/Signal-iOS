@@ -203,11 +203,11 @@ extension SignalCall: CallManagerCallReference { }
         // Create a callRecord for outgoing calls immediately.
         let callRecord = TSCall(
             callType: .outgoingIncomplete,
-            offerType: call.offerMediaType.recentOfferType,
+            offerType: call.offerMediaType,
             thread: call.thread,
             sentAtTimestamp: call.sentAtTimestamp
         )
-        databaseStorage.write { transaction in
+        databaseStorage.asyncWrite { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
         call.callRecord = callRecord
@@ -216,7 +216,7 @@ extension SignalCall: CallManagerCallReference { }
         let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
 
         do {
-            try callManager.placeCall(call: call, callMediaType: call.offerMediaType.callMediaType, localDevice: localDeviceId)
+            try callManager.placeCall(call: call, callMediaType: call.offerMediaType.asCallMediaType, localDevice: localDeviceId)
         } catch {
             self.handleFailedCall(failedCall: call, error: error)
         }
@@ -242,11 +242,11 @@ extension SignalCall: CallManagerCallReference { }
 
         let callRecord = TSCall(
             callType: .incomingIncomplete,
-            offerType: call.offerMediaType.recentOfferType,
+            offerType: call.offerMediaType,
             thread: call.thread,
             sentAtTimestamp: call.sentAtTimestamp
         )
-        databaseStorage.write { transaction in
+        databaseStorage.asyncWrite { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
         call.callRecord = callRecord
@@ -301,11 +301,11 @@ extension SignalCall: CallManagerCallReference { }
         } else if call.state == .localRinging {
             let callRecord = TSCall(
                 callType: .incomingDeclined,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
             call.callRecord = callRecord
@@ -389,31 +389,29 @@ extension SignalCall: CallManagerCallReference { }
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, sentAtTimestamp: sentAtTimestamp)
-        calls.insert(newCall)
-        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
-
-        let callMediaType: CallMediaType
+        let offerMediaType: TSRecentCallOfferType
         switch callType {
         case .offerAudioCall:
-            callMediaType = .audioCall
-            newCall.offerMediaType = .audio
+            offerMediaType = .audio
         case .offerVideoCall:
-            callMediaType = .videoCall
-            newCall.offerMediaType = .video
+            offerMediaType = .video
         }
+
+        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, sentAtTimestamp: sentAtTimestamp, offerMediaType: offerMediaType)
+        calls.insert(newCall)
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("user is not onboarded, skipping call.")
             let callRecord = TSCall(
                 callType: .incomingMissed,
-                offerType: newCall.offerMediaType.recentOfferType,
+                offerType: newCall.offerMediaType,
                 thread: thread,
                 sentAtTimestamp: sentAtTimestamp
             )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
 
@@ -440,13 +438,13 @@ extension SignalCall: CallManagerCallReference { }
 
             let callRecord = TSCall(
                 callType: .incomingMissedBecauseOfChangedIdentity,
-                offerType: newCall.offerMediaType.recentOfferType,
+                offerType: newCall.offerMediaType,
                 thread: thread,
                 sentAtTimestamp: sentAtTimestamp
             )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
 
@@ -475,13 +473,13 @@ extension SignalCall: CallManagerCallReference { }
             // or the caller can try again.
             let callRecord = TSCall(
                 callType: .incomingMissed,
-                offerType: newCall.offerMediaType.recentOfferType,
+                offerType: newCall.offerMediaType,
                 thread: thread,
                 sentAtTimestamp: sentAtTimestamp
             )
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
 
@@ -518,7 +516,7 @@ extension SignalCall: CallManagerCallReference { }
         let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: callMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }
@@ -833,11 +831,11 @@ extension SignalCall: CallManagerCallReference { }
                 assert(call.direction == .incoming)
                 let callRecord = TSCall(
                     callType: .incomingMissed,
-                    offerType: call.offerMediaType.recentOfferType,
+                    offerType: call.offerMediaType,
                     thread: call.thread,
                     sentAtTimestamp: call.sentAtTimestamp
                 )
-                databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+                databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
                 call.callRecord = callRecord
                 callUIAdapter.reportMissedCall(call)
             }
@@ -1096,7 +1094,7 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             callRecord = TSCall(
                 callType: .incomingMissed,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
@@ -1105,7 +1103,7 @@ extension SignalCall: CallManagerCallReference { }
 
         switch callRecord.callType {
         case .incomingMissed:
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
             }
             callUIAdapter.reportMissedCall(call)
@@ -1116,11 +1114,11 @@ extension SignalCall: CallManagerCallReference { }
             callRecord.updateCallType(.outgoingMissed)
         case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
             }
         @unknown default:
-            databaseStorage.write { transaction in
+            databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
             }
             owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
@@ -1136,12 +1134,12 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             let callRecord = TSCall(
                 callType: .incomingAnsweredElsewhere,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
             call.callRecord = callRecord
-            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
         }
 
         call.state = .answeredElsewhere
@@ -1161,12 +1159,12 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             let callRecord = TSCall(
                 callType: .incomingDeclinedElsewhere,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
             call.callRecord = callRecord
-            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
         }
 
         call.state = .declinedElsewhere
@@ -1186,12 +1184,12 @@ extension SignalCall: CallManagerCallReference { }
         } else {
             let callRecord = TSCall(
                 callType: .incomingBusyElsewhere,
-                offerType: call.offerMediaType.recentOfferType,
+                offerType: call.offerMediaType,
                 thread: call.thread,
                 sentAtTimestamp: call.sentAtTimestamp
             )
             call.callRecord = callRecord
-            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
         }
 
         call.state = .busyElsewhere
@@ -1682,18 +1680,11 @@ extension NSNumber {
     }
 }
 
-extension CallOfferMediaType {
-    var callMediaType: CallMediaType {
+extension TSRecentCallOfferType {
+    var asCallMediaType: CallMediaType {
         switch self {
         case .audio: return .audioCall
         case .video: return .videoCall
-        }
-    }
-
-    var recentOfferType: TSRecentCallOfferType {
-        switch self {
-        case .audio: return .audio
-        case .video: return .video
         }
     }
 }

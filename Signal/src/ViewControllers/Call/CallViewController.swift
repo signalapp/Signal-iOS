@@ -31,6 +31,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Views
 
+    private lazy var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     private lazy var backgroundAvatarView = UIImageView()
     private lazy var dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
@@ -130,7 +131,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     private lazy var remoteVideoView = RemoteVideoView()
     private weak var remoteVideoTrack: RTCVideoTrack?
 
-    private lazy var localVideoView = RTCCameraPreviewView()
+    private lazy var localVideoView = LocalVideoView()
     private weak var localCaptureSession: AVCaptureSession?
 
     // MARK: - Gestures
@@ -190,13 +191,27 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.shouldUseTheme = false
     }
 
+    deinit {
+        // These views might be in the return to call PIP's hierarchy,
+        // we want to remove them so they are free'd when the call ends
+        remoteVideoView.removeFromSuperview()
+        localVideoView.removeFromSuperview()
+    }
+
+    // MARK: - View Lifecycle
+
     @objc func didBecomeActive() {
         if self.isViewLoaded {
             shouldRemoteVideoControlsBeHidden = false
         }
     }
 
-    // MARK: - View Lifecycle
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { [weak self] _ in
+            self?.updateLocalVideoLayout()
+        }, completion: nil)
+    }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -213,6 +228,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func loadView() {
         view = UIView()
+        view.clipsToBounds = true
         view.backgroundColor = UIColor.black
         view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
 
@@ -225,11 +241,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         contactNameLabel.text = contactsManager.displayName(for: thread.contactAddress)
         updateAvatarImage()
-        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
-            guard let strongSelf = self else { return }
-            Logger.info("updating avatar image")
-            strongSelf.updateAvatarImage()
-        }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateAvatarImage),
+            name: .OWSContactsManagerSignalAccountsDidChange,
+            object: nil
+        )
 
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)
@@ -258,11 +276,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func createViews() {
         view.isUserInteractionEnabled = true
 
-        tapGesture.delegate = self
         view.addGestureRecognizer(tapGesture)
-
+        localVideoView.addGestureRecognizer(panGesture)
         panGesture.delegate = self
-        view.addGestureRecognizer(panGesture)
+        tapGesture.require(toFail: panGesture)
 
         // The callee's avatar is rendered behind the blurred background.
         backgroundAvatarView.contentMode = .scaleAspectFill
@@ -271,8 +288,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         backgroundAvatarView.autoPinEdgesToSuperviewEdges()
 
         // Dark blurred background.
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.isUserInteractionEnabled = false
         view.addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
@@ -297,13 +312,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         view.addSubview(remoteVideoView)
 
         // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".
-        if let previewLayer = localVideoView.layer as? AVCaptureVideoPreviewLayer {
-            previewLayer.videoGravity = .resizeAspectFill
-        } else {
-            owsFailDebug("unexpected preview layer class \(type(of: localVideoView.layer))")
-        }
+        localVideoView.contentMode = .scaleAspectFill
+        localVideoView.clipsToBounds = true
         localVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "localVideoView")
-
         localVideoView.isHidden = true
         view.addSubview(localVideoView)
     }
@@ -441,6 +452,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         presentActionSheet(actionSheetController)
     }
 
+    @objc
     func updateAvatarImage() {
         contactAvatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: 400)
         backgroundAvatarView.image = contactsManager.imageForAddress(withSneakyTransaction: thread.contactAddress)
@@ -584,65 +596,31 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return [.idle, .dialing, .remoteRinging].contains(call.state) && !localVideoView.isHidden
     }
 
-    private func nearestValidLocalVideoFrame(for origin: CGPoint) -> CGRect {
-        var newFrame = CGRect(
-            origin: origin,
-            // The PIP has a fixed size for iPhone and iPad
-            size: CGSize(
-                width: UIDevice.current.isIPad ? 272 : 90,
-                height: UIDevice.current.isIPad ? 154 : 160
-            )
-        )
-
-        let boundingRect = localVideoBoundingRect
-
-        // If the origin is zero, we always want to position
-        // the pip in the top right
-        let hasZeroOrigin = newFrame.origin == .zero
-
-        // If we're positioned outside of the vertical bounds, we
-        // want to position the pip at the nearest bound
-        let positionedOutOfVerticalBounds = newFrame.minY < boundingRect.minY || newFrame.maxY > boundingRect.maxY
-
-        // If we're position anywhere but exactly at the horizontal
-        // edges, we want to position the pip at the nearest edge
-        let positionedAwayFromHorizontalEdges = boundingRect.minX != newFrame.minX && boundingRect.maxX != newFrame.maxX
-
-        if positionedOutOfVerticalBounds {
-            if newFrame.minY < boundingRect.minY || hasZeroOrigin {
-                newFrame.origin.y = boundingRect.minY
-            } else {
-                newFrame.origin.y = boundingRect.maxY - newFrame.height
-            }
-        }
-
-        if positionedAwayFromHorizontalEdges {
-            let distanceFromLeading = newFrame.minX - boundingRect.minX
-            let distanceFromTrailing = boundingRect.maxX - newFrame.maxX
-
-            if distanceFromLeading > distanceFromTrailing || hasZeroOrigin {
-                newFrame.origin.x = boundingRect.maxX - newFrame.width
-            } else {
-                newFrame.origin.x = boundingRect.minX
-            }
-        }
-
-        return newFrame
-    }
-
+    private var previousOrigin: CGPoint!
     private func updateLocalVideoLayout() {
+        guard localVideoView.superview == view else { return }
+
         guard !isRenderingLocalVanityVideo else {
             view.layoutIfNeeded()
             localVideoView.frame = view.frame
             return
         }
 
-        let newFrame: CGRect
-        if !localVideoView.isHidden {
-            newFrame = nearestValidLocalVideoFrame(for: localVideoView.frame.origin)
-        } else {
-            newFrame = .zero
+        guard !localVideoView.isHidden else { return }
+
+        // Prefer to start in the top right
+        if previousOrigin == nil {
+            previousOrigin = CGPoint(
+                x: localVideoBoundingRect.maxX - ReturnToCallViewController.pipSize.width,
+                y: localVideoBoundingRect.minY
+            )
         }
+
+        let newFrame = CGRect(
+            origin: previousOrigin,
+            size: ReturnToCallViewController.pipSize
+        ).pinnedToVerticalEdge(of: localVideoBoundingRect)
+        previousOrigin = newFrame.origin
 
         UIView.animate(withDuration: 0.25) { self.localVideoView.frame = newFrame }
     }
@@ -651,31 +629,17 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     @objc func handleLocalVideoPan(sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began, .changed:
-            let translation = sender.translation(in: view)
-            sender.setTranslation(.zero, in: view)
+            let translation = sender.translation(in: localVideoView)
+            sender.setTranslation(.zero, in: localVideoView)
 
             localVideoView.frame.origin.y += translation.y
             localVideoView.frame.origin.x += translation.x
         case .ended, .cancelled, .failed:
-            let velocity = sender.velocity(in: view)
-
-            // TODO: maybe do more sophisticated deceleration
-
-            let duration: CGFloat = 0.35
-
-            let additionalDistanceX = velocity.x * duration
-            let additionalDistanceY = velocity.y * duration
-
-            let finalDestination = CGPoint(
-                x: localVideoView.frame.origin.x + additionalDistanceX,
-                y: localVideoView.frame.origin.y + additionalDistanceY
-            )
-
-            let finalFrame = nearestValidLocalVideoFrame(for: finalDestination)
-
-            UIView.animate(withDuration: TimeInterval(duration)) {
-                self.localVideoView.frame = finalFrame
-            }
+            localVideoView.animateDecelerationToVerticalEdge(
+                withDuration: 0.35,
+                velocity: sender.velocity(in: localVideoView),
+                boundingRect: localVideoBoundingRect
+            ) { _ in self.previousOrigin = self.localVideoView.frame.origin }
         default:
             break
         }
@@ -896,6 +860,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             callDurationTimer?.invalidate()
             callDurationTimer = nil
         }
+
+        scheduleControlTimeoutIfNecessary()
     }
 
     func displayNeedPermissionErrorAndDismiss() {
@@ -986,6 +952,34 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         audioModeSourceButton.isSelected = !audioSource.isBuiltInEarPiece
         videoModeAudioSourceButton.isSelected = !audioSource.isBuiltInEarPiece
+    }
+
+    // MARK: - Video control timeout
+
+    private var controlTimeoutTimer: Timer?
+    private func scheduleControlTimeoutIfNecessary() {
+        if remoteVideoView.isHidden || shouldRemoteVideoControlsBeHidden {
+            controlTimeoutTimer?.invalidate()
+            controlTimeoutTimer = nil
+        }
+
+        guard controlTimeoutTimer == nil else { return }
+        controlTimeoutTimer = .weakScheduledTimer(
+            withTimeInterval: 5,
+            target: self,
+            selector: #selector(timeoutControls),
+            userInfo: nil,
+            repeats: false
+        )
+    }
+
+    @objc
+    private func timeoutControls() {
+        controlTimeoutTimer?.invalidate()
+        controlTimeoutTimer = nil
+
+        guard !remoteVideoView.isHidden && !shouldRemoteVideoControlsBeHidden else { return }
+        shouldRemoteVideoControlsBeHidden = true
     }
 
     // MARK: - Actions
@@ -1250,154 +1244,64 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 }
 
-private class CallButton: UIButton {
-    var iconName: String { didSet { updateAppearance() } }
-    var selectedIconName: String? { didSet { updateAppearance() } }
-
-    var currentIconName: String {
-        if isSelected, let selectedImageName = selectedIconName {
-            return selectedImageName
-        }
-        return iconName
-    }
-
-    var iconColor: UIColor = .ows_white { didSet { updateAppearance() } }
-    var selectedIconColor: UIColor = .ows_gray75 { didSet { updateAppearance() } }
-    var currentIconColor: UIColor { isSelected ? selectedIconColor : iconColor }
-
-    var unselectedBackgroundColor = UIColor.ows_whiteAlpha40 { didSet { updateAppearance() } }
-    var selectedBackgroundColor = UIColor.ows_white { didSet { updateAppearance() } }
-
-    var currentBackgroundColor: UIColor {
-        return isSelected ? selectedBackgroundColor : unselectedBackgroundColor
-    }
-
-    var text: String? { didSet { updateAppearance() } }
-
-    override var isSelected: Bool { didSet { updateAppearance() } }
-    override var isHighlighted: Bool { didSet { updateAppearance() } }
-
-    var showDropdownArrow = false { didSet { updateDropdownArrow() } }
-
-    var isSmall = false { didSet { updateSizing() } }
-
-    private var currentConstraints = [NSLayoutConstraint]()
-
-    private var currentIconSize: CGFloat { isSmall ? 48 : 56 }
-    private var currentIconInsets: UIEdgeInsets {
-        var insets: UIEdgeInsets
-        if isSmall {
-            insets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        } else {
-            insets = UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14)
-        }
-
-        if showDropdownArrow {
-            if CurrentAppContext().isRTL {
-                insets.left += 3
-                insets.right -= 3
-            } else {
-                insets.left -= 3
-                insets.right += 3
-            }
-        }
-
-        return insets
-    }
-
-    private lazy var iconView = UIImageView()
-    private var dropdownIconView: UIImageView?
-    private lazy var circleView = CircleView()
-    private lazy var label = UILabel()
-
-    init(iconName: String) {
-        self.iconName = iconName
-
-        super.init(frame: .zero)
-
-        let circleViewContainer = UIView.container()
-        circleViewContainer.addSubview(circleView)
-        circleView.autoPinHeightToSuperview()
-        circleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 0, relation: .greaterThanOrEqual)
-        circleView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0, relation: .greaterThanOrEqual)
-        circleView.autoHCenterInSuperview()
-
-        let stackView = UIStackView(arrangedSubviews: [circleViewContainer, label])
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        stackView.isUserInteractionEnabled =  false
-
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
-
-        label.font = .ows_dynamicTypeSubheadline
-        label.textColor = Theme.darkThemePrimaryColor
-        label.textAlignment = .center
-
-        circleView.addSubview(iconView)
-
-        updateAppearance()
-        updateSizing()
-    }
-
-    private func updateAppearance() {
-        circleView.backgroundColor = currentBackgroundColor
-        iconView.setTemplateImageName(currentIconName, tintColor: currentIconColor)
-        dropdownIconView?.setTemplateImageName("arrow-down-12", tintColor: currentIconColor)
-
-        if let text = text {
-            label.isHidden = false
-            label.text = text
-        } else {
-            label.isHidden = true
-        }
-
-        alpha = isHighlighted ? 0.6 : 1
-    }
-
-    private func updateSizing() {
-        NSLayoutConstraint.deactivate(currentConstraints)
-        currentConstraints.removeAll()
-
-        currentConstraints += circleView.autoSetDimensions(to: CGSize(square: currentIconSize))
-        currentConstraints += iconView.autoPinEdgesToSuperviewEdges(with: currentIconInsets)
-        if let dropdownIconView = dropdownIconView {
-            currentConstraints.append(dropdownIconView.autoPinEdge(.leading, to: .trailing, of: iconView, withOffset: isSmall ? 0 : 2))
-        }
-    }
-
-    private func updateDropdownArrow() {
-        if showDropdownArrow {
-            if dropdownIconView?.superview != nil { return }
-            let dropdownIconView = UIImageView()
-            self.dropdownIconView = dropdownIconView
-            circleView.addSubview(dropdownIconView)
-
-            dropdownIconView.autoSetDimensions(to: CGSize(square: 12))
-            dropdownIconView.autoVCenterInSuperview()
-
-            updateSizing()
-            updateAppearance()
-        } else {
-            dropdownIconView?.removeFromSuperview()
-            dropdownIconView = nil
-        }
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+extension CallViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return !localVideoView.isHidden && localVideoView.superview == view && call.state == .connected
     }
 }
 
-extension CallViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        let isInLocalVideoView = localVideoView.bounds.contains(gestureRecognizer.location(in: localVideoView))
+extension CallViewController: CallViewControllerWindowReference {
+    var remoteVideoViewReference: UIView { remoteVideoView }
+    var localVideoViewReference: UIView { localVideoView }
 
-        if gestureRecognizer == panGesture {
-            guard !localVideoView.isHidden, call.state == .connected else { return false }
-            return isInLocalVideoView
-        } else {
-            return !isInLocalVideoView
+    @objc
+    public func returnFromPip(pipWindow: UIWindow) {
+        // The call "pip" uses our remote and local video views since only
+        // one `AVCaptureVideoPreviewLayer` per capture session is supported.
+        // We need to re-add them when we return to this view.
+        guard remoteVideoView.superview != view && localVideoView.superview != view else {
+            return owsFailDebug("unexpectedly returned to call while we own the video views")
+        }
+
+        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
+            return owsFailDebug("failed to snapshot rootViewController")
+        }
+
+        guard let pipSnapshot = pipWindow.snapshotView(afterScreenUpdates: false) else {
+            return owsFailDebug("failed to snapshot pip")
+        }
+
+        view.insertSubview(remoteVideoView, aboveSubview: blurView)
+        remoteVideoView.autoPinEdgesToSuperviewEdges()
+
+        view.insertSubview(localVideoView, aboveSubview: contactAvatarContainerView)
+
+        updateLocalVideoLayout()
+
+        shouldRemoteVideoControlsBeHidden = false
+
+        animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
+    }
+
+    private func animateReturnFromPip(pipSnapshot: UIView, pipFrame: CGRect, splitViewSnapshot: UIView) {
+        guard let window = view.window else { return owsFailDebug("missing window") }
+        view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
+        splitViewSnapshot.autoPinEdgesToSuperviewEdges()
+
+        view.frame = pipFrame
+        view.addSubview(pipSnapshot)
+        pipSnapshot.autoPinEdgesToSuperviewEdges()
+
+        view.layoutIfNeeded()
+
+        UIView.animate(withDuration: 0.2, animations: {
+            pipSnapshot.alpha = 0
+            self.view.frame = window.frame
+            self.view.layoutIfNeeded()
+        }) { _ in
+            self.updateCallUI()
+            splitViewSnapshot.removeFromSuperview()
+            pipSnapshot.removeFromSuperview()
         }
     }
 }

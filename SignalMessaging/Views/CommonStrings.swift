@@ -113,10 +113,16 @@ public class MessageStrings: NSObject {
 @objc
 public class NotificationStrings: NSObject {
     @objc
-    static public let incomingCallBody = NSLocalizedString("CALL_INCOMING_NOTIFICATION_BODY", comment: "notification body")
+    static public let incomingAudioCallBody = NSLocalizedString("CALL_AUDIO_INCOMING_NOTIFICATION_BODY", comment: "notification body")
 
     @objc
-    static public let missedCallBody = NSLocalizedString("CALL_MISSED_NOTIFICATION_BODY", comment: "notification body")
+    static public let incomingVideoCallBody = NSLocalizedString("CALL_VIDEO_INCOMING_NOTIFICATION_BODY", comment: "notification body")
+
+    @objc
+    static public let missedAudioCallBody = NSLocalizedString("CALL_AUDIO_MISSED_NOTIFICATION_BODY", comment: "notification body")
+
+    @objc
+    static public let missedVideoCallBody = NSLocalizedString("CALL_VIDEO_MISSED_NOTIFICATION_BODY", comment: "notification body")
 
     @objc
     static public let missedCallBecauseOfIdentityChangeBody = NSLocalizedString("CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY", comment: "notification body")

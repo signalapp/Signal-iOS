@@ -14,26 +14,6 @@ NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCa
 
 NSString *const IsScreenBlockActiveDidChangeNotification = @"IsScreenBlockActiveDidChangeNotification";
 
-const CGFloat OWSWindowManagerCallBannerHeight(void)
-{
-    if (@available(iOS 11.4, *)) {
-        return CurrentAppContext().statusBarHeight + 20;
-    }
-
-    if (![UIDevice currentDevice].hasIPhoneXNotch) {
-        return CurrentAppContext().statusBarHeight + 20;
-    }
-
-    // Hardcode CallBanner height for iPhone X's on older iOS.
-    //
-    // As of iOS11.4 and iOS12, this no longer seems to be an issue, but previously statusBarHeight returned
-    // something like 20pts (IIRC), meaning our call banner did not extend sufficiently past the iPhone X notch.
-    //
-    // Before noticing that this behavior changed, I actually assumed that notch height was intentionally excluded from
-    // the statusBarHeight, and that this was not a bug, else I'd have taken better notes.
-    return 64;
-}
-
 // Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
 
@@ -110,7 +90,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 @property (nonatomic) BOOL shouldShowCallView;
 
-@property (nonatomic, nullable) UIViewController *callViewController;
+@property (nonatomic, nullable) UIViewController<CallViewControllerWindowReference> *callViewController;
 
 @end
 
@@ -153,28 +133,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
     self.callViewWindow = [self createCallViewWindow:rootWindow];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didChangeStatusBarFrame:)
-                                                 name:UIApplicationDidChangeStatusBarFrameNotification
-                                               object:nil];
-
     [self ensureWindowState];
-}
-
-- (void)didChangeStatusBarFrame:(NSNotification *)notification
-{
-    // Apple bug? Upon returning from landscape, this method *is* fired, but both the notification and [UIApplication
-    // sharedApplication].statusBarFrame still show a height of 0. So to work around we also call
-    // `ensureReturnToCallWindowFrame` before showing the call banner.
-    [self ensureReturnToCallWindowFrame];
-}
-
-- (void)ensureReturnToCallWindowFrame
-{
-    CGRect newFrame = CurrentAppContext().frame;
-    newFrame.size.height = OWSWindowManagerCallBannerHeight();
-    OWSLogDebug(@"returnToCallWindowFrame: %@", NSStringFromCGRect(newFrame));
-    self.returnToCallWindow.frame = newFrame;
 }
 
 - (UIWindow *)createReturnToCallWindow:(UIWindow *)rootWindow
@@ -182,10 +141,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssertIsOnMainThread();
     OWSAssertDebug(rootWindow);
 
-    // "Return to call" should remain at the top of the screen.
-    CGRect applicationFrame = CurrentAppContext().frame;
-    applicationFrame.size.height = OWSWindowManagerCallBannerHeight();
-    UIWindow *window = [[OWSWindow alloc] initWithFrame:applicationFrame];
+    UIWindow *window = [[OWSWindow alloc] initWithFrame:rootWindow.bounds];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
     window.opaque = YES;
@@ -266,7 +222,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 #pragma mark - Calls
 
-- (void)setCallViewController:(nullable UIViewController *)callViewController
+- (void)setCallViewController:(nullable UIViewController<CallViewControllerWindowReference> *)callViewController
 {
     OWSAssertIsOnMainThread();
 
@@ -279,7 +235,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     [NSNotificationCenter.defaultCenter postNotificationName:OWSWindowManagerCallDidChangeNotification object:nil];
 }
 
-- (void)startCall:(UIViewController *)callViewController
+- (void)startCall:(UIViewController<CallViewControllerWindowReference> *)callViewController
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(callViewController);
@@ -298,7 +254,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     [self ensureWindowState];
 }
 
-- (void)endCall:(UIViewController *)callViewController
+- (void)endCall:(UIViewController<CallViewControllerWindowReference> *)callViewController
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(callViewController);
@@ -337,6 +293,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
     self.shouldShowCallView = YES;
 
+    [self.callViewController returnFromPipWithPipWindow:self.returnToCallWindow];
     [self ensureWindowState];
 }
 
@@ -373,14 +330,13 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         // Show Call View.
 
         [self ensureRootWindowHidden];
-        [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowShown];
+        [self ensureReturnToCallWindowHidden];
         [self ensureScreenBlockWindowHidden];
     } else {
         // Show Root Window
 
         [self ensureRootWindowShown];
-        [self ensureCallViewWindowHidden];
         [self ensureScreenBlockWindowHidden];
 
         if (self.callViewController) {
@@ -390,6 +346,8 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         } else {
             [self ensureReturnToCallWindowHidden];
         }
+
+        [self ensureCallViewWindowHidden];
     }
 }
 
@@ -430,10 +388,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         return;
     }
 
-    [self ensureReturnToCallWindowFrame];
     OWSLogInfo(@"showing 'return to call' window.");
     self.returnToCallWindow.hidden = NO;
-    [self.returnToCallViewController startAnimating];
+    [self.returnToCallViewController displayForCallViewController:self.callViewController];
 }
 
 - (void)ensureReturnToCallWindowHidden
@@ -446,7 +403,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
     OWSLogInfo(@"hiding 'return to call' window.");
     self.returnToCallWindow.hidden = YES;
-    [self.returnToCallViewController stopAnimating];
 }
 
 - (void)ensureCallViewWindowShown

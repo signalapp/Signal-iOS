@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Call Again";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Microphone Access Required";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Call";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
@@ -481,6 +481,12 @@
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Call?";
+
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";
@@ -1616,8 +1619,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "You";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Call";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
@@ -1625,8 +1628,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Members";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Message";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "Video Call";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Group name (required)";

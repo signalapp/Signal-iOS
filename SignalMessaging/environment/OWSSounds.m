@@ -168,7 +168,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"Signal Classic";
 
         // Call Audio
-        case OWSSound_Opening:
+        case OWSSound_Reflection:
             return @"Opening";
         case OWSSound_CallConnecting:
             return @"Call Connecting";
@@ -180,6 +180,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"Call Ended";
         case OWSSound_MessageSent:
             return @"Message Sent";
+        case OWSSound_Silence:
+            return @"Silence";
 
         // Other
         case OWSSound_None:
@@ -230,8 +232,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return (quiet ? @"classic-quiet.aifc" : @"classic.aifc");
 
             // Ringtone Sounds
-        case OWSSound_Opening:
-            return @"Opening.m4r";
+        case OWSSound_Reflection:
+            return @"Reflection.m4r";
 
             // Calls
         case OWSSound_CallConnecting:
@@ -244,6 +246,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"end_call_tone_cept.caf";
         case OWSSound_MessageSent:
             return @"message_sent.aiff";
+        case OWSSound_Silence:
+            return @"silence.aiff";
 
             // Other
         case OWSSound_None:

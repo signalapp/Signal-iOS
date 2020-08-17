@@ -209,6 +209,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         disableUnsupportedFeatures(callUpdate: update)
 
         provider.reportCall(with: call.localId, updated: update)
+
+        // When we tell CallKit about the call, it tries
+        // to unmute the call. We can work around this
+        // by resetting our mute state after answering.
+        setIsMuted(call: call, isMuted: call.isMuted)
     }
 
     func localHangupCall(localId: UUID) {

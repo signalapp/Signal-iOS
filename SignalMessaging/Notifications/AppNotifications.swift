@@ -234,7 +234,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = callerName
             threadIdentifier = thread.uniqueId
         }
-        let notificationBody = NotificationStrings.incomingCallBody
+
+        let notificationBody: String
+        switch call.offerMediaType {
+        case .audio: notificationBody = NotificationStrings.incomingAudioCallBody
+        case .video: notificationBody = NotificationStrings.incomingVideoCallBody
+        }
+
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.localCallId: call.localId.uuidString
@@ -246,7 +252,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
-                                sound: .defaultiOSIncomingRingtone,
+                                sound: nil,
                                 replacingIdentifier: call.localId.uuidString)
         }
     }
@@ -266,7 +272,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = callerName
             threadIdentifier = thread.uniqueId
         }
-        let notificationBody = NotificationStrings.missedCallBody
+
+        let notificationBody: String
+        switch call.offerMediaType {
+        case .audio: notificationBody = NotificationStrings.missedAudioCallBody
+        case .video: notificationBody = NotificationStrings.missedVideoCallBody
+        }
+
         let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
 
         let category: AppNotificationCategory = (shouldShowActions
@@ -762,4 +774,5 @@ extension TruncatedList: Collection {
 public protocol SignalCallNotificationInfo {
     var remoteAddress: SignalServiceAddress { get }
     var localId: UUID { get }
+    var offerMediaType: TSRecentCallOfferType { get }
 }

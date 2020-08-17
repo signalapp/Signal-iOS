@@ -109,10 +109,15 @@ NS_ASSUME_NONNULL_BEGIN
     return self.audioActivity.supportsBackgroundPlayback;
 }
 
+- (BOOL)supportsBackgroundPlaybackControls
+{
+    return self.supportsBackgroundPlayback && self.audioActivity.backgroundPlaybackName.length > 0;
+}
+
 - (void)updateNowPlayingInfo
 {
     // Only update the now playing info if the activity supports background playback
-    if (!self.supportsBackgroundPlayback) {
+    if (!self.supportsBackgroundPlaybackControls) {
         return;
     }
 
@@ -126,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupRemoteCommandCenter
 {
     // Only setup the command if the activity supports background playback
-    if (!self.supportsBackgroundPlayback) {
+    if (!self.supportsBackgroundPlaybackControls) {
         return;
     }
 

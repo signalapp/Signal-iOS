@@ -145,9 +145,16 @@ lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
     OWSAssertDebug(contactAddress.isValid);
 
     __block TSContactThread *thread;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithContactAddress:contactAddress transaction:transaction];
-    });
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [self getThreadWithContactAddress:contactAddress transaction:transaction];
+    }];
+
+    if (thread == nil) {
+        // Only open a write transaction if necessary
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            thread = [self getOrCreateThreadWithContactAddress:contactAddress transaction:transaction];
+        });
+    }
 
     return thread;
 }

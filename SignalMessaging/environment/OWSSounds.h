@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_SignalClassic,
 
     // Ringtone Sounds
-    OWSSound_Opening,
+    OWSSound_Reflection,
 
     // Calls
     OWSSound_CallConnecting,
@@ -37,7 +37,8 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     // Other
     OWSSound_MessageSent,
     OWSSound_None,
-    OWSSound_DefaultiOSIncomingRingtone = OWSSound_Opening,
+    OWSSound_Silence,
+    OWSSound_DefaultiOSIncomingRingtone = OWSSound_Reflection,
 };
 
 @class OWSAudioPlayer;

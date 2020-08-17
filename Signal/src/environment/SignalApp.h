@@ -55,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)receivedVerificationCode:(NSString *)verificationCode;
 - (void)applicationWillTerminate;
 
+- (nullable UIView *)snapshotSplitViewControllerAfterScreenUpdates:(BOOL)afterScreenUpdates;
+
 @end
 
 NS_ASSUME_NONNULL_END

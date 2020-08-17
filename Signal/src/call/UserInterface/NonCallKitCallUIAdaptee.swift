@@ -51,11 +51,28 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
         self.showCall(call)
 
-        // present lock screen notification
-        if UIApplication.shared.applicationState == .active {
-            Logger.debug("skipping notification since app is already active.")
-        } else {
-            notificationPresenter.presentIncomingCall(call, callerName: callerName)
+        startNotifiyingForIncomingCall(call, callerName: callerName)
+    }
+
+    private var incomingCallNotificationTimer: Timer?
+    private func startNotifiyingForIncomingCall(_ call: SignalCall, callerName: String) {
+        incomingCallNotificationTimer?.invalidate()
+        incomingCallNotificationTimer = nil
+
+        // present lock screen notification if we're in the background.
+        // we re-present the notifiation every 3 seconds to make sure
+        // the user sees that their phone is ringing
+        incomingCallNotificationTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
+            guard call.state == .localRinging else {
+                self?.incomingCallNotificationTimer?.invalidate()
+                self?.incomingCallNotificationTimer = nil
+                return
+            }
+            if UIApplication.shared.applicationState == .active {
+                Logger.debug("skipping notification since app is already active.")
+            } else {
+                self?.notificationPresenter.presentIncomingCall(call, callerName: callerName)
+            }
         }
     }
 
