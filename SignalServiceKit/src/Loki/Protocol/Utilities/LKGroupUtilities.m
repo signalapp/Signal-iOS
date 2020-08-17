@@ -1,6 +1,4 @@
 #import "LKGroupUtilities.h"
-#import "NSData+OWS.h"
-#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @implementation LKGroupUtilities
 
@@ -66,12 +64,8 @@
 
 +(NSData *)getDecodedGroupIDAsData:(NSData *)groupID
 {
-    // FIXME: This needs to be cleaned up. A lot.
     OWSAssertDebug(groupID.length > 0);
-    NSString *encodedGroupID = [[NSString alloc] initWithData:groupID encoding:NSUTF8StringEncoding];
-    if (encodedGroupID == nil && [ECKeyPair isValidHexEncodedPublicKeyWithCandidate:[groupID hexadecimalString]]) {
-        return groupID; // Workaround to make things compatible with Android
-    }
+    NSString *encodedGroupID = [[NSString alloc]initWithData:groupID encoding:NSUTF8StringEncoding];
     NSString *decodedGroupID = [encodedGroupID componentsSeparatedByString:@"!"][0];
     if ([encodedGroupID componentsSeparatedByString:@"!"].count > 1) {
         decodedGroupID = [encodedGroupID componentsSeparatedByString:@"!"][1];
