@@ -4763,7 +4763,11 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
-    _threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
+    TSThread *_Nullable lastestThread = [TSThread anyFetchWithUniqueId:self.thread.uniqueId transaction:transaction];
+    if (lastestThread == nil) {
+        lastestThread = self.thread;
+    }
+    _threadViewModel = [[ThreadViewModel alloc] initWithThread:lastestThread transaction:transaction];
     [self updateNavigationBarSubtitleLabel];
     [self updateBarButtonItems];
 
