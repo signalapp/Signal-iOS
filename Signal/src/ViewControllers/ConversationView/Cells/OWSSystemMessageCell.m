@@ -123,18 +123,7 @@ typedef void (^SystemMessageActionBlock)(void);
     vStackView.spacing = self.vSpacing;
     vStackView.alignment = UIStackViewAlignmentCenter;
 
-    UIStackView *selectionViewWrapper =
-        [[UIStackView alloc] initWithArrangedSubviews:@[ self.selectionView, [UIView hStretchingSpacer] ]];
-    UIView *trailingCenteredPadding = [UIView hStretchingSpacer];
-    UIStackView *contentStackView =
-        [[UIStackView alloc] initWithArrangedSubviews:@[ selectionViewWrapper, vStackView, trailingCenteredPadding ]];
-
-    // center the vstack with padding views.
-    // It's tricky because we don't want the vStack to move when revealing the
-    // selectionView.
-    [trailingCenteredPadding autoMatchDimension:ALDimensionWidth
-                                    toDimension:ALDimensionWidth
-                                         ofView:selectionViewWrapper];
+    UIStackView *contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.selectionView, vStackView ]];
 
     contentStackView.axis = UILayoutConstraintAxisHorizontal;
     contentStackView.spacing = ConversationStyle.messageStackSpacing;
@@ -280,7 +269,9 @@ typedef void (^SystemMessageActionBlock)(void);
             case RPRecentCallTypeIncomingBusyElsewhere:
             case RPRecentCallTypeIncomingDeclined:
             case RPRecentCallTypeIncomingDeclinedElsewhere:
-                return [UIColor ows_accentRedColor];
+                // We use a custom red here, as we consider changing
+                // our red everywhere for better accessibility
+                return [UIColor colorWithRGBHex:0xE51D0E];
             default:
                 break;
         }
@@ -297,7 +288,7 @@ typedef void (^SystemMessageActionBlock)(void);
         switch (((TSErrorMessage *)interaction).errorType) {
             case TSErrorMessageNonBlockingIdentityChange:
             case TSErrorMessageWrongTrustedIdentityKey:
-                result = [Theme iconImage:ThemeIconSettingsViewSafetyNumber];
+                result = [Theme iconImage:ThemeIconSafetyNumber16];
                 break;
             case TSErrorMessageInvalidKeyException:
             case TSErrorMessageMissingKeyId:
@@ -320,13 +311,12 @@ typedef void (^SystemMessageActionBlock)(void);
                 return nil;
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
-                return [Theme iconImage:ThemeIconGroupMessage];
+                return [Theme iconImage:ThemeIconGroup16];
             case TSInfoMessageUnknownProtocolVersion:
                 OWSAssertDebug([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]);
                 if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
                     OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)interaction;
-                    result = [UIImage imageNamed:(message.isProtocolVersionUnknown ? @"error-outline-12"
-                                                                                   : @"check-circle-outline-28")];
+                    result = [Theme iconImage:message.isProtocolVersionUnknown ? ThemeIconError16 : ThemeIconCheck16];
                 }
                 break;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
@@ -337,8 +327,8 @@ typedef void (^SystemMessageActionBlock)(void);
                 } else {
                     OWSFailDebug(@"unexpected interaction type: %@", interaction.class);
                 }
-                result = (areDisappearingMessagesEnabled ? [Theme iconImage:ThemeIconSettingsTimer]
-                                                         : [Theme iconImage:ThemeIconSettingsTimerDisabled]);
+                result = (areDisappearingMessagesEnabled ? [Theme iconImage:ThemeIconTimer16]
+                                                         : [Theme iconImage:ThemeIconTimerDisabled16]);
                 break;
             }
             case TSInfoMessageVerificationStateChange:
@@ -350,16 +340,16 @@ typedef void (^SystemMessageActionBlock)(void);
                         return nil;
                     }
                 }
-                result = [UIImage imageNamed:@"check-circle-outline-28"];
+                result = [Theme iconImage:ThemeIconCheck16];
                 break;
             case TSInfoMessageUserJoinedSignal:
-                result = [UIImage imageNamed:@"emoji-heart-filled-28"];
+                result = [Theme iconImage:ThemeIconHeart16];
                 break;
             case TSInfoMessageSyncedThread:
-                result = [Theme iconImage:ThemeIconInfo];
+                result = [Theme iconImage:ThemeIconInfo16];
                 break;
             case TSInfoMessageProfileUpdate:
-                result = [Theme iconImage:ThemeIconProfileChangeMessage];
+                result = [Theme iconImage:ThemeIconProfile16];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
@@ -414,47 +404,45 @@ typedef void (^SystemMessageActionBlock)(void);
 
     switch (type) {
         case GroupUpdateTypeUserMembershipState_left:
-            iconName = [Theme iconName:ThemeIconSettingsLeaveGroup];
+            iconName = [Theme iconName:ThemeIconLeave16];
             break;
         case GroupUpdateTypeUserMembershipState_removed:
-            iconName = @"removed-outline-32";
+            iconName = [Theme iconName:ThemeIconMemberRemove16];
             break;
         case GroupUpdateTypeUserMembershipState_invited:
         case GroupUpdateTypeUserMembershipState_added:
-            iconName = @"invite-outline-32";
+        case GroupUpdateTypeUserMembershipState_invitesNew:
+            iconName = [Theme iconName:ThemeIconMemberAdded16];
             break;
+        case GroupUpdateTypeGroupCreated:
         case GroupUpdateTypeGeneric:
         case GroupUpdateTypeDebug:
         case GroupUpdateTypeUserMembershipState:
-            iconName = [Theme iconName:ThemeIconGroupMessage];
-            break;
-        case GroupUpdateTypeUserMembershipState_invitesNew:
+        case GroupUpdateTypeUserMembershipState_invalidInvitesRemoved:
         case GroupUpdateTypeUserMembershipState_invalidInvitesAdded:
-            iconName = [Theme iconName:ThemeIconSettingsViewPendingInvites];
+            iconName = [Theme iconName:ThemeIconGroup16];
             break;
         case GroupUpdateTypeUserMembershipState_invitesDeclined:
         case GroupUpdateTypeUserMembershipState_invitesRevoked:
-        case GroupUpdateTypeUserMembershipState_invalidInvitesRemoved:
-            iconName = @"invites-removed-outline-24";
+            iconName = [Theme iconName:ThemeIconMemberDeclined16];
             break;
         case GroupUpdateTypeAccessAttributes:
         case GroupUpdateTypeAccessMembers:
         case GroupUpdateTypeUserRole:
-        case GroupUpdateTypeGroupCreated:
-            iconName = [Theme iconName:ThemeIconMegaphone];
+            iconName = [Theme iconName:ThemeIconMegaphone16];
             break;
         case GroupUpdateTypeGroupName:
-            iconName = [Theme iconName:ThemeIconCompose];
+            iconName = [Theme iconName:ThemeIconCompose16];
             break;
         case GroupUpdateTypeGroupAvatar:
-            iconName = [Theme iconName:ThemeIconPhoto];
+            iconName = [Theme iconName:ThemeIconPhoto16];
             break;
         case GroupUpdateTypeDisappearingMessagesState:
         case GroupUpdateTypeDisappearingMessagesState_enabled:
-            iconName = [Theme iconName:ThemeIconSettingsTimer];
+            iconName = [Theme iconName:ThemeIconTimer16];
             break;
         case GroupUpdateTypeDisappearingMessagesState_disabled:
-            iconName = [Theme iconName:ThemeIconSettingsTimerDisabled];
+            iconName = [Theme iconName:ThemeIconTimerDisabled16];
             break;
     }
 
@@ -474,7 +462,9 @@ typedef void (^SystemMessageActionBlock)(void);
         for (GroupUpdateCopyItem *update in self.viewItem.systemMessageGroupUpdates) {
             NSString *iconName = [self iconNameForGroupUpdate:update.type];
 
-            [labelText appendTemplatedImageNamed:iconName font:label.font];
+            [labelText appendTemplatedImageNamed:iconName
+                                            font:label.font
+                                 heightReference:ImageAttachmentHeightReferenceLineHeight];
             [labelText append:@"  " attributes:@{}];
             [labelText append:update.text attributes:@{}];
 
@@ -497,7 +487,9 @@ typedef void (^SystemMessageActionBlock)(void);
 
         UIImage *_Nullable icon = [self iconForInteraction:interaction];
         if (icon) {
-            [labelText appendImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] font:label.font];
+            [labelText appendImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                              font:label.font
+                   heightReference:ImageAttachmentHeightReferenceLineHeight];
             [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:@"  "]];
         }
 

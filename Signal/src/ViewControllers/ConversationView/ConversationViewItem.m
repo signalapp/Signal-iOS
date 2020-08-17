@@ -605,21 +605,33 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_UnreadIndicator:
             return ConversationStyle.defaultMessageSpacing;
         case OWSInteractionType_IncomingMessage:
-            if (previousLayoutItem.interaction.interactionType == self.interaction.interactionType) {
-                TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-                TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
-                if ([incomingMessage.authorAddress isEqualToAddress:previousIncomingMessage.authorAddress]) {
-                    return ConversationStyle.compactMessageSpacing;
+            switch (previousLayoutItem.interaction.interactionType) {
+                case OWSInteractionType_IncomingMessage: {
+                    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+                    TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
+                    if ([incomingMessage.authorAddress isEqualToAddress:previousIncomingMessage.authorAddress]) {
+                        return ConversationStyle.compactMessageSpacing;
+                    }
+                    return ConversationStyle.defaultMessageSpacing;
                 }
+                case OWSInteractionType_Call:
+                case OWSInteractionType_Info:
+                case OWSInteractionType_Error:
+                    return ConversationStyle.systemMessageSpacing;
+                default:
+                    return ConversationStyle.defaultMessageSpacing;
             }
-
-            return ConversationStyle.defaultMessageSpacing;
         case OWSInteractionType_OutgoingMessage:
-            if (previousLayoutItem.interaction.interactionType == self.interaction.interactionType) {
-                return ConversationStyle.compactMessageSpacing;
+            switch (previousLayoutItem.interaction.interactionType) {
+                case OWSInteractionType_OutgoingMessage:
+                    return ConversationStyle.compactMessageSpacing;
+                case OWSInteractionType_Call:
+                case OWSInteractionType_Info:
+                case OWSInteractionType_Error:
+                    return ConversationStyle.systemMessageSpacing;
+                default:
+                    return ConversationStyle.defaultMessageSpacing;
             }
-
-            return ConversationStyle.defaultMessageSpacing;
         case OWSInteractionType_Call:
         case OWSInteractionType_Info:
         case OWSInteractionType_Error:
@@ -648,6 +660,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                     default:
                         break;
                 }
+            } else if (previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage
+                || previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+                return ConversationStyle.systemMessageSpacing;
             } else {
                 return ConversationStyle.defaultMessageSpacing;
             }

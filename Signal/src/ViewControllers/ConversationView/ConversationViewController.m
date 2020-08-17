@@ -1263,7 +1263,7 @@ typedef enum : NSUInteger {
         // If the user is in the system contacts, show a badge
         if ([self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
             icon =
-                [[UIImage imageNamed:@"profile-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                [[UIImage imageNamed:@"contact-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }
     } else if ([self.thread isKindOfClass:TSGroupThread.class]) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;

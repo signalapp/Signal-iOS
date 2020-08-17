@@ -61,8 +61,30 @@ public enum ThemeIcon: UInt {
     case info
     case groupMessage
     case profileChangeMessage
-    case photo
-    case megaphone
+
+    case check16
+    case compose16
+    case error16
+    case group16
+    case heart16
+    case info16
+    case leave16
+    case megaphone16
+    case memberAccepted16
+    case memberAdded16
+    case memberDeclined16
+    case memberRemove16
+    case phoneIncoming16
+    case phoneoutgoing16
+    case phoneX16
+    case photo16
+    case profile16
+    case safetyNumber16
+    case timerDisabled16
+    case timer16
+    case videoIncoming16
+    case videoOutgoing16
+    case videoX16
 
     case transfer
     case register
@@ -219,10 +241,53 @@ public extension Theme {
             return "group-outline-20"
         case .profileChangeMessage:
             return isDarkThemeEnabled ? "profile-solid-20" : "profile-outline-20"
-        case .photo:
-            return isDarkThemeEnabled ? "photo-solid-24" : "photo-outline-24"
-        case .megaphone:
+
+        case .check16:
+            return isDarkThemeEnabled ? "check-solid-16" : "check-outline-16"
+        case .compose16:
+            return isDarkThemeEnabled ? "compose-solid-16" : "compose-outline-16"
+        case .error16:
+            return isDarkThemeEnabled ? "error-solid-16" : "error-outline-16"
+        case .group16:
+            return isDarkThemeEnabled ? "group-solid-16" : "group-outline-16"
+        case .heart16:
+            return isDarkThemeEnabled ? "heart-solid-16" : "heart-outline-16"
+        case .info16:
+            return isDarkThemeEnabled ? "info-solid-16" : "info-outline-16"
+        case .leave16:
+            return isDarkThemeEnabled ? "leave-solid-16" : "leave-outline-16"
+        case .megaphone16:
             return isDarkThemeEnabled ? "megaphone-solid-16" : "megaphone-outline-16"
+        case .memberAccepted16:
+            return isDarkThemeEnabled ? "member-accepted-solid-16" : "member-accepted-outline-16"
+        case .memberAdded16:
+            return isDarkThemeEnabled ? "member-added-solid-16" : "member-added-outline-16"
+        case .memberDeclined16:
+            return isDarkThemeEnabled ? "member-declined-solid-16" : "member-declined-outline-16"
+        case .memberRemove16:
+            return isDarkThemeEnabled ? "member-remove-solid-16" : "member-remove-outline-16"
+        case .phoneIncoming16:
+            return isDarkThemeEnabled ? "phone-incoming-solid-16" : "phone-incoming-outline-16"
+        case .phoneoutgoing16:
+            return isDarkThemeEnabled ? "phone-outgoing-solid-16" : "phone-outgoing-outline-16"
+        case .phoneX16:
+            return isDarkThemeEnabled ? "phone-x-solid-16" : "phone-x-outline-16"
+        case .photo16:
+            return isDarkThemeEnabled ? "photo-solid-16" : "photo-outline-16"
+        case .profile16:
+            return isDarkThemeEnabled ? "profile-solid-16" : "profile-outline-16"
+        case .safetyNumber16:
+            return isDarkThemeEnabled ? "safety-number-solid-16" : "safety-number-outline-16"
+        case .timerDisabled16:
+            return isDarkThemeEnabled ? "timer-disabled-solid-16" : "timer-disabled-outline-16"
+        case .timer16:
+            return isDarkThemeEnabled ? "timer-solid-16" : "timer-outline-16"
+        case .videoIncoming16:
+            return isDarkThemeEnabled ? "video-incoming-solid-16" : "video-incoming-outline-16"
+        case .videoOutgoing16:
+            return isDarkThemeEnabled ? "video-outgoing-solid-16" : "video-outgoing-outline-16"
+        case .videoX16:
+            return isDarkThemeEnabled ? "video-x-solid-16" : "video-x-outline-16"
 
         case .transfer:
             return "transfer-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
