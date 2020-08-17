@@ -187,17 +187,3 @@ public class DotNetAPI : NSObject {
         }
     }
 }
-
-// MARK: Error Handling
-internal extension Promise {
-
-    internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
-        return recover2 { error -> Promise<T> in
-            if case HTTP.Error.httpRequestFailed(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
-                print("[Loki] Auth token for: \(server) expired; dropping it.")
-                DotNetAPI.removeAuthToken(for: server)
-            }
-            throw error
-        }
-    }
-}
