@@ -73,6 +73,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)videoView:(id<RTCVideoRenderer>)videoView didChangeVideoSize:(CGSize)size
 {
+    OWSAssertIsOnMainThread();
+
     if (!UIDevice.currentDevice.isIPad) {
         // We don't rotate the device while this view is rendered on iPhone,
         // so we don't need to adjust the content mode.
@@ -135,6 +137,51 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)renderFrame:(nullable RTCVideoFrame *)frame
 {
     [self.videoRenderer renderFrame:frame];
+
+    if (UIDevice.currentDevice.isIPad) {
+        return;
+    }
+
+    // iPhones are locked to portrait mode. However, we want both
+    // portrait and portrait upside-down to be right side up in portrait.
+    // We want both landscape left and landscape right to be right side
+    // up in landscape. This means, sometimes we force the rotation to
+    // portrait, and sometimes we force the rotation to portrait upside
+    // down depending on the orientation of the incoming frames AND
+    // the device's current orientation, so that from the user's perspective
+    // everything always looks right-side-up.
+    DispatchMainThreadSafe(^{
+        switch (frame.rotation) {
+            // Portrait upside-down
+            case RTCVideoRotation_270:
+                // Portrait upside down renders in portrait
+                self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
+                break;
+            // Portrait
+            case RTCVideoRotation_90:
+                // Portrait renders in portrait
+                self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
+                break;
+            // Landscape right
+            case RTCVideoRotation_180:
+                // If the device is in landscape left, flip upside down
+                if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeLeft) {
+                    self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
+                } else if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeRight) {
+                    self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
+                }
+                break;
+            // Landscape left
+            case RTCVideoRotation_0:
+                // If the device is in landscape right, flip upside down
+                if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeRight) {
+                    self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
+                } else if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeLeft) {
+                    self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
+                }
+                break;
+        }
+    });
 }
 
 @end
