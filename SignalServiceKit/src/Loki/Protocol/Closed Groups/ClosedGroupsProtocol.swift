@@ -124,22 +124,25 @@ public final class ClosedGroupsProtocol : NSObject {
         infoMessage.save(with: transaction)
     }
 
-    public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
-        removeMembers([ userPublicKey ], from: groupPublicKey, using: transaction)
+        return removeMembers([ userPublicKey ], from: groupPublicKey, using: transaction)
     }
 
-    public static func removeMembers(_ membersToRemove: Set<String>, from groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+    /// The returned promise is fulfilled when the message has been sent **to the group**. It doesn't wait for the user's new ratchet to be distributed.
+    public static func removeMembers(_ membersToRemove: Set<String>, from groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         // Prepare
         let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
         let isUserLeaving = membersToRemove.contains(userPublicKey)
         guard !isUserLeaving || membersToRemove.count == 1 else {
-            return print("[Loki] Can't remove self and others simultaneously.")
+            print("[Loki] Can't remove self and others simultaneously.")
+            return Promise.value(())
         }
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            return print("[Loki] Can't remove users from nonexistent closed group.")
+            print("[Loki] Can't remove users from nonexistent closed group.")
+            return Promise.value(())
         }
         let group = thread.groupModel
         let name = group.groupName!
@@ -149,7 +152,8 @@ public final class ClosedGroupsProtocol : NSObject {
         var members = group.groupMemberIds
         let indexes = membersToRemove.compactMap { members.firstIndex(of: $0) }
         guard indexes.count == membersToRemove.count else {
-            return print("[Loki] Can't remove users from group.")
+            print("[Loki] Can't remove users from group.")
+            return Promise.value(())
         }
         indexes.forEach { members.remove(at: $0) }
         let membersAsData = members.map { Data(hex: $0) }
@@ -157,14 +161,20 @@ public final class ClosedGroupsProtocol : NSObject {
         let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: [],
             members: membersAsData, admins: adminsAsData)
         let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-        messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
-        // Delete all ratchets (it's important that this happens after sending out the update)
-        Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
-        // Remove the group from the user's set of public keys to poll for if the user is leaving. Otherwise generate a new ratchet and send it out to all
-        // members (minus the removed ones) and their linked devices using established channels.
-        if isUserLeaving {
-            Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
-        } else {
+        let (promise, seal) = Promise<Void>.pending()
+        SSKEnvironment.shared.messageSender.send(closedGroupUpdateMessage, success: { seal.fulfill(()) }, failure: { seal.reject($0) })
+        promise.done {
+            try! Storage.writeSync { transaction in
+                // Delete all ratchets (it's important that this happens after sending out the update)
+                Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
+                // Remove the group from the user's set of public keys to poll for
+                if isUserLeaving {
+                    Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
+                }
+            }
+        }
+        // Generate a new ratchet and send it out to all members (minus the removed ones) and their linked devices using established channels if needed.
+        if !isUserLeaving {
             // Establish sessions if needed
             establishSessionsIfNeeded(with: members, using: transaction) // This internally takes care of multi device
             // Send out the user's new ratchet to all members (minus the removed ones) and their linked devices using established channels
@@ -186,6 +196,8 @@ public final class ClosedGroupsProtocol : NSObject {
         let infoMessageType: TSInfoMessageType = isUserLeaving ? .typeGroupQuit : .typeGroupUpdate
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType)
         infoMessage.save(with: transaction)
+        // Return
+        return promise
     }
 
     public static func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
@@ -274,7 +286,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         let group = thread.groupModel
         // Check that the sender is a member of the group (before the update)
-        var membersAndLinkedDevices: Set<String> = []
+        var membersAndLinkedDevices: Set<String> = Set(group.groupMemberIds)
         for member in group.groupMemberIds {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
             membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
@@ -333,7 +345,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         let group = groupThread.groupModel
         // Check that the requesting user is a member of the group
-        var membersAndLinkedDevices: Set<String> = []
+        var membersAndLinkedDevices: Set<String> = Set(group.groupMemberIds)
         for member in group.groupMemberIds {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
             membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
@@ -365,7 +377,7 @@ public final class ClosedGroupsProtocol : NSObject {
             return print("[Loki] Ignoring invalid closed group sender key.")
         }
         // Check that the requesting user is a member of the group
-        var membersAndLinkedDevices: Set<String> = []
+        var membersAndLinkedDevices: Set<String> = Set(group.groupMemberIds)
         for member in group.groupMemberIds {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
             membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
