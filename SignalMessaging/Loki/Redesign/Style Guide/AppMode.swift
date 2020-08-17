@@ -3,6 +3,9 @@ public enum AppMode {
     case light, dark
     
     public static var current: AppMode = .dark
+//    public static var current: AppMode {
+//        return UserDefaults.standard[.isUsingDarkMode] ? .dark : .light
+//    }
 }
 
 public var isLightMode: Bool {

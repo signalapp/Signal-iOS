@@ -128,6 +128,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         stackView.pin(to: scrollView)
         view.addSubview(scrollView)
         scrollView.pin(to: view)
+        // Register for notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeSwitchedNotification(_:)), name: .appModeSwitched, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     private func getSettingButtons() -> [UIView] {
@@ -203,6 +209,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     // MARK: Updating
+    @objc private func handleAppModeSwitchedNotification(_ notification: Notification) {
+        updateNavigationBarButtons()
+        // TODO: Redraw UI
+    }
+
     private func handleIsEditingDisplayNameChanged() {
         updateNavigationBarButtons()
         UIView.animate(withDuration: 0.25) {
@@ -228,9 +239,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
             closeButton.tintColor = Colors.text
             navigationItem.leftBarButtonItem = closeButton
+            let appModeIcon = UserDefaults.standard[.isUsingDarkMode] ? #imageLiteral(resourceName: "ic_dark_theme_on") : #imageLiteral(resourceName: "ic_dark_theme_off")
+            let appModeButton = UIBarButtonItem(image: appModeIcon, style: .plain, target: self, action: #selector(switchAppMode))
+            appModeButton.tintColor = Colors.text
             let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCode"), style: .plain, target: self, action: #selector(showQRCode))
             qrCodeButton.tintColor = Colors.text
-            navigationItem.rightBarButtonItem = qrCodeButton
+            navigationItem.rightBarButtonItems = [ qrCodeButton/*, appModeButton*/ ]
         }
     }
     
@@ -281,7 +295,13 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
-    
+
+    @objc private func switchAppMode() {
+        let isUsingDarkMode = UserDefaults.standard[.isUsingDarkMode]
+        UserDefaults.standard[.isUsingDarkMode] = !isUsingDarkMode
+        NotificationCenter.default.post(name: .appModeSwitched, object: nil)
+    }
+
     @objc private func showQRCode() {
         let qrCodeVC = QRCodeVC()
         navigationController!.pushViewController(qrCodeVC, animated: true)

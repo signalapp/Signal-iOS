@@ -191,7 +191,7 @@ import SignalMessaging
         maskingView.autoPinEdgesToSuperviewEdges()
 
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
+        titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",

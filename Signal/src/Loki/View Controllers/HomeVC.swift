@@ -415,9 +415,21 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                         transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: PublicChatAPI.lastMessageServerIDCollection)
                         transaction.removeObject(forKey: "\(publicChat.server).\(publicChat.channel)", inCollection: PublicChatAPI.lastDeletionServerIDCollection)
                         let _ = PublicChatAPI.leave(publicChat.channel, on: publicChat.server)
+                        thread.removeAllThreadInteractions(with: transaction)
+                        thread.remove(with: transaction)
+                    } else if let thread = thread as? TSGroupThread, thread.usesSharedSenderKeys == true {
+                        let groupID = thread.groupModel.groupId
+                        let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
+                        let _ = ClosedGroupsProtocol.leave(groupPublicKey, using: transaction).ensure {
+                            try! Storage.writeSync { transaction in
+                                thread.removeAllThreadInteractions(with: transaction)
+                                thread.remove(with: transaction)
+                            }
+                        }
+                    } else {
+                        thread.removeAllThreadInteractions(with: transaction)
+                        thread.remove(with: transaction)
                     }
-                    thread.removeAllThreadInteractions(with: transaction)
-                    thread.remove(with: transaction)
                 }
                 NotificationCenter.default.post(name: .threadDeleted, object: nil, userInfo: [ "threadId" : thread.uniqueId! ])
             })
