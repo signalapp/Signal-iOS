@@ -187,7 +187,11 @@ const CGFloat kIconViewLength = 24;
 
 - (BOOL)isOpenGroupChat
 {
-    return [self isGroupThread] && ![self isPrivateGroupChat];
+    if ([self isGroupThread]) {
+        TSGroupThread *thread = (TSGroupThread *)self.thread;
+        return thread.isPublicChat;
+    }
+    return false;
 }
 
 -(BOOL)isPrivateGroupChat
@@ -541,14 +545,13 @@ const CGFloat kIconViewLength = 24;
                                      [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
                                      UILabel *subtitleLabel = [UILabel new];
-                                     NSString *threadName;
-                                     // TODO: Modify the text content
+                                     NSString *displayName;
                                      if (self.thread.isGroupThread) {
-                                         threadName = @"the group";
+                                         displayName = @"the group";
                                      } else {
-                                         threadName = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier];
+                                         displayName = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier];
                                      }
-                                     subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), threadName];
+                                     subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), displayName];
                                      subtitleLabel.textColor = LKColors.text;
                                      subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
                                      subtitleLabel.numberOfLines = 0;

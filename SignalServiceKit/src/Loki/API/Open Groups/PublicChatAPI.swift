@@ -529,7 +529,7 @@ internal extension Promise {
 
     internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
         return recover2 { error -> Promise<T> in
-            if case OnionRequestAPI.Error.httpRequestFailedAtTargetSnode(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
+            if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                 print("[Loki] Auth token for: \(server) expired; dropping it.")
                 PublicChatAPI.removeAuthToken(for: server)
             }

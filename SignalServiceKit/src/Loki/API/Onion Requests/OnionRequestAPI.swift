@@ -27,7 +27,7 @@ public enum OnionRequestAPI {
 
     // MARK: Error
      public enum Error : LocalizedError {
-        case httpRequestFailedAtTargetSnode(statusCode: UInt, json: JSON)
+        case httpRequestFailedAtDestination(statusCode: UInt, json: JSON)
         case insufficientSnodes
         case invalidURL
         case missingSnodeVersion
@@ -37,7 +37,7 @@ public enum OnionRequestAPI {
 
         public var errorDescription: String? {
             switch self {
-            case .httpRequestFailedAtTargetSnode(let statusCode): return "HTTP request failed at target snode with status code: \(statusCode)."
+            case .httpRequestFailedAtDestination(let statusCode): return "HTTP request failed at destination with status code: \(statusCode)."
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
             case .invalidURL: return "Invalid URL"
             case .missingSnodeVersion: return "Missing snode version."
@@ -226,7 +226,7 @@ public enum OnionRequestAPI {
     internal static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
         return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
-            guard case OnionRequestAPI.Error.httpRequestFailedAtTargetSnode(let statusCode, let json) = error else { throw error }
+            guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json) = error else { throw error }
             throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
         }
     }
@@ -322,10 +322,10 @@ public enum OnionRequestAPI {
                                 let b = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
                                 body = b
                             }
-                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
+                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body)) }
                             seal.fulfill(body)
                         } else {
-                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: json)) }
+                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json)) }
                             seal.fulfill(json)
                         }
                     } catch {

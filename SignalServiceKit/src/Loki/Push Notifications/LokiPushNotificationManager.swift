@@ -112,7 +112,7 @@ public final class LokiPushNotificationManager : NSObject {
                 return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(json["message"] as? String ?? "nil").")
             }
         }, failure: { _, error in
-            print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash).")
+            print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(error).")
         })
     }
 }

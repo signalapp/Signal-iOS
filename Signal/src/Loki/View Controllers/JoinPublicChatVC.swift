@@ -156,7 +156,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                 var title = "Couldn't Join"
                 var message = ""
-                if case OnionRequestAPI.Error.httpRequestFailedAtTargetSnode(statusCode: let statusCode, json: _) = error, statusCode == 401 || statusCode == 403 {
+                if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
                     title = "Unauthorized"
                     message = "Please ask the open group operator to add you to the group."
                 }
