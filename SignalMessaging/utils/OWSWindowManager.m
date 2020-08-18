@@ -145,6 +145,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
     window.opaque = YES;
+    window.clipsToBounds = YES;
 
     ReturnToCallViewController *viewController = [ReturnToCallViewController new];
     self.returnToCallViewController = viewController;

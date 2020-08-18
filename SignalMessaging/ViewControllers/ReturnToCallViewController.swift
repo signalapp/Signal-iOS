@@ -120,8 +120,12 @@ public class ReturnToCallViewController: UIViewController {
         )
     }
 
+    private var isAnimating = false
     private func animatePipPresentation(snapshot: UIView) {
         guard let window = view.window else { return owsFailDebug("missing window") }
+
+        isAnimating = true
+
         let previousOrigin = window.frame.origin
         window.frame = OWSWindowManager.shared.rootWindow.bounds
 
@@ -139,6 +143,7 @@ public class ReturnToCallViewController: UIViewController {
             window.layoutIfNeeded()
         }) { _ in
             snapshot.removeFromSuperview()
+            self.isAnimating = false
         }
     }
 
@@ -162,6 +167,7 @@ public class ReturnToCallViewController: UIViewController {
     }
 
     private func updatePipLayout() {
+        guard !isAnimating else { return }
         guard let window = view.window else { return owsFailDebug("missing window") }
         let newFrame = CGRect(
             origin: window.frame.origin,
