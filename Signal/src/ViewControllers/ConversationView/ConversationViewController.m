@@ -201,6 +201,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
 @property (nonatomic) NSDictionary<NSString *, id<ConversationViewItem>> *selectedItems;
 
+@property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
+
 @end
 
 #pragma mark -
@@ -261,6 +264,9 @@ typedef enum : NSUInteger {
     [[NSRunLoop mainRunLoop] addTimer:self.reloadTimer forMode:NSRunLoopCommonModes];
 
     [self updateV2GroupIfNecessary];
+
+    _longPressGestureRecognizer = [UILongPressGestureRecognizer new];
+    _panGestureRecognizer = [UIPanGestureRecognizer new];
 
     return self;
 }
@@ -575,6 +581,8 @@ typedef enum : NSUInteger {
     [super viewDidLoad];
 
     [self createContents];
+
+    [self createGestureRecognizers];
 
     [self registerCellClasses];
 
@@ -4403,14 +4411,6 @@ typedef enum : NSUInteger {
         messageCell.messageBubbleView.delegate = self;
         messageCell.messageStickerView.delegate = self;
         messageCell.messageViewOnceView.delegate = self;
-
-        // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
-        // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
-        // gesture work reliably without conflict with audio scrubbing or swipe-to-repy.
-        if (self.navigationController) {
-            [messageCell.panGestureRecognizer
-                requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
-        }
     }
     cell.conversationStyle = self.conversationStyle;
 
@@ -4423,6 +4423,9 @@ typedef enum : NSUInteger {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.messageViewTapGestureRecognizer];
         [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.contentViewTapGestureRecognizer];
+
+        [messageCell.messageViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+        [messageCell.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
     }
 
 #ifdef DEBUG

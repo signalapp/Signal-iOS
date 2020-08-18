@@ -48,7 +48,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 #pragma mark -
 
-@interface OWSSystemMessageCell () <UIGestureRecognizerDelegate>
+@interface OWSSystemMessageCell () <UIGestureRecognizerDelegate, ConversationViewLongPressableCell>
 
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *button;
@@ -136,11 +136,6 @@ typedef void (^SystemMessageActionBlock)(void);
 
     [self.contentView addSubview:contentStackView];
     [contentStackView autoPinEdgesToSuperviewEdges];
-
-    UILongPressGestureRecognizer *longPress =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
-    longPress.delegate = self;
-    [self addGestureRecognizer:longPress];
 }
 
 - (CGFloat)vSpacing
@@ -249,15 +244,6 @@ typedef void (^SystemMessageActionBlock)(void);
 }
 
 #pragma mark - UIGestureRecognizerDelegate
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-    if (self.delegate.isShowingSelectionUI) {
-        return self.contentViewTapGestureRecognizer == gestureRecognizer;
-    } else {
-        return YES;
-    }
-}
 
 - (UIColor *)textColorForInteraction:(TSInteraction *)interaction
 {

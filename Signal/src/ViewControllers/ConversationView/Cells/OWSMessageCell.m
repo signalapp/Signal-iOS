@@ -12,7 +12,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageCell () <UIGestureRecognizerDelegate>
+@interface OWSMessageCell () <UIGestureRecognizerDelegate,
+    ConversationViewLongPressableCell,
+    ConversationViewPannableCell>
 
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
@@ -30,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UITapGestureRecognizer *messageViewTapGestureRecognizer;
 @property (nonatomic) UITapGestureRecognizer *contentViewTapGestureRecognizer;
-@property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
-@property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
 @property (nonatomic) CGFloat swipeableContentViewInitialX;
@@ -98,28 +98,10 @@ NS_ASSUME_NONNULL_BEGIN
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMessageViewTapGesture:)];
     self.messageViewTapGestureRecognizer.delegate = self;
 
-    self.longPressGestureRecognizer =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
-    [self.contentView addGestureRecognizer:self.longPressGestureRecognizer];
-    self.longPressGestureRecognizer.delegate = self;
-
-    self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                                        action:@selector(handlePanGesture:)];
-
-    // Allow panning with trackpad
-    if (@available(iOS 13.4, *)) {
-        self.panGestureRecognizer.allowedScrollTypesMask = UIScrollTypeMaskContinuous;
-    }
-
-    self.panGestureRecognizer.delegate = self;
-    [self.contentView addGestureRecognizer:self.panGestureRecognizer];
-    [self.messageViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
-
     self.contentViewTapGestureRecognizer =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleContentViewTapGesture:)];
     self.contentViewTapGestureRecognizer.delegate = self;
     [self.contentView addGestureRecognizer:self.contentViewTapGestureRecognizer];
-    [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
     [self.contentViewTapGestureRecognizer requireGestureRecognizerToFail:self.messageViewTapGestureRecognizer];
 
     self.reactionCountsView = [ReactionCountsView new];
@@ -678,12 +660,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self.contentViewTapGestureRecognizer == gestureRecognizer;
     }
 
-    if (gestureRecognizer == self.panGestureRecognizer) {
-        // Only allow the pan gesture to recognize horizontal panning,
-        // to avoid conflicts with the conversation view scroll view.
-        CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
-        return fabs(velocity.x) > fabs(velocity.y);
-    } else if (gestureRecognizer == self.messageViewTapGestureRecognizer) {
+    if (gestureRecognizer == self.messageViewTapGestureRecognizer) {
         return ![self isGestureInReactions:self.messageViewTapGestureRecognizer]
             && ![self isGestureInAvatar:self.contentViewTapGestureRecognizer] &&
             [self.messageView willHandleTapGesture:self.messageViewTapGestureRecognizer];
