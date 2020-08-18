@@ -57,6 +57,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return view
     }()
 
+    private lazy var bottomContainerView = UIView.container()
+
     private lazy var bottomGradientView: UIView = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
@@ -329,7 +331,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         topGradientView.autoPinWidthToSuperview()
         topGradientView.autoPinEdge(toSuperviewEdge: .top)
 
-        view.addSubview(bottomGradientView)
+        view.addSubview(bottomContainerView)
+        bottomContainerView.autoPinWidthToSuperview()
+        bottomContainerView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        bottomContainerView.addSubview(bottomGradientView)
         bottomGradientView.autoPinWidthToSuperview()
         bottomGradientView.autoPinEdge(toSuperviewEdge: .bottom)
 
@@ -539,7 +545,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         incomingVideoCallControls.axis = .vertical
         incomingVideoCallControls.spacing = 20
-        bottomGradientView.addSubview(incomingVideoCallControls)
+        bottomContainerView.addSubview(incomingVideoCallControls)
 
         // Ensure that the controls are always horizontally centered
         for stackView in [incomingAudioCallControls, incomingVideoCallBottomControls] {
@@ -596,6 +602,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactAvatarView.autoSetDimensions(to: CGSize(square: 200))
 
         ongoingAudioCallControls.autoPinEdge(toSuperviewEdge: .top, withInset: gradientMargin)
+        incomingVideoCallControls.autoPinEdge(toSuperviewEdge: .top)
 
         for controls in [incomingVideoCallControls, incomingAudioCallControls, ongoingAudioCallControls, ongoingVideoCallControls] {
             controls.autoPinWidthToSuperviewMargins()
@@ -623,10 +630,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         let topInset = shouldRemoteVideoControlsBeHidden
             ? view.layoutMargins.top
-            : topGradientView.frame.maxY - gradientMargin + 14
+            : topGradientView.height - gradientMargin + 14
         let bottomInset = shouldRemoteVideoControlsBeHidden
             ? view.layoutMargins.bottom
-            : view.frame.maxY - bottomGradientView.frame.minY - gradientMargin + 14
+            : bottomGradientView.height - gradientMargin + 14
         rect.origin.y += topInset
         rect.size.height -= topInset + bottomInset
 
@@ -642,12 +649,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         guard localVideoView.superview == view else { return }
 
         guard !isRenderingLocalVanityVideo else {
+            view.bringSubviewToFront(topGradientView)
+            view.bringSubviewToFront(bottomContainerView)
             view.layoutIfNeeded()
             localVideoView.frame = view.frame
             return
         }
 
         guard !localVideoView.isHidden else { return }
+
+        view.bringSubviewToFront(localVideoView)
 
         // Prefer to start in the top right
         if previousOrigin == nil {
@@ -824,16 +835,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Also hide other controls if user has tapped to hide them.
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden
-        let remoteControlsAreHidden = bottomGradientView.isHidden && topGradientView.isHidden
+        let remoteControlsAreHidden = bottomContainerView.isHidden && topGradientView.isHidden
         if hideRemoteControls != remoteControlsAreHidden {
-            self.bottomGradientView.isHidden = false
+            self.bottomContainerView.isHidden = false
             self.topGradientView.isHidden = false
 
             UIView.animate(withDuration: 0.15, animations: {
-                self.bottomGradientView.alpha = hideRemoteControls ? 0 : 1
+                self.bottomContainerView.alpha = hideRemoteControls ? 0 : 1
                 self.topGradientView.alpha = hideRemoteControls ? 0 : 1
             }) { _ in
-                self.bottomGradientView.isHidden = hideRemoteControls
+                self.bottomContainerView.isHidden = hideRemoteControls
                 self.topGradientView.isHidden = hideRemoteControls
             }
         }
