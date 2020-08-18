@@ -42,6 +42,36 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     private var callDurationTimer: Timer?
 
+    // MARK: - Gradient Views
+
+    private lazy var topGradientView: UIView = {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor.ows_blackAlpha60.cgColor,
+            UIColor.black.withAlphaComponent(0).cgColor
+        ]
+        let view = OWSLayerView(frame: .zero) { view in
+            gradientLayer.frame = view.bounds
+        }
+        view.layer.addSublayer(gradientLayer)
+        return view
+    }()
+
+    private lazy var bottomGradientView: UIView = {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor.black.withAlphaComponent(0).cgColor,
+            UIColor.ows_blackAlpha60.cgColor
+        ]
+        let view = OWSLayerView(frame: .zero) { view in
+            gradientLayer.frame = view.bounds
+        }
+        view.layer.addSublayer(gradientLayer)
+        return view
+    }()
+
+    let gradientMargin: CGFloat = 46
+
     // MARK: - Contact Views
 
     private lazy var contactNameLabel = MarqueeLabel()
@@ -294,6 +324,15 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Create the video views first, as they are under the other views.
         createVideoViews()
+
+        view.addSubview(topGradientView)
+        topGradientView.autoPinWidthToSuperview()
+        topGradientView.autoPinEdge(toSuperviewEdge: .top)
+
+        view.addSubview(bottomGradientView)
+        bottomGradientView.autoPinWidthToSuperview()
+        bottomGradientView.autoPinEdge(toSuperviewEdge: .bottom)
+
         createContactViews()
         createOngoingCallControls()
         createIncomingCallControls()
@@ -325,7 +364,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         backButton.setImage(backButtonImage, for: .normal)
         backButton.autoSetDimensions(to: CGSize(square: 40))
         backButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
-        view.addSubview(backButton)
+        topGradientView.addSubview(backButton)
 
         // marquee config
         contactNameLabel.type = .continuous
@@ -341,20 +380,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.font = UIFont.ows_dynamicTypeTitle1
         contactNameLabel.textAlignment = .center
         contactNameLabel.textColor = UIColor.white
-        contactNameLabel.layer.shadowOffset = CGSize.zero
-        contactNameLabel.layer.shadowOpacity = 0.35
+        contactNameLabel.layer.shadowOffset = .zero
+        contactNameLabel.layer.shadowOpacity = 0.25
         contactNameLabel.layer.shadowRadius = 4
 
-        view.addSubview(contactNameLabel)
+        topGradientView.addSubview(contactNameLabel)
 
         callStatusLabel.font = UIFont.ows_dynamicTypeBody
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
-        callStatusLabel.layer.shadowOffset = CGSize.zero
-        callStatusLabel.layer.shadowOpacity = 0.35
+        callStatusLabel.layer.shadowOffset = .zero
+        callStatusLabel.layer.shadowOpacity = 0.25
         callStatusLabel.layer.shadowRadius = 4
 
-        view.addSubview(callStatusLabel)
+        topGradientView.addSubview(callStatusLabel)
 
         contactAvatarContainerView.addSubview(contactAvatarView)
         view.insertSubview(contactAvatarContainerView, belowSubview: localVideoView)
@@ -398,11 +437,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         ongoingAudioCallControls.spacing = 16
         ongoingAudioCallControls.axis = .horizontal
-        view.addSubview(ongoingAudioCallControls)
+        bottomGradientView.addSubview(ongoingAudioCallControls)
 
         ongoingVideoCallControls.spacing = 16
         ongoingVideoCallControls.axis = .horizontal
-        view.addSubview(ongoingVideoCallControls)
+        bottomGradientView.addSubview(ongoingVideoCallControls)
 
         // Ensure that the controls are always horizontally centered
         for stackView in [ongoingAudioCallControls, ongoingVideoCallControls] {
@@ -473,7 +512,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         incomingAudioCallControls.axis = .horizontal
         incomingAudioCallControls.alignment = .center
-        view.addSubview(incomingAudioCallControls)
+        bottomGradientView.addSubview(incomingAudioCallControls)
 
         audioAnswerIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioAnswerIncomingButton")
         audioDeclineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioDeclineIncomingButton")
@@ -500,7 +539,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         incomingVideoCallControls.axis = .vertical
         incomingVideoCallControls.spacing = 20
-        view.addSubview(incomingVideoCallControls)
+        bottomGradientView.addSubview(incomingVideoCallControls)
 
         // Ensure that the controls are always horizontally centered
         for stackView in [incomingAudioCallControls, incomingVideoCallBottomControls] {
@@ -542,6 +581,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.setCompressionResistanceHigh()
 
         callStatusLabel.autoPinEdge(.top, to: .bottom, of: contactNameLabel, withOffset: contactVSpacing)
+        callStatusLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: gradientMargin)
         callStatusLabel.autoHCenterInSuperview()
         callStatusLabel.setContentHuggingVerticalHigh()
         callStatusLabel.setCompressionResistanceHigh()
@@ -555,10 +595,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactAvatarView.autoCenterInSuperview()
         contactAvatarView.autoSetDimensions(to: CGSize(square: 200))
 
+        ongoingAudioCallControls.autoPinEdge(toSuperviewEdge: .top, withInset: gradientMargin)
+
         for controls in [incomingVideoCallControls, incomingAudioCallControls, ongoingAudioCallControls, ongoingVideoCallControls] {
+            controls.autoPinWidthToSuperviewMargins()
             controls.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomMargin)
-            controls.autoPinLeadingToSuperviewMargin()
-            controls.autoPinTrailingToSuperviewMargin()
             controls.setContentHuggingVerticalHigh()
         }
     }
@@ -580,12 +621,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         rect.origin.x += view.layoutMargins.left
         rect.size.width -= view.layoutMargins.left + view.layoutMargins.right
 
-        let topInset = contactNameLabel.isHidden
+        let topInset = shouldRemoteVideoControlsBeHidden
             ? view.layoutMargins.top
-            : contactNameLabel.frame.maxY + view.layoutMargins.top
-        let bottomInset = ongoingVideoCallControls.isHidden
+            : topGradientView.frame.maxY - gradientMargin + 14
+        let bottomInset = shouldRemoteVideoControlsBeHidden
             ? view.layoutMargins.bottom
-            : view.frame.maxY - (ongoingVideoCallControls.frame.minY - view.layoutMargins.bottom)
+            : view.frame.maxY - bottomGradientView.frame.minY - gradientMargin + 14
         rect.origin.y += topInset
         rect.size.height -= topInset + bottomInset
 
@@ -782,16 +823,19 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
 
         // Also hide other controls if user has tapped to hide them.
-        if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
-            backButton.isHidden = true
-            contactNameLabel.isHidden = true
-            callStatusLabel.isHidden = true
-            ongoingVideoCallControls.isHidden = true
-            ongoingAudioCallControls.isHidden = true
-        } else {
-            backButton.isHidden = false
-            contactNameLabel.isHidden = false
-            callStatusLabel.isHidden = false
+        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden
+        let remoteControlsAreHidden = bottomGradientView.isHidden && topGradientView.isHidden
+        if hideRemoteControls != remoteControlsAreHidden {
+            self.bottomGradientView.isHidden = false
+            self.topGradientView.isHidden = false
+
+            UIView.animate(withDuration: 0.15, animations: {
+                self.bottomGradientView.alpha = hideRemoteControls ? 0 : 1
+                self.topGradientView.alpha = hideRemoteControls ? 0 : 1
+            }) { _ in
+                self.bottomGradientView.isHidden = hideRemoteControls
+                self.topGradientView.isHidden = hideRemoteControls
+            }
         }
 
         let videoControls = [videoModeAudioSourceButton, videoModeFlipCameraButton, videoModeVideoButton, videoModeMuteButton, videoModeHangUpButton]

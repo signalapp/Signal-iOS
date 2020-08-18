@@ -75,6 +75,9 @@ class CallButton: UIButton {
         circleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 0, relation: .greaterThanOrEqual)
         circleView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0, relation: .greaterThanOrEqual)
         circleView.autoHCenterInSuperview()
+        circleView.layer.shadowOffset = .zero
+        circleView.layer.shadowOpacity = 0.25
+        circleView.layer.shadowRadius = 4
 
         let stackView = UIStackView(arrangedSubviews: [circleViewContainer, label])
         stackView.axis = .vertical
@@ -87,6 +90,9 @@ class CallButton: UIButton {
         label.font = .ows_dynamicTypeSubheadline
         label.textColor = Theme.darkThemePrimaryColor
         label.textAlignment = .center
+        label.layer.shadowOffset = .zero
+        label.layer.shadowOpacity = 0.25
+        label.layer.shadowRadius = 4
 
         circleView.addSubview(iconView)
 

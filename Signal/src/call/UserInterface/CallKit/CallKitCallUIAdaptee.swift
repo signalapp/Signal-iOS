@@ -199,6 +199,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.answer(call: call)
     }
 
+    private var ignoreFirstUnuteAfterRemoteAnswer = false
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
@@ -212,8 +213,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // When we tell CallKit about the call, it tries
         // to unmute the call. We can work around this
-        // by resetting our mute state after answering.
-        setIsMuted(call: call, isMuted: call.isMuted)
+        // by ignoring the next "unmute" request from
+        // CallKit after the call is answered.
+        ignoreFirstUnuteAfterRemoteAnswer = call.isMuted
     }
 
     func localHangupCall(localId: UUID) {
@@ -383,6 +385,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             action.fail()
             return
         }
+
+        defer { ignoreFirstUnuteAfterRemoteAnswer = false }
+        guard !ignoreFirstUnuteAfterRemoteAnswer || action.isMuted else { return }
 
         self.callService.setIsMuted(call: call, isMuted: action.isMuted)
         action.fulfill()

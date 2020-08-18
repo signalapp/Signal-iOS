@@ -118,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.videoRenderer renderFrame:frame];
 
+#if DEVICE_SUPPORTS_METAL
     DispatchMainThreadSafe(^{
         if (UIDevice.currentDevice.isIPad) {
             CGSize currentWindowSize = CurrentAppContext().frame.size;
@@ -132,7 +133,6 @@ NS_ASSUME_NONNULL_BEGIN
                 self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFit;
             }
         } else {
-        #if DEVICE_SUPPORTS_METAL
             // iPhones are locked to portrait mode. However, we want both
             // portrait and portrait upside-down to be right side up in portrait.
             // We want both landscape left and landscape right to be right side
@@ -171,9 +171,9 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                     break;
             }
-        #endif
         }
     });
+#endif
 }
 
 @end
