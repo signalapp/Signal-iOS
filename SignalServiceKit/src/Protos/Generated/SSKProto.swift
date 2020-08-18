@@ -245,7 +245,7 @@ public class SSKProtoEnvelope: NSObject, Codable {
     }
     @objc
     public var hasSourceE164: Bool {
-        return proto.hasSourceE164
+        return proto.hasSourceE164 && !proto.sourceE164.isEmpty
     }
 
     @objc
@@ -323,7 +323,7 @@ public class SSKProtoEnvelope: NSObject, Codable {
     }
     @objc
     public var hasSourceUuid: Bool {
-        return proto.hasSourceUuid
+        return proto.hasSourceUuid && !proto.sourceUuid.isEmpty
     }
 
     @objc
