@@ -26,7 +26,6 @@ public class ConversationStyle: NSObject {
 
     @objc public var headerGutterLeading: CGFloat = 28
     @objc public var headerGutterTrailing: CGFloat = 28
-    @objc public let headerViewDateHeaderVMargin: CGFloat = 23
 
     // These are the gutters used by "full width" views
     // like "contact offer" and "info message".
@@ -38,6 +37,7 @@ public class ConversationStyle: NSObject {
     @objc static public let messageStackSpacing: CGFloat = 8
     @objc static public let defaultMessageSpacing: CGFloat = 12
     @objc static public let compactMessageSpacing: CGFloat = 2
+    @objc static public let systemMessageSpacing: CGFloat = 20
 
     @objc public var contentWidth: CGFloat {
         return viewWidth - (gutterLeading + gutterTrailing)

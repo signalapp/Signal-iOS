@@ -926,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
 
@@ -1937,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Give your inbox something to write home about. Get started by messaging a friend.";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "Answered Call";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "Answered on other device";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "Missed because a call is in progress on another device";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "Declined on other device";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "Incoming call";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missed call because their safety number has changed.";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
@@ -2681,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "Outgoing call";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF could not be displayed";
@@ -4035,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "This message was deleted.";

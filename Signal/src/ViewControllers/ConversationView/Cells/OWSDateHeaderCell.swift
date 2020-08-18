@@ -28,27 +28,15 @@ public class DateHeaderCell: ConversationViewCell {
         // Date breaks and unread indicators are not interactive.
         self.isUserInteractionEnabled = true
 
-        self.stackView = UIStackView(arrangedSubviews: [strokeView, titleLabel])
-        stackView.axis = .vertical
-        stackView.spacing = 2
-        contentView.addSubview(stackView)
-        stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+        contentView.addSubview(titleLabel)
+        titleLabel.autoPinEdgesToSuperviewMargins()
     }
-
-    var stackView: UIStackView!
 
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.lineBreakMode = .byTruncatingTail
         return label
-    }()
-
-    let strokeView: UIView = {
-        let stroke = UIView()
-        stroke.autoSetDimension(.height, toSize: strokeHeight)
-        stroke.layer.cornerRadius = strokeHeight / 2
-        return stroke
     }()
 
     override public func loadForDisplay() {
@@ -61,19 +49,17 @@ public class DateHeaderCell: ConversationViewCell {
             return
         }
 
-        titleLabel.font = .ows_dynamicTypeBody2
-        titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.font = UIFont.ows_dynamicTypeFootnote.ows_semibold()
+        titleLabel.textColor = Theme.secondaryTextAndIconColor
 
         let date = Date(millisecondsSince1970: viewItem.interaction.timestamp)
         let dateString = DateUtil.formatDate(forConversationDateBreaks: date)
 
-        titleLabel.text = dateString.localizedUppercase
+        titleLabel.text = dateString
 
-        strokeView.backgroundColor = Theme.secondaryTextAndIconColor
-
-        self.contentView.layoutMargins = UIEdgeInsets(top: conversationStyle.headerViewDateHeaderVMargin/2,
+        self.contentView.layoutMargins = UIEdgeInsets(top: 8,
                                                       leading: conversationStyle.headerGutterLeading,
-                                                      bottom: conversationStyle.headerViewDateHeaderVMargin/2,
+                                                      bottom: 8,
                                                       trailing: conversationStyle.headerGutterTrailing)
     }
 
@@ -94,7 +80,7 @@ public class DateHeaderCell: ConversationViewCell {
         let availableSize = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
         let labelSize = titleLabel.sizeThatFits(availableSize)
 
-        height += labelSize.height + stackView.spacing
+        height += labelSize.height
 
         return CGSizeCeil(CGSize(width: viewWidth, height: height))
     }

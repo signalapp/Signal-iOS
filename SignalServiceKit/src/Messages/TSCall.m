@@ -143,36 +143,34 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    TSThread *thread = [self threadWithTransaction:transaction];
+    OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
+    TSContactThread *contactThread = (TSContactThread *)thread;
+    NSString *shortName = [SSKEnvironment.shared.contactsManager shortDisplayNameForAddress:contactThread.contactAddress
+                                                                                transaction:transaction];
+
     // We don't actually use the `transaction` but other sibling classes do.
     switch (_callType) {
         case RPRecentCallTypeIncoming:
-            return NSLocalizedString(@"INCOMING_CALL_ANSWERED", @"info message text in conversation view");
-        case RPRecentCallTypeOutgoing:
-            return NSLocalizedString(@"OUTGOING_CALL", @"info message text in conversation view");
-        case RPRecentCallTypeIncomingMissed:
-            return NSLocalizedString(@"MISSED_CALL", @"info message text in conversation view");
-        case RPRecentCallTypeOutgoingIncomplete:
-            return NSLocalizedString(@"OUTGOING_INCOMPLETE_CALL", @"info message text in conversation view");
         case RPRecentCallTypeIncomingIncomplete:
-            return NSLocalizedString(@"INCOMING_INCOMPLETE_CALL", @"info message text in conversation view");
+        case RPRecentCallTypeIncomingAnsweredElsewhere: {
+            NSString *format = NSLocalizedString(
+                @"INCOMING_CALL_FORMAT", @"info message text in conversation view. {embeds callee name}");
+            return [NSString stringWithFormat:format, shortName];
+        }
+        case RPRecentCallTypeOutgoing:
+        case RPRecentCallTypeOutgoingIncomplete:
+        case RPRecentCallTypeOutgoingMissed: {
+            NSString *format = NSLocalizedString(
+                @"OUTGOING_CALL_FORMAT", @"info message text in conversation view. {embeds callee name}");
+            return [NSString stringWithFormat:format, shortName];
+        }
+        case RPRecentCallTypeIncomingMissed:
         case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
-            return NSLocalizedString(@"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY", @"info message text shown in conversation view");
-        case RPRecentCallTypeIncomingDeclined:
-            return NSLocalizedString(@"INCOMING_DECLINED_CALL",
-                                     @"info message recorded in conversation history when local user declined a call");
-        case RPRecentCallTypeOutgoingMissed:
-            return NSLocalizedString(@"OUTGOING_MISSED_CALL",
-                @"info message recorded in conversation history when local user tries and fails to call another user.");
-        case RPRecentCallTypeIncomingAnsweredElsewhere:
-            return NSLocalizedString(@"INCOMING_CALL_ANSWERED_ELSEWHERE",
-                @"info message recorded in conversation history when a call was answered from another device");
-        case RPRecentCallTypeIncomingDeclinedElsewhere:
-            return NSLocalizedString(@"INCOMING_CALL_DECLINED_ELSEWHERE",
-                @"info message recorded in conversation history when a call was declined from another device");
         case RPRecentCallTypeIncomingBusyElsewhere:
-            return NSLocalizedString(@"INCOMING_CALL_BUSY_ELSEWHERE",
-                @"info message recorded in conversation history when a call was missed due to an active call on "
-                @"another device");
+        case RPRecentCallTypeIncomingDeclined:
+        case RPRecentCallTypeIncomingDeclinedElsewhere:
+            return NSLocalizedString(@"MISSED_CALL", @"info message text in conversation view");
     }
 }
 

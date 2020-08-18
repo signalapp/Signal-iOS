@@ -37,6 +37,21 @@ public extension TSInfoMessage {
                                       transaction: transaction)
     }
 
+    func groupUpdateItems(transaction: SDSAnyReadTransaction) -> [GroupUpdateCopyItem]? {
+        // for legacy group updates we persisted a pre-rendered string, rather than the details
+        // to generate that string
+        guard customMessage == nil else { return nil }
+
+        guard let newGroupModel = self.newGroupModel else {
+            // Legacy info message before we began embedding user info.
+            return nil
+        }
+
+        return groupUpdateItems(oldGroupModel: self.previousGroupModel,
+                                newGroupModel: newGroupModel,
+                                transaction: transaction)
+    }
+
     func profileChangeDescription(transaction: SDSAnyReadTransaction) -> String {
         guard let profileChanges = profileChanges,
             let updateDescription = profileChanges.descriptionForUpdate(transaction: transaction) else {
@@ -77,6 +92,25 @@ extension TSInfoMessage {
                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                           transaction: transaction)
         return groupUpdate.updateDescription
+    }
+
+    private func groupUpdateItems(oldGroupModel: TSGroupModel?,
+                                  newGroupModel: TSGroupModel,
+                                  transaction: SDSAnyReadTransaction) -> [GroupUpdateCopyItem]? {
+
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("missing local address")
+            return nil
+        }
+
+        let groupUpdate = GroupUpdateCopy(newGroupModel: newGroupModel,
+                                          oldGroupModel: oldGroupModel,
+                                          oldDisappearingMessageToken: oldDisappearingMessageToken,
+                                          newDisappearingMessageToken: newDisappearingMessageToken,
+                                          localAddress: localAddress,
+                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                          transaction: transaction)
+        return groupUpdate.itemList
     }
 
     @objc

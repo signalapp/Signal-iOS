@@ -975,10 +975,10 @@ NS_ASSUME_NONNULL_BEGIN
               return viewItem;
           };
 
-    __block BOOL hasPlacedUnreadIndicator = NO;
     __block BOOL shouldShowDateOnNextViewItem = YES;
     __block uint64_t previousViewItemTimestamp = 0;
-    void (^addHeaderViewItemIfNecessary)(id<ConversationViewItem>) = ^(id<ConversationViewItem> viewItem) {
+    __block id<ConversationViewItem> _Nullable previousViewItem;
+    void (^addDateHeaderViewItemIfNecessary)(id<ConversationViewItem>) = ^(id<ConversationViewItem> viewItem) {
         uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
         OWSAssertDebug(viewItemTimestamp > 0);
 
@@ -998,15 +998,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSInteraction *_Nullable interaction;
 
-        if (!hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator
-            && self.messageMapping.oldestUnreadInteraction != nil
-            && self.messageMapping.oldestUnreadInteraction.sortId <= viewItem.interaction.sortId) {
-            hasPlacedUnreadIndicator = YES;
-            interaction = [[OWSUnreadIndicatorInteraction alloc] initWithThread:self.thread
-                                                                      timestamp:viewItem.interaction.timestamp
-                                                            receivedAtTimestamp:viewItem.interaction.receivedAtTimestamp
-                                                                 shouldShowDate:shouldShowDate];
-        } else if (shouldShowDate) {
+        if (shouldShowDate) {
             interaction = [[OWSDateHeaderInteraction alloc] initWithThread:self.thread
                                                                  timestamp:viewItem.interaction.timestamp];
         }
@@ -1015,9 +1007,35 @@ NS_ASSUME_NONNULL_BEGIN
             id<ConversationViewItem> _Nullable headerViewItem = createViewItemForInteraction(interaction);
             [headerViewItem clearNeedsUpdate];
             [viewItems addObject:headerViewItem];
+            previousViewItem = headerViewItem;
         }
 
         previousViewItemTimestamp = viewItemTimestamp;
+    };
+
+    __block BOOL hasPlacedUnreadIndicator = NO;
+    void (^addUnreadHeaderViewItemIfNecessary)(id<ConversationViewItem>) = ^(id<ConversationViewItem> viewItem) {
+        uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
+        OWSAssertDebug(viewItemTimestamp > 0);
+
+        TSInteraction *_Nullable interaction;
+
+        if (!hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator
+            && self.messageMapping.oldestUnreadInteraction != nil
+            && self.messageMapping.oldestUnreadInteraction.sortId <= viewItem.interaction.sortId) {
+            hasPlacedUnreadIndicator = YES;
+            interaction =
+                [[OWSUnreadIndicatorInteraction alloc] initWithThread:self.thread
+                                                            timestamp:viewItem.interaction.timestamp
+                                                  receivedAtTimestamp:viewItem.interaction.receivedAtTimestamp];
+        }
+
+        if (interaction) {
+            id<ConversationViewItem> _Nullable headerViewItem = createViewItemForInteraction(interaction);
+            [headerViewItem clearNeedsUpdate];
+            [viewItems addObject:headerViewItem];
+            previousViewItem = headerViewItem;
+        }
     };
 
     __block BOOL hasError = NO;
@@ -1032,10 +1050,43 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Insert a dynamic header item before this item if necessary
-        addHeaderViewItemIfNecessary(viewItem);
+        addDateHeaderViewItemIfNecessary(viewItem);
+        addUnreadHeaderViewItemIfNecessary(viewItem);
+
+        if (previousViewItem.interaction.interactionType == interaction.interactionType) {
+            switch (interaction.interactionType) {
+                case OWSInteractionType_Error: {
+                    TSErrorMessage *previousErrorMessage = (TSErrorMessage *)previousViewItem.interaction;
+                    TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
+                    if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
+                        break;
+                    }
+                    previousViewItem.shouldCollapseSystemMessageAction
+                        = previousErrorMessage.errorType == errorMessage.errorType;
+                    break;
+                }
+                case OWSInteractionType_Info: {
+                    TSInfoMessage *previousInfoMessage = (TSInfoMessage *)previousViewItem.interaction;
+                    TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
+                    if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
+                        break;
+                    }
+                    previousViewItem.shouldCollapseSystemMessageAction
+                        = previousInfoMessage.messageType == infoMessage.messageType;
+                    break;
+                }
+                case OWSInteractionType_Call:
+                    previousViewItem.shouldCollapseSystemMessageAction = YES;
+                    break;
+                default:
+                    break;
+            }
+        }
 
         [viewItem clearNeedsUpdate];
         [viewItems addObject:viewItem];
+
+        previousViewItem = viewItem;
 
         return viewItem;
     };
