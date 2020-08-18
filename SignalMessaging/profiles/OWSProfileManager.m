@@ -1796,14 +1796,20 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         // If the optional avatar data is present, prepare for
         // its possible usage by trying to write it to disk
         // and verifying that it can be read.
-        NSString *avatarFileName = [self generateAvatarFilename];
+        NSString *_Nullable avatarFileName;
         UIImage *_Nullable avatarImage = nil;
+        // The avatar won't always be pre-downloaded.
+        // We may have to fill in it below.
         if (optionalDecryptedAvatarData.length > 0) {
             OWSAssertDebug(avatarUrlPath.length > 0);
 
-            NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:avatarFileName];
+            NSString *newAvatarFileName = [self generateAvatarFilename];
+            NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFileName];
             BOOL success = [optionalDecryptedAvatarData writeToFile:filePath atomically:YES];
-            if (success) {
+            if (!success) {
+                OWSFailDebug(@"Could not write avatar to disk.");
+            } else {
+                avatarFileName = newAvatarFileName;
                 avatarImage = [UIImage imageWithContentsOfFile:filePath];
             }
         }
