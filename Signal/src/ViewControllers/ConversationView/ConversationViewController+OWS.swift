@@ -588,6 +588,10 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
             return false
         }
     }
+
+    func messageActionsViewControllerLongPressGestureRecognizer(_ messageActionsViewController: MessageActionsViewController) -> UILongPressGestureRecognizer {
+        return longPressGestureRecognizer
+    }
 }
 
 extension ConversationViewController: MediaPresentationContextProvider {

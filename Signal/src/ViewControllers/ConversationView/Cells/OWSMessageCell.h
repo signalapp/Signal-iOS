@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UITapGestureRecognizer *messageViewTapGestureRecognizer;
 @property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
-@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
-@property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
 - (instancetype)init;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder;

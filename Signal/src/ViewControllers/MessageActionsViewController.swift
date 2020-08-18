@@ -60,6 +60,7 @@ protocol MessageActionsViewControllerDelegate: class {
     func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
                                       shouldShowReactionPickerForInteraction: TSInteraction) -> Bool
     func messageActionsViewControllerRequestedKeyboardDismissal(_ messageActionsViewController: MessageActionsViewController, focusedView: ConversationViewCell)
+    func messageActionsViewControllerLongPressGestureRecognizer(_ messageActionsViewController: MessageActionsViewController) -> UILongPressGestureRecognizer
 }
 
 @objc
@@ -296,12 +297,12 @@ class MessageActionsViewController: UIViewController {
 
     private lazy var initialTouchLocation = currentTouchLocation
     private var currentTouchLocation: CGPoint {
-        guard let cell = focusedView as? OWSMessageCell else {
-            owsFailDebug("unexpected cell type")
+        guard let delegate = delegate else {
+            owsFailDebug("unexpectedly missing delegate")
             return view.center
         }
 
-        return cell.longPressGestureRecognizer.location(in: view)
+        return delegate.messageActionsViewControllerLongPressGestureRecognizer(self).location(in: view)
     }
 
     private var gestureExitedDeadZone = false

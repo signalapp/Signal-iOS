@@ -25,6 +25,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @property (nonatomic, readonly) ThreadViewModel *threadViewModel;
 @property (nonatomic, readonly) BOOL isUserScrolling;
 @property (nonatomic, readonly) CGFloat safeContentHeight;
+@property (nonatomic, nullable) NSString *panGestureCurrentInteractionId;
+@property (nonatomic, nullable) NSString *longPressGestureCurrentInteractionId;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -104,6 +106,9 @@ typedef NS_CLOSED_ENUM(NSUInteger,
 @property (nonatomic, readonly) MessageActionsToolbar *selectionToolbar;
 @property (nonatomic) NSDictionary<NSString *, id<ConversationViewItem>> *selectedItems;
 @property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
+@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic, readonly) UILongPressGestureRecognizer *longPressGestureRecognizer;
+@property (nonatomic, readonly) BOOL isShowingSelectionUI;
 
 - (void)conversationCell:(nonnull ConversationViewCell *)cell didSelectViewItem:(id<ConversationViewItem>)viewItem;
 
