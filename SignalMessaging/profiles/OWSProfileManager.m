@@ -1796,56 +1796,23 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         // If the optional avatar data is present, prepare for
         // its possible usage by trying to write it to disk
         // and verifying that it can be read.
-        __block NSString *_Nullable avatarFileName;
-        __block UIImage *_Nullable avatarImage = nil;
-        void (^tryToStoreNewAvatar)(void) = ^{
-            // The avatar won't always be pre-downloaded.
-            // We may have to fill in it below.
-            if (optionalDecryptedAvatarData.length <= 1) {
-                return;
-            }
+        NSString *_Nullable avatarFileName;
+        UIImage *_Nullable avatarImage = nil;
+        // The avatar won't always be pre-downloaded.
+        // We may have to fill in it below.
+        if (optionalDecryptedAvatarData.length > 0) {
             OWSAssertDebug(avatarUrlPath.length > 0);
 
-            BOOL (^tryToReuseExistingAvatar)(void) = ^{
-                __block OWSUserProfile *_Nullable existingUserProfile;
-                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                    existingUserProfile = [OWSUserProfile getUserProfileForAddress:address transaction:transaction];
-                }];
-                if (existingUserProfile == nil || existingUserProfile.avatarFileName == nil) {
-                    return NO;
-                }
-                NSData *_Nullable existingAvatar =
-                    [self loadProfileDataWithFilename:existingUserProfile.avatarFileName];
-                if (existingAvatar == nil) {
-                    OWSFailDebug(@"Could not load existing avatar.");
-                    return NO;
-                }
-                if (![existingAvatar isEqualToData:optionalDecryptedAvatarData]) {
-                    return NO;
-                }
-                avatarFileName = existingUserProfile.avatarFileName;
-                NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:avatarFileName];
-                avatarImage = [UIImage imageWithContentsOfFile:filePath];
-                return YES;
-            };
-
-            if (tryToReuseExistingAvatar()) {
-                // Do nothing.
-                OWSLogVerbose(@"Reused existing avatar file.");
+            NSString *newAvatarFileName = [self generateAvatarFilename];
+            NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFileName];
+            BOOL success = [optionalDecryptedAvatarData writeToFile:filePath atomically:YES];
+            if (!success) {
+                OWSFailDebug(@"Could not write avatar to disk.");
             } else {
-                // We can't re-use the existing avatar;
-                NSString *newAvatarFileName = [self generateAvatarFilename];
-                NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFileName];
-                BOOL success = [optionalDecryptedAvatarData writeToFile:filePath atomically:YES];
-                if (!success) {
-                    OWSFailDebug(@"Could not write avatar to disk.");
-                } else {
-                    avatarFileName = newAvatarFileName;
-                    avatarImage = [UIImage imageWithContentsOfFile:filePath];
-                }
+                avatarFileName = newAvatarFileName;
+                avatarImage = [UIImage imageWithContentsOfFile:filePath];
             }
-        };
-        tryToStoreNewAvatar();
+        }
 
         __block OWSUserProfile *userProfile;
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
