@@ -3,6 +3,7 @@
 //
 
 #import "OWSOperation.h"
+#import "TSNetworkManager.h"
 #import <objc/runtime.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,11 +28,17 @@ static void *kNSError_MessageSender_IsFatal = &kNSError_MessageSender_IsFatal;
 
     // This value should always be set for all errors by the time OWSOperation
     // queries it's value.  If not, default to retrying in production.
-    if (value == nil) {
-        OWSLogVerbose(@"Error without retry behavior specified: %@", self);
+    if (value != nil) {
+        return [value boolValue];
     }
-    OWSAssertDebug(value);
-    return value ? [value boolValue] : YES;
+    if (IsNetworkConnectivityFailure(self)) {
+        // We can safely default to retrying network failures.
+        OWSLogVerbose(@"Error without retry behavior specified: %@", self);
+        return YES;
+    }
+    OWSFailDebug(@"Error without retry behavior specified: %@", self);
+    // Default to retrying to be conservative.
+    return YES;
 }
 
 - (void)setIsRetryable:(BOOL)value
