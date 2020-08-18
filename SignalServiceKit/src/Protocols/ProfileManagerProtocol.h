@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
       wasLocallyInitiated:(BOOL)wasLocallyInitiated
               transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (BOOL)hasProfileAvatarData:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
                                      transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address

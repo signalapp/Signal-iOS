@@ -458,19 +458,19 @@ public class ProfileFetcherJob: NSObject {
                                  optionalAvatarData: nil)
         }
 
-        if let existingAvatarData = (databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Data? in
+        let hasExistingAvatarData = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
             guard let oldAvatarURLPath = self.profileManager.profileAvatarURLPath(for: profileAddress,
                                                                                   transaction: transaction),
                 oldAvatarURLPath == avatarUrlPath else {
-                    return nil
+                    return false
             }
-            return self.profileManager.profileAvatarData(for: profileAddress,
-                                                         transaction: transaction)
-        }) {
+            return self.profileManager.hasProfileAvatarData(profileAddress, transaction: transaction)
+        }
+        if hasExistingAvatarData {
             Logger.verbose("Skipping avatar data download; already downloaded.")
             return updateProfile(fetchedProfile: fetchedProfile,
                                  profileKey: profileKey,
-                                 optionalAvatarData: existingAvatarData)
+                                 optionalAvatarData: nil)
         }
 
         return firstly { () -> AnyPromise in
