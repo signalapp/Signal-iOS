@@ -471,18 +471,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gestures
 
-- (void)addGestureHandlers
-{
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self addGestureRecognizer:tap];
-
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                                          action:@selector(handlePanGesture:)];
-    [self addGestureRecognizer:pan];
-    [tap requireGestureRecognizerToFail:pan];
-}
-
 - (BOOL)willHandleTapGesture:(UITapGestureRecognizer *)sender
 {
     return YES;

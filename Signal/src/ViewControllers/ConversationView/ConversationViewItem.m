@@ -165,6 +165,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize audioPlaybackState = _audioPlaybackState;
 @synthesize needsUpdate = _needsUpdate;
 @synthesize shouldCollapseSystemMessageAction = _shouldCollapseSystemMessageAction;
+@synthesize isTruncatedTextVisible = _isTruncatedTextVisible;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                              thread:(TSThread *)thread
@@ -504,6 +505,17 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     _shouldCollapseSystemMessageAction = shouldCollapseSystemMessageAction;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setIsTruncatedTextVisible:(BOOL)isTruncatedTextVisible
+{
+    if (_isTruncatedTextVisible == isTruncatedTextVisible) {
+        return;
+    }
+
+    _isTruncatedTextVisible = isTruncatedTextVisible;
 
     [self clearCachedLayoutState];
 }

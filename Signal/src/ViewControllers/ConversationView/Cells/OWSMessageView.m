@@ -94,6 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(handlePanGesture:)];
+    _panGesture = pan;
     [self addGestureRecognizer:pan];
     [tap requireGestureRecognizerToFail:pan];
 }

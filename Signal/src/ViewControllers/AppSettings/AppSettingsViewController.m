@@ -13,7 +13,6 @@
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -202,68 +201,9 @@
                                               }]];
 #endif
 
-    if (self.tsAccountManager.isDeregistered) {
-        [section
-            addItem:[self destructiveButtonItemWithTitle:self.tsAccountManager.isPrimaryDevice
-                              ? NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON", @"Label for re-registration button.")
-                              : NSLocalizedString(@"SETTINGS_RELINK_BUTTON", @"Label for re-link button.")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
-                                                selector:@selector(reregisterUser)
-                                                   color:Theme.accentBlueColor]];
-        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
-                                                                  @"Label for 'delete data' button.")
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
-                                                     selector:@selector(deleteUnregisterUserData)
-                                                        color:UIColor.ows_accentRedColor]];
-    } else if (self.tsAccountManager.isRegisteredPrimaryDevice) {
-        [section
-            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
-                                                selector:@selector(unregisterUser)
-                                                   color:UIColor.ows_accentRedColor]];
-    } else {
-        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
-                                                                  @"Label for 'delete data' button.")
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
-                                                     selector:@selector(deleteLinkedData)
-                                                        color:UIColor.ows_accentRedColor]];
-    }
-
     [contents addSection:section];
 
     self.contents = contents;
-}
-
-- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title
-                         accessibilityIdentifier:(NSString *)accessibilityIdentifier
-                                        selector:(SEL)selector
-                                           color:(UIColor *)color
-{
-    __weak AppSettingsViewController *weakSelf = self;
-   return [OWSTableItem
-        itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [OWSTableItem newCell];
-            cell.preservesSuperviewLayoutMargins = YES;
-            cell.contentView.preservesSuperviewLayoutMargins = YES;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-            const CGFloat kButtonHeight = 40.f;
-            OWSFlatButton *button = [OWSFlatButton buttonWithTitle:title
-                                                              font:[OWSFlatButton fontForHeight:kButtonHeight]
-                                                        titleColor:[UIColor whiteColor]
-                                                   backgroundColor:color
-                                                            target:weakSelf
-                                                          selector:selector];
-            [cell.contentView addSubview:button];
-            [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
-            [button autoVCenterInSuperview];
-            [button autoPinLeadingAndTrailingToSuperviewMargin];
-            button.accessibilityIdentifier = accessibilityIdentifier;
-
-            return cell;
-        }
-                customRowHeight:90.f
-                    actionBlock:nil];
 }
 
 - (UITableViewCell *)profileHeaderCell
@@ -442,81 +382,6 @@
 - (void)dismissWasPressed:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - Unregister & Re-register
-
-- (void)unregisterUser
-{
-    [self showDeleteAccountUI:YES];
-}
-
-- (void)deleteLinkedData
-{
-    ActionSheetController *actionSheet =
-        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TITLE", @"")
-                                             message:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TEXT", @"")];
-    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
-                                                              style:ActionSheetActionStyleDestructive
-                                                            handler:^(ActionSheetAction *action) {
-                                                                [SignalApp resetAppData];
-                                                            }]];
-    [actionSheet addAction:[OWSActionSheets cancelAction]];
-
-    [self presentActionSheet:actionSheet];
-}
-
-- (void)deleteUnregisterUserData
-{
-    [self showDeleteAccountUI:NO];
-}
-
-- (void)showDeleteAccountUI:(BOOL)isRegistered
-{
-    __weak AppSettingsViewController *weakSelf = self;
-
-    ActionSheetController *actionSheet =
-        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
-                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")];
-    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
-                                                              style:ActionSheetActionStyleDestructive
-                                                            handler:^(ActionSheetAction *action) {
-                                                                [weakSelf deleteAccount:isRegistered];
-                                                            }]];
-    [actionSheet addAction:[OWSActionSheets cancelAction]];
-
-    [self presentActionSheet:actionSheet];
-}
-
-- (void)deleteAccount:(BOOL)isRegistered
-{
-    if (isRegistered) {
-        [ModalActivityIndicatorViewController
-            presentFromViewController:self
-                            canCancel:NO
-                      backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                          [TSAccountManager
-                              unregisterTextSecureWithSuccess:^{
-                                  [SignalApp resetAppData];
-                              }
-                              failure:^(NSError *error) {
-                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                      [modalActivityIndicator dismissWithCompletion:^{
-                                          [OWSActionSheets
-                                              showActionSheetWithTitle:NSLocalizedString(
-                                                                           @"UNREGISTER_SIGNAL_FAIL", @"")];
-                                      }];
-                                  });
-                              }];
-                      }];
-    } else {
-        [SignalApp resetAppData];
-    }
-}
-
-- (void)reregisterUser
-{
-    [RegistrationUtils showReregistrationUIFromViewController:self];
 }
 
 #pragma mark - Dark Theme

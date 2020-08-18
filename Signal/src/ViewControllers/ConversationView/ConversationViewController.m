@@ -1335,6 +1335,12 @@ typedef enum : NSUInteger {
 
 - (void)updateBarButtonItems
 {
+    // Don't include "Back" text on view controllers pushed above us, just use the arrow.
+    [self.navigationItem setBackBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@""
+                                                                               style:UIBarButtonItemStylePlain
+                                                                              target:nil
+                                                                              action:nil]];
+
     self.navigationItem.hidesBackButton = NO;
     self.navigationItem.leftBarButtonItem = nil;
 
@@ -2470,9 +2476,17 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
-    viewController.delegate = self;
-    [self.navigationController pushViewController:viewController animated:YES];
+    if (conversationItem.displayableBodyText.canRenderTruncatedTextInline) {
+        conversationItem.isTruncatedTextVisible = YES;
+
+        CGPoint contentOffset = self.collectionView.contentOffset;
+        [self reloadData];
+        [self.collectionView setContentOffset:contentOffset animated:NO];
+    } else {
+        LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
+        viewController.delegate = self;
+        [self.navigationController pushViewController:viewController animated:YES];
+    }
 }
 
 - (void)didTapMention:(Mention *)mention

@@ -7,6 +7,7 @@
 #import "DomainFrontingCountryViewController.h"
 #import "OWSCountryMetadata.h"
 #import "Pastelog.h"
+#import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "TSAccountManager.h"
 #import <PromiseKit/AnyPromise.h>
@@ -24,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<SSKReachabilityManager>)reachabilityManager
 {
     return SSKEnvironment.shared.reachabilityManager;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
 }
 
 #pragma mark -
@@ -240,6 +246,40 @@ NS_ASSUME_NONNULL_BEGIN
                                                   }]];
     [contents addSection:pinsSection];
 
+    OWSTableSection *deleteAccountSection = [OWSTableSection new];
+    deleteAccountSection.customHeaderView = [UIView spacerWithHeight:24];
+
+    if (self.tsAccountManager.isDeregistered) {
+        [deleteAccountSection
+            addItem:[self destructiveButtonItemWithTitle:self.tsAccountManager.isPrimaryDevice
+                              ? NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON", @"Label for re-registration button.")
+                              : NSLocalizedString(@"SETTINGS_RELINK_BUTTON", @"Label for re-link button.")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
+                                                selector:@selector(reregisterUser)
+                                                   color:Theme.accentBlueColor]];
+        [deleteAccountSection
+            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
+                                                             @"Label for 'delete data' button.")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
+                                                selector:@selector(deleteUnregisterUserData)
+                                                   color:UIColor.ows_accentRedColor]];
+    } else if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+        [deleteAccountSection
+            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
+                                                selector:@selector(unregisterUser)
+                                                   color:UIColor.ows_accentRedColor]];
+    } else {
+        [deleteAccountSection
+            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
+                                                             @"Label for 'delete data' button.")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
+                                                selector:@selector(deleteLinkedData)
+                                                   color:UIColor.ows_accentRedColor]];
+    }
+
+    [contents addSection:deleteAccountSection];
+
     self.contents = contents;
 }
 
@@ -343,6 +383,114 @@ NS_ASSUME_NONNULL_BEGIN
     NSURL *errorLogsDir = DebugLogger.sharedLogger.errorLogsDir;
     LogPickerViewController *logPicker = [[LogPickerViewController alloc] initWithLogDirUrl:errorLogsDir];
     [self.navigationController pushViewController:logPicker animated:YES];
+}
+
+#pragma mark - Unregister & Re-register
+
+- (void)unregisterUser
+{
+    [self showDeleteAccountUI:YES];
+}
+
+- (void)deleteLinkedData
+{
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TITLE", @"")
+                                             message:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TEXT", @"")];
+    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                                              style:ActionSheetActionStyleDestructive
+                                                            handler:^(ActionSheetAction *action) {
+                                                                [SignalApp resetAppData];
+                                                            }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
+
+    [self presentActionSheet:actionSheet];
+}
+
+- (void)reregisterUser
+{
+    [RegistrationUtils showReregistrationUIFromViewController:self];
+}
+
+- (void)deleteUnregisterUserData
+{
+    [self showDeleteAccountUI:NO];
+}
+
+- (void)showDeleteAccountUI:(BOOL)isRegistered
+{
+    __weak AdvancedSettingsTableViewController *weakSelf = self;
+
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
+                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")];
+    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                                              style:ActionSheetActionStyleDestructive
+                                                            handler:^(ActionSheetAction *action) {
+                                                                [weakSelf deleteAccount:isRegistered];
+                                                            }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
+
+    [self presentActionSheet:actionSheet];
+}
+
+- (void)deleteAccount:(BOOL)isRegistered
+{
+    if (isRegistered) {
+        [ModalActivityIndicatorViewController
+            presentFromViewController:self
+                            canCancel:NO
+                      backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                          [TSAccountManager
+                              unregisterTextSecureWithSuccess:^{
+                                  [SignalApp resetAppData];
+                              }
+                              failure:^(NSError *error) {
+                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                      [modalActivityIndicator dismissWithCompletion:^{
+                                          [OWSActionSheets
+                                              showActionSheetWithTitle:NSLocalizedString(
+                                                                           @"UNREGISTER_SIGNAL_FAIL", @"")];
+                                      }];
+                                  });
+                              }];
+                      }];
+    } else {
+        [SignalApp resetAppData];
+    }
+}
+
+- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title
+                         accessibilityIdentifier:(NSString *)accessibilityIdentifier
+                                        selector:(SEL)selector
+                                           color:(UIColor *)color
+{
+    __weak AdvancedSettingsTableViewController *weakSelf = self;
+    return [OWSTableItem
+        itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [OWSTableItem newCell];
+            cell.preservesSuperviewLayoutMargins = YES;
+            cell.contentView.preservesSuperviewLayoutMargins = YES;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.contentView.backgroundColor = Theme.tableViewBackgroundColor;
+
+            const CGFloat kButtonHeight = 40.f;
+            OWSFlatButton *button = [OWSFlatButton buttonWithTitle:title
+                                                              font:[OWSFlatButton fontForHeight:kButtonHeight]
+                                                        titleColor:[UIColor whiteColor]
+                                                   backgroundColor:color
+                                                            target:weakSelf
+                                                          selector:selector];
+            [cell.contentView addSubview:button];
+            [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
+            [button autoVCenterInSuperview];
+            [button autoPinLeadingAndTrailingToSuperviewMargin];
+            button.accessibilityIdentifier = accessibilityIdentifier;
+
+            return cell;
+        }
+                customRowHeight:90.f
+                    actionBlock:nil];
 }
 
 @end

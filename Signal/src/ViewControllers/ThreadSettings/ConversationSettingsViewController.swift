@@ -203,9 +203,6 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     func updateNavigationBar() {
-        navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self,
-                                                                                selector: #selector(backButtonPressed))
-
         if isGroupThread, canEditConversationAttributes {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_GROUP",
                                                                                          comment: "Label for the 'edit group' button in conversation settings view."),
@@ -238,14 +235,6 @@ class ConversationSettingsViewController: OWSTableViewController {
         }
 
         updateTableContents()
-    }
-
-    @objc
-    public func backButtonPressed(_ sender: Any) {
-        guard !shouldCancelNavigationBack() else {
-            return
-        }
-        navigationController?.popViewController(animated: true)
     }
 
     // MARK: -

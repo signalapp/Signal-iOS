@@ -167,6 +167,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @property (nonatomic, readonly, nullable) InteractionReactionState *reactionState;
 
+@property (nonatomic) BOOL isTruncatedTextVisible;
+
 #pragma mark - MessageActions
 
 @property (nonatomic, readonly) BOOL hasBodyTextActionContent;

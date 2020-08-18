@@ -60,6 +60,8 @@ typedef struct {
 
 @property (nonatomic) OWSMessageFooterView *footerView;
 
+@property (nonatomic, nullable) UILabel *tapForMoreLabel;
+
 @property (nonatomic, nullable) OWSContactShareButtonsView *contactShareButtonsView;
 
 @property (nonatomic) BOOL isHandlingPan;
@@ -415,6 +417,7 @@ typedef struct {
 
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
+    UIView *_Nullable tapForMoreLabel;
     if (self.hasBodyText || !bodyMediaView) {
         [self configureBodyTextView];
         [textViews addObject:self.bodyTextView];
@@ -424,17 +427,11 @@ typedef struct {
             [self.bodyTextView autoSetDimension:ALDimensionHeight toSize:measurement.bodyTextSize.height],
         ]];
 
-        UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
-        if (tapForMoreLabel) {
-            [textViews addObject:tapForMoreLabel];
-            [self.viewConstraints addObjectsFromArray:@[
-                [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
-            ]];
-        }
+        tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
     }
 
     BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && bodyMediaView && !self.hasBodyText);
-    if (self.viewItem.shouldHideFooter) {
+    if (self.viewItem.shouldHideFooter && !self.hasTapForMore) {
         // Do nothing.
     } else if (shouldFooterOverlayMedia) {
         OWSAssertDebug(bodyMediaView);
@@ -479,7 +476,22 @@ typedef struct {
                                          isOverlayingMedia:NO
                                            isOutsideBubble:self.isBubbleTransparent];
         [textViews addObject:self.footerView];
+
+        if (tapForMoreLabel) {
+            [self.footerView addSubview:tapForMoreLabel];
+            [self.viewConstraints addObjectsFromArray:@[
+                [tapForMoreLabel autoMatchDimension:ALDimensionHeight
+                                        toDimension:ALDimensionHeight
+                                             ofView:self.footerView
+                                         withOffset:0
+                                           relation:NSLayoutRelationLessThanOrEqual],
+                [tapForMoreLabel autoVCenterInSuperview],
+                [tapForMoreLabel autoPinEdgeToSuperviewEdge:self.isIncoming ? ALEdgeTrailing : ALEdgeLeading],
+                [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
+            ]];
+        }
     }
+
 
     [self insertAnyTextViewsIntoStackView:textViews];
 
@@ -703,7 +715,7 @@ typedef struct {
 - (BOOL)hasBottomFooter
 {
     BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && self.hasBodyMediaView && !self.hasBodyText);
-    if (self.viewItem.shouldHideFooter) {
+    if (self.viewItem.shouldHideFooter && !self.hasTapForMore) {
         return NO;
     } else if (shouldFooterOverlayMedia) {
         return NO;
@@ -800,7 +812,8 @@ typedef struct {
            accessibilityAuthorName:self.viewItem.accessibilityAuthorName
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
-                shouldIgnoreEvents:shouldIgnoreEvents];
+                shouldIgnoreEvents:shouldIgnoreEvents
+            isTruncatedTextVisible:self.viewItem.isTruncatedTextVisible];
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
@@ -810,6 +823,7 @@ typedef struct {
                   textColor:(UIColor *)textColor
                        font:(UIFont *)font
          shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
+     isTruncatedTextVisible:(BOOL)isTruncatedTextVisible
 {
     textView.hidden = NO;
     textView.textColor = textColor;
@@ -822,11 +836,21 @@ typedef struct {
     };
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
 
+    NSAttributedString *displayableAttributedText;
+    NSTextAlignment displayableTextAlignment;
+    if (displayableText.isTextTruncated && isTruncatedTextVisible) {
+        displayableAttributedText = displayableText.fullAttributedText;
+        displayableTextAlignment = displayableText.fullTextNaturalAlignment;
+    } else {
+        OWSAssertDebug(!isTruncatedTextVisible);
+        displayableAttributedText = displayableText.displayAttributedText;
+        displayableTextAlignment = displayableText.displayTextNaturalAlignment;
+    }
 
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-    paragraphStyle.alignment = displayableText.displayTextNaturalAlignment;
+    paragraphStyle.alignment = displayableTextAlignment;
 
-    NSMutableAttributedString *attributedText = [displayableText.displayAttributedText mutableCopy];
+    NSMutableAttributedString *attributedText = [displayableAttributedText mutableCopy];
     [attributedText addAttributes:@{
         NSFontAttributeName : font,
         NSForegroundColorAttributeName : textColor,
@@ -887,7 +911,7 @@ typedef struct {
     } else if (!self.displayableBodyText.isTextTruncated) {
         return NO;
     } else {
-        return YES;
+        return !self.viewItem.isTruncatedTextVisible;
     }
 }
 
@@ -897,12 +921,20 @@ typedef struct {
         return nil;
     }
 
+    if (self.tapForMoreLabel) {
+        return self.tapForMoreLabel;
+    }
+
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+
     UILabel *tapForMoreLabel = [UILabel new];
     tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
         @"Indicator on truncated text messages that they can be tapped to see the entire text message.");
     tapForMoreLabel.font = [self tapForMoreFont];
-    tapForMoreLabel.textColor = [self.bodyTextColor colorWithAlphaComponent:0.85];
+    tapForMoreLabel.textColor = [self.conversationStyle bubbleReadMoreTextColorWithMessage:message];
     tapForMoreLabel.textAlignment = [tapForMoreLabel textAlignmentUnnatural];
+    self.tapForMoreLabel = tapForMoreLabel;
 
     return tapForMoreLabel;
 }
@@ -1445,6 +1477,9 @@ typedef struct {
     if (self.hasBottomFooter) {
         CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
         footerSize.width = MIN(footerSize.width, self.conversationStyle.maxMessageWidth);
+        if (self.hasTapForMore) {
+            footerSize.height = MAX(self.tapForMoreHeight, footerSize.height);
+        }
         [textViewSizes addObject:[NSValue valueWithCGSize:footerSize]];
     }
 
@@ -1458,10 +1493,6 @@ typedef struct {
     cellSize.width = MAX(cellSize.width, self.bubbleView.minWidth);
 
     OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
-
-    if (self.hasTapForMore) {
-        cellSize.height += self.tapForMoreHeight + self.textViewVSpacing;
-    }
 
     NSValue *_Nullable actionButtonsSize = [self actionButtonsSize];
     if (actionButtonsSize) {
@@ -1503,7 +1534,7 @@ typedef struct {
 
 - (UIFont *)tapForMoreFont
 {
-    return UIFont.ows_dynamicTypeCaption1Font;
+    return UIFont.ows_dynamicTypeSubheadlineClampedFont.ows_semibold;
 }
 
 - (CGFloat)tapForMoreHeight
@@ -1561,6 +1592,9 @@ typedef struct {
 
     [self.footerView removeFromSuperview];
     [self.footerView prepareForReuse];
+
+    [self.tapForMoreLabel removeFromSuperview];
+    self.tapForMoreLabel = nil;
 
     for (UIView *subview in self.stackView.subviews) {
         [subview removeFromSuperview];

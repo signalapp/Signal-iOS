@@ -29,6 +29,8 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 @property (nonatomic, readonly) BOOL isBorderless;
 
+@property (nonatomic, readonly) UIPanGestureRecognizer *panGesture;
+
 - (void)configureViews;
 
 - (void)loadContent;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,6 +24,8 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         let gesture = DirectionalPanGestureRecognizer(direction: .vertical,
                                                       target: self,
                                                       action: #selector(handleGesture(_:)))
+        // Allow panning with trackpad
+        if #available(iOS 13.4, *) { gesture.allowedScrollTypesMask = .continuous }
         view.addGestureRecognizer(gesture)
     }
 

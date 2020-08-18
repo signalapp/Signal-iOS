@@ -374,6 +374,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var reactionState: InteractionReactionState?
     var shouldCollapseSystemMessageAction: Bool = false
     var systemMessageGroupUpdates: [GroupUpdateCopyItem]?
+    var isTruncatedTextVisible: Bool = false
 
     init(interaction: TSInteraction, thread: TSThread) {
         self.interaction = interaction

@@ -105,6 +105,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                         action:@selector(handlePanGesture:)];
+
+    // Allow panning with trackpad
+    if (@available(iOS 13.4, *)) {
+        self.panGestureRecognizer.allowedScrollTypesMask = UIScrollTypeMaskContinuous;
+    }
+
     self.panGestureRecognizer.delegate = self;
     [self.contentView addGestureRecognizer:self.panGestureRecognizer];
     [self.messageViewTapGestureRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];

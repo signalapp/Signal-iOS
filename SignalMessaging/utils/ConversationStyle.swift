@@ -235,6 +235,18 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
+    public func bubbleReadMoreTextColor(message: TSMessage) -> UIColor {
+        if message is TSIncomingMessage {
+            return Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_accentBlue
+        } else if message is TSOutgoingMessage {
+            return Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
+        } else {
+            owsFailDebug("Unexpected message type: \(message)")
+            return ConversationStyle.bubbleTextColorOutgoing
+        }
+    }
+
+    @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
             return ConversationStyle.bubbleSecondaryTextColorIncoming
