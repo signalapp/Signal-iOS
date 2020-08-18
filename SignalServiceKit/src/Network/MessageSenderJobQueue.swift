@@ -72,7 +72,9 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = MessageSenderOperation
     @objc
     public static let jobRecordLabel: String = "MessageSender"
-    public static let maxRetries: UInt = 30
+    // per OWSOperation.retryIntervalForExponentialBackoff(failureCount:),
+    // 110 retries will yield ~24 hours of retry.
+    public static let maxRetries: UInt = 110
     public let requiresInternet: Bool = true
     public var runningOperations = AtomicArray<MessageSenderOperation>()
 
@@ -253,19 +255,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func retryInterval() -> TimeInterval {
-        // Arbitrary backoff factor...
-        // With backOffFactor of 1.9
-        // try  1 delay:  0.00s
-        // try  2 delay:  0.19s
-        // ...
-        // try  5 delay:  1.30s
-        // ...
-        // try 11 delay: 61.31s
-        let backoffFactor = 1.9
-        let maxBackoff = 15 * kMinuteInterval
-
-        let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.jobRecord.failureCount)))
-        return seconds
+        return OWSOperation.retryIntervalForExponentialBackoff(failureCount: jobRecord.failureCount)
     }
 
     override public func didFail(error: Error) {
