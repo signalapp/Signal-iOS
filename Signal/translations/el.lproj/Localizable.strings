@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Επανάκληση";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Μπορείς να ενεργοποιήσεις την πρόσβαση στο μικρόφωνο στην εφαρμογή Ρυθμίσεις του iOS για να κάνεις κλήσεις και να ηχογραφείς μηνύματα φωνής στο Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Απαιτείται πρόσβαση στο μικρόφωνο";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Εισερχόμενη κλήση";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Κλήση";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Αναπάντητη κλήση επειδή ο αριθμός ασφαλείας αυτού/ης που σε κάλεσε άλλαξε.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Αναπάντητη κλήση";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Δεν απάντησε";
@@ -482,17 +482,23 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Κλήση;";
 
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Αποδοχή εισερχόμενης κλήσης";
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+
+/* label for accepting incoming video calls as audio  only */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Απάντηση χωρίς βίντεο";
+
+/* label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Απάντηση";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Ήχος";
 
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Απόρριψη εισερχόμενης κλήσης";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Πάτα εδώ για να ενεργοποιήσεις το βίντεό σου";
+/* label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Απόρριψη";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Τερματισμός κλήσης";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Αλλαγή σε βιντεοκλήση";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Πάτα για επιστροφή στην κλήση";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Επανάκληση";
@@ -822,7 +825,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Χρώμα συνομιλίας";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Επεξεργασία πληροφοριών ομάδας";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Μόνο οι διαχειριστές/τριες";
@@ -852,7 +855,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Ορισμός διαχειριστή";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "Ο/Η %@ θα μπορεί να επεξεργάζεται αυτή την ομάδα και τα μέλη της.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Μέλη";
@@ -864,10 +867,10 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Διάλεξε ποιος μπορεί να διαχειρίζεται την συμμετοχή στην ομάδα.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Να ειδοποιούμαι πάντα";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Να μην ειδοποιούμαι αν είναι σε σίγαση";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Θέλεις να λαμβάνεις ειδοποιήσεις όταν σε αναφέρουν σε σιγασμένες συνομιλίες;";
@@ -923,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Αναζήτηση στη συνομιλία";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Πάτα για αλλαγή";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Κατάργηση φραγής ομάδας";
 
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Φορτώνονται περισσότερα μηνύματα...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Πάτα για περισσότερα";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Η επαναφορά της συνεδρίας θα επιτρέψει τη λήψη μελλοντικών μηνυμάτων από τον/την %@, αλλά δεν θα ανακτήσει τα ήδη κατεστραμμένα μηνύματα.";
@@ -1233,10 +1233,10 @@
 "EMAIL_INVITE_SUBJECT" = "Έλα να χρησιμοποιήσουμε το Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Η συσκευή σου δεν είναι παραμετροποιημένη για να στέλνει email. Για να στείλεις ένα αίτημα υποστήριξης, ρύθμισε το email στη συσκευή σου ή στείλε email στο support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "Το email δεν είναι διαθέσιμο";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Δραστηριότητες";
@@ -1293,7 +1293,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Η αποστολή του μηνύματος απέτυχε.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Αποτυχία ανοίγματος εφαρμογής email";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Δεν μπόρεσε να δημιουργηθεί αίτημα υποστήριξης";
@@ -1503,40 +1503,40 @@
 "GROUP_CREATION_FAILED" = "Δεν μπόρεσαν να προστεθούν όλα τα μέλη στην ομάδα. Πάτα για επανάληψη.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "Προστέθηκε μια άκυρη πρόσκληση.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Πρόσθεσες μια άκυρη πρόσκληση.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Πρόσθεσες άκυρες προσκλήσεις.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "Ο/Η %@ πρόσθεσε μια άκυρη πρόσκληση.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "Ο/Η %@ πρόσθεσε άκυρες προσκλήσεις.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "Προστέθηκαν άκυρες προσκλήσεις.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "Μια άκυρη πρόσκληση ανακλήθηκε.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Ανακάλεσες μια άκυρη πρόσκληση.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Ανακάλεσες άκυρες προσκλήσεις.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "Ο/Η %@ ανακάλεσε μια άκυρη πρόσκληση.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "Ο/Η %@ ανακάλεσε άκυρες προσκλήσεις.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "Ανακλήθηκαν άκυρες προσκλήσεις.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Δεν μπορείς να προσθέσεις αυτόματα τον/την %@ σε αυτή την ομάδα. Του/της στάλθηκε πρόσκληση για να μπει, και δεν θα βλέπει τα μηνύματα της ομάδας μέχρι να αποδεχτεί.";
@@ -1616,8 +1616,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Εσύ";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Κλήση";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Κανένα μέλος.";
@@ -1625,8 +1625,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Μέλη";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Μήνυμα";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "Βιντεοκλήση";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Όνομα ομάδας (απαιτείται)";
@@ -1686,7 +1689,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "1 άτομο προσκλήθηκε στην ομάδα.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "O/H %@ προσκλήθηκε στην ομάδα.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Προσκάλεσες τον/την %@ στην ομάδα.";
@@ -1797,7 +1800,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Οι ομάδες παλαιού τύπου δεν μπορούν να μετατραπούν σε νέες ομάδες, αλλά μπορείς να δημιουργήσεις μια νέα ομάδα με τα ίδια μέλη.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Πως \"αναβαθμίζω\" μια ομάδα παλαιού τύπου;";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Για τη δημιουργία ομάδας νέου τύπου, όλα τα μέλη θα πρέπει να αναβαθμίσουν στην πιο πρόσφατη έκδοση του Signal.";
@@ -1806,19 +1809,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Ομάδες παλαιού τύπου και νέες ομάδες";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Θα δημιουργηθεί ομάδα παλαιού τύπου γιατί 1 μέλος χρησιμοποιεί μια παλιά έκδοση του Signal. Θα μπορείς να δημιουργήσεις ομάδα νέου τύπου μαζί τους αφού αναβαθμίσει το Signal, ή αν τον/την αφαιρέσεις πριν δημιουργήσεις την ομάδα.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Θα δημιουργηθεί ομάδα παλαιού τύπου γιατί %@ μέλη χρησιμοποιούν μια παλιά έκδοση του Signal. Θα μπορείς να δημιουργήσεις ομάδα νέου τύπου μαζί τους αφού αναβαθμίσουν το Signal, ή αν τους αφαιρέσεις πριν δημιουργήσεις την ομάδα.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 μέλος δεν έχοει υποστήριξη για Νέες ομάδες, οπότε αυτή η ομάδα θα είναι παλαιού τύπου. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ μέλη δεν έχουν υποστήριξη για Νέες ομάδες, οπότε αυτή η ομάδα θα είναι παλαιού τύπου. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Αυτή η ομάδα είναι παλαιού τύπου. Για πρόσβαση σε χαρακτηριστικά όπως οι διαχειριστές ομάδας, δημιουργήστε μια νέα ομάδα. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Ομάδα παλαιού τύπου";
@@ -1914,6 +1917,12 @@
 "IN_CALL_RINGING" = "Χτυπάει...";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "Απαντήθηκε. Διασφάλιση...";
 
 /* Call setup status label */
@@ -1925,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Δώσε ζωή στα εισερχόμενά σου! Ξεκίνα στέλνοντας μήνυμα σε κάποιον/α φίλο/η σου.";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "Απαντημένη κλήση";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "Απαντήθηκε σε άλλη συσκευή";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "Δεν απαντήθηκε γιατί μια κλήση είναι σε εξέλιξη από άλλη συσκευή";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "Απορρίφθηκε από άλλη συσκευή";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "Απέρριψες μια κλήση";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "Εισερχόμενη κλήση";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Αναπάντητη κλήση επειδή ο αριθμός ασφαλείας του/της χρήστη/τριας έχει αλλάξει.";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Μπορείς να στέλνεις και να λαμβάνεις συγχρονισμένα μηνύματα απο το κινητό ή το iPad σου.\nΓια την ασφάλειά σου, το ιστορικό συνομιλίας δεν μεταφέρεται στις νέες συνδεμένες συσκευές.";
@@ -2115,10 +2106,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Θα στο θυμίσουμε αργότερα.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Τράβα τη προσοχή κάποιου ατόμου σε μια ομάδα νέου τύπου, γράφοντας @";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "Υποδέξου τις @Αναφορές";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Αντιγραφή κειμένου μηνύματος";
@@ -2256,7 +2247,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Θέλεις να καταργηθεί η φραγή αυτής της ομάδας και να μοιραστεί το όνομα και η φωτογραφία σου με τα μέλη της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τη φραγή της.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Κατάργηση της φραγής αυτής της ομάδας; Δεν θα γνωρίζουν οτι έχεις δει τα μηνυματά τους μέχρι να καταργήσεις τη φραγή.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Διαγραφή";
@@ -2277,7 +2268,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Θέλεις να μπεις στην ομάδα και να μοιραστείς το όνομα και τη φωτογραφία σου με τα μέλη της; Δεν θα ξέρουν ότι έχεις δει τα μηνύματά τους μέχρι να δεχτείς.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Θέλεις να μπεις σε αυτή την ομάδα; Δεν θα γνωρίζουν οτι έχεις δει τα μηνυματά τους μέχρι να δεχτείς.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Κοινοποίηση προφίλ";
@@ -2348,9 +2339,6 @@
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Πάνω από ένα μέλη αυτής της ομάδας δεν είναι πλέον σημειωμένα ως επιβεβαιωμένα. Πάτα για επιλογές.";
 
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Πάτα εδώ για ρυθμίσεις";
-
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Νέα μηνύματα";
 
@@ -2383,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Δεν θα λαμβάνεις ειδοποιήσεις για τις συνομιλίες σε σίγαση.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Παράλειψη";
@@ -2669,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Το Signal αντιμετωπίζει τεχνικές δυσκολίες. Εργαζόμαστε σκληρά για να αποκαταστήσουμε την υπηρεσία το συντομότερο δυνατό.";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "Εξερχόμενη κλήση";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "Εξερχόμενη κλήση";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Αναπάντητη εξερχόμενη κλήση";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "Το PDF δεν μπορεί να προβληθεί";
@@ -2700,10 +2685,10 @@
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Επαναποστολή προσκλήσεων";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Ανάκληση άκυρης πρόσκλησης";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Ανάκληση %@ άκυρων προσκλήσεων";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Ανάκληση πρόσκλησης";
@@ -2730,7 +2715,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Δεν εμφανίζονται λεπτομέρειες των ατόμων που έχουν προσκληθεί από άλλα μέλη της ομάδας. Αν οι προσκεκλημένοι επιλέξουν να δεχτούν την πρόσκληση, οι πληροφορίες τους θα μοιραστούν με την ομάδα εκείνη την ώρα. Δεν θα μπορούν να δουν οποιαδήποτε μηνύματα μέχρι να δεχτούν την πρόσκληση.";
 
 /* Title for the 'invalid invites' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Άκυρες προσκλήσεις";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Προσκλήσεις από άλλα μέλη της ομάδας";
@@ -4005,7 +3990,7 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Πες μας τι συμβαίνει";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Παρακαλώ στείλε το αίτημα υποστήριξής σου με email στο support@signal.org";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Αίτημα Υποστήριξης Signal iOS";
@@ -4023,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Φορτώνει";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Επαλήθευση αριθμού ασφαλείας";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Επιβεβαίωση";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Αυτο το μήνυμα διαγράφτηκε.";
@@ -4077,13 +4062,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ λεπτό";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ δευτερόλεπτο";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ εβδομάδα";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ έτος";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ εβδομάδες";
@@ -4092,10 +4077,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@εβ";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ έτη";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 δευτερόλεπτα";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Ακύρωση";

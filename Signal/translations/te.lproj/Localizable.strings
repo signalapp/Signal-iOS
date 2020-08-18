@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "మళ్ళీ కాల్ చేయండీ";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal లో కాల్స్ చేయడానికి మరియు వాయిస్ సందేశాలను రికార్డ్ చేయడానికి మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో మైక్రోఫోన్ ప్రాప్యతను ప్రారంభించవచ్చు.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "మైక్రోఫోన్ యాక్సెస్ అవసరం";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "క్రొత్తగా వచ్చిన కాల్";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "కాల్";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "కాల్ చేసిన వ్యక్తి యొక్క భద్రతా సంఖ్య మారినందున కాల్ తప్పిపోయింది.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "తప్పిన కాల్";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "జవాబు లేదు";
@@ -482,17 +482,23 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "కాల్?";
 
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "క్రొత్తగా వచ్చిన కాల్ అంగీకరించండి";
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+
+/* label for accepting incoming video calls as audio  only */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+
+/* label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "సమాధానం";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "ఆడియో";
 
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "క్రొత్తగా వచ్చిన కాల్‌ను తిరస్కరించండి";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "మీ వీడియోను ప్రారంభించడానికి ఇక్కడ నొక్కండి";
+/* label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "కాల్ ముగించండి";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "వీడియో కాల్‌కు మారండి";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = " తిరిగి కాల్‌కు రావడానికి తాకండి";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "తిరిగి కాల్ చేయండి";
@@ -923,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "సంభాషణను శోధించండి";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "మార్చడానికి నొక్కండి";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "సమూహాన్ని అన్‌బ్లాక్ చేయండి";
 
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "మరిన్ని సందేశాలను లోడ్ చేస్తోంది…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "మరిన్ని కోసం తాకండి";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "మీ సెషన్‌ను రీసెట్ చేయడం వలన భవిష్యత్తులో సందేశాలను %@ నుండి స్వీకరించడానికి మిమ్మల్ని అనుమతిస్తుంది, అయితే ఇది ఇప్పటికే పాడైన సందేశాలను తిరిగి పొందదు.";
@@ -1616,8 +1616,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "మీరు";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "కాల్";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "సభ్యులు లేరు";
@@ -1625,8 +1625,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = " సభ్యులు";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "సందేశం";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "విడియో కాల్";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "సమూహం పేరు (అవసరం)";
@@ -1914,6 +1917,12 @@
 "IN_CALL_RINGING" = "మోగుతున్నది...";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "సమాధానం. సురక్షితంగా ...";
 
 /* Call setup status label */
@@ -1925,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "మీ ఇన్‌బాక్స్‌కు ఏదైనా వ్రాయడానికి ఇవ్వండి. స్నేహితుడికి సందేశం పంపడం ద్వారా ప్రారంభించండి.";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "సమాధానం కాల్";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "ఇతర పరికరంలో సమాధానం ఇవ్వబడింది";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "మరొక పరికరంలో కాల్ ప్రోగ్రెస్‌లో ఉన్నందున తప్పిపోయింది";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "ఇతర పరికరంలో తిరస్కరించబడింది";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "మీరు కాల్ తిరస్కరించారు";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "క్రొత్తగా వచ్చిన కాల్";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "వారి భద్రతా సంఖ్య మారినందున కాల్ తప్పిపోయింది.";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "మీరు మీ ఫోన్ లేదా ఐప్యాడ్ నుండి సమకాలీకరించిన సందేశాలను పంపవచ్చు లేదా స్వీకరించవచ్చు. \nమీ భద్రత కోసం, సంభాషణ చరిత్ర కొత్త లింక్ చేసిన పరికరాలకు బదిలీ చేయబడదు.";
@@ -2348,9 +2339,6 @@
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "ఈ గుంపులో ఒకటి కంటే ఎక్కువ సభ్యులు ధృవీకరించబడినట్లుగా గుర్తించబడలేదు. ఎంపికల కోసం నొక్కండి.";
 
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "సెట్టింగ్‌ల కోసం ఇక్కడ నొక్కండి";
-
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "కొత్త సందేశాలు";
 
@@ -2383,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "మ్యూట్ చేసిన సంభాషణల కోసం మీకు నోటిఫికేషన్‌లు అందవు.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "దాటవేయి";
@@ -2669,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal సాంకేతిక సమస్యలను ఎదుర్కొంటోంది. వీలైనంత త్వరగా సేవని పునరుద్ధరించడానికి మేము కృషి చేస్తున్నాము.";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "అవుట్గోయింగ్ కాల్";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "అవుట్గోయింగ్ కాల్";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "సమాధానం లేని అవుట్గోయింగ్ కాల్";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF ప్రదర్శించబడలేదు";
@@ -4023,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "లోడ్";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "భద్రత సంఖ్యను ధృవీకరించండి";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "నిర్ధారించబడిన";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ఈ సందేశం తొలగించబడింది.";

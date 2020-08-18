@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "വീണ്ടും വിളിക്കുക";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "നിങ്ങൾക്ക് Signal വഴി കോൾ ചെയ്യുന്നതിനും വോയിസ് മെസേജുകൾ റെക്കോഡ് ചെയ്യുന്നതിനും iOS സെറ്റിംഗ്സ് ആപ്പിൽ മൈക്രോഫോൺ അക്സസ്സ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "മൈക്രോഫോൺ പ്രാപ്യത ആവശ്യമാണ്";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "ഇൻ‌കമിംഗ് കോൾ";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "വിളിക്കുക";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "കോളറുടെ സുരക്ഷാ നമ്പർ മാറിയതിനാൽ കോൾ മിസ്സായി.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "മിസ്‌ഡ് കോൾ";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "ഉത്തരമില്ല";
@@ -482,17 +482,23 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "കോൾ?";
 
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "ഇൻ‌കമിംഗ് കോൾ സ്വീകരിക്കുക";
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+
+/* label for accepting incoming video calls as audio  only */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "വീഡിയോ ഇല്ലാതെ ഉത്തരം നൽകുക";
+
+/* label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "ഉത്തരം";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "ഓഡിയോ";
 
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "ഇൻ‌കമിംഗ് കോൾ നിരാകരിക്കുക";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "നിങ്ങളുടെ വീഡിയോ ഓൺ ചെയ്യാൻ ഇവിടെ തട്ടുക";
+/* label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "നിരസിക്കുക";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "കോൾ അവസാനിപ്പിക്കുക";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "വീഡിയോ കോളിലേക്കു മാറുക";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "കോളിലേക്കു മടങ്ങാൻ ടച്ച് ചെയ്യുക";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "തിരികെ വിളിക്കുക";
@@ -923,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "സംഭാഷണം തിരയുക";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "മാറ്റുവാനായി അമർത്തുക";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ഗ്രൂപ്പിനെ അൺബ്ലോക്ക് ചെയ്യുക";
 
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "കൂടുതൽ സന്ദേശങ്ങൾ ലോഡ് ചെയ്യുന്നു...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "കൂടുതൽ ലഭിക്കുന്നതിനായി ടാപ് ചെയ്യുക";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = " നിങ്ങളുടെ സെഷൻ റീസെറ്റ് ചെയ്യുന്നത് ഭാവിയിൽ %@ ൽ നിന്ന് സന്ദേശങ്ങൾ സ്വീകരിക്കാൻ നിങ്ങളെ അനുവദിക്കും, പക്ഷേ നേരത്തെ തന്നെ പിശക് സംഭവിച്ച സന്ദേശങ്ങൾ അത് വീണ്ടെടുക്കുകയില്ല.";
@@ -1616,8 +1616,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "നിങ്ങൾ";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "വിളിക്കുക";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "അംഗങ്ങൾ ഇല്ല.";
@@ -1625,8 +1625,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "അംഗങ്ങൾ";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "സന്ദേശം";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "വീഡിയോ കോൾ";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "ഗ്രൂപ്പിന്റെ പേര് (ആവശ്യമാണ്)";
@@ -1914,6 +1917,12 @@
 "IN_CALL_RINGING" = "റിംഗിംഗ്...";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "ഉത്തരം നൽകി. സെക്വറിംഗ്...";
 
 /* Call setup status label */
@@ -1925,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "നിങ്ങളുടെ ഇൻ‌ബോക്സിന് വീട്ടിലേക്ക് എന്തെങ്കിലും എഴുതാൻ ഉപയോഗിക്കൂ. ഒരു സുഹൃത്തിനു മെസേജ് ചെയ്തുകൊണ്ട് തുടങ്ങൂ.";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "ഉത്തരം നൽകിയ കോൾ";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "ഉത്തരം നൽകിയത് മറ്റൊരു ഡിവൈസിൽ ആണ്";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "മിസ് ആയി, എന്തെന്നാൽ മറ്റൊരു ഡിവൈസിൽ ഒരു കോളിൽ ആയിരുന്നു";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "മറ്റ് ഡിവൈസിൽ നിരാകരിച്ചിരിക്കുന്നു";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "നിങ്ങൾ ഒരു കോൾ നിരാകരിച്ചിരിക്കുന്നു";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "ഇൻകമിംഗ് കോൾ";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "അവരുടെ സുരക്ഷാ നമ്പർ മാറിയതിനാൽ കോൾ മിസ്സായി.";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "നിങ്ങളുടെ ഫോണിൽ നിന്നോ ഐപാഡിൽ നിന്നോ സിങ്ക്രോണൈസ്ഡ് ആയ സന്ദേശങ്ങൾ നിങ്ങൾക്ക് അയയ്ക്കുകയോ സ്വീകരിക്കുകയോ ചെയ്യാവുന്നതാണ്. ↵നിങ്ങളുടെ സുരക്ഷയ്ക്കായി, സംഭാഷണത്തിൻ്റെ ചരിത്രം പുതുതായി ലിങ്ക് ചെയ്ത ഡിവൈസുകളിലേക്ക് മാറ്റപ്പെടുകയില്ല.";
@@ -2348,9 +2339,6 @@
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "ഈ ഗ്രൂപ്പിലെ ഒന്നിലധികം അംഗങ്ങൾ വേരിഫൈ ചെയ്യപ്പെട്ടതായി മാർക്ക് ചെയ്തിട്ടില്ല. ഓപ്ഷൻ ലഭിക്കുന്നതിന് തട്ടുക.";
 
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "ക്രമീകരണത്തിനായി ഇവിടെ അമർത്തുക";
-
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "പുതിയ സന്ദേശങ്ങൾ";
 
@@ -2383,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "നിങ്ങൾക്ക് മ്യൂട്ട് ചെയ്ത സംഭാഷണങ്ങൾക്ക് നോട്ടിഫിക്കേഷനുകൾ ലഭിക്കില്ല.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ഒഴിവാക്കുക";
@@ -2669,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ചില സാങ്കേതിക പ്രശ്നങ്ങൾ നേരിടുകയാണ്.  കഴിയുന്നതും വേഗം സേവനം പുനസ്ഥാപിക്കാൻ ഞങ്ങൾ കഠിനപ്രയത്നം നടത്തുകയാണ്.";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "ഔട്ട് ഗോയിംഗ് കോൾ";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "ഔട്ട് ഗോയിംഗ് കോൾ";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "പ്രതികരിക്കാത്ത ഔട്ട് ഗോയിംഗ് കോൾ";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF ഡിസ്പ്ലേ ചെയ്യാൻ കഴിയുന്നില്ല";
@@ -4023,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ലോഡിംഗ്";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "സുരക്ഷാ നമ്പർ പരിശോധിക്കുക";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "പരിശോധിക്കുക";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ഈ സന്ദേശം ഇല്ലാതാക്കി.";

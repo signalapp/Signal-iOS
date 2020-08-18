@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "โทรอีกครั้ง";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "คุณสามารถเปิดใช้การเข้าถึงไมโครโฟน ได้ในการตั้งค่าของ iOS เพื่อให้สามารถโทรและอัดข้อความเสียงได้ใน Signal";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "ต้องการเข้าถึงไมโครโฟน";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ สายเรียกเข้า";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "โทร";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ ไม่ได้รับสาย เพราะหมายเลขความปลอดภัยของผู้โทรได้เปลี่ยนไป";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ ไม่ได้รับสาย";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "ไม่มีการตอบรับ";
@@ -482,17 +482,23 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "โทรหรือไม่";
 
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "รับสายเข้า";
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+
+/* label for accepting incoming video calls as audio  only */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+
+/* label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "รับสาย";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "เสียง";
 
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "ปฏิเสธสายเข้า";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "แตะเพื่อเปิดวีดิโอของคุณ";
+/* label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "ปฏิเสธ";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "วางสาย";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "สลับไปโทรด้วยวิดีโอ";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "แตะเพื่อกลับไปที่การโทร";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "โทรกลับ";
@@ -923,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "ค้นหาบทสนทนา";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "แตะเพื่อเปลี่ยน";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "เลิกปิดกั้นกลุ่ม";
 
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "กำลังโหลดข้อความเพิ่ม...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "แตะเพื่อดูเพิ่ม";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตเซสชันของคุณจะทำให้คุณรับข้อความในอนาคตจาก %@ ได้ แต่จะไม่สามารถเรียกคืนข้อความใดๆ ที่เสียหายไปแล้วได้";
@@ -1616,8 +1616,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "คุณ";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "โทร";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "ไม่มีสมาชิก";
@@ -1625,8 +1625,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "สมาชิก";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "ข้อความ";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "โทรเห็นหน้า";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "ชื่อกลุ่ม (ต้องมี)";
@@ -1914,6 +1917,12 @@
 "IN_CALL_RINGING" = "กำลังเรียกสาย…";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "รับสายแล้ว กำลังทำให้ปลอดภัย…";
 
 /* Call setup status label */
@@ -1925,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "ลองเขียนอะไรสักอย่าง เริ่มต้นด้วยการส่งข้อความหาเพื่อนสักคน";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "รับสาย";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "มีการรับสายบนอุปกรณ์อื่น";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "ยกเลิกสายเพราะมีการใช้สายบนอุปกรณ์อื่น";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "ปฏิเสธรับสายบนอุปกรณ์อื่น";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "คุณได้ปฏิเสธสาย";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "สายโทรเข้า";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "ไม่รับสาย เนื่องจากหมายเลขความปลอดภัยของเขาได้เปลี่ยนไป";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "คุณสามารถส่งหรือรับข้อความที่ปรับประสานถึงกันจากโทรศัพท์หรือไอแพดของคุณ.↵เพื่อความมั่นคงปลอดภัยของคุณ ประวัติการสนทนาจะไม่ถูกถ่ายโอนไปยังอุปกรณ์ใหม่ๆ ที่ถูกเชื่อมโยง";
@@ -2348,9 +2339,6 @@
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "สมาชิกมากกว่าหนึ่งคนของกลุ่มนี้ไม่ถือว่าถูกตรวจยืนยันอีกต่อไป แตะเพื่อดูตัวเลือก";
 
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "แตะที่นี่สำหรับการตั้งค่า";
-
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "ข้อความใหม่";
 
@@ -2383,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับการแจ้งเตือนสำหรับการสนทนาที่ปิดเสียง";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ข้าม";
@@ -2669,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal กำลังพบกับอุปสรรคทางเทคนิค เรากำลังทำงานอย่างหนักเพื่อให้สามารถกลับมาให้บริการได้โดยเร็วที่สุดเท่าที่จะเป็นไปได้";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "สายโทรออก";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "สายโทรออก";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "สายโทรออกที่ไม่มีผู้รับ";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "ไม่สามารถแสดง PDF ได้";
@@ -4023,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "กำลังโหลด";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ตรวจยืนยันหมายเลขความปลอดภัย";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ตรวจยืนยัน";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ข้อความนี้ถูกลบ";

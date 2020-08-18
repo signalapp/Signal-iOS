@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "ਦੁਬਾਰਾ ਕਾਲ ਕਰੋ";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "ਤੁਸੀਂ Signal ਵਿੱਚ ਕਾਲਾਂ ਕਰਨ ਅਤੇ ਵੌਇਸ ਸੁਨੇਹੇ ਰਿਕਾਰਡ ਕਰਨ ਲਈ iOS Settings ਐਪ ਵਿੱਚ ਮਾਈਕ੍ਰੋਫੋਨ ਐਕਸੈਸ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "ਮਾਈਕ੍ਰੋਫੋਨ ਐਕਸੈਸ ਦੀ ਲੋੜ ਹੈ";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ ਇਨਕਮਿੰਗ ਕਾਲ";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "ਕਾਲ";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ ਮਿਸਡ ਕਾਲ ਕਿਉਂਕਿ ਕਾਲਰ ਦਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਬਦਲ ਗਿਆ.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ ਮਿਸਡ ਕਾਲ";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "ਕੋਈ ਉੱਤਰ ਨਹੀਂ";
@@ -482,17 +482,23 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "ਕਾਲ ਕਰਨੀ ਹੈ?";
 
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "ਆਉਣ ਵਾਲੀ ਕਾਲ ਨੂੰ ਸਵੀਕਾਰ ਕਰੋ";
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+
+/* label for accepting incoming video calls as audio  only */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+
+/* label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "ਜਵਾਬ";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "ਆਡੀਓ";
 
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "ਆਉਣ ਵਾਲੀ ਕਾਲ ਨੂੰ ਰੱਦ ਕਰੋ";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "ਆਪਣੀ ਵੀਡੀਓ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਇੱਥੇ ਟੈਪ ਕਰੋ";
+/* label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "ਕਾਲ ਸਮਾਪਤ ਕਰੋ";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "ਵੀਡੀਓ ਕਾਲ ਵਿੱਚ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "ਕਾਲ 'ਤੇ ਵਾਪਸ ਜਾਣ ਲਈ ਟਚ ਕਰੋ";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "ਵਾਪਸ ਕਾਲ ਕਰੋ";
@@ -923,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "ਵਾਰਤਾਲਾਪ ਖੋਜੋ";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ਗਰੁੱਪ ਨੂੰ ਅਨਬਲੌਕ ਕਰੋ";
 
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "ਹੋਰ ਸੁਨੇਹੇ ਲੋਡ ਹੋ ਰਹੇ ਹਨ ...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "ਹੋਰ ਲਈ ਟੈਪ ਕਰੋ";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "ਤੁਹਾਡੇ ਸੈਸ਼ਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ ਤੁਸੀਂ %@ ਕੋਲੋਂ ਭਵਿੱਖ ਦੇ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਕਰ ਪਾਓਗੇ, ਪਰ ਇਸ ਨਾਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਕਰਪਟ ਹੋ ਚੁੱਕੇ ਸੁਨੇਹੇ ਬਹਾਲ ਨਹੀਂ ਹੋਣਗੇ.";
@@ -1616,8 +1616,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "ਤੁਸੀਂ";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "ਕਾਲ";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "ਕੋਈ ਮੈਂਬਰ ਨਹੀਂ.";
@@ -1625,8 +1625,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "ਮੈਂਬਰ";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "ਸੁਨੇਹਾ";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "ਵੀਡੀਓ ਕਾਲ";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "ਗਰੁੱਪ ਦਾ ਨਾਮ (ਲਾਜ਼ਮੀ)";
@@ -1914,6 +1917,12 @@
 "IN_CALL_RINGING" = "ਰਿੰਗ ਜਾ ਰਹੀ ਹੈ...";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "ਜਵਾਬ ਦਿੱਤਾ ਗਿਆ. ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...";
 
 /* Call setup status label */
@@ -1925,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਇਨਬਾਕਸ ਵਿੱਚ ਕੁਝ ਲਿਖੋ. ਕਿਸੇ ਦੋਸਤ ਨੂੰ ਸੁਨੇਹਾ ਭੇਜ ਕੇ ਸ਼ੁਰੂਆਤ ਕਰੋ.";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "ਜਵਾਬ ਦਿੱਤੀ ਕਾਲ";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "ਹੋਰ ਡਿਵਾਈਸ 'ਤੇ ਜਵਾਬ ਦਿੱਤਾ ਗਿਆ";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "ਮਿਸ ਹੋ ਗਈ ਕਿਉਂਕਿ ਇੱਕ ਕਾਲ ਦੂਸਰੇ ਡਿਵਾਈਸ 'ਤੇ ਚੱਲ ਰਹੀ ਹੈ";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "ਦੂਸਰੇ ਡਿਵਾਈਸ 'ਤੇ ਕੱਟੀ ਗਈ";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "ਤੁਸੀਂ ਇੱਕ ਕਾਲ ਕੱਟ ਦਿੱਤੀ";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "ਆਉਣ ਵਾਲੀ ਕਾਲ";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "ਕਾਲ ਮਿਸ ਹੋਈ ਕਿਉਂਕਿ ਉਹਨਾਂ ਦਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਬਦਲ ਗਿਆ ਹੈ.";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "ਤੁਸੀਂ ਆਪਣੇ ਫੋਨ ਜਾਂ iPad ਤੋਂ ਸਿੰਕ੍ਰੋਨਾਈਜ਼ ਕੀਤੇ ਸੁਨੇਹੇ ਭੇਜ ਜਾਂ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ. \nਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਦੇ ਲਈ, ਵਾਰਤਾਲਾਪ ਦਾ ਇਤਿਹਾਸ ਨਵੇਂ ਲਿੰਕ ਕੀਤੇ ਹੋਏ ਡਿਵਾਈਸਾਂ 'ਤੇ ਟ੍ਰਾਂਸਫਰ ਨਹੀਂ ਹੋਇਆ.";
@@ -2348,9 +2339,6 @@
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "ਇਸ ਗਰੁੱਪ ਦੇ ਇੱਕ ਤੋਂ ਵੱਧ ਮੈਂਬਰ ਹੁਣ ਤਸਦੀਕਸ਼ੁਦਾ ਵਜੋਂ ਚਿੰਨ੍ਹਿਤ ਨਹੀਂ ਹਨ। ਵਿਕਲਪਾਂ ਲਈ ਟੈਪ ਕਰੋ.";
 
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "ਸੈਟਿੰਗਾਂ ਲਈ ਇੱਥੇ ਟੈਪ ਕਰੋ";
-
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "ਨਵੇਂ ਸੁਨੇਹੇ";
 
@@ -2383,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "ਤੁਸੀਂ ਚੁੱਪ ਕੀਤੇ ਵਾਰਤਾਲਾਪਾਂ ਲਈ ਕੋਈ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰੋਗੇ.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ਛੱਡੋ";
@@ -2669,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ਤਕਨੀਕੀ ਮੁਸ਼ਕਲਾਂ ਦਾ ਸਾਹਮਣਾ ਕਰ ਰਹੀ ਹੈ. ਅਸੀਂ ਜਿੰਨੀ ਛੇਤੀ ਸੰਭਵ ਹੋ ਸਕੇ ਸੇਵਾ ਨੂੰ ਬਹਾਲ ਕਰਨ ਲਈ ਸਖ਼ਤ ਮਿਹਨਤ ਕਰ ਰਹੇ ਹਾਂ.";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "ਬਾਹਰ ਜਾਣ ਵਾਲੀ ਕਾਲ";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "ਬਾਹਰ ਜਾਣ ਵਾਲੀ ਕਾਲ";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "ਜਵਾਬ ਨਾ ਦਿੱਤੀ ਬਾਹਰ ਜਾਣ ਵਾਲੀ ਕਾਲ";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF ਨੂੰ ਪ੍ਰਦਰਸ਼ਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ";
@@ -4023,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ ...";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ਸੁਰੱਖਿਆ ਨੰਬਰ ਦੀ ਤਸਦੀਕ ਕਰੋ";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ਤਸਦੀਕ ਕਰੋ";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ਇਹ ਸੁਨੇਹਾ ਮਿਟਾਇਆ ਗਿਆ ਸੀ.";

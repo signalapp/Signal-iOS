@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Muling Tumawag";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Maaari mong paganahin ang access sa mikropono sa Settings app ng iOS upang makatawag at mag-record ng mga voice na mensahe sa Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Kailangan ng Access sa Mikropono";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "Papasok na Tawag";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Tawag";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "Ang tawag ay hindi nasagot dahil nagbago ang numerong pangkaligtasan ng tumatawag.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "Tawag na hindi Nasagot";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Walang Sagot";
@@ -482,17 +482,23 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Tawagan?";
 
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Tanggapin ang paparating na tawag";
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+
+/* label for accepting incoming video calls as audio  only */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Answer without video";
+
+/* label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Sagutin";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
 
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Huwag tanggapin ang paparating na tawag";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "I-tap dito upang buksan ang iyong video";
+/* label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Tapusin ang Tawag";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Lumipat sa video na tawag";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Pindutin upang bumalik sa tawag";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Tawagan Pabalik";
@@ -923,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Saliksikin ang Pag-uusap";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Pindutin para Baguhin";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "I-unblock ang Grupo";
 
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Naglo-load ng Marami pang mga Mensahe...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Pindutin para sa Marami pa";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Ang pagre-reset ng iyong session ay magbibigay-daan upang matanggap mo ang mga susunod pang mensahe mula kay %@, ngunit hindi nito magagawang i-recover ang alinmang nasira nang mga mensahe. ";
@@ -1616,8 +1616,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Ikaw";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Tawagan";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Walang mga kasapi.";
@@ -1625,8 +1625,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Mga Kasapi";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mensahe";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "Video na Tawag";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Pangalan ng Grupo (kailangan)";
@@ -1914,6 +1917,12 @@
 "IN_CALL_RINGING" = "Nagri-ring...";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "Sinagot. Sinisigurong ligtas...";
 
 /* Call setup status label */
@@ -1925,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Bigyan ang iyong inbox ng anumang maisusulat. Magsimula sa pamamagitan ng pagmemensahe sa isang kaibigan.";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "Nasagot na Tawag";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "Nasagot sa ibang device";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "Na-miss dahil may tawag na nagaganap sa isa pang device.";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "Tinanggihan sa ibang device.";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "Tinanggihan mo ang tawag";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "Paparating na tawag";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Na-miss ang tawag dahil nag-iba na ang kanilang numerong pangkaligtasan.";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Makakapagpadala o makakatanggap ka ng synchronized na mga mensahe mula sa iyong telepono o iPad. ↵Para sa iyong seguridad, ang nauna nang pag-uusap ay hindi inilipat sa bagong naka-link na mga device.";
@@ -2348,9 +2339,6 @@
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mahigit sa isang kasapi ng grupong ito ay hindi na markadong beripikado. Pindutin para sa mga pagpipilian.";
 
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Dito pindutin para sa settings ";
-
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Bagong mga Mensahe";
 
@@ -2383,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Hindi ka makakatanggap ng notipikasyon para sa mga naka-mute na pag-uusap.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Lagpasan";
@@ -2669,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Nakakaranas ng kahirapang pang-teknikal ang Signal. Kami'y nagtatrabaho ng lubos upang maibalik ang serbisyo sa pinakamabilis na paraan.";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "Papalabas na tawag";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "Papalabas na tawag";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Hindi nasagot na papalabas na tawag";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "Ang PDF ay hindi maipakita";
@@ -4023,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Naglo-load";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Beripikahin ang Numerong Pangkaligtasan";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Iberipika";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Ang mensaheng ito ay nabura na.";

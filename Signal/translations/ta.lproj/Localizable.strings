@@ -449,23 +449,23 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "மீண்டும் அழை";
 
+/* notification body */
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+
+/* notification body */
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal லில் அழைப்புகள் மற்றும் குரல் செய்திகளைப் பதிவுசெய்ய iOS அமைப்புகள் பயன்பாடு மைக்ரோஃபோன் அணுகலை இயக்கலாம்.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "மைக்ரோஃபோன் அணுகல் தேவை";
 
-/* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ உள்வரும் அழைப்பு";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "அழைப்பு";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "அழைப்பாளரின் பாதுகாப்பு எண் மாற்றப்பட்டதால் தவறவிட்ட அழைப்பு☎️.";
-
-/* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ தவறவிட்ட அழைப்பு";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "பதில் இல்லை";
@@ -482,17 +482,23 @@
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "அழைப்பு?";
 
-/* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "உள்வரும் அழைப்பை ஒப்புக்கொள்";
+/* notification body */
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+
+/* notification body */
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+
+/* label for accepting incoming video calls as audio  only */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "வீடியோ இல்லாமல் பதில்";
+
+/* label for accepting incoming calls */
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "பதில்";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "ஒலி";
 
-/* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "உள்வரும் அழைப்பை நிராகரிக்கவும்";
-
-/* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "உங்கள் வீடியோவை இயக்க இங்கே தட்டவும்";
+/* label for declining incoming calls */
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "மறு";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "அழைப்பை முடி ";
@@ -511,9 +517,6 @@
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "வீடியோ அழைப்புக்கு மாறவும்";
-
-/* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "அழைப்பிற்குத் திரும்பத் தொடவும்";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "மீண்டும் அழைக்கவும்";
@@ -864,7 +867,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "யாரால் முடியும் என்பதைத் தேர்வுசெய்க தொகு குழு உறுப்பினர்.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "எப்போதும் அறிவிக்கவும்";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "முடக்கப்பட்டிருந்தால் அறிவிக்க வேண்டாம்";
@@ -923,9 +926,6 @@
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "உரையாடலை தேடு ";
 
-/* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "மாற்ற தட்டவும்";
-
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "குழுவைத் தடைநீக்கு";
 
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "மேலும் செய்திகளை ஏற்றுகிறது…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "மேலும் தட்டவும்";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "உங்கள் அமர்வை மீட்டமைப்பது எதிர்கால செய்திகளை %@ from இலிருந்து பெற உங்களை அனுமதிக்கும், ஆனால் இது ஏற்கனவே சிதைந்த செய்திகளை மீட்டெடுக்காது.";
@@ -1616,8 +1616,8 @@
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "நீங்கள்";
 
-/* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "அழைப்பு";
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_CALL" = "Audio Call";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "இல்லை உறுப்பினர்கள்.";
@@ -1625,8 +1625,11 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "உறுப்பினர்கள்";
 
-/* Button label for the 'send message to group member' button */
+/* Accessibility label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "செய்தி";
+
+/* Accessibility label for the 'call group member' button */
+"GROUP_MEMBERS_VIDEO_CALL" = "வீடியோ அழைப்பு";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "குழு பெயர் (தேவை)";
@@ -1914,6 +1917,12 @@
 "IN_CALL_RINGING" = "மணி அடிக்கிறது ...";
 
 /* Call setup status label */
+"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+
+/* Call setup status label */
+"IN_CALL_RINGING_VIDEO" = "Video Call…";
+
+/* Call setup status label */
 "IN_CALL_SECURING" = "பதிலளிக்கப்பட்டது. பாதுகாத்தல் ...";
 
 /* Call setup status label */
@@ -1925,26 +1934,8 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "உங்கள் இன்பாக்ஸைப் பற்றி வீட்டிற்கு எழுத ஏதாவது கொடுங்கள். நண்பருக்கு செய்தி அனுப்புவதன் மூலம் தொடங்கவும்.";
 
-/* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "பதிலளித்த அழைப்பு";
-
-/* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "பதில் மற்றவை சாதனம்";
-
-/* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "ஒரு அழைப்பு இன்னொன்றில் நடந்து கொண்டிருப்பதால் தவறவிட்டது சாதனம்";
-
-/* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "நிராகரிக்கப்பட்டது மற்றவை சாதனம்";
-
-/* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "நீங்கள் அழைப்பை மறுத்துவிட்டீர்கள்";
-
-/* info message text in conversation view */
-"INCOMING_INCOMPLETE_CALL" = "உள்வரும் அழைப்பு";
-
-/* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "அவர்களின் பாதுகாப்பு எண் மாறிவிட்டதால் அழைப்பு தவறவிட்டது.";
+/* info message text in conversation view. {embeds callee name} */
+"INCOMING_CALL_FORMAT" = "%@ called you";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "நீங்கள் முடியும் அனுப்பு அல்லது ஒத்திசைக்கப்பட்ட செய்திகளைப் பெறுக உங்கள் தொலைபேசி அல்லது ஐபாட். ↵க்கு உங்கள் பாதுகாப்பு, உரையாடல் வரலாறு புதியதாக மாற்றப்படவில்லை இணைக்கப்பட்டுள்ளது சாதனங்கள்";
@@ -2115,10 +2106,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "நாங்கள் நினைவூட்டுவோம் நீங்கள் பின்னர்.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "@ தட்டச்சு செய்வதன் மூலம் “புதிய குழுவில்” ஒருவரின் கவனத்தைப் பெறுங்கள்";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "அறிமுகம் @ குறிப்புகள்";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "செய்தி உரையை நகலெடுக்கவும்";
@@ -2348,9 +2339,6 @@
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "இந்த குழுவில் ஒன்றுக்கு மேற்பட்ட உறுப்பினர்கள் சரிபார்க்கப்பட்டதாக இனி குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
 
-/* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "அமைப்புகளுக்கு இங்கே தட்டவும்";
-
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "புதிய செய்திகள்";
 
@@ -2383,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "முடக்கிய உரையாடல்களுக்கான அறிவிப்புகளைப் பெற மாட்டீர்கள்.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "தவிர்க்க ";
@@ -2669,14 +2660,8 @@
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "சிக்னல் தொழில்நுட்ப சிக்கல்களை எதிர்கொள்கிறது. சேவையை விரைவாக மீட்டெடுக்க நாங்கள் கடுமையாக உழைத்து வருகிறோம்.";
 
-/* info message text in conversation view */
-"OUTGOING_CALL" = "வெளிசெல்லும் அழைப்பு";
-
-/* info message text in conversation view */
-"OUTGOING_INCOMPLETE_CALL" = "வெளிசெல்லும் அழைப்பு";
-
-/* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "பதிலளிக்கப்படாத  வெளிச்செல்லும் அழைப்பு";
+/* info message text in conversation view. {embeds callee name} */
+"OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "பிடிஎப் ஐக் காட்ட முடியவில்லை";
@@ -4023,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ஏற்றுதல்";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "பாதுகாப்பு எண்ணைச் சரிபார்க்கவும்";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "சரிபார்க்கவும்";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "இந்த செய்தி இருந்தது நீக்கப்பட்டது";
