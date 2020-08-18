@@ -112,6 +112,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_recordMessageRequestInteractionIdEpoch
         case dataMigration_indexSignalRecipients
         case dataMigration_kbsStateCleanup
+        case dataMigration_turnScreenSecurityOnForExistingUsers
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -903,6 +904,22 @@ public class GRDBSchemaMigrator: NSObject {
 
             OWS2FAManager.keyValueStore().removeValue(forKey: "isUsingRandomPinKey", transaction: transaction.asAnyWrite)
             KeyBackupService.useDeviceLocalMasterKey(transaction: transaction.asAnyWrite)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_turnScreenSecurityOnForExistingUsers.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // Declare the key value store here, since it's normally only
+            // available in SignalMessaging (OWSPreferences).
+            let preferencesKeyValueStore = SDSKeyValueStore(collection: "SignalPreferences")
+            let screenSecurityKey = "Screen Security Key"
+            guard !preferencesKeyValueStore.hasValue(
+                forKey: screenSecurityKey,
+                transaction: transaction.asAnyRead
+            ) else { return }
+
+            preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite)
         }
     }
 }
