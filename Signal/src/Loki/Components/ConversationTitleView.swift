@@ -167,7 +167,7 @@ final class ConversationTitleView : UIView {
             case .messageFailed: self.subtitleLabel.text = NSLocalizedString("Message failed to send", comment: "")
             case nil:
                 let subtitle = NSMutableAttributedString()
-                if let muteEndDate = self.thread.mutedUntilDate {
+                if let muteEndDate = self.thread.mutedUntilDate, self.thread.isMuted {
                     subtitle.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
                     let dateFormatter = DateFormatter()
                     dateFormatter.locale = Locale.current

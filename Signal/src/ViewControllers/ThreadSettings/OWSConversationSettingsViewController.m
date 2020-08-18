@@ -185,6 +185,11 @@ const CGFloat kIconViewLength = 24;
     return [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+- (BOOL)isOpenGroupChat
+{
+    return [self isGroupThread] && ![self isPrivateGroupChat];
+}
+
 -(BOOL)isPrivateGroupChat
 {
     if (self.isGroupThread) {
@@ -500,7 +505,7 @@ const CGFloat kIconViewLength = 24;
      * =======
      */
 
-    if (!self.thread.isGroupThread) {
+    if (![self isOpenGroupChat]) {
         [mainSection addItem:[OWSTableItem
                                  itemWithCustomCellBlock:^{
                                      UITableViewCell *cell = [OWSTableItem newCell];
@@ -536,7 +541,14 @@ const CGFloat kIconViewLength = 24;
                                      [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
                                      UILabel *subtitleLabel = [UILabel new];
-                                     subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier]];
+                                     NSString *threadName;
+                                     // TODO: Modify the text content
+                                     if (self.thread.isGroupThread) {
+                                         threadName = @"the group";
+                                     } else {
+                                         threadName = [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:self.thread.contactIdentifier];
+                                     }
+                                     subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), threadName];
                                      subtitleLabel.textColor = LKColors.text;
                                      subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
                                      subtitleLabel.numberOfLines = 0;

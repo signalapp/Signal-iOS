@@ -935,8 +935,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSData *groupId = groupThread.groupModel.groupId;
         return [self isGroupIdInProfileWhitelist:groupId];
     } else {
-        NSString *recipientId = thread.contactIdentifier;
-        return [self isUserInProfileWhitelist:recipientId];
+//        NSString *recipientId = thread.contactIdentifier;
+//        return [self isUserInProfileWhitelist:recipientId];
+        return true;
     }
 }
 

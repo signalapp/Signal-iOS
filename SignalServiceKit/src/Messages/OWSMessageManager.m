@@ -1061,7 +1061,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
-    NSString *name = [dataMessage.profile displayName] ?: [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
+    NSString *name = [dataMessage.profile displayName] ?: [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:envelope.source transaction:transaction] ?: envelope.source;
 
     // MJK TODO - safe to remove senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *message =
@@ -1352,7 +1352,7 @@ NS_ASSUME_NONNULL_BEGIN
                 oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
                 [oldGroupThread saveWithTransaction:transaction];
 
-                NSString *nameString =
+                NSString *nameString = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:senderMasterPublicKey transaction:transaction] ?: 
                     [self.contactsManager displayNameForPhoneIdentifier:senderMasterPublicKey transaction:transaction];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
