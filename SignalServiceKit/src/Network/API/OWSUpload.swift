@@ -208,9 +208,9 @@ public class OWSAttachmentUploadV2: NSObject {
         }.then(on: .global()) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
             let uploadUrlPath = "attachments/"
             return OWSUpload.upload(data: attachmentData,
-                                      uploadForm: form,
-                                      uploadUrlPath: uploadUrlPath,
-                                      progressBlock: progressBlock)
+                                    uploadForm: form,
+                                    uploadUrlPath: uploadUrlPath,
+                                    progressBlock: progressBlock)
         }.map(on: .global()) { [weak self] (_) throws -> Void in
             self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -270,7 +270,7 @@ public class OWSAttachmentUploadV2: NSObject {
             return firstly { () -> Promise<URL> in
                 guard let form = form,
                     let uploadV3Metadata = uploadV3Metadata else {
-                    throw OWSAssertionError("Missing form or metadata.")
+                        throw OWSAssertionError("Missing form or metadata.")
                 }
                 return self.fetchResumableUploadLocationV3(form: form, uploadV3Metadata: uploadV3Metadata)
             }.map(on: .global()) { (url: URL) in
@@ -288,7 +288,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                  progressBlock: progressBlock)
         }.map(on: .global()) { () throws -> Void in
             guard let uploadV3Metadata = uploadV3Metadata else {
-                    throw OWSAssertionError("Missing form or metadata.")
+                throw OWSAssertionError("Missing form or metadata.")
             }
 
             self.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
@@ -323,7 +323,7 @@ public class OWSAttachmentUploadV2: NSObject {
             _progress.get()
         }
 
-        private let failureCount = AtomicUInt(0)
+        private let _attemptCount = AtomicUInt(0)
         fileprivate var attemptCount: UInt {
             failureCount.get()
         }
@@ -336,7 +336,7 @@ public class OWSAttachmentUploadV2: NSObject {
         }
 
         fileprivate func recordFailure(didAttemptMakeAnyProgress: Bool) -> UploadV3FailureMode {
-            failureCount.increment()
+            _attemptCount.increment()
 
             guard canRetry else {
                 return .noMoreRetries
@@ -405,8 +405,6 @@ public class OWSAttachmentUploadV2: NSObject {
             }
             return locationUrl
         }.recover(on: .global()) { (error: Error) -> Promise<URL> in
-            Logger.warn("Error: \(error)")
-            Logger.flush()
             guard IsNetworkConnectivityFailure(error) else {
                 throw error
             }
@@ -655,9 +653,9 @@ public class OWSAttachmentUploadV2: NSObject {
             let rangeEndString = rangeHeader.suffix(rangeHeader.count - expectedPrefix.count)
             guard !rangeEndString.isEmpty,
                 let rangeEnd = Int(rangeEndString) else {
-                owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
-                // Return zero to restart the upload.
-                return 0
+                    owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
+                    // Return zero to restart the upload.
+                    return 0
             }
 
             // rangeEnd is the _index_ of the last uploaded bytes, e.g.:
