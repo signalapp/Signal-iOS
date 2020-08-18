@@ -2609,7 +2609,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
     }
     @objc
     public var hasAuthorE164: Bool {
-        return proto.hasAuthorE164
+        return proto.hasAuthorE164 && !proto.authorE164.isEmpty
     }
 
     @objc
@@ -2621,7 +2621,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
     }
     @objc
     public var hasAuthorUuid: Bool {
-        return proto.hasAuthorUuid
+        return proto.hasAuthorUuid && !proto.authorUuid.isEmpty
     }
 
     @objc
@@ -4777,7 +4777,7 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
     }
     @objc
     public var hasAuthorE164: Bool {
-        return proto.hasAuthorE164
+        return proto.hasAuthorE164 && !proto.authorE164.isEmpty
     }
 
     @objc
@@ -4789,7 +4789,7 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
     }
     @objc
     public var hasAuthorUuid: Bool {
-        return proto.hasAuthorUuid
+        return proto.hasAuthorUuid && !proto.authorUuid.isEmpty
     }
 
     @objc
@@ -5168,7 +5168,7 @@ public class SSKProtoDataMessageBodyRange: NSObject, Codable {
     }
     @objc
     public var hasMentionUuid: Bool {
-        return proto.hasMentionUuid
+        return proto.hasMentionUuid && !proto.mentionUuid.isEmpty
     }
 
     public var hasUnknownFields: Bool {
@@ -6248,7 +6248,7 @@ public class SSKProtoVerified: NSObject, Codable {
     }
     @objc
     public var hasDestinationE164: Bool {
-        return proto.hasDestinationE164
+        return proto.hasDestinationE164 && !proto.destinationE164.isEmpty
     }
 
     @objc
@@ -6260,7 +6260,7 @@ public class SSKProtoVerified: NSObject, Codable {
     }
     @objc
     public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid
+        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
     }
 
     @objc
@@ -6512,7 +6512,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
     }
     @objc
     public var hasDestinationE164: Bool {
-        return proto.hasDestinationE164
+        return proto.hasDestinationE164 && !proto.destinationE164.isEmpty
     }
 
     @objc
@@ -6524,7 +6524,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
     }
     @objc
     public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid
+        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
     }
 
     @objc
@@ -6790,7 +6790,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable {
     }
     @objc
     public var hasDestinationE164: Bool {
-        return proto.hasDestinationE164
+        return proto.hasDestinationE164 && !proto.destinationE164.isEmpty
     }
 
     @objc
@@ -6802,7 +6802,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable {
     }
     @objc
     public var hasDestinationUuid: Bool {
-        return proto.hasDestinationUuid
+        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
     }
 
     @objc
@@ -7693,7 +7693,7 @@ public class SSKProtoSyncMessageRead: NSObject, Codable {
     }
     @objc
     public var hasSenderE164: Bool {
-        return proto.hasSenderE164
+        return proto.hasSenderE164 && !proto.senderE164.isEmpty
     }
 
     @objc
@@ -7705,7 +7705,7 @@ public class SSKProtoSyncMessageRead: NSObject, Codable {
     }
     @objc
     public var hasSenderUuid: Bool {
-        return proto.hasSenderUuid
+        return proto.hasSenderUuid && !proto.senderUuid.isEmpty
     }
 
     @objc
@@ -8339,7 +8339,7 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable {
     }
     @objc
     public var hasSenderE164: Bool {
-        return proto.hasSenderE164
+        return proto.hasSenderE164 && !proto.senderE164.isEmpty
     }
 
     @objc
@@ -8351,7 +8351,7 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable {
     }
     @objc
     public var hasSenderUuid: Bool {
-        return proto.hasSenderUuid
+        return proto.hasSenderUuid && !proto.senderUuid.isEmpty
     }
 
     @objc
@@ -8915,7 +8915,7 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable {
     }
     @objc
     public var hasThreadE164: Bool {
-        return proto.hasThreadE164
+        return proto.hasThreadE164 && !proto.threadE164.isEmpty
     }
 
     @objc
@@ -8927,7 +8927,7 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable {
     }
     @objc
     public var hasThreadUuid: Bool {
-        return proto.hasThreadUuid
+        return proto.hasThreadUuid && !proto.threadUuid.isEmpty
     }
 
     @objc
@@ -10950,7 +10950,7 @@ public class SSKProtoContactDetails: NSObject, Codable {
     }
     @objc
     public var hasContactE164: Bool {
-        return proto.hasContactE164
+        return proto.hasContactE164 && !proto.contactE164.isEmpty
     }
 
     @objc
@@ -10962,7 +10962,7 @@ public class SSKProtoContactDetails: NSObject, Codable {
     }
     @objc
     public var hasContactUuid: Bool {
-        return proto.hasContactUuid
+        return proto.hasContactUuid && !proto.contactUuid.isEmpty
     }
 
     @objc
