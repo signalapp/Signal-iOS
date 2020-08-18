@@ -384,6 +384,7 @@ class MessageDetailViewController: OWSViewController {
         }
 
         messageView.addGestureHandlers()
+        messageView.panGesture.require(toFail: scrollView.panGestureRecognizer)
         self.messageView = messageView
         messageView.viewItem = viewItem
         messageView.cellMediaCache = NSCache()
@@ -702,14 +703,19 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     }
 
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {
-        guard let navigationController = self.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
+        if conversationItem.displayableBodyText?.canRenderTruncatedTextInline == true {
+            conversationItem.isTruncatedTextVisible = true
+            updateContent()
+        } else {
+            guard let navigationController = self.navigationController else {
+                owsFailDebug("navigationController was unexpectedly nil")
+                return
+            }
 
-        let viewController = LongTextViewController(viewItem: viewItem)
-        viewController.delegate = self
-        navigationController.pushViewController(viewController, animated: true)
+            let viewController = LongTextViewController(viewItem: viewItem)
+            viewController.delegate = self
+            navigationController.pushViewController(viewController, animated: true)
+        }
     }
 
     func didTapMention(_ mention: Mention) {

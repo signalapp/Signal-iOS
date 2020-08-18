@@ -39,6 +39,16 @@ import Foundation
         return truncatedContent != nil
     }
 
+    private static let maxInlineText = 1024 * 8
+
+    @objc
+    public var canRenderTruncatedTextInline: Bool {
+        return isTextTruncated && fullLengthWithNewLineScalar <= Self.maxInlineText
+    }
+
+    @objc
+    public let fullLengthWithNewLineScalar: Int
+
     @objc public let jumbomojiCount: UInt
 
     @objc
@@ -56,6 +66,7 @@ import Foundation
         self.fullContent = fullContent
         self.truncatedContent = truncatedContent
         self.jumbomojiCount = DisplayableText.jumbomojiCount(in: fullContent.attributedText.string)
+        self.fullLengthWithNewLineScalar = DisplayableText.fullLengthWithNewLineScalar(in: fullContent.attributedText.string)
 
         super.init()
 
@@ -177,6 +188,18 @@ import Foundation
 
     // MARK: Filter Methods
 
+    private static let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
+    private static let newLineScalar = 16
+
+    private class func fullLengthWithNewLineScalar(in string: String) -> Int {
+        let numberOfNewLines = newLineRegex.numberOfMatches(
+            in: string,
+            options: [],
+            range: NSRange(location: 0, length: string.utf16.count)
+        )
+        return string.utf16.count + numberOfNewLines * newLineScalar
+    }
+
     @objc
     public class var empty: DisplayableText {
         return DisplayableText(
@@ -208,22 +231,34 @@ import Foundation
 
         // Only show up to N characters of text.
         let kMaxTextDisplayLength = 512
+        let kMaxSnippetNewLines = 15
         let truncatedContent: Content?
+
         if fullAttributedText.string.count > kMaxTextDisplayLength {
+            var snippetLength = kMaxTextDisplayLength
+
+            // Message bubbles by default should be short. We don't ever
+            // want to show more than X new lines in the truncated text.po
+            let newLineMatches = newLineRegex.matches(
+                in: fullAttributedText.string,
+                options: [],
+                range: NSRange(location: 0, length: kMaxTextDisplayLength)
+            )
+            if newLineMatches.count > kMaxSnippetNewLines {
+                snippetLength = newLineMatches[kMaxSnippetNewLines - 1].range.location
+            }
 
             var mentionRange = NSRange()
             let possibleOverlappingMention = fullAttributedText.attribute(
                 .mention,
-                at: kMaxTextDisplayLength,
+                at: snippetLength,
                 longestEffectiveRange: &mentionRange,
                 in: NSRange(location: 0, length: fullAttributedText.length)
             )
 
-            var snippetLength = kMaxTextDisplayLength
-
             // There's a mention overlapping our normal truncate point, we want to truncate sooner
             // so we don't "split" the mention.
-            if possibleOverlappingMention != nil && mentionRange.location < kMaxTextDisplayLength {
+            if possibleOverlappingMention != nil && mentionRange.location < snippetLength {
                 snippetLength = mentionRange.location
             }
 

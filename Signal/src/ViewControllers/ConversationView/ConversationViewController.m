@@ -2476,9 +2476,17 @@ typedef enum : NSUInteger {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
-    viewController.delegate = self;
-    [self.navigationController pushViewController:viewController animated:YES];
+    if (conversationItem.displayableBodyText.canRenderTruncatedTextInline) {
+        conversationItem.isTruncatedTextVisible = YES;
+
+        CGPoint contentOffset = self.collectionView.contentOffset;
+        [self reloadData];
+        [self.collectionView setContentOffset:contentOffset animated:NO];
+    } else {
+        LongTextViewController *viewController = [[LongTextViewController alloc] initWithViewItem:conversationItem];
+        viewController.delegate = self;
+        [self.navigationController pushViewController:viewController animated:YES];
+    }
 }
 
 - (void)didTapMention:(Mention *)mention
