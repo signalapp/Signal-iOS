@@ -224,6 +224,9 @@ NS_ASSUME_NONNULL_BEGIN
                                              });
                                      }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Save plaintext database key"
+                                     actionBlock:^() { [DebugUIMisc enableExternalDatabaseAccess]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -600,6 +603,41 @@ NS_ASSUME_NONNULL_BEGIN
         anyInsertWithTransaction:transaction];
     [[[OWSSessionResetJobRecord alloc] initWithContactThread:thread label:OWSSessionResetJobQueue.jobRecordLabel]
         anyInsertWithTransaction:transaction];
+}
+
++ (void)enableExternalDatabaseAccess
+{
+    if (!OWSIsDebugBuild()) {
+        [OWSActionSheets showErrorAlertWithMessage:@"Must be running a debug build"];
+    }
+    if (!Platform.isSimulator) {
+        [OWSActionSheets showErrorAlertWithMessage:@"Must be running in the simulator"];
+    }
+    [OWSActionSheets
+        showConfirmationAlertWithTitle:@"⚠️⚠️⚠️ Warning!!! ⚠️⚠️⚠️"
+                               message:
+                                   @"This will save your database key in plaintext and severely weaken the security of "
+                                   @"all data. Make sure you're using a test account with data you don't care about."
+                          proceedTitle:@"I'm okay with this"
+                          proceedStyle:ActionSheetActionStyleDestructive
+                         proceedAction:^(ActionSheetAction *action) {
+                             // This should be caught above. Fatal assert just in case.
+                             OWSAssert(OWSIsDebugBuild() && Platform.isSimulator);
+
+                             // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
+                             NSDictionary *payload = @ {
+                                 @"dbPath" : SDSDatabaseStorage.grdbDatabaseFileUrl.path,
+                                 @"key" : [GRDBDatabaseStorageAdapter.debugOnly_keyData hexadecimalString]
+                             };
+                             NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payload
+                                                                                   options:NSJSONWritingPrettyPrinted
+                                                                                     error:nil];
+
+                             NSURL *groupDir = [NSURL fileURLWithPath:OWSFileSystem.appSharedDataDirectoryPath
+                                                          isDirectory:YES];
+                             NSURL *destURL = [groupDir URLByAppendingPathComponent:@"dbPayload.txt"];
+                             [payloadData writeToURL:destURL atomically:YES];
+                         }];
 }
 
 @end
