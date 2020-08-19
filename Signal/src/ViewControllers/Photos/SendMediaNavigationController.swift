@@ -127,11 +127,19 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     private func didTapCameraModeButton() {
-        fadeTo(viewControllers: [captureViewController])
+        self.ows_ask(forCameraPermissions: { granted in
+            if (granted) {
+                self.fadeTo(viewControllers: [self.captureViewController])
+            }
+        })
     }
 
     private func didTapMediaLibraryModeButton() {
-        fadeTo(viewControllers: [mediaLibraryViewController])
+        self.ows_ask(forMediaLibraryPermissions: { granted in
+            if (granted) {
+                self.fadeTo(viewControllers: [self.mediaLibraryViewController])
+            }
+        })
     }
 
     // MARK: Views

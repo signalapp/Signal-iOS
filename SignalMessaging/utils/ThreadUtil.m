@@ -456,7 +456,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         } else {
             TSInteraction *_Nullable firstUnseenInteraction =
                 [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
-            if (firstUnseenInteraction) {
+            if (firstUnseenInteraction && firstUnseenInteraction.sortId != NULL) {
                 firstUnseenSortId = @(firstUnseenInteraction.sortId);
             }
         }

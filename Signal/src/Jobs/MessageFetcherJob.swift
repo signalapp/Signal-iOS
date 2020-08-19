@@ -199,7 +199,14 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func fetchUndeliveredMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
-        return SnodeAPI.getMessages(for: getUserHexEncodedPublicKey())
+        // In some cases like deleting an account
+        // the backgroud fetch was not stopped
+        // so the identityKeyPair can be nil
+        let userPublickKey = getUserHexEncodedPublicKey()
+        if !userPublickKey.isEmpty {
+            return SnodeAPI.getMessages(for: userPublickKey)
+        }
+        return Promise.value(Set())
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {

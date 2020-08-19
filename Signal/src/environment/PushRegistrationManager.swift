@@ -192,7 +192,7 @@ public enum PushRegistrationError: Error {
         }.map { (pushTokenData: Data) -> String in
             if self.isSusceptibleToFailedPushRegistration {
                 // Sentinal in case this bug is fixed
-                owsFailDebug("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
+                OWSLogger.debug("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
             }
 
             return pushTokenData.hexEncodedString
