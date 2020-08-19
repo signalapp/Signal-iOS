@@ -62,7 +62,18 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     OWSSingletonAssert();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self notifyIfThemeModeIsNotDefault];
+        // IOS-782: +[Theme sharedInstance] re-enterant initialization
+        // AppReadiness will invoke the block synchronously if the app is already ready.
+        // This doesn't work here, because we'll end up reenterantly calling +sharedInstance
+        // if the app is in dark mode and the first call to +[Theme sharedInstance] happens
+        // after the app is ready.
+        //
+        // It looks like that pattern is only hit in the share extension, but we're better off
+        // asyncing always to ensure the dependency chain is broken. We're okay waiting, since
+        // there's no guarantee that this block in synchronously executed anyway.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self notifyIfThemeModeIsNotDefault];
+        });
     }];
 
     return self;
