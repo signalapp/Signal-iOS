@@ -87,7 +87,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     private func sendAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
         let pendingReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction) else {
-                Logger.debug("aborting since there is still a pending message request for thread: \(thread)")
+                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
@@ -95,7 +95,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
         }
 
         guard !pendingReceipts.isEmpty else {
-            Logger.debug("aborting since pendingReceipts is empty for threads: \(threads)")
+            Logger.debug("aborting since pendingReceipts is empty for threads: \(threads.count)")
             return
         }
 
@@ -111,7 +111,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
     private func removeAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
         let pendingReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
             guard !thread.hasPendingMessageRequest(transaction: transaction) else {
-                Logger.debug("aborting since there is still a pending message request for thread: \(thread)")
+                Logger.debug("aborting since there is still a pending message request for thread: \(thread.uniqueId)")
                 return []
             }
 
@@ -119,7 +119,7 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
         }
 
         guard !pendingReceipts.isEmpty else {
-            Logger.debug("aborting since pendingReceipts is empty for threads: \(threads)")
+            Logger.debug("aborting since pendingReceipts is empty for threads: \(threads.count)")
             return
         }
 

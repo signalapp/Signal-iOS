@@ -96,90 +96,6 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         }
     }
 
-    func testIsValidLinkUrl() {
-        Assert(validPreviewLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
-        Assert(validPreviewLink: "https://youtube.com/watch?v=tP-Ipsat90c")
-
-        // Case shouldn't matter.
-        Assert(validPreviewLink: "https://WWW.YOUTUBE.COM/watch?v=tP-Ipsat90c")
-
-        // Don't allow arbitrary subdomains.
-        Assert(invalidPreviewMedia: "https://some.random.subdomain.youtube.com/watch?v=tP-Ipsat90c")
-
-        // Don't allow HTTP, only HTTPS
-        Assert(invalidPreviewLink: "http://youtube.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewLink: "mailto://youtube.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewLink: "ftp://youtube.com/watch?v=tP-Ipsat90c")
-
-        // Don't allow similar domains.
-        Assert(invalidPreviewLink: "https://xyoutube.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewLink: "https://youtubex.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewLink: "https://youtube.comx/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewLink: "https://www.xyoutube.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewLink: "https://www.youtubex.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewLink: "https://www.youtube.comx/watch?v=tP-Ipsat90c")
-
-        // Don't allow media domains.
-        Assert(invalidPreviewLink: "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
-
-        // Allow all whitelisted domains.
-        Assert(validPreviewLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
-        Assert(validPreviewLink: "https://youtu.be/tP-Ipsat90c")
-        Assert(validPreviewLink: "https://www.reddit.com/r/androiddev/comments/a7gctz/androidx_release_notes_this_is_the_first_release/")
-        Assert(validPreviewLink: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")
-        Assert(validPreviewLink: "https://imgur.com/gallery/KFCL8fm")
-        Assert(validPreviewLink: "https://imgur.com/gallery/FMdwTiV")
-        Assert(validPreviewLink: "https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_web_button_share_sheet")
-        Assert(validPreviewLink: "https://www.instagram.com/p/BrgpsUjF9Jo/?utm_source=ig_share_sheet&igshid=94c7ihqjfmbm")
-        Assert(validPreviewLink: "https://imgur.com/gallery/igHOwDM")
-        Assert(validPreviewLink: "https://pinterest.com/something")
-        Assert(validPreviewLink: "https://www.pinterest.com/something")
-        Assert(validPreviewLink: "https://pin.it/something")
-        Assert(validPreviewLink: "https://www.pinterest.com/norat0464/test-board/")
-
-        // Strip trailing commas.
-        Assert(validPreviewLink: "https://imgur.com/gallery/igHOwDM,")
-
-        // Ignore URLs with an empty path.
-        Assert(invalidPreviewLink: "https://imgur.com")
-        Assert(invalidPreviewLink: "https://imgur.com/")
-        Assert(validPreviewLink: "https://imgur.com/X")
-    }
-
-    func testIsValidMediaUrl() {
-        // Only allow domains on the media whitelist.
-        Assert(invalidPreviewMedia: "https://www.youtube.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "https://youtube.com/watch?v=tP-Ipsat90c")
-
-        // Allow arbitrary subdomains.
-        Assert(validPreviewMedia: "https://ytimg.com/something")
-        Assert(validPreviewMedia: "https://something.ytimg.com/something")
-
-        // Don't allow HTTP, only HTTPS
-        Assert(invalidPreviewMedia: "http://ytimg.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "mailto://ytimg.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "ftp://ytimg.com/watch?v=tP-Ipsat90c")
-
-        // Don't allow similar domains.
-        Assert(invalidPreviewMedia: "https://xytimg.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "https://youtubex.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "https://ytimg.comx/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "https://www.xytimg.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "https://www.ytimgx.com/watch?v=tP-Ipsat90c")
-        Assert(invalidPreviewMedia: "https://www.ytimg.comx/watch?v=tP-Ipsat90c")
-
-        // Allow media domains.
-        Assert(validPreviewMedia: "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
-        Assert(validPreviewMedia: "https://external-preview.redd.it/j5lhdY0huShdzyrbSEdKzOb09BKhNreyEZOLDu1UzBA.jpg?auto=webp&s=2cb8bdb5ac5b54fc9514719030c0c9f08a03f684")
-        Assert(validPreviewMedia: "https://preview.redd.it/ehakvm9vx5521.jpg?auto=webp&s=925fb2d8776ca7102b944ab00e0615ae20c1bd5a")
-        Assert(validPreviewMedia: "https://i.imgur.com/Y3wjlwY.jpg?fb")
-        Assert(validPreviewMedia: "https://i.imgur.com/Vot3iHh.jpg?fbplay")
-        Assert(validPreviewMedia: "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
-        Assert(validPreviewMedia: "https://scontent-mia3-2.cdninstagram.com/vp/9035a7d6b32e6f840856661e4a11e3cf/5CFC285B/t51.2885-15/e35/47690175_2275988962411653_1145978227188801192_n.jpg?_nc_ht=scontent-mia3-2.cdninstagram.com")
-        Assert(validPreviewMedia: "https://i.imgur.com/PYiyLv1.jpg?fbplay")
-        Assert(validPreviewMedia: "https://pinimg.com/something")
-    }
-
     func testPreviewUrlForMessageBodyText() {
         Assert(bodyText: "", extractsLink: nil)
         Assert(bodyText: "alice bob jim", extractsLink: nil)
@@ -592,40 +508,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     }
 
     private func Assert(bodyText: String, extractsLink link: String?, selectedRange: NSRange? = nil, file: StaticString = #file, line: UInt = #line) {
-        let actual = linkPreviewManager.previewUrl(forMessageBodyText: bodyText, selectedRange: selectedRange)
+        let actual = linkPreviewManager.previewUrl(forMessageBodyText: bodyText, selectedRange: selectedRange, whitelistedOnly: false)
         XCTAssertEqual(actual, link, file: file, line: line)
     }
-
-    private func Assert(validPreviewLink urlString: String, file: StaticString = #file, line: UInt = #line) {
-        guard let url = URL(string: urlString) else {
-            XCTFail("unparsable url", file: file, line: line)
-            return
-        }
-        XCTAssertTrue(OWSLinkPreviewManager.isValidLink(url: url), file: file, line: line)
-    }
-
-    private func Assert(invalidPreviewLink urlString: String, file: StaticString = #file, line: UInt = #line) {
-        guard let url = URL(string: urlString) else {
-            XCTFail("unparsable url", file: file, line: line)
-            return
-        }
-        XCTAssertFalse(OWSLinkPreviewManager.isValidLink(url: url), file: file, line: line)
-    }
-
-    private func Assert(validPreviewMedia urlString: String, file: StaticString = #file, line: UInt = #line) {
-        guard let url = URL(string: urlString) else {
-            XCTFail("unparsable url", file: file, line: line)
-            return
-        }
-        XCTAssertTrue(OWSLinkPreviewManager.isValidMedia(url: url), file: file, line: line)
-    }
-
-    private func Assert(invalidPreviewMedia urlString: String, file: StaticString = #file, line: UInt = #line) {
-        guard let url = URL(string: urlString) else {
-            XCTFail("unparsable url", file: file, line: line)
-            return
-        }
-        XCTAssertFalse(OWSLinkPreviewManager.isValidMedia(url: url), file: file, line: line)
-    }
-
 }

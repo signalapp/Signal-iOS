@@ -357,7 +357,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        owsAssert(attachmentTextToolbarDelegate != nil)
+        owsAssertDebug(attachmentTextToolbarDelegate != nil)
         return attachmentTextToolbarDelegate?.textView(textView, shouldResolveMentionForAddress: address) ?? false
     }
 
