@@ -315,7 +315,8 @@ public class OWSAttachmentUploadV2: NSObject {
         private let _progress = AtomicValue<Int>(0)
 
         fileprivate func recordProgress(_ value: Int) {
-            // TODO: We could assert that this monotonically increases.
+            // This value should only monotonically increase.
+            owsAssertDebug(value >= _progress.get())
             _progress.set(value)
         }
 
@@ -382,6 +383,10 @@ public class OWSAttachmentUploadV2: NSObject {
                 throw OWSAssertionError("Invalid signedUploadLocation.")
             }
             var headers = form.headers
+            // Remove host header.
+            headers = headers.filter { (key, _) in
+                key.lowercased() != "host"
+            }
             headers["Content-Length"] = "0"
             headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
 
