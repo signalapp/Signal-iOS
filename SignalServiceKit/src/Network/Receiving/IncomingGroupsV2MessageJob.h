@@ -44,8 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
                     envelopeData:(NSData *)envelopeData
                          groupId:(nullable NSData *)groupId
                    plaintextData:(nullable NSData *)plaintextData
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:groupId:plaintextData:wasReceivedByUD:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:groupId:plaintextData:serverDeliveryTimestamp:wasReceivedByUD:));
 
 // clang-format on
 

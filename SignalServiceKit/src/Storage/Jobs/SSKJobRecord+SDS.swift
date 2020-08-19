@@ -40,6 +40,7 @@ public struct JobRecordRecord: SDSRecord {
     public let threadId: String?
     public let attachmentId: String?
     public let isMediaMessage: Bool?
+    public let serverDeliveryTimestamp: UInt64?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -57,6 +58,7 @@ public struct JobRecordRecord: SDSRecord {
         case threadId
         case attachmentId
         case isMediaMessage
+        case serverDeliveryTimestamp
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -95,6 +97,7 @@ public extension JobRecordRecord {
         threadId = row[12]
         attachmentId = row[13]
         isMediaMessage = row[14]
+        serverDeliveryTimestamp = row[15]
     }
 }
 
@@ -215,6 +218,7 @@ extension SSKJobRecord {
             let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
+            let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
 
             return SSKMessageDecryptJobRecord(grdbId: recordId,
                                               uniqueId: uniqueId,
@@ -222,7 +226,8 @@ extension SSKJobRecord {
                                               label: label,
                                               sortId: sortId,
                                               status: status,
-                                              envelopeData: envelopeData)
+                                              envelopeData: envelopeData,
+                                              serverDeliveryTimestamp: serverDeliveryTimestamp)
 
         case .messageSenderJobRecord:
 
@@ -359,6 +364,7 @@ extension SSKJobRecord: DeepCopyable {
             let sortId: UInt64 = modelToCopy.sortId
             let status: SSKJobRecordStatus = modelToCopy.status
             let envelopeData: Data? = modelToCopy.envelopeData
+            let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
 
             return SSKMessageDecryptJobRecord(grdbId: id,
                                               uniqueId: uniqueId,
@@ -366,7 +372,8 @@ extension SSKJobRecord: DeepCopyable {
                                               label: label,
                                               sortId: sortId,
                                               status: status,
-                                              envelopeData: envelopeData)
+                                              envelopeData: envelopeData,
+                                              serverDeliveryTimestamp: serverDeliveryTimestamp)
         }
 
         if let modelToCopy = self as? OWSSessionResetJobRecord {
@@ -485,6 +492,7 @@ extension SSKJobRecordSerializer {
     static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true)
     static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true)
     static let isMediaMessageColumn = SDSColumnMetadata(columnName: "isMediaMessage", columnType: .int, isOptional: true)
+    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -505,7 +513,8 @@ extension SSKJobRecordSerializer {
         removeMessageAfterSendingColumn,
         threadIdColumn,
         attachmentIdColumn,
-        isMediaMessageColumn
+        isMediaMessageColumn,
+        serverDeliveryTimestampColumn
         ])
 }
 
@@ -929,8 +938,9 @@ class SSKJobRecordSerializer: SDSSerializer {
         let threadId: String? = nil
         let attachmentId: String? = nil
         let isMediaMessage: Bool? = nil
+        let serverDeliveryTimestamp: UInt64? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp)
     }
 }
 

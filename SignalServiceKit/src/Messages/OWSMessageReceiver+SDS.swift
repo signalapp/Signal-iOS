@@ -30,6 +30,7 @@ public struct MessageDecryptJobRecord: SDSRecord {
     // Properties
     public let createdAt: Double
     public let envelopeData: Data
+    public let serverDeliveryTimestamp: UInt64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -37,6 +38,7 @@ public struct MessageDecryptJobRecord: SDSRecord {
         case uniqueId
         case createdAt
         case envelopeData
+        case serverDeliveryTimestamp
     }
 
     public static func columnName(_ column: MessageDecryptJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -65,6 +67,7 @@ public extension MessageDecryptJobRecord {
         uniqueId = row[2]
         createdAt = row[3]
         envelopeData = row[4]
+        serverDeliveryTimestamp = row[5]
     }
 }
 
@@ -99,11 +102,13 @@ extension OWSMessageDecryptJob {
             let createdAtInterval: Double = record.createdAt
             let createdAt: Date = SDSDeserialization.requiredDoubleAsDate(createdAtInterval, name: "createdAt")
             let envelopeData: Data = record.envelopeData
+            let serverDeliveryTimestamp: UInt64 = record.serverDeliveryTimestamp
 
             return OWSMessageDecryptJob(grdbId: recordId,
                                         uniqueId: uniqueId,
                                         createdAt: createdAt,
-                                        envelopeData: envelopeData)
+                                        envelopeData: envelopeData,
+                                        serverDeliveryTimestamp: serverDeliveryTimestamp)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -156,11 +161,13 @@ extension OWSMessageDecryptJob: DeepCopyable {
             let uniqueId: String = modelToCopy.uniqueId
             let createdAt: Date = modelToCopy.createdAt
             let envelopeData: Data = modelToCopy.envelopeData
+            let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
 
             return OWSMessageDecryptJob(grdbId: id,
                                         uniqueId: uniqueId,
                                         createdAt: createdAt,
-                                        envelopeData: envelopeData)
+                                        envelopeData: envelopeData,
+                                        serverDeliveryTimestamp: serverDeliveryTimestamp)
         }
 
     }
@@ -178,6 +185,7 @@ extension OWSMessageDecryptJobSerializer {
     // Properties
     static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double)
     static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob)
+    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -188,7 +196,8 @@ extension OWSMessageDecryptJobSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         createdAtColumn,
-        envelopeDataColumn
+        envelopeDataColumn,
+        serverDeliveryTimestampColumn
         ])
 }
 
@@ -602,8 +611,9 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
         // Properties
         let createdAt: Double = archiveDate(model.createdAt)
         let envelopeData: Data = model.envelopeData
+        let serverDeliveryTimestamp: UInt64 = model.serverDeliveryTimestamp
 
-        return MessageDecryptJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData)
+        return MessageDecryptJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, serverDeliveryTimestamp: serverDeliveryTimestamp)
     }
 }
 

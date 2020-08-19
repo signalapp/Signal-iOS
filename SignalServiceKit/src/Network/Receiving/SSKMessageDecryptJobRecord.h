@@ -39,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                     envelopeData:(nullable NSData *)envelopeData
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:envelopeData:));
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:envelopeData:serverDeliveryTimestamp:));
 
 // clang-format on
 

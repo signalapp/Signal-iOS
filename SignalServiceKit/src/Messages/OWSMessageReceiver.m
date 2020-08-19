@@ -59,6 +59,7 @@ NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue
                       uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -69,6 +70,7 @@ NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue
 
     _createdAt = createdAt;
     _envelopeData = envelopeData;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
 
     return self;
 }

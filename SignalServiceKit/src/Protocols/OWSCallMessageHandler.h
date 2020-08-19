@@ -19,10 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
             sentAtTimestamp:(uint64_t)sentAtTimestamp
       serverSentAtTimestamp:(uint64_t)serverSentAtTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-          supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:
-                                serverSentAtTimestamp:
-                                serverDeliveryTimestamp:
-                                supportsMultiRing:));
+          supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:serverSentAtTimestamp:serverDeliveryTimestamp:supportsMultiRing:));
 
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller

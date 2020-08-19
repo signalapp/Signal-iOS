@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
                     envelopeData:(NSData *)envelopeData
                          groupId:(nullable NSData *)groupId
                    plaintextData:(nullable NSData *)plaintextData
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     self = [super initWithGrdbId:grdbId
@@ -63,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     _envelopeData = envelopeData;
     _groupId = groupId;
     _plaintextData = plaintextData;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
 
     return self;

@@ -42,8 +42,9 @@ extern NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueu
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
                    plaintextData:(nullable NSData *)plaintextData
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:plaintextData:wasReceivedByUD:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:plaintextData:serverDeliveryTimestamp:wasReceivedByUD:));
 
 // clang-format on
 

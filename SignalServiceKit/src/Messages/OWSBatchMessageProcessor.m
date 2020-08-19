@@ -61,6 +61,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
                    plaintextData:(nullable NSData *)plaintextData
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     self = [super initWithGrdbId:grdbId
@@ -73,6 +74,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     _createdAt = createdAt;
     _envelopeData = envelopeData;
     _plaintextData = plaintextData;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
 
     return self;

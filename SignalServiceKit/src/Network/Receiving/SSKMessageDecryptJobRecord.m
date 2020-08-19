@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                     envelopeData:(nullable NSData *)envelopeData
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -54,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _envelopeData = envelopeData;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
 
     return self;
 }
