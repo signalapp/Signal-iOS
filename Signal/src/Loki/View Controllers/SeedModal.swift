@@ -52,8 +52,16 @@ final class SeedModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        // Set up explanation label
+        let disclaimerLabel = UILabel()
+        disclaimerLabel.textColor = Colors.text
+        disclaimerLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        disclaimerLabel.text = NSLocalizedString("modal_seed_disclaimer", comment: "")
+        disclaimerLabel.numberOfLines = 0
+        disclaimerLabel.lineBreakMode = .byWordWrapping
+        disclaimerLabel.textAlignment = .center
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabel, explanationLabel, buttonStackView ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabel, explanationLabel, buttonStackView, disclaimerLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         contentView.addSubview(stackView)
