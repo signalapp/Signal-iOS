@@ -8,7 +8,6 @@ import SignalServiceKit
 
 public struct AudioSource: Hashable {
 
-    public let image: UIImage
     public let localizedName: String
     public let portDescription: AVAudioSessionPortDescription?
 
@@ -18,9 +17,8 @@ public struct AudioSource: Hashable {
     // The built-in quiet speaker, aka the normal phone handset receiver earpiece
     public let isBuiltInEarPiece: Bool
 
-    public init(localizedName: String, image: UIImage, isBuiltInSpeaker: Bool, isBuiltInEarPiece: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
+    public init(localizedName: String, isBuiltInSpeaker: Bool, isBuiltInEarPiece: Bool, portDescription: AVAudioSessionPortDescription? = nil) {
         self.localizedName = localizedName
-        self.image = image
         self.isBuiltInSpeaker = isBuiltInSpeaker
         self.isBuiltInEarPiece = isBuiltInEarPiece
         self.portDescription = portDescription
@@ -36,7 +34,6 @@ public struct AudioSource: Hashable {
         let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
 
         self.init(localizedName: localizedName,
-                  image: Theme.iconImage(.audioCall), // TODO
                   isBuiltInSpeaker: false,
                   isBuiltInEarPiece: isBuiltInEarPiece,
                   portDescription: portDescription)
@@ -45,7 +42,6 @@ public struct AudioSource: Hashable {
     // Speakerphone is handled separately from the other audio routes as it doesn't appear as an "input"
     public static var builtInSpeaker: AudioSource {
         return self.init(localizedName: NSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
-                         image: Theme.iconImage(.audioCall), //TODO
                          isBuiltInSpeaker: true,
                          isBuiltInEarPiece: false)
     }

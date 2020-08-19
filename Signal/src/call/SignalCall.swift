@@ -38,7 +38,6 @@ public protocol CallObserver: class {
     func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
     func holdDidChange(call: SignalCall, isOnHold: Bool)
-    func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?)
 }
 
 public enum CallError: Error {
@@ -199,25 +198,6 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     }
 
     public let audioActivity: AudioActivity
-
-    public var audioSource: AudioSource? = nil {
-        didSet {
-            AssertIsOnMainThread()
-            Logger.debug("audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
-
-            for observer in observers.elements {
-                observer.audioSourceDidChange(call: self, audioSource: audioSource)
-            }
-        }
-    }
-
-    public var isSpeakerphoneEnabled: Bool {
-        guard let audioSource = self.audioSource else {
-            return false
-        }
-
-        return audioSource.isBuiltInSpeaker
-    }
 
     public var isOnHold = false {
         didSet {

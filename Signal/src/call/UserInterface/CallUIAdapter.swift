@@ -321,15 +321,6 @@ extension CallUIAdaptee {
         adaptee(for: call).setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
-    internal func setAudioSource(call: SignalCall, audioSource: AudioSource?) {
-        AssertIsOnMainThread()
-
-        // AudioSource is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the
-        // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's
-        // assigned property.
-        call.audioSource = audioSource
-    }
-
     internal func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         AssertIsOnMainThread()
 
