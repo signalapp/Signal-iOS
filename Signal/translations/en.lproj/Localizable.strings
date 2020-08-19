@@ -2729,3 +2729,6 @@
 "vc_contact_selection_contacts_title" = "Contacts";
 "vc_contact_selection_closed_groups_title" = "Closed Groups";
 "vc_contact_selection_open_groups_title" = "Open Groups";
+
+// MARK: Next round of translation
+"modal_seed_disclaimer" = "*Please note that it is not possible to use the same Session ID on multiple devices simultaneously";
