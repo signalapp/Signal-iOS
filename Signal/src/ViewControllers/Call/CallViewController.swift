@@ -870,6 +870,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Audio Source Handling (bluetooth)
         if self.hasAlternateAudioSources, let audioSource = callUIAdapter.audioService.currentAudioSource {
+            audioModeSourceButton.isHidden = false
+            videoModeAudioSourceButton.isHidden = false
+
             videoModeAudioSourceButton.isHidden = !call.hasLocalVideo
             videoModeAudioSourceButton.showDropdownArrow = true
             audioModeSourceButton.isHidden = call.hasLocalVideo
@@ -888,8 +891,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                 audioModeSourceButton.iconName = "speaker-bt-solid-28"
                 videoModeAudioSourceButton.iconName = "speaker-bt-solid-28"
             }
-
+        } else if UIDevice.current.isIPad {
+            // iPad *only* supports speaker mode, if there are no external
+            // devices connected, so we don't need to show the button unless
+            // we have alternate audio sources.
+            audioModeSourceButton.isHidden = true
+            videoModeAudioSourceButton.isHidden = true
         } else {
+            audioModeSourceButton.isHidden = false
+            videoModeAudioSourceButton.isHidden = false
+
             // No bluetooth audio detected
             audioModeSourceButton.iconName = "speaker-solid-28"
             audioModeSourceButton.showDropdownArrow = false
