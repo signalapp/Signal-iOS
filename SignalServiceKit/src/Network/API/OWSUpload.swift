@@ -325,7 +325,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
         private let _attemptCount = AtomicUInt(0)
         fileprivate var attemptCount: UInt {
-            failureCount.get()
+            _attemptCount.get()
         }
 
         private let failuresWithoutProgressCount = AtomicUInt(0)
@@ -377,7 +377,7 @@ public class OWSAttachmentUploadV2: NSObject {
         }
 
         return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
-            let urlString = try Self.prepareCdnUrlString(form.signedUploadLocation)
+            let urlString = form.signedUploadLocation
             guard urlString.lowercased().hasPrefix("http") else {
                 throw OWSAssertionError("Invalid signedUploadLocation.")
             }
@@ -385,9 +385,7 @@ public class OWSAttachmentUploadV2: NSObject {
             headers["Content-Length"] = "0"
             headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
 
-            let urlSession = (Self.useGoogleDirectly
-                ? OWSUpload.googleUrlSession
-                : OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber))
+            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
             return urlSession.dataTaskPromise(urlString, verb: .post, headers: headers, body: body)
         }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
@@ -442,10 +440,8 @@ public class OWSAttachmentUploadV2: NSObject {
             }
 
             let formatInt = OWSFormat.formatInt
-            let urlString = try Self.prepareCdnUrlString(locationUrl.absoluteString)
-            let urlSession = (Self.useGoogleDirectly
-                ? OWSUpload.googleUrlSession
-                : OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber))
+            let urlString = locationUrl.absoluteString
+            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
 
             // Wrap the progress block.
             let progressBlock = { (progress: Progress) in
@@ -468,9 +464,6 @@ public class OWSAttachmentUploadV2: NSObject {
                 // Either first attempt or no progress so far, use entire encrypted data.
                 var headers = [String: String]()
                 headers["Content-Length"] = formatInt(uploadV3Metadata.dataLength)
-                if Self.useGoogleDirectly {
-                    headers["Host"] = "cdn2.signal.org"
-                }
                 return urlSession.uploadTaskPromise(urlString,
                                                     verb: .put,
                                                     headers: headers,
@@ -497,9 +490,6 @@ public class OWSAttachmentUploadV2: NSObject {
                 var headers = [String: String]()
                 headers["Content-Length"] = formatInt(dataSlice.count)
                 headers["Content-Range"] = "bytes \(formatInt(bytesAlreadyUploaded))-\(formatInt(totalDataLength - 1))/\(formatInt(totalDataLength))"
-                if Self.useGoogleDirectly {
-                    headers["Host"] = "cdn2.signal.org"
-                }
 
                 return firstly(on: .global()) {
                     urlSession.uploadTaskPromise(urlString,
@@ -530,7 +520,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                   locationUrl: locationUrl)
             }.then(on: .global()) { (bytesAlreadyUploaded: Int) -> Promise<Void> in
 
-                let didAttemptMakeAnyProgress = uploadV3Metadata.progress > bytesAlreadyUploaded
+                let didAttemptMakeAnyProgress = uploadV3Metadata.progress < bytesAlreadyUploaded
 
                 // We need to record the progress so that we can use it
                 // to resume after failures.
@@ -583,18 +573,23 @@ public class OWSAttachmentUploadV2: NSObject {
                                                      uploadV3Metadata: uploadV3Metadata,
                                                      locationUrl: locationUrl)
         }.recover(on: .global()) { (error: Error) -> Promise<Int> in
+            guard attemptCount < 2 else {
+                // Default to using last known progress.
+                return Promise.value(uploadV3Metadata.progress)
+            }
+            var canRetry = false
             if case OWSUploadError.missingRangeHeader = error {
-                guard attemptCount < 2 else {
-                    // Default to using last known progress.
-                    return Promise.value(uploadV3Metadata.progress)
-                }
-                return self.getResumableUploadProgressV3(form: form,
-                                                         uploadV3Metadata: uploadV3Metadata,
-                                                         locationUrl: locationUrl,
-                                                         attemptCount: attemptCount + 1)
-            } else {
+                canRetry = true
+            } else if IsNetworkConnectivityFailure(error) {
+                canRetry = true
+            }
+            guard canRetry else {
                 throw error
             }
+            return self.getResumableUploadProgressV3(form: form,
+                                                     uploadV3Metadata: uploadV3Metadata,
+                                                     locationUrl: locationUrl,
+                                                     attemptCount: attemptCount + 1)
         }
     }
 
@@ -604,18 +599,13 @@ public class OWSAttachmentUploadV2: NSObject {
                                                      locationUrl: URL) -> Promise<Int> {
 
         return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
-            let urlString = try Self.prepareCdnUrlString(locationUrl.absoluteString)
+            let urlString = locationUrl.absoluteString
 
             var headers = [String: String]()
             headers["Content-Length"] = "0"
             headers["Content-Range"] = "bytes */\(OWSFormat.formatInt(uploadV3Metadata.dataLength))"
-            if Self.useGoogleDirectly {
-                headers["Host"] = "cdn2.signal.org"
-            }
 
-            let urlSession = (Self.useGoogleDirectly
-                ? OWSUpload.googleUrlSession
-                : OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber))
+            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
 
             let body = "".data(using: .utf8)
 
@@ -665,22 +655,6 @@ public class OWSAttachmentUploadV2: NSObject {
             Logger.verbose("rangeEnd: \(rangeEnd), bytesAlreadyUploaded: \(bytesAlreadyUploaded).")
             return bytesAlreadyUploaded
         }
-    }
-
-    // TODO:
-    private static let useGoogleDirectly = true
-
-    private static func prepareCdnUrlString(_ urlString: String) throws -> String {
-        guard useGoogleDirectly else {
-            return urlString
-        }
-        let signalPrefix = "https://cdn2.signal.org/"
-        let googlePrefix = "https://storage.googleapis.com/"
-        guard urlString.hasPrefix(signalPrefix) else {
-            throw OWSAssertionError("Invalid url: \(urlString)")
-        }
-        let result = googlePrefix + urlString.substring(from: signalPrefix.count)
-        return result
     }
 }
 

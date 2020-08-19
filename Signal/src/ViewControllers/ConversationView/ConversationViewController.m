@@ -5429,7 +5429,6 @@ typedef enum : NSUInteger {
     UIEdgeInsets oldInsets = self.collectionView.contentInset;
     UIEdgeInsets newInsets = oldInsets;
 
-    OWSAssertDebug(self.bottomLayoutGuide.length == self.view.safeAreaInsets.bottom);
     newInsets.bottom = self.messageActionsExtraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
         + self.bottomBar.height - self.view.safeAreaInsets.bottom;
     newInsets.top = self.messageActionsExtraContentInsetPadding;
