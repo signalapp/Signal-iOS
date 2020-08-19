@@ -392,7 +392,7 @@ extension SignalCall: CallManagerCallReference { }
         sdp: String?,
         opaque: Data?,
         sentAtTimestamp: UInt64,
-        serverSentAtTimestamp: UInt64,
+        serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
         callType: SSKProtoCallMessageOfferType,
         supportsMultiRing: Bool
@@ -520,8 +520,8 @@ extension SignalCall: CallManagerCallReference { }
         newCall.backgroundTask = backgroundTask
 
         let messageAgeSec: UInt64
-        if serverSentAtTimestamp > 0 && serverDeliveryTimestamp > 0 {
-            messageAgeSec = serverDeliveryTimestamp - serverSentAtTimestamp
+        if serverReceivedTimestamp > 0 && serverDeliveryTimestamp > 0 {
+            messageAgeSec = max(serverDeliveryTimestamp - serverReceivedTimestamp, 0) / 1000
         } else {
             owsFailDebug("Unable to calculate age for call offer")
             messageAgeSec = 0

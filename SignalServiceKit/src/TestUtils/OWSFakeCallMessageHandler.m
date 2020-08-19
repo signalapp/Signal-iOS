@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
                  fromCaller:(SignalServiceAddress *)caller
                sourceDevice:(uint32_t)device
             sentAtTimestamp:(uint64_t)sentAtTimestamp
-      serverSentAtTimestamp:(uint64_t)serverSentAtTimestamp
+    serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
           supportsMultiRing:(BOOL)supportsMultiRing
 {

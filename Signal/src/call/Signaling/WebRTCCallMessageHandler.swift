@@ -39,7 +39,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         from caller: SignalServiceAddress,
         sourceDevice: UInt32,
         sentAtTimestamp: UInt64,
-        serverSentAtTimestamp: UInt64,
+        serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
         supportsMultiRing: Bool
     ) {
@@ -61,7 +61,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             sdp: offer.sdp,
             opaque: offer.opaque,
             sentAtTimestamp: sentAtTimestamp,
-            serverSentAtTimestamp: serverSentAtTimestamp,
+            serverReceivedTimestamp: serverReceivedTimestamp,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             callType: callType,
             supportsMultiRing: supportsMultiRing

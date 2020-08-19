@@ -1065,7 +1065,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         fromCaller:envelope.sourceAddress
                                       sourceDevice:envelope.sourceDevice
                                    sentAtTimestamp:envelope.timestamp
-                             serverSentAtTimestamp:envelope.serverTimestamp
+                           serverReceivedTimestamp:envelope.serverTimestamp
                            serverDeliveryTimestamp:serverDeliveryTimestamp
                                  supportsMultiRing:supportsMultiRing];
         } else if (callMessage.answer) {

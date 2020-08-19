@@ -103,6 +103,7 @@ CREATE
             ,"wasRemotelyDeleted" BOOLEAN
             ,"bodyRanges" BLOB
             ,"offerType" INTEGER
+            ,"serverDeliveryTimestamp" INTEGER
         )
 ;
 
@@ -226,6 +227,7 @@ CREATE
             ,"threadId" TEXT
             ,"attachmentId" TEXT
             ,"isMediaMessage" BOOLEAN
+            ,"serverDeliveryTimestamp" INTEGER
         )
 ;
 
@@ -246,6 +248,7 @@ CREATE
             ,"envelopeData" BLOB NOT NULL
             ,"plaintextData" BLOB
             ,"wasReceivedByUD" INTEGER NOT NULL
+            ,"serverDeliveryTimestamp" INTEGER NOT NULL DEFAULT 0
         )
 ;
 
@@ -802,6 +805,7 @@ CREATE
             ,"plaintextData" BLOB
             ,"wasReceivedByUD" INTEGER NOT NULL
             ,"groupId" BLOB
+            ,"serverDeliveryTimestamp" INTEGER NOT NULL DEFAULT 0
         )
 ;
 
