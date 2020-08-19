@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                        plaintextData:(NSData *_Nullable)plaintextData
                              groupId:(NSData *_Nullable)groupId
                      wasReceivedByUD:(BOOL)wasReceivedByUD
+             serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     OWSAssertDebug(envelopeData);
 
@@ -30,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
     _plaintextData = plaintextData;
     _groupId = groupId;
     _wasReceivedByUD = wasReceivedByUD;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _createdAt = [NSDate new];
 
     return self;

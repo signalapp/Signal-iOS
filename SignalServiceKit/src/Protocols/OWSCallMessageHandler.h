@@ -14,10 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSCallMessageHandler <NSObject>
 
 - (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
-           fromCaller:(SignalServiceAddress *)caller
-         sourceDevice:(uint32_t)device
-      sentAtTimestamp:(uint64_t)sentAtTimestamp
-    supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:supportsMultiRing:));
+                 fromCaller:(SignalServiceAddress *)caller
+               sourceDevice:(uint32_t)device
+            sentAtTimestamp:(uint64_t)sentAtTimestamp
+      serverSentAtTimestamp:(uint64_t)serverSentAtTimestamp
+    serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+          supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:
+                                serverSentAtTimestamp:
+                                serverDeliveryTimestamp:
+                                supportsMultiRing:));
 
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller

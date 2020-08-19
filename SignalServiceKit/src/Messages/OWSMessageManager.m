@@ -275,14 +275,16 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - message handling
 
 - (BOOL)processEnvelope:(SSKProtoEnvelope *)envelope
-          plaintextData:(NSData *_Nullable)plaintextData
-        wasReceivedByUD:(BOOL)wasReceivedByUD
-            transaction:(SDSAnyWriteTransaction *)transaction
+              plaintextData:(NSData *_Nullable)plaintextData
+            wasReceivedByUD:(BOOL)wasReceivedByUD
+    serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     @try {
         [self throws_processEnvelope:envelope
                        plaintextData:plaintextData
                      wasReceivedByUD:wasReceivedByUD
+             serverDeliveryTimestamp:serverDeliveryTimestamp
                          transaction:transaction];
         return YES;
     } @catch (NSException *exception) {
@@ -294,6 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
                  plaintextData:(NSData *_Nullable)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -346,6 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self throws_handleEnvelope:envelope
                           plaintextData:plaintextData
                         wasReceivedByUD:wasReceivedByUD
+                serverDeliveryTimestamp:serverDeliveryTimestamp
                             transaction:transaction];
             break;
         case SSKProtoEnvelopeTypeReceipt:
@@ -459,6 +463,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)throws_handleEnvelope:(SSKProtoEnvelope *)envelope
                 plaintextData:(NSData *)plaintextData
               wasReceivedByUD:(BOOL)wasReceivedByUD
+      serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -517,6 +522,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 withSyncMessage:contentProto.syncMessage
                                   plaintextData:plaintextData
                                 wasReceivedByUD:wasReceivedByUD
+                        serverDeliveryTimestamp:serverDeliveryTimestamp
                                     transaction:transaction];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
@@ -525,11 +531,18 @@ NS_ASSUME_NONNULL_BEGIN
                          withDataMessage:contentProto.dataMessage
                            plaintextData:plaintextData
                          wasReceivedByUD:wasReceivedByUD
+                 serverDeliveryTimestamp:serverDeliveryTimestamp
                              transaction:transaction];
         } else if (contentProto.callMessage) {
-            [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage transaction:transaction];
+            [self handleIncomingEnvelope:envelope
+                         withCallMessage:contentProto.callMessage
+                 serverDeliveryTimestamp:serverDeliveryTimestamp
+                             transaction:transaction];
         } else if (contentProto.typingMessage) {
-            [self handleIncomingEnvelope:envelope withTypingMessage:contentProto.typingMessage transaction:transaction];
+            [self handleIncomingEnvelope:envelope
+                       withTypingMessage:contentProto.typingMessage
+                 serverDeliveryTimestamp:serverDeliveryTimestamp
+                             transaction:transaction];
         } else if (contentProto.nullMessage) {
             OWSLogInfo(@"Received null message.");
         } else if (contentProto.receiptMessage) {
@@ -553,6 +566,7 @@ NS_ASSUME_NONNULL_BEGIN
                      withDataMessage:dataMessageProto
                        plaintextData:plaintextData
                      wasReceivedByUD:wasReceivedByUD
+             serverDeliveryTimestamp:serverDeliveryTimestamp
                          transaction:transaction];
     } else {
         OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
@@ -563,6 +577,7 @@ NS_ASSUME_NONNULL_BEGIN
                withDataMessage:(SSKProtoDataMessage *)dataMessage
                  plaintextData:(NSData *)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -648,6 +663,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        thread:thread
                                 plaintextData:plaintextData
                               wasReceivedByUD:wasReceivedByUD
+                      serverDeliveryTimestamp:serverDeliveryTimestamp
                                   transaction:transaction];
     } else {
         [self handleReceivedTextMessageWithEnvelope:envelope
@@ -655,6 +671,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              thread:thread
                                       plaintextData:plaintextData
                                     wasReceivedByUD:wasReceivedByUD
+                            serverDeliveryTimestamp:serverDeliveryTimestamp
                                         transaction:transaction];
     }
 
@@ -997,6 +1014,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withCallMessage:(SSKProtoCallMessage *)callMessage
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1047,6 +1065,8 @@ NS_ASSUME_NONNULL_BEGIN
                                         fromCaller:envelope.sourceAddress
                                       sourceDevice:envelope.sourceDevice
                                    sentAtTimestamp:envelope.timestamp
+                             serverSentAtTimestamp:envelope.serverTimestamp
+                           serverDeliveryTimestamp:serverDeliveryTimestamp
                                  supportsMultiRing:supportsMultiRing];
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer
@@ -1079,6 +1099,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
              withTypingMessage:(SSKProtoTypingMessage *)typingMessage
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -1140,8 +1161,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // We should ignore typing indicator messages.
-    if (envelope.hasServerTimestamp && envelope.serverTimestamp > 0) {
-        uint64_t relevancyCutoff = NSDate.ows_millisecondTimeStamp - (5 * kMinuteInterval);
+    if (envelope.hasServerTimestamp && envelope.serverTimestamp > 0 && serverDeliveryTimestamp > 0) {
+        uint64_t relevancyCutoff = serverDeliveryTimestamp - (5 * kMinuteInterval);
         if (envelope.serverTimestamp < relevancyCutoff) {
             OWSLogInfo(@"Discarding obsolete typing indicator message.");
             return;
@@ -1448,6 +1469,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  thread:(TSThread *)thread
                           plaintextData:(NSData *)plaintextData
                         wasReceivedByUD:(BOOL)wasReceivedByUD
+                serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                             transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1472,6 +1494,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  thread:thread
                                                           plaintextData:plaintextData
                                                         wasReceivedByUD:wasReceivedByUD
+                                                serverDeliveryTimestamp:serverDeliveryTimestamp
                                                             transaction:transaction];
 
     if (!message) {
@@ -1499,6 +1522,7 @@ NS_ASSUME_NONNULL_BEGIN
                       withSyncMessage:(SSKProtoSyncMessage *)syncMessage
                         plaintextData:(NSData *)plaintextData
                       wasReceivedByUD:(BOOL)wasReceivedByUD
+              serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                           transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1591,6 +1615,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                     plainTextData:plaintextData
                                                   wasReceivedByUD:wasReceivedByUD
+                                          serverDeliveryTimestamp:serverDeliveryTimestamp
                                        associatedMessageTimestamp:dataMessage.reaction.timestamp
                                           associatedMessageAuthor:dataMessage.reaction.authorAddress];
                     break;
@@ -1626,6 +1651,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                     plainTextData:plaintextData
                                                   wasReceivedByUD:wasReceivedByUD
+                                          serverDeliveryTimestamp:serverDeliveryTimestamp
                                        associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
                                           associatedMessageAuthor:envelope.sourceAddress];
                     break;
@@ -1715,6 +1741,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
+                                      serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:syncMessage.viewOnceOpen.timestamp
                                       associatedMessageAuthor:syncMessage.viewOnceOpen.senderAddress];
                 break;
@@ -1832,6 +1859,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        thread:(TSThread *)thread
                                 plaintextData:(NSData *)plaintextData
                               wasReceivedByUD:(BOOL)wasReceivedByUD
+                      serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1856,6 +1884,7 @@ NS_ASSUME_NONNULL_BEGIN
                           thread:thread
                    plaintextData:plaintextData
                  wasReceivedByUD:wasReceivedByUD
+         serverDeliveryTimestamp:serverDeliveryTimestamp
                      transaction:transaction];
 }
 
@@ -1951,6 +1980,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 thread:(TSThread *)thread
                                          plaintextData:(NSData *)plaintextData
                                        wasReceivedByUD:(BOOL)wasReceivedByUD
+                               serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                                            transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -2015,6 +2045,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
+                                      serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:dataMessage.reaction.timestamp
                                       associatedMessageAuthor:dataMessage.reaction.authorAddress];
                 break;
@@ -2041,6 +2072,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.earlyMessageManager recordEarlyEnvelope:envelope
                                                 plainTextData:plaintextData
                                               wasReceivedByUD:wasReceivedByUD
+                                      serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
                                       associatedMessageAuthor:envelope.sourceAddress];
                 break;
@@ -2113,6 +2145,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         linkPreview:linkPreview
                                      messageSticker:messageSticker
                                     serverTimestamp:serverTimestamp
+                            serverDeliveryTimestamp:serverDeliveryTimestamp
                                     wasReceivedByUD:wasReceivedByUD
                                   isViewOnceMessage:isViewOnceMessage];
     TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];

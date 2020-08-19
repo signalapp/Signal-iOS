@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSData *plaintextData;
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 @property (nonatomic, readonly, nullable) NSData *groupId;
+@property (nonatomic, readonly) uint64_t serverDeliveryTimestamp;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -27,7 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData
                              groupId:(NSData *_Nullable)groupId
-                     wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
+                     wasReceivedByUD:(BOOL)wasReceivedByUD
+             serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

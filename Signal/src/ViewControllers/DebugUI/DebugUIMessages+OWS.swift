@@ -69,7 +69,7 @@ public extension DebugUIMessages {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
         envelopeBuilder.setSourceUuid(senderClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageReceiver.handleReceivedEnvelopeData(envelopeData)
+        messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0)
     }
 
     @objc

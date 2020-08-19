@@ -143,6 +143,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                              plaintextData: Data?,
                              groupId: Data,
                              wasReceivedByUD: Bool,
+                             serverDeliveryTimestamp: UInt64,
                              transaction: SDSAnyWriteTransaction) {
 
         // We need to persist the decrypted envelope data ASAP to prevent data loss.
@@ -150,6 +151,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                       plaintextData: plaintextData,
                       groupId: groupId,
                       wasReceivedByUD: wasReceivedByUD,
+                      serverDeliveryTimestamp: serverDeliveryTimestamp,
                       transaction: transaction.unwrapGrdbWrite)
     }
 
@@ -484,6 +486,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                 if !self.messageManager.processEnvelope(envelope,
                                                         plaintextData: job.plaintextData,
                                                         wasReceivedByUD: job.wasReceivedByUD,
+                                                        serverDeliveryTimestamp: job.serverDeliveryTimestamp,
                                                         transaction: transaction) {
                     reportFailure(transaction)
                 }
@@ -761,6 +764,7 @@ public class GroupsV2MessageProcessor: NSObject {
                         plaintextData: Data?,
                         envelope: SSKProtoEnvelope,
                         wasReceivedByUD: Bool,
+                        serverDeliveryTimestamp: UInt64,
                         transaction: SDSAnyWriteTransaction) {
         guard envelopeData.count > 0 else {
             owsFailDebug("Empty envelope.")
@@ -782,6 +786,7 @@ public class GroupsV2MessageProcessor: NSObject {
                                 plaintextData: plaintextData,
                                 groupId: groupId,
                                 wasReceivedByUD: wasReceivedByUD,
+                                serverDeliveryTimestamp: serverDeliveryTimestamp,
                                 transaction: transaction)
 
         // The new envelope won't be visible to the finder until this transaction commits,

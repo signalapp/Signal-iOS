@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
 @property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
+@property (nonatomic, readonly) uint64_t serverDeliveryTimestamp;
 
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 

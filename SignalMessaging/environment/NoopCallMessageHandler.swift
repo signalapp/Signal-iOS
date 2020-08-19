@@ -7,7 +7,7 @@ import SignalServiceKit
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
-    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice device: UInt32, sentAtTimestamp: UInt64, supportsMultiRing: Bool) {
+    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice device: UInt32, sentAtTimestamp: UInt64, serverSentAtTimestamp: UInt64, serverDeliveryTimestamp: UInt64, supportsMultiRing: Bool) {
         owsFailDebug("")
     }
 

@@ -3950,6 +3950,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [SSKEnvironment.shared.batchMessageProcessor enqueueEnvelopeData:envelopeData
                                                            plaintextData:plaintextData
                                                          wasReceivedByUD:NO
+                                                 serverDeliveryTimestamp:0
                                                              transaction:transaction];
     });
 }

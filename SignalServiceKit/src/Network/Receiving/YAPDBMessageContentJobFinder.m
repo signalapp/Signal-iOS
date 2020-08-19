@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "YAPDBMessageContentJobFinder.h"
@@ -42,6 +42,7 @@ NSString *const YAPDBMessageContentJobFinderExtensionGroup = @"OWSMessageContent
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData
                  plaintextData:(NSData *_Nullable)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(envelopeData);
@@ -49,7 +50,8 @@ NSString *const YAPDBMessageContentJobFinderExtensionGroup = @"OWSMessageContent
 
     OWSMessageContentJob *job = [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData
                                                                      plaintextData:plaintextData
-                                                                   wasReceivedByUD:wasReceivedByUD];
+                                                                   wasReceivedByUD:wasReceivedByUD
+                                                           serverDeliveryTimestamp:serverDeliveryTimestamp];
     [job anyInsertWithTransaction:transaction.asAnyWrite];
 }
 

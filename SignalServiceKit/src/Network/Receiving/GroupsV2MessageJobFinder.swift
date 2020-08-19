@@ -15,11 +15,13 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
                        plaintextData: Data?,
                        groupId: Data,
                        wasReceivedByUD: Bool,
+                       serverDeliveryTimestamp: UInt64,
                        transaction: GRDBWriteTransaction) {
         let job = IncomingGroupsV2MessageJob(envelopeData: envelopeData,
                                              plaintextData: plaintextData,
                                              groupId: groupId,
-                                             wasReceivedByUD: wasReceivedByUD)
+                                             wasReceivedByUD: wasReceivedByUD,
+                                             serverDeliveryTimestamp: serverDeliveryTimestamp)
         job.anyInsert(transaction: transaction.asAnyWrite)
     }
 

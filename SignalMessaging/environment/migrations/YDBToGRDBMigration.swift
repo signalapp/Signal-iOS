@@ -740,7 +740,11 @@ public class GRDBDecryptJobMigrator: GRDBMigrator {
         try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateJobRecords { legacyJob in
-                let newJob = SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
+                let newJob = SSKMessageDecryptJobRecord(
+                    envelopeData: legacyJob.envelopeData,
+                    serverDeliveryTimestamp: 0,
+                    label: SSKMessageDecryptJobQueue.jobRecordLabel
+                )
                 newJob.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
                 memorySampler.sample()

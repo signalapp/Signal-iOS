@@ -64,6 +64,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _sourceDeviceId = incomingMessageBuilder.sourceDeviceId;
     _read = NO;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;
+    _serverDeliveryTimestamp = incomingMessageBuilder.serverDeliveryTimestamp;
     _wasReceivedByUD = incomingMessageBuilder.wasReceivedByUD;
 
     _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;

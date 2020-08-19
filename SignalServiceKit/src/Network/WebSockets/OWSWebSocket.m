@@ -787,7 +787,25 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         dispatch_async(self.serialQueue, ^{
             BOOL success = NO;
             @try {
-                BOOL useSignalingKey = [message.headers containsObject:@"X-Signal-Key: true"];
+                BOOL useSignalingKey = NO;
+                uint64_t serverDeliveryTimestamp = 0;
+                for (NSString *header in message.headers) {
+                    if ([header isEqualToString:@"X-Signal-Key: true"]) {
+                        useSignalingKey = YES;
+                    } else if ([header hasPrefix:@"X-Signal-Timestamp:"]) {
+                        NSArray<NSString *> *components = [header componentsSeparatedByString:@":"];
+                        if (components.count == 2) {
+                            serverDeliveryTimestamp = (uint64_t)[components[1] longLongValue];
+                        } else {
+                            OWSFailDebug(@"Invalidly formatted timestamp header %@", header);
+                        }
+                    }
+                }
+
+                if (serverDeliveryTimestamp == 0) {
+                    OWSFailDebug(@"Missing server delivery timestamp");
+                }
+
                 NSData *_Nullable decryptedPayload;
                 if (useSignalingKey) {
                     NSString *_Nullable signalingKey = self.tsAccountManager.storedSignalingKey;
@@ -803,7 +821,8 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                 if (!decryptedPayload) {
                     OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
                 } else {
-                    [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
+                    [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload
+                                             serverDeliveryTimestamp:serverDeliveryTimestamp];
                     success = YES;
                 }
             } @catch (NSException *exception) {

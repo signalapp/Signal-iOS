@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addJobWithEnvelopeData:(NSData *)envelopeData
                  plaintextData:(NSData *_Nullable)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds transaction:(YapDatabaseReadWriteTransaction *)transaction;

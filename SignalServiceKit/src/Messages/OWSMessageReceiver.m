@@ -33,7 +33,7 @@ NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue
     return @"OWSMessageProcessingJob";
 }
 
-- (instancetype)initWithEnvelopeData:(NSData *)envelopeData
+- (instancetype)initWithEnvelopeData:(NSData *)envelopeData serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     OWSAssertDebug(envelopeData);
 
@@ -43,6 +43,7 @@ NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueue
     }
 
     _envelopeData = envelopeData;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _createdAt = [NSDate new];
 
     return self;
@@ -149,16 +150,21 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return job;
 }
 
-- (void)addJobForEnvelopeData:(NSData *)envelopeData
+- (void)addJobForEnvelopeData:(NSData *)envelopeData serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self addJobForEnvelopeData:envelopeData transaction:transaction];
+        [self addJobForEnvelopeData:envelopeData
+            serverDeliveryTimestamp:serverDeliveryTimestamp
+                        transaction:transaction];
     });
 }
 
-- (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction
+- (void)addJobForEnvelopeData:(NSData *)envelopeData
+      serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
+    OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData
+                                                           serverDeliveryTimestamp:serverDeliveryTimestamp];
     [job anyInsertWithTransaction:transaction];
 }
 
@@ -360,9 +366,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return queue;
 }
 
-- (void)enqueueEnvelopeData:(NSData *)envelopeData
+- (void)enqueueEnvelopeData:(NSData *)envelopeData serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
-    [self.finder addJobForEnvelopeData:envelopeData];
+    [self.finder addJobForEnvelopeData:envelopeData serverDeliveryTimestamp:serverDeliveryTimestamp];
 }
 
 - (void)drainQueue
@@ -476,6 +482,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             [self.batchMessageProcessor enqueueEnvelopeData:result.envelopeData
                                               plaintextData:result.plaintextData
                                             wasReceivedByUD:wasReceivedByUD
+                                    serverDeliveryTimestamp:job.serverDeliveryTimestamp
                                                 transaction:transaction];
 
             [self.profileManager didSendOrReceiveMessageFromAddress:result.sourceAddress transaction:transaction];
@@ -557,7 +564,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - instance methods
 
-- (void)handleReceivedEnvelopeData:(NSData *)envelopeData
+- (void)handleReceivedEnvelopeData:(NSData *)envelopeData serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     if (envelopeData.length < 1) {
         OWSFailDebug(@"Empty envelope.");
@@ -581,11 +588,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-        [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
+        [self.yapProcessingQueue enqueueEnvelopeData:envelopeData serverDeliveryTimestamp:serverDeliveryTimestamp];
         [self.yapProcessingQueue drainQueue];
     } else {
         // We *could* use this processing Queue for Yap *and* GRDB
-        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
+        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData serverDeliveryTimestamp:serverDeliveryTimestamp];
     }
 }
 
