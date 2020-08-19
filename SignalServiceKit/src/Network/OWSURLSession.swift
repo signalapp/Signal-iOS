@@ -212,6 +212,7 @@ public class OWSURLSession: NSObject {
                               verb: HTTPVerb,
                               headers: [String: String]? = nil,
                               body: Data? = nil) throws -> URLRequest {
+        let urlString = buildUrlString(urlString)
         guard let url = URL(string: urlString, relativeTo: baseUrl) else {
             throw OWSAssertionError("Invalid url.")
         }
