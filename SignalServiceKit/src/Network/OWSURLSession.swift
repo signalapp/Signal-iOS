@@ -50,6 +50,14 @@ public class OWSURLSession: NSObject {
 
     private var extraHeaders = [String: String]()
 
+    @objc
+    public let censorshipCircumventionHost: String?
+
+    @objc
+    public var isUsingCensorshipCircumvention: Bool {
+        censorshipCircumventionHost != nil
+    }
+
     @objc(addExtraHeader:withValue:)
     public func addExtraHeader(_ header: String, value: String) {
         owsAssertDebug(!header.isEmpty)
@@ -79,10 +87,15 @@ public class OWSURLSession: NSObject {
     }
 
     @objc
-    public init(baseUrl: URL?, securityPolicy: AFSecurityPolicy, configuration: URLSessionConfiguration) {
+    public init(baseUrl: URL?,
+                securityPolicy: AFSecurityPolicy,
+                configuration: URLSessionConfiguration,
+                censorshipCircumventionHost: String? = nil) {
         self.baseUrl = baseUrl
         self.securityPolicy = securityPolicy
         self.configuration = configuration
+        self.censorshipCircumventionHost = censorshipCircumventionHost
+
         super.init()
     }
 
@@ -231,6 +244,43 @@ public class OWSURLSession: NSObject {
 
         request.httpBody = body
         return request
+    }
+
+    private func buildUrlString(_ rawUrlString: String) -> String {
+        var urlString = rawUrlString
+        guard let censorshipCircumventionHost = censorshipCircumventionHost else {
+            // Censorship circumvention not active.
+            return urlString
+        }
+        guard !censorshipCircumventionHost.isEmpty else {
+            owsFailDebug("Invalid censorshipCircumventionHost.")
+            return urlString
+        }
+        guard let baseUrl = baseUrl else {
+            owsFailDebug("Missing baseUrl.")
+            return urlString
+        }
+
+        if urlString.hasPrefix(censorshipCircumventionHost) {
+            // Remove protocol/host prefix so that URL is relative to baseUrl.
+            urlString = urlString.substring(from: censorshipCircumventionHost.count)
+        } else if urlString.lowercased().hasPrefix("http") {
+            // Censorship circumvention will work with relative URLs and
+            // absolute URLs that match the expected protocol/host prefix.
+            // Other absolute URLs should not be used with this session.
+            owsFailDebug("Unexpected URL for censorship circumvention.")
+        }
+        if urlString.hasPrefix("/") {
+            // Remove leading forward slash if present so that URL
+            // is relative to any path components in the baseUrl.
+            urlString = urlString.substring(from: 1)
+        }
+        var result = baseUrl.absoluteString
+        if !result.hasSuffix("/") {
+            result += "/"
+        }
+        result += urlString
+        return result
     }
 
     typealias TaskIdentifier = Int
