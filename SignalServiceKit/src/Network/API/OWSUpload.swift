@@ -5,6 +5,10 @@
 import Foundation
 import PromiseKit
 
+public enum OWSUploadError: Error {
+    case missingRangeHeader
+}
+
 @objc
 public class OWSUpload: NSObject {
 
@@ -25,6 +29,53 @@ public class OWSUpload: NSObject {
 
 // MARK: -
 
+fileprivate extension OWSUpload {
+
+    // MARK: - Dependencies
+
+    static var socketManager: TSSocketManager {
+        return SSKEnvironment.shared.socketManager
+    }
+
+    static var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    static var signalService: OWSSignalService {
+        return OWSSignalService.sharedInstance()
+    }
+
+    // MARK: -
+
+    static func cdnSessionManager(forCdnNumber cdnNumber: UInt32) -> AFHTTPSessionManager {
+        signalService.cdnSessionManager(forCdnNumber: cdnNumber)
+    }
+
+    static var cdn0SessionManager: AFHTTPSessionManager {
+        signalService.cdnSessionManager(forCdnNumber: 0)
+    }
+
+    // Used for other services like Google.
+    static func googleJSONSessionManager() -> AFHTTPSessionManager {
+        let sessionManager = AFHTTPSessionManager(baseURL: nil, sessionConfiguration: .ephemeral)
+        sessionManager.requestSerializer = AFJSONRequestSerializer()
+        sessionManager.responseSerializer = AFJSONResponseSerializer()
+        return sessionManager
+    }
+
+    static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSession {
+        signalService.cdnURLSession(forCdnNumber: cdnNumber)
+    }
+
+    static var googleUrlSession: OWSURLSession {
+        OWSURLSession(baseUrl: nil,
+                      securityPolicy: OWSURLSession.defaultSecurityPolicy(),
+                      configuration: OWSURLSession.defaultURLSessionConfiguration())
+    }
+}
+
+// MARK: -
+
 // A strong reference should be maintained to this object
 // until it completes.  If it is deallocated, the upload
 // may be cancelled.
@@ -32,22 +83,6 @@ public class OWSUpload: NSObject {
 // This class can be safely accessed and used from any thread.
 @objc
 public class OWSAttachmentUploadV2: NSObject {
-
-    // MARK: - Dependencies
-
-    private var socketManager: TSSocketManager {
-        return SSKEnvironment.shared.socketManager
-    }
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
-    private var signalService: OWSSignalService {
-        return OWSSignalService.sharedInstance()
-    }
-
-    // MARK: -
 
     public typealias ProgressBlock = (Progress) -> Void
 
@@ -133,17 +168,17 @@ public class OWSAttachmentUploadV2: NSObject {
                                 requestBlock: @escaping () -> TSRequest) -> Promise<Any?> {
         return firstly(on: .global()) { () -> Promise<Any?> in
             let formRequest = requestBlock()
-            let shouldUseWebsocket = self.socketManager.canMakeRequests() && !skipWebsocket
+            let shouldUseWebsocket = OWSUpload.socketManager.canMakeRequests() && !skipWebsocket
             if shouldUseWebsocket {
                 return firstly(on: .global()) { () -> Promise<Any?> in
-                    self.socketManager.makeRequestPromise(request: formRequest)
+                    OWSUpload.socketManager.makeRequestPromise(request: formRequest)
                 }.recover(on: .global()) { (_) -> Promise<Any?> in
                     // Failover to REST request.
                     self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
                 }
             } else {
                 return firstly(on: .global()) {
-                    return self.networkManager.makePromise(request: formRequest)
+                    return OWSUpload.networkManager.makePromise(request: formRequest)
                 }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> Any? in
                     return responseObject
                 }
@@ -173,9 +208,9 @@ public class OWSAttachmentUploadV2: NSObject {
         }.then(on: .global()) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
             let uploadUrlPath = "attachments/"
             return OWSUpload.upload(data: attachmentData,
-                                      uploadForm: form,
-                                      uploadUrlPath: uploadUrlPath,
-                                      progressBlock: progressBlock)
+                                    uploadForm: form,
+                                    uploadUrlPath: uploadUrlPath,
+                                    progressBlock: progressBlock)
         }.map(on: .global()) { [weak self] (_) throws -> Void in
             self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -235,7 +270,7 @@ public class OWSAttachmentUploadV2: NSObject {
             return firstly { () -> Promise<URL> in
                 guard let form = form,
                     let uploadV3Metadata = uploadV3Metadata else {
-                    throw OWSAssertionError("Missing form or metadata.")
+                        throw OWSAssertionError("Missing form or metadata.")
                 }
                 return self.fetchResumableUploadLocationV3(form: form, uploadV3Metadata: uploadV3Metadata)
             }.map(on: .global()) { (url: URL) in
@@ -253,18 +288,70 @@ public class OWSAttachmentUploadV2: NSObject {
                                                  progressBlock: progressBlock)
         }.map(on: .global()) { () throws -> Void in
             guard let uploadV3Metadata = uploadV3Metadata else {
-                    throw OWSAssertionError("Missing form or metadata.")
+                throw OWSAssertionError("Missing form or metadata.")
             }
 
             self.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
 
-            OWSFileSystem.deleteFile(uploadV3Metadata.temporaryFileUrl.path)
+            do {
+                try OWSFileSystem.deleteFile(url: uploadV3Metadata.temporaryFileUrl)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
         }
+    }
+
+    private enum UploadV3FailureMode {
+        case noMoreRetries
+        case retryImmediately
+        case retryAfterDelay(delay: TimeInterval)
     }
 
     private struct UploadV3Metadata {
         let temporaryFileUrl: URL
         let dataLength: Int
+        let startDate = Date()
+
+        private let _progress = AtomicValue<Int>(0)
+
+        fileprivate func recordProgress(_ value: Int) {
+            // This value should only monotonically increase.
+            owsAssertDebug(value >= _progress.get())
+            _progress.set(value)
+        }
+
+        fileprivate var progress: Int {
+            _progress.get()
+        }
+
+        private let _attemptCount = AtomicUInt(0)
+        fileprivate var attemptCount: UInt {
+            _attemptCount.get()
+        }
+
+        private let failuresWithoutProgressCount = AtomicUInt(0)
+
+        fileprivate var canRetry: Bool {
+            let maxRetryInterval = kMinuteInterval * 5
+            return abs(startDate.timeIntervalSinceNow) < maxRetryInterval
+        }
+
+        fileprivate func recordFailure(didAttemptMakeAnyProgress: Bool) -> UploadV3FailureMode {
+            _attemptCount.increment()
+
+            guard canRetry else {
+                return .noMoreRetries
+            }
+            if didAttemptMakeAnyProgress {
+                // Reset the "failures without progress" counter.
+                failuresWithoutProgressCount.set(0)
+
+                return .retryImmediately
+            }
+            let failuresWithoutProgressCount = self.failuresWithoutProgressCount.increment()
+            let delay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: failuresWithoutProgressCount)
+            return .retryAfterDelay(delay: delay)
+        }
     }
 
     private func prepareUploadV3() -> Promise<UploadV3Metadata> {
@@ -290,23 +377,31 @@ public class OWSAttachmentUploadV2: NSObject {
             Logger.info("attemptCount: \(attemptCount)")
         }
 
-        return firstly(on: .global()) { () -> Promise<AFHTTPSessionManager.Response> in
+        return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
             let urlString = form.signedUploadLocation
-            let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: form.cdnNumber)
+            guard urlString.lowercased().hasPrefix("http") else {
+                throw OWSAssertionError("Invalid signedUploadLocation.")
+            }
             var headers = form.headers
-            headers["Content-Length"] = OWSFormat.formatInt(uploadV3Metadata.dataLength)
+            // Remove host header.
+            headers = headers.filter { (key, _) in
+                key.lowercased() != "host"
+            }
+            headers["Content-Length"] = "0"
             headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
 
-            return sessionManager.postPromise(urlString, headers: headers)
-        }.map(on: .global()) { (task: URLSessionDataTask, _: Any?) in
-            guard let response = task.response as? HTTPURLResponse else {
-                throw OWSAssertionError("Missing response.")
-            }
+            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
+            let body = "".data(using: .utf8)
+            return urlSession.dataTaskPromise(urlString, verb: .post, headers: headers, body: body)
+        }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
             guard response.statusCode == 201 else {
                 throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
             }
             guard let locationHeader = response.allHeaderFields["Location"] as? String else {
                 throw OWSAssertionError("Missing location header.")
+            }
+            guard locationHeader.lowercased().hasPrefix("http") else {
+                throw OWSAssertionError("Invalid location.")
             }
             guard let locationUrl = URL(string: locationHeader) else {
                 throw OWSAssertionError("Invalid location header.")
@@ -316,7 +411,6 @@ public class OWSAttachmentUploadV2: NSObject {
             guard IsNetworkConnectivityFailure(error) else {
                 throw error
             }
-            // TODO: Tune this value.
             let maxRetryCount: Int = 3
             guard attemptCount < maxRetryCount else {
                 Logger.warn("No more retries: \(attemptCount). ")
@@ -332,22 +426,16 @@ public class OWSAttachmentUploadV2: NSObject {
     private func performResumableUploadV3(form: OWSUploadFormV3,
                                           uploadV3Metadata: UploadV3Metadata,
                                           locationUrl: URL,
-                                          progressBlock: ProgressBlock? = nil,
-                                          attemptCount: Int = 0) -> Promise<Void> {
+                                          progressBlock progressBlockParam: ProgressBlock?,
+                                          bytesAlreadyUploaded: Int = 0) -> Promise<Void> {
+        let attemptCount = uploadV3Metadata.attemptCount
         if attemptCount > 0 {
             Logger.info("attemptCount: \(attemptCount)")
         }
 
-        return firstly(on: .global()) { () -> Promise<Int> in
-            let isRetry = attemptCount > 0
-            guard isRetry else {
-                return Promise.value(0)
-            }
-            return self.getResumableUploadProgressV3(form: form,
-                                                     uploadV3Metadata: uploadV3Metadata,
-                                                     locationUrl: locationUrl)
-        }.then(on: .global()) { (bytesAlreadyUploaded: Int) -> Promise<Void> in
+        return firstly(on: .global()) { () -> Promise<Void> in
             let totalDataLength = uploadV3Metadata.dataLength
+
             if bytesAlreadyUploaded > totalDataLength {
                 throw OWSAssertionError("Unexpected content length.")
             }
@@ -358,84 +446,119 @@ public class OWSAttachmentUploadV2: NSObject {
 
             let formatInt = OWSFormat.formatInt
             let urlString = locationUrl.absoluteString
-            let session = OWSURLSession()
+            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
+
+            // Wrap the progress block.
+            let progressBlock = { (progress: Progress) in
+                // Total progress is (progress from previous attempts/slices +
+                // progress from this attempt/slice).
+                let totalCompleted: Int = bytesAlreadyUploaded + Int(progress.completedUnitCount)
+                assert(totalCompleted >= 0)
+                assert(totalCompleted <= totalDataLength)
+
+                // When resuming, we'll only upload a slice of the data.
+                // We need to massage the progress to reflect the bytes already uploaded.
+                let sliceProgress = Progress(parent: nil, userInfo: nil)
+                sliceProgress.totalUnitCount = Int64(totalDataLength)
+                sliceProgress.completedUnitCount = Int64(totalCompleted)
+
+                progressBlockParam?(sliceProgress)
+            }
 
             if bytesAlreadyUploaded == 0 {
                 // Either first attempt or no progress so far, use entire encrypted data.
-                let headers: [String: String] = [
-                    "Content-Length": formatInt(uploadV3Metadata.dataLength)
-                ]
-                return session.uploadTaskPromise(urlString,
-                                                 verb: .put,
-                                                 headers: headers,
-                                                 dataUrl: uploadV3Metadata.temporaryFileUrl,
-                                                 progressBlock: progressBlock).asVoid()
+                var headers = [String: String]()
+                headers["Content-Length"] = formatInt(uploadV3Metadata.dataLength)
+                return urlSession.uploadTaskPromise(urlString,
+                                                    verb: .put,
+                                                    headers: headers,
+                                                    dataUrl: uploadV3Metadata.temporaryFileUrl,
+                                                    progressBlock: progressBlock).asVoid()
             } else {
                 // Resuming, slice attachment data in memory.
                 //
                 // TODO: It'd be better if we could slice on disk.
                 let entireFileData = try Data(contentsOf: uploadV3Metadata.temporaryFileUrl)
-                let dataSlice = entireFileData.suffix(from: bytesAlreadyUploaded)
+                let dataSlice = entireFileData.suffix(from: Int(bytesAlreadyUploaded))
                 guard dataSlice.count + bytesAlreadyUploaded == entireFileData.count else {
                     throw OWSAssertionError("Could not slice the data.")
                 }
 
                 // Write the slice to a temporary file.
-                let dataSliceFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
-                let dataSliceFileUrl = URL(fileURLWithPath: dataSliceFilePath)
+                let dataSliceFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
                 try dataSlice.write(to: dataSliceFileUrl)
 
                 // Example: Resuming after uploading 2359296 of 7351375 bytes.
                 //
                 // Content-Range: bytes 2359296-7351374/7351375
                 // Content-Length: 4992079
-                let headers: [String: String] = [
-                    "Content-Length": formatInt(dataSlice.count),
-                    "Content-Range": "bytes \(formatInt(bytesAlreadyUploaded))-\(formatInt(totalDataLength - 1))/\(formatInt(totalDataLength))"
-                ]
-
-                // We need to massage the progress to reflect the bytes
-                // already uploaded.
-                let modifiedProgressBlock = { (progress: Progress) in
-                    let sliceProgress = Progress(parent: nil, userInfo: nil)
-                    sliceProgress.totalUnitCount = progress.totalUnitCount + Int64(bytesAlreadyUploaded)
-                    sliceProgress.completedUnitCount = progress.completedUnitCount + Int64(bytesAlreadyUploaded)
-                    progressBlock?(sliceProgress)
-                }
+                var headers = [String: String]()
+                headers["Content-Length"] = formatInt(dataSlice.count)
+                headers["Content-Range"] = "bytes \(formatInt(bytesAlreadyUploaded))-\(formatInt(totalDataLength - 1))/\(formatInt(totalDataLength))"
 
                 return firstly(on: .global()) {
-                    session.uploadTaskPromise(urlString,
-                                              verb: .put,
-                                              headers: headers,
-                                              dataUrl: dataSliceFileUrl,
-                                              progressBlock: modifiedProgressBlock).asVoid()
+                    urlSession.uploadTaskPromise(urlString,
+                                                 verb: .put,
+                                                 headers: headers,
+                                                 dataUrl: dataSliceFileUrl,
+                                                 progressBlock: progressBlock).asVoid()
                 }.ensure(on: .global()) {
-                    OWSFileSystem.deleteFile(dataSliceFilePath)
+                    do {
+                        try OWSFileSystem.deleteFile(url: dataSliceFileUrl)
+                    } catch {
+                        owsFailDebug("Error: \(error)")
+                    }
                 }
             }
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+
             guard IsNetworkConnectivityFailure(error) else {
                 throw error
             }
-            // TODO: Tune this value.
-            let maxRetryCount: Int = 16
-            guard attemptCount < maxRetryCount else {
-                Logger.warn("No more retries: \(attemptCount). ")
+            guard uploadV3Metadata.canRetry else {
                 throw error
             }
-            Logger.info("Trying to resume.")
+
             return firstly {
-                // To avoid 308 "Resume Incomplete" with a Range header,
-                // we wait briefly before retrying to give Cloud Storage time
-                // to persist the uploaded data. The docs indicate that we
-                // should "wait a few seconds" but don't specify a specific
-                // duration.
-                after(seconds: 3.0)
-            }.then(on: .global()) {
-                self.performResumableUploadV3(form: form,
-                                              uploadV3Metadata: uploadV3Metadata,
-                                              locationUrl: locationUrl,
-                                              attemptCount: attemptCount + 1)
+                self.getResumableUploadProgressV3(form: form,
+                                                  uploadV3Metadata: uploadV3Metadata,
+                                                  locationUrl: locationUrl)
+            }.then(on: .global()) { (bytesAlreadyUploaded: Int) -> Promise<Void> in
+
+                let didAttemptMakeAnyProgress = uploadV3Metadata.progress < bytesAlreadyUploaded
+
+                // We need to record the progress so that we can use it
+                // to resume after failures.
+                uploadV3Metadata.recordProgress(bytesAlreadyUploaded)
+
+                let failureMode = uploadV3Metadata.recordFailure(didAttemptMakeAnyProgress: didAttemptMakeAnyProgress)
+
+                if case .noMoreRetries = failureMode {
+                    Logger.warn("No more retries. ")
+                    throw error
+                }
+
+                Logger.info("Trying to resume.")
+
+                return firstly { () -> Guarantee<Void> in
+                    switch failureMode {
+                    case .noMoreRetries:
+                        owsFailDebug("No more retries.")
+                        return Guarantee.value(())
+                    case .retryImmediately:
+                        return Guarantee.value(())
+                    case .retryAfterDelay(let delay):
+                        // We wait briefly before retrying.
+                        return after(seconds: delay)
+                    }
+                }.then(on: .global()) {
+                    // Retry
+                    self.performResumableUploadV3(form: form,
+                                                  uploadV3Metadata: uploadV3Metadata,
+                                                  locationUrl: locationUrl,
+                                                  progressBlock: progressBlockParam,
+                                                  bytesAlreadyUploaded: bytesAlreadyUploaded)
+                }
             }
         }
     }
@@ -443,16 +566,55 @@ public class OWSAttachmentUploadV2: NSObject {
     // Determine how much has already been uploaded.
     private func getResumableUploadProgressV3(form: OWSUploadFormV3,
                                               uploadV3Metadata: UploadV3Metadata,
-                                              locationUrl: URL) -> Promise<Int> {
+                                              locationUrl: URL,
+                                              attemptCount: UInt = 0) -> Promise<Int> {
+
+        return firstly {
+            // Google Cloud Storage seems to need time to store the uploaded data,
+            // so we wait before querying for the current upload progress.
+            after(seconds: 5)
+        }.then(on: .global()) { () -> Promise<Int> in
+            self.getResumableUploadProgressV3Attempt(form: form,
+                                                     uploadV3Metadata: uploadV3Metadata,
+                                                     locationUrl: locationUrl)
+        }.recover(on: .global()) { (error: Error) -> Promise<Int> in
+            guard attemptCount < 2 else {
+                // Default to using last known progress.
+                return Promise.value(uploadV3Metadata.progress)
+            }
+            var canRetry = false
+            if case OWSUploadError.missingRangeHeader = error {
+                canRetry = true
+            } else if IsNetworkConnectivityFailure(error) {
+                canRetry = true
+            }
+            guard canRetry else {
+                throw error
+            }
+            return self.getResumableUploadProgressV3(form: form,
+                                                     uploadV3Metadata: uploadV3Metadata,
+                                                     locationUrl: locationUrl,
+                                                     attemptCount: attemptCount + 1)
+        }
+    }
+
+    // Determine how much has already been uploaded.
+    private func getResumableUploadProgressV3Attempt(form: OWSUploadFormV3,
+                                                     uploadV3Metadata: UploadV3Metadata,
+                                                     locationUrl: URL) -> Promise<Int> {
+
         return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
             let urlString = locationUrl.absoluteString
-            let headers: [String: String] = [
-                "Content-Length": OWSFormat.formatInt(0),
-                "Content-Range": "bytes */\(OWSFormat.formatInt(uploadV3Metadata.dataLength))"
-            ]
 
-            let session = OWSURLSession()
-            return session.dataTaskPromise(urlString, verb: .put, headers: headers)
+            var headers = [String: String]()
+            headers["Content-Length"] = "0"
+            headers["Content-Range"] = "bytes */\(OWSFormat.formatInt(uploadV3Metadata.dataLength))"
+
+            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
+
+            let body = "".data(using: .utf8)
+
+            return urlSession.dataTaskPromise(urlString, verb: .put, headers: headers, body: body)
         }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
 
             if response.statusCode != 308 {
@@ -460,6 +622,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 // Return zero to restart the upload.
                 return 0
             }
+
             // From the docs:
             //
             // If you receive a 308 Resume Incomplete response with no Range header,
@@ -471,13 +634,11 @@ public class OWSAttachmentUploadV2: NSObject {
             // * https://cloud.google.com/storage/docs/performing-resumable-uploads#resume-upload
             // * https://cloud.google.com/storage/docs/resumable-uploads
             guard let rangeHeader = response.allHeaderFields["Range"] as? String else {
-                owsFailDebug("Missing Range header.")
-                // Return zero to restart the upload.
-                return 0
+                Logger.warn("Missing Range header.")
+
+                throw OWSUploadError.missingRangeHeader
             }
-            // TODO: Google Cloud Storage isn't currently returning the Range header.
-            // Until we've verified that this works, log the range header.
-            Logger.info("rangeHeader: \(rangeHeader). ")
+
             let expectedPrefix = "bytes=0-"
             guard rangeHeader.hasPrefix(expectedPrefix) else {
                 owsFailDebug("Invalid Range header: \(rangeHeader).")
@@ -487,15 +648,16 @@ public class OWSAttachmentUploadV2: NSObject {
             let rangeEndString = rangeHeader.suffix(rangeHeader.count - expectedPrefix.count)
             guard !rangeEndString.isEmpty,
                 let rangeEnd = Int(rangeEndString) else {
-                owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
-                // Return zero to restart the upload.
-                return 0
+                    owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
+                    // Return zero to restart the upload.
+                    return 0
             }
+
             // rangeEnd is the _index_ of the last uploaded bytes, e.g.:
             // * 0 if 1 byte has been uploaded,
             // * N if N+1 bytes have been uploaded.
             let bytesAlreadyUploaded = rangeEnd + 1
-            Logger.info("rangeEnd: \(rangeEnd), bytesAlreadyUploaded: \(bytesAlreadyUploaded).")
+            Logger.verbose("rangeEnd: \(rangeEnd), bytesAlreadyUploaded: \(bytesAlreadyUploaded).")
             return bytesAlreadyUploaded
         }
     }
@@ -505,14 +667,6 @@ public class OWSAttachmentUploadV2: NSObject {
 
 public extension OWSUpload {
 
-    // MARK: - Dependencies
-
-    private class var uploadSessionManager: AFHTTPSessionManager {
-        OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: 0)
-    }
-
-    // MARK: -
-
     class func upload(data: Data,
                       uploadForm: OWSUploadFormV2,
                       uploadUrlPath: String,
@@ -520,9 +674,9 @@ public extension OWSUpload {
 
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {
-            self.uploadSessionManager.post(uploadUrlPath,
-                                           parameters: nil,
-                                           constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
+            self.cdn0SessionManager.post(uploadUrlPath,
+                                         parameters: nil,
+                                         constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
 
                                             // We have to build up the form manually vs. simply passing in a parameters dict
                                             // because AWS is sensitive to the order of the form params (at least the "key"
@@ -535,14 +689,14 @@ public extension OWSUpload {
 
                                             formData.appendPart(withForm: data, name: "file")
             },
-                                           progress: { progress in
+                                         progress: { progress in
                                             Logger.verbose("progress: \(progress.fractionCompleted)")
 
                                             if let progressBlock = progressBlock {
                                                 progressBlock(progress)
                                             }
             },
-                                           success: { (_, _) in
+                                         success: { (_, _) in
                                             Logger.verbose("Success.")
                                             let uploadedUrlPath = uploadForm.key
                                             resolver.fulfill(uploadedUrlPath)

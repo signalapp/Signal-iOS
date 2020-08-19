@@ -41,21 +41,47 @@ public class OWSURLSession: NSObject {
         return queue
     }()
 
+    private let baseUrl: URL?
+
     private let configuration: URLSessionConfiguration
 
-    private let securityPolicy = OWSHTTPSecurityPolicy.shared()
+    // TODO: Replace AFSecurityPolicy.
+    private let securityPolicy: AFSecurityPolicy
+
+    private var extraHeaders = [String: String]()
+
+    @objc(addExtraHeader:withValue:)
+    public func addExtraHeader(_ header: String, value: String) {
+        owsAssertDebug(!header.isEmpty)
+        owsAssertDebug(!value.isEmpty)
+        owsAssertDebug(extraHeaders[header] == nil)
+
+        extraHeaders[header] = value
+    }
 
     private lazy var session: URLSession = {
         URLSession(configuration: configuration, delegate: self, delegateQueue: Self.operationQueue)
     }()
 
     @objc
-    public override convenience init() {
-        self.init(configuration: .ephemeral)
+    public static func defaultSecurityPolicy() -> AFSecurityPolicy {
+        AFSecurityPolicy.default()
     }
 
     @objc
-    public init(configuration: URLSessionConfiguration) {
+    public static func signalServiceSecurityPolicy() -> AFSecurityPolicy {
+        OWSHTTPSecurityPolicy.shared()
+    }
+
+    @objc
+    public static func defaultURLSessionConfiguration() -> URLSessionConfiguration {
+        URLSessionConfiguration.ephemeral
+    }
+
+    @objc
+    public init(baseUrl: URL?, securityPolicy: AFSecurityPolicy, configuration: URLSessionConfiguration) {
+        self.baseUrl = baseUrl
+        self.securityPolicy = securityPolicy
         self.configuration = configuration
         super.init()
     }
@@ -127,9 +153,10 @@ public class OWSURLSession: NSObject {
 
     func dataTaskPromise(_ urlString: String,
                          verb: HTTPVerb,
-                         headers: [String: String]? = nil) -> Promise<Response> {
+                         headers: [String: String]? = nil,
+                         body: Data?) -> Promise<Response> {
         firstly(on: .global()) { () -> Promise<Response> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers, body: body)
             return self.dataTaskPromise(request: request)
         }
     }
@@ -170,17 +197,39 @@ public class OWSURLSession: NSObject {
 
     private func buildRequest(_ urlString: String,
                               verb: HTTPVerb,
-                              headers: [String: String]? = nil) throws -> URLRequest {
-        guard let url = URL(string: urlString) else {
+                              headers: [String: String]? = nil,
+                              body: Data? = nil) throws -> URLRequest {
+        guard let url = URL(string: urlString, relativeTo: baseUrl) else {
             throw OWSAssertionError("Invalid url.")
         }
         var request = URLRequest(url: url)
         request.httpMethod = verb.httpMethod
+
+        var headerSet = Set<String>()
+
+        // Add the headers.
         if let headers = headers {
             for (headerField, headerValue) in headers {
+                owsAssertDebug(!headerSet.contains(headerField.lowercased()))
+                headerSet.insert(headerField.lowercased())
+
                 request.addValue(headerValue, forHTTPHeaderField: headerField)
+
             }
         }
+
+        // Add the "extra headers".
+        for (headerField, headerValue) in extraHeaders {
+            guard !headerSet.contains(headerField.lowercased()) else {
+                owsFailDebug("Skipping redundant header: \(headerField)")
+                continue
+            }
+            headerSet.insert(headerField.lowercased())
+
+            request.addValue(headerValue, forHTTPHeaderField: headerField)
+        }
+
+        request.httpBody = body
         return request
     }
 

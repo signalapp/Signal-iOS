@@ -136,7 +136,11 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     } else if ([domain isEqualToString:OWSFrontingHost_GoogleUAE]) {
         return self.googlePinningPolicy;
     } else {
-        OWSFailDebug(@"unknown pinning domain.");
+        if ([domain containsString:@".google."]) {
+            OWSLogWarn(@"Unknown pinning domain.");
+        } else {
+            OWSFailDebug(@"Unknown pinning domain.");
+        }
         return self.googlePinningPolicy;
     }
 }

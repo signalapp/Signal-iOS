@@ -176,19 +176,7 @@ open class CDNDownloadOperation: OWSOperation {
     }
 
     override public func retryInterval() -> TimeInterval {
-        // Arbitrary backoff factor...
-        // With backOffFactor of 1.9
-        // try  1 delay:  0.00s
-        // try  2 delay:  0.19s
-        // ...
-        // try  5 delay:  1.30s
-        // ...
-        // try 11 delay: 61.31s
-        let backoffFactor = 1.9
-        let maxBackoff = kHourInterval
-
-        let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.errorCount)))
-        return seconds
+        return OWSOperation.retryIntervalForExponentialBackoff(failureCount: errorCount)
     }
 
     // MARK: - Corrupt Data

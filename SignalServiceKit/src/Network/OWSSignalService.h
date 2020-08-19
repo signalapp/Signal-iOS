@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange;
 
 @class AFHTTPSessionManager;
+@class OWSURLSession;
 @class SDSKeyValueStore;
 @class TSAccountManager;
 
@@ -24,6 +25,9 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 /// For uploading and downloading blobs on the specified CDN.
 - (AFHTTPSessionManager *)cdnSessionManagerForCdnNumber:(UInt32)cdnNumber;
+
+/// For uploading and downloading blobs on the specified CDN.
+- (OWSURLSession *)cdnURLSessionForCdnNumber:(UInt32)cdnNumber;
 
 #pragma mark - Censorship Circumvention
 

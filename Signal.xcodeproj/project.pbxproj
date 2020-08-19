@@ -3439,6 +3439,7 @@
 				3499997D22EF1E2100654932 /* FTS */,
 				B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */,
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
+				4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */,
 				455AC69D1F4F8B0300134004 /* ImageCacheTest.swift */,
 				34DB0BEC2011548B007B313F /* OWSDatabaseConverterTest.m */,
 				34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */,
@@ -3450,7 +3451,6 @@
 				B660F6B41C29868000687D6E /* UtilTest.m */,
 				340CCB6F2305962A005243B3 /* YDBToGRDBMigrationKeyValueTest.swift */,
 				340CCB702305962B005243B3 /* YDBToGRDBMigrationModelTest.swift */,
-				4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
