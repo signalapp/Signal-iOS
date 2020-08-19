@@ -307,6 +307,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
         OWSLogInfo(@"using reflector CDNSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
         return [self reflectorCDNUrlSessionWithCensorshipConfiguration:censorshipConfiguration
+                                                          cdnServerUrl:cdnServerUrl
                                                    cdnCensorshipPrefix:cdnCensorshipPrefix];
     } else {
         return [self defaultCDNUrlSessionForBaseURL:cdnServerUrl];
@@ -336,7 +337,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     OWSAssertDebug(baseUrl);
     return [[OWSURLSession alloc] initWithBaseUrl:baseUrl
                                    securityPolicy:OWSURLSession.signalServiceSecurityPolicy
-                                    configuration:OWSURLSession.defaultURLSessionConfiguration];
+                                    configuration:OWSURLSession.defaultURLSessionConfiguration
+                      censorshipCircumventionHost:nil];
 }
 
 - (AFHTTPSessionManager *)reflectorCDNSessionManagerWithCensorshipConfiguration:
@@ -362,13 +364,15 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (OWSURLSession *)reflectorCDNUrlSessionWithCensorshipConfiguration:
                        (OWSCensorshipConfiguration *)censorshipConfiguration
+                                                        cdnServerUrl:(NSString *)cdnServerUrl
                                                  cdnCensorshipPrefix:(NSString *)cdnCensorshipPrefix
 {
     NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
     NSURL *baseUrl = [frontingURL URLByAppendingPathComponent:cdnCensorshipPrefix];
     OWSURLSession *urlSession = [[OWSURLSession alloc] initWithBaseUrl:baseUrl
                                                         securityPolicy:censorshipConfiguration.domainFrontSecurityPolicy
-                                                         configuration:OWSURLSession.defaultURLSessionConfiguration];
+                                                         configuration:OWSURLSession.defaultURLSessionConfiguration
+                                           censorshipCircumventionHost:cdnServerUrl];
     [urlSession addExtraHeader:@"Host" withValue:TSConstants.censorshipReflectorHost];
     return urlSession;
 }

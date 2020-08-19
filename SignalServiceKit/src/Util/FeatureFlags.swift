@@ -397,7 +397,7 @@ public class DebugFlags: BaseFlags {
 
     static let forceMentions = build.includes(.dev)
 
-    static let forceAttachmentUploadV3 = build.includes(.qa)
+    static let forceAttachmentUploadV3 = build.includes(.beta)
 
     @objc
     public static let messageDetailsExtraInfo = build.includes(.qa)
