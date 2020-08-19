@@ -705,7 +705,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     if (self.hasBodyText && message.linkPreview) {
         self.linkPreview = message.linkPreview;
-        if (message.linkPreview.imageAttachmentId.length > 0) {
+        if (message.linkPreview.imageAttachmentId && message.linkPreview.imageAttachmentId.length) {
             TSAttachment *_Nullable linkPreviewAttachment =
                 [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
             if (!linkPreviewAttachment) {
