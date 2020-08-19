@@ -618,7 +618,11 @@ class MessageContext(BaseContext):
                         else:
                             writer.add('return true')
                     else:
-                        writer.add('return proto.%s' % field.has_accessor_name() )
+                        is_uuid_or_e164 = field.name.endswith('Uuid') or field.name.endswith('E164')
+                        if is_uuid_or_e164:
+                            writer.add('return proto.%s && !proto.%s.isEmpty' % ( field.has_accessor_name(), field.name_swift, ) ) 
+                        else:
+                            writer.add('return proto.%s' % field.has_accessor_name() ) 
                     writer.pop_indent()
                     writer.add('}')
                     writer.newline()
@@ -688,7 +692,7 @@ class MessageContext(BaseContext):
             writer.add('guard %s else {' % e164_field.has_accessor_name())
             writer.push_indent()
             writer.add('// Shouldn’t happen in prod yet')
-            writer.add('assert(FeatureFlags.allowUUIDOnlyContacts)')
+            writer.add('assert(RemoteConfig.allowUUIDOnlyContacts)')
             writer.add('return nil')
             writer.pop_indent()
             writer.add('}')
