@@ -1279,9 +1279,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             return
         } else if shouldDelay {
             hasDismissed = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.dismissImmediately(completion: completion)
+
+            if UIApplication.shared.applicationState == .active {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.dismissImmediately(completion: completion)
+                }
+            } else {
+                dismissImmediately(completion: completion)
             }
         } else {
             hasDismissed = true
