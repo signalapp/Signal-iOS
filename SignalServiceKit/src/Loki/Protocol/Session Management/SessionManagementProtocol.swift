@@ -73,6 +73,7 @@ public final class SessionManagementProtocol : NSObject {
     public static func shouldUseFallbackEncryption(for message: TSOutgoingMessage, recipientID: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
         if SharedSenderKeysImplementation.shared.isClosedGroup(recipientID) { return false }
         else if message is SessionRequestMessage { return true }
+        else if message is EndSessionMessage { return true }
         else if let message = message as? DeviceLinkMessage, message.kind == .request { return true }
         else if message is OWSOutgoingNullMessage { return false }
         return !storage.containsSession(recipientID, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
@@ -146,7 +147,7 @@ public final class SessionManagementProtocol : NSObject {
             guard ECKeyPair.isValidHexEncodedPublicKey(candidate: device) else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: device, transaction: transaction)
             thread.save(with: transaction)
-            let endSessionMessage = EndSessionMessage(in: thread, messageBody: "TERMINATE", attachmentId: nil)
+            let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread)
             let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
             messageSenderJobQueue.add(message: endSessionMessage, transaction: transaction)
         }
