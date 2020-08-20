@@ -1450,13 +1450,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSPrimaryStorage *storage = self.primaryStorage;
     SignalRecipient *recipient = messageSend.recipient;
     OWSAssertDebug(recipientID.length > 0);
-
-    __block BOOL hasSession;
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        hasSession = [storage containsSession:recipientID deviceId:[deviceId intValue] protocolContext:transaction];
-    } error:nil];
-    if (hasSession) { return YES; }
-
+    
     // Discard "typing indicator" messages if there is no existing session with the user.
     BOOL canSafelyBeDiscarded = messageSend.message.isOnline;
     if (canSafelyBeDiscarded) {
@@ -1467,6 +1461,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     __block NSException *exception;
 
     if (!bundle) {
+        __block BOOL hasSession;
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            hasSession = [storage containsSession:recipientID deviceId:[deviceId intValue] protocolContext:transaction];
+        } error:nil];
+        if (hasSession) { return YES; }
+
         TSOutgoingMessage *message = messageSend.message;
         // Loki: Remove this when we have shared sender keys
         // ========
