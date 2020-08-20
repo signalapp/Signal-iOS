@@ -29,6 +29,7 @@ public struct ChangedGroupModel {
 
 // MARK: -
 
+// TODO: Rename to GroupsV2IncomingChanges
 public class GroupsV2Changes {
 
     // GroupsV2Changes has one responsibility: applying incremental
@@ -75,6 +76,7 @@ public class GroupsV2Changes {
         var newGroupName: String? = oldGroupModel.groupName
         var newAvatarData: Data? = oldGroupModel.groupAvatarData
         var newAvatarUrlPath = oldGroupModel.avatarUrlPath
+        var newInviteLinkPassword: Data? = oldGroupModel.inviteLinkPassword
 
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
@@ -82,13 +84,13 @@ public class GroupsV2Changes {
         let oldGroupAccess: GroupAccess = oldGroupModel.access
         var newMembersAccess = oldGroupAccess.members
         var newAttributesAccess = oldGroupAccess.attributes
+        var newAddFromInviteLinkAccess = oldGroupAccess.addFromInviteLink
 
-        if !oldGroupMembership.isPendingOrNonPendingMember(changeAuthorUuid) {
+        if !oldGroupMembership.isMemberOfAnyKind(changeAuthorUuid) {
             owsFailDebug("changeAuthorUuid not a full member of the group.")
         }
-        let isChangeAuthorMember = oldGroupMembership.isNonPendingMember(changeAuthorUuid)
-        let isChangeAuthorAdmin = (oldGroupMembership.isNonPendingMember(changeAuthorUuid) &&
-            oldGroupMembership.isAdministrator(changeAuthorUuid))
+        let isChangeAuthorMember = oldGroupMembership.isFullMember(changeAuthorUuid)
+        let isChangeAuthorAdmin = oldGroupMembership.isFullMemberAndAdministrator(changeAuthorUuid)
         let canAddMembers: Bool
         switch oldGroupAccess.members {
         case .unknown:
@@ -99,6 +101,8 @@ public class GroupsV2Changes {
             canAddMembers = isChangeAuthorAdmin
         case .any:
             // We no longer honor the "any" level.
+            canAddMembers = false
+        case .unsatisfiable:
             canAddMembers = false
         }
         let canRemoveMembers = isChangeAuthorAdmin
@@ -114,8 +118,11 @@ public class GroupsV2Changes {
         case .any:
             // We no longer honor the "any" level.
             canEditAttributes = false
+        case .unsatisfiable:
+            canEditAttributes = false
         }
         let canEditAccess = isChangeAuthorAdmin
+        let canEditInviteLinks = isChangeAuthorAdmin
 
         // This client can learn of profile keys from parsing group state protos.
         // After parsing, we should fill in profileKeys in the profile manager.
@@ -146,12 +153,12 @@ public class GroupsV2Changes {
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
 
-            guard !oldGroupMembership.isNonPendingMember(uuid) else {
+            guard !oldGroupMembership.isFullMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addNonPendingMember(uuid, role: role)
+            groupMembershipBuilder.addFullMember(uuid, role: role)
 
             guard let profileKeyCiphertextData = member.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
@@ -176,7 +183,7 @@ public class GroupsV2Changes {
                 // Any member can leave the group.
                 owsFailDebug("Cannot kick member.")
             }
-            if !oldGroupMembership.isNonPendingMember(uuid) {
+            if !oldGroupMembership.isFullMember(uuid) {
                 owsFailDebug("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
@@ -206,14 +213,14 @@ public class GroupsV2Changes {
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
 
-            guard oldGroupMembership.isNonPendingMember(uuid) else {
+            guard oldGroupMembership.isFullMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             if oldGroupMembership.role(for: uuid) == role {
                 owsFailDebug("Member already has that role.")
             }
             groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addNonPendingMember(uuid, role: role)
+            groupMembershipBuilder.addFullMember(uuid, role: role)
         }
 
         for action in changeActionsProto.modifyMemberProfileKeys {
@@ -224,7 +231,7 @@ public class GroupsV2Changes {
             let uuidCiphertext = try presentation.getUuidCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
 
-            guard oldGroupMembership.isNonPendingMember(uuid) else {
+            guard oldGroupMembership.isFullMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
 
@@ -284,12 +291,12 @@ public class GroupsV2Changes {
                 }
                 continue
             }
-            guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
+            guard !oldGroupMembership.isMemberOfAnyKind(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addPendingMember(uuid, role: role, addedByUuid: addedByUuid)
+            groupMembershipBuilder.addPendingProfileKeyMember(uuid, role: role, addedByUuid: addedByUuid)
         }
 
         for action in changeActionsProto.deletePendingMembers {
@@ -309,7 +316,7 @@ public class GroupsV2Changes {
                 }
 
                 guard oldGroupMembership.hasInvalidInvite(forUserId: userId) ||
-                    oldGroupMembership.isPendingMember(uuid) else {
+                    oldGroupMembership.isPendingProfileKeyMember(uuid) else {
                         throw OWSAssertionError("Invalid membership.")
                 }
                 groupMembershipBuilder.removeInvalidInvite(userId: userId)
@@ -336,10 +343,10 @@ public class GroupsV2Changes {
             let userId = uuidCiphertext.serialize().asData
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
 
-            guard oldGroupMembership.isPendingMember(uuid) else {
+            guard oldGroupMembership.isPendingProfileKeyMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            guard !oldGroupMembership.isNonPendingMember(uuid) else {
+            guard !oldGroupMembership.isFullMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             guard let role = oldGroupMembership.role(for: uuid) else {
@@ -347,7 +354,7 @@ public class GroupsV2Changes {
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addNonPendingMember(uuid, role: role)
+            groupMembershipBuilder.addFullMember(uuid, role: role)
 
             if uuid != changeAuthorUuid {
                 // Only the invitee can accept an invitation.
@@ -410,7 +417,7 @@ public class GroupsV2Changes {
             guard let protoAccess = action.attributesAccess else {
                 throw OWSAssertionError("Missing access.")
             }
-            newAttributesAccess = GroupAccess.groupV2Access(forProtoAccess: protoAccess)
+            newAttributesAccess = GroupV2Access.access(forProtoAccess: protoAccess)
 
             if newAttributesAccess == .unknown {
                 owsFailDebug("Unknown attributes access.")
@@ -425,15 +432,99 @@ public class GroupsV2Changes {
             guard let protoAccess = action.membersAccess else {
                 throw OWSAssertionError("Missing access.")
             }
-            newMembersAccess = GroupAccess.groupV2Access(forProtoAccess: protoAccess)
+            newMembersAccess = GroupV2Access.access(forProtoAccess: protoAccess)
 
             if newMembersAccess == .unknown {
                 owsFailDebug("Unknown member access.")
             }
         }
 
+        if let action = changeActionsProto.modifyAddFromInviteLinkAccess {
+            if !canEditInviteLinks {
+                owsFailDebug("Cannot edit addFromInviteLink access.")
+            }
+
+            guard let protoAccess = action.addFromInviteLinkAccess else {
+                throw OWSAssertionError("Missing access.")
+            }
+            newAddFromInviteLinkAccess = GroupV2Access.access(forProtoAccess: protoAccess)
+
+            if newAddFromInviteLinkAccess == .unknown {
+                owsFailDebug("Unknown addFromInviteLink access.")
+            }
+        }
+
+        for action in changeActionsProto.addRequestingMembers {
+            if !canAddMembers {
+                owsFailDebug("Cannot add members.")
+            }
+
+            guard let requestingMember = action.added else {
+                throw OWSAssertionError("Missing requestingMember.")
+            }
+            // TODO: Modify this parsing to reflect action contents.
+            guard let userId = requestingMember.userID else {
+                throw OWSAssertionError("Missing userID.")
+            }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
+            //
+            // TODO: Is this one?
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            guard let profileKeyCiphertextData = requestingMember.profileKey else {
+                throw OWSAssertionError("Missing profileKeyCiphertext.")
+            }
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
+
+            guard let presentationData = requestingMember.presentation else {
+                throw OWSAssertionError("Missing presentation.")
+            }
+            let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
+            let uuidCiphertext = try presentation.getUuidCiphertext()
+            let uuidFromPresentation = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
+            // TODO:
+            guard uuid == uuidFromPresentation else {
+                throw OWSAssertionError("uuids do not match.")
+            }
+
+            guard oldGroupMembership.isMemberOfAnyKind(uuid) else {
+                throw OWSAssertionError("Invalid membership.")
+            }
+
+            let profileKeyCiphertextFromPresentation = try presentation.getProfileKeyCiphertext()
+            let profileKeyFromPresentation = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertextFromPresentation,
+                                                                          uuid: uuid)
+            // TODO:
+            guard profileKey == profileKeyFromPresentation else {
+                throw OWSAssertionError("profileKeys do not match.")
+            }
+
+            guard !oldGroupMembership.isMemberOfAnyKind(uuid) else {
+                throw OWSAssertionError("Invalid membership.")
+            }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
+            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.addRequestingMember(uuid)
+
+            profileKeys[uuid] = profileKey
+        }
+
+        if let action = changeActionsProto.modifyInviteLinkPassword {
+            if !canEditInviteLinks {
+                owsFailDebug("Cannot modify inviteLinkPassword.")
+            }
+
+            // Change clears or updates the group inviteLinkPassword.
+            newInviteLinkPassword = action.inviteLinkPassword
+        }
+
         let newGroupMembership = groupMembershipBuilder.build()
-        let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess)
+        let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess, addFromInviteLink: newAddFromInviteLinkAccess)
+
+        GroupsV2Protos.validateInviteLinkState(inviteLinkPassword: newInviteLinkPassword, groupAccess: newGroupAccess)
 
         var builder = oldGroupModel.asBuilder
         builder.name = newGroupName
@@ -442,6 +533,7 @@ public class GroupsV2Changes {
         builder.groupAccess = newGroupAccess
         builder.groupV2Revision = newRevision
         builder.avatarUrlPath = newAvatarUrlPath
+        builder.inviteLinkPassword = newInviteLinkPassword
         let newGroupModel = try builder.buildAsV2(transaction: transaction)
 
         return ChangedGroupModel(oldGroupModel: oldGroupModel,

@@ -135,8 +135,12 @@ class ConversationSettingsViewController: OWSTableViewController {
         return groupViewHelper.canEditConversationAccess
     }
 
-    var isLocalUserInConversation: Bool {
-        return groupViewHelper.isLocalUserInConversation
+    var isLocalUserFullMemberOfGroup: Bool {
+        return groupViewHelper.isLocalUserFullMemberOfGroup
+    }
+
+    var isLocalUserFullOrInvitedMemberOfGroup: Bool {
+        return groupViewHelper.isLocalUserFullOrInvitedMemberOfGroup
     }
 
     var isGroupThread: Bool {
@@ -318,7 +322,7 @@ class ConversationSettingsViewController: OWSTableViewController {
                     // Thread no longer exists.
                     return false
                 }
-                guard latestThread.isLocalUserInGroup else {
+                guard latestThread.isLocalUserMemberOfAnyKind else {
                     // Local user is no longer in group, e.g. perhaps they just blocked it.
                     return false
                 }
@@ -690,9 +694,8 @@ class ConversationSettingsViewController: OWSTableViewController {
             return false
         }
         let groupMembership = groupModelV2.groupMembership
-        guard groupMembership.isNonPendingMember(localAddress),
-            groupMembership.isAdministrator(localAddress),
-            groupMembership.nonPendingAdministrators.count == 1 else {
+        guard groupMembership.isFullMemberAndAdministrator(localAddress),
+            groupMembership.fullMemberAdministrators.count == 1 else {
                 return false
         }
         return true
@@ -710,7 +713,7 @@ class ConversationSettingsViewController: OWSTableViewController {
             owsFailDebug("missing local address")
             return []
         }
-        var candidates = groupModelV2.groupMembership.nonPendingMembers
+        var candidates = groupModelV2.groupMembership.fullMembers
         candidates.remove(localAddress)
         return candidates
     }

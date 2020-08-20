@@ -24,6 +24,7 @@ public struct TSGroupModelBuilder {
     public var groupSecretParamsData: Data?
     public var newGroupSeed: NewGroupSeed?
     public var avatarUrlPath: String?
+    public var inviteLinkPassword: Data?
 
     public init() {}
 
@@ -39,11 +40,12 @@ public struct TSGroupModelBuilder {
         self.groupV2Revision = groupV2Snapshot.revision
         self.groupSecretParamsData = groupV2Snapshot.groupSecretParamsData
         self.avatarUrlPath = groupV2Snapshot.avatarUrlPath
+        self.inviteLinkPassword = groupV2Snapshot.inviteLinkPassword
     }
 
     public func build(transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
 
-        let allUsers = groupMembership.allUsers
+        let allUsers = groupMembership.allMembersOfAnyKind
         for recipientAddress in allUsers {
             guard recipientAddress.isValid else {
                 throw OWSAssertionError("Invalid address.")
@@ -70,13 +72,16 @@ public struct TSGroupModelBuilder {
 
         switch groupsVersion {
         case .V1:
-            if groupMembership.pendingMembers.count > 0 {
-                owsFailDebug("v1 group has pending members.")
+            if !groupMembership.pendingProfileKeyMembers.isEmpty {
+                owsFailDebug("v1 group has pending profile key members.")
+            }
+            if !groupMembership.pendingRequestMembers.isEmpty {
+                owsFailDebug("v1 group has pending request members.")
             }
             return TSGroupModel(groupId: groupId,
                                 name: name,
                                 avatarData: avatarData,
-                                members: Array(groupMembership.nonPendingMembers))
+                                members: Array(groupMembership.fullMembers))
         case .V2:
             let groupAccess = buildGroupAccess(groupsVersion: groupsVersion)
             let groupSecretParamsData = try buildGroupSecretParamsData(newGroupSeed: newGroupSeed)
@@ -90,7 +95,8 @@ public struct TSGroupModelBuilder {
                                   groupAccess: groupAccess,
                                   revision: groupV2Revision,
                                   secretParamsData: groupSecretParamsData,
-                                  avatarUrlPath: avatarUrlPath)
+                                  avatarUrlPath: avatarUrlPath,
+                                  inviteLinkPassword: inviteLinkPassword)
         }
     }
 
@@ -182,6 +188,7 @@ public extension TSGroupModel {
             builder.groupV2Revision = v2.revision
             builder.groupSecretParamsData = v2.secretParamsData
             builder.avatarUrlPath = v2.avatarUrlPath
+            builder.inviteLinkPassword = v2.inviteLinkPassword
         }
         return builder
     }

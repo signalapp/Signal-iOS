@@ -29,251 +29,217 @@ public extension TSGroupMemberRole {
 
 // MARK: -
 
+// NOTE: We only use this class for backwards compatibility.
+@objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
+class LegacyMemberState: MTLModel {
+    @objc
+    var role: TSGroupMemberRole = .normal
+
+    @objc
+    var isPending: Bool = false
+
+    // Only applies for pending members.
+    @objc
+    var addedByUuid: UUID?
+
+    @objc
+    public override init() {
+        super.init()
+    }
+
+    init(role: TSGroupMemberRole,
+         isPending: Bool,
+         addedByUuid: UUID? = nil) {
+        self.role = role
+        self.isPending = isPending
+        self.addedByUuid = addedByUuid
+
+        super.init()
+    }
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+
+    @objc
+    public var isAdministrator: Bool {
+        return role == .administrator
+    }
+}
+
+// MARK: -
+
+@objc
+public enum GroupMemberType: UInt {
+    case fullMember = 0
+    case pendingProfileKey = 1
+    case pendingRequest = 2
+}
+
+// MARK: -
+
+extension GroupMemberType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .fullMember:
+            return ".fullMember"
+        case .pendingProfileKey:
+            return ".pendingProfileKey"
+        case .pendingRequest:
+            return ".pendingRequest"
+        }
+    }
+}
+
+// MARK: -
+
+// This class is immutable.
+@objc(GroupMembershipMemberState)
+class MemberState: MTLModel {
+    @objc
+    var role: TSGroupMemberRole = .normal
+
+    func memberType() -> GroupMemberType {
+        .fullMember
+    }
+
+    @objc
+    public override init() {
+        super.init()
+    }
+
+    init(role: TSGroupMemberRole) {
+        self.role = role
+        super.init()
+    }
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+
+    @objc
+    public var isAdministrator: Bool {
+        return role == .administrator
+    }
+}
+
+// MARK: -
+
+// This class is immutable.
+@objc(GroupMembershipFullMemberState)
+class FullMemberState: MemberState {
+    override func memberType() -> GroupMemberType {
+        .fullMember
+    }
+}
+
+// MARK: -
+
+// This class is immutable.
+@objc(GroupMembershipPendingProfileKeyMemberState)
+class PendingProfileKeyMemberState: MemberState {
+
+    override func memberType() -> GroupMemberType {
+        .pendingProfileKey
+    }
+
+    @objc
+    var addedByUuid: UUID?
+
+    init(role: TSGroupMemberRole, addedByUuid: UUID? = nil) {
+        self.addedByUuid = addedByUuid
+
+        super.init(role: role)
+    }
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+}
+
+// MARK: -
+
+// This class is immutable.
+@objc(GroupMembershipPendingRequestMemberState)
+class PendingRequestMemberState: MemberState {
+
+    override func memberType() -> GroupMemberType {
+        .pendingRequest
+    }
+}
+
+// MARK: -
+
+// This class is immutable.
+@objc(GroupMembershipInvalidInviteModel)
+class InvalidInviteModel: MTLModel {
+    @objc
+    var userId: Data?
+
+    @objc
+    var addedByUserId: Data?
+
+    @objc
+    public override init() {
+        super.init()
+    }
+
+    init(userId: Data?, addedByUserId: Data? = nil) {
+        self.userId = userId
+        self.addedByUserId = addedByUserId
+
+        super.init()
+    }
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+}
+
+// MARK: -
+
 // This class is immutable.
 @objc
 public class GroupMembership: MTLModel {
-    // This class is immutable.
-    @objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
-    class MemberState: MTLModel {
-        @objc
-        var role: TSGroupMemberRole = .normal
 
-        @objc
-        var isPending: Bool = false
-
-        // Only applies for pending members.
-        @objc
-        var addedByUuid: UUID?
-
-        @objc
-        public override init() {
-            super.init()
-        }
-
-        init(role: TSGroupMemberRole,
-             isPending: Bool,
-             addedByUuid: UUID? = nil) {
-            self.role = role
-            self.isPending = isPending
-            self.addedByUuid = addedByUuid
-
-            super.init()
-        }
-
-        @objc
-        required public init?(coder aDecoder: NSCoder) {
-            super.init(coder: aDecoder)
-        }
-
-        @objc
-        public required init(dictionary dictionaryValue: [String: Any]!) throws {
-            try super.init(dictionary: dictionaryValue)
-        }
-
-        @objc
-        public var isAdministrator: Bool {
-            return role == .administrator
-        }
-    }
-
-    // This class is immutable.
-    @objc(GroupMembershipInvalidInviteModel)
-    class InvalidInviteModel: MTLModel {
-        @objc
-        var userId: Data?
-
-        @objc
-        var addedByUserId: Data?
-
-        @objc
-        public override init() {
-            super.init()
-        }
-
-        init(userId: Data?, addedByUserId: Data? = nil) {
-            self.userId = userId
-            self.addedByUserId = addedByUserId
-
-            super.init()
-        }
-
-        @objc
-        required public init?(coder aDecoder: NSCoder) {
-            super.init(coder: aDecoder)
-        }
-
-        @objc
-        public required init(dictionary dictionaryValue: [String: Any]!) throws {
-            try super.init(dictionary: dictionaryValue)
-        }
-    }
+    typealias LegacyMemberStateMap = [SignalServiceAddress: LegacyMemberState]
 
     // By using a single dictionary we ensure that no address has more than one state.
     typealias MemberStateMap = [SignalServiceAddress: MemberState]
     @objc
-    var memberStateMap: MemberStateMap
+    var memberStates: MemberStateMap
 
     typealias InvalidInviteMap = [Data: InvalidInviteModel]
     @objc
     var invalidInviteMap: InvalidInviteMap
 
     @objc
-    public var nonAdminMembers: Set<SignalServiceAddress> {
-        return Set(memberStateMap.filter { !$0.value.isAdministrator && !$0.value.isPending }.keys)
-    }
-    @objc
-    public var nonPendingAdministrators: Set<SignalServiceAddress> {
-        return Set(memberStateMap.filter { $0.value.isAdministrator && !$0.value.isPending }.keys)
-    }
-    @objc
-    public var nonPendingMembers: Set<SignalServiceAddress> {
-        return Set(memberStateMap.filter { !$0.value.isPending }.keys)
-    }
-
-    @objc
-    public var pendingNonAdminMembers: Set<SignalServiceAddress> {
-        return Set(memberStateMap.filter { !$0.value.isAdministrator && $0.value.isPending }.keys)
-    }
-    @objc
-    public var pendingAdministrators: Set<SignalServiceAddress> {
-        return Set(memberStateMap.filter { $0.value.isAdministrator && $0.value.isPending }.keys)
-    }
-    // pendingMembers includes normal and administrator "pending members".
-    @objc
-    public var pendingMembers: Set<SignalServiceAddress> {
-        return Set(memberStateMap.filter { $0.value.isPending }.keys)
-    }
-
-    @objc
-    public var pendingAndNonPendingMemberCount: Int {
-        return memberStateMap.count
-    }
-
-    // allUsers includes _all_ users:
-    //
-    // * Normal and administrator.
-    // * Pending and non-pending.
-    @objc
-    public var allUsers: Set<SignalServiceAddress> {
-        return Set(memberStateMap.keys)
-    }
-
-    public struct Builder {
-        private var memberStateMap = MemberStateMap()
-        private var invalidInviteMap = InvalidInviteMap()
-
-        public init() {}
-
-        internal init(memberStateMap: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
-            self.memberStateMap = memberStateMap
-            self.invalidInviteMap = invalidInviteMap
-        }
-
-        public mutating func remove(_ uuid: UUID) {
-            remove(SignalServiceAddress(uuid: uuid))
-        }
-
-        public mutating func remove(_ address: SignalServiceAddress) {
-            memberStateMap.removeValue(forKey: address)
-        }
-
-        public mutating func remove(_ addresses: Set<SignalServiceAddress>) {
-            for address in addresses {
-                remove(address)
-            }
-        }
-
-        public mutating func addNonPendingMember(_ uuid: UUID,
-                                                 role: TSGroupMemberRole) {
-            addNonPendingMember(SignalServiceAddress(uuid: uuid), role: role)
-        }
-
-        public mutating func addNonPendingMember(_ address: SignalServiceAddress,
-                                                 role: TSGroupMemberRole) {
-            addNonPendingMembers([address], role: role)
-        }
-
-        public mutating func addNonPendingMembers(_ addresses: Set<SignalServiceAddress>,
-                                                  role: TSGroupMemberRole) {
-            for address in addresses {
-                if memberStateMap[address] != nil {
-                    owsFailDebug("Duplicate address.")
-                }
-                memberStateMap[address] = MemberState(role: role, isPending: false, addedByUuid: nil)
-            }
-        }
-
-        public mutating func addPendingMember(_ uuid: UUID,
-                                              role: TSGroupMemberRole,
-                                              addedByUuid: UUID) {
-            addPendingMember(SignalServiceAddress(uuid: uuid), role: role, addedByUuid: addedByUuid)
-        }
-
-        public mutating func addPendingMember(_ address: SignalServiceAddress,
-                                              role: TSGroupMemberRole,
-                                              addedByUuid: UUID) {
-            addPendingMembers([address], role: role, addedByUuid: addedByUuid)
-        }
-
-        public mutating func addPendingMembers(_ addresses: Set<SignalServiceAddress>,
-                                               role: TSGroupMemberRole,
-                                               addedByUuid: UUID) {
-            for address in addresses {
-                if memberStateMap[address] != nil {
-                    Logger.error("Duplicate address.")
-                    continue
-//                    owsFailDebug("Duplicate address.")
-                }
-                memberStateMap[address] = MemberState(role: role, isPending: true, addedByUuid: addedByUuid)
-            }
-        }
-
-        public mutating func copyMember(_ address: SignalServiceAddress,
-                                        from oldGroupMembership: GroupMembership) {
-            guard let memberState = oldGroupMembership.memberStateMap[address] else {
-                owsFailDebug("Unknown address")
-                return
-            }
-            if memberStateMap[address] != nil {
-                owsFailDebug("Duplicate address.")
-            }
-            memberStateMap[address] = memberState
-        }
-
-        public mutating func addInvalidInvite(userId: Data, addedByUserId: Data) {
-            invalidInviteMap[userId] = InvalidInviteModel(userId: userId, addedByUserId: addedByUserId)
-        }
-
-        public mutating func removeInvalidInvite(userId: Data) {
-            invalidInviteMap.removeValue(forKey: userId)
-        }
-
-        public mutating func copyInvalidInvites(from other: GroupMembership) {
-            assert(invalidInviteMap.isEmpty)
-            invalidInviteMap = other.invalidInviteMap
-        }
-
-        internal func asMemberStateMap() -> MemberStateMap {
-            return memberStateMap
-        }
-
-        public func build() -> GroupMembership {
-            var memberStateMap = self.memberStateMap
-
-            let localProfileInvariantAddress = SignalServiceAddress(phoneNumber: kLocalProfileInvariantPhoneNumber)
-            if memberStateMap[localProfileInvariantAddress] != nil {
-                owsFailDebug("Removing localProfileInvariantAddress.")
-                memberStateMap.removeValue(forKey: localProfileInvariantAddress)
-            }
-
-            return GroupMembership(memberStateMap: memberStateMap,
-                                   invalidInviteMap: invalidInviteMap)
-        }
-    }
-
-    @objc
     public override init() {
-        self.memberStateMap = MemberStateMap()
+        self.memberStates = MemberStateMap()
         self.invalidInviteMap = [:]
 
         super.init()
@@ -281,22 +247,47 @@ public class GroupMembership: MTLModel {
 
     @objc
     required public init?(coder aDecoder: NSCoder) {
-        self.memberStateMap = MemberStateMap()
-        self.invalidInviteMap = [:]
+        if let invalidInviteMap = aDecoder.decodeObject(forKey: "invalidInviteMap") as? InvalidInviteMap {
+            self.invalidInviteMap = invalidInviteMap
+        } else {
+            // invalidInviteMap is optional.
+            self.invalidInviteMap = [:]
+        }
 
-        super.init(coder: aDecoder)
+        if let memberStates = aDecoder.decodeObject(forKey: "memberStates") as? MemberStateMap {
+            self.memberStates = memberStates
+        } else if let legacyMemberStateMap = aDecoder.decodeObject(forKey: "memberStateMap") as? LegacyMemberStateMap {
+            self.memberStates = Self.convertLegacyMemberStateMap(legacyMemberStateMap)
+        } else {
+            owsFailDebug("Could not decode.")
+            return nil
+        }
+
+        super.init()
     }
 
     @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        self.memberStateMap = MemberStateMap()
-        self.invalidInviteMap = [:]
+        if let invalidInviteMap = dictionaryValue["invalidInviteMap"] as? InvalidInviteMap {
+            self.invalidInviteMap = invalidInviteMap
+        } else {
+            // invalidInviteMap is optional.
+            self.invalidInviteMap = [:]
+        }
 
-        try super.init(dictionary: dictionaryValue)
+        if let memberStates = dictionaryValue["memberStates"] as? MemberStateMap {
+            self.memberStates = memberStates
+        } else if let legacyMemberStateMap = dictionaryValue["memberStateMap"] as? LegacyMemberStateMap {
+            self.memberStates = Self.convertLegacyMemberStateMap(legacyMemberStateMap)
+        } else {
+            throw OWSAssertionError("Could not decode.")
+        }
+
+        super.init()
     }
 
-    internal init(memberStateMap: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
-        self.memberStateMap = memberStateMap
+    internal init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
+        self.memberStates = memberStates
         self.invalidInviteMap = invalidInviteMap
 
         super.init()
@@ -305,87 +296,36 @@ public class GroupMembership: MTLModel {
     @objc
     public init(v1Members: Set<SignalServiceAddress>) {
         var builder = Builder()
-        builder.addNonPendingMembers(v1Members, role: .normal)
-        self.memberStateMap = builder.asMemberStateMap()
+        builder.addFullMembers(v1Members, role: .normal)
+        self.memberStates = builder.asMemberStateMap()
         self.invalidInviteMap = [:]
 
         super.init()
     }
 
+    private static func convertLegacyMemberStateMap(_ legacyMemberStateMap: LegacyMemberStateMap) -> MemberStateMap {
+        var result = MemberStateMap()
+        for (address, legacyMemberState) in legacyMemberStateMap {
+            let memberState: MemberState
+            if legacyMemberState.isPending {
+                if let addedByUuid = legacyMemberState.addedByUuid {
+                    memberState = PendingProfileKeyMemberState(role: legacyMemberState.role,
+                                                               addedByUuid: addedByUuid)
+                } else {
+                    owsFailDebug("Missing addedByUuid.")
+                    continue
+                }
+            } else {
+                memberState = FullMemberState(role: legacyMemberState.role)
+            }
+            result[address] = memberState
+        }
+        return result
+    }
+
     @objc
     public static var empty: GroupMembership {
         return Builder().build()
-    }
-
-    public func role(for uuid: UUID) -> TSGroupMemberRole? {
-        return role(for: SignalServiceAddress(uuid: uuid))
-    }
-
-    public func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
-        guard let memberState = memberStateMap[address] else {
-            return nil
-        }
-        return memberState.role
-    }
-
-    public func isAdministrator(_ address: SignalServiceAddress) -> Bool {
-        guard let memberState = memberStateMap[address] else {
-            return false
-        }
-        return memberState.isAdministrator
-    }
-
-    public func isAdministrator(_ uuid: UUID) -> Bool {
-        return isAdministrator(SignalServiceAddress(uuid: uuid))
-    }
-
-    @objc
-    public func isNonPendingMember(_ address: SignalServiceAddress) -> Bool {
-        guard let memberState = memberStateMap[address] else {
-            return false
-        }
-        return !memberState.isPending
-    }
-
-    public func isNonPendingMember(_ uuid: UUID) -> Bool {
-        return isNonPendingMember(SignalServiceAddress(uuid: uuid))
-    }
-
-    @objc
-    public func isPendingMember(_ address: SignalServiceAddress) -> Bool {
-        guard let memberState = memberStateMap[address] else {
-            return false
-        }
-        return memberState.isPending
-    }
-
-    public func isPendingMember(_ uuid: UUID) -> Bool {
-        isPendingMember(SignalServiceAddress(uuid: uuid))
-    }
-
-    // When we check "is X a member?" we might mean...
-    //
-    // * Is X a "full" member or a pending member?
-    // * Is X a "full" member and not a pending member?
-    // * Is X a "normal" member and not an administrator member?
-    // * Is X a "normal" member or an administrator member?
-    // * Some combination thereof.
-    //
-    // This method is intended tests the inclusive case: pending
-    // or non-pending, any role.
-    @objc
-    public func isPendingOrNonPendingMember(_ address: SignalServiceAddress) -> Bool {
-        return memberStateMap[address] != nil
-    }
-
-    public func isPendingOrNonPendingMember(_ uuid: UUID) -> Bool {
-        return isPendingOrNonPendingMember(SignalServiceAddress(uuid: uuid))
-    }
-
-    public func addedByUuid(forPendingMember address: SignalServiceAddress) -> UUID? {
-        assert(isPendingMember(address))
-
-        return memberStateMap[address]?.addedByUuid
     }
 
     @objc
@@ -415,19 +355,309 @@ public class GroupMembership: MTLModel {
     }
 
     public var asBuilder: Builder {
-        return Builder(memberStateMap: memberStateMap, invalidInviteMap: invalidInviteMap)
+        return Builder(memberStates: memberStates, invalidInviteMap: invalidInviteMap)
     }
 
     public override var debugDescription: String {
         var result = "["
-        for address in GroupMembership.normalize(Array(allUsers)) {
-            guard let memberState = memberStateMap[address] else {
+        for address in GroupMembership.normalize(Array(allMembersOfAnyKind)) {
+            guard let memberState = memberStates[address] else {
                 owsFailDebug("Missing memberState.")
                 continue
             }
-            result += "\(address), isPending: \(memberState.isPending), isAdministrator: \(memberState.isAdministrator)\n"
+            result += "\(address), memberType: \(memberState.memberType()), role: \(memberState.role)\n"
         }
         result += "]"
         return result
+    }
+}
+
+// MARK: - Swift Accessors
+
+public extension GroupMembership {
+
+    var fullMemberAdministrators: Set<SignalServiceAddress> {
+        return Set(memberStates.filter { $0.value.isAdministrator && $0.value.memberType() == .fullMember }.keys)
+    }
+
+    var fullMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.filter { $0.value.memberType() == .fullMember }.keys)
+    }
+
+    var pendingProfileKeyMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.filter { $0.value.memberType() == .pendingProfileKey }.keys)
+    }
+
+    var pendingRequestMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.filter { $0.value.memberType() == .pendingRequest }.keys)
+    }
+
+    var fullOrPendingProfileKeyMembers: Set<SignalServiceAddress> {
+        let memberTypes: [GroupMemberType] = [ .fullMember, .pendingProfileKey ]
+        return Set(memberStates.filter { memberTypes.contains($0.value.memberType()) }.keys)
+    }
+
+    var pendingProfileKeyOrRequestMembers: Set<SignalServiceAddress> {
+        let memberTypes: [GroupMemberType] = [ .pendingProfileKey, .pendingRequest ]
+        return Set(memberStates.filter { memberTypes.contains($0.value.memberType()) }.keys)
+    }
+
+    // allMembersOfAnyKind includes _all_ members:
+    //
+    // * Normal and administrator.
+    // * Normal, pending profile key, requesting.
+    var allMembersOfAnyKind: Set<SignalServiceAddress> {
+        return Set(memberStates.keys)
+    }
+
+    // allUsers includes _all_ members:
+    //
+    // * Normal and administrator.
+    // * Normal, pending profile key, requesting.
+    var allMemberUuidsOfAnyKind: Set<UUID> {
+        return Set(memberStates.keys.compactMap { $0.uuid })
+    }
+
+    func role(for uuid: UUID) -> TSGroupMemberRole? {
+        return role(for: SignalServiceAddress(uuid: uuid))
+    }
+
+    func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
+        guard let memberState = memberStates[address] else {
+            return nil
+        }
+        return memberState.role
+    }
+
+    func isFullOrInvitedAdministrator(_ address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            return false
+        }
+        guard memberState.isAdministrator else {
+            return false
+        }
+        switch memberState.memberType() {
+        case .fullMember, .pendingProfileKey:
+            return true
+        case .pendingRequest:
+            return false
+        }
+    }
+
+    func isFullOrInvitedAdministrator(_ uuid: UUID) -> Bool {
+        return isFullOrInvitedAdministrator(SignalServiceAddress(uuid: uuid))
+    }
+
+    func isFullMemberAndAdministrator(_ address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            return false
+        }
+        return memberState.isAdministrator && memberState.memberType() == .fullMember
+    }
+
+    func isFullMemberAndAdministrator(_ uuid: UUID) -> Bool {
+        return isFullMemberAndAdministrator(SignalServiceAddress(uuid: uuid))
+    }
+
+    @objc
+    func isFullMember(_ address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            return false
+        }
+        return memberState.memberType() == .fullMember
+    }
+
+    func isFullMember(_ uuid: UUID) -> Bool {
+        isFullMember(SignalServiceAddress(uuid: uuid))
+    }
+
+    @objc
+    func isPendingProfileKeyMember(_ address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            return false
+        }
+        return memberState.memberType() == .pendingProfileKey
+    }
+
+    func isPendingProfileKeyMember(_ uuid: UUID) -> Bool {
+        isPendingProfileKeyMember(SignalServiceAddress(uuid: uuid))
+    }
+
+    func isRequestingMember(_ address: SignalServiceAddress) -> Bool {
+        guard let memberState = memberStates[address] else {
+            return false
+        }
+        return memberState.memberType() == .pendingRequest
+    }
+
+    func isRequestingMember(_ uuid: UUID) -> Bool {
+        isRequestingMember(SignalServiceAddress(uuid: uuid))
+    }
+
+    // Returns true for...
+    //
+    // * Any type: Full members, "pending invite" members, "requesting" members.
+    // * Any role: admin, non-admin.
+    //
+    // This method is intended tests the inclusive case: pending
+    // or non-pending, any role.
+    //
+    // This method does NOT return true for invalid invites,
+    // which don't have a UUID or address associated with them.
+    func isMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
+        return memberStates[address] != nil
+    }
+
+    func isMemberOfAnyKind(_ uuid: UUID) -> Bool {
+        return isMemberOfAnyKind(SignalServiceAddress(uuid: uuid))
+    }
+
+    // This method should only be called for "pending profile key" members.
+    func addedByUuid(forPendingProfileKeyMember address: SignalServiceAddress) -> UUID? {
+        assert(isPendingProfileKeyMember(address))
+
+        guard let memberState = memberStates[address] else {
+            return nil
+        }
+        guard let pendingProfileKeyMemberState = memberState as? PendingProfileKeyMemberState else {
+            owsFailDebug("Unexpected member type.")
+            return nil
+        }
+        return pendingProfileKeyMemberState.addedByUuid
+    }
+}
+
+// MARK: - Builder
+
+@objc
+public extension GroupMembership {
+    struct Builder {
+        private var memberStates = MemberStateMap()
+        private var invalidInviteMap = InvalidInviteMap()
+
+        public init() {}
+
+        internal init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
+            self.memberStates = memberStates
+            self.invalidInviteMap = invalidInviteMap
+        }
+
+        public mutating func remove(_ uuid: UUID) {
+            remove(SignalServiceAddress(uuid: uuid))
+        }
+
+        public mutating func remove(_ address: SignalServiceAddress) {
+            memberStates.removeValue(forKey: address)
+        }
+
+        public mutating func remove(_ addresses: Set<SignalServiceAddress>) {
+            for address in addresses {
+                remove(address)
+            }
+        }
+
+        public mutating func addFullMember(_ uuid: UUID,
+                                           role: TSGroupMemberRole) {
+            addFullMember(SignalServiceAddress(uuid: uuid), role: role)
+        }
+
+        public mutating func addFullMember(_ address: SignalServiceAddress,
+                                           role: TSGroupMemberRole) {
+            addFullMembers([address], role: role)
+        }
+
+        public mutating func addFullMembers(_ addresses: Set<SignalServiceAddress>,
+                                            role: TSGroupMemberRole) {
+            for address in addresses {
+                if memberStates[address] != nil {
+                    owsFailDebug("Duplicate address.")
+                }
+                memberStates[address] = FullMemberState(role: role)
+            }
+        }
+
+        public mutating func addPendingProfileKeyMember(_ uuid: UUID,
+                                                        role: TSGroupMemberRole,
+                                                        addedByUuid: UUID) {
+            addPendingProfileKeyMember(SignalServiceAddress(uuid: uuid), role: role, addedByUuid: addedByUuid)
+        }
+
+        public mutating func addPendingProfileKeyMember(_ address: SignalServiceAddress,
+                                                        role: TSGroupMemberRole,
+                                                        addedByUuid: UUID) {
+            addPendingProfileKeyMembers([address], role: role, addedByUuid: addedByUuid)
+        }
+
+        public mutating func addPendingProfileKeyMembers(_ addresses: Set<SignalServiceAddress>,
+                                                         role: TSGroupMemberRole,
+                                                         addedByUuid: UUID) {
+            for address in addresses {
+                if memberStates[address] != nil {
+                    owsFailDebug("Duplicate address.")
+                    continue
+                }
+                memberStates[address] = PendingProfileKeyMemberState(role: role, addedByUuid: addedByUuid)
+            }
+        }
+
+        public mutating func addRequestingMember(_ uuid: UUID) {
+            addRequestingMember(SignalServiceAddress(uuid: uuid))
+        }
+
+        public mutating func addRequestingMember(_ address: SignalServiceAddress) {
+            addRequestingMembers([address])
+        }
+
+        public mutating func addRequestingMembers(_ addresses: Set<SignalServiceAddress>) {
+            for address in addresses {
+                if memberStates[address] != nil {
+                    owsFailDebug("Duplicate address.")
+                    continue
+                }
+                memberStates[address] = PendingRequestMemberState()
+            }
+        }
+
+        public mutating func copyMember(_ address: SignalServiceAddress,
+                                        from oldGroupMembership: GroupMembership) {
+            guard let memberState = oldGroupMembership.memberStates[address] else {
+                owsFailDebug("Unknown address")
+                return
+            }
+            if memberStates[address] != nil {
+                owsFailDebug("Duplicate address.")
+            }
+            memberStates[address] = memberState
+        }
+
+        public mutating func addInvalidInvite(userId: Data, addedByUserId: Data) {
+            invalidInviteMap[userId] = InvalidInviteModel(userId: userId, addedByUserId: addedByUserId)
+        }
+
+        public mutating func removeInvalidInvite(userId: Data) {
+            invalidInviteMap.removeValue(forKey: userId)
+        }
+
+        public mutating func copyInvalidInvites(from other: GroupMembership) {
+            assert(invalidInviteMap.isEmpty)
+            invalidInviteMap = other.invalidInviteMap
+        }
+
+        internal func asMemberStateMap() -> MemberStateMap {
+            return memberStates
+        }
+
+        public func build() -> GroupMembership {
+            var memberStates = self.memberStates
+
+            let localProfileInvariantAddress = SignalServiceAddress(phoneNumber: kLocalProfileInvariantPhoneNumber)
+            if memberStates[localProfileInvariantAddress] != nil {
+                owsFailDebug("Removing localProfileInvariantAddress.")
+                memberStates.removeValue(forKey: localProfileInvariantAddress)
+            }
+
+            return GroupMembership(memberStates: memberStates,
+                                   invalidInviteMap: invalidInviteMap)
+        }
     }
 }

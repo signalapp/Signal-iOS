@@ -199,7 +199,7 @@ extension ConversationSettingsViewController {
             return
         }
 
-        let isLocalUserInConversation = self.isLocalUserInConversation
+        let isLocalUserFullMemberOfGroup = self.isLocalUserFullMemberOfGroup
 
         // For pre-message request threads, allow manually sharing your profile if the thread is not whitelisted.
         let (isPreMessageRequestsThread, isThreadInProfileWhitelist) = databaseStorage.uiRead { transaction -> (Bool, Bool) in
@@ -225,7 +225,7 @@ extension ConversationSettingsViewController {
                 let cell = OWSTableItem.buildDisclosureCell(name: title,
                                                             icon: .settingsProfile,
                                                             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_profile"))
-                cell.isUserInteractionEnabled = isLocalUserInConversation
+                cell.isUserInteractionEnabled = isLocalUserFullMemberOfGroup
                 return cell
                 },
                                      actionBlock: { [weak self] in
@@ -472,7 +472,7 @@ extension ConversationSettingsViewController {
             : NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER",
                                 comment: "Footer text for the 'block and leave' section of contact conversation settings view.")
 
-        if isGroupThread, isLocalUserInConversation {
+        if isGroupThread, isLocalUserFullOrInvitedMemberOfGroup {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
@@ -592,7 +592,7 @@ extension ConversationSettingsViewController {
 
     private func accessoryLabel(forAccess access: GroupV2Access) -> String {
         switch access {
-        case .unknown, .any, .member:
+        case .any, .member:
             if access != .member {
                 owsFailDebug("Invalid attributes access: \(access.rawValue)")
             }
@@ -600,7 +600,11 @@ extension ConversationSettingsViewController {
                                              comment: "Label indicating that all group members can update the group's attributes: name, avatar, etc.")
         case .administrator:
             return NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR",
-                                             comment: "Label indicating that only administrators can update the group's attributes: name, avatar, etc.")
+                                     comment: "Label indicating that only administrators can update the group's attributes: name, avatar, etc.")
+        case .unknown, .unsatisfiable:
+            owsFailDebug("Invalid access")
+            return NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE",
+                                     comment: "Label indicating that no member can update the group's attributes: name, avatar, etc.")
         }
     }
 
@@ -650,7 +654,7 @@ extension ConversationSettingsViewController {
         }
 
         let groupMembership = groupModel.groupMembership
-        let allMembers = groupMembership.nonPendingMembers
+        let allMembers = groupMembership.fullMembers
         var allMembersSorted = [SignalServiceAddress]()
         var verificationStateMap = [SignalServiceAddress: OWSVerificationState]()
         databaseStorage.uiRead { transaction in
@@ -663,15 +667,15 @@ extension ConversationSettingsViewController {
         }
 
         var membersToRender = [SignalServiceAddress]()
-        if groupMembership.isNonPendingMember(localAddress) {
+        if groupMembership.isFullMember(localAddress) {
             // Make sure local user is first.
             membersToRender.insert(localAddress, at: 0)
         }
         // Admin users are second.
-        let adminMembers = allMembersSorted.filter { $0 != localAddress && groupMembership.isAdministrator($0) }
+        let adminMembers = allMembersSorted.filter { $0 != localAddress && groupMembership.isFullMemberAndAdministrator($0) }
         membersToRender += adminMembers
         // Non-admin users are third.
-        let nonAdminMembers = allMembersSorted.filter { $0 != localAddress && !groupMembership.isAdministrator($0) }
+        let nonAdminMembers = allMembersSorted.filter { $0 != localAddress && !groupMembership.isFullMemberAndAdministrator($0) }
         membersToRender += nonAdminMembers
 
         if membersToRender.count > 1 {
@@ -708,7 +712,7 @@ extension ConversationSettingsViewController {
                 let cell = ContactTableViewCell()
                 cell.setUseSmallAvatars()
 
-                let isGroupAdmin = groupMembership.isAdministrator(memberAddress)
+                let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
                 let isVerified = verificationState == .verified
                 let isNoLongerVerified = verificationState == .noLongerVerified
                 let isBlocked = helper.isSignalServiceAddressBlocked(memberAddress)
@@ -794,6 +798,7 @@ extension ConversationSettingsViewController {
         return section
     }
 
+    // TODO: Add requesting members section.
     private func buildPendingMembersSection(groupModel: TSGroupModel,
                                             localAddress: SignalServiceAddress) -> OWSTableSection {
         let section = OWSTableSection()
@@ -803,7 +808,7 @@ extension ConversationSettingsViewController {
         // Only admins can revoke invites.
         let canRevokeInvites = groupViewHelper.canRevokePendingInvites
 
-        let pendingMembers = groupModel.groupMembership.pendingMembers
+        let pendingMembers = groupModel.groupMembership.pendingProfileKeyMembers
         let pendingInviteCount = (canRevokeInvites
             ? pendingMembers.count + groupModel.groupMembership.invalidInvites.count
             : pendingMembers.count)
@@ -815,7 +820,7 @@ extension ConversationSettingsViewController {
             accessoryText = NSLocalizedString("CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE",
                                               comment: "Indicates that there are no pending member invites in the group.")
         }
-        let isLocalUserFullMember = groupModel.groupMembership.isNonPendingMember(localAddress)
+        let isLocalUserFullMember = groupModel.groupMembership.isFullMember(localAddress)
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {

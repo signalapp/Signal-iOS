@@ -172,7 +172,7 @@ extension ConversationSettingsViewController {
     private func buildHeaderForGroup(groupThread: TSGroupThread) -> UIView {
         var builder = HeaderBuilder(viewController: self)
 
-        let memberCount = groupThread.groupModel.groupMembership.nonPendingMembers.count
+        let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
         var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         if RemoteConfig.groupsV2GoodCitizen,
             groupThread.isGroupV1Thread {

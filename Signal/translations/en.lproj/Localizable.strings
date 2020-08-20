@@ -802,6 +802,9 @@
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All";
 
+/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Disabled";
+
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
 
@@ -1480,6 +1483,9 @@
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Unknown";
 
+/* Description of the 'unsatisfiable' access level. */
+"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Disabled";
+
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
 
@@ -1590,6 +1596,15 @@
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+
+/* Message indicating that the local user's request to join the group was approved. */
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "GROUP_LOCAL_USER_REQUEST_APPROVED";
+
+/* Message indicating that the local user's request to join the group was rejected. */
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "GROUP_LOCAL_USER_REQUEST_REJECTED";
+
+/* Message indicating that the local user requested to join the group. */
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
@@ -1713,6 +1728,27 @@
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+
+/* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT";
+
+/* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT";
+
+/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT";
+
+/* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT";
+
+/* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT";
+
+/* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT";
+
+/* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";

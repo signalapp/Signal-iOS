@@ -58,23 +58,27 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
     // Non-nil if the title changed.
     // When clearing the title, this will be the empty string.
-    private var title: String?
+    private var newTitle: String?
 
     public var newAvatarData: Data?
     public var newAvatarUrlPath: String?
     private var shouldUpdateAvatar = false
 
     private var membersToAdd = [UUID: TSGroupMemberRole]()
-    // Pending or non-pending members to remove.
+    // Full, pending profile key or pending request members to remove.
     private var membersToRemove = [UUID]()
     private var membersToChangeRole = [UUID: TSGroupMemberRole]()
-    private var pendingMembersToAdd = [UUID: TSGroupMemberRole]()
+    private var pendingProfileKeyMembersToAdd = [UUID: TSGroupMemberRole]()
     private var invalidInvitesToRemove = [Data: InvalidInvite]()
-    private var pendingMembersToPromote = [UUID]()
+    private var pendingProfileKeyMembersToPromote = [UUID]()
 
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
     private var accessForAttributes: GroupV2Access?
+    private var accessForAddFromInviteLink: GroupV2Access?
+
+    public var newInviteLinkPassword: Data?
+    private var shouldUpdateInviteLinkPassword = false
 
     private var shouldLeaveGroupDeclineInvite = false
     private var shouldRevokeInvalidInvites = false
@@ -135,15 +139,19 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         let oldGroupMembership = oldGroupModel.groupMembership
         let newGroupMembership = newGroupModel.groupMembership
 
-        let oldUserUuids = Set(oldGroupMembership.allUsers.compactMap { $0.uuid })
-        let newUserUuids = Set(newGroupMembership.allUsers.compactMap { $0.uuid })
+        let oldUserUuids = oldGroupMembership.allMemberUuidsOfAnyKind
+        let newUserUuids = newGroupMembership.allMemberUuidsOfAnyKind
 
         for uuid in newUserUuids.subtracting(oldUserUuids) {
-            let isAdministrator = newGroupMembership.isAdministrator(uuid)
-            let isPending = newGroupMembership.isPendingMember(uuid)
+            guard !newGroupMembership.isRequestingMember(uuid) else {
+                owsFailDebug("Pending request members should never be added by diffing models.")
+                continue
+            }
+            let isAdministrator = newGroupMembership.isFullOrInvitedAdministrator(uuid)
+            let isPending = newGroupMembership.isPendingProfileKeyMember(uuid)
             let role: TSGroupMemberRole = isAdministrator ? .administrator : .normal
             if isPending {
-                addPendingMember(uuid, role: role)
+                addPendingProfileKeyMember(uuid, role: role)
             } else {
                 addMember(uuid, role: role)
             }
@@ -160,17 +168,22 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         for uuid in oldUserUuids.intersection(newUserUuids) {
-            if oldGroupMembership.isPendingMember(uuid),
-                newGroupMembership.isNonPendingMember(uuid) {
+            if oldGroupMembership.isPendingProfileKeyMember(uuid),
+                newGroupMembership.isFullMember(uuid) {
+                addMember(uuid, role: .normal)
+            } else if oldGroupMembership.isRequestingMember(uuid),
+                newGroupMembership.isFullMember(uuid) {
+                // We only currently support accepting join requests
+                // with "normal" role.
                 addMember(uuid, role: .normal)
             }
         }
 
-        let oldMemberUuids = Set(oldGroupMembership.nonPendingMembers.compactMap { $0.uuid })
-        let newMemberUuids = Set(newGroupMembership.nonPendingMembers.compactMap { $0.uuid })
+        let oldMemberUuids = Set(oldGroupMembership.fullMembers.compactMap { $0.uuid })
+        let newMemberUuids = Set(newGroupMembership.fullMembers.compactMap { $0.uuid })
         for uuid in oldMemberUuids.intersection(newMemberUuids) {
-            let oldIsAdministrator = oldGroupMembership.isAdministrator(uuid)
-            let newIsAdministrator = newGroupMembership.isAdministrator(uuid)
+            let oldIsAdministrator = oldGroupMembership.isFullMemberAndAdministrator(uuid)
+            let newIsAdministrator = newGroupMembership.isFullMemberAndAdministrator(uuid)
             guard oldIsAdministrator != newIsAdministrator else {
                 continue
             }
@@ -178,13 +191,20 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             changeRoleForMember(uuid, role: role)
         }
 
+        if oldGroupModel.inviteLinkPassword != newGroupModel.inviteLinkPassword {
+            setInviteLinkPassword(newGroupModel.inviteLinkPassword)
+        }
+
         let oldAccess = oldGroupModel.access
         let newAccess = newGroupModel.access
         if oldAccess.members != newAccess.members {
-            self.accessForMembers = newAccess.members
+            setAccessForMembers(newAccess.members)
         }
         if oldAccess.attributes != newAccess.attributes {
-            self.accessForAttributes = newAccess.attributes
+            setAccessForAttributes(newAccess.attributes)
+        }
+        if oldAccess.addFromInviteLink != newAccess.addFromInviteLink {
+            setAccessForAddFromInviteLink(newAccess.addFromInviteLink)
         }
 
         let oldDisappearingMessageToken = oldDMConfiguration.asToken
@@ -196,9 +216,17 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
     @objc
     public func setTitle(_ value: String?) {
-        assert(self.title == nil)
+        assert(self.newTitle == nil)
         // Non-nil if the title changed.
-        self.title = value ?? ""
+        self.newTitle = value ?? ""
+    }
+
+    @objc
+    public func setInviteLinkPassword(_ value: Data?) {
+        assert(self.newInviteLinkPassword == nil)
+        assert(!shouldUpdateInviteLinkPassword)
+        newInviteLinkPassword = value
+        shouldUpdateInviteLinkPassword = true
     }
 
     @objc
@@ -234,9 +262,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     }
 
     @objc
-    public func promotePendingMember(_ uuid: UUID) {
-        assert(!pendingMembersToPromote.contains(uuid))
-        pendingMembersToPromote.append(uuid)
+    public func promotePendingProfileKeyMember(_ uuid: UUID) {
+        assert(!pendingProfileKeyMembersToPromote.contains(uuid))
+        pendingProfileKeyMembersToPromote.append(uuid)
     }
 
     public func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole) {
@@ -244,9 +272,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         membersToChangeRole[uuid] = role
     }
 
-    public func addPendingMember(_ uuid: UUID, role: TSGroupMemberRole) {
-        assert(pendingMembersToAdd[uuid] == nil)
-        pendingMembersToAdd[uuid] = role
+    public func addPendingProfileKeyMember(_ uuid: UUID, role: TSGroupMemberRole) {
+        assert(pendingProfileKeyMembersToAdd[uuid] == nil)
+        pendingProfileKeyMembersToAdd[uuid] = role
     }
 
     public func setShouldLeaveGroupDeclineInvite() {
@@ -267,6 +295,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public func setAccessForAttributes(_ value: GroupV2Access) {
         assert(accessForAttributes == nil)
         accessForAttributes = value
+    }
+
+    public func setAccessForAddFromInviteLink(_ value: GroupV2Access) {
+        assert(accessForAddFromInviteLink == nil)
+        accessForAddFromInviteLink = value
     }
 
     public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
@@ -313,7 +346,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
         var uuidsForProfileKeyCredentials = Set<UUID>()
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
-        uuidsForProfileKeyCredentials.formUnion(pendingMembersToPromote)
+        uuidsForProfileKeyCredentials.formUnion(pendingProfileKeyMembersToPromote)
         // This should be redundant, but we'll also double-check that we have
         // the local profile key credential.
         uuidsForProfileKeyCredentials.insert(localUuid)
@@ -383,16 +416,16 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         Logger.verbose("Revision: \(oldRevision) -> \(newRevision)")
         actionsBuilder.setRevision(newRevision)
 
-        var nonPendingAdministratorCount: Int = currentGroupModel.groupMembership.nonPendingAdministrators.count
-        var allMemberCount = currentGroupModel.groupMembership.pendingAndNonPendingMemberCount
+        var fullMemberAdministratorCount: Int = currentGroupModel.groupMembership.fullMemberAdministrators.count
+        var allMemberCount = currentGroupModel.groupMembership.allMembersOfAnyKind.count
 
         var didChange = false
 
-        if let title = self.title {
-            if title == currentGroupModel.groupName {
+        if let newTitle = self.newTitle {
+            if newTitle == currentGroupModel.groupName {
                 // Redundant change, not a conflict.
             } else {
-                let encryptedData = try groupV2Params.encryptGroupName(title)
+                let encryptedData = try groupV2Params.encryptGroupName(newTitle)
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
                 actionsBuilder.setModifyTitle(try actionBuilder.build())
@@ -416,46 +449,74 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
+        if shouldUpdateInviteLinkPassword {
+            if newInviteLinkPassword == currentGroupModel.inviteLinkPassword {
+                // Redundant change, not a conflict.
+            } else {
+                let actionBuilder = GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction.builder()
+                if let newInviteLinkPassword = self.newInviteLinkPassword {
+                    actionBuilder.setInviteLinkPassword(newInviteLinkPassword)
+                }
+                actionsBuilder.setModifyInviteLinkPassword(try actionBuilder.build())
+                didChange = true
+            }
+        }
+
         let currentGroupMembership = currentGroupModel.groupMembership
-        for (uuid, role) in self.membersToAdd {
-            guard !currentGroupMembership.isNonPendingMember(uuid) else {
+        for (uuid, role) in membersToAdd {
+            guard !currentGroupMembership.isFullMember(uuid) else {
                 // Another user has already added this member.
                 // They may have been added with a different role.
                 // We don't treat that as a conflict.
                 continue
             }
-            guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
-                throw OWSAssertionError("Missing profile key credential: \(uuid)")
+            if currentGroupMembership.isRequestingMember(uuid) {
+                let actionBuilder = GroupsProtoGroupChangeActionsPromoteRequestingMemberAction.builder()
+                let userId = try groupV2Params.userId(forUuid: uuid)
+                actionBuilder.setUserID(userId)
+                actionBuilder.setRole(role.asProtoRole)
+                actionsBuilder.addPromoteRequestingMembers(try actionBuilder.build())
+            } else {
+                guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
+                    throw OWSAssertionError("Missing profile key credential: \(uuid)")
+                }
+                let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
+                actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
+                                                                           role: role.asProtoRole,
+                                                                           groupV2Params: groupV2Params))
+                actionsBuilder.addAddMembers(try actionBuilder.build())
             }
-            let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
-            actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
-                                                                       role: role.asProtoRole,
-                                                                       groupV2Params: groupV2Params))
-            actionsBuilder.addAddMembers(try actionBuilder.build())
             didChange = true
 
             if role == .administrator {
-                nonPendingAdministratorCount += 1
+                fullMemberAdministratorCount += 1
             }
         }
 
         for uuid in self.membersToRemove {
-            if currentGroupMembership.isNonPendingMember(uuid) {
+            if currentGroupMembership.isFullMember(uuid) {
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
                 let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true
 
-                if currentGroupMembership.isAdministrator(uuid) {
-                    nonPendingAdministratorCount -= 1
+                if currentGroupMembership.isFullMemberAndAdministrator(uuid) {
+                    fullMemberAdministratorCount -= 1
                 }
                 allMemberCount -= 1
-            } else if currentGroupMembership.isPendingMember(uuid) {
+            } else if currentGroupMembership.isPendingProfileKeyMember(uuid) {
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
+                didChange = true
+                allMemberCount -= 1
+            } else if currentGroupMembership.isRequestingMember(uuid) {
+                let actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
+                let userId = try groupV2Params.userId(forUuid: uuid)
+                actionBuilder.setDeletedUserID(userId)
+                actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
                 didChange = true
                 allMemberCount -= 1
             } else {
@@ -466,8 +527,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
-        for (uuid, role) in self.pendingMembersToAdd {
-            guard !currentGroupMembership.isPendingOrNonPendingMember(uuid) else {
+        for (uuid, role) in self.pendingProfileKeyMembersToAdd {
+            guard !currentGroupMembership.isMemberOfAnyKind(uuid) else {
                 // Another user has already added or invited this member.
                 // They may have been added with a different role.
                 // We don't treat that as a conflict.
@@ -516,7 +577,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         for (uuid, newRole) in self.membersToChangeRole {
-            guard currentGroupMembership.isNonPendingMember(uuid) else {
+            guard currentGroupMembership.isFullMember(uuid) else {
                 // User is no longer a member.
                 throw GroupsV2Error.conflictingChange
             }
@@ -534,9 +595,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             didChange = true
 
             if currentRole == .administrator {
-                nonPendingAdministratorCount -= 1
+                fullMemberAdministratorCount -= 1
             } else if newRole == .administrator {
-                nonPendingAdministratorCount += 1
+                fullMemberAdministratorCount += 1
             }
         }
 
@@ -546,7 +607,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 // Redundant change, not a conflict.
             } else {
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction.builder()
-                actionBuilder.setMembersAccess(GroupAccess.protoAccess(forGroupV2Access: access))
+                actionBuilder.setMembersAccess(access.protoAccess)
                 actionsBuilder.setModifyMemberAccess(try actionBuilder.build())
                 didChange = true
             }
@@ -556,15 +617,25 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 // Redundant change, not a conflict.
             } else {
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.builder()
-                actionBuilder.setAttributesAccess(GroupAccess.protoAccess(forGroupV2Access: access))
+                actionBuilder.setAttributesAccess(access.protoAccess)
                 actionsBuilder.setModifyAttributesAccess(try actionBuilder.build())
                 didChange = true
             }
         }
+        if let access = self.accessForAddFromInviteLink {
+            if currentAccess.addFromInviteLink == access {
+                // Redundant change, not a conflict.
+            } else {
+                let actionBuilder = GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction.builder()
+                actionBuilder.setAddFromInviteLinkAccess(access.protoAccess)
+                actionsBuilder.setModifyAddFromInviteLinkAccess(try actionBuilder.build())
+                didChange = true
+            }
+        }
 
-        for uuid in pendingMembersToPromote {
+        for uuid in pendingProfileKeyMembersToPromote {
             // Check that pending member is still invited.
-            guard currentGroupMembership.isPendingMember(uuid) else {
+            guard currentGroupMembership.isPendingProfileKeyMember(uuid) else {
                 throw GroupsV2Error.redundantChange
             }
             guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
@@ -578,9 +649,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if self.shouldLeaveGroupDeclineInvite {
-            let isLastAdminInV2Group = (currentGroupMembership.isNonPendingMember(localUuid) &&
-                currentGroupMembership.isAdministrator(localUuid) &&
-                nonPendingAdministratorCount == 1)
+            let isLastAdminInV2Group = (currentGroupMembership.isFullMemberAndAdministrator(localUuid) &&
+                fullMemberAdministratorCount == 1)
             guard !isLastAdminInV2Group else {
                 // This could happen if the last two admins leave at the same time
                 // and race.
@@ -588,14 +658,14 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
 
             // Check that we are still invited or in group.
-            if currentGroupMembership.isPendingMember(localUuid) {
+            if currentGroupMembership.isPendingProfileKeyMember(localUuid) {
                 // Decline invite
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let localUserId = try groupV2Params.userId(forUuid: localUuid)
                 actionBuilder.setDeletedUserID(localUserId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
-            } else if currentGroupMembership.isNonPendingMember(localUuid) {
+            } else if currentGroupMembership.isFullMember(localUuid) {
                 // Leave group
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
                 let localUserId = try groupV2Params.userId(forUuid: localUuid)

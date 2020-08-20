@@ -21,7 +21,7 @@ public extension GroupManager {
                                                      replacementAdminUuid: UUID? = nil,
                                                      success: (() -> Void)?) {
 
-        guard groupThread.isLocalUserPendingOrNonPendingMember else {
+        guard groupThread.isLocalUserMemberOfAnyKind else {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
         }

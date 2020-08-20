@@ -346,6 +346,10 @@ extension GroupUpdateCopy {
         case .administrator:
             return NSLocalizedString("GROUP_ACCESS_LEVEL_ADMINISTRATORS",
                                      comment: "Description of the 'admins only' access level.")
+        case .unsatisfiable:
+            // TODO:
+            return NSLocalizedString("GROUP_ACCESS_LEVEL_UNSATISFIABLE",
+                                     comment: "Description of the 'unsatisfiable' access level.")
         }
     }
 
@@ -415,7 +419,7 @@ extension GroupUpdateCopy {
     mutating func addMembershipUpdates(oldGroupMembership: GroupMembership) {
         var membershipCounts = MembershipCounts()
 
-        let allUsersUnsorted = oldGroupMembership.allUsers.union(newGroupMembership.allUsers)
+        let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
         var allUsersSorted = allUsersUnsorted.sorted { (left, right) -> Bool in
             // Use an arbitrary sort to ensure the output is deterministic.
             return left.stringForDisplay > right.stringForDisplay
@@ -443,6 +447,9 @@ extension GroupUpdateCopy {
                     addMemberRoleUpdates(for: address, oldGroupMembership: oldGroupMembership)
                 case .invited:
                     addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(for: address)
+                case .requesting:
+                    owsFailDebug("This transition is unexpected")
+                    addUserRequestedToJoinGroup(for: address)
                 case .none:
                     addUserLeftOrWasKickedOutOfGroup(for: address)
                 }
@@ -468,10 +475,25 @@ extension GroupUpdateCopy {
                 case .invited:
                     // Membership status didn't change.
                     break
+                case .requesting:
+                    addUserRequestedToJoinGroup(for: address)
                 case .none:
                     addUserInviteWasDeclinedOrRevoked(for: address,
                                                       oldGroupMembership: oldGroupMembership,
                                                       membershipCounts: &membershipCounts)
+                }
+            case .requesting:
+                switch newMembershipStatus {
+                case .normalMember:
+                    addUserRequestWasApproved(for: address)
+                case .invited:
+                    addUserWasInvitedToTheGroup(for: address,
+                                                membershipCounts: &membershipCounts)
+                case .requesting:
+                // Membership status didn't change.
+                    break
+                case .none:
+                    addUserRequestWasRejected(for: address)
                 }
             case .none:
                 switch newMembershipStatus {
@@ -480,6 +502,8 @@ extension GroupUpdateCopy {
                 case .invited:
                     addUserWasInvitedToTheGroup(for: address,
                                                 membershipCounts: &membershipCounts)
+                case .requesting:
+                    addUserRequestedToJoinGroup(for: address)
                 case .none:
                     // Membership status didn't change.
                     break
@@ -579,8 +603,8 @@ extension GroupUpdateCopy {
     mutating func addMemberRoleUpdates(for address: SignalServiceAddress,
                                        oldGroupMembership: GroupMembership) {
 
-        let oldIsAdministrator = oldGroupMembership.isAdministrator(address)
-        let newIsAdministrator = newGroupMembership.isAdministrator(address)
+        let oldIsAdministrator = oldGroupMembership.isFullMemberAndAdministrator(address)
+        let newIsAdministrator = newGroupMembership.isFullMemberAndAdministrator(address)
 
         guard oldIsAdministrator != newIsAdministrator else {
             // Role didn't change.
@@ -826,7 +850,7 @@ extension GroupUpdateCopy {
 
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
-        if let inviterUuid = oldGroupMembership.addedByUuid(forPendingMember: address) {
+        if let inviterUuid = oldGroupMembership.addedByUuid(forPendingProfileKeyMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
             inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
                                                       transaction: transaction)
@@ -924,7 +948,7 @@ extension GroupUpdateCopy {
 
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
-        if let inviterUuid = oldGroupMembership.addedByUuid(forPendingMember: address) {
+        if let inviterUuid = oldGroupMembership.addedByUuid(forPendingProfileKeyMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
             inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
                                                       transaction: transaction)
@@ -1198,6 +1222,77 @@ extension GroupUpdateCopy {
         }
     }
 
+    // MARK: - Requesting Members
+
+    mutating func addUserRequestedToJoinGroup(for address: SignalServiceAddress) {
+        let isLocalUser = localAddress == address
+        if isLocalUser {
+            addItem(.userMembershipState,
+                    address: address,
+                    copy: NSLocalizedString("GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP",
+                                            comment: "Message indicating that the local user requested to join the group."))
+        } else {
+            let requesterName = contactsManager.displayName(for: address, transaction: transaction)
+            let format = NSLocalizedString("GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT",
+                                           comment: "Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}.")
+            addItem(.userMembershipState, address: address, format: format, requesterName)
+        }
+    }
+
+    mutating func addUserRequestWasApproved(for address: SignalServiceAddress) {
+        let isLocalUser = localAddress == address
+        if isLocalUser {
+            // TODO: Should we embed the name of the user who approved us?
+            addItem(.userMembershipState,
+                    address: address,
+                    copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED",
+                                            comment: "Message indicating that the local user's request to join the group was approved."))
+        } else {
+            let requesterName = contactsManager.displayName(for: address, transaction: transaction)
+            switch updater {
+            case .localUser:
+                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT",
+                                               comment: "Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}.")
+                addItem(.userMembershipState, address: address, format: format, requesterName)
+            case .otherUser(let updaterName, _):
+                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
+                                               comment: "Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
+                addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
+            case .unknown:
+                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT",
+                                               comment: "Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}.")
+                addItem(.userMembershipState, address: address, format: format, requesterName)
+            }
+        }
+    }
+
+    mutating func addUserRequestWasRejected(for address: SignalServiceAddress) {
+        let isLocalUser = localAddress == address
+        if isLocalUser {
+            // TODO: Should we embed the name of the user who rejected us?
+            addItem(.userMembershipState,
+                    address: address,
+                    copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
+                                            comment: "Message indicating that the local user's request to join the group was rejected."))
+        } else {
+            let requesterName = contactsManager.displayName(for: address, transaction: transaction)
+            switch updater {
+            case .localUser:
+                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT",
+                                               comment: "Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}.")
+                addItem(.userMembershipState, address: address, format: format, requesterName)
+            case .otherUser(let updaterName, _):
+                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT",
+                                               comment: "Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
+                addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
+            case .unknown:
+                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT",
+                                               comment: "Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}.")
+                addItem(.userMembershipState, address: address, format: format, requesterName)
+            }
+        }
+    }
+
     // MARK: - Disappearing Messages
 
     mutating func addDisappearingMessageUpdates(oldToken: DisappearingMessageToken?,
@@ -1311,7 +1406,7 @@ extension GroupUpdateCopy {
                                             comment: "Message indicating that the local user has joined the group."))
         case .invited:
             if let localAddress = Self.tsAccountManager.localAddress,
-                let inviterUuid = newGroupMembership.addedByUuid(forPendingMember: localAddress) {
+                let inviterUuid = newGroupMembership.addedByUuid(forPendingProfileKeyMember: localAddress) {
                 let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
                 let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
                 let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
@@ -1325,6 +1420,12 @@ extension GroupUpdateCopy {
                         copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was invited to the group."))
             }
+        case .requesting:
+            if let localAddress = Self.tsAccountManager.localAddress {
+                addUserRequestedToJoinGroup(for: localAddress)
+            } else {
+                owsFailDebug("Missing localAddress.")
+            }
         case .none:
             if !DebugFlags.permissiveGroupUpdateInfoMessages {
                 owsFailDebug("Learned of group without any membership status.")
@@ -1336,9 +1437,10 @@ extension GroupUpdateCopy {
 
     // MARK: - Membership Status
 
-    enum MembershipStatus {
+    fileprivate enum MembershipStatus {
         case normalMember
         case invited
+        case requesting
         case none
     }
 
@@ -1348,10 +1450,12 @@ extension GroupUpdateCopy {
 
     func membershipStatus(of address: SignalServiceAddress,
                           in groupMembership: GroupMembership) -> MembershipStatus {
-        if groupMembership.isNonPendingMember(address) {
+        if groupMembership.isFullMember(address) {
             return .normalMember
-        } else if groupMembership.isPendingMember(address) {
+        } else if groupMembership.isPendingProfileKeyMember(address) {
             return .invited
+        } else if groupMembership.isRequestingMember(address) {
+            return .requesting
         } else {
             return .none
         }

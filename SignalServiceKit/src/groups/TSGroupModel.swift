@@ -24,6 +24,8 @@ public class TSGroupModelV2: TSGroupModel {
     public var revision: UInt32 = 0
     @objc
     public var avatarUrlPath: String?
+    @objc
+    public var inviteLinkPassword: Data?
 
     @objc
     public required init(groupId: Data,
@@ -33,7 +35,8 @@ public class TSGroupModelV2: TSGroupModel {
                          groupAccess: GroupAccess,
                          revision: UInt32,
                          secretParamsData: Data,
-                         avatarUrlPath: String?) {
+                         avatarUrlPath: String?,
+                         inviteLinkPassword: Data?) {
         assert(secretParamsData.count > 0)
 
         self.membership = groupMembership
@@ -41,11 +44,12 @@ public class TSGroupModelV2: TSGroupModel {
         self.access = groupAccess
         self.revision = revision
         self.avatarUrlPath = avatarUrlPath
+        self.inviteLinkPassword = inviteLinkPassword
 
         super.init(groupId: groupId,
                    name: name,
                    avatarData: avatarData,
-                   members: Array(groupMembership.nonPendingMembers))
+                   members: Array(groupMembership.fullMembers))
     }
 
     // MARK: - MTLModel
@@ -74,7 +78,7 @@ public class TSGroupModelV2: TSGroupModel {
 
     @objc
     public override var groupMembers: [SignalServiceAddress] {
-        return Array(groupMembership.nonPendingMembers)
+        return Array(groupMembership.fullMembers)
     }
 
     public override func isEqual(to model: TSGroupModel,
@@ -100,6 +104,9 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.avatarUrlPath == avatarUrlPath else {
             return false
         }
+        guard other.inviteLinkPassword == inviteLinkPassword else {
+            return false
+        }
         return true
     }
 
@@ -115,6 +122,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "secretParamsData: \(secretParamsData.hexadecimalString.prefix(32)),\n"
         result += "revision: \(revision),\n"
         result += "avatarUrlPath: \(String(describing: avatarUrlPath)),\n"
+        result += "inviteLinkPassword: \(inviteLinkPassword?.hexadecimalString ?? "None"),\n"
         result += "]"
         return result
     }

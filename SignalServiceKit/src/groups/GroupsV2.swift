@@ -99,6 +99,7 @@ public protocol GroupsV2Swift: GroupsV2 {
 
 // MARK: -
 
+// TODO: Rename to GroupsV2ProposedChanges
 public protocol GroupsV2ChangeSet: AnyObject {
     var groupId: Data { get }
     var groupSecretParamsData: Data { get }
@@ -116,7 +117,7 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
     func setAccessForAttributes(_ value: GroupV2Access)
 
-    func promotePendingMember(_ uuid: UUID)
+    func promotePendingProfileKeyMember(_ uuid: UUID)
 
     func setShouldLeaveGroupDeclineInvite()
 
@@ -216,12 +217,11 @@ public protocol GroupV2Snapshot {
 
     var groupAccess: GroupAccess { get }
 
-    var accessControlForAttributes: GroupsProtoAccessControlAccessRequired { get }
-    var accessControlForMembers: GroupsProtoAccessControlAccessRequired { get }
-
     var disappearingMessageToken: DisappearingMessageToken { get }
 
     var profileKeys: [UUID: Data] { get }
+
+    var inviteLinkPassword: Data? { get }
 }
 
 // MARK: -

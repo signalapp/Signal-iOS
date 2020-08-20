@@ -147,7 +147,7 @@ public class AddToGroupViewController: OWSTableViewController {
             return Environment.shared.contactsManager.shortDisplayName(for: self.address, transaction: transaction)
         }
 
-        guard !groupThread.groupModel.groupMembership.isPendingOrNonPendingMember(address) else {
+        guard !groupThread.groupModel.groupMembership.isMemberOfAnyKind(address) else {
             let toastFormat = NSLocalizedString(
                 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT",
                 comment: "A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name}"
@@ -220,12 +220,12 @@ public class AddToGroupViewController: OWSTableViewController {
                 let oldGroupMembership = oldGroupModel.groupMembership
                 var groupMembershipBuilder = oldGroupMembership.asBuilder
 
-                guard !oldGroupMembership.isPendingOrNonPendingMember(self.address) else {
+                guard !oldGroupMembership.isMemberOfAnyKind(self.address) else {
                     owsFailDebug("Recipient is already in group.")
                     return nil
                 }
                 // GroupManager will separate out members as pending if necessary.
-                groupMembershipBuilder.addNonPendingMember(self.address, role: .normal)
+                groupMembershipBuilder.addFullMember(self.address, role: .normal)
 
                 builder.groupMembership = groupMembershipBuilder.build()
                 return try builder.build(transaction: transaction)

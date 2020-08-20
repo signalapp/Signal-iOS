@@ -50,10 +50,10 @@ extension GroupViewHelper {
             owsFailDebug("Missing localAddress.")
             return false
         }
-        let isLocalUserAdmin = groupThread.groupModel.groupMembership.isAdministrator(localAddress)
+        let isLocalUserAdmin = groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(localAddress)
         let groupMembership = groupThread.groupModel.groupMembership
-        let canBecomeAdmin = (groupMembership.isNonPendingMember(address) &&
-            !groupMembership.isAdministrator(address))
+        let canBecomeAdmin = (groupMembership.isFullMember(address) &&
+            !groupMembership.isFullMemberAndAdministrator(address))
         return (canEditConversationMembership && isLocalUserAdmin && canBecomeAdmin)
     }
 
@@ -73,7 +73,7 @@ extension GroupViewHelper {
         guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Missing group model."))
         }
-        guard oldGroupModel.groupMembership.isPendingOrNonPendingMember(address) else {
+        guard oldGroupModel.groupMembership.isMemberOfAnyKind(address) else {
             return Promise(error: OWSAssertionError("Not a group member."))
         }
         guard let uuid = address.uuid else {
@@ -98,10 +98,9 @@ extension GroupViewHelper {
             owsFailDebug("Missing localAddress.")
             return false
         }
-        let isLocalUserAdmin = groupThread.groupModel.groupMembership.isAdministrator(localAddress)
         let groupMembership = groupThread.groupModel.groupMembership
-        let canRevokeAdmin = (groupMembership.isNonPendingMember(address) &&
-            groupMembership.isAdministrator(address))
+        let isLocalUserAdmin = groupMembership.isFullMemberAndAdministrator(localAddress)
+        let canRevokeAdmin = groupMembership.isFullMemberAndAdministrator(address)
         return (canEditConversationMembership && isLocalUserAdmin && canRevokeAdmin)
     }
 
@@ -121,7 +120,7 @@ extension GroupViewHelper {
         guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Missing group model."))
         }
-        guard oldGroupModel.groupMembership.isPendingOrNonPendingMember(address) else {
+        guard oldGroupModel.groupMembership.isMemberOfAnyKind(address) else {
             return Promise(error: OWSAssertionError("Not a group member."))
         }
         guard let uuid = address.uuid else {
@@ -148,9 +147,9 @@ extension GroupViewHelper {
             return false
         }
         // Only admins can kick out other members.
-        let isLocalUserAdmin = groupThread.groupModel.groupMembership.isAdministrator(localAddress)
         let groupMembership = groupThread.groupModel.groupMembership
-        let isAddressInGroup = groupMembership.isPendingOrNonPendingMember(address)
+        let isLocalUserAdmin = groupMembership.isFullMemberAndAdministrator(localAddress)
+        let isAddressInGroup = groupMembership.isMemberOfAnyKind(address)
         return canEditConversationMembership && isLocalUserAdmin && isAddressInGroup
     }
 
@@ -170,7 +169,7 @@ extension GroupViewHelper {
         guard let oldGroupModel = delegate?.currentGroupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Missing group model."))
         }
-        guard oldGroupModel.groupMembership.isPendingOrNonPendingMember(address) else {
+        guard oldGroupModel.groupMembership.isMemberOfAnyKind(address) else {
             return Promise(error: OWSAssertionError("Not a group member."))
         }
         guard let uuid = address.uuid else {

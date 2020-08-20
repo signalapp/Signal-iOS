@@ -10,6 +10,7 @@ public enum GroupV2Access: UInt, Codable {
     case any
     case member
     case administrator
+    case unsatisfiable
 
     var description: String {
         get {
@@ -22,7 +23,37 @@ public enum GroupV2Access: UInt, Codable {
                 return "member"
             case .administrator:
                 return "administrator"
+            case .unsatisfiable:
+                return "unsatisfiable"
             }
+        }
+    }
+
+    public static func access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
+        switch value {
+        case .member:
+            return .member
+        case .administrator:
+            return .administrator
+        case .unsatisfiable:
+            return .unsatisfiable
+        default:
+            return .unknown
+        }
+    }
+
+    public var protoAccess: GroupsProtoAccessControlAccessRequired {
+        switch self {
+        case .any:
+            return .unknown
+        case .member:
+            return .member
+        case .administrator:
+            return .administrator
+        case .unsatisfiable:
+            return .unsatisfiable
+        default:
+            return .unknown
         }
     }
 }
@@ -36,11 +67,15 @@ public class GroupAccess: MTLModel {
     public var members: GroupV2Access = .unknown
     @objc
     public var attributes: GroupV2Access = .unknown
+    @objc
+    public var addFromInviteLink: GroupV2Access = .unknown
 
     public init(members: GroupV2Access,
-                attributes: GroupV2Access) {
+                attributes: GroupV2Access,
+                addFromInviteLink: GroupV2Access) {
         self.members = members
         self.attributes = attributes
+        self.addFromInviteLink = addFromInviteLink
 
         super.init()
     }
@@ -62,12 +97,12 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var allAccess: GroupAccess {
-        return GroupAccess(members: .any, attributes: .any)
+        return GroupAccess(members: .any, attributes: .any, addFromInviteLink: .any)
     }
 
     @objc
     public static var adminOnly: GroupAccess {
-        return GroupAccess(members: .administrator, attributes: .administrator)
+        return GroupAccess(members: .administrator, attributes: .administrator, addFromInviteLink: .administrator)
     }
 
     @objc
@@ -77,34 +112,10 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var defaultForV2: GroupAccess {
-        return GroupAccess(members: .member, attributes: .member)
-    }
-
-    public class func groupV2Access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
-        switch value {
-        case .member:
-            return .member
-        case .administrator:
-            return .administrator
-        default:
-            return .unknown
-        }
-    }
-
-    public class func protoAccess(forGroupV2Access value: GroupV2Access) -> GroupsProtoAccessControlAccessRequired {
-        switch value {
-        case .any:
-            return .unknown
-        case .member:
-            return .member
-        case .administrator:
-            return .administrator
-        default:
-            return .unknown
-        }
+        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .unsatisfiable)
     }
 
     public override var debugDescription: String {
-        return "[members: \(members.description), attributes: \(attributes.description), ]"
+        return "[members: \(members), attributes: \(attributes), addFromInviteLink: \(addFromInviteLink), ]"
     }
 }

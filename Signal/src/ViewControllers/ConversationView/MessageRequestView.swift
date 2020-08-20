@@ -56,7 +56,7 @@ class MessageRequestView: UIStackView {
 
         if let groupThread = thread as? TSGroupThread,
             groupThread.isGroupV2Thread {
-            self.mode = (groupThread.isLocalUserPendingMember
+            self.mode = (groupThread.isLocalUserPendingProfileKeyMember
                 ? .groupInviteRequest
                 : .contactOrGroupRequest)
         } else {
@@ -262,7 +262,7 @@ class MessageRequestView: UIStackView {
             return UILabel()
         }
         let groupMembership = groupThread.groupModel.groupMembership
-        guard let addedByUuid = groupMembership.addedByUuid(forPendingMember: localAddress) else {
+        guard let addedByUuid = groupMembership.addedByUuid(forPendingProfileKeyMember: localAddress) else {
             owsFailDebug("missing addedByUuid")
             return UILabel()
         }

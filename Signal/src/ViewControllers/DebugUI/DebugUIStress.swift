@@ -121,12 +121,12 @@ public extension DebugUIStress {
                 var groupMembershipBuilder = oldGroupMembership.asBuilder
                 for address in membersToAdd {
                     assert(address.isValid)
-                    guard !oldGroupMembership.isPendingOrNonPendingMember(address) else {
+                    guard !oldGroupMembership.isMemberOfAnyKind(address) else {
                         Logger.warn("Recipient is already in group.")
                         continue
                     }
                     // GroupManager will separate out members as pending if necessary.
-                    groupMembershipBuilder.addNonPendingMember(address, role: .normal)
+                    groupMembershipBuilder.addFullMember(address, role: .normal)
                 }
                 builder.groupMembership = groupMembershipBuilder.build()
                 return try builder.build(transaction: transaction)
