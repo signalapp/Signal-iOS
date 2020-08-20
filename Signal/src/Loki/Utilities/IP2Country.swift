@@ -58,8 +58,9 @@ final class IP2Country {
                 OnionRequestAPI.paths = storage.getOnionRequestPaths(in: transaction)
             }
         }
-        guard OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount else { return false }
-        let pathToDisplay = OnionRequestAPI.paths.first!
+        let paths = OnionRequestAPI.paths
+        guard paths.count >= OnionRequestAPI.pathCount else { return false }
+        let pathToDisplay = paths.first!
         pathToDisplay.forEach { snode in
             let _ = self.cacheCountry(for: snode.ip) // Preload if needed
         }
