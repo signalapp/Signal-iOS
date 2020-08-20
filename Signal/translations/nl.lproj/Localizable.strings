@@ -290,6 +290,9 @@
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audiobericht";
 
+/* Accessibility label for placing an audio call */
+"AUDIO_CALL_LABEL" = "Spraakoproep";
+
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Luidspreker";
 
@@ -450,19 +453,16 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Opnieuw bellen";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Inkomend audiogesprek…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Gemist audiogesprek…";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Je kunt microfoontoegang inschakelen in de iOS-instellingenapp om te kunnen bellen en spraakberichten op te kunnen nemen met Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Toegang vereist tot microfoon";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "Bellen";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Oproep gemist omdat het veiligheidsnummer van de beller veranderde.";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "Bellen?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Inkomend videogesprek…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Gemist videogesprek…";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Beantwoorden zonder video";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Gesprekskleur";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Groepsinformatie bewerken";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Uitsluitend beheerders";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "Bellen …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Audiogesprek...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Videogesprek...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Beantwoord. Aan het beveiligen …";
@@ -2371,9 +2371,6 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Je zult geen meldingen krijgen voor gedempte gesprekken.";
-
-/* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Overslaan";
@@ -4259,6 +4256,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Veiligheidsnummers nakijken";
 
+/* Accessibility label for placing a video call */
+"VIDEO_CALL_LABEL" = "Video-oproep";
+
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Je hebt dit bericht al weergegeven.";
 
@@ -4292,5 +4292,6 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Je moet de configuratie voltooien voor je verder kunt gaan.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
+   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelfwissende berichten op %@ ingesteld.";

@@ -31,6 +31,7 @@ BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
             case kCFURLErrorNetworkConnectionLost:
             case kCFURLErrorDNSLookupFailed:
             case kCFURLErrorNotConnectedToInternet:
+            case kCFURLErrorSecureConnectionFailed:
                 // TODO: We might want to add kCFURLErrorCannotFindHost.
                 return YES;
             default:
@@ -455,7 +456,7 @@ dispatch_queue_t NetworkManagerQueue()
         [curlComponents addObject:[NSString stringWithFormat:@"'%@: %@'", header, headerValue]];
     }
     // Body/parameters (e.g. JSON payload)
-    if (task.originalRequest.HTTPBody) {
+    if (task.originalRequest.HTTPBody.length > 0) {
         NSString *_Nullable contentType = task.originalRequest.allHTTPHeaderFields[@"Content-Type"];
         BOOL isJson = [contentType isEqualToString:@"application/json"];
         BOOL isProtobuf = [contentType isEqualToString:@"application/x-protobuf"];
@@ -481,7 +482,7 @@ dispatch_queue_t NetworkManagerQueue()
             NSString *echoCommand =
                 [NSString stringWithFormat:@"echo -n -e %@ > %@", [echoBytes componentsJoinedByString:@""], filename];
 
-            OWSLogVerbose(@"curl for failed request: %@", echoCommand);
+            OWSLogVerbose(@"curl for request: %@", echoCommand);
             [curlComponents addObject:@"--data-binary"];
             [curlComponents addObject:[NSString stringWithFormat:@"@%@", filename]];
         } else {
@@ -489,9 +490,10 @@ dispatch_queue_t NetworkManagerQueue()
         }
     }
     // TODO: Add support for cookies.
-    [curlComponents addObject:task.originalRequest.URL.absoluteString];
+    // Double-quote the URL.
+    [curlComponents addObject:[NSString stringWithFormat:@"\"%@\"", task.originalRequest.URL.absoluteString]];
     NSString *curlCommand = [curlComponents componentsJoinedByString:@" "];
-    OWSLogVerbose(@"curl for failed request: %@", curlCommand);
+    OWSLogVerbose(@"curl for request: %@", curlCommand);
 }
 #endif
 

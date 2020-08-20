@@ -497,9 +497,9 @@ NS_ASSUME_NONNULL_BEGIN
         __block TSAttachmentPointer *_Nullable attachmentPointer;
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
-            attachmentPointer =
-                [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:job.attachmentId transaction:transaction];
-            if (attachmentPointer == nil) {
+            TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:job.attachmentId
+                                                                        transaction:transaction];
+            if (attachment == nil) {
                 // This isn't necessarily a bug.  For example:
                 //
                 // * Receive an incoming message with an attachment.
@@ -509,6 +509,14 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Missing attachment.");
                 return;
             }
+            if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                // This isn't necessarily a bug.
+                //
+                // * An attachment may have been enqueued for download multiple times by the user in some cases.
+                OWSFailDebug(@"Unexpected attachment.");
+                return;
+            }
+            attachmentPointer = (TSAttachmentPointer *)attachment;
             [attachmentPointer anyUpdateAttachmentPointerWithTransaction:transaction
                                                                    block:^(TSAttachmentPointer *attachment) {
                                                                        attachment.state

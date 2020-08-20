@@ -290,6 +290,9 @@
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Mensagem de áudio";
 
+/* Accessibility label for placing an audio call */
+"AUDIO_CALL_LABEL" = "Chamada de áudio";
+
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Alta voz";
 
@@ -450,19 +453,16 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Ligar novamente";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 A receber chamada de áudio…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Chamada de áudio perdida";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Pode dar ao Signal acesso ao seu microfone na aplicação de Definições para poder realizar chamadas e gravar mensagens de voz.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Requer acesso ao microfone";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "Ligar";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Chamada perdida porque o número de segurança do contacto mudou.";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "Ligar?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 A receber vídeochamada…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Chamada de vídeo perdida";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Atender sem vídeo";
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "A carregar mais mensagens...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Ler mais";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Reiniciar a sua sessão permitirá que receba novamente mensagens de %@, mas não poderá recuperar as mensagens corrompidas.";
@@ -1617,7 +1617,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Você";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "Chamada de áudio";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Sem membros.";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "A tocar...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Chamada de áudio...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Videochamada...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Atendida. A ativar a segurança...";
@@ -1935,7 +1935,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Dê à sua caixa de entrada alguma escrita. Comece por enviar uma mensagem para um amigo.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ ligou-lhe";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Pode enviar ou receber mensagens sincronizadas a partir do seu telemóvel ou iPad. ↵Para sua segurança, o histórico de conversas não é transferido para os novos dispositivos associados.";
@@ -2372,9 +2372,6 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Não receberá notificações de conversas silenciadas.";
 
-/* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
-
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorar";
 
@@ -2661,7 +2658,7 @@
 "OUTAGE_WARNING" = "O Signal está a ter alguns problemas técnicos. Estamos a trabalhar para restituir o serviço o mais rapidamente possível.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "Ligou para %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "Não é possível exibir o PDF";
@@ -4259,6 +4256,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Rever número de segurança";
 
+/* Accessibility label for placing a video call */
+"VIDEO_CALL_LABEL" = "Videochamada";
+
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Já tinha visto esta mensagem.";
 
@@ -4292,5 +4292,6 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Deverá terminar a configuração antes de continuar.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
+   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Você definiu %@ como o tempo a decorrer até as mensagens serem destruídas.";

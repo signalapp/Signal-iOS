@@ -290,6 +290,9 @@
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "پیام صوتی";
 
+/* Accessibility label for placing an audio call */
+"AUDIO_CALL_LABEL" = "تماس صوتی";
+
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "بلندگو";
 
@@ -450,19 +453,16 @@
 "CALL_AGAIN_BUTTON_TITLE" = "تماس دوباره";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 تماس صوتی ورودی...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 تماس صوتی بی‌پاسخ";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "شما میتوانید دسترسی به میکروفون را در قسمت تنظیمات iOS فعال کنید تا در Signal تماس برقرار کنید و پیام های صوتی ضبط کنید.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "نیاز به دسترسی به میکروفن";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "تماس";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ تماس برقرار نشد چون شماره امنیتی تماس گیرنده تغییر کرد.";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "تماس؟";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 تماس تصویری ورودی...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 تماس تصویری بی‌پاسخ";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "پاسخ دادن بدون تصویر";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "رنگ مکالمه ها.";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "ویرایش اطلاعات گروه";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "فقط مدیرها";
@@ -1617,7 +1617,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "شما";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "تماس صوتی";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "بدون عضو.";
@@ -1839,10 +1839,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "مدیر جدید را انتخاب کنید";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "تماس با ما";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "مرکز پشتیبانی";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "مکالمه های آرشیو شده";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "در حال زنگ خوردن…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "تماس صوتی";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "تماس تصویری";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "پاسخ داده شد. در حال امن کردن…";
@@ -1935,7 +1935,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "ورودی خود را نوشتن چیزی پر کنید. می توانید با پیام دادن به یک دوست شروع کنید.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ با شما تماس گرفت";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "شما میتوانید پیام های همگام شده را از تلفن همراه یا iPad خود ارسال کرده یا دریافت کنید.↵برای امنیت شما، تاریخچه مکالمه به دستگاه‌های پیوند داده شده جدید منتقل نمی‌شوند.";
@@ -2371,9 +2371,6 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "شما هیچ اعلانی از گفتگوهای ساکت‌شده دریافت نخواهید کرد.";
-
-/* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "رد کردن";
@@ -3984,16 +3981,16 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "کلید هویت‌سنجی مطابقت دارد!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "تماس با ما";
 
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "در مورد اشکال به ما توضیح دهید";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "لطفا درخواست پشتیبانی خود را به نشانی ایمیل support@signal.org ارسال کنید";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "درخواست پشتیبانی برای Signal iOS";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "چه حسی دارید؟ (اختیاری)";
@@ -4002,7 +3999,7 @@
 "SUPPORT_FAQ_PROMPT" = "آیا قسمت پرسش‌های متداول را خوانده‌اید؟";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "شامل گزارش خرابی";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "در حال بارگذاری";
@@ -4062,13 +4059,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ دقیقه";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ ثانیه";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ هفته";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ سال";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ هفته";
@@ -4077,10 +4074,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ه";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ سال";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "۰ ثانیه";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "لغو";
@@ -4259,6 +4256,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "بازبینی شماره‌های امنیتی";
 
+/* Accessibility label for placing a video call */
+"VIDEO_CALL_LABEL" = "تماس تصویری";
+
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "شما قبلاً این پیام را دیده‌اید.";
 
@@ -4292,5 +4292,6 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "قبل از ادامه باید راه اندازی برنامه را تکمیل کنید.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
+   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "شما زمان ناپدید شدن پیام‌ها را روی %@ تنظیم کردید.";

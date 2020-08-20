@@ -290,6 +290,9 @@
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "অডিও বার্তা";
 
+/* Accessibility label for placing an audio call */
+"AUDIO_CALL_LABEL" = "Audio Call";
+
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "স্পিকার";
 
@@ -460,9 +463,6 @@
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "মাইক্রোফোন অ্যাক্সেস প্রয়োজন";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "কল";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ মিস করা কল, কারণ কলারের নিরাপত্তা নাম্বার পরিবর্তিত হয়েছে।";
@@ -2372,9 +2372,6 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "নিঃশব্দ কথোপকথনসমুহের জন্য আপনি বিজ্ঞপ্তি পাবেন না।";
 
-/* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
-
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "বাদ দিয়ে যান";
 
@@ -4259,6 +4256,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "সুরক্ষা নাম্বার পর্যালোচনা করুন";
 
+/* Accessibility label for placing a video call */
+"VIDEO_CALL_LABEL" = "ভিডিও কল";
+
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "আপনি ইতিমধ্যে এই বার্তাটি দেখেছেন।";
 
@@ -4292,5 +4292,6 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "এগিয়ে যাওয়ার আগে আপনাকে অবশ্যই সেটআপ শেষ করতে হবে।";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
+   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "আপনি অদৃশ্য হয়ে যাওয়া বার্তার সময়কাল %@ নির্ধারন করেছেন।";

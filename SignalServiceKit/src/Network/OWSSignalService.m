@@ -284,14 +284,44 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return result;
 }
 
+- (OWSURLSession *)cdnURLSessionForCdnNumber:(UInt32)cdnNumber
+{
+    NSString *cdnServerUrl;
+    NSString *cdnCensorshipPrefix;
+    switch (cdnNumber) {
+        case 0:
+            cdnServerUrl = TSConstants.textSecureCDN0ServerURL;
+            cdnCensorshipPrefix = TSConstants.cdn0CensorshipPrefix;
+            break;
+        case 2:
+            cdnServerUrl = TSConstants.textSecureCDN2ServerURL;
+            cdnCensorshipPrefix = TSConstants.cdn2CensorshipPrefix;
+            break;
+        default:
+            OWSFailDebug(@"Unrecognized CDN number configuration requested: %u", cdnNumber);
+            cdnServerUrl = TSConstants.textSecureCDN0ServerURL;
+            cdnCensorshipPrefix = TSConstants.cdn0CensorshipPrefix;
+            break;
+    }
+    if (self.isCensorshipCircumventionActive) {
+        OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
+        OWSLogInfo(@"using reflector CDNSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
+        return [self reflectorCDNUrlSessionWithCensorshipConfiguration:censorshipConfiguration
+                                                          cdnServerUrl:cdnServerUrl
+                                                   cdnCensorshipPrefix:cdnCensorshipPrefix];
+    } else {
+        return [self defaultCDNUrlSessionForBaseURL:cdnServerUrl];
+    }
+}
+
 - (AFHTTPSessionManager *)defaultCDNSessionManagerForBaseURL:(NSString *)cdnServerURL
 {
     NSURL *baseURL = [[NSURL alloc] initWithString:cdnServerURL];
     OWSAssertDebug(baseURL);
     
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL
+                                                                    sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     
@@ -299,6 +329,16 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.responseSerializer.acceptableContentTypes = nil;
 
     return sessionManager;
+}
+
+- (OWSURLSession *)defaultCDNUrlSessionForBaseURL:(NSString *)cdnServerURL
+{
+    NSURL *baseUrl = [[NSURL alloc] initWithString:cdnServerURL];
+    OWSAssertDebug(baseUrl);
+    return [[OWSURLSession alloc] initWithBaseUrl:baseUrl
+                                   securityPolicy:OWSURLSession.signalServiceSecurityPolicy
+                                    configuration:OWSURLSession.defaultURLSessionConfiguration
+                      censorshipCircumventionHost:nil];
 }
 
 - (AFHTTPSessionManager *)reflectorCDNSessionManagerWithCensorshipConfiguration:
@@ -309,8 +349,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
     NSURL *baseURL = [frontingURL URLByAppendingPathComponent:cdnCensorshipPrefix];
-    AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL
+                                                                    sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 
@@ -320,6 +360,21 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
 
     return sessionManager;
+}
+
+- (OWSURLSession *)reflectorCDNUrlSessionWithCensorshipConfiguration:
+                       (OWSCensorshipConfiguration *)censorshipConfiguration
+                                                        cdnServerUrl:(NSString *)cdnServerUrl
+                                                 cdnCensorshipPrefix:(NSString *)cdnCensorshipPrefix
+{
+    NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
+    NSURL *baseUrl = [frontingURL URLByAppendingPathComponent:cdnCensorshipPrefix];
+    OWSURLSession *urlSession = [[OWSURLSession alloc] initWithBaseUrl:baseUrl
+                                                        securityPolicy:censorshipConfiguration.domainFrontSecurityPolicy
+                                                         configuration:OWSURLSession.defaultURLSessionConfiguration
+                                           censorshipCircumventionHost:cdnServerUrl];
+    [urlSession addExtraHeader:@"Host" withValue:TSConstants.censorshipReflectorHost];
+    return urlSession;
 }
 
 #pragma mark - Storage Service

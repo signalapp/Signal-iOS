@@ -1593,6 +1593,7 @@
 		88238EA124E9DDB700F28079 /* LocalVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalVideoView.swift; sourceTree = "<group>"; };
 		88238EA324E9DDE900F28079 /* CallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallButton.swift; sourceTree = "<group>"; };
 		88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GestureRecognizers.swift"; sourceTree = "<group>"; };
+		88238EB024EE29F400F28079 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = translations/hr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8827004B232071C500F01C46 /* OWSWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSWindow.swift; sourceTree = "<group>"; };
 		8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsTableViewController.swift; sourceTree = "<group>"; };
 		882BDAAD249050F000C14587 /* AddToGroupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToGroupViewController.swift; sourceTree = "<group>"; };
@@ -3439,6 +3440,7 @@
 				3499997D22EF1E2100654932 /* FTS */,
 				B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */,
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
+				4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */,
 				455AC69D1F4F8B0300134004 /* ImageCacheTest.swift */,
 				34DB0BEC2011548B007B313F /* OWSDatabaseConverterTest.m */,
 				34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */,
@@ -3450,7 +3452,6 @@
 				B660F6B41C29868000687D6E /* UtilTest.m */,
 				340CCB6F2305962A005243B3 /* YDBToGRDBMigrationKeyValueTest.swift */,
 				340CCB702305962B005243B3 /* YDBToGRDBMigrationModelTest.swift */,
-				4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -5181,6 +5182,7 @@
 				888A280424B3E9820045D639 /* mk */,
 				888A280524B3E9820045D639 /* es */,
 				884596F024B93E32002F66D3 /* cy */,
+				88238EB024EE29F400F28079 /* hr */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

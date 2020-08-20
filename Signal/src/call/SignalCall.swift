@@ -38,7 +38,6 @@ public protocol CallObserver: class {
     func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
     func muteDidChange(call: SignalCall, isMuted: Bool)
     func holdDidChange(call: SignalCall, isOnHold: Bool)
-    func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?)
 }
 
 public enum CallError: Error {
@@ -200,25 +199,6 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     public let audioActivity: AudioActivity
 
-    public var audioSource: AudioSource? = nil {
-        didSet {
-            AssertIsOnMainThread()
-            Logger.debug("audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
-
-            for observer in observers.elements {
-                observer.audioSourceDidChange(call: self, audioSource: audioSource)
-            }
-        }
-    }
-
-    public var isSpeakerphoneEnabled: Bool {
-        guard let audioSource = self.audioSource else {
-            return false
-        }
-
-        return audioSource.isBuiltInSpeaker
-    }
-
     public var isOnHold = false {
         didSet {
             AssertIsOnMainThread()
@@ -275,13 +255,10 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     }
 
     public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64, offerMediaType: TSRecentCallOfferType) -> SignalCall {
-        // If this is a video call, and the app is active, we want
-        // to use in the in app call screen because CallKit has poor
-        // support for video calls. We still use CallKit when the app
-        // is not active, because CallKit provides a much better
-        // background ringing experience.
+        // If this is a video call, we want to use in the in app call screen
+        // because CallKit has poor support for video calls.
         let callAdapterType: CallAdapterType
-        if offerMediaType == .video && UIApplication.shared.applicationState == .active {
+        if offerMediaType == .video {
             callAdapterType = .nonCallKit
         } else {
             callAdapterType = .default

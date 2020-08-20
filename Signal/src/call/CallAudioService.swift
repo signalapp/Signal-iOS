@@ -6,10 +6,11 @@ import Foundation
 import AVFoundation
 import SignalServiceKit
 import SignalMessaging
+import AVKit
 
 protocol CallAudioServiceDelegate: class {
-    func callAudioService(_ callAudioService: CallAudioService, didUpdateIsSpeakerphoneEnabled isEnabled: Bool)
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService)
+    func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
 @objc class CallAudioService: NSObject, CallObserver {
@@ -51,7 +52,7 @@ protocol CallAudioServiceDelegate: class {
         audioSession.configureRTCAudio()
         NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: nil) { _ in
             assert(!Thread.isMainThread)
-            self.updateIsSpeakerphoneEnabled()
+            self.audioRouteDidChange()
         }
     }
 
@@ -78,32 +79,22 @@ protocol CallAudioServiceDelegate: class {
         ensureProperAudioSession(call: call)
     }
 
-    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
-        AssertIsOnMainThread()
-
-        ensureProperAudioSession(call: call)
-
-        if let audioSource = audioSource, audioSource.isBuiltInSpeaker {
-            self.isSpeakerphoneEnabled = true
-        } else {
-            self.isSpeakerphoneEnabled = false
-        }
-    }
-
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
     }
 
-    // Speakerphone can be manipulated by the in-app callscreen or via the system callscreen (CallKit).
-    // Unlike other CallKit CallScreen buttons, enabling doesn't trigger a CXAction, so it's not as simple
-    // to track state changes. Instead we never store the state and directly access the ground-truth in the
-    // AVAudioSession.
-    private(set) var isSpeakerphoneEnabled: Bool = false {
-        didSet {
-            self.delegate?.callAudioService(self, didUpdateIsSpeakerphoneEnabled: isSpeakerphoneEnabled)
+    private let routePicker = AVRoutePickerView()
+    public func presentRoutePicker() -> Bool {
+        guard let routeButton = routePicker.subviews.first(where: { $0 is UIButton }) as? UIButton else {
+            owsFailDebug("Failed to find subview to present route picker, falling back to old system")
+            return false
         }
+
+        routeButton.sendActions(for: .touchUpInside)
+
+        return true
     }
 
     public func requestSpeakerphone(isEnabled: Bool) {
@@ -119,12 +110,14 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func updateIsSpeakerphoneEnabled() {
-        let value = avAudioSession.currentRoute.outputs.contains { (portDescription: AVAudioSessionPortDescription) -> Bool in
-            return portDescription.portType == .builtInSpeaker
+    private func audioRouteDidChange() {
+        guard let currentAudioSource = currentAudioSource else {
+            return owsFailDebug("Switched to route without audio source")
         }
-        DispatchQueue.main.async {
-            self.isSpeakerphoneEnabled = value
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.callAudioServiceDidChangeAudioSource(self, audioSource: currentAudioSource)
         }
     }
 
@@ -158,14 +151,6 @@ protocol CallAudioServiceDelegate: class {
             return
         }
 
-        // Disallow bluetooth while (and only while) the user has explicitly chosen the built in receiver.
-        //
-        // NOTE: I'm actually not sure why this is required - it seems like we should just be able
-        // to setPreferredInput to call.audioSource.portDescription in this case,
-        // but in practice I'm seeing the call revert to the bluetooth headset.
-        // Presumably something else (in WebRTC?) is touching our shared AudioSession. - mjk
-        let options: AVAudioSession.CategoryOptions = call.audioSource?.isBuiltInEarPiece == true ? [] : [.allowBluetooth]
-
         if call.state == .localRinging {
             // SoloAmbient plays through speaker and respects silent switch,
             // but does not playback in the background. Playback plays through
@@ -185,7 +170,7 @@ protocol CallAudioServiceDelegate: class {
             // does not include my linked bluetooth device
             setAudioSession(category: .playAndRecord,
                             mode: .videoChat,
-                            options: options)
+                            options: .allowBluetooth)
         } else {
             // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
             // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
@@ -193,20 +178,7 @@ protocol CallAudioServiceDelegate: class {
             // does not include my linked bluetooth device
             setAudioSession(category: .playAndRecord,
                             mode: .voiceChat,
-                            options: options)
-        }
-
-        do {
-            // It's important to set preferred input *after* ensuring properAudioSession
-            // because some sources are only valid for certain category/option combinations.
-            let existingPreferredInput = avAudioSession.preferredInput
-            if  existingPreferredInput != call.audioSource?.portDescription {
-                Logger.info("changing preferred input: \(String(describing: existingPreferredInput)) -> \(String(describing: call.audioSource?.portDescription))")
-                try avAudioSession.setPreferredInput(call.audioSource?.portDescription)
-            }
-
-        } catch {
-            owsFailDebug("failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
+                            options: .allowBluetooth)
         }
     }
 
@@ -353,7 +325,6 @@ protocol CallAudioServiceDelegate: class {
         }
 
         // Stop solo audio, revert to default.
-        isSpeakerphoneEnabled = false
         setAudioSession(category: .soloAmbient)
     }
 
@@ -466,20 +437,49 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    func currentAudioSource(call: SignalCall) -> AudioSource? {
-        if let audioSource = call.audioSource {
-            return audioSource
-        }
+    var currentAudioSource: AudioSource? {
+        get {
+            let outputsByType = avAudioSession.currentRoute.outputs.reduce(
+                into: [AVAudioSession.Port: AVAudioSessionPortDescription]()
+            ) { result, portDescription in
+                result[portDescription.portType] = portDescription
+            }
 
-        // Before the user has specified an audio source on the call, we rely on the existing
-        // system state to determine the current audio source.
-        // If a bluetooth is connected, this will be bluetooth, otherwise
-        // this will be the receiver.
-        guard let portDescription = avAudioSession.currentRoute.inputs.first else {
-            return nil
-        }
+            let inputsByType = avAudioSession.currentRoute.inputs.reduce(
+                into: [AVAudioSession.Port: AVAudioSessionPortDescription]()
+            ) { result, portDescription in
+                result[portDescription.portType] = portDescription
+            }
 
-        return AudioSource(portDescription: portDescription)
+            if let builtInMic = inputsByType[.builtInMic], inputsByType[.builtInReceiver] != nil {
+                return AudioSource(portDescription: builtInMic)
+            } else if outputsByType[.builtInSpeaker] != nil {
+                return AudioSource.builtInSpeaker
+            } else if let firstRemaining = inputsByType.values.first {
+                return AudioSource(portDescription: firstRemaining)
+            } else {
+                return nil
+            }
+        }
+        set {
+            guard currentAudioSource != newValue else { return }
+
+            Logger.info("changing preferred input: \(String(describing: currentAudioSource)) -> \(String(describing: newValue))")
+
+            if let portDescription = newValue?.portDescription {
+                do {
+                    try avAudioSession.setPreferredInput(portDescription)
+                } catch {
+                    owsFailDebug("failed setting audio source with error: \(error)")
+                }
+            } else if newValue == AudioSource.builtInSpeaker {
+                requestSpeakerphone(isEnabled: true)
+            } else {
+                owsFailDebug("Tried to set unexpected audio source")
+            }
+
+            delegate?.callAudioServiceDidChangeAudioSource(self, audioSource: newValue)
+        }
     }
 
     private func setAudioSession(category: AVAudioSession.Category,

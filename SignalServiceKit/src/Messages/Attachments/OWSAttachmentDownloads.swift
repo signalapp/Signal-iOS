@@ -179,6 +179,7 @@ public extension OWSAttachmentDownloads {
 
             promise.catch(on: .global()) { (error: Error) in
                 if let statusCode = HTTPStatusCodeForError(error),
+                    attachmentPointer.cdnNumber == 0,
                     attachmentPointer.serverId < 100 {
                     // This looks like the symptom of the "frequent 404
                     // downloading attachments with low server ids".

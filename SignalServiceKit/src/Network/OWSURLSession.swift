@@ -41,22 +41,61 @@ public class OWSURLSession: NSObject {
         return queue
     }()
 
+    private let baseUrl: URL?
+
     private let configuration: URLSessionConfiguration
 
-    private let securityPolicy = OWSHTTPSecurityPolicy.shared()
+    // TODO: Replace AFSecurityPolicy.
+    private let securityPolicy: AFSecurityPolicy
+
+    private var extraHeaders = [String: String]()
+
+    @objc
+    public let censorshipCircumventionHost: String?
+
+    @objc
+    public var isUsingCensorshipCircumvention: Bool {
+        censorshipCircumventionHost != nil
+    }
+
+    @objc(addExtraHeader:withValue:)
+    public func addExtraHeader(_ header: String, value: String) {
+        owsAssertDebug(!header.isEmpty)
+        owsAssertDebug(!value.isEmpty)
+        owsAssertDebug(extraHeaders[header] == nil)
+
+        extraHeaders[header] = value
+    }
 
     private lazy var session: URLSession = {
         URLSession(configuration: configuration, delegate: self, delegateQueue: Self.operationQueue)
     }()
 
     @objc
-    public override convenience init() {
-        self.init(configuration: .ephemeral)
+    public static func defaultSecurityPolicy() -> AFSecurityPolicy {
+        AFSecurityPolicy.default()
     }
 
     @objc
-    public init(configuration: URLSessionConfiguration) {
+    public static func signalServiceSecurityPolicy() -> AFSecurityPolicy {
+        OWSHTTPSecurityPolicy.shared()
+    }
+
+    @objc
+    public static func defaultURLSessionConfiguration() -> URLSessionConfiguration {
+        URLSessionConfiguration.ephemeral
+    }
+
+    @objc
+    public init(baseUrl: URL?,
+                securityPolicy: AFSecurityPolicy,
+                configuration: URLSessionConfiguration,
+                censorshipCircumventionHost: String? = nil) {
+        self.baseUrl = baseUrl
+        self.securityPolicy = securityPolicy
         self.configuration = configuration
+        self.censorshipCircumventionHost = censorshipCircumventionHost
+
         super.init()
     }
 
@@ -127,9 +166,10 @@ public class OWSURLSession: NSObject {
 
     func dataTaskPromise(_ urlString: String,
                          verb: HTTPVerb,
-                         headers: [String: String]? = nil) -> Promise<Response> {
+                         headers: [String: String]? = nil,
+                         body: Data?) -> Promise<Response> {
         firstly(on: .global()) { () -> Promise<Response> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers, body: body)
             return self.dataTaskPromise(request: request)
         }
     }
@@ -170,18 +210,89 @@ public class OWSURLSession: NSObject {
 
     private func buildRequest(_ urlString: String,
                               verb: HTTPVerb,
-                              headers: [String: String]? = nil) throws -> URLRequest {
-        guard let url = URL(string: urlString) else {
+                              headers: [String: String]? = nil,
+                              body: Data? = nil) throws -> URLRequest {
+        let urlString = buildUrlString(urlString)
+        guard let url = URL(string: urlString, relativeTo: baseUrl) else {
             throw OWSAssertionError("Invalid url.")
         }
         var request = URLRequest(url: url)
         request.httpMethod = verb.httpMethod
+
+        var headerSet = Set<String>()
+
+        // Add the headers.
         if let headers = headers {
             for (headerField, headerValue) in headers {
+                owsAssertDebug(!headerSet.contains(headerField.lowercased()))
+                headerSet.insert(headerField.lowercased())
+
                 request.addValue(headerValue, forHTTPHeaderField: headerField)
+
             }
         }
+
+        // Add the "extra headers".
+        for (headerField, headerValue) in extraHeaders {
+            guard !headerSet.contains(headerField.lowercased()) else {
+                owsFailDebug("Skipping redundant header: \(headerField)")
+                continue
+            }
+            headerSet.insert(headerField.lowercased())
+
+            request.addValue(headerValue, forHTTPHeaderField: headerField)
+        }
+
+        request.httpBody = body
         return request
+    }
+
+    private func buildUrlString(_ urlString: String) -> String {
+        guard let censorshipCircumventionHost = censorshipCircumventionHost else {
+            // Censorship circumvention not active.
+            return urlString
+        }
+        guard !censorshipCircumventionHost.isEmpty else {
+            owsFailDebug("Invalid censorshipCircumventionHost.")
+            return urlString
+        }
+        guard let baseUrl = baseUrl else {
+            owsFailDebug("Censorship circumvention requires baseUrl.")
+            return urlString
+        }
+
+        if urlString.hasPrefix(censorshipCircumventionHost) {
+            // urlString has expected protocol/host.
+        } else if urlString.lowercased().hasPrefix("http") {
+            // Censorship circumvention will work with relative URLs and
+            // absolute URLs that match the expected protocol/host prefix.
+            // Other absolute URLs should not be used with this session.
+            owsFailDebug("Unexpected URL for censorship circumvention.")
+        }
+
+        guard let requestComponents = URLComponents(string: urlString) else {
+            owsFailDebug("Could not rewrite URL.")
+            return urlString
+        }
+
+        var finalComponents = URLComponents()
+
+        // Use scheme and host from baseUrl.
+        finalComponents.scheme = baseUrl.scheme
+        finalComponents.host = baseUrl.host
+
+        // Use query and fragement from the request.
+        finalComponents.query = requestComponents.query
+        finalComponents.fragment = requestComponents.fragment
+
+        // Join the paths.
+        finalComponents.path = (baseUrl.path as NSString).appendingPathComponent(requestComponents.path)
+
+        guard let result = finalComponents.string else {
+            owsFailDebug("Could not rewrite URL.")
+            return urlString
+        }
+        return result
     }
 
     typealias TaskIdentifier = Int

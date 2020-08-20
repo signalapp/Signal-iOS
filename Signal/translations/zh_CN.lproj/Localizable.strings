@@ -290,6 +290,9 @@
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "语音消息";
 
+/* Accessibility label for placing an audio call */
+"AUDIO_CALL_LABEL" = "Audio Call";
+
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "扬声器";
 
@@ -460,9 +463,6 @@
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "需麦克风访问权限";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "呼叫";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 未接来电，因为对方的安全码发生了变化。";
@@ -2372,9 +2372,6 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "您将不会收到来自静音对话的通知。";
 
-/* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
-
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "跳过";
 
@@ -4259,6 +4256,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "检查安全码";
 
+/* Accessibility label for placing a video call */
+"VIDEO_CALL_LABEL" = "视频通话";
+
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "你已经看过这条消息了。";
 
@@ -4292,5 +4292,6 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "你必须先完成设置才能继续。";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
+   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您设置了消息%@后消失。";
