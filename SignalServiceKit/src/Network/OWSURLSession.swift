@@ -212,8 +212,7 @@ public class OWSURLSession: NSObject {
                               verb: HTTPVerb,
                               headers: [String: String]? = nil,
                               body: Data? = nil) throws -> URLRequest {
-        let urlString = buildUrlString(urlString)
-        guard let url = URL(string: urlString, relativeTo: baseUrl) else {
+        guard let url = buildUrl(urlString) else {
             throw OWSAssertionError("Invalid url.")
         }
         var request = URLRequest(url: url)
@@ -247,18 +246,24 @@ public class OWSURLSession: NSObject {
         return request
     }
 
-    private func buildUrlString(_ urlString: String) -> String {
+    private func buildUrl(_ urlString: String) -> URL? {
         guard let censorshipCircumventionHost = censorshipCircumventionHost else {
             // Censorship circumvention not active.
-            return urlString
+            guard let requestUrl = URL(string: urlString, relativeTo: baseUrl) else {
+                owsFailDebug("Could not build URL.")
+                return nil
+            }
+            return requestUrl
         }
+
+        // Censorship circumvention active.
         guard !censorshipCircumventionHost.isEmpty else {
             owsFailDebug("Invalid censorshipCircumventionHost.")
-            return urlString
+            return nil
         }
         guard let baseUrl = baseUrl else {
             owsFailDebug("Censorship circumvention requires baseUrl.")
-            return urlString
+            return nil
         }
 
         if urlString.hasPrefix(censorshipCircumventionHost) {
@@ -270,9 +275,31 @@ public class OWSURLSession: NSObject {
             owsFailDebug("Unexpected URL for censorship circumvention.")
         }
 
+        guard let requestUrl = Self.buildUrl(urlString: urlString, baseUrl: baseUrl) else {
+            owsFailDebug("Could not build URL.")
+            return nil
+        }
+        return requestUrl
+    }
+
+    @objc(buildUrlWithString:baseUrl:)
+    public class func buildUrl(urlString: String, baseUrl: URL?) -> URL? {
+        guard let baseUrl = baseUrl else {
+            guard let requestUrl = URL(string: urlString, relativeTo: nil) else {
+                owsFailDebug("Could not build URL.")
+                return nil
+            }
+            return requestUrl
+        }
+
+        // Ensure the base URL has a trailing "/".
+        let safeBaseUrl: URL = (baseUrl.absoluteString.hasSuffix("/")
+            ? baseUrl
+            : baseUrl.appendingPathComponent(""))
+
         guard let requestComponents = URLComponents(string: urlString) else {
             owsFailDebug("Could not rewrite URL.")
-            return urlString
+            return nil
         }
 
         var finalComponents = URLComponents()
@@ -286,13 +313,18 @@ public class OWSURLSession: NSObject {
         finalComponents.fragment = requestComponents.fragment
 
         // Join the paths.
-        finalComponents.path = (baseUrl.path as NSString).appendingPathComponent(requestComponents.path)
+        finalComponents.path = (safeBaseUrl.path as NSString).appendingPathComponent(requestComponents.path)
 
-        guard let result = finalComponents.string else {
+        guard let finalUrlString = finalComponents.string else {
             owsFailDebug("Could not rewrite URL.")
-            return urlString
+            return nil
         }
-        return result
+
+        guard let finalUrl = URL(string: finalUrlString) else {
+            owsFailDebug("Could not rewrite URL.")
+            return nil
+        }
+        return finalUrl
     }
 
     typealias TaskIdentifier = Int

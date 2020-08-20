@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Al silenciar, no recibirás notificaciones de mensajes en este chat durante el tiempo seleccionado.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Silenciada";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ahora no";
 
@@ -4257,7 +4260,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Verificar cifras de seguridad";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "Vídeollamada";
+"VIDEO_CALL_LABEL" = "Hacer vídeollamada";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ya has visto este mensaje.";

@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Du kommer inte få notiser för tystade konversationer.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Mikrofon av";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Hoppa över";
 

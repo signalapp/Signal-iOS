@@ -171,12 +171,10 @@ dispatch_queue_t NetworkManagerQueue()
         // All fronted requests go through the same host
         NSURL *customBaseURL = [self.signalService.domainFrontBaseURL
             URLByAppendingPathComponent:request.customCensorshipCircumventionPrefix];
-        // Ensure terminal slash for baseURL path, so that NSURL +URLWithString:relativeToURL: works as expected
-        if (![customBaseURL.absoluteString hasSuffix:@"/"]) {
-            customBaseURL = [customBaseURL URLByAppendingPathComponent:@""];
-        }
-        OWSAssertDebug(customBaseURL);
-        requestURLString = [NSURL URLWithString:request.URL.absoluteString relativeToURL:customBaseURL].absoluteString;
+        NSURL *_Nullable requestURL = [OWSURLSession buildUrlWithString:request.URL.absoluteString
+                                                                baseUrl:customBaseURL];
+        OWSAssertDebug(requestURL != nil);
+        requestURLString = requestURL.absoluteString;
     } else if (request.customHost) {
         NSURL *customBaseURL = [NSURL URLWithString:request.customHost];
         OWSAssertDebug(customBaseURL);
@@ -433,7 +431,7 @@ dispatch_queue_t NetworkManagerQueue()
 }
 
 #if TESTABLE_BUILD
-+ (void)logCurlForTask:(NSURLSessionDataTask *)task
++ (void)logCurlForTask:(NSURLSessionTask *)task
 {
     NSMutableArray<NSString *> *curlComponents = [NSMutableArray new];
     [curlComponents addObject:@"curl"];

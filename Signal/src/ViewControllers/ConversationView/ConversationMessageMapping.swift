@@ -133,26 +133,42 @@ public class ConversationMessageMapping: NSObject {
 
     @discardableResult
     private func ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
+        return try Bench(title: "ConversationMessageMapping.ensureLoaded") {
+            return try _ensureLoaded(direction, count: count, transaction: transaction)
+        }
+    }
+
+    @discardableResult
+    private func _ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
         let conversationSize = interactionFinder.count(transaction: transaction)
 
-        let getDistanceFromEnd = { (interactionUniqueId: String) throws -> Int in
-            guard let sortIndex = try self.interactionFinder.sortIndex(interactionUniqueId: interactionUniqueId, transaction: transaction) else {
+        // The "sortIndex" is a zero relative number representing where
+        // this interaction is in the conversation, with the first message
+        // being 0 and the newest/last message being conversationSize - 1
+        let getSortIndex = { (interactionUniqueId: String) throws -> Int in
+            // To calculate the sort index, we figure out how far we are from the newest
+            // message, and then subtract that from the conversation size. In the most
+            // common cases, this will be *substantially* faster than trying to calculate
+            // the distance from the oldest message, since most of the time the user will
+            // be scrolled towards the bottom of the conversation. The further you scroll
+            // from the bottom of the conversation, the more expensive this query will get.
+            guard let distanceFromLatest = try self.interactionFinder.distanceFromLatest(interactionUniqueId: interactionUniqueId, transaction: transaction) else {
                 throw OWSAssertionError("viewIndex was unexpectedly nil")
             }
-            return Int(sortIndex)
+            return Int(conversationSize - distanceFromLatest - 1)
         }
 
         let lowerBound: Int
         switch direction {
         case .before(let interactionUniqueId):
-            let distanceFromEnd = try getDistanceFromEnd(interactionUniqueId)
-            lowerBound = distanceFromEnd - count + 1
+            let sortIndex = try getSortIndex(interactionUniqueId)
+            lowerBound = sortIndex - count + 1
         case .after(let interactionUniqueId):
-            let distanceFromEnd = try getDistanceFromEnd(interactionUniqueId)
-            lowerBound = distanceFromEnd
+            let sortIndex = try getSortIndex(interactionUniqueId)
+            lowerBound = sortIndex
         case .around(let interactionUniqueId):
-            let distanceFromEnd = try getDistanceFromEnd(interactionUniqueId)
-            lowerBound = distanceFromEnd - count / 2
+            let sortIndex = try getSortIndex(interactionUniqueId)
+            lowerBound = sortIndex - count / 2
         case .newest:
             lowerBound = Int(conversationSize) - count
         }

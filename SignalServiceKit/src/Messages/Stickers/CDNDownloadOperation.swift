@@ -46,7 +46,7 @@ open class CDNDownloadOperation: OWSOperation {
             owsFailDebug("Missing baseUrl.")
             throw StickerError.assertionFailure
         }
-        guard let url = URL(string: urlPath, relativeTo: baseUrl) else {
+        guard let url = OWSURLSession.buildUrl(urlString: urlPath, baseUrl: baseUrl) else {
             owsFailDebug("Invalid url.")
             throw StickerError.assertionFailure
         }

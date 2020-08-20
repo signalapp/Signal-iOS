@@ -884,6 +884,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         return resolver.reject(error)
                     }
 
+                    #if TESTABLE_BUILD
+                    TSNetworkManager.logCurl(for: blockTask)
+                    #endif
+
                     if let statusCode = error.httpStatusCode {
                         if [401, 403, 409].contains(statusCode) {
                             // These status codes will be handled by performServiceRequest.

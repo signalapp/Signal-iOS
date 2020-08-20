@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Nie będziesz otrzymywać powiadomień dla wyciszonych konwersacji.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Wyciszony";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Pomiń";
 

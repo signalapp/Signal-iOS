@@ -159,7 +159,7 @@ protocol CallAudioServiceDelegate: class {
             // background playback AND respecting the mute switch, but because
             // there is not we have to manually switch between categories when
             // we detect the mute switch changed.
-            setAudioSession(category: Self.isMuteSwitchEnabled.get() ? .soloAmbient : .playback, mode: .default)
+            setAudioSession(category: .playback, mode: .default)
         } else if call.hasLocalVideo {
             // Because ModeVideoChat affects gain, we don't want to apply it until the call is connected.
             // otherwise sounds like ringing will be extra loud for video vs. speakerphone

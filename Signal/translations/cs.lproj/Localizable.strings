@@ -1293,13 +1293,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepodařilo se odeslat zprávu.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Nepodařilo se otevřít e-mailovou aplikaci";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Nepodařilo se vytvořit požadavek na uživatelskou podporu";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Nepodařilo se nahrát logy.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Nebylo možné odeslat zprávu kvůli neplatnému klíči šifrování.";
@@ -1503,40 +1503,40 @@
 "GROUP_CREATION_FAILED" = "Do skupiny se nepodařilo přidat všechny členy. Zkusit znovu to můžete klepnutím.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "Neplatná pozvánka byla přidána.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Přidali jste neplatnou pozvánku.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Přidali jste neplatné pozvánky.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@přidal neplatnou pozvánku.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@přidal neplatné pozvánky.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "Neplatné pozvánky byly vybrány.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "Neplatná pozvánka byla zrušena.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Zrušili jste neplatnou pozvánku.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Zrušili jste neplatné pozvánky.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@zrušil neplatnou pozvánku.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@zrušil neplatné pozvánky.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "Neplatné pozvánky byly zrušeny.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@nemůže být přidán do skupiny automaticky. Byl pozván, ale neuvidí žádné zprávy dokud pozvání nepřijme.";
@@ -1800,7 +1800,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Starší skupiny nemohou být převedeny na nové, ale můžete vytvořit novou skupinu se stejnými členy.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Jak \"upgradovat\" starší skupinu?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Pro vytvoření nové skupiny je třeba, aby všichni členové skupiny aktualizovali na poslední verzi Signal.";
@@ -1809,10 +1809,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Starší a nové skupiny";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Bude vytvořena starší skupina, protože 1 člen využívá starou verzi Signalu. Můžete vytvořit skupinu nového typu poté co si tento člen aktualizuje Signal nebo jej odstranit předtím než skupinu vytvoříte.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Bude vytvořena starší skupina, protože %@ členů využívá starou verzi Signalu. Můžete vytvořit skupinu nového typu poté co si tito členové aktualizují Signal nebo je odstranit předtím než skupinu vytvoříte.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
@@ -2371,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Pro ztlumené konverzace nebudete dostávat oznámení.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Přeskočit";

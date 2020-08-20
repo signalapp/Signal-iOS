@@ -291,7 +291,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Garso žinutė";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "Garso skambutis";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Garsiakalbis";
@@ -453,10 +453,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Skambinti vėl";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Gaunamasis garso skambutis…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Praleistas garso skambutis";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Norėdami Signal skambinti ir įrašinėti balso žinutes, iOS nustatymų programėlėje galite įjungti prieigą prie mikrofono.";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "Skambinti?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Gaunamasis vaizdo skambutis…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Praleistas vaizdo skambutis";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Atsiliepti be vaizdo";
@@ -867,7 +867,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Pasirinkite, kas gali keisti grupės narystes.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Visada pranešti";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nepranešti, jei pranešimai išjungti";
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Įkeliama daugiau žinučių…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Skaityti daugiau";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Jūsų seanso atstatymas leis jums ateityje gauti žinutes nuo %@, tačiau jis neatkurs jokias jau pažeistas žinutes.";
@@ -1617,7 +1617,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Jūs";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "Garso skambutis";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nėra narių.";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "Skambinama…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Garso skambutis…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Vaizdo skambutis…";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Atsiliepta. Apsaugoma…";
@@ -1935,7 +1935,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Pradėkite, bendraudami su draugais.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "Jums skambino %@";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Galite siųsti ar gauti sinchronizuotas žinutes iš savo telefono ar iPad. ↵Jūsų saugumui, pokalbių istorija nėra perduodama į naujai susietus įrenginius.";
@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Pokalbiams, kuriuose pranešimai yra išjungti, nebus rodomi jokie pranešimai.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Praleisti";
 
@@ -2658,7 +2661,7 @@
 "OUTAGE_WARNING" = "Signal patiria techninius nesklandumus. Mes sunkiai dirbame, kad kaip įmanoma greičiau atkurtume paslaugą.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "Jūs skambinote naudotojui %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "Nepavyko parodyti PDF";
