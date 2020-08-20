@@ -581,6 +581,24 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
+            // FIXME: This is a temporary patch for bad mac issues. At least with this people will be able to message again. We have to figure out the root cause of the issue though.
+            if ([decryptError userInfo][NSUnderlyingErrorKey] != nil) {
+                NSDictionary *underlyingErrorUserInfo = [[decryptError userInfo][NSUnderlyingErrorKey] userInfo];
+                if (underlyingErrorUserInfo[SCKExceptionWrapperUnderlyingExceptionKey] != nil) {
+                    NSException *underlyingUnderlyingError = underlyingErrorUserInfo[SCKExceptionWrapperUnderlyingExceptionKey];
+                    if ([[underlyingUnderlyingError reason] hasPrefix:@"Bad Mac!"]) {
+                        if ([underlyingError userInfo][@"kSenderRecipientIdKey"] != nil) {
+                            NSString *senderPublicKey = [underlyingError userInfo][@"kSenderRecipientIdKey"];
+                            TSContactThread *thread = [TSContactThread getThreadWithContactId:senderPublicKey transaction:transaction];
+                            if (thread != nil) {
+                                [thread addSessionRestoreDevice:senderPublicKey transaction:transaction];
+                                [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
+                            }
+                        }
+                    }
+                }
+            }
+
             failureBlock(underlyingError);
             return;
         }

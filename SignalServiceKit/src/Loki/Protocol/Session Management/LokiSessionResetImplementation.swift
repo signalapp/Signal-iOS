@@ -20,7 +20,7 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
         guard let preKeyMessage = whisperMessage as? PreKeyWhisperMessage else { return }
         guard let storedPreKey = storage.getPreKeyRecord(forContact: recipientID, transaction: transaction) else {
             print("[Loki] Missing pre key bundle.")
-            return
+            throw Error.invalidPreKey
         }
         guard storedPreKey.id == preKeyMessage.prekeyID else {
             print("[Loki] Received a `PreKeyWhisperMessage` from an unknown source.")
