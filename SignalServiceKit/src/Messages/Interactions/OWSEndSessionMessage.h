@@ -21,6 +21,8 @@ NS_SWIFT_NAME(EndSessionMessage)
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview NS_UNAVAILABLE;
 
+- (instancetype)initInThread:(nullable TSThread *)thread messageBody:(nullable NSString *)body attachmentId:(nullable NSString *)attachmentId NS_DESIGNATED_INITIALIZER;
+
 // MJK TODO can we remove the sender timestamp?
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
