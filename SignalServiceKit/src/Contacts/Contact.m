@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
                      cnContactId:(nullable NSString *)cnContactId
                        firstName:(nullable NSString *)firstName
                         lastName:(nullable NSString *)lastName
+                        nickname:(nullable NSString *)nickname
                         fullName:(NSString *)fullName
             userTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
               phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
@@ -70,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     _firstName = [firstName copy];
     _lastName = [lastName copy];
     _fullName = [fullName copy];
+    _nickname = [nickname copy];
     _userTextPhoneNumbers = [userTextPhoneNumbers copy];
     _phoneNumberNameMap = [phoneNumberNameMap copy];
     _parsedPhoneNumbers = [parsedPhoneNumbers copy];
@@ -170,6 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
                       cnContactId:cnContact.identifier
                         firstName:cnContact.givenName.ows_stripped
                          lastName:cnContact.familyName.ows_stripped
+                         nickname:cnContact.nickname.ows_stripped
                          fullName:[Contact formattedFullNameWithCNContact:cnContact]
              userTextPhoneNumbers:userTextPhoneNumbers
                phoneNumberNameMap:phoneNumberNameMap
@@ -252,6 +255,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)combineLeftName:(NSString *)leftName withRightName:(NSString *)rightName usingSeparator:(NSString *)separator {
     const BOOL leftNameNonEmpty = (leftName.length > 0);
     const BOOL rightNameNonEmpty = (rightName.length > 0);
+    
+    if (self.nickname) {
+        return self.nickname;
+    }
     
     if (leftNameNonEmpty && rightNameNonEmpty) {
         return [NSString stringWithFormat:@"%@%@%@", leftName, separator, rightName];
@@ -395,6 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (formattedFullName.length == 0) {
         mergedCNContact.namePrefix = newCNContact.namePrefix.ows_stripped;
         mergedCNContact.givenName = newCNContact.givenName.ows_stripped;
+        mergedCNContact.nickname = newCNContact.nickname.ows_stripped;
         mergedCNContact.middleName = newCNContact.middleName.ows_stripped;
         mergedCNContact.familyName = newCNContact.familyName.ows_stripped;
         mergedCNContact.nameSuffix = newCNContact.nameSuffix.ows_stripped;

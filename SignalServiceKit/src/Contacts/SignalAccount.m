@@ -17,6 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSUInteger const SignalAccountSchemaVersion = 1;
 
+/* We need to query the system preferences to achieve the behaviour at Messages on iOS.
+ 
+ If we ask NSPersonNameComponentsFormatter for "short" we will get the nickname if it exists but if it _doesn't_ exit we'll just get the first name. (Or the name pattern the user has selected in their system preferences. This means that in the conversation list in the left, where Messages displays the full name of a contact if they don't have a nickname, we'd just display the Short Name. To match the behaviour we ask UserDefaults for the value of this key and prefer to use the nickname, if available, in the conversation list.
+*/
+static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldPreferNicknamesPreference";
+
 @interface SignalAccount ()
 
 @property (nonatomic, readonly) NSUInteger accountSchemaVersion;
@@ -162,6 +168,24 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (nullable NSString *)contactPreferredDisplayName {
+    NSPersonNameComponents *components = [NSPersonNameComponents new];
+    components.givenName = self.contact.firstName;
+    components.familyName = self.contact.lastName;
+    components.nickname = self.contact.nickname;
+    
+    NSString *result = nil;
+    // If we have a nickname check what the user prefers.
+    if (components.nickname.length && [[NSUserDefaults standardUserDefaults] boolForKey: kSignalPreferNicknamesPreference]) {
+        result = components.nickname;
+    } else {
+        result = [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents: components
+                                                                                    style: NSPersonNameComponentsFormatterStyleDefault
+                                                                                  options: 0];
+    }
+    return result.filterStringForDisplay;
+}
 
 - (nullable NSString *)contactFullName
 {

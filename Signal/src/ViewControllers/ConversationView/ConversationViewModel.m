@@ -1092,7 +1092,6 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
-    BOOL canLoadMoreItems = self.messageMapping.canLoadOlder;
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
     for (TSInteraction *interaction in self.messageMapping.loadedInteractions) {
