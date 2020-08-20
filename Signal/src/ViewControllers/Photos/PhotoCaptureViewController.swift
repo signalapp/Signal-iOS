@@ -34,9 +34,11 @@ extension PhotoCaptureError: LocalizedError {
     }
 }
 
-class PhotoCaptureViewController: OWSViewController {
+class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
+    var interactiveDismiss : PhotoCaptureInteractiveDismiss!
+    var initialFrame : CGRect?
 
     @objc public lazy var photoCapture = PhotoCapture()
 
@@ -62,6 +64,7 @@ class PhotoCaptureViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = Theme.darkThemeBackgroundColor
+        definesPresentationContext = true
 
         view.addSubview(previewView)
 
@@ -99,6 +102,8 @@ class PhotoCaptureViewController: OWSViewController {
         topBar.autoPinWidthToSuperview()
         topBarOffset = topBar.autoPinEdge(toSuperviewEdge: .top)
         topBar.autoSetDimension(.height, toSize: 44)
+        
+        initialFrame = view.frame
     }
 
     var topBarOffset: NSLayoutConstraint!
@@ -111,10 +116,13 @@ class PhotoCaptureViewController: OWSViewController {
         updateNavigationItems()
         updateFlashModeControl()
 
-        view.addGestureRecognizer(swipeGesture)
         view.addGestureRecognizer(pinchZoomGesture)
         view.addGestureRecognizer(tapToFocusGesture)
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
+        
+        interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: self)
+        interactiveDismiss.interactiveDismissDelegate = self
+        interactiveDismiss.addGestureRecognizer(to: view)
 
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
     }
@@ -159,7 +167,7 @@ class PhotoCaptureViewController: OWSViewController {
     override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
-
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -185,7 +193,20 @@ class PhotoCaptureViewController: OWSViewController {
             topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
         }
     }
-
+    
+    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    }
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
+        guard let frame = initialFrame else {return}
+        view.center = frame.offsetBy(dx: offset.x, dy: offset.y).center
+    }
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        dismiss(animated: true)
+    }
+    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        
+    }
+    
     // MARK: -
     var isRecordingMovie: Bool = false
 
@@ -303,12 +324,6 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }()
     
-    lazy var swipeGesture: UISwipeGestureRecognizer = {
-        let swipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe(swipeGesture:)))
-        swipe.direction = [.up, .down]
-        return swipe
-    }()
-
     lazy var pinchZoomGesture: UIPinchGestureRecognizer = {
         return UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:)))
     }()
@@ -370,13 +385,6 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
     
-    @objc
-    func didSwipe(swipeGesture: UISwipeGestureRecognizer) {
-        if swipeGesture.state == .ended {
-            didTapClose()
-        }
-    }
-
     @objc
     func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
@@ -1186,4 +1194,36 @@ public class MovieLockView: UIView {
 
         return view
     }()
+}
+
+// MARK: - UIViewControllerTransitioningDelegate
+
+extension PhotoCaptureViewController: UIViewControllerTransitioningDelegate {
+    public func animationController(forPresented presented: UIViewController,
+                                    presenting: UIViewController,
+                                    source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return nil
+    }
+
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard self == dismissed else {
+            owsFailDebug("unexpected presented: \(dismissed)")
+            return nil
+        }
+
+        let animationController = PhotoDismissAnimationController(interactionController: interactiveDismiss)
+        interactiveDismiss?.interactiveDismissDelegate = animationController
+
+        return animationController
+    }
+
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard let animator = animator as? MediaDismissAnimationController,
+            let interactionController = animator.interactionController,
+            interactionController.interactionInProgress
+            else {
+                return nil
+        }
+        return interactionController
+    }
 }

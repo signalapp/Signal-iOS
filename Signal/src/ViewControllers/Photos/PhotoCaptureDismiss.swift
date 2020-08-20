@@ -4,30 +4,21 @@
 
 import Foundation
 
-protocol InteractiveDismissDelegate: AnyObject {
-    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint)
-    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
-    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
-}
-
-class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
+class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
     var interactionInProgress = false
 
     weak var interactiveDismissDelegate: InteractiveDismissDelegate?
-    private weak var mediaPageViewController: MediaPageViewController?
+    private weak var viewController: UIViewController?
 
-    init(mediaPageViewController: MediaPageViewController) {
+    init(viewController: UIViewController) {
         super.init()
-        self.mediaPageViewController = mediaPageViewController
+        self.viewController = viewController
     }
 
     public func addGestureRecognizer(to view: UIView) {
         let gesture = DirectionalPanGestureRecognizer(direction: .vertical,
                                                       target: self,
                                                       action: #selector(handleGesture(_:)))
-        // Allow panning with trackpad
-        if #available(iOS 13.4, *) { gesture.allowedScrollTypesMask = .continuous }
         view.addGestureRecognizer(gesture)
     }
 
@@ -67,7 +58,8 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         switch gestureRecognizer.state {
         case .began:
             interactionInProgress = true
-            mediaPageViewController?.dismissSelf(animated: true)
+            interactiveDismissDelegate?.interactiveDismissDidBegin(self)
+            //viewController?.dismiss(animated: true);
 
         case .changed:
             let velocity = abs(gestureRecognizer.velocity(in: coordinateSpace).y)
@@ -84,8 +76,8 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             interactiveDismissDelegate?.interactiveDismiss(self, didChangeTouchOffset: offset)
 
         case .cancelled:
-            interactiveDismissDelegate?.interactiveDismissDidFinish(self)
             cancel()
+            interactiveDismissDelegate?.interactiveDismissDidCancel(self)
 
             interactionInProgress = false
             farEnoughToCompleteTransition = false
@@ -107,5 +99,52 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         default:
             break
         }
+    }
+}
+
+class PhotoDismissAnimationController: NSObject {
+    public let interactionController: UIPercentDrivenInteractiveTransition?
+
+    var transitionView: UIView?
+    var fromMediaFrame: CGRect?
+
+    init(interactionController: UIPercentDrivenInteractiveTransition? = nil) {
+        self.interactionController = interactionController
+    }
+}
+
+extension PhotoDismissAnimationController: UIViewControllerAnimatedTransitioning {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        return 5
+    }
+    
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        print(".")
+    }
+    
+}
+
+extension PhotoDismissAnimationController: InteractiveDismissDelegate {
+    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    }
+
+    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
+        guard let transitionView = transitionView else {
+            // transition hasn't started yet.
+            return
+        }
+
+        guard let fromMediaFrame = fromMediaFrame else {
+            owsFailDebug("fromMediaFrame was unexpectedly nil")
+            return
+        }
+
+        transitionView.center = fromMediaFrame.offsetBy(dx: offset.x, dy: offset.y).center
+    }
+
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    }
+    
+    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
     }
 }
