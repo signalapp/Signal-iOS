@@ -487,6 +487,7 @@ class PhotoCapture: NSObject {
         }.done(on: captureOutput.movieRecordingQueue) { movieRecording in
             self.captureOutput.movieRecording = movieRecording
         }.done {
+            self.setTorchMode(self.flashMode.toTorchMode)
             self.delegate?.photoCaptureDidBeginMovie(self)
         }.catch { error in
             self.delegate?.photoCapture(self, processingDidError: error)
@@ -498,6 +499,7 @@ class PhotoCapture: NSObject {
         BenchEventStart(title: "Movie Processing", eventId: "Movie Processing")
         captureOutput.movieRecordingQueue.async(.promise) {
             self.captureOutput.completeMovie(delegate: self)
+            self.setTorchMode(.off)
         }.done(on: sessionQueue) {
             self.stopAudioCapture()
         }
@@ -514,6 +516,17 @@ class PhotoCapture: NSObject {
             self.stopAudioCapture()
         }
         delegate?.photoCaptureDidCancelMovie(self)
+    }
+
+    private func setTorchMode(_ mode: AVCaptureDevice.TorchMode) {
+        guard let captureDevice = captureDevice, captureDevice.hasTorch, captureDevice.isTorchModeSupported(mode) else { return }
+        do {
+            try captureDevice.lockForConfiguration()
+            captureDevice.torchMode = mode
+            captureDevice.unlockForConfiguration()
+        } catch {
+            owsFailDebug("Error setting torchMode: \(error)")
+        }
     }
 }
 
@@ -1171,6 +1184,22 @@ extension CGSize {
             return CGSize(width: width, height: width * aspectRatio)
         } else {
             return CGSize(width: height * aspectRatio, height: height)
+        }
+    }
+}
+
+extension AVCaptureDevice.FlashMode {
+    var toTorchMode: AVCaptureDevice.TorchMode {
+        switch self {
+        case .auto:
+            return .auto
+        case .on:
+            return .on
+        case .off:
+            return .off
+        @unknown default:
+            owsFailDebug("Unhandled AVCaptureDevice.FlashMode type: \(self)")
+            return .off
         }
     }
 }
