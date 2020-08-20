@@ -35,7 +35,7 @@ protocol InteractionFinderAdapter {
 
     func earliestKnownInteractionRowId(transaction: ReadTransaction) -> Int?
 
-    func sortIndex(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
+    func distanceFromLatest(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
     func count(transaction: ReadTransaction) -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
     func enumerateRecentInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
@@ -290,13 +290,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public func sortIndex(interactionUniqueId: String, transaction: SDSAnyReadTransaction) throws -> UInt? {
-        return try Bench(title: "sortIndex") {
+    public func distanceFromLatest(interactionUniqueId: String, transaction: SDSAnyReadTransaction) throws -> UInt? {
+        return try Bench(title: "InteractionFinder.distanceFromLatest") {
             switch transaction.readTransaction {
             case .yapRead(let yapRead):
-                return yapAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: yapRead)
+                return yapAdapter.distanceFromLatest(interactionUniqueId: interactionUniqueId, transaction: yapRead)
             case .grdbRead(let grdbRead):
-                return try grdbAdapter.sortIndex(interactionUniqueId: interactionUniqueId, transaction: grdbRead)
+                return try grdbAdapter.distanceFromLatest(interactionUniqueId: interactionUniqueId, transaction: grdbRead)
             }
         }
     }
@@ -702,18 +702,9 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return view.numberOfItems(inGroup: threadUniqueId)
     }
 
-    func sortIndex(interactionUniqueId: String, transaction: YapDatabaseReadTransaction) -> UInt? {
-        var index: UInt = 0
-        guard let view = interactionExt(transaction) else {
-            return nil
-        }
-        let wasFound = view.getGroup(nil, index: &index, forKey: interactionUniqueId, inCollection: collection)
-
-        guard wasFound else {
-            return nil
-        }
-
-        return index
+    func distanceFromLatest(interactionUniqueId: String, transaction: YapDatabaseReadTransaction) -> UInt? {
+        owsFailDebug("unsupported transction")
+        return nil
     }
 
     func enumerateInteractionIds(transaction: YapDatabaseReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
@@ -1067,23 +1058,28 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return try? Int.fetchOne(transaction.database, sql: sql, arguments: arguments)
     }
 
-    func sortIndex(interactionUniqueId: String, transaction: GRDBReadTransaction) throws -> UInt? {
-        return try Bench(title: "InteractionFinder.sortIndex") {
-            return try UInt.fetchOne(transaction.database,
-                                 sql: """
-            SELECT sortIndex
-            FROM (
-                SELECT
-                    ROW_NUMBER() OVER (ORDER BY \(interactionColumn: .id)) - 1 as sortIndex,
-                    \(interactionColumn: .id),
-                    \(interactionColumn: .uniqueId)
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-            )
+    func distanceFromLatest(interactionUniqueId: String, transaction: GRDBReadTransaction) throws -> UInt? {
+        guard let interactionId = try UInt.fetchOne(transaction.database, sql: """
+            SELECT id
+            FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .uniqueId) = ?
-            """,
-            arguments: [threadUniqueId, interactionUniqueId])
+        """, arguments: [interactionUniqueId]) else {
+            owsFailDebug("failed to find id for interaction \(interactionUniqueId)")
+            return nil
         }
+
+        guard let distanceFromLatest = try UInt.fetchOne(transaction.database, sql: """
+            SELECT count(*) - 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .id) >= ?
+            ORDER BY \(interactionColumn: .id) DESC
+        """, arguments: [threadUniqueId, interactionId]) else {
+            owsFailDebug("failed to find distance from latest message")
+            return nil
+        }
+
+        return distanceFromLatest
     }
 
     func count(transaction: GRDBReadTransaction) -> UInt {
