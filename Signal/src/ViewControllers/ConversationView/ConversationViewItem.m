@@ -1007,7 +1007,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         return;
     } else {
         NSString *_Nullable bodyText = message.body;
-        if (bodyText) {
+        OWSAssertDebug(bodyText.length > 0);
+        if (bodyText && bodyText.length > 0) {
             self.displayableBodyText = [self displayableBodyTextForText:bodyText
                                                                  ranges:message.bodyRanges
                                                           interactionId:message.uniqueId
