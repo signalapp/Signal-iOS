@@ -87,16 +87,29 @@ public extension StorageService {
                                             sessionManager: AFHTTPSessionManager,
                                             authCredential: AuthCredential) throws -> NSURLRequest {
 
-        guard let url = URL(string: urlPath, relativeTo: sessionManager.baseURL) else {
+        guard let url = OWSURLSession.buildUrl(urlString: urlPath, baseUrl: sessionManager.baseURL) else {
             throw OWSAssertionError("Invalid URL.")
         }
-        let request = NSMutableURLRequest(url: url)
-        request.httpMethod = httpMethod
+
+        var error: NSError?
+        let request = sessionManager.requestSerializer.request(
+            withMethod: httpMethod,
+            urlString: url.absoluteString,
+            parameters: nil,
+            error: &error
+        )
+        if let error = error {
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
 
         if let protoData = protoData {
             request.httpBody = protoData
-            request.setValue(OWSMimeTypeProtobuf, forHTTPHeaderField: "Content-Type")
         }
+
+        // The censorship circumvention reflectors require a Content-Type
+        // even if the body is empty.
+        request.setValue(OWSMimeTypeProtobuf, forHTTPHeaderField: "Content-Type")
 
         try self.addAuthorizationHeader(to: request,
                                         groupV2Params: groupV2Params,

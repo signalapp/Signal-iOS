@@ -124,6 +124,11 @@ public extension AFHTTPSessionManager {
         },
                                 completionHandler: { (_: URLResponse, completionUrl: URL?, error: Error?) in
                                     if let error = error {
+                                        #if TESTABLE_BUILD
+                                        if let task = taskReference {
+                                            TSNetworkManager.logCurl(for: task)
+                                        }
+                                        #endif
                                         resolver.reject(error)
                                         return
                                     }
@@ -142,7 +147,7 @@ public extension AFHTTPSessionManager {
                                           verb: HTTPVerb,
                                           headers: [String: String]? = nil,
                                           parameters: [String: AnyObject]? = nil) throws -> URLRequest {
-        guard let url = URL(string: urlString, relativeTo: baseURL) else {
+        guard let url = OWSURLSession.buildUrl(urlString: urlString, baseUrl: baseURL) else {
             throw OWSAssertionError("Invalid URL.")
         }
 

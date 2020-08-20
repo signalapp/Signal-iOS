@@ -204,7 +204,7 @@ public extension OWSAttachmentDownloads {
         } else {
             urlPath = String(format: "attachments/%llu", attachmentPointer.serverId)
         }
-        guard let url = URL(string: urlPath, relativeTo: sessionManager.baseURL) else {
+        guard let url = URL(string: urlPath) else {
             throw OWSAssertionError("Invalid URL.")
         }
         return url

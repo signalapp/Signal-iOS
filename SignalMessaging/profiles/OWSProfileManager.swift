@@ -558,7 +558,7 @@ public extension OWSProfileManager {
             let tempFileURL = tempDirectoryURL.appendingPathComponent(fileName)
 
             let avatarHTTPManager = self.avatarHTTPManager
-            guard let avatarUrl = URL(string: avatarUrlPath, relativeTo: avatarHTTPManager.baseURL) else {
+            guard let avatarUrl = OWSURLSession.buildUrl(urlString: avatarUrlPath, baseUrl: avatarHTTPManager.baseURL) else {
                 throw OWSAssertionError("Invalid avatar URL path.")
             }
             var requestError: NSError?

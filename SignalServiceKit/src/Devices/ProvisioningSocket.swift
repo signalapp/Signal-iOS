@@ -15,6 +15,7 @@ public class ProvisioningSocket {
     public weak var delegate: ProvisioningSocketDelegate?
 
     public init() {
+        // TODO: Will this work with censorship circumvention?
         let serviceBaseURL = URL(string: TSConstants.textSecureWebSocketAPI)!
         let socketURL = URL(string: "/v1/websocket/provisioning/?agent=\(OWSUserAgent)",
                             relativeTo: serviceBaseURL)!

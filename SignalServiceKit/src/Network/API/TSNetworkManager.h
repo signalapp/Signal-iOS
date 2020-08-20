@@ -44,7 +44,7 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
             failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:completionQueue:success:failure:));
 
 #if TESTABLE_BUILD
-+ (void)logCurlForTask:(NSURLSessionDataTask *)task;
++ (void)logCurlForTask:(NSURLSessionTask *)task;
 #endif
 
 @end
