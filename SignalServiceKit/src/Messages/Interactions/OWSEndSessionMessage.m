@@ -32,26 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
                                        linkPreview:nil];
 }
 
-- (instancetype)initInThread:(nullable TSThread *)thread messageBody:(nullable NSString *)body attachmentId:(nullable NSString *)attachmentId
-{
-    NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    if (attachmentId) {
-        [attachmentIds addObject:attachmentId];
-    }
-
-    return [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                          inThread:thread
-                                       messageBody:body
-                                     attachmentIds:attachmentIds
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil
-                                       linkPreview:nil];
-}
-
 - (BOOL)shouldBeSaved
 {
     return NO;
