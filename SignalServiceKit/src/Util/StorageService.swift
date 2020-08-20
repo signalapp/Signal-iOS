@@ -397,7 +397,7 @@ public struct StorageService {
             Auth(username: username, password: password)
         }.then(on: .global()) { auth in
             Promise { resolver in
-                guard let url = URL(string: endpoint, relativeTo: sessionManager.baseURL) else {
+                guard let url = OWSURLSession.buildUrl(urlString: endpoint, baseUrl: sessionManager.baseURL) else {
                     owsFailDebug("failed to initialize URL")
                     throw StorageError.assertion
                 }

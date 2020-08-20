@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -64,7 +64,7 @@ public class ContentProxy: NSObject {
     public class func configureSessionManager(sessionManager: AFHTTPSessionManager,
                                               forUrl urlString: String) -> Bool {
 
-        guard let url = URL(string: urlString, relativeTo: sessionManager.baseURL) else {
+        guard let url = OWSURLSession.buildUrl(urlString: urlString, baseUrl: sessionManager.baseURL) else {
             owsFailDebug("Invalid URL query: \(urlString).")
             return false
         }
