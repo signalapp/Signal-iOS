@@ -169,8 +169,13 @@ public final class SessionManagementProtocol : NSObject {
         // Show the session reset prompt upon certain errors
         switch type {
         case .noSession, .invalidMessage, .invalidKeyException:
-            // Store the source device's public key in case it was a secondary device
-            thread.addSessionRestoreDevice(publicKey, transaction: transaction)
+            if storage.getRestorationTime() > 0 {
+                // Automatically rebuild session after restoration
+                sendSessionRequestIfNeeded(to: publicKey, using: transaction)
+            } else {
+                // Store the source device's public key in case it was a secondary device
+                thread.addSessionRestoreDevice(publicKey, transaction: transaction)
+            }
         default: break
         }
     }
@@ -178,7 +183,8 @@ public final class SessionManagementProtocol : NSObject {
     private static func shouldProcessSessionRequest(from publicKey: String, at timestamp: UInt64) -> Bool {
         let sentTimestamp = Storage.getSessionRequestSentTimestamp(for: publicKey)
         let processedTimestamp = Storage.getSessionRequestProcessedTimestamp(for: publicKey)
-        return timestamp > sentTimestamp && timestamp > processedTimestamp
+        let restorationTimestamp = UInt64(storage.getRestorationTime() * 1000)
+        return timestamp > sentTimestamp && timestamp > processedTimestamp && timestamp > restorationTimestamp
     }
 
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:transaction:)
