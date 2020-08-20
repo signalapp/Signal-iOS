@@ -162,14 +162,6 @@ struct YAPDBThreadFinder: ThreadFinder {
 @objc
 public class GRDBThreadFinder: NSObject, ThreadFinder {
 
-    // MARK: - Dependencies
-
-    private class var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
-    }
-
-    // MARK: -
-
     public typealias ReadTransaction = GRDBReadTransaction
 
     static let cn = ThreadRecord.columnName

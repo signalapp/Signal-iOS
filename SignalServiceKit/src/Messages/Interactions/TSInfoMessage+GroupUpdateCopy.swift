@@ -1444,12 +1444,12 @@ extension GroupUpdateCopy {
         case none
     }
 
-    func localMembershipStatus(for groupMembership: GroupMembership) -> MembershipStatus {
+    fileprivate func localMembershipStatus(for groupMembership: GroupMembership) -> MembershipStatus {
         return membershipStatus(of: localAddress, in: groupMembership)
     }
 
-    func membershipStatus(of address: SignalServiceAddress,
-                          in groupMembership: GroupMembership) -> MembershipStatus {
+    fileprivate func membershipStatus(of address: SignalServiceAddress,
+                                      in groupMembership: GroupMembership) -> MembershipStatus {
         if groupMembership.isFullMember(address) {
             return .normalMember
         } else if groupMembership.isPendingProfileKeyMember(address) {
