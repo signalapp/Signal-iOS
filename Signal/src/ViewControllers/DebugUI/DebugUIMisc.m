@@ -607,11 +607,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)enableExternalDatabaseAccess
 {
-    if (!OWSIsDebugBuild()) {
-        [OWSActionSheets showErrorAlertWithMessage:@"Must be running a debug build"];
-    }
     if (!Platform.isSimulator) {
         [OWSActionSheets showErrorAlertWithMessage:@"Must be running in the simulator"];
+        return;
     }
     [OWSActionSheets
         showConfirmationAlertWithTitle:@"⚠️⚠️⚠️ Warning!!! ⚠️⚠️⚠️"
@@ -622,7 +620,7 @@ NS_ASSUME_NONNULL_BEGIN
                           proceedStyle:ActionSheetActionStyleDestructive
                          proceedAction:^(ActionSheetAction *action) {
                              // This should be caught above. Fatal assert just in case.
-                             OWSAssert(OWSIsDebugBuild() && Platform.isSimulator);
+                             OWSAssert(OWSIsTestableBuild() && Platform.isSimulator);
 
                              // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
                              NSDictionary *payload = @ {

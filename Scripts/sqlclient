@@ -4,6 +4,7 @@ import getpass
 import json
 import os
 import subprocess
+import sys
 import textwrap
 
 SIGNAL_BUNDLEID = "org.whispersystems.signal"
@@ -15,13 +16,19 @@ SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY = "dbPath"
 SIGNAL_DEBUG_PAYLOAD_PASSPHRASE_KEY = "key"
 SIGNAL_FALLBACK_DATABASE_PATH = "grdb/signal.sqlite"
 
+quietMode=False
+def failWithError(string):
+    print("Error: " + string, file=sys.stderr)
+    exit(1)
+
+def printInfo(string = ""):
+    if quietMode == False:
+        print(string)
+
 def runCommand(cmd):
     result = subprocess.run(cmd.split(), text=True, capture_output=True)
     if result.returncode != 0:
-        print("Failed to run \"" + cmd + "\". Status: " + str(result.returncode))
-        if len(result.stderr) > 0:
-            print("Error: " + result.stderr)
-        exit(1)
+        failWithError("Failed to run \"" + cmd + "\". Status: " + str(result.returncode) + "\n" + result.stderr)
     return result.stdout
 
 
@@ -50,13 +57,14 @@ class Simulator:
         selectedCandidate = None
 
         if len(candidates) == 0:
-            print("Error: Could not find a \"" + searchString + "\" simulator")
-            exit(1)
+            failWithError("Could not find a \"" + searchString + "\" simulator")
         elif len(candidates) == 1:
             selectedCandidate = candidates[0]
         else:
+            if quietMode:
+                failWithError("Multiple simulator candidates. Interactive selection not supported in quiet mode")
             for idx, candidate in enumerate(candidates):
-                print("{}:\t{:40}\t{} {} ({})".format(idx, candidate["name"], candidate["type"], candidate["os"], candidate["udid"]))
+                printInfo("{}:\t{:40}\t{} {} ({})".format(idx, candidate["name"], candidate["type"], candidate["os"], candidate["udid"]))
 
             while selectedCandidate == None:
                 try:
@@ -68,9 +76,9 @@ class Simulator:
         self.udid = selectedCandidate["udid"]
         self.groupID = SIGNAL_APPGROUP_STAGING if useStaging else SIGNAL_APPGROUP
         self.groupContainer = self.fetchGroupContainer(self.udid, self.groupID)
-        print("Selected simulator: " + selectedCandidate["name"] + " (" + selectedCandidate["udid"] + ")")
-        print("Using groupID: " + self.groupID)
-        print()
+        printInfo("Selected simulator: " + selectedCandidate["name"] + " (" + selectedCandidate["udid"] + ")")
+        printInfo("Using groupID: " + self.groupID)
+        printInfo()
 
     def parseDebugPayload(self):
         path = self.groupContainer + "/" + SIGNAL_DEBUG_PAYLOAD_NAME
@@ -90,7 +98,7 @@ class Simulator:
             if os.path.isfile(payloadPath):
                 return payloadPath
             else:
-                print("Debug payload " + payloadPath[-50:] + " not found. Falling back the standard path.")
+                printInfo("Debug payload " + payloadPath[-50:] + " not found. Falling back the standard path.")
 
         return (self.groupContainer + "/" + SIGNAL_FALLBACK_DATABASE_PATH)
 
@@ -139,7 +147,7 @@ parser = argparse.ArgumentParser(
                     Alternatively, you can provide a sqlcipher path directly via command line arguments. In this case,
                     you'll be required to provide a database key through an argument or stdin.
                 '''),
-        usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase]")
+        usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase] [--quiet]")
 
 group = parser.add_mutually_exclusive_group()
 group.add_argument("--simulator", metavar="SIM", help="A string identifiying a simulator instance. (default: %(default)s).", default="booted")
@@ -147,8 +155,10 @@ group.add_argument("--path", help="An sqlcipher path")
 parser.add_argument("--passphrase", metavar="PASS", help="The passphrase encrypting the database")
 parser.add_argument("--staging", action='store_true', help="If a simulator is being targeted, specifies that the staging database should be used")
 parser.add_argument("remainder", nargs=argparse.REMAINDER, metavar="--", help="All subsequent args will be interpreted as SQL. You probably want quotes here. Be careful with \"*\" since your shell will probably replace it.")
+parser.add_argument("--quiet", action='store_true', help="Suppress non-failing output")
 args = parser.parse_args()
 
+quietMode=args.quiet
 dbPath = None
 passphrase = None
 
@@ -160,11 +170,9 @@ elif args.simulator:
     passphrase = target.passphraseIfAvailable()
 
 if dbPath == None:
-    print("Error: No valid database path")
-    exit(1)
+    failWithError("No valid database path")
 elif os.path.isfile(dbPath) == False:
-    print("Error: Not valid path " + dbPath)
-    exit(1)
+    failWithError("Not valid path " + dbPath)
 
 if args.passphrase:
     passphrase = args.passphrase
@@ -172,8 +180,7 @@ if passphrase == None:
     passphrase = getpass.getpass("Please enter the passphrase. Alternatively, set up a plaintext database key in Debug UI > Misc > Save plaintext database key. Then, rerun the command. ")
 
 if passphrase == None or len(passphrase) == 0:
-    print("Error: No valid sqlcipher passphrase")
-    exit(1)
+    failWithError("No valid sqlcipher passphrase")
 
 passphrase = preparePassphrase(passphrase)
 sqlArgs = args.remainder
