@@ -291,7 +291,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "សារសំឡេង";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "ហៅជាសំឡេង";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "បំពងសំឡេង";
@@ -456,7 +456,7 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ការហៅជាសំឡេងចូល…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 ខកខានហៅចូលជាសំឡេង";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតចូលទៅប្រើប្រាស់មីក្រូហ្វូន នៅក្នុងការកំណត់របស់ iOS app ដើម្បីអាចធ្វើការហៅ និងថតសារជាសំឡេងក្នុង Signal";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "ហៅ?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 កំពុងហៅចូលជាវីដេអូ…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 ខកខានហៅចូលជាវីដេអូ";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ឆ្លើយដោយគ្មានវីដេអូ";
@@ -507,7 +507,7 @@
 "CALL_VIEW_MUTE_LABEL" = "បិទសំឡេង";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ នឹងទទួលបានសារស្នើសុំពីអ្នក។ អ្នកអាចហៅបាននៅពេលដែលការស្នើសុំសាររបស់អ្នកត្រូវបានទទួលយក។";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "ផ្លាស់ប្តូរទិសដៅកាមេរ៉ា";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "ពណ៌ការសន្ទនា";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "កែព័ត៌មានក្រុម";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "មានតែអ្នកគ្រប់គ្រង";
@@ -855,7 +855,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "ដាក់ជាអ្នកគ្រប់គ្រង";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ នឹងអាចកែក្រុមនេះ និងសមាជិករបស់ក្រុម។";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "សមាជិក";
@@ -867,16 +867,16 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "ជ្រើសរើសអ្នកដែលអាចកែប្រែសមាជិកភាពក្រុម។";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "ជូនដំណឹងជានិច្ច";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "កុំជូនដំណឹងប្រសិនបើបិទ";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "ទទួលបានការជូនដំណឹងនៅពេលដែលអ្នកត្រូវបានគេហៅនៅក្នុងការសន្ទនាស្ងាត់ ៗ ?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ហៅ";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "បិទសំឡេង";
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "កំពុងផ្ទុកសារបន្ថែម...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "អានបន្ថែមទៀត";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "ការកំណត់ការចូលប្រើប្រាស់របស់អ្នកឡើងវិញ នឹងអនុញ្ញាតឲ្យអ្នកទទួលសារក្នុងពេលខាងមុខពី %@, ប៉ុន្តែ វានឹងមិនស្តារនូវសារណាដែលបានខូចខាតទេ។";
@@ -1236,7 +1236,7 @@
 "EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "អ៊ីមែលមិនអាចប្រើបាន";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "សកម្មភាព";
@@ -1617,7 +1617,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "អ្នក";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "ហៅជាសំឡេង";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "គ្មានសមាជិក។";
@@ -2371,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "អ្នកនឹងមិនទទួលសារជូនដំណឹង សម្រាប់បិទសំឡេងការសន្ទនានោះទេ។";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "រំលង";

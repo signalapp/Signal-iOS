@@ -51,7 +51,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Vai pievienot dalībnieku “%2$@”?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Vai pievienot % 1$@ dalībniekus “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Vai pievienot %1$@ dalībniekus “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Pievienot jaunu dalībnieku";
@@ -291,7 +291,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio ziņa";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "Audio zvans";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Skaļrunis";
@@ -453,10 +453,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Zvanīt vēlreiz";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "☎ Ienākošs audio zvans";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "☎Neatbildēts audio zvans";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Varat iespējot piekļuvi mikrofonam iOS iestatījumu lietotnē, lai veiktu zvanus un ierakstītu balss ziņas lietotnē Signal.";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "Vai zvanīt?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "☎ Ienākošs video zvans";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "☎Neatbildēts video zvans";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Atbildēt bez video";
@@ -507,7 +507,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Izslēgt skaņu";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ saņems no jums pieprasījuma ziņojumu. Jūs varēsiet zvanīt, tiklīdz pieprasījuma ziņojums tiks akceptēts.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Pārslēgt kameras virzienu";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Sarunas krāsa";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Rediģēt grupas informāciju";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Tikai administratori";
@@ -867,7 +867,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Izvēlieties, kurš var rediģēt grupas dalību.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Paziņot vienmēr";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
@@ -1041,7 +1041,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub novirzīšana";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "Informācija par atkļūdošanas žurnāliem";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Vai dzēst visas ziņas šajā sarunā?";
@@ -1236,7 +1236,7 @@
 "EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "E-pasts nav pieejams";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktivitātes";
@@ -1293,7 +1293,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Neizdevās nosūtīt ziņu.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Neizdevās atvērt e-pasta lietotni";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
@@ -1509,19 +1509,19 @@
 "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Jūs pievienojāt nederīgus uzaicinājumus.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ pievienoja nederīgu uzaicinājumu.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ pievienoja nederīgus uzaicinājumus.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
 "GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "Nederīgs uzaicinājums tika atsaukts.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
 "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
@@ -1617,7 +1617,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Jūs";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "Audio zvans";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nav dalībnieku.";
@@ -1689,7 +1689,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "1 persona tika uzaicināta pievienoties šai grupai.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ tika uzaicināts(-a) pievienoties šai grupai.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Jūs uzaicinājāt %@ pievienoties šai grupai.";
@@ -1737,7 +1737,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ nonēma attēlu.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Grupas fotoattēls tika atjaunināts.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Jūs atjaunojāt attēlu.";
@@ -1794,19 +1794,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "What are Legacy Groups?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Kas ir mantotās grupas?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can’t be converted into New Groups, but you can create a New Group with the same members.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kā veikt mantotās grupas \"jaunināšanu\"?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. New Groups";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Mantoto grupu salīdzinājums ar jaunajām";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -1824,7 +1824,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Mantotā grupa";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Uzzināt vairāk";
@@ -1839,10 +1839,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Izvēlēties jaunu administratoru";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contact Us";
+"HELP_CONTACT_US" = "Sazināties ar mums";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "Atbalsta centrs";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arhivētās sarunas";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "Zvana...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Audio zvans...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Video zvans...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Atbildēts. Aizsargā…";
@@ -1935,7 +1935,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Sāciet saņemt iesūtnē interesantas ziņas. Uzrakstiet kādam draugam.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "Jums zvanīja %@";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Sinhronizētus ziņojumus varat nosūtīt vai saņemt, izmantojot tālruni vai iPad.  Jūsu drošības labad sarunu vēsture netiek pārsūtīta uz jaunām saistītajām ierīcēm.";
@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Nesaņemsiet paziņojumus par sarunām, kurām ir atspējota ziņu saņemšana.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Izlaist";
 
@@ -2658,7 +2661,7 @@
 "OUTAGE_WARNING" = "Signal ir tehniskas grūtības. Mēs darām visu, lai iespējami drīz atjaunotu pakalpojuma darbību.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "Jūs zvanījāt %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF nevarēja parādīt";
@@ -2682,7 +2685,7 @@
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Nosūtīt uzaicinājumus vēlreiz";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Atsaukt nederīgu uzaicinājumu";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
@@ -2712,7 +2715,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Netiek parādīta informācija par cilvēkiem, kurus uzaicinājuši citi grupas dalībnieki. Ja uzaicinātie cilvēki izvēlas pievienoties, viņu informācija tiks kopīgota ar grupu. Šie cilvēki neredzēs nevienu ziņu grupā, kamēr nebūs pievienojušies.";
 
 /* Title for the 'invalid invites' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Nederīgi uzaicinājumi";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Citu grupas dalībnieku uzaicinājumi";
@@ -2817,7 +2820,7 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Izveidot ciparu PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Atspējot PIN";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
@@ -2835,7 +2838,7 @@
 "PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Uzzināt vairāk par PIN kodiem";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN nesakrīt. Mēģiniet vēlreiz.";
@@ -2865,7 +2868,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Vai izslēgt reģistrācijas bloķēšanu?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "Atspējot PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "PIN izveide";
@@ -2874,7 +2877,7 @@
 "PIN_CREATION_WEAK_ERROR" = "Izvēlēties spēcīgāku PIN";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Jūsu PIN nebija iespējams atspējot. Mēs lūgsim jūs to izdarīt vēlāk.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
@@ -2931,7 +2934,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN izveidots. To var mainīt iestatījumos.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN atspējots.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Atskaņot multivides saturu";
@@ -3252,10 +3255,10 @@
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Iepriekš pārbaudīts";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Drošības numura izmaiņas";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Skatīt";
@@ -3462,7 +3465,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Neatbalstīta versija";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Jūsu otrajā ierīcē darbojas vecāka Signal versija, kas neatbalsta iPad QR kodu skenēšanu. Instalējiet jaunāko Signal laidienu un mēģiniet vēlreiz.";
@@ -3582,16 +3585,16 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Iespējot atkļūdošanas žurnālu";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Papildu PIN iestatījumi";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Papildu PIN iestatījumi";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Atspējot PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Iespējot PIN";
 
 /* Table header for the 'pins' section. */
 "SETTINGS_ADVANCED_PINS_HEADER" = "Signāla PIN";
@@ -3981,7 +3984,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Drošības numurs sakrīt!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Contact Us";
+"SUPPORT_CONTACT_US_HEADER" = "Sazināties ar mums";
 
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Pastāstiet, kas notiek";
@@ -4059,13 +4062,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ minūte";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ sekunde";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ nedēļa";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ gads";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ nedēļas";
@@ -4074,10 +4077,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ gadi";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 sekundes";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Atcelt";
@@ -4161,7 +4164,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Jūsu ierīce neatbalsta šo funkciju.";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Atjaunināt kontaktpersonu";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Grupu nevarēja atjaunināt.";
@@ -4173,7 +4176,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Izveidot PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Uzzināt vairāk par PIN kodiem";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
@@ -4182,7 +4185,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Informācija par PIN kodiem";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Atspējot PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Lietotnei Signal drīz būs nepieciešama OS iOS 11 vai jaunāka. Jauniniet sadaļā Settings >> General >> Software Update (Iestatījumi > Vispārīgi > Programmatūras atjaunināšana).";

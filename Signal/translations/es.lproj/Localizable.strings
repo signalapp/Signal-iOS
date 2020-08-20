@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Al silenciar, no recibirás notificaciones de mensajes en este chat durante el tiempo seleccionado.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Silenciada";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ahora no";
 

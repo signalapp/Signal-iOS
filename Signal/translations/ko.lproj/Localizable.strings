@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "대화 알림을 끄면 알림을 받을 수 없습니다.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "건너뛰기";
 

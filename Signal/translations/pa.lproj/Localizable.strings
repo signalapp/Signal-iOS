@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "ਤੁਸੀਂ ਚੁੱਪ ਕੀਤੇ ਵਾਰਤਾਲਾਪਾਂ ਲਈ ਕੋਈ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰੋਗੇ.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ਛੱਡੋ";
 

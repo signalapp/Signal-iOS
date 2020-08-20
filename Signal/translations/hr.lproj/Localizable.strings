@@ -153,13 +153,13 @@
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Ažuriraj";
 
 /* Name indicating that the dark theme is enabled. */
-"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Tamno";
+"APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Tamna";
 
 /* Name indicating that the light theme is enabled. */
-"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "Svijetlo";
+"APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "Svijetla";
 
 /* Name indicating that the system theme is enabled. */
-"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Sustavno zadano";
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Sustav";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -2371,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Nećete primati obavijesti za utišane razgovore.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Utišano";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Preskoči";

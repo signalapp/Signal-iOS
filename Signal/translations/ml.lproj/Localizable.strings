@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "നിങ്ങൾക്ക് മ്യൂട്ട് ചെയ്ത സംഭാഷണങ്ങൾക്ക് നോട്ടിഫിക്കേഷനുകൾ ലഭിക്കില്ല.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Muted";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ഒഴിവാക്കുക";
 

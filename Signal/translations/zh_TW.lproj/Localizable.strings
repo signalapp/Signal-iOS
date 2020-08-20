@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "你將無法自禁言的對話收到通知。";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "已靜音";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "跳過";
 

@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Mehr Nachrichten werden geladen …";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Mehr lesen";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Weiterlesen";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Das Neustarten der Verschlüsselung ermöglicht dir, zukünftige Nachrichten von %@ zu erhalten, wird jedoch bereits fehlerhafte Nachrichten nicht wiederherstellen.";
@@ -2371,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Du wirst keine Mitteilungen über stummgeschaltete Unterhaltungen erhalten.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Stumm";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Überspringen";

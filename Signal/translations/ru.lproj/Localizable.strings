@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Вы не будете получать уведомления о разговорах, звуки которых отключены.";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Без звука";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропустить";
 

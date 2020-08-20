@@ -612,7 +612,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Vil du virkelig gå ut?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Godkjenn ny enhet";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Koble til ny enhet";
 
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Bekreft";
@@ -1371,7 +1371,7 @@
 "ERROR_NETWORK_FAILURE" = "Nettverksfeil";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Enheten din er ikke lenger koblet. Vennligst lenke på nytt for å sende flere meldinger.";
+"ERROR_SENDING_DELINKED" = "Enheten din er ikke lenger tilkoblet. Vennligst koble til på nytt for å sende flere meldinger.";
 
 /* Error indicating a send failure due to a deregistered application. */
 "ERROR_SENDING_DEREGISTERED" = "Enheten din er ikke lenger registrert. Registrer deg på nytt for å sende flere meldinger.";
@@ -2372,6 +2372,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Du vil ikke motta varsler for samtaler som er satt i stillemodus";
 
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Mutet";
+
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Hopp over";
 
@@ -2556,7 +2559,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrer denne iPaden";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Koble denne iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Koble til denne iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrering av denne iPad vil deaktivere Signal på andre enheter som for øyeblikket er registrert med samme telefonnummer.";
@@ -3471,7 +3474,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Oppdater skannings enhet";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Kunne ikke koble enheten din";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Kunne ikke koble til enheten din";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Velg et navn for denne enheten";
@@ -3501,7 +3504,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Trykk på ditt profilbilde for å åpne Signal innstillingene på din telefon. Deretter \"Koblede enheter\" og \"koble ny enhet\" for å scanne denne koden med telefonen din:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjelp til å koble iPad-en din her";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjelp til å koble iPaden din her";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Skann QR-koden med telefonen din";
@@ -3810,7 +3813,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Aktiver registreringslås?";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Koble på nytt";
+"SETTINGS_RELINK_BUTTON" = "Koble til på nytt";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "Registrer på nytt";

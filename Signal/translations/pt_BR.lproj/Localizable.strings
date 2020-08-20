@@ -291,7 +291,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Mensagem de áudio";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "Ligação de Áudio";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Caixa de som";
@@ -453,10 +453,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Chamar novamente";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Recebendo ligação de áudio...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Ligação de áudio perdida";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Você pode permitir o acesso ao microfone no app Ajustes do iOS e, assim, fazer ligações e gravar mensagems de voz no Signal.";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "Ligar?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Recebendo ligação de vídeo...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Ligação de vídeo perdida";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Atender sem vídeo";
@@ -867,13 +867,13 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Escolha quem pode editar os membros do grupo.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Sempre Notificar";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Não notifique se silenciado";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receber notificações quando você for mencionado em conversas silenciadas?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Menções";
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Carrengando Mais Mensagens...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Ler Mais";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Restabelecer sua sessão lhe permitirá receber mensagens futuras de %@, mas não recuperará nehuma mensagem que já estiver corrompida.";
@@ -1617,7 +1617,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Você";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "Ligação de Áudio";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nenhum membro.";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "Chamando...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Ligação de Áudio...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Ligação de Vídeo...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Atendida. Estabelecendo chamada segura...";
@@ -2106,10 +2106,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Nós relembraremos você mais tarde.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Chame a atenção de alguém em um \"Novo Grupo\" digitando @";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "Introduzindo @Menções";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensagem de texto";
@@ -2371,6 +2371,9 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Você não receberá notificações de conversas silenciadas.";
+
+/* Badge indicating that the user is muted. */
+"MUTED_BADGE" = "Silenciado/a";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Pular";
@@ -4257,7 +4260,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Rever números de segurança";
 
 /* Accessibility label for placing a video call */
-"VIDEO_CALL_LABEL" = "Chamada de vídeo";
+"VIDEO_CALL_LABEL" = "Ligação de Vídeo";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Você já visualizou essa mensagem";
