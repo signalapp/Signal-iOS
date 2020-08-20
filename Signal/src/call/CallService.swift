@@ -1489,11 +1489,6 @@ extension SignalCall: CallManagerCallReference { }
         // Do nothing
     }
 
-    public func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
-        AssertIsOnMainThread()
-        // Do nothing
-    }
-
     // MARK: - Video
 
     private func shouldHaveLocalVideoTrack() -> Bool {

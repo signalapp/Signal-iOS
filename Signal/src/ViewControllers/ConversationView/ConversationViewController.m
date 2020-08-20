@@ -1300,6 +1300,7 @@ typedef enum : NSUInteger {
 {
     ConversationHeaderView *headerView = [[ConversationHeaderView alloc] initWithThread:self.thread
                                                                         contactsManager:self.contactsManager];
+    headerView.accessibilityLabel = NSLocalizedString(@"CONVERSATION_SETTINGS", "title for conversation settings screen");
     self.headerView = headerView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);
 
@@ -1387,7 +1388,7 @@ typedef enum : NSUInteger {
                                                     action:@selector(startAudioCall)];
                 audioCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
                 audioCallButton.accessibilityLabel
-                    = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
+                    = NSLocalizedString(@"AUDIO_CALL_LABEL", "Accessibility label for placing an audio call");
                 [barButtons addObject:audioCallButton];
 
                 UIBarButtonItem *videoCallButton =
@@ -1397,7 +1398,7 @@ typedef enum : NSUInteger {
                                                     action:@selector(startVideoCall)];
                 videoCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
                 videoCallButton.accessibilityLabel
-                    = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
+                    = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
                 [barButtons addObject:videoCallButton];
             }
 
@@ -1421,23 +1422,21 @@ typedef enum : NSUInteger {
         NSFontAttributeName : subtitleFont,
         NSForegroundColorAttributeName : [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9],
     };
+    NSString *hairSpace = @"\u200a";
 
     BOOL isMuted = self.thread.isMuted;
     if (isMuted) {
         [subtitleText appendTemplatedImageNamed:@"bell-disabled-outline-24" font:subtitleFont];
-        [subtitleText append:@" " attributes:attributes];
-        [subtitleText append:NSLocalizedString(@"MUTED_BADGE", @"Badge indicating that the user is muted.")
-                  attributes:attributes];
     }
 
     BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
     if (hasTimer) {
         if (isMuted) {
-            [subtitleText append:@"   " attributes:attributes];
+            [subtitleText append:@" " attributes:attributes];
         }
 
-        [subtitleText appendTemplatedImageNamed:@"timer-60-12" font:subtitleFont];
-        [subtitleText append:@" " attributes:attributes];
+        [subtitleText appendTemplatedImageNamed:@"timer-outline-16" font:subtitleFont];
+        [subtitleText append:hairSpace attributes:attributes];
         [subtitleText append:[NSString formatDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds
                                               useShortFormat:YES]
                   attributes:attributes];
@@ -1453,11 +1452,11 @@ typedef enum : NSUInteger {
     }
     if (isVerified) {
         if (hasTimer || isMuted) {
-            [subtitleText append:@"   " attributes:attributes];
+            [subtitleText append:@" " attributes:attributes];
         }
 
         [subtitleText appendTemplatedImageNamed:@"check-12" font:subtitleFont];
-        [subtitleText append:@" " attributes:attributes];
+        [subtitleText append:hairSpace attributes:attributes];
         [subtitleText append:NSLocalizedString(
                                  @"PRIVACY_IDENTITY_IS_VERIFIED_BADGE", @"Badge indicating that the user is verified.")
                   attributes:attributes];

@@ -37,6 +37,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"
         dateFormatter.timeZone = TimeZone(identifier: "UTC")!
+        dateFormatter.locale = Locale(identifier: "en_US")
         return dateFormatter
     }()
 
@@ -472,15 +473,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func presentAudioSourcePicker() {
         AssertIsOnMainThread()
 
+        guard !callUIAdapter.audioService.presentRoutePicker() else { return }
+
+        // Fallback to action sheet based picker, which is buggy
+        owsFailDebug("Failed to present native route picker, maybe a new iOS version broke it?")
+
         let actionSheetController = ActionSheetController(title: nil, message: nil)
 
         let dismissAction = ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel)
         actionSheetController.addAction(dismissAction)
 
-        let currentAudioSource = callUIAdapter.audioService.currentAudioSource(call: self.call)
+        let currentAudioSource = callUIAdapter.audioService.currentAudioSource
         for audioSource in self.appropriateAudioSources {
             let routeAudioAction = ActionSheetAction(title: audioSource.localizedName, style: .default) { _ in
-                self.callUIAdapter.setAudioSource(call: self.call, audioSource: audioSource)
+                self.callUIAdapter.audioService.currentAudioSource = audioSource
             }
 
             // create checkmark for active audio source.
@@ -621,6 +627,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateCallUI()
     }
 
+    private var lastLocalVideoBoundingRect: CGRect = .zero
     private var localVideoBoundingRect: CGRect {
         view.layoutIfNeeded()
 
@@ -636,6 +643,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             : bottomGradientView.height - gradientMargin + 14
         rect.origin.y += topInset
         rect.size.height -= topInset + bottomInset
+
+        lastLocalVideoBoundingRect = rect
 
         return rect
     }
@@ -660,18 +669,26 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         view.bringSubviewToFront(localVideoView)
 
+        let pipSize = ReturnToCallViewController.pipSize
+        let lastBoundingRect = lastLocalVideoBoundingRect
+        let boundingRect = localVideoBoundingRect
+
         // Prefer to start in the top right
         if previousOrigin == nil {
             previousOrigin = CGPoint(
-                x: localVideoBoundingRect.maxX - ReturnToCallViewController.pipSize.width,
-                y: localVideoBoundingRect.minY
+                x: boundingRect.maxX - pipSize.width,
+                y: boundingRect.minY
             )
+
+        // If the bounding rect has gotten bigger, and we were at the top or
+        // bottom edge move the pip so it stays at the top or bottom edge.
+        } else if boundingRect.minY < lastBoundingRect.minY && previousOrigin.y == lastBoundingRect.minY {
+            previousOrigin.y = boundingRect.minY
+        } else if boundingRect.maxY > lastBoundingRect.maxY && previousOrigin.y + pipSize.height == lastBoundingRect.maxY {
+            previousOrigin.y += boundingRect.maxY - lastBoundingRect.maxY
         }
 
-        let newFrame = CGRect(
-            origin: previousOrigin,
-            size: ReturnToCallViewController.pipSize
-        ).pinnedToVerticalEdge(of: localVideoBoundingRect)
+        let newFrame = CGRect(origin: previousOrigin, size: pipSize).pinnedToVerticalEdge(of: localVideoBoundingRect)
         previousOrigin = newFrame.origin
 
         UIView.animate(withDuration: 0.25) { self.localVideoView.frame = newFrame }
@@ -852,7 +869,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let videoControls = [videoModeAudioSourceButton, videoModeFlipCameraButton, videoModeVideoButton, videoModeMuteButton, videoModeHangUpButton]
 
         // Audio Source Handling (bluetooth)
-        if self.hasAlternateAudioSources, let audioSource = callUIAdapter.audioService.currentAudioSource(call: call) {
+        if self.hasAlternateAudioSources, let audioSource = callUIAdapter.audioService.currentAudioSource {
+            audioModeSourceButton.isHidden = false
+            videoModeAudioSourceButton.isHidden = false
+
             videoModeAudioSourceButton.isHidden = !call.hasLocalVideo
             videoModeAudioSourceButton.showDropdownArrow = true
             audioModeSourceButton.isHidden = call.hasLocalVideo
@@ -871,8 +891,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                 audioModeSourceButton.iconName = "speaker-bt-solid-28"
                 videoModeAudioSourceButton.iconName = "speaker-bt-solid-28"
             }
-
+        } else if UIDevice.current.isIPad {
+            // iPad *only* supports speaker mode, if there are no external
+            // devices connected, so we don't need to show the button unless
+            // we have alternate audio sources.
+            audioModeSourceButton.isHidden = true
+            videoModeAudioSourceButton.isHidden = true
         } else {
+            audioModeSourceButton.isHidden = false
+            videoModeAudioSourceButton.isHidden = false
+
             // No bluetooth audio detected
             audioModeSourceButton.iconName = "speaker-solid-28"
             audioModeSourceButton.showDropdownArrow = false
@@ -989,24 +1017,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func updateCallDuration() {
         updateCallStatusLabel()
-    }
-
-    // We update the audioSourceButton outside of the main `updateCallUI`
-    // because `updateCallUI` is intended to be idempotent, which isn't possible
-    // with external speaker state because:
-    // - the system API which enables the external speaker is a (somewhat slow) asyncronous
-    //   operation
-    // - we want to give immediate UI feedback by marking the pressed button as selected
-    //   before the operation completes.
-    func updateAudioSourceButtonIsSelected() {
-        guard let audioSource = callUIAdapter.audioService.currentAudioSource(call: call) else {
-            audioModeSourceButton.isSelected = false
-            videoModeAudioSourceButton.isSelected = false
-            return
-        }
-
-        audioModeSourceButton.isSelected = !audioSource.isBuiltInEarPiece
-        videoModeAudioSourceButton.isSelected = !audioSource.isBuiltInEarPiece
     }
 
     // MARK: - Video control timeout
@@ -1163,18 +1173,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.updateCallUI()
     }
 
-    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
-        AssertIsOnMainThread()
-        self.updateCallUI()
-    }
-
     // MARK: - CallAudioServiceDelegate
-
-    func callAudioService(_ callAudioService: CallAudioService, didUpdateIsSpeakerphoneEnabled isSpeakerphoneEnabled: Bool) {
-        AssertIsOnMainThread()
-
-        updateAudioSourceButtonIsSelected()
-    }
 
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {
         AssertIsOnMainThread()
@@ -1190,6 +1189,23 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let availableInputs = callAudioService.availableInputs
         self.allAudioSources.formUnion(availableInputs)
         updateCallUI()
+    }
+
+    func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?) {
+        // You might have switched to a newly available route (like a bluetooth device connecting),
+        // update the UI to reflect it.
+        let availableInputs = callAudioService.availableInputs
+        self.allAudioSources.formUnion(availableInputs)
+        updateCallUI()
+
+        guard let audioSource = audioSource else {
+            audioModeSourceButton.isSelected = false
+            videoModeAudioSourceButton.isSelected = false
+            return
+        }
+
+        audioModeSourceButton.isSelected = !audioSource.isBuiltInEarPiece
+        videoModeAudioSourceButton.isSelected = !audioSource.isBuiltInEarPiece
     }
 
     // MARK: - Video
@@ -1210,7 +1226,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         localVideoView.isHidden = isHidden
 
         updateCallUI()
-        updateAudioSourceButtonIsSelected()
     }
 
     var hasRemoteVideoTrack: Bool {
