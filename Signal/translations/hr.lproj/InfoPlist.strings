@@ -1,0 +1,8 @@
+NSAppleMusicUsageDescription = "Signal treba koristiti Apple Music za reprodukciju medijskih privitaka.";
+NSCameraUsageDescription = "Signal koristi vašu kameru za snimanje fotografija i za videopozive.";
+NSContactsUsageDescription = "Signal koristi vaše kontakte za pronalaženje korisnika koje poznajete. Ne spremamo vaše kontakte na poslužitelju.";
+NSFaceIDUsageDescription = "Zaključavanje zaslona za Signal koristi Face ID.";
+NSLocationWhenInUseUsageDescription = "Signal zahtijeva pristup vašoj lokaciji kako bi se dijelila vaša trenutna lokacija.";
+NSMicrophoneUsageDescription = "Signal zahtijeva pristup vašem mikrofonu za upućivanje i primanje telefonskih poziva kao i za snimanje glasovnih poruka.";
+NSPhotoLibraryAddUsageDescription = "Signal će fotografije spremiti u vašu galeriju.";
+NSPhotoLibraryUsageDescription = "Signal će vam omogućiti da odaberete koje fotografije iz svoje galerije želite poslati.";

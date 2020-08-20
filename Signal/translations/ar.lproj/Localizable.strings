@@ -290,6 +290,9 @@
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "رسالة صوتية";
 
+/* Accessibility label for placing an audio call */
+"AUDIO_CALL_LABEL" = "مكالمة صوتية";
+
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "مكبر الصوت.";
 
@@ -450,19 +453,16 @@
 "CALL_AGAIN_BUTTON_TITLE" = "معاودة الاتصال";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞مكالمة صوتية واردة...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞مكالمة صوتية فائتة";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "يمكنك تفعيل الوصول للميكروفون من إعدادات الجهاز لتتمكن من إجراء مكالمات وارسال رسائل صوتية في Signal. ";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "الإذن لاستخدام الميكرفون مطلوب";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "إتصل";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "مكالمة فائتة لأن رقم الأمان للمستخدم قد تغيّر. ";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "إتصال؟";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹مكالمة فيديو واردة...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹مكالمة فيديو فائتة";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "أجِب بلا فيديو";
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "يجري تحميل رسائل أخرى…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "قراءة المزيد";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
@@ -1617,7 +1617,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "أنت";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "مكالمة صوتية";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "لا وجود للأعضاء.";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "رنين…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "مكالمة صوتية...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "مكالمة فيديو...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "تمت الإجابة. جار التأمين...";
@@ -1935,7 +1935,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "ابدأ محادثة مع أصدقائك.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "قام %@ بالاتصال بك";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "يمكنك تلقي الرسائل المتزامنة عبر هاتفك أو جهاز iPad.\nإن محادثاتك السابقة لا يُعاد توجيهها إلى الأجهزة الحديثة المرتبطة، لأجل أمانك.";
@@ -2372,9 +2372,6 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "لن تستلم تنبيهات من المحادثات التي تم كتمها.";
 
-/* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
-
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "تخطى";
 
@@ -2451,7 +2448,7 @@
 "NON_CONTACT_TABLE_CELL_SEND_SMS" = "لم يعثر على المستخدم. هل تود دعوته بواسطة SMS ؟";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "ملاحظة لنفسي";
+"NOTE_TO_SELF" = "الملاحظات الشخصيّة";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون هناك رسائل وصلتك خلال إعادة تشغيلك %@.";
@@ -2661,7 +2658,7 @@
 "OUTAGE_WARNING" = "نقوم حاليا باستعادة عمل خدمة Signal من بعض المشكلات بأسرع ما يمكن.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "لقد اتصلت ب%@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "لم يتمكن من عرض ملف PDF";
@@ -4259,6 +4256,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "مراجعة أرقام الأمان";
 
+/* Accessibility label for placing a video call */
+"VIDEO_CALL_LABEL" = "اتصال فيديو";
+
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "لقد قمت مسبقا بمعاينة هذه الرسالة.";
 
@@ -4292,5 +4292,6 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "يجب عليك إنهاء التثبيت قبل أي إجراء آخر.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
+   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد ضبطت وقت إخفاء الرسالة على %@.";

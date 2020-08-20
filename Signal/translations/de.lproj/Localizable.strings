@@ -290,6 +290,9 @@
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Sprachnachricht";
 
+/* Accessibility label for placing an audio call */
+"AUDIO_CALL_LABEL" = "Sprachanruf";
+
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Lautsprecher";
 
@@ -450,19 +453,16 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Erneut anrufen";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Eingehender Sprachanruf …";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Entgangener Sprachanruf";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Du kannst den Zugriff auf das Mikrofon in der iOS-App »Einstellungen« aktivieren, um Anrufe zu machen und Sprachnachrichten aufzuzeichnen.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Zugriff auf Mikrofon erforderlich";
-
-/* Accessibility label for placing call button */
-"CALL_LABEL" = "Anrufen";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Entgangener Anruf, da sich die Sicherheitsnummer des Anrufers geändert hat.";
@@ -483,10 +483,10 @@
 "CALL_USER_ALERT_TITLE" = "Anrufen?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Eingehender Videoanruf …";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Entgangener Videoanruf";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Ohne Video annehmen";
@@ -870,7 +870,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Immer benachrichtigen";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nicht benachrichtigen wenn stumm geschaltet";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nicht benachrichtigen falls stummgeschaltet";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Benachrichtigungen erhalten, wenn du in stummgeschalteten Unterhaltungen erwähnt wirst?";
@@ -966,7 +966,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Mehr Nachrichten werden geladen …";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Mehr lesen";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Das Neustarten der Verschlüsselung ermöglicht dir, zukünftige Nachrichten von %@ zu erhalten, wird jedoch bereits fehlerhafte Nachrichten nicht wiederherstellen.";
@@ -1503,40 +1503,40 @@
 "GROUP_CREATION_FAILED" = "Nicht alle Mitglieder konnten zur Gruppe hinzugefügt werden. Für erneuten Versuch antippen.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "Eine ungültige Gruppeneinladung wurde hinzugefügt.";
+"GROUP_INVALID_INVITES_ADDED_1" = "Eine ungültige Einladung wurde hinzugefügt.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Du hast eine ungültige Gruppeneinladung hinzugefügt.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Du hast eine ungültige Einladung hinzugefügt.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Du hast ungültige Gruppeneinladungen hinzugefügt.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Du hast ungültige Einladungen hinzugefügt.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@hat eine ungültige Gruppeneinladung hinzugefügt.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ hat eine ungültige Einladung hinzugefügt.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@hat ungültige Gruppeneinladungen hinzugefügt.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ hat ungültige Einladungen hinzugefügt.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Ungültige Gruppeneinladungen wurden hinzugefügt.";
+"GROUP_INVALID_INVITES_ADDED_N" = "Ungültige Einladungen wurden hinzugefügt.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "Eine ungültige Gruppeneinladung wurde widerrufen.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "Eine ungültige Einladung wurde widerrufen.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Du hast eine ungültige Gruppeneinladung widerrufen.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Du hast eine ungültige Einladung widerrufen.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Du hast ungültige Gruppeneinladungen widerrufen.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Du hast ungültige Einladungen widerrufen.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@hat eine ungültige Gruppeneinladung widerrufen.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ hat eine ungültige Einladung widerrufen.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ ungültige Gruppeneinladungen widerrufen.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ hat ungültige Einladungen widerrufen.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Ungültige Gruppeneinladungen wurden widerrufen.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "Ungültige Einladungen wurden widerrufen.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Benutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
@@ -1800,7 +1800,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Alt-Gruppen können nicht in Neu-Gruppen umgewandelt werden, aber du kannst eine Neu-Gruppe mit denselben Mitgliedern erstellen.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Wie \"aktualisiere\" ich eine Legacy-Gruppe?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Wie »aktualisiere« ich eine Alt-Gruppe?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Zum Erstellen einer Neu-Gruppe sollten alle Mitglieder Signal auf die neueste Version aktualisieren.";
@@ -1917,10 +1917,10 @@
 "IN_CALL_RINGING" = "Klingeln …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Sprachanruf …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Videoanruf …";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Angenommen. Absichern …";
@@ -1935,7 +1935,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Erwecke deinen Posteingang zum Leben. Leg los und schreib einem Freund.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "Empfangener Anruf von %@";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Du kannst von deinem Telefon oder iPad synchronisierte Nachrichten versenden oder empfangen. Zu deiner Sicherheit wird der Unterhaltungsverlauf nicht auf neue gekoppelte Geräte übertragen.";
@@ -2106,7 +2106,7 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Wir erinnern dich später.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Lenke die Aufmerksamkeit von jemandem in einer \"Neuen Gruppe\" auf dich, indem Du @ tippst";
+"MENTIONS_MEGAPHONE_BODY" = "Tippe @ in einer »Neu-Gruppe«, um jemandes Aufmerksamkeit zu erhalten";
 
 /* Title for mentions megaphone */
 "MENTIONS_MEGAPHONE_TITLE" = "Einführung von @Erwähnungen";
@@ -2247,7 +2247,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Möchtest du diese Gruppe freigeben und deinen Namen und dein Foto mit deren Mitgliedern teilen? Du wirst keine Nachrichten erhalten, bis du die Gruppe freigibst.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Diese Gruppe freigeben? Solange du nicht freigibst, werden die Gruppenmitglieder nicht wissen, dass du ihre Nachrichten gesehen hast.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Möchtest du diese Gruppe freigeben? Deren Mitglieder wissen nicht, dass du ihre Nachrichten gesehen hast, bis du die Gruppe freigibst.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Löschen";
@@ -2371,9 +2371,6 @@
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Du wirst keine Mitteilungen über stummgeschaltete Unterhaltungen erhalten.";
-
-/* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Überspringen";
@@ -2661,7 +2658,7 @@
 "OUTAGE_WARNING" = "Signal hat derzeit technische Schwierigkeiten. Wir arbeiten hart daran, den Betrieb so schnell wie möglich wiederherzustellen.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "Ausgehender Anruf an %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF konnte nicht angezeigt werden";
@@ -2685,10 +2682,10 @@
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Einladungen erneut senden";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Ungültige Gruppeneinladung widerrufen.";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Ungültige Gruppeneinladung widerrufen";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "%@ ungültige Gruppeneinladungen widerrufen";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "%@ ungültige Gruppeneinladungen widerrufen";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Einladung widerrufen";
@@ -4008,7 +4005,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Wird geladen …";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Bestätigen";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifizieren";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Diese Nachricht wurde gelöscht.";
@@ -4062,13 +4059,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ Minute";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ Sekunde";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@ Sekunde";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ Woche";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ Jahr";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@ Jahr";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ Wochen";
@@ -4077,10 +4074,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ Jahre";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@ Jahre";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 Sekunden";
+"TIME_AMOUNT_ZERO_SECONDS" = "0 Sekunden";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Abbrechen";
@@ -4259,6 +4256,9 @@
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Sicherheitsnummern überprüfen";
 
+/* Accessibility label for placing a video call */
+"VIDEO_CALL_LABEL" = "Videoanruf";
+
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Du hast diese Nachricht bereits angezeigt.";
 
@@ -4292,5 +4292,6 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Du musst du die Einrichtung abschließen, um fortzufahren.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
+   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du hast die Zeit für verschwindende Nachrichten auf %@ festgelegt.";
