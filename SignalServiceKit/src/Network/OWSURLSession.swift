@@ -247,8 +247,7 @@ public class OWSURLSession: NSObject {
         return request
     }
 
-    private func buildUrlString(_ rawUrlString: String) -> String {
-        var urlString = rawUrlString
+    private func buildUrlString(_ urlString: String) -> String {
         guard let censorshipCircumventionHost = censorshipCircumventionHost else {
             // Censorship circumvention not active.
             return urlString
@@ -258,29 +257,41 @@ public class OWSURLSession: NSObject {
             return urlString
         }
         guard let baseUrl = baseUrl else {
-            owsFailDebug("Missing baseUrl.")
+            owsFailDebug("Censorship circumvention requires baseUrl.")
             return urlString
         }
 
         if urlString.hasPrefix(censorshipCircumventionHost) {
-            // Remove protocol/host prefix so that URL is relative to baseUrl.
-            urlString = urlString.substring(from: censorshipCircumventionHost.count)
+            // urlString has expected protocol/host.
         } else if urlString.lowercased().hasPrefix("http") {
             // Censorship circumvention will work with relative URLs and
             // absolute URLs that match the expected protocol/host prefix.
             // Other absolute URLs should not be used with this session.
             owsFailDebug("Unexpected URL for censorship circumvention.")
         }
-        if urlString.hasPrefix("/") {
-            // Remove leading forward slash if present so that URL
-            // is relative to any path components in the baseUrl.
-            urlString = urlString.substring(from: 1)
+
+        guard let requestComponents = URLComponents(string: urlString) else {
+            owsFailDebug("Could not rewrite URL.")
+            return urlString
         }
-        var result = baseUrl.absoluteString
-        if !result.hasSuffix("/") {
-            result += "/"
+
+        var finalComponents = URLComponents()
+
+        // Use scheme and host from baseUrl.
+        finalComponents.scheme = baseUrl.scheme
+        finalComponents.host = baseUrl.host
+
+        // Use query and fragement from the request.
+        finalComponents.query = requestComponents.query
+        finalComponents.fragment = requestComponents.fragment
+
+        // Join the paths.
+        finalComponents.path = (baseUrl.path as NSString).appendingPathComponent(requestComponents.path)
+
+        guard let result = finalComponents.string else {
+            owsFailDebug("Could not rewrite URL.")
+            return urlString
         }
-        result += urlString
         return result
     }
 
