@@ -81,7 +81,7 @@ message GroupChange {
 
         message AddMemberAction {
             Member added              = 1;
-	        bool   joinFromInviteLink = 2;
+            bool   joinFromInviteLink = 2;
         }
 
         message DeleteMemberAction {
@@ -114,7 +114,7 @@ message GroupChange {
 	    }
 
         message DeleteRequestingMemberAction {
-	        bytes deletedUserId = 1;
+            bytes deletedUserId = 1;
 	    }
 
         message PromoteRequestingMemberAction {
