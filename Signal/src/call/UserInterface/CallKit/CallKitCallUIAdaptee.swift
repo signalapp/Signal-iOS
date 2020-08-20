@@ -151,6 +151,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
+        self.showCall(call)
+
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
 
@@ -337,7 +339,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         self.callService.handleAcceptCall(call)
-        self.showCall(call)
         action.fulfill()
     }
 

@@ -275,13 +275,10 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     }
 
     public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64, offerMediaType: TSRecentCallOfferType) -> SignalCall {
-        // If this is a video call, and the app is active, we want
-        // to use in the in app call screen because CallKit has poor
-        // support for video calls. We still use CallKit when the app
-        // is not active, because CallKit provides a much better
-        // background ringing experience.
+        // If this is a video call, we want to use in the in app call screen
+        // because CallKit has poor support for video calls.
         let callAdapterType: CallAdapterType
-        if offerMediaType == .video && UIApplication.shared.applicationState == .active {
+        if offerMediaType == .video {
             callAdapterType = .nonCallKit
         } else {
             callAdapterType = .default

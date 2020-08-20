@@ -37,6 +37,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"
         dateFormatter.timeZone = TimeZone(identifier: "UTC")!
+        dateFormatter.locale = Locale(identifier: "en_US")
         return dateFormatter
     }()
 
@@ -621,6 +622,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateCallUI()
     }
 
+    private var lastLocalVideoBoundingRect: CGRect = .zero
     private var localVideoBoundingRect: CGRect {
         view.layoutIfNeeded()
 
@@ -636,6 +638,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             : bottomGradientView.height - gradientMargin + 14
         rect.origin.y += topInset
         rect.size.height -= topInset + bottomInset
+
+        lastLocalVideoBoundingRect = rect
 
         return rect
     }
@@ -660,18 +664,26 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         view.bringSubviewToFront(localVideoView)
 
+        let pipSize = ReturnToCallViewController.pipSize
+        let lastBoundingRect = lastLocalVideoBoundingRect
+        let boundingRect = localVideoBoundingRect
+
         // Prefer to start in the top right
         if previousOrigin == nil {
             previousOrigin = CGPoint(
-                x: localVideoBoundingRect.maxX - ReturnToCallViewController.pipSize.width,
-                y: localVideoBoundingRect.minY
+                x: boundingRect.maxX - pipSize.width,
+                y: boundingRect.minY
             )
+
+        // If the bounding rect has gotten bigger, and we were at the top or
+        // bottom edge move the pip so it stays at the top or bottom edge.
+        } else if boundingRect.minY < lastBoundingRect.minY && previousOrigin.y == lastBoundingRect.minY {
+            previousOrigin.y = boundingRect.minY
+        } else if boundingRect.maxY > lastBoundingRect.maxY && previousOrigin.y + pipSize.height == lastBoundingRect.maxY {
+            previousOrigin.y += boundingRect.maxY - lastBoundingRect.maxY
         }
 
-        let newFrame = CGRect(
-            origin: previousOrigin,
-            size: ReturnToCallViewController.pipSize
-        ).pinnedToVerticalEdge(of: localVideoBoundingRect)
+        let newFrame = CGRect(origin: previousOrigin, size: pipSize).pinnedToVerticalEdge(of: localVideoBoundingRect)
         previousOrigin = newFrame.origin
 
         UIView.animate(withDuration: 0.25) { self.localVideoView.frame = newFrame }

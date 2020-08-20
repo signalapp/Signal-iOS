@@ -1300,6 +1300,7 @@ typedef enum : NSUInteger {
 {
     ConversationHeaderView *headerView = [[ConversationHeaderView alloc] initWithThread:self.thread
                                                                         contactsManager:self.contactsManager];
+    headerView.accessibilityLabel = NSLocalizedString(@"CONVERSATION_SETTINGS", "title for conversation settings screen");
     self.headerView = headerView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);
 
@@ -1387,7 +1388,7 @@ typedef enum : NSUInteger {
                                                     action:@selector(startAudioCall)];
                 audioCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
                 audioCallButton.accessibilityLabel
-                    = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
+                    = NSLocalizedString(@"AUDIO_CALL_LABEL", "Accessibility label for placing an audio call");
                 [barButtons addObject:audioCallButton];
 
                 UIBarButtonItem *videoCallButton =
@@ -1397,7 +1398,7 @@ typedef enum : NSUInteger {
                                                     action:@selector(startVideoCall)];
                 videoCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
                 videoCallButton.accessibilityLabel
-                    = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
+                    = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
                 [barButtons addObject:videoCallButton];
             }
 
