@@ -1425,11 +1425,24 @@ typedef enum : NSUInteger {
     NSString *hairSpace = @"\u200a";
 
     BOOL isMuted = self.thread.isMuted;
-    if (isMuted) {
-        [subtitleText appendTemplatedImageNamed:@"bell-disabled-outline-24" font:subtitleFont];
+    BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
+    BOOL isVerified = YES;
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address] != OWSVerificationStateVerified) {
+            isVerified = NO;
+            break;
+        }
     }
 
-    BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
+    if (isMuted) {
+        [subtitleText appendTemplatedImageNamed:@"bell-disabled-outline-24" font:subtitleFont];
+        if (!isVerified) {
+            [subtitleText append:hairSpace attributes:attributes];
+            [subtitleText append:NSLocalizedString(@"MUTED_BADGE", @"Badge indicating that the user is muted.")
+                      attributes:attributes];
+        }
+    }
+
     if (hasTimer) {
         if (isMuted) {
             [subtitleText append:@" " attributes:attributes];
@@ -1442,14 +1455,6 @@ typedef enum : NSUInteger {
                   attributes:attributes];
     }
 
-
-    BOOL isVerified = YES;
-    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address] != OWSVerificationStateVerified) {
-            isVerified = NO;
-            break;
-        }
-    }
     if (isVerified) {
         if (hasTimer || isMuted) {
             [subtitleText append:@" " attributes:attributes];
