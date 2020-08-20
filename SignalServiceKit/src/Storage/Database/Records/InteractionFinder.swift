@@ -1068,7 +1068,8 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     func sortIndex(interactionUniqueId: String, transaction: GRDBReadTransaction) throws -> UInt? {
-        return try UInt.fetchOne(transaction.database,
+        return try Bench(title: "InteractionFinder.sortIndex") {
+            return try UInt.fetchOne(transaction.database,
                                  sql: """
             SELECT sortIndex
             FROM (
@@ -1082,6 +1083,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             WHERE \(interactionColumn: .uniqueId) = ?
             """,
             arguments: [threadUniqueId, interactionUniqueId])
+        }
     }
 
     func count(transaction: GRDBReadTransaction) -> UInt {

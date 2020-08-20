@@ -3988,6 +3988,10 @@ typedef enum : NSUInteger {
 
 - (void)scrollUpdateTimerDidFire
 {
+    if (!self.viewHasEverAppeared) {
+        return;
+    }
+
     [self autoLoadMoreIfNecessary];
     [self saveLastVisibleSortIdAndOnScreenPercentage];
 }

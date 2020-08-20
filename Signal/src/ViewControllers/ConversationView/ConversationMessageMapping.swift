@@ -133,6 +133,13 @@ public class ConversationMessageMapping: NSObject {
 
     @discardableResult
     private func ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
+        return try Bench(title: "ConversationMessageMapping.ensureLoaded") {
+            return try _ensureLoaded(direction, count: count, transaction: transaction)
+        }
+    }
+
+    @discardableResult
+    private func _ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
         let conversationSize = interactionFinder.count(transaction: transaction)
 
         let getDistanceFromEnd = { (interactionUniqueId: String) throws -> Int in
