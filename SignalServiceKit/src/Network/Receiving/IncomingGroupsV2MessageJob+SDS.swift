@@ -33,6 +33,7 @@ public struct IncomingGroupsV2MessageJobRecord: SDSRecord {
     public let plaintextData: Data?
     public let wasReceivedByUD: Bool
     public let groupId: Data?
+    public let serverDeliveryTimestamp: UInt64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -43,6 +44,7 @@ public struct IncomingGroupsV2MessageJobRecord: SDSRecord {
         case plaintextData
         case wasReceivedByUD
         case groupId
+        case serverDeliveryTimestamp
     }
 
     public static func columnName(_ column: IncomingGroupsV2MessageJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -74,6 +76,7 @@ public extension IncomingGroupsV2MessageJobRecord {
         plaintextData = row[5]
         wasReceivedByUD = row[6]
         groupId = row[7]
+        serverDeliveryTimestamp = row[8]
     }
 }
 
@@ -110,6 +113,7 @@ extension IncomingGroupsV2MessageJob {
             let envelopeData: Data = record.envelopeData
             let groupId: Data? = SDSDeserialization.optionalData(record.groupId, name: "groupId")
             let plaintextData: Data? = SDSDeserialization.optionalData(record.plaintextData, name: "plaintextData")
+            let serverDeliveryTimestamp: UInt64 = record.serverDeliveryTimestamp
             let wasReceivedByUD: Bool = record.wasReceivedByUD
 
             return IncomingGroupsV2MessageJob(grdbId: recordId,
@@ -118,6 +122,7 @@ extension IncomingGroupsV2MessageJob {
                                               envelopeData: envelopeData,
                                               groupId: groupId,
                                               plaintextData: plaintextData,
+                                              serverDeliveryTimestamp: serverDeliveryTimestamp,
                                               wasReceivedByUD: wasReceivedByUD)
 
         default:
@@ -173,6 +178,7 @@ extension IncomingGroupsV2MessageJob: DeepCopyable {
             let envelopeData: Data = modelToCopy.envelopeData
             let groupId: Data? = modelToCopy.groupId
             let plaintextData: Data? = modelToCopy.plaintextData
+            let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
 
             return IncomingGroupsV2MessageJob(grdbId: id,
@@ -181,6 +187,7 @@ extension IncomingGroupsV2MessageJob: DeepCopyable {
                                               envelopeData: envelopeData,
                                               groupId: groupId,
                                               plaintextData: plaintextData,
+                                              serverDeliveryTimestamp: serverDeliveryTimestamp,
                                               wasReceivedByUD: wasReceivedByUD)
         }
 
@@ -202,6 +209,7 @@ extension IncomingGroupsV2MessageJobSerializer {
     static let plaintextDataColumn = SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true)
     static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int)
     static let groupIdColumn = SDSColumnMetadata(columnName: "groupId", columnType: .blob, isOptional: true)
+    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -215,7 +223,8 @@ extension IncomingGroupsV2MessageJobSerializer {
         envelopeDataColumn,
         plaintextDataColumn,
         wasReceivedByUDColumn,
-        groupIdColumn
+        groupIdColumn,
+        serverDeliveryTimestampColumn
         ])
 }
 
@@ -632,8 +641,9 @@ class IncomingGroupsV2MessageJobSerializer: SDSSerializer {
         let plaintextData: Data? = model.plaintextData
         let wasReceivedByUD: Bool = model.wasReceivedByUD
         let groupId: Data? = model.groupId
+        let serverDeliveryTimestamp: UInt64 = model.serverDeliveryTimestamp
 
-        return IncomingGroupsV2MessageJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, groupId: groupId)
+        return IncomingGroupsV2MessageJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, groupId: groupId, serverDeliveryTimestamp: serverDeliveryTimestamp)
     }
 }
 

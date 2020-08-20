@@ -83,6 +83,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addMentions
         case addMentionNotificationMode
         case addOfferTypeToCalls
+        case addServerDeliveryTimestamp
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -800,6 +801,34 @@ public class GRDBSchemaMigrator: NSObject {
 
                 // Backfill all existing calls as "audio" calls.
                 try db.execute(sql: "UPDATE model_TSInteraction SET offerType = 0 WHERE recordType IS \(SDSRecordType.call.rawValue)")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addServerDeliveryTimestamp.rawValue) { db in
+            do {
+                try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
+                    table.add(column: "serverDeliveryTimestamp", .integer).notNull().defaults(to: 0)
+                }
+
+                try db.alter(table: "model_OWSMessageContentJob") { (table: TableAlteration) -> Void in
+                    table.add(column: "serverDeliveryTimestamp", .integer).notNull().defaults(to: 0)
+                }
+
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "serverDeliveryTimestamp", .integer)
+                }
+
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "serverDeliveryTimestamp", .integer)
+                }
+
+                // Backfill all incoming messages with "0" as their timestamp
+                try db.execute(sql: "UPDATE model_TSInteraction SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.incomingMessage.rawValue)")
+
+                // Backfill all jobs with "0" as their timestamp
+                try db.execute(sql: "UPDATE model_SSKJobRecord SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.messageDecryptJobRecord.rawValue)")
             } catch {
                 owsFail("Error: \(error)")
             }

@@ -9,12 +9,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SSKMessageDecryptJobRecord : SSKJobRecord
 
 @property (nonatomic, readonly, nullable) NSData *envelopeData;
+@property (nonatomic, readonly) uint64_t serverDeliveryTimestamp;
 
 - (instancetype)initWithLabel:(NSString *)label NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithEnvelopeData:(NSData *)message label:(NSString *)label NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEnvelopeData:(NSData *)message
+             serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                               label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
@@ -36,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                     envelopeData:(nullable NSData *)envelopeData
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:envelopeData:));
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:envelopeData:serverDeliveryTimestamp:));
 
 // clang-format on
 

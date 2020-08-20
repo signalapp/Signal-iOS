@@ -385,7 +385,18 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Received an incoming call Offer from call initiator.
      */
-    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String?, opaque: Data?, sentAtTimestamp: UInt64, callType: SSKProtoCallMessageOfferType, supportsMultiRing: Bool) {
+    public func handleReceivedOffer(
+        thread: TSContactThread,
+        callId: UInt64,
+        sourceDevice: UInt32,
+        sdp: String?,
+        opaque: Data?,
+        sentAtTimestamp: UInt64,
+        serverReceivedTimestamp: UInt64,
+        serverDeliveryTimestamp: UInt64,
+        callType: SSKProtoCallMessageOfferType,
+        supportsMultiRing: Bool
+    ) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
@@ -508,8 +519,13 @@ extension SignalCall: CallManagerCallReference { }
 
         newCall.backgroundTask = backgroundTask
 
-        // TODO - Need to calculate the "message age" when ready
-        let messageAgeSec: UInt64 = 0
+        let messageAgeSec: UInt64
+        if serverReceivedTimestamp > 0 && serverDeliveryTimestamp > 0 {
+            messageAgeSec = max(serverDeliveryTimestamp - serverReceivedTimestamp, 0) / 1000
+        } else {
+            owsFailDebug("Unable to calculate age for call offer")
+            messageAgeSec = 0
+        }
 
         // Get the current local device Id, must be valid for lifetime of the call.
         let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()

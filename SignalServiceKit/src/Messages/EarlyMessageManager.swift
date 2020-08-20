@@ -15,6 +15,7 @@ public class EarlyMessageManager: NSObject {
         let envelope: SSKProtoEnvelope
         let plainTextData: Data?
         let wasReceivedByUD: Bool
+        let serverDeliveryTimestamp: UInt64
     }
 
     private enum EarlyReceipt {
@@ -66,6 +67,7 @@ public class EarlyMessageManager: NSObject {
         _ envelope: SSKProtoEnvelope,
         plainTextData: Data?,
         wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
     ) {
@@ -82,7 +84,12 @@ public class EarlyMessageManager: NSObject {
                 owsFailDebug("Dropping early envelope \(droppedEarlyEnvelope.envelope.timestamp) for message \(identifier) due to excessive early envelopes.")
             }
 
-            envelopes.append(EarlyEnvelope(envelope: envelope, plainTextData: plainTextData, wasReceivedByUD: wasReceivedByUD))
+            envelopes.append(EarlyEnvelope(
+                envelope: envelope,
+                plainTextData: plainTextData,
+                wasReceivedByUD: wasReceivedByUD,
+                serverDeliveryTimestamp: serverDeliveryTimestamp
+            ))
             pendingEnvelopes[identifier] = envelopes
 
             while pendingEnvelopes.count >= Self.maxQueuedMessages, let droppedEarlyIdentifier = pendingEnvelopes.orderedKeys.first {
@@ -212,6 +219,7 @@ public class EarlyMessageManager: NSObject {
                 earlyEnvelope.envelope,
                 plaintextData: earlyEnvelope.plainTextData,
                 wasReceivedByUD: earlyEnvelope.wasReceivedByUD,
+                serverDeliveryTimestamp: earlyEnvelope.serverDeliveryTimestamp,
                 transaction: transaction
             )
         }

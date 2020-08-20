@@ -64,6 +64,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _sourceDeviceId = incomingMessageBuilder.sourceDeviceId;
     _read = NO;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;
+    _serverDeliveryTimestamp = incomingMessageBuilder.serverDeliveryTimestamp;
     _wasReceivedByUD = incomingMessageBuilder.wasReceivedByUD;
 
     _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
@@ -100,6 +101,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
                             read:(BOOL)read
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                  wasReceivedByUD:(BOOL)wasReceivedByUD
@@ -132,6 +134,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _authorPhoneNumber = authorPhoneNumber;
     _authorUUID = authorUUID;
     _read = read;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
     _wasReceivedByUD = wasReceivedByUD;

@@ -32,6 +32,7 @@ public struct MessageContentJobRecord: SDSRecord {
     public let envelopeData: Data
     public let plaintextData: Data?
     public let wasReceivedByUD: Bool
+    public let serverDeliveryTimestamp: UInt64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -41,6 +42,7 @@ public struct MessageContentJobRecord: SDSRecord {
         case envelopeData
         case plaintextData
         case wasReceivedByUD
+        case serverDeliveryTimestamp
     }
 
     public static func columnName(_ column: MessageContentJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -71,6 +73,7 @@ public extension MessageContentJobRecord {
         envelopeData = row[4]
         plaintextData = row[5]
         wasReceivedByUD = row[6]
+        serverDeliveryTimestamp = row[7]
     }
 }
 
@@ -106,6 +109,7 @@ extension OWSMessageContentJob {
             let createdAt: Date = SDSDeserialization.requiredDoubleAsDate(createdAtInterval, name: "createdAt")
             let envelopeData: Data = record.envelopeData
             let plaintextData: Data? = SDSDeserialization.optionalData(record.plaintextData, name: "plaintextData")
+            let serverDeliveryTimestamp: UInt64 = record.serverDeliveryTimestamp
             let wasReceivedByUD: Bool = record.wasReceivedByUD
 
             return OWSMessageContentJob(grdbId: recordId,
@@ -113,6 +117,7 @@ extension OWSMessageContentJob {
                                         createdAt: createdAt,
                                         envelopeData: envelopeData,
                                         plaintextData: plaintextData,
+                                        serverDeliveryTimestamp: serverDeliveryTimestamp,
                                         wasReceivedByUD: wasReceivedByUD)
 
         default:
@@ -167,6 +172,7 @@ extension OWSMessageContentJob: DeepCopyable {
             let createdAt: Date = modelToCopy.createdAt
             let envelopeData: Data = modelToCopy.envelopeData
             let plaintextData: Data? = modelToCopy.plaintextData
+            let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
 
             return OWSMessageContentJob(grdbId: id,
@@ -174,6 +180,7 @@ extension OWSMessageContentJob: DeepCopyable {
                                         createdAt: createdAt,
                                         envelopeData: envelopeData,
                                         plaintextData: plaintextData,
+                                        serverDeliveryTimestamp: serverDeliveryTimestamp,
                                         wasReceivedByUD: wasReceivedByUD)
         }
 
@@ -194,6 +201,7 @@ extension OWSMessageContentJobSerializer {
     static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob)
     static let plaintextDataColumn = SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true)
     static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int)
+    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -206,7 +214,8 @@ extension OWSMessageContentJobSerializer {
         createdAtColumn,
         envelopeDataColumn,
         plaintextDataColumn,
-        wasReceivedByUDColumn
+        wasReceivedByUDColumn,
+        serverDeliveryTimestampColumn
         ])
 }
 
@@ -622,8 +631,9 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         let envelopeData: Data = model.envelopeData
         let plaintextData: Data? = model.plaintextData
         let wasReceivedByUD: Bool = model.wasReceivedByUD
+        let serverDeliveryTimestamp: UInt64 = model.serverDeliveryTimestamp
 
-        return MessageContentJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
+        return MessageContentJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, serverDeliveryTimestamp: serverDeliveryTimestamp)
     }
 }
 

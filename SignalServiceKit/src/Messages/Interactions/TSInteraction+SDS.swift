@@ -81,6 +81,7 @@ public struct InteractionRecord: SDSRecord {
     public let wasRemotelyDeleted: Bool?
     public let bodyRanges: Data?
     public let offerType: TSRecentCallOfferType?
+    public let serverDeliveryTimestamp: UInt64?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -139,6 +140,7 @@ public struct InteractionRecord: SDSRecord {
         case wasRemotelyDeleted
         case bodyRanges
         case offerType
+        case serverDeliveryTimestamp
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -218,6 +220,7 @@ public extension InteractionRecord {
         wasRemotelyDeleted = row[53]
         bodyRanges = row[54]
         offerType = row[55]
+        serverDeliveryTimestamp = row[56]
     }
 }
 
@@ -754,6 +757,7 @@ extension TSInteraction {
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
             let serverTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.serverTimestamp, name: "serverTimestamp", conversion: { NSNumber(value: $0) })
             let sourceDeviceId: UInt32 = try SDSDeserialization.required(record.sourceDeviceId, name: "sourceDeviceId")
             let wasReceivedByUD: Bool = try SDSDeserialization.required(record.wasReceivedByUD, name: "wasReceivedByUD")
@@ -781,6 +785,7 @@ extension TSInteraction {
                                      authorPhoneNumber: authorPhoneNumber,
                                      authorUUID: authorUUID,
                                      read: read,
+                                     serverDeliveryTimestamp: serverDeliveryTimestamp,
                                      serverTimestamp: serverTimestamp,
                                      sourceDeviceId: sourceDeviceId,
                                      wasReceivedByUD: wasReceivedByUD)
@@ -2395,6 +2400,7 @@ extension TSInteraction: DeepCopyable {
             let authorPhoneNumber: String? = modelToCopy.authorPhoneNumber
             let authorUUID: String? = modelToCopy.authorUUID
             let read: Bool = modelToCopy.wasRead
+            let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let serverTimestamp: NSNumber? = modelToCopy.serverTimestamp
             let sourceDeviceId: UInt32 = modelToCopy.sourceDeviceId
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
@@ -2422,6 +2428,7 @@ extension TSInteraction: DeepCopyable {
                                      authorPhoneNumber: authorPhoneNumber,
                                      authorUUID: authorUUID,
                                      read: read,
+                                     serverDeliveryTimestamp: serverDeliveryTimestamp,
                                      serverTimestamp: serverTimestamp,
                                      sourceDeviceId: sourceDeviceId,
                                      wasReceivedByUD: wasReceivedByUD)
@@ -3268,6 +3275,7 @@ extension TSInteractionSerializer {
     static let wasRemotelyDeletedColumn = SDSColumnMetadata(columnName: "wasRemotelyDeleted", columnType: .int, isOptional: true)
     static let bodyRangesColumn = SDSColumnMetadata(columnName: "bodyRanges", columnType: .blob, isOptional: true)
     static let offerTypeColumn = SDSColumnMetadata(columnName: "offerType", columnType: .int, isOptional: true)
+    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -3329,7 +3337,8 @@ extension TSInteractionSerializer {
         infoMessageUserInfoColumn,
         wasRemotelyDeletedColumn,
         bodyRangesColumn,
-        offerTypeColumn
+        offerTypeColumn,
+        serverDeliveryTimestampColumn
         ])
 }
 
@@ -3812,8 +3821,9 @@ class TSInteractionSerializer: SDSSerializer {
         let wasRemotelyDeleted: Bool? = nil
         let bodyRanges: Data? = nil
         let offerType: TSRecentCallOfferType? = nil
+        let serverDeliveryTimestamp: UInt64? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp)
     }
 }
 

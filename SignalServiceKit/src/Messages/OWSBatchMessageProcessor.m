@@ -32,6 +32,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData
                      wasReceivedByUD:(BOOL)wasReceivedByUD
+             serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     OWSAssertDebug(envelopeData);
 
@@ -43,6 +44,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     _envelopeData = envelopeData;
     _plaintextData = plaintextData;
     _wasReceivedByUD = wasReceivedByUD;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _createdAt = [NSDate new];
 
     return self;
@@ -59,6 +61,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
                    plaintextData:(nullable NSData *)plaintextData
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     self = [super initWithGrdbId:grdbId
@@ -71,6 +74,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     _createdAt = createdAt;
     _envelopeData = envelopeData;
     _plaintextData = plaintextData;
+    _serverDeliveryTimestamp = serverDeliveryTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
 
     return self;
@@ -220,6 +224,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
             wasReceivedByUD:(BOOL)wasReceivedByUD
+    serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(envelopeData);
@@ -229,6 +234,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     [self.finder addJobWithEnvelopeData:envelopeData
                           plaintextData:plaintextData
                         wasReceivedByUD:wasReceivedByUD
+                serverDeliveryTimestamp:serverDeliveryTimestamp
                             transaction:transaction];
 }
 
@@ -343,11 +349,13 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
                                                      plaintextData:job.plaintextData
                                                           envelope:envelope
                                                    wasReceivedByUD:job.wasReceivedByUD
+                                           serverDeliveryTimestamp:job.serverDeliveryTimestamp
                                                        transaction:transaction];
         } else {
             if (![self.messageManager processEnvelope:envelope
                                         plaintextData:job.plaintextData
                                       wasReceivedByUD:job.wasReceivedByUD
+                              serverDeliveryTimestamp:job.serverDeliveryTimestamp
                                           transaction:transaction]) {
                 reportFailure(transaction);
             }
@@ -408,6 +416,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
             wasReceivedByUD:(BOOL)wasReceivedByUD
+    serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (envelopeData.length < 1) {
@@ -420,6 +429,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     [self.processingQueue enqueueEnvelopeData:envelopeData
                                 plaintextData:plaintextData
                               wasReceivedByUD:wasReceivedByUD
+                      serverDeliveryTimestamp:serverDeliveryTimestamp
                                   transaction:transaction];
 
     // The new envelope won't be visible to the finder until this transaction commits,

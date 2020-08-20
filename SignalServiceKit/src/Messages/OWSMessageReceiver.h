@@ -18,6 +18,7 @@ extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueu
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) NSData *envelopeData;
 @property (nonatomic, readonly, nullable) SSKProtoEnvelope *envelopeProto;
+@property (nonatomic, readonly) uint64_t serverDeliveryTimestamp;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -25,7 +26,8 @@ extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueu
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
-- (instancetype)initWithEnvelopeData:(NSData *)envelopeData NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEnvelopeData:(NSData *)envelopeData
+             serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -37,7 +39,8 @@ extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueu
                       uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:));
+         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:serverDeliveryTimestamp:));
 
 // clang-format on
 
@@ -55,7 +58,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeD
 - (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 #ifdef DEBUG
-- (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)addJobForEnvelopeData:(NSData *)envelopeData
+      serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                  transaction:(SDSAnyWriteTransaction *)transaction;
 #endif
 
 @end
@@ -73,7 +78,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeD
 + (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
 
-- (void)handleReceivedEnvelopeData:(NSData *)envelopeData;
+- (void)handleReceivedEnvelopeData:(NSData *)envelopeData serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp;
 
 - (BOOL)hasPendingJobsWithTransaction:(SDSAnyReadTransaction *)transaction;
 

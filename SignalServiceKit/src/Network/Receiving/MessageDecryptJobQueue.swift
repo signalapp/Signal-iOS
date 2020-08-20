@@ -27,16 +27,16 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
 
     // MARK: 
 
-    @objc(enqueueEnvelopeData:)
-    public func add(envelopeData: Data) {
+    @objc(enqueueEnvelopeData:serverDeliveryTimestamp:)
+    public func add(envelopeData: Data, serverDeliveryTimestamp: UInt64) {
         databaseStorage.write { transaction in
-            self.add(envelopeData: envelopeData, transaction: transaction)
+            self.add(envelopeData: envelopeData, serverDeliveryTimestamp: serverDeliveryTimestamp, transaction: transaction)
         }
     }
 
-    @objc(enqueueEnvelopeData:transaction:)
-    public func add(envelopeData: Data, transaction: SDSAnyWriteTransaction) {
-        let jobRecord = SSKMessageDecryptJobRecord(envelopeData: envelopeData, label: jobRecordLabel)
+    @objc(enqueueEnvelopeData:serverDeliveryTimestamp:transaction:)
+    public func add(envelopeData: Data, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {
+        let jobRecord = SSKMessageDecryptJobRecord(envelopeData: envelopeData, serverDeliveryTimestamp: serverDeliveryTimestamp, label: jobRecordLabel)
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
@@ -184,6 +184,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
                                                 self.batchMessageProcessor.enqueueEnvelopeData(result.envelopeData,
                                                                                                plaintextData: result.plaintextData,
                                                                                                wasReceivedByUD: wasReceivedByUD,
+                                                                                               serverDeliveryTimestamp: self.jobRecord.serverDeliveryTimestamp,
                                                                                                transaction: transaction)
                                                 DispatchQueue.global().async {
                                                     self.reportSuccess()

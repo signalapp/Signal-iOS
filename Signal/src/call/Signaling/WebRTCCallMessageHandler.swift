@@ -34,7 +34,15 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Call Handlers
 
-    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice: UInt32, sentAtTimestamp: UInt64, supportsMultiRing: Bool) {
+    public func receivedOffer(
+        _ offer: SSKProtoCallMessageOffer,
+        from caller: SignalServiceAddress,
+        sourceDevice: UInt32,
+        sentAtTimestamp: UInt64,
+        serverReceivedTimestamp: UInt64,
+        serverDeliveryTimestamp: UInt64,
+        supportsMultiRing: Bool
+    ) {
         AssertIsOnMainThread()
 
         let callType: SSKProtoCallMessageOfferType
@@ -46,7 +54,18 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         }
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sourceDevice: sourceDevice, sdp: offer.sdp, opaque: offer.opaque, sentAtTimestamp: sentAtTimestamp, callType: callType, supportsMultiRing: supportsMultiRing)
+        self.callService.handleReceivedOffer(
+            thread: thread,
+            callId: offer.id,
+            sourceDevice: sourceDevice,
+            sdp: offer.sdp,
+            opaque: offer.opaque,
+            sentAtTimestamp: sentAtTimestamp,
+            serverReceivedTimestamp: serverReceivedTimestamp,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            callType: callType,
+            supportsMultiRing: supportsMultiRing
+        )
     }
 
     public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32, supportsMultiRing: Bool) {

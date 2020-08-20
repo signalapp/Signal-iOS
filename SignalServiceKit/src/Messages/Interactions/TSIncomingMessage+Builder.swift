@@ -17,6 +17,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public var serverTimestamp: NSNumber?
     @objc
+    public var serverDeliveryTimestamp: UInt64 = 0
+    @objc
     public var wasReceivedByUD = false
 
     public required init(thread: TSThread,
@@ -32,6 +34,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          linkPreview: OWSLinkPreview? = nil,
                          messageSticker: MessageSticker? = nil,
                          serverTimestamp: NSNumber? = nil,
+                         serverDeliveryTimestamp: UInt64 = 0,
                          wasReceivedByUD: Bool = false,
                          isViewOnceMessage: Bool = false) {
 
@@ -53,6 +56,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         self.authorAddress = authorAddress
         self.sourceDeviceId = sourceDeviceId
         self.serverTimestamp = serverTimestamp
+        self.serverDeliveryTimestamp = serverDeliveryTimestamp
         self.wasReceivedByUD = wasReceivedByUD
     }
 
@@ -85,6 +89,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               linkPreview: OWSLinkPreview?,
                               messageSticker: MessageSticker?,
                               serverTimestamp: NSNumber?,
+                              serverDeliveryTimestamp: UInt64,
                               wasReceivedByUD: Bool,
                               isViewOnceMessage: Bool) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
@@ -100,6 +105,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         linkPreview: linkPreview,
                                         messageSticker: messageSticker,
                                         serverTimestamp: serverTimestamp,
+                                        serverDeliveryTimestamp: serverDeliveryTimestamp,
                                         wasReceivedByUD: wasReceivedByUD,
                                         isViewOnceMessage: isViewOnceMessage)
     }

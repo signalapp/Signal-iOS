@@ -11,10 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSFakeCallMessageHandler
 
 - (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
-           fromCaller:(SignalServiceAddress *)caller
-         sourceDevice:(uint32_t)device
-      sentAtTimestamp:(uint64_t)sentAtTimestamp
-    supportsMultiRing:(BOOL)supportsMultiRing
+                 fromCaller:(SignalServiceAddress *)caller
+               sourceDevice:(uint32_t)device
+            sentAtTimestamp:(uint64_t)sentAtTimestamp
+    serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
+    serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+          supportsMultiRing:(BOOL)supportsMultiRing
 {
     OWSLogInfo(@"");
 }

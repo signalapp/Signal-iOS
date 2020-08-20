@@ -506,8 +506,8 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // TODO: Generate real envelope data.
     if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-        [[[OWSMessageDecryptJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]]
-            anyInsertWithTransaction:transaction];
+        [[[OWSMessageDecryptJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
+                                    serverDeliveryTimestamp:0] anyInsertWithTransaction:transaction];
     }
 
     // OWSMessageContentJob
@@ -515,7 +515,8 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: Generate real envelope data.
     [[[OWSMessageContentJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
                                           plaintextData:nil
-                                        wasReceivedByUD:NO] anyInsertWithTransaction:transaction];
+                                        wasReceivedByUD:NO
+                                serverDeliveryTimestamp:0] anyInsertWithTransaction:transaction];
 
     // TSAttachment
     [[[TSAttachmentPointer alloc] initWithServerId:12345
@@ -586,6 +587,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // NOTE: We insert every kind of job record.
     [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
+                                      serverDeliveryTimestamp:0
                                                         label:SSKMessageDecryptJobQueue.jobRecordLabel]
         anyInsertWithTransaction:transaction];
     TSOutgoingMessage *queuedMessage = [[TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread

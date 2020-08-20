@@ -187,12 +187,15 @@ public class MessageFetcherJob: NSObject {
 
         return firstly {
             fetchBatchViaRest()
-        }.then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
+        }.then { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
             for envelope in envelopes {
                 Logger.info("received envelope.")
                 do {
                     let envelopeData = try envelope.serializedData()
-                    self.messageReceiver.handleReceivedEnvelopeData(envelopeData)
+                    self.messageReceiver.handleReceivedEnvelopeData(
+                        envelopeData,
+                        serverDeliveryTimestamp: serverDeliveryTimestamp
+                    )
                 } catch {
                     owsFailDebug("failed to serialize envelope")
                 }
@@ -308,18 +311,24 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private class func fetchBatchViaRest() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
+    private class func fetchBatchViaRest() -> Promise<(envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool)> {
         return Promise { resolver in
             let request = OWSRequestFactory.getMessagesRequest()
             self.networkManager.makeRequest(
                 request,
-                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
+                success: { task, responseObject -> Void in
+                    guard let httpResponse = task.response as? HTTPURLResponse,
+                        let timestampString = httpResponse.allHeaderFields["x-signal-timestamp"] as? String,
+                        let serverDeliveryTimestamp = UInt64(timestampString) else {
+                            return resolver.reject(OWSAssertionError("Unable to parse server delivery timestamp."))
+                    }
+
                     guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
                         Logger.error("response object had unexpected content")
                         return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
                     }
 
-                    resolver.fulfill((envelopes: envelopes, more: more))
+                    resolver.fulfill((envelopes: envelopes, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more))
                 },
                 failure: { (_: URLSessionDataTask?, error: Error?) in
                     guard let error = error else {
