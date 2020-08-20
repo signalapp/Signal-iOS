@@ -55,22 +55,8 @@ fileprivate extension OWSUpload {
         signalService.cdnSessionManager(forCdnNumber: 0)
     }
 
-    // Used for other services like Google.
-    static func googleJSONSessionManager() -> AFHTTPSessionManager {
-        let sessionManager = AFHTTPSessionManager(baseURL: nil, sessionConfiguration: .ephemeral)
-        sessionManager.requestSerializer = AFJSONRequestSerializer()
-        sessionManager.responseSerializer = AFJSONResponseSerializer()
-        return sessionManager
-    }
-
     static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSession {
         signalService.cdnURLSession(forCdnNumber: cdnNumber)
-    }
-
-    static var googleUrlSession: OWSURLSession {
-        OWSURLSession(baseUrl: nil,
-                      securityPolicy: OWSURLSession.defaultSecurityPolicy(),
-                      configuration: OWSURLSession.defaultURLSessionConfiguration())
     }
 }
 
