@@ -64,8 +64,14 @@ extension ConversationViewController {
             return scrollToBottom(animated: animated)
         }
 
+        guard let indexPath = conversationViewModel.indexPath(forInteractionId: lastVisibleInteraction.uniqueId) else {
+            owsFailDebug("No index path for interaction, scrolling to bottom")
+            scrollToBottom(animated: animated)
+            return
+        }
+
         scrollToInteraction(
-            uniqueId: lastVisibleInteraction.uniqueId,
+            indexPath: indexPath,
             onScreenPercentage: CGFloat(thread.lastVisibleSortIdOnScreenPercentage),
             position: .bottom,
             animated: animated
