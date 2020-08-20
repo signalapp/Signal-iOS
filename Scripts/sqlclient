@@ -1,23 +1,201 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
+import argparse
+import getpass
+import json
+import os
+import subprocess
+import sys
+import textwrap
 
-# e.g. put in whatever passphrase is actually being used
-PASSPHRASE="x'6d66c344496fdcc0165e6d3271bfbe1745eb5225aee52694d7cd412c1957a551cd8c069d53030b03f3827c82cfe60a46'"
+SIGNAL_BUNDLEID = "org.whispersystems.signal"
+SIGNAL_APPGROUP = "group.org.whispersystems.signal.group"
+SIGNAL_APPGROUP_STAGING = "group.org.whispersystems.signal.group.staging"
 
-BIN_NAME=$0
+SIGNAL_DEBUG_PAYLOAD_NAME = "dbPayload.txt"
+SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY = "dbPath"
+SIGNAL_DEBUG_PAYLOAD_PASSPHRASE_KEY = "key"
+SIGNAL_FALLBACK_DATABASE_PATH = "grdb/signal.sqlite"
 
-function usage() {
-    echo "$BIN_NAME <path-to-database>"
-    echo "e.g. $BIN_NAME /Home/Users/foo/Library/Simulator/blah/database/signal.sqlite"
-}
+quietMode=False
+def failWithError(string):
+    print("Error: " + string, file=sys.stderr)
+    exit(1)
 
-DB_PATH=$1
-if [ -z $DB_PATH ]
-then
-   usage
-   exit 1
-fi
-shift
+def printInfo(string = ""):
+    if quietMode == False:
+        print(string)
 
-sqlcipher -cmd "PRAGMA key = \"${PASSPHRASE}\";" \
-          -cmd "PRAGMA cipher_plaintext_header_size = 32;" \
-          $DB_PATH $@
+def runCommand(cmd):
+    result = subprocess.run(cmd.split(), text=True, capture_output=True)
+    if result.returncode != 0:
+        failWithError("Failed to run \"" + cmd + "\". Status: " + str(result.returncode) + "\n" + result.stderr)
+    return result.stdout
+
+
+class Simulator:
+    def __init__(self, searchString, useStaging):
+
+        # Get JSON list of simulators matching searchString
+        cmd = "xcrun simctl list -j devices " + searchString
+        resultString = runCommand(cmd)
+        simDict = json.loads(resultString)
+        devicesByRuntime = simDict["devices"]
+
+        # Parse all candidates
+        candidates = []
+        for runtime, devices in devicesByRuntime.items():
+            os = self.parseOSFromRuntime(runtime)
+            for device in devices:
+                udid = device.get("udid")
+                rawDevice = device.get("deviceTypeIdentifier")
+                name = device.get("name")
+                if udid != None:
+                    deviceType = self.parseDeviceTypeFromRaw(rawDevice)
+                    candidates.append({"os": os, "type": deviceType, "udid": udid, "name": name})
+
+        # Select a candidate
+        selectedCandidate = None
+
+        if len(candidates) == 0:
+            failWithError("Could not find a \"" + searchString + "\" simulator")
+        elif len(candidates) == 1:
+            selectedCandidate = candidates[0]
+        else:
+            if quietMode:
+                failWithError("Multiple simulator candidates. Interactive selection not supported in quiet mode")
+            for idx, candidate in enumerate(candidates):
+                printInfo("{}:\t{:40}\t{} {} ({})".format(idx, candidate["name"], candidate["type"], candidate["os"], candidate["udid"]))
+
+            while selectedCandidate == None:
+                try:
+                    idx = int(input("Select a simulator: "))
+                    selectedCandidate = candidates[idx]
+                except (ValueError, IndexError):
+                    pass
+
+        self.udid = selectedCandidate["udid"]
+        self.groupID = SIGNAL_APPGROUP_STAGING if useStaging else SIGNAL_APPGROUP
+        self.groupContainer = self.fetchGroupContainer(self.udid, self.groupID)
+        printInfo("Selected simulator: " + selectedCandidate["name"] + " (" + selectedCandidate["udid"] + ")")
+        printInfo("Using groupID: " + self.groupID)
+        printInfo()
+
+    def parseDebugPayload(self):
+        path = self.groupContainer + "/" + SIGNAL_DEBUG_PAYLOAD_NAME
+        try:
+            fd = open(path, 'r')
+            data = fd.read()
+            payload = json.loads(data)
+            return payload
+        except IOError:
+            return None
+
+    def databasePath(self):
+        debugPayload = self.parseDebugPayload()
+
+        if debugPayload and SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY in debugPayload:
+            payloadPath = debugPayload[SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY]
+            if os.path.isfile(payloadPath):
+                return payloadPath
+            else:
+                printInfo("Debug payload " + payloadPath[-50:] + " not found. Falling back the standard path.")
+
+        return (self.groupContainer + "/" + SIGNAL_FALLBACK_DATABASE_PATH)
+
+    def passphraseIfAvailable(self):
+        debugPayload = self.parseDebugPayload()
+        if debugPayload and SIGNAL_DEBUG_PAYLOAD_PASSPHRASE_KEY in debugPayload:
+            return debugPayload[SIGNAL_DEBUG_PAYLOAD_PASSPHRASE_KEY]
+        else:
+            return None
+
+    @staticmethod
+    def parseOSFromRuntime(runtime):
+        lastPeriodIdx = runtime.rfind('.')
+        hypenatedOS = runtime[lastPeriodIdx+1:]
+        return hypenatedOS.replace("-", ".")
+
+    @staticmethod
+    def parseDeviceTypeFromRaw(rawDevice):
+        lastPeriodIdx = rawDevice.rfind('.')
+        hypenatedOS = rawDevice[lastPeriodIdx+1:]
+        return hypenatedOS.replace("-", " ")
+
+    @staticmethod
+    def fetchGroupContainer(udid, groupID):
+        cmd = "xcrun simctl get_app_container {} {} {}".format(udid, SIGNAL_BUNDLEID, groupID)
+        result = runCommand(cmd)
+        return result.rstrip()
+
+def preparePassphrase(passphrase):
+    if len(passphrase) > 0 and passphrase[0] == 'x':
+        return passphrase
+    else:
+        return "x'" + passphrase + "'"
+
+
+parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent('''\
+                SQLCipher Command Line Interface
+
+                    If providing a simulatorID (or accepting the default "Booted" simulator), passphrase retrieval
+                    can be simplified by navigating to Signal Settings > Debug UI > Misc > Save plaintext database key.
+                    If a database key could not be found and one was not provided through an argument, you'll be prompted
+                    to enter one.
+
+                    Alternatively, you can provide a sqlcipher path directly via command line arguments. In this case,
+                    you'll be required to provide a database key through an argument or stdin.
+                '''),
+        usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase] [--quiet]")
+
+group = parser.add_mutually_exclusive_group()
+group.add_argument("--simulator", metavar="SIM", help="A string identifiying a simulator instance. (default: %(default)s).", default="booted")
+group.add_argument("--path", help="An sqlcipher path")
+parser.add_argument("--passphrase", metavar="PASS", help="The passphrase encrypting the database")
+parser.add_argument("--staging", action='store_true', help="If a simulator is being targeted, specifies that the staging database should be used")
+parser.add_argument("remainder", nargs=argparse.REMAINDER, metavar="--", help="All subsequent args will be interpreted as SQL. You probably want quotes here. Be careful with \"*\" since your shell will probably replace it.")
+parser.add_argument("--quiet", action='store_true', help="Suppress non-failing output")
+args = parser.parse_args()
+
+quietMode=args.quiet
+dbPath = None
+passphrase = None
+
+if args.path:
+    dbPath = args.path
+elif args.simulator:
+    target = Simulator(args.simulator, args.staging)
+    dbPath = target.databasePath()
+    passphrase = target.passphraseIfAvailable()
+
+if dbPath == None:
+    failWithError("No valid database path")
+elif os.path.isfile(dbPath) == False:
+    failWithError("Not valid path " + dbPath)
+
+if args.passphrase:
+    passphrase = args.passphrase
+if passphrase == None:
+    passphrase = getpass.getpass("Please enter the passphrase. Alternatively, set up a plaintext database key in Debug UI > Misc > Save plaintext database key. Then, rerun the command. ")
+
+if passphrase == None or len(passphrase) == 0:
+    failWithError("No valid sqlcipher passphrase")
+
+passphrase = preparePassphrase(passphrase)
+sqlArgs = args.remainder
+if len(sqlArgs) > 0 and sqlArgs[0] == "--":
+    sqlArgs.pop(0)
+sqlArgString = " ".join(sqlArgs)
+
+allArgs = [
+    "sqlcipher",
+    "-cmd", "PRAGMA key = \"" + passphrase + "\";",
+    "-cmd", "PRAGMA cipher_plaintext_header_size = 32;",
+    dbPath
+]
+if len(sqlArgString) > 0:
+    allArgs.append(sqlArgString)
+
+os.execvp("sqlcipher", allArgs)
+

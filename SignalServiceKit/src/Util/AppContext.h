@@ -13,6 +13,15 @@ static inline BOOL OWSIsDebugBuild()
 #endif
 }
 
+static inline BOOL OWSIsTestableBuild()
+{
+#ifdef TESTABLE_BUILD
+    return YES;
+#else
+    return NO;
+#endif
+}
+
 // These are fired whenever the corresponding "main app" or "app extension"
 // notification is fired.
 //

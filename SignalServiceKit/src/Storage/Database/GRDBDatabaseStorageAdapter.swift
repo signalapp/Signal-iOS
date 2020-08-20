@@ -160,6 +160,15 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
+    /// Fetches the GRDB key data from the keychain.
+    /// - Note: Will fatally assert if not running in a debug or test build.
+    /// - Returns: The key data, if available.
+    @objc
+    public static var debugOnly_keyData: Data? {
+        owsAssert(OWSIsTestableBuild())
+        return try? keyspec.fetchData()
+    }
+
     @objc
     public static func ensureDatabaseKeySpecExists(baseDir: URL) throws {
 
