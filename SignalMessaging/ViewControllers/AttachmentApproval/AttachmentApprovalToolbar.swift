@@ -69,7 +69,9 @@ class AttachmentApprovalToolbar: UIView {
         let backgroundView = UIView()
         backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
+        backgroundView.autoPinWidthToSuperview()
+        backgroundView.autoPinEdge(toSuperviewEdge: .top)
+        backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -30)
 
         currentCaptionLabel.textColor = UIColor(white: 1, alpha: 0.8)
         currentCaptionLabel.font = UIFont.ows_dynamicTypeBody
