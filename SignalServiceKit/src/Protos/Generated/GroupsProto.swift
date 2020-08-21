@@ -4795,3 +4795,523 @@ extension GroupsProtoGroupAttributeBlob.GroupsProtoGroupAttributeBlobBuilder {
 }
 
 #endif
+
+// MARK: - GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1
+
+public class GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1: NSObject, Codable {
+
+    // MARK: - GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder
+
+    public class func builder() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
+        return GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
+        let builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder()
+        if let _value = groupMasterKey {
+            builder.setGroupMasterKey(_value)
+        }
+        if let _value = inviteLinkPassword {
+            builder.setInviteLinkPassword(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder: NSObject {
+
+        private var proto = GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setGroupMasterKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.groupMasterKey = valueParam
+        }
+
+        public func setGroupMasterKey(_ valueParam: Data) {
+            proto.groupMasterKey = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setInviteLinkPassword(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.inviteLinkPassword = valueParam
+        }
+
+        public func setInviteLinkPassword(_ valueParam: Data) {
+            proto.inviteLinkPassword = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
+            return try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1
+
+    public var groupMasterKey: Data? {
+        guard hasGroupMasterKey else {
+            return nil
+        }
+        return proto.groupMasterKey
+    }
+    public var hasGroupMasterKey: Bool {
+        return !proto.groupMasterKey.isEmpty
+    }
+
+    public var inviteLinkPassword: Data? {
+        guard hasInviteLinkPassword else {
+            return nil
+        }
+        return proto.inviteLinkPassword
+    }
+    public var hasInviteLinkPassword: Bool {
+        return !proto.inviteLinkPassword.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public convenience init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1) throws {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupInviteLinkOneOfContents
+
+public enum GroupsProtoGroupInviteLinkOneOfContents: Equatable {
+    case v1contents(GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1)
+}
+
+private func GroupsProtoGroupInviteLinkOneOfContentsWrap(_ value: GroupsProtos_GroupInviteLink.OneOf_Contents) throws -> GroupsProtoGroupInviteLinkOneOfContents {
+    switch value {
+    case .v1contents(let value): return .v1contents(try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(value))
+    }
+}
+
+private func GroupsProtoGroupInviteLinkOneOfContentsUnwrap(_ value: GroupsProtoGroupInviteLinkOneOfContents) -> GroupsProtos_GroupInviteLink.OneOf_Contents {
+    switch value {
+    case .v1contents(let value): return .v1contents(value.proto)
+    }
+}
+
+// MARK: - GroupsProtoGroupInviteLink
+
+public class GroupsProtoGroupInviteLink: NSObject, Codable {
+
+    // MARK: - GroupsProtoGroupInviteLinkBuilder
+
+    public class func builder() -> GroupsProtoGroupInviteLinkBuilder {
+        return GroupsProtoGroupInviteLinkBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupInviteLinkBuilder {
+        let builder = GroupsProtoGroupInviteLinkBuilder()
+        if let _value = contents {
+            builder.setContents(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupInviteLinkBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupInviteLink()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setContents(_ valueParam: GroupsProtoGroupInviteLinkOneOfContents?) {
+            guard let valueParam = valueParam else { return }
+            proto.contents = GroupsProtoGroupInviteLinkOneOfContentsUnwrap(valueParam)
+        }
+
+        public func setContents(_ valueParam: GroupsProtoGroupInviteLinkOneOfContents) {
+            proto.contents = GroupsProtoGroupInviteLinkOneOfContentsUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> GroupsProtoGroupInviteLink {
+            return try GroupsProtoGroupInviteLink(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupInviteLink(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupInviteLink
+
+    public var contents: GroupsProtoGroupInviteLinkOneOfContents? {
+        guard hasContents else {
+            return nil
+        }
+        guard let contents = proto.contents else {
+            owsFailDebug("contents was unexpectedly nil")
+            return nil
+        }
+        guard let unwrappedContents = try? GroupsProtoGroupInviteLinkOneOfContentsWrap(contents) else {
+            owsFailDebug("failed to unwrap contents")
+            return nil
+        }
+        return unwrappedContents
+    }
+    public var hasContents: Bool {
+        return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupInviteLink) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public convenience init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupInviteLink(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: GroupsProtos_GroupInviteLink) throws {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupInviteLink -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupInviteLink -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupInviteLink {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupInviteLink.GroupsProtoGroupInviteLinkBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupInviteLink? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - GroupsProtoGroupJoinInfo
+
+public class GroupsProtoGroupJoinInfo: NSObject, Codable {
+
+    // MARK: - GroupsProtoGroupJoinInfoBuilder
+
+    public class func builder() -> GroupsProtoGroupJoinInfoBuilder {
+        return GroupsProtoGroupJoinInfoBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupJoinInfoBuilder {
+        let builder = GroupsProtoGroupJoinInfoBuilder()
+        if let _value = publicKey {
+            builder.setPublicKey(_value)
+        }
+        if let _value = title {
+            builder.setTitle(_value)
+        }
+        if let _value = avatar {
+            builder.setAvatar(_value)
+        }
+        if hasMemberCount {
+            builder.setMemberCount(memberCount)
+        }
+        if let _value = addFromInviteLink {
+            builder.setAddFromInviteLink(_value)
+        }
+        if hasRevision {
+            builder.setRevision(revision)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupJoinInfoBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupJoinInfo()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setPublicKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.publicKey = valueParam
+        }
+
+        public func setPublicKey(_ valueParam: Data) {
+            proto.publicKey = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setTitle(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.title = valueParam
+        }
+
+        public func setTitle(_ valueParam: Data) {
+            proto.title = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setAvatar(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.avatar = valueParam
+        }
+
+        public func setAvatar(_ valueParam: String) {
+            proto.avatar = valueParam
+        }
+
+        public func setMemberCount(_ valueParam: UInt32) {
+            proto.memberCount = valueParam
+        }
+
+        public func setAddFromInviteLink(_ valueParam: GroupsProtoAccessControlAccessRequired) {
+            proto.addFromInviteLink = GroupsProtoAccessControlAccessRequiredUnwrap(valueParam)
+        }
+
+        public func setRevision(_ valueParam: UInt32) {
+            proto.revision = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> GroupsProtoGroupJoinInfo {
+            return try GroupsProtoGroupJoinInfo(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupJoinInfo(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupJoinInfo
+
+    public var publicKey: Data? {
+        guard hasPublicKey else {
+            return nil
+        }
+        return proto.publicKey
+    }
+    public var hasPublicKey: Bool {
+        return !proto.publicKey.isEmpty
+    }
+
+    public var title: Data? {
+        guard hasTitle else {
+            return nil
+        }
+        return proto.title
+    }
+    public var hasTitle: Bool {
+        return !proto.title.isEmpty
+    }
+
+    public var avatar: String? {
+        guard hasAvatar else {
+            return nil
+        }
+        return proto.avatar
+    }
+    public var hasAvatar: Bool {
+        return !proto.avatar.isEmpty
+    }
+
+    public var memberCount: UInt32 {
+        return proto.memberCount
+    }
+    public var hasMemberCount: Bool {
+        return true
+    }
+
+    public var addFromInviteLink: GroupsProtoAccessControlAccessRequired? {
+        guard hasAddFromInviteLink else {
+            return nil
+        }
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLink)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedAddFromInviteLink: GroupsProtoAccessControlAccessRequired {
+        if !hasAddFromInviteLink {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: GroupJoinInfo.addFromInviteLink.")
+        }
+        return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLink)
+    }
+    public var hasAddFromInviteLink: Bool {
+        return true
+    }
+
+    public var revision: UInt32 {
+        return proto.revision
+    }
+    public var hasRevision: Bool {
+        return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupJoinInfo) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public convenience init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupJoinInfo(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: GroupsProtos_GroupJoinInfo) throws {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupJoinInfo -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupJoinInfo -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupJoinInfo {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupJoinInfo.GroupsProtoGroupJoinInfoBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupJoinInfo? {
+        return try! self.build()
+    }
+}
+
+#endif

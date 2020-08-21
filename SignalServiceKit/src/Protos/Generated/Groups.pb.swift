@@ -788,6 +788,74 @@ struct GroupsProtos_GroupAttributeBlob {
   init() {}
 }
 
+struct GroupsProtos_GroupInviteLink {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var contents: GroupsProtos_GroupInviteLink.OneOf_Contents?
+
+  var v1Contents: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1 {
+    get {
+      if case .v1Contents(let v)? = contents {return v}
+      return GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1()
+    }
+    set {contents = .v1Contents(newValue)}
+  }
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum OneOf_Contents: Equatable {
+    case v1Contents(GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1)
+
+  #if !swift(>=4.1)
+    static func ==(lhs: GroupsProtos_GroupInviteLink.OneOf_Contents, rhs: GroupsProtos_GroupInviteLink.OneOf_Contents) -> Bool {
+      switch (lhs, rhs) {
+      case (.v1Contents(let l), .v1Contents(let r)): return l == r
+      }
+    }
+  #endif
+  }
+
+  struct GroupInviteLinkContentsV1 {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var groupMasterKey: Data = SwiftProtobuf.Internal.emptyData
+
+    var inviteLinkPassword: Data = SwiftProtobuf.Internal.emptyData
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+  }
+
+  init() {}
+}
+
+struct GroupsProtos_GroupJoinInfo {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var publicKey: Data = SwiftProtobuf.Internal.emptyData
+
+  var title: Data = SwiftProtobuf.Internal.emptyData
+
+  var avatar: String = String()
+
+  var memberCount: UInt32 = 0
+
+  var addFromInviteLink: GroupsProtos_AccessControl.AccessRequired = .unknown
+
+  var revision: UInt32 = 0
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 private let _protobuf_package = "GroupsProtos"
@@ -2035,6 +2103,136 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
 
   static func ==(lhs: GroupsProtos_GroupAttributeBlob, rhs: GroupsProtos_GroupAttributeBlob) -> Bool {
     if lhs.content != rhs.content {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupInviteLink"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "v1Contents")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1:
+        var v: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1?
+        if let current = self.contents {
+          try decoder.handleConflictingOneOf()
+          if case .v1Contents(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {self.contents = .v1Contents(v)}
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if case .v1Contents(let v)? = self.contents {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupInviteLink, rhs: GroupsProtos_GroupInviteLink) -> Bool {
+    if lhs.contents != rhs.contents {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = GroupsProtos_GroupInviteLink.protoMessageName + ".GroupInviteLinkContentsV1"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "groupMasterKey"),
+    2: .same(proto: "inviteLinkPassword")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self.groupMasterKey)
+      case 2: try decoder.decodeSingularBytesField(value: &self.inviteLinkPassword)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.groupMasterKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.groupMasterKey, fieldNumber: 1)
+    }
+    if !self.inviteLinkPassword.isEmpty {
+      try visitor.visitSingularBytesField(value: self.inviteLinkPassword, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1, rhs: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1) -> Bool {
+    if lhs.groupMasterKey != rhs.groupMasterKey {return false}
+    if lhs.inviteLinkPassword != rhs.inviteLinkPassword {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupJoinInfo"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "publicKey"),
+    2: .same(proto: "title"),
+    3: .same(proto: "avatar"),
+    4: .same(proto: "memberCount"),
+    5: .same(proto: "addFromInviteLink"),
+    6: .same(proto: "revision")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self.publicKey)
+      case 2: try decoder.decodeSingularBytesField(value: &self.title)
+      case 3: try decoder.decodeSingularStringField(value: &self.avatar)
+      case 4: try decoder.decodeSingularUInt32Field(value: &self.memberCount)
+      case 5: try decoder.decodeSingularEnumField(value: &self.addFromInviteLink)
+      case 6: try decoder.decodeSingularUInt32Field(value: &self.revision)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.publicKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.publicKey, fieldNumber: 1)
+    }
+    if !self.title.isEmpty {
+      try visitor.visitSingularBytesField(value: self.title, fieldNumber: 2)
+    }
+    if !self.avatar.isEmpty {
+      try visitor.visitSingularStringField(value: self.avatar, fieldNumber: 3)
+    }
+    if self.memberCount != 0 {
+      try visitor.visitSingularUInt32Field(value: self.memberCount, fieldNumber: 4)
+    }
+    if self.addFromInviteLink != .unknown {
+      try visitor.visitSingularEnumField(value: self.addFromInviteLink, fieldNumber: 5)
+    }
+    if self.revision != 0 {
+      try visitor.visitSingularUInt32Field(value: self.revision, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupJoinInfo, rhs: GroupsProtos_GroupJoinInfo) -> Bool {
+    if lhs.publicKey != rhs.publicKey {return false}
+    if lhs.title != rhs.title {return false}
+    if lhs.avatar != rhs.avatar {return false}
+    if lhs.memberCount != rhs.memberCount {return false}
+    if lhs.addFromInviteLink != rhs.addFromInviteLink {return false}
+    if lhs.revision != rhs.revision {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
