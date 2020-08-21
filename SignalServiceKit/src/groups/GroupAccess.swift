@@ -12,23 +12,6 @@ public enum GroupV2Access: UInt, Codable {
     case administrator
     case unsatisfiable
 
-    var description: String {
-        get {
-            switch self {
-            case .unknown:
-                return "unknown"
-            case .any:
-                return "any"
-            case .member:
-                return "member"
-            case .administrator:
-                return "administrator"
-            case .unsatisfiable:
-                return "unsatisfiable"
-            }
-        }
-    }
-
     public static func access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
         switch value {
         case .member:
@@ -54,6 +37,27 @@ public enum GroupV2Access: UInt, Codable {
             return .unsatisfiable
         default:
             return .unknown
+        }
+    }
+}
+
+// MARK: -
+
+extension GroupV2Access: CustomStringConvertible {
+    public var description: String {
+        get {
+            switch self {
+            case .unknown:
+                return "unknown"
+            case .any:
+                return "any"
+            case .member:
+                return "member"
+            case .administrator:
+                return "administrator"
+            case .unsatisfiable:
+                return "unsatisfiable"
+            }
         }
     }
 }
@@ -117,5 +121,14 @@ public class GroupAccess: MTLModel {
 
     public override var debugDescription: String {
         return "[members: \(members), attributes: \(attributes), addFromInviteLink: \(addFromInviteLink), ]"
+    }
+}
+
+@objc
+public extension GroupAccess {
+    var canJoinFromInviteLink: Bool {
+        // TODO: Should this include .member?
+        (addFromInviteLink == .any ||
+            addFromInviteLink == .administrator)
     }
 }

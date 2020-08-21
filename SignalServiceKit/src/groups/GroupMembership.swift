@@ -75,16 +75,113 @@ class LegacyMemberState: MTLModel {
 
 // MARK: -
 
-@objc
-public enum GroupMemberType: UInt {
-    case fullMember = 0
-    case pendingProfileKey = 1
-    case pendingRequest = 2
+extension TSGroupMemberRole: Codable {}
+
+// MARK: -
+
+private enum GroupMemberState {
+    case fullMember(role: TSGroupMemberRole)
+    case pendingProfileKey(role: TSGroupMemberRole, addedByUuid: UUID)
+    // These members don't yet have any attributes.
+    // We'll add PendingRequestMemberState if they ever do.
+    case pendingRequest
+
+    var role: TSGroupMemberRole {
+        switch self {
+        case .fullMember(let role):
+            return role
+        case .pendingProfileKey(let role, _):
+            return role
+        case .pendingRequest:
+            return .`normal`
+        }
+    }
+
+    var isAdministrator: Bool {
+        role == .administrator
+    }
+
+    var isFullMember: Bool {
+        switch self {
+        case .fullMember:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isPendingProfileKey: Bool {
+        switch self {
+        case .pendingProfileKey:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isPendingRequest: Bool {
+        switch self {
+        case .pendingRequest:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 // MARK: -
 
-extension GroupMemberType: CustomStringConvertible {
+extension GroupMemberState: Codable {
+
+    private enum TypeKey: UInt, Codable {
+        case fullMember = 0
+        case pendingProfileKey = 1
+        case pendingRequest = 2
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case typeKey
+        case role
+        case addedByUuid
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        let typeKey = try container.decode(TypeKey.self, forKey: .typeKey)
+        switch typeKey {
+        case .fullMember:
+            let role = try container.decode(TSGroupMemberRole.self, forKey: .role)
+            self = .fullMember(role: role)
+        case .pendingProfileKey:
+            let role = try container.decode(TSGroupMemberRole.self, forKey: .role)
+            let addedByUuid = try container.decode(UUID.self, forKey: .addedByUuid)
+            self = .pendingProfileKey(role: role, addedByUuid: addedByUuid)
+        case .pendingRequest:
+            self = .pendingRequest
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        switch self {
+        case .fullMember(let role):
+            try container.encode(TypeKey.fullMember, forKey: .typeKey)
+            try container.encode(role, forKey: .role)
+        case .pendingProfileKey(let role, let addedByUuid):
+            try container.encode(TypeKey.pendingProfileKey, forKey: .typeKey)
+            try container.encode(role, forKey: .role)
+            try container.encode(addedByUuid, forKey: .addedByUuid)
+        case .pendingRequest:
+            try container.encode(TypeKey.pendingRequest, forKey: .typeKey)
+        }
+    }
+}
+
+// MARK: -
+
+extension GroupMemberState: CustomStringConvertible {
     public var description: String {
         switch self {
         case .fullMember:
@@ -94,95 +191,6 @@ extension GroupMemberType: CustomStringConvertible {
         case .pendingRequest:
             return ".pendingRequest"
         }
-    }
-}
-
-// MARK: -
-
-// This class is immutable.
-@objc(GroupMembershipMemberState)
-class MemberState: MTLModel {
-    @objc
-    var role: TSGroupMemberRole = .normal
-
-    func memberType() -> GroupMemberType {
-        .fullMember
-    }
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    init(role: TSGroupMemberRole) {
-        self.role = role
-        super.init()
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
-    }
-
-    @objc
-    public var isAdministrator: Bool {
-        return role == .administrator
-    }
-}
-
-// MARK: -
-
-// This class is immutable.
-@objc(GroupMembershipFullMemberState)
-class FullMemberState: MemberState {
-    override func memberType() -> GroupMemberType {
-        .fullMember
-    }
-}
-
-// MARK: -
-
-// This class is immutable.
-@objc(GroupMembershipPendingProfileKeyMemberState)
-class PendingProfileKeyMemberState: MemberState {
-
-    override func memberType() -> GroupMemberType {
-        .pendingProfileKey
-    }
-
-    @objc
-    var addedByUuid: UUID?
-
-    init(role: TSGroupMemberRole, addedByUuid: UUID? = nil) {
-        self.addedByUuid = addedByUuid
-
-        super.init(role: role)
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
-    }
-}
-
-// MARK: -
-
-// This class is immutable.
-@objc(GroupMembershipPendingRequestMemberState)
-class PendingRequestMemberState: MemberState {
-
-    override func memberType() -> GroupMemberType {
-        .pendingRequest
     }
 }
 
@@ -229,9 +237,8 @@ public class GroupMembership: MTLModel {
     typealias LegacyMemberStateMap = [SignalServiceAddress: LegacyMemberState]
 
     // By using a single dictionary we ensure that no address has more than one state.
-    typealias MemberStateMap = [SignalServiceAddress: MemberState]
-    @objc
-    var memberStates: MemberStateMap
+    fileprivate typealias MemberStateMap = [SignalServiceAddress: GroupMemberState]
+    fileprivate var memberStates: MemberStateMap
 
     typealias InvalidInviteMap = [Data: InvalidInviteModel]
     @objc
@@ -247,16 +254,22 @@ public class GroupMembership: MTLModel {
 
     @objc
     required public init?(coder aDecoder: NSCoder) {
-        if let invalidInviteMap = aDecoder.decodeObject(forKey: "invalidInviteMap") as? InvalidInviteMap {
+        if let invalidInviteMap = aDecoder.decodeObject(forKey: Self.invalidInviteMapKey) as? InvalidInviteMap {
             self.invalidInviteMap = invalidInviteMap
         } else {
             // invalidInviteMap is optional.
             self.invalidInviteMap = [:]
         }
 
-        if let memberStates = aDecoder.decodeObject(forKey: "memberStates") as? MemberStateMap {
-            self.memberStates = memberStates
-        } else if let legacyMemberStateMap = aDecoder.decodeObject(forKey: "memberStateMap") as? LegacyMemberStateMap {
+        if let memberStatesData = aDecoder.decodeObject(forKey: Self.memberStatesKey) as? Data {
+            let decoder = JSONDecoder()
+            do {
+                self.memberStates = try decoder.decode(MemberStateMap.self, from: memberStatesData)
+            } catch {
+                owsFailDebug("Error: \(error)")
+                return nil
+            }
+        } else if let legacyMemberStateMap = aDecoder.decodeObject(forKey: Self.legacyMemberStatesKey) as? LegacyMemberStateMap {
             self.memberStates = Self.convertLegacyMemberStateMap(legacyMemberStateMap)
         } else {
             owsFailDebug("Could not decode.")
@@ -266,18 +279,34 @@ public class GroupMembership: MTLModel {
         super.init()
     }
 
+    private static let memberStatesKey = "memberStates"
+    private static let legacyMemberStatesKey = "memberStateMap"
+    private static let invalidInviteMapKey = "invalidInviteMap"
+
+    public override func encode(with aCoder: NSCoder) {
+        let encoder = JSONEncoder()
+        do {
+            let memberStatesData = try encoder.encode(self.memberStates)
+            aCoder.encode(memberStatesData, forKey: Self.memberStatesKey)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+
+        aCoder.encode(invalidInviteMap, forKey: Self.invalidInviteMapKey)
+    }
+
     @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        if let invalidInviteMap = dictionaryValue["invalidInviteMap"] as? InvalidInviteMap {
+        if let invalidInviteMap = dictionaryValue[Self.invalidInviteMapKey] as? InvalidInviteMap {
             self.invalidInviteMap = invalidInviteMap
         } else {
             // invalidInviteMap is optional.
             self.invalidInviteMap = [:]
         }
 
-        if let memberStates = dictionaryValue["memberStates"] as? MemberStateMap {
+        if let memberStates = dictionaryValue[Self.memberStatesKey] as? MemberStateMap {
             self.memberStates = memberStates
-        } else if let legacyMemberStateMap = dictionaryValue["memberStateMap"] as? LegacyMemberStateMap {
+        } else if let legacyMemberStateMap = dictionaryValue[Self.legacyMemberStatesKey] as? LegacyMemberStateMap {
             self.memberStates = Self.convertLegacyMemberStateMap(legacyMemberStateMap)
         } else {
             throw OWSAssertionError("Could not decode.")
@@ -286,7 +315,7 @@ public class GroupMembership: MTLModel {
         super.init()
     }
 
-    internal init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
+    fileprivate init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
         self.memberStates = memberStates
         self.invalidInviteMap = invalidInviteMap
 
@@ -306,22 +335,24 @@ public class GroupMembership: MTLModel {
     private static func convertLegacyMemberStateMap(_ legacyMemberStateMap: LegacyMemberStateMap) -> MemberStateMap {
         var result = MemberStateMap()
         for (address, legacyMemberState) in legacyMemberStateMap {
-            let memberState: MemberState
+            let memberState: GroupMemberState
             if legacyMemberState.isPending {
                 if let addedByUuid = legacyMemberState.addedByUuid {
-                    memberState = PendingProfileKeyMemberState(role: legacyMemberState.role,
-                                                               addedByUuid: addedByUuid)
+                    memberState = .pendingProfileKey(role: legacyMemberState.role,
+                                                     addedByUuid: addedByUuid)
                 } else {
                     owsFailDebug("Missing addedByUuid.")
                     continue
                 }
             } else {
-                memberState = FullMemberState(role: legacyMemberState.role)
+                memberState = .fullMember(role: legacyMemberState.role)
             }
             result[address] = memberState
         }
         return result
     }
+
+    // MARK: -
 
     @objc
     public static var empty: GroupMembership {
@@ -365,7 +396,7 @@ public class GroupMembership: MTLModel {
                 owsFailDebug("Missing memberState.")
                 continue
             }
-            result += "\(address), memberType: \(memberState.memberType()), role: \(memberState.role)\n"
+            result += "\(address), memberType: \(memberState)\n"
         }
         result += "]"
         return result
@@ -377,29 +408,31 @@ public class GroupMembership: MTLModel {
 public extension GroupMembership {
 
     var fullMemberAdministrators: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isAdministrator && $0.value.memberType() == .fullMember }.keys)
+        return Set(memberStates.filter { $0.value.isAdministrator && $0.value.isFullMember }.keys)
     }
 
     var fullMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.memberType() == .fullMember }.keys)
+        return Set(memberStates.filter { $0.value.isFullMember }.keys)
     }
 
     var pendingProfileKeyMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.memberType() == .pendingProfileKey }.keys)
+        return Set(memberStates.filter { $0.value.isPendingProfileKey }.keys)
     }
 
     var pendingRequestMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.memberType() == .pendingRequest }.keys)
+        return Set(memberStates.filter { $0.value.isPendingRequest }.keys)
     }
 
     var fullOrPendingProfileKeyMembers: Set<SignalServiceAddress> {
-        let memberTypes: [GroupMemberType] = [ .fullMember, .pendingProfileKey ]
-        return Set(memberStates.filter { memberTypes.contains($0.value.memberType()) }.keys)
+        return Set(memberStates.filter {
+            $0.value.isFullMember || $0.value.isPendingProfileKey
+        }.keys)
     }
 
     var pendingProfileKeyOrRequestMembers: Set<SignalServiceAddress> {
-        let memberTypes: [GroupMemberType] = [ .pendingProfileKey, .pendingRequest ]
-        return Set(memberStates.filter { memberTypes.contains($0.value.memberType()) }.keys)
+        return Set(memberStates.filter {
+            $0.value.isPendingProfileKey || $0.value.isPendingRequest
+        }.keys)
     }
 
     // allMembersOfAnyKind includes _all_ members:
@@ -433,12 +466,11 @@ public extension GroupMembership {
         guard let memberState = memberStates[address] else {
             return false
         }
-        guard memberState.isAdministrator else {
-            return false
-        }
-        switch memberState.memberType() {
-        case .fullMember, .pendingProfileKey:
-            return true
+        switch memberState {
+        case .fullMember(let role):
+            return role == .administrator
+        case .pendingProfileKey(let role, _):
+            return role == .administrator
         case .pendingRequest:
             return false
         }
@@ -452,7 +484,7 @@ public extension GroupMembership {
         guard let memberState = memberStates[address] else {
             return false
         }
-        return memberState.isAdministrator && memberState.memberType() == .fullMember
+        return memberState.isAdministrator && memberState.isFullMember
     }
 
     func isFullMemberAndAdministrator(_ uuid: UUID) -> Bool {
@@ -464,7 +496,7 @@ public extension GroupMembership {
         guard let memberState = memberStates[address] else {
             return false
         }
-        return memberState.memberType() == .fullMember
+        return memberState.isFullMember
     }
 
     func isFullMember(_ uuid: UUID) -> Bool {
@@ -476,7 +508,7 @@ public extension GroupMembership {
         guard let memberState = memberStates[address] else {
             return false
         }
-        return memberState.memberType() == .pendingProfileKey
+        return memberState.isPendingProfileKey
     }
 
     func isPendingProfileKeyMember(_ uuid: UUID) -> Bool {
@@ -487,7 +519,7 @@ public extension GroupMembership {
         guard let memberState = memberStates[address] else {
             return false
         }
-        return memberState.memberType() == .pendingRequest
+        return memberState.isPendingRequest
     }
 
     func isRequestingMember(_ uuid: UUID) -> Bool {
@@ -514,16 +546,16 @@ public extension GroupMembership {
 
     // This method should only be called for "pending profile key" members.
     func addedByUuid(forPendingProfileKeyMember address: SignalServiceAddress) -> UUID? {
-        assert(isPendingProfileKeyMember(address))
-
         guard let memberState = memberStates[address] else {
             return nil
         }
-        guard let pendingProfileKeyMemberState = memberState as? PendingProfileKeyMemberState else {
-            owsFailDebug("Unexpected member type.")
+        switch memberState {
+        case .pendingProfileKey(_, let addedByUuid):
+            return addedByUuid
+        default:
+            owsFailDebug("Not a pending profile key member.")
             return nil
         }
-        return pendingProfileKeyMemberState.addedByUuid
     }
 }
 
@@ -537,7 +569,7 @@ public extension GroupMembership {
 
         public init() {}
 
-        internal init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
+        fileprivate init(memberStates: MemberStateMap, invalidInviteMap: InvalidInviteMap) {
             self.memberStates = memberStates
             self.invalidInviteMap = invalidInviteMap
         }
@@ -572,7 +604,7 @@ public extension GroupMembership {
                 if memberStates[address] != nil {
                     owsFailDebug("Duplicate address.")
                 }
-                memberStates[address] = FullMemberState(role: role)
+                memberStates[address] = .fullMember(role: role)
             }
         }
 
@@ -596,7 +628,7 @@ public extension GroupMembership {
                     owsFailDebug("Duplicate address.")
                     continue
                 }
-                memberStates[address] = PendingProfileKeyMemberState(role: role, addedByUuid: addedByUuid)
+                memberStates[address] = .pendingProfileKey(role: role, addedByUuid: addedByUuid)
             }
         }
 
@@ -614,7 +646,7 @@ public extension GroupMembership {
                     owsFailDebug("Duplicate address.")
                     continue
                 }
-                memberStates[address] = PendingRequestMemberState()
+                memberStates[address] = .pendingRequest
             }
         }
 
@@ -643,7 +675,7 @@ public extension GroupMembership {
             invalidInviteMap = other.invalidInviteMap
         }
 
-        internal func asMemberStateMap() -> MemberStateMap {
+        fileprivate func asMemberStateMap() -> MemberStateMap {
             return memberStates
         }
 
