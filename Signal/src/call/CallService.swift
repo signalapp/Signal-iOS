@@ -560,10 +560,10 @@ extension SignalCall: CallManagerCallReference { }
         newCall.backgroundTask = backgroundTask
 
         let messageAgeSec: UInt64
-        if serverReceivedTimestamp > 0 && serverDeliveryTimestamp > 0 {
-            messageAgeSec = max(serverDeliveryTimestamp - serverReceivedTimestamp, 0) / 1000
+        if serverReceivedTimestamp > 0 && serverDeliveryTimestamp >= serverReceivedTimestamp {
+            messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
         } else {
-            owsFailDebug("Unable to calculate age for call offer")
+            owsFailDebug("Unable to calculate age for call offer: \(serverDeliveryTimestamp) \(serverReceivedTimestamp)")
             messageAgeSec = 0
         }
 
