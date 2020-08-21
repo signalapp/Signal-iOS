@@ -617,11 +617,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    override func updateViewConstraints() {
-        updateRemoteVideoLayout()
-        super.updateViewConstraints()
-    }
-
     internal func updateRemoteVideoLayout() {
         remoteVideoView.isHidden = !self.hasRemoteVideoTrack
         updateCallUI()
