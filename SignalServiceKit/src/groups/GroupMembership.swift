@@ -29,52 +29,6 @@ public extension TSGroupMemberRole {
 
 // MARK: -
 
-// NOTE: We only use this class for backwards compatibility.
-@objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
-class LegacyMemberState: MTLModel {
-    @objc
-    var role: TSGroupMemberRole = .normal
-
-    @objc
-    var isPending: Bool = false
-
-    // Only applies for pending members.
-    @objc
-    var addedByUuid: UUID?
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    init(role: TSGroupMemberRole,
-         isPending: Bool,
-         addedByUuid: UUID? = nil) {
-        self.role = role
-        self.isPending = isPending
-        self.addedByUuid = addedByUuid
-
-        super.init()
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
-    }
-
-    @objc
-    public var isAdministrator: Bool {
-        return role == .administrator
-    }
-}
-
-// MARK: -
-
 extension TSGroupMemberRole: Codable {}
 
 // MARK: -
@@ -691,5 +645,51 @@ public extension GroupMembership {
             return GroupMembership(memberStates: memberStates,
                                    invalidInviteMap: invalidInviteMap)
         }
+    }
+}
+
+// MARK: -
+
+// NOTE: We only use this class for backwards compatibility.
+@objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
+class LegacyMemberState: MTLModel {
+    @objc
+    var role: TSGroupMemberRole = .normal
+
+    @objc
+    var isPending: Bool = false
+
+    // Only applies for pending members.
+    @objc
+    var addedByUuid: UUID?
+
+    @objc
+    public override init() {
+        super.init()
+    }
+
+    init(role: TSGroupMemberRole,
+         isPending: Bool,
+         addedByUuid: UUID? = nil) {
+        self.role = role
+        self.isPending = isPending
+        self.addedByUuid = addedByUuid
+
+        super.init()
+    }
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+
+    @objc
+    public var isAdministrator: Bool {
+        return role == .administrator
     }
 }
