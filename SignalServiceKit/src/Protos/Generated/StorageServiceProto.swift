@@ -2067,9 +2067,6 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         if hasNoteToSelfArchived {
             builder.setNoteToSelfArchived(noteToSelfArchived)
         }
-        if hasNoteToSelfMarkedUnread {
-            builder.setNoteToSelfMarkedUnread(noteToSelfMarkedUnread)
-        }
         if hasReadReceipts {
             builder.setReadReceipts(readReceipts)
         }
@@ -2078,6 +2075,12 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         }
         if hasTypingIndicators {
             builder.setTypingIndicators(typingIndicators)
+        }
+        if hasProxiedLinkPreviews {
+            builder.setProxiedLinkPreviews(proxiedLinkPreviews)
+        }
+        if hasNoteToSelfMarkedUnread {
+            builder.setNoteToSelfMarkedUnread(noteToSelfMarkedUnread)
         }
         if hasLinkPreviews {
             builder.setLinkPreviews(linkPreviews)
@@ -2144,10 +2147,6 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
             proto.noteToSelfArchived = valueParam
         }
 
-        public func setNoteToSelfMarkedUnread(_ valueParam: Bool) {
-            proto.noteToSelfMarkedUnread = valueParam
-        }
-
         public func setReadReceipts(_ valueParam: Bool) {
             proto.readReceipts = valueParam
         }
@@ -2158,6 +2157,14 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
 
         public func setTypingIndicators(_ valueParam: Bool) {
             proto.typingIndicators = valueParam
+        }
+
+        public func setProxiedLinkPreviews(_ valueParam: Bool) {
+            proto.proxiedLinkPreviews = valueParam
+        }
+
+        public func setNoteToSelfMarkedUnread(_ valueParam: Bool) {
+            proto.noteToSelfMarkedUnread = valueParam
         }
 
         public func setLinkPreviews(_ valueParam: Bool) {
@@ -2234,13 +2241,6 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         return true
     }
 
-    public var noteToSelfMarkedUnread: Bool {
-        return proto.noteToSelfMarkedUnread
-    }
-    public var hasNoteToSelfMarkedUnread: Bool {
-        return true
-    }
-
     public var readReceipts: Bool {
         return proto.readReceipts
     }
@@ -2259,6 +2259,20 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         return proto.typingIndicators
     }
     public var hasTypingIndicators: Bool {
+        return true
+    }
+
+    public var proxiedLinkPreviews: Bool {
+        return proto.proxiedLinkPreviews
+    }
+    public var hasProxiedLinkPreviews: Bool {
+        return true
+    }
+
+    public var noteToSelfMarkedUnread: Bool {
+        return proto.noteToSelfMarkedUnread
+    }
+    public var hasNoteToSelfMarkedUnread: Bool {
         return true
     }
 
