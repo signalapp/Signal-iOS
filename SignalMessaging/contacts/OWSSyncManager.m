@@ -252,12 +252,23 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)processIncomingConfigurationSyncMessage:(SSKProtoSyncMessageConfiguration *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [SSKEnvironment.shared.readReceiptManager setAreReadReceiptsEnabled:syncMessage.readReceipts transaction:transaction];
-    [Environment.shared.preferences
-        setShouldShowUnidentifiedDeliveryIndicators:syncMessage.unidentifiedDeliveryIndicators
-                                        transaction:transaction];
-    [self.typingIndicators setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators transaction:transaction];
-    [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews transaction:transaction];
+    if (syncMessage.hasReadReceipts) {
+        [SSKEnvironment.shared.readReceiptManager setAreReadReceiptsEnabled:syncMessage.readReceipts
+                                                                transaction:transaction];
+    }
+    if (syncMessage.hasUnidentifiedDeliveryIndicators) {
+        BOOL updatedValue = syncMessage.unidentifiedDeliveryIndicators;
+        [Environment.shared.preferences setShouldShowUnidentifiedDeliveryIndicators:updatedValue
+                                                                        transaction:transaction];
+    }
+    if (syncMessage.hasTypingIndicators) {
+        [self.typingIndicators setTypingIndicatorsEnabledWithValue:syncMessage.typingIndicators
+                                                       transaction:transaction];
+    }
+    if (syncMessage.hasLinkPreviews) {
+        [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews
+                                      transaction:transaction];
+    }
 
     [transaction addAsyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationSyncDidCompleteNotification
