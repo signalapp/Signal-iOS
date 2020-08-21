@@ -1230,7 +1230,7 @@ extension GroupUpdateCopy {
             // Changed by localNumber on this device or via synced transcript
             if newToken.isEnabled {
                 let format = NSLocalizedString("YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
-                                               comment: "Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.")
+                                               comment: "Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.")
                 addItem(.disappearingMessagesState_enabled, format: format, durationString)
             } else {
                 addItem(.disappearingMessagesState_disabled,

@@ -26,15 +26,15 @@ public class SSKPreferences: NSObject {
     }
 
     @objc
-    public static func setAreLinkPreviewsEnabledAndSendSyncMessage(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        setAreLinkPreviewsEnabled(newValue, transaction: transaction)
-        SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
-        SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
-    }
-
-    @objc
-    public static func setAreLinkPreviewsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+    public static func setAreLinkPreviewsEnabled(_ newValue: Bool,
+                                                 sendSyncMessage shouldSync: Bool = false,
+                                                 transaction: SDSAnyWriteTransaction) {
         store.setBool(newValue, key: areLinkPreviewsEnabledKey, transaction: transaction)
+
+        if shouldSync {
+            SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
+            SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+        }
     }
 
     // MARK: -

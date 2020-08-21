@@ -13,6 +13,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case notificationPermissionReminder
     case contactPermissionReminder
     case mentions
+    case linkPreviews
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -55,6 +56,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
         case .mentions:
             return RemoteConfig.mentions
+        case .linkPreviews:
+            return true
         }
     }
 
@@ -97,6 +100,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return .high
         case .messageRequests:
             return .high
+        case .linkPreviews:
+            return .medium
         case .pinReminder:
             return .medium
         case .notificationPermissionReminder:
@@ -153,6 +158,18 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return true
         default:
             return false
+        }
+    }
+
+    var objcRepresentation: ObjcExperienceUpgradeId {
+        switch self {
+        case .introducingPins:                  return .introducingPins
+        case .messageRequests:                  return .messageRequests
+        case .pinReminder:                      return .pinReminder
+        case .notificationPermissionReminder:   return .notificationPermissionReminder
+        case .contactPermissionReminder:        return .contactPermissionReminder
+        case .mentions:                         return .mentions
+        case .linkPreviews:                     return .linkPreviews
         }
     }
 }
@@ -286,5 +303,30 @@ public extension ExperienceUpgrade {
         let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
         changeBlock(experienceUpgrade)
         experienceUpgrade.anyUpsert(transaction: transaction)
+    }
+}
+
+/// A workaround bridge to allow PrivacySettingsTableViewController to clear an experience upgrade
+/// Feel free to remove this if that ever gets migrated to Swift
+@objc(OWSObjcExperienceUpgradeId)
+public enum ObjcExperienceUpgradeId: Int {
+    case introducingPins
+    case messageRequests
+    case pinReminder
+    case notificationPermissionReminder
+    case contactPermissionReminder
+    case mentions
+    case linkPreviews
+
+    public var swiftRepresentation: ExperienceUpgradeId {
+        switch self {
+        case .introducingPins:                  return .introducingPins
+        case .messageRequests:                  return .messageRequests
+        case .pinReminder:                      return .pinReminder
+        case .notificationPermissionReminder:   return .notificationPermissionReminder
+        case .contactPermissionReminder:        return .contactPermissionReminder
+        case .mentions:                         return .mentions
+        case .linkPreviews:                     return .linkPreviews
+        }
     }
 }

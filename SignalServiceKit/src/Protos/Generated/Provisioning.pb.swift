@@ -52,7 +52,7 @@ struct ProvisioningProtos_ProvisionEnvelope {
 
   /// @required
   var publicKey: Data {
-    get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+    get {return _publicKey ?? Data()}
     set {_publicKey = newValue}
   }
   /// Returns true if `publicKey` has been explicitly set.
@@ -62,7 +62,7 @@ struct ProvisioningProtos_ProvisionEnvelope {
 
   /// @required
   var body: Data {
-    get {return _body ?? SwiftProtobuf.Internal.emptyData}
+    get {return _body ?? Data()}
     set {_body = newValue}
   }
   /// Returns true if `body` has been explicitly set.
@@ -85,7 +85,7 @@ struct ProvisioningProtos_ProvisionMessage {
 
   /// @required
   var identityKeyPublic: Data {
-    get {return _identityKeyPublic ?? SwiftProtobuf.Internal.emptyData}
+    get {return _identityKeyPublic ?? Data()}
     set {_identityKeyPublic = newValue}
   }
   /// Returns true if `identityKeyPublic` has been explicitly set.
@@ -95,7 +95,7 @@ struct ProvisioningProtos_ProvisionMessage {
 
   /// @required
   var identityKeyPrivate: Data {
-    get {return _identityKeyPrivate ?? SwiftProtobuf.Internal.emptyData}
+    get {return _identityKeyPrivate ?? Data()}
     set {_identityKeyPrivate = newValue}
   }
   /// Returns true if `identityKeyPrivate` has been explicitly set.
@@ -142,7 +142,7 @@ struct ProvisioningProtos_ProvisionMessage {
 
   /// @required
   var profileKey: Data {
-    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
+    get {return _profileKey ?? Data()}
     set {_profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.

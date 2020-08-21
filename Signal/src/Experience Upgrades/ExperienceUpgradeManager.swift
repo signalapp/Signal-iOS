@@ -109,6 +109,12 @@ class ExperienceUpgradeManager: NSObject {
         databaseStorage.asyncWrite { clearExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
     }
 
+    @objc(clearExperienceUpgrade:transaction:)
+    static func clearExperienceUpgrade(objcId experienceUpgradeId: ObjcExperienceUpgradeId,
+                                       transaction: GRDBWriteTransaction) {
+        clearExperienceUpgrade(experienceUpgradeId.swiftRepresentation, transaction: transaction)
+    }
+
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
     static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
@@ -152,7 +158,8 @@ class ExperienceUpgradeManager: NSObject {
              .pinReminder,
              .notificationPermissionReminder,
              .contactPermissionReminder,
-             .mentions:
+             .mentions,
+             .linkPreviews:
             return true
         case .messageRequests:
             // no need to annoy user with banner for message requests. They are self explanatory.
@@ -174,6 +181,8 @@ class ExperienceUpgradeManager: NSObject {
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .mentions:
             return MentionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .linkPreviews:
+            return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

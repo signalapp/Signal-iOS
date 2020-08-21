@@ -7854,11 +7854,11 @@ public class SSKProtoSyncMessageConfiguration: NSObject, Codable {
         if hasTypingIndicators {
             builder.setTypingIndicators(typingIndicators)
         }
-        if hasLinkPreviews {
-            builder.setLinkPreviews(linkPreviews)
-        }
         if hasProvisioningVersion {
             builder.setProvisioningVersion(provisioningVersion)
+        }
+        if hasLinkPreviews {
+            builder.setLinkPreviews(linkPreviews)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -7890,13 +7890,13 @@ public class SSKProtoSyncMessageConfiguration: NSObject, Codable {
         }
 
         @objc
-        public func setLinkPreviews(_ valueParam: Bool) {
-            proto.linkPreviews = valueParam
+        public func setProvisioningVersion(_ valueParam: UInt32) {
+            proto.provisioningVersion = valueParam
         }
 
         @objc
-        public func setProvisioningVersion(_ valueParam: UInt32) {
-            proto.provisioningVersion = valueParam
+        public func setLinkPreviews(_ valueParam: Bool) {
+            proto.linkPreviews = valueParam
         }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -7944,21 +7944,21 @@ public class SSKProtoSyncMessageConfiguration: NSObject, Codable {
     }
 
     @objc
-    public var linkPreviews: Bool {
-        return proto.linkPreviews
-    }
-    @objc
-    public var hasLinkPreviews: Bool {
-        return proto.hasLinkPreviews
-    }
-
-    @objc
     public var provisioningVersion: UInt32 {
         return proto.provisioningVersion
     }
     @objc
     public var hasProvisioningVersion: Bool {
         return proto.hasProvisioningVersion
+    }
+
+    @objc
+    public var linkPreviews: Bool {
+        return proto.linkPreviews
+    }
+    @objc
+    public var hasLinkPreviews: Bool {
+        return proto.hasLinkPreviews
     }
 
     public var hasUnknownFields: Bool {

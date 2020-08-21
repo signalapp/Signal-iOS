@@ -267,6 +267,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }
     if (syncMessage.hasLinkPreviews) {
         [SSKPreferences setAreLinkPreviewsEnabled:syncMessage.linkPreviews
+                                  sendSyncMessage:NO
                                       transaction:transaction];
     }
 
