@@ -1374,6 +1374,7 @@
 		C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK002RemoveFriendRequests.swift; sourceTree = "<group>"; };
 		C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceRemovalSheet.swift; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
+		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3C3CF8824D8EED300E1CCE7 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
@@ -3146,6 +3147,7 @@
 				zh_CN,
 				Base,
 				it,
+				fa,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -4057,6 +4059,7 @@
 				B68CB7E01AA548420065AC3F /* ru */,
 				B68CB7E61AA548870065AC3F /* zh_CN */,
 				4C1D2337218B6BA000A0598F /* it */,
+				C3AECBEA24EF5244005743DE /* fa */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
