@@ -16,7 +16,6 @@ protocol CallAudioServiceDelegate: class {
 @objc class CallAudioService: NSObject, CallObserver {
 
     private var vibrateTimer: Timer?
-    private var muteStatusTimer: Timer?
     private let audioPlayer = AVAudioPlayer()
     var handleRinging = false
     weak var delegate: CallAudioServiceDelegate? {
@@ -121,26 +120,6 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private static let muteSoundId = OWSSounds.systemSoundID(for: .silence, quiet: false)
-    private static var isMuteSwitchEnabled = AtomicBool(false)
-    private static func updateMuteSwitchStatus(completion: @escaping (_ statusDidChange: Bool) -> Void) {
-        // In order to detect if the mute switch is enabled, we play a silent sound.
-        // If playback finishes immediately, the switch is on. This is super hack-y,
-        // but the only non-private API available to do this somewhat reliably.
-        let startTime = CACurrentMediaTime()
-        AudioServicesPlaySystemSoundWithCompletion(muteSoundId) {
-            let elapsedTime = CACurrentMediaTime() - startTime
-            let currentValue = isMuteSwitchEnabled.get()
-            let newValue = elapsedTime < 0.1
-            if currentValue != newValue {
-                isMuteSwitchEnabled.set(newValue)
-                DispatchQueue.main.async { completion(true) }
-            } else {
-                DispatchQueue.main.async { completion(false) }
-            }
-        }
-    }
-
     private func ensureProperAudioSession(call: SignalCall?) {
         AssertIsOnMainThread()
 
@@ -152,13 +131,6 @@ protocol CallAudioServiceDelegate: class {
         }
 
         if call.state == .localRinging {
-            // SoloAmbient plays through speaker and respects silent switch,
-            // but does not playback in the background. Playback plays through
-            // speaker and plays back in the background, but does not respect
-            // the mute switch. Ideally, there would be a category that allowed
-            // background playback AND respecting the mute switch, but because
-            // there is not we have to manually switch between categories when
-            // we detect the mute switch changed.
             setAudioSession(category: .playback, mode: .default)
         } else if call.hasLocalVideo {
             // Because ModeVideoChat affects gain, we don't want to apply it until the call is connected.
@@ -334,22 +306,28 @@ protocol CallAudioServiceDelegate: class {
 
     private func stopPlayingAnySounds() {
         currentPlayer?.stop()
-        stopAnyRingingVibration()
+        stopRinging()
     }
 
-    private func play(sound: OWSSound) {
+    private func prepareToPlay(sound: OWSSound) -> OWSAudioPlayer? {
         guard let newPlayer = OWSSounds.audioPlayer(for: sound, audioBehavior: .call) else {
             owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(for: sound))")
-            return
+            return nil
         }
         Logger.info("playing sound: \(OWSSounds.displayName(for: sound))")
 
-        // It's important to stop the current player **before** starting the new player. In the case that 
-        // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise 
+        // It's important to stop the current player **before** starting the new player. In the case that
+        // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise
         // stop the sound we just started.
         self.currentPlayer?.stop()
-        newPlayer.play()
         self.currentPlayer = newPlayer
+
+        return newPlayer
+    }
+
+    private func play(sound: OWSSound) {
+        guard let newPlayer = prepareToPlay(sound: sound) else { return }
+        newPlayer.play()
     }
 
     // MARK: - Ringing
@@ -365,29 +343,27 @@ protocol CallAudioServiceDelegate: class {
             self?.ringVibration()
         }
 
-        // Before playing the ring tone, check if the mute switch is enabled.
-        // If it is not enabled, we want to play with a mode that lets us
-        // ring in the background.
-        Self.updateMuteSwitchStatus { [weak self] stateDidChange in
-            guard !call.isEnded else { return }
-            if stateDidChange { self?.ensureProperAudioSession(call: call) }
-            self?.play(sound: .defaultiOSIncomingRingtone)
+        guard let player = prepareToPlay(sound: .defaultiOSIncomingRingtone) else {
+            return owsFailDebug("Failed to prepare player for ringing")
         }
 
-        // Check regularly if the mute switch status has changed. If it has,
-        // we need to update our audio session category to ensure ringtone
-        // playback.
-        muteStatusTimer?.invalidate()
-        muteStatusTimer = .scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
-            Self.updateMuteSwitchStatus { stateDidChange in
-                guard !call.isEnded else { return }
-                guard stateDidChange else { return }
-                self?.ensureProperAudioSession(call: call)
+        startObservingRingerState { [weak self] isDeviceSilenced in
+            AssertIsOnMainThread()
+
+            // We must ensure the proper audio session before
+            // each time we play / pause, otherwise the category
+            // may have changed and no playback would occur.
+            self?.ensureProperAudioSession(call: call)
+
+            if isDeviceSilenced {
+                player.pause()
+            } else {
+                player.play()
             }
         }
     }
 
-    private func stopAnyRingingVibration() {
+    private func stopRinging() {
         guard handleRinging else {
             Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
             return
@@ -398,9 +374,9 @@ protocol CallAudioServiceDelegate: class {
         vibrateTimer?.invalidate()
         vibrateTimer = nil
 
-        // Stop polling mute switch status
-        muteStatusTimer?.invalidate()
-        muteStatusTimer = nil
+        stopObservingRingerState()
+
+        currentPlayer?.stop()
     }
 
     // public so it can be called by timer via selector
@@ -539,5 +515,31 @@ protocol CallAudioServiceDelegate: class {
             Logger.info("")
             self.delegate?.callAudioServiceDidChangeAudioSession(self)
         }
+    }
+
+    // mark: - Ringer State
+
+    // let encodedDarwinNotificationName = "com.apple.springboard.ringerstate".encodedForSelector
+    private static let ringerStateNotificationName = DarwinNotificationName("dAF+P3ICAn12PwUCBHoAeHMBcgR1PwR6AHh2BAUGcgZ2".decodedForSelector!)
+
+    private var ringerStateToken: Int32?
+    private func startObservingRingerState(stateChanged: @escaping (_ isDeviceSilenced: Bool) -> Void) {
+
+        func isRingerStateSilenced(token: Int32) -> Bool {
+            return DarwinNotificationCenter.getStateForObserver(token) > 0 ? false : true
+        }
+
+        let token = DarwinNotificationCenter.addObserver(
+            for: Self.ringerStateNotificationName,
+            queue: .main
+        ) { stateChanged(isRingerStateSilenced(token: $0)) }
+        ringerStateToken = token
+        stateChanged(isRingerStateSilenced(token: token))
+    }
+
+    private func stopObservingRingerState() {
+        guard let ringerStateToken = ringerStateToken else { return }
+        DarwinNotificationCenter.removeObserver(ringerStateToken)
+        self.ringerStateToken = nil
     }
 }
