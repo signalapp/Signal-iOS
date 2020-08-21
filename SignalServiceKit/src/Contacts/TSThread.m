@@ -622,7 +622,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     if (needsToUpdateLastInteractionRowId || needsToUpdateLastVisibleSortId) {
         [self anyUpdateWithTransaction:transaction
                                  block:^(TSThread *thread) {
-                                     if (needsToUpdateLastVisibleSortId) {
+                                     if (needsToUpdateLastInteractionRowId) {
                                          TSInteraction *_Nullable latestInteraction =
                                              [thread lastInteractionForInboxWithTransaction:transaction];
                                          thread.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
@@ -636,7 +636,6 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                                              = messageBeforeDeletedMessage ? messageBeforeDeletedMessage.sortId : 0;
                                          thread.lastVisibleSortIdOnScreenPercentage = 1;
                                      }
-                                     thread.lastInteractionRowId = 0;
                                  }];
     } else {
         [self scheduleTouchFinalizationWithTransaction:transaction];

@@ -486,7 +486,7 @@ typedef void (^SystemMessageActionBlock)(void);
             static dispatch_once_t onceToken;
             dispatch_once(&onceToken, ^{
                 dateFormatter = [NSDateFormatter new];
-                dateFormatter.dateFormat = @"MMM d, h:mm a";
+                [dateFormatter setLocalizedDateFormatFromTemplate: @"MMM d, h:mm a"];
             });
 
             [labelText

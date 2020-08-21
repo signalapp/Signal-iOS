@@ -64,7 +64,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         formatter = [NSDateFormatter new];
         formatter.locale = [NSLocale currentLocale];
         // Tue, Jun 6
-        formatter.dateFormat = @"EE, MMM d";
+        [formatter setLocalizedDateFormatFromTemplate:@"EE, MMM d"];
     });
 
     return formatter;
@@ -117,7 +117,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     dispatch_once(&onceToken, ^{
         formatter = [NSDateFormatter new];
         [formatter setLocale:[NSLocale currentLocale]];
-        formatter.dateFormat = @"MMM d";
+        [formatter setLocalizedDateFormatFromTemplate: @"MMM d"];
     });
     return formatter;
 }
@@ -325,7 +325,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     dispatch_once(&onceToken, ^{
         formatter = [NSDateFormatter new];
         [formatter setLocale:[NSLocale currentLocale]];
-        [formatter setDateFormat:@"MMM d, yyyy"];
+        [formatter setLocalizedDateFormatFromTemplate:@"MMM d, yyyy"];
     });
     return formatter;
 }
@@ -337,7 +337,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     dispatch_once(&onceToken, ^{
         formatter = [NSDateFormatter new];
         [formatter setLocale:[NSLocale currentLocale]];
-        [formatter setDateFormat:@"MMM d"];
+        [formatter setLocalizedDateFormatFromTemplate:@"MMM d"];
     });
     return formatter;
 }
