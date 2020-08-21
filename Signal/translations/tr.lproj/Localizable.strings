@@ -3027,7 +3027,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profiliniz yalnızca internete bağlıyken güncellenebilir.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profiliniz uçtan uca şifrelidir. Profiliniz ve profildeki değişiklikler, yeni sohbetler başlattığınızda veya kabul ettiğinizde ve yeni gruplara katıldığınızda kişileriniz tarafından görülebilir.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Kaydet";

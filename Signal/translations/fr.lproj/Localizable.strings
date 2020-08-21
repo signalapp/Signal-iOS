@@ -2373,7 +2373,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Vous ne recevrez pas de notifications pour les conversations en sourdine.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Micro coupé";
+"MUTED_BADGE" = "Muet";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorer";
