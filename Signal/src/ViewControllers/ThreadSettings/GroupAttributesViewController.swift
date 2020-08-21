@@ -298,7 +298,7 @@ private extension GroupAttributesViewController {
                                                         updatePromiseBlock: {
                                                             self.updateGroupThreadPromise(newGroupModel: newGroupModel)
         },
-                                                        completion: {
+                                                        completion: { _ in
             dismissAndUpdateDelegate()
         })
     }

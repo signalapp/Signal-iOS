@@ -77,13 +77,20 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var accessForAttributes: GroupV2Access?
     private var accessForAddFromInviteLink: GroupV2Access?
 
-    public var newInviteLinkPassword: Data?
-    private var shouldUpdateInviteLinkPassword = false
+    private enum InviteLinkPasswordMode {
+        case clear
+        case rotate
+        case ensureValid
+    }
+
+    private var inviteLinkPasswordMode: InviteLinkPasswordMode?
 
     private var shouldLeaveGroupDeclineInvite = false
     private var shouldRevokeInvalidInvites = false
 
     private var shouldUpdateLocalProfileKey = false
+
+    private var newLinkMode: GroupsV2LinkMode?
 
     // Non-nil if dm state changed.
     private var newDisappearingMessageToken: DisappearingMessageToken?
@@ -192,7 +199,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if oldGroupModel.inviteLinkPassword != newGroupModel.inviteLinkPassword {
-            setInviteLinkPassword(newGroupModel.inviteLinkPassword)
+            owsFailDebug("We should never change the invite link password by diffing group models.")
         }
 
         let oldAccess = oldGroupModel.access
@@ -204,7 +211,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             setAccessForAttributes(newAccess.attributes)
         }
         if oldAccess.addFromInviteLink != newAccess.addFromInviteLink {
-            setAccessForAddFromInviteLink(newAccess.addFromInviteLink)
+            owsFailDebug("We should never change the invite link access by diffing group models.")
         }
 
         let oldDisappearingMessageToken = oldDMConfiguration.asToken
@@ -219,14 +226,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         assert(self.newTitle == nil)
         // Non-nil if the title changed.
         self.newTitle = value ?? ""
-    }
-
-    @objc
-    public func setInviteLinkPassword(_ value: Data?) {
-        assert(self.newInviteLinkPassword == nil)
-        assert(!shouldUpdateInviteLinkPassword)
-        newInviteLinkPassword = value
-        shouldUpdateInviteLinkPassword = true
     }
 
     @objc
@@ -297,11 +296,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         accessForAttributes = value
     }
 
-    public func setAccessForAddFromInviteLink(_ value: GroupV2Access) {
-        assert(accessForAddFromInviteLink == nil)
-        accessForAddFromInviteLink = value
-    }
-
     public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
         assert(self.newDisappearingMessageToken == nil)
         self.newDisappearingMessageToken = newDisappearingMessageToken
@@ -315,6 +309,28 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     public func revokeInvalidInvites() {
         assert(!shouldRevokeInvalidInvites)
         shouldRevokeInvalidInvites = true
+    }
+
+    public func setLinkMode(_ linkMode: GroupsV2LinkMode) {
+        assert(accessForAddFromInviteLink == nil)
+        assert(inviteLinkPasswordMode == nil)
+
+        switch linkMode {
+        case .disabled:
+            accessForAddFromInviteLink = .unsatisfiable
+            inviteLinkPasswordMode = .clear
+        case .enabledWithoutApproval, .enabledWithApproval:
+            accessForAddFromInviteLink = (linkMode == .enabledWithoutApproval
+                ? .any
+                : .administrator)
+            inviteLinkPasswordMode = .ensureValid
+        }
+    }
+
+    public func rotateInviteLinkPassword() {
+        assert(inviteLinkPasswordMode == nil)
+
+        inviteLinkPasswordMode = .rotate
     }
 
     // MARK: - Change Protos
@@ -355,11 +371,11 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         return firstly {
             groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials)
         }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
-            return groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
+            groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
         }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
-            return try self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
-                                                  currentDisappearingMessageToken: currentDisappearingMessageToken,
-                                                  profileKeyCredentialMap: profileKeyCredentialMap)
+            try self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
+                                           currentDisappearingMessageToken: currentDisappearingMessageToken,
+                                           profileKeyCredentialMap: profileKeyCredentialMap)
         }
     }
 
@@ -449,13 +465,28 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
-        if shouldUpdateInviteLinkPassword {
+        if let inviteLinkPasswordMode = inviteLinkPasswordMode {
+            let newInviteLinkPassword: Data?
+            switch inviteLinkPasswordMode {
+            case .clear:
+                newInviteLinkPassword = nil
+            case .rotate:
+                newInviteLinkPassword = GroupManager.generateInviteLinkPasswordV2()
+            case .ensureValid:
+                if let oldInviteLinkPassword = currentGroupModel.inviteLinkPassword,
+                    !oldInviteLinkPassword.isEmpty {
+                    newInviteLinkPassword = oldInviteLinkPassword
+                } else {
+                    newInviteLinkPassword = GroupManager.generateInviteLinkPasswordV2()
+                }
+            }
+
             if newInviteLinkPassword == currentGroupModel.inviteLinkPassword {
                 // Redundant change, not a conflict.
             } else {
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction.builder()
-                if let newInviteLinkPassword = self.newInviteLinkPassword {
-                    actionBuilder.setInviteLinkPassword(newInviteLinkPassword)
+                if let inviteLinkPassword = newInviteLinkPassword {
+                    actionBuilder.setInviteLinkPassword(inviteLinkPassword)
                 }
                 actionsBuilder.setModifyInviteLinkPassword(try actionBuilder.build())
                 didChange = true

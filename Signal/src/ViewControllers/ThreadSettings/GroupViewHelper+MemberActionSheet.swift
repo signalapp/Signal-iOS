@@ -24,7 +24,7 @@ extension GroupViewHelper {
         let actionBlock = {
             GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: fromViewController,
                                                             updatePromiseBlock: updatePromiseBlock,
-                                                            completion: { [weak self] in
+                                                            completion: { [weak self] _ in
                                                                 self?.delegate?.groupViewHelperDidUpdateGroup()
             })
         }

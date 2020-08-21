@@ -51,6 +51,7 @@ message RequestingMember {
 message AccessControl {
     enum AccessRequired {
         UNKNOWN       = 0;
+        ANY           = 1;
         MEMBER        = 2; // Any group member can make the modification
         ADMINISTRATOR = 3; // Only administrators can make the modification
         UNSATISFIABLE = 4;
@@ -203,7 +204,9 @@ message GroupInviteLink {
     }
 
     oneof contents {
-        GroupInviteLinkContentsV1 v1Contents = 1;
+        // I have renamed this field to work around a limitation 
+        // in our code generation.
+        GroupInviteLinkContentsV1 contentsV1 = 1;
     }
 }
 

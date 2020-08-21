@@ -180,6 +180,7 @@ struct GroupsProtos_AccessControl {
   enum AccessRequired: SwiftProtobuf.Enum {
     typealias RawValue = Int
     case unknown // = 0
+    case any // = 1
 
     /// Any group member can make the modification
     case member // = 2
@@ -196,6 +197,7 @@ struct GroupsProtos_AccessControl {
     init?(rawValue: Int) {
       switch rawValue {
       case 0: self = .unknown
+      case 1: self = .any
       case 2: self = .member
       case 3: self = .administrator
       case 4: self = .unsatisfiable
@@ -206,6 +208,7 @@ struct GroupsProtos_AccessControl {
     var rawValue: Int {
       switch self {
       case .unknown: return 0
+      case .any: return 1
       case .member: return 2
       case .administrator: return 3
       case .unsatisfiable: return 4
@@ -224,6 +227,7 @@ extension GroupsProtos_AccessControl.AccessRequired: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
   static var allCases: [GroupsProtos_AccessControl.AccessRequired] = [
     .unknown,
+    .any,
     .member,
     .administrator,
     .unsatisfiable
@@ -795,23 +799,27 @@ struct GroupsProtos_GroupInviteLink {
 
   var contents: GroupsProtos_GroupInviteLink.OneOf_Contents?
 
-  var v1Contents: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1 {
+  /// I have renamed this field to work around a limitation 
+  /// in our code generation.
+  var contentsV1: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1 {
     get {
-      if case .v1Contents(let v)? = contents {return v}
+      if case .contentsV1(let v)? = contents {return v}
       return GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1()
     }
-    set {contents = .v1Contents(newValue)}
+    set {contents = .contentsV1(newValue)}
   }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Contents: Equatable {
-    case v1Contents(GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1)
+    /// I have renamed this field to work around a limitation 
+    /// in our code generation.
+    case contentsV1(GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1)
 
   #if !swift(>=4.1)
     static func ==(lhs: GroupsProtos_GroupInviteLink.OneOf_Contents, rhs: GroupsProtos_GroupInviteLink.OneOf_Contents) -> Bool {
       switch (lhs, rhs) {
-      case (.v1Contents(let l), .v1Contents(let r)): return l == r
+      case (.contentsV1(let l), .contentsV1(let r)): return l == r
       }
     }
   #endif
@@ -1118,6 +1126,7 @@ extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._Mess
 extension GroupsProtos_AccessControl.AccessRequired: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
+    1: .same(proto: "ANY"),
     2: .same(proto: "MEMBER"),
     3: .same(proto: "ADMINISTRATOR"),
     4: .same(proto: "UNSATISFIABLE")
@@ -2111,7 +2120,7 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
 extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupInviteLink"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "v1Contents")
+    1: .same(proto: "contentsV1")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2121,17 +2130,17 @@ extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._Me
         var v: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1?
         if let current = self.contents {
           try decoder.handleConflictingOneOf()
-          if case .v1Contents(let m) = current {v = m}
+          if case .contentsV1(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.contents = .v1Contents(v)}
+        if let v = v {self.contents = .contentsV1(v)}
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if case .v1Contents(let v)? = self.contents {
+    if case .contentsV1(let v)? = self.contents {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)

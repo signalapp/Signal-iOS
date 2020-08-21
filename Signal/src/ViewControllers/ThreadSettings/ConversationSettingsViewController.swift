@@ -135,12 +135,12 @@ class ConversationSettingsViewController: OWSTableViewController {
         return groupViewHelper.canEditConversationAccess
     }
 
-    var isLocalUserFullMemberOfGroup: Bool {
-        return groupViewHelper.isLocalUserFullMemberOfGroup
+    var isLocalUserFullMember: Bool {
+        return groupViewHelper.isLocalUserFullMember
     }
 
-    var isLocalUserFullOrInvitedMemberOfGroup: Bool {
-        return groupViewHelper.isLocalUserFullOrInvitedMemberOfGroup
+    var isLocalUserFullOrInvitedMember: Bool {
+        return groupViewHelper.isLocalUserFullOrInvitedMember
     }
 
     var isGroupThread: Bool {
@@ -463,7 +463,7 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                             self.setGroupAttributesAccessPromise(groupModelV2: groupModelV2,
                                                                                                  access: access)
         },
-                                                        completion: { [weak self] in
+                                                        completion: { [weak self] _ in
                                                             self?.reloadGroupModelAndUpdateContent()
         })
     }
@@ -541,7 +541,7 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                             self.setGroupMembershipAccessPromise(groupModelV2: groupModelV2,
                                                                                                  access: access)
         },
-                                                        completion: { [weak self] in
+                                                        completion: { [weak self] _ in
                                                             self?.reloadGroupModelAndUpdateContent()
         })
     }
@@ -576,15 +576,30 @@ class ConversationSettingsViewController: OWSTableViewController {
         navigationController?.pushViewController(addGroupMembersViewController, animated: true)
     }
 
-    func showPendingMembersView() {
+    func showMemberRequestsAndInvitesView() {
         guard let groupThread = thread as? TSGroupThread else {
-                owsFailDebug("Invalid thread.")
-                return
+            owsFailDebug("Invalid thread.")
+            return
         }
         let pendingGroupMembersViewController = PendingGroupMembersViewController(groupModel: groupThread.groupModel,
                                                                                   groupViewHelper: groupViewHelper)
         pendingGroupMembersViewController.pendingGroupMembersViewControllerDelegate = self
         navigationController?.pushViewController(pendingGroupMembersViewController, animated: true)
+    }
+
+    func showGroupLinkView() {
+        guard let groupThread = thread as? TSGroupThread else {
+            owsFailDebug("Invalid thread.")
+            return
+        }
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid groupModel.")
+            return
+        }
+        let groupLinkViewController = GroupLinkViewController(groupModelV2: groupModelV2,
+                                                              groupViewHelper: groupViewHelper)
+        groupLinkViewController.groupLinkViewControllerDelegate = self
+        navigationController?.pushViewController(groupLinkViewController, animated: true)
     }
 
     func presentContactViewController() {
@@ -1094,6 +1109,14 @@ extension ConversationSettingsViewController: PendingGroupMembersViewControllerD
 
 // MARK: -
 
+extension ConversationSettingsViewController: GroupLinkViewControllerDelegate {
+    func groupLinkViewViewDidUpdate() {
+        reloadGroupModelAndUpdateContent()
+    }
+}
+
+// MARK: -
+
 extension ConversationSettingsViewController: SheetViewControllerDelegate {
     public func sheetViewControllerRequestedDismiss(_ sheetViewController: SheetViewController) {
         dismiss(animated: true)
@@ -1143,7 +1166,7 @@ extension ConversationSettingsViewController: OWSNavigationView {
                                                             self.updateDisappearingMessagesConfigurationPromise(dmConfiguration,
                                                                                                                 thread: thread)
         },
-                                                        completion: { [weak self] in
+                                                        completion: { [weak self] _ in
                                                             self?.navigationController?.popViewController(animated: true)
         })
     }

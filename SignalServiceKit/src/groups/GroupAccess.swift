@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public enum GroupV2Access: UInt, Codable {
+public enum GroupV2Access: UInt, Codable, CustomStringConvertible {
     case unknown = 0
     case any
     case member
@@ -14,6 +14,8 @@ public enum GroupV2Access: UInt, Codable {
 
     public static func access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
         switch value {
+        case .any:
+            return .any
         case .member:
             return .member
         case .administrator:
@@ -28,7 +30,7 @@ public enum GroupV2Access: UInt, Codable {
     public var protoAccess: GroupsProtoAccessControlAccessRequired {
         switch self {
         case .any:
-            return .unknown
+            return .any
         case .member:
             return .member
         case .administrator:
@@ -39,11 +41,9 @@ public enum GroupV2Access: UInt, Codable {
             return .unknown
         }
     }
-}
 
-// MARK: -
+    // MARK: - CustomStringConvertible
 
-extension GroupV2Access: CustomStringConvertible {
     public var description: String {
         get {
             switch self {
@@ -77,11 +77,43 @@ public class GroupAccess: MTLModel {
     public init(members: GroupV2Access,
                 attributes: GroupV2Access,
                 addFromInviteLink: GroupV2Access) {
-        self.members = members
-        self.attributes = attributes
-        self.addFromInviteLink = addFromInviteLink
+
+        // Ensure we always have valid values.
+        self.members = Self.filter(forMembers: members)
+        self.attributes = Self.filter(forAttributes: attributes)
+        self.addFromInviteLink = Self.filter(forAddFromInviteLink: addFromInviteLink)
 
         super.init()
+    }
+
+    private static func filter(forMembers value: GroupV2Access) -> GroupV2Access {
+        switch value {
+        case .member, .administrator:
+            return value
+        default:
+            owsFailDebug("Invalid access level: \(value)")
+            return .unknown
+        }
+    }
+
+    private static func filter(forAttributes value: GroupV2Access) -> GroupV2Access {
+        switch value {
+        case .member, .administrator:
+            return value
+        default:
+            owsFailDebug("Invalid access level: \(value)")
+            return .unknown
+        }
+    }
+
+    private static func filter(forAddFromInviteLink value: GroupV2Access) -> GroupV2Access {
+        switch value {
+        case .unsatisfiable, .administrator, .any:
+            return value
+        default:
+            owsFailDebug("Invalid access level: \(value)")
+            return .unknown
+        }
     }
 
     @objc

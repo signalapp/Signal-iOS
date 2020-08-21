@@ -693,3 +693,50 @@ class LegacyMemberState: MTLModel {
         return role == .administrator
     }
 }
+
+// MARK: - -
+
+@objc
+public extension GroupMembership {
+    var isLocalUserMemberOfAnyKind: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isMemberOfAnyKind(localAddress)
+    }
+
+    var isLocalUserFullMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isFullMember(localAddress)
+    }
+
+    var isLocalUserInvitedMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isInvitedMember(localAddress)
+    }
+
+    var isLocalUserRequestingMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isRequestingMember(localAddress)
+    }
+
+    var isLocalUserFullOrInvitedMember: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return (isFullMember(localAddress) || isInvitedMember(localAddress))
+    }
+
+    var isLocalUserFullMemberAndAdministrator: Bool {
+        guard let localAddress = TSAccountManager.localAddress else {
+            return false
+        }
+        return isFullMemberAndAdministrator(localAddress)
+    }
+}

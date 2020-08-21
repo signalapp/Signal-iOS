@@ -189,7 +189,9 @@ public class AddToGroupViewController: OWSTableViewController {
                 self.updateGroupThreadPromise(oldGroupModel: oldGroupModel,
                                               newGroupModel: newGroupModel)
             },
-            completion: { self.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName) }
+            completion: { [weak self] _ in
+                self?.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName)
+            }
         )
     }
 

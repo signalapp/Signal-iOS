@@ -22,24 +22,24 @@ class GroupViewUtils {
         return String(format: format, OWSFormat.formatInt(memberCount))
     }
 
-    public static func updateGroupWithActivityIndicator(fromViewController: UIViewController,
-                                                        updatePromiseBlock: @escaping () -> Promise<Void>,
-                                                        completion: @escaping () -> Void) {
+    public static func updateGroupWithActivityIndicator<T>(fromViewController: UIViewController,
+                                                           updatePromiseBlock: @escaping () -> Promise<T>,
+                                                           completion: @escaping (T?) -> Void) {
         // GroupsV2 TODO: Should we allow cancel here?
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly {
                                                             updatePromiseBlock()
-                                                        }.done { _ in
+                                                        }.done { (value: T) in
                                                             modalActivityIndicator.dismiss {
-                                                                completion()
+                                                                completion(value)
                                                             }
                                                         }.catch { error in
                                                             switch error {
                                                             case GroupsV2Error.redundantChange:
                                                                 // Treat GroupsV2Error.redundantChange as a success.
                                                                 modalActivityIndicator.dismiss {
-                                                                    completion()
+                                                                    completion(nil)
                                                                 }
                                                             default:
                                                                 owsFailDebug("Could not update group: \(error)")

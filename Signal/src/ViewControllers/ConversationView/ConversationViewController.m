@@ -557,7 +557,7 @@ typedef enum : NSUInteger {
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return !groupThread.isLocalUserFullMemberOfGroup;
+    return !groupThread.isLocalUserFullMember;
 }
 
 - (void)updateInputVisibility

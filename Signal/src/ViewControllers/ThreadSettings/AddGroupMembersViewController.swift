@@ -178,7 +178,7 @@ private extension AddGroupMembersViewController {
                                                         updatePromiseBlock: {
                                                             self.updateGroupThreadPromise(newGroupModel: newGroupModel)
         },
-                                                        completion: {
+                                                        completion: { _ in
                                                             dismissAndUpdateDelegate()
         })
     }

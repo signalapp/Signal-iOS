@@ -73,19 +73,15 @@ extension ConversationSettingsViewController {
         }
 
         if let groupModel = currentGroupModel {
-            if canEditConversationAccess,
-                let groupModelV2 = groupModel as? TSGroupModelV2 {
-                buildGroupAccessSections(groupModelV2: groupModelV2,
-                                         contents: contents)
+            if let groupModelV2 = groupModel as? TSGroupModelV2 {
+                if canEditConversationAccess {
+                    buildGroupAccessSections(groupModelV2: groupModelV2, contents: contents)
+                }
+
+                buildRequestsInvitesAndLinkSection(groupModelV2: groupModelV2, contents: contents)
             }
 
             contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
-
-            if thread.isGroupV2Thread,
-                let localAddress = tsAccountManager.localAddress {
-                contents.addSection(buildPendingMembersSection(groupModel: groupModel,
-                                                               localAddress: localAddress))
-            }
         }
 
         if !isNoteToSelf {
@@ -199,7 +195,7 @@ extension ConversationSettingsViewController {
             return
         }
 
-        let isLocalUserFullMemberOfGroup = self.isLocalUserFullMemberOfGroup
+        let isLocalUserFullMember = self.isLocalUserFullMember
 
         // For pre-message request threads, allow manually sharing your profile if the thread is not whitelisted.
         let (isPreMessageRequestsThread, isThreadInProfileWhitelist) = databaseStorage.uiRead { transaction -> (Bool, Bool) in
@@ -225,7 +221,7 @@ extension ConversationSettingsViewController {
                 let cell = OWSTableItem.buildDisclosureCell(name: title,
                                                             icon: .settingsProfile,
                                                             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_profile"))
-                cell.isUserInteractionEnabled = isLocalUserFullMemberOfGroup
+                cell.isUserInteractionEnabled = isLocalUserFullMember
                 return cell
                 },
                                      actionBlock: { [weak self] in
@@ -472,7 +468,7 @@ extension ConversationSettingsViewController {
             : NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER",
                                 comment: "Footer text for the 'block and leave' section of contact conversation settings view.")
 
-        if isGroupThread, isLocalUserFullOrInvitedMemberOfGroup {
+        if isGroupThread, isLocalUserFullOrInvitedMember {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
@@ -534,7 +530,7 @@ extension ConversationSettingsViewController {
     }
 
     private func buildGroupAccessSections(groupModelV2: TSGroupModelV2,
-                                         contents: OWSTableContents) {
+                                          contents: OWSTableContents) {
 
         do {
             let section = OWSTableSection()
@@ -798,52 +794,35 @@ extension ConversationSettingsViewController {
         return section
     }
 
-    // TODO: Add requesting members section.
-    private func buildPendingMembersSection(groupModel: TSGroupModel,
-                                            localAddress: SignalServiceAddress) -> OWSTableSection {
+    private func buildRequestsInvitesAndLinkSection(groupModelV2: TSGroupModelV2,
+                                                    contents: OWSTableContents) {
+
         let section = OWSTableSection()
         section.customHeaderHeight = 14
         section.customFooterHeight = 14
 
-        // Only admins can revoke invites.
-        let canRevokeInvites = groupViewHelper.canRevokePendingInvites
+        section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
+                                                name: NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
+                                                                        comment: "Label for 'member requests & invites' action in conversation settings view."),
+                                                accessibilityIdentifier: "conversation_settings_requests_and_invites",
+                                                actionBlock: {  [weak self] in
+                                                    self?.showMemberRequestsAndInvitesView()
 
-        let pendingMembers = groupModel.groupMembership.invitedMembers
-        let pendingInviteCount = (canRevokeInvites
-            ? pendingMembers.count + groupModel.groupMembership.invalidInvites.count
-            : pendingMembers.count)
-        let accessoryText: String
-        let hasPendingMembers = pendingInviteCount > 0
-        if hasPendingMembers {
-            accessoryText = OWSFormat.formatInt(pendingInviteCount)
-        } else {
-            accessoryText = NSLocalizedString("CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE",
-                                              comment: "Indicates that there are no pending member invites in the group.")
-        }
-        let isLocalUserFullMember = groupModel.groupMembership.isFullMember(localAddress)
+        }))
 
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-            let cellName = NSLocalizedString("PENDING_GROUP_MEMBERS_VIEW_TITLE",
-                                             comment: "The title for the 'pending group members' view.")
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsViewPendingInvites,
-                                                                itemName: cellName,
-                                                                accessoryText: accessoryText)
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "pending.members")
-            cell.accessoryType = isLocalUserFullMember ? .disclosureIndicator : .none
-            cell.selectionStyle = isLocalUserFullMember ? .default : .none
+        let groupLinkStatus = (groupModelV2.isGroupLinkEnabled
+            ? CommonStrings.switchOn
+            : CommonStrings.switchOff)
+        section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
+                                                name: NSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
+                                                                        comment: "Label for 'group link' action in conversation settings view."),
+                                                accessoryText: groupLinkStatus,
+                                                accessibilityIdentifier: "conversation_settings_group_link",
+                                                actionBlock: {  [weak self] in
+                                                    self?.showGroupLinkView()
 
-            return cell
-            },
-                                 customRowHeight: UITableView.automaticDimension) { [weak self] in
-                                    if isLocalUserFullMember {
-                                        self?.showPendingMembersView()
-                                    }
-        })
+        }))
 
-        return section
+        contents.addSection(section)
     }
 }

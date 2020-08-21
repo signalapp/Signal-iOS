@@ -232,7 +232,7 @@ extension ConversationViewController: MessageRequestDelegate {
         }
 
         guard let groupThread = thread as? TSGroupThread,
-            groupThread.isLocalUserFullOrInvitedMemberOfGroup else {
+            groupThread.isLocalUserFullOrInvitedMember else {
                 // If we don't need to leave the group, finish up immediately.
                 return completion()
         }

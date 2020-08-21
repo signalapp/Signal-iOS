@@ -20,6 +20,28 @@ public enum GroupsV2Error: Error {
     case gv2NotEnabled
 }
 
+// MARK: -
+
+@objc
+public enum GroupsV2LinkMode: UInt, CustomStringConvertible {
+    case disabled
+    case enabledWithoutApproval
+    case enabledWithApproval
+
+    public var description: String {
+        switch self {
+        case .disabled:
+            return ".disabled"
+        case .enabledWithoutApproval:
+            return ".enabledWithoutApproval"
+        case .enabledWithApproval:
+            return ".enabledWithApproval"
+        }
+    }
+}
+
+// MARK: -
+
 @objc
 public protocol GroupsV2: AnyObject {
 
@@ -56,6 +78,8 @@ public protocol GroupsV2: AnyObject {
     func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction)
 
     func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
+
+    func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL
 }
 
 // MARK: -
@@ -122,6 +146,10 @@ public protocol GroupsV2ChangeSet: AnyObject {
     func setShouldLeaveGroupDeclineInvite()
 
     func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken)
+
+    func setLinkMode(_ linkMode: GroupsV2LinkMode)
+
+    func rotateInviteLinkPassword()
 
     func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
@@ -473,6 +501,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
+        owsFail("Not implemented.")
+    }
+
+    public func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
         owsFail("Not implemented.")
     }
 }

@@ -67,6 +67,11 @@ import Foundation
     @objc
     static public let unreadAction = NSLocalizedString("UNREAD_ACTION", comment: "Pressing this button marks a thread as unread")
 
+    @objc
+    static public let switchOn = NSLocalizedString("SWITCH_ON", comment: "Label for 'on' state of a switch control.")
+
+    @objc
+    static public let switchOff = NSLocalizedString("SWITCH_OFF", comment: "Label for 'off' state of a switch control.")
 }
 
 @objc

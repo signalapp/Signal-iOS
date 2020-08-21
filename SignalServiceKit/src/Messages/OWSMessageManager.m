@@ -719,7 +719,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         if (groupThread) {
-            if (!groupThread.isLocalUserFullMemberOfGroup) {
+            if (!groupThread.isLocalUserFullMember) {
                 OWSLogInfo(@"Ignoring messages for left group.");
                 return nil;
             }
@@ -810,7 +810,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Missing sender address.");
             return nil;
         }
-        if (!groupThread.isLocalUserFullMemberOfGroup) {
+        if (!groupThread.isLocalUserFullMember) {
             // We don't want to process messages for groups in which we are a pending member.
             OWSLogInfo(@"Ignoring messages for left group.");
             return nil;
@@ -1133,7 +1133,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (typingMessage.hasGroupID) {
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:typingMessage.groupID
                                                                    transaction:transaction];
-        if (groupThread != nil && !groupThread.isLocalUserFullOrInvitedMemberOfGroup) {
+        if (groupThread != nil && !groupThread.isLocalUserFullOrInvitedMember) {
             OWSLogInfo(@"Ignoring messages for left group.");
             return;
         }
@@ -1238,7 +1238,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Group update for invalid group version.");
             return;
         }
-        if (oldGroupThread.isLocalUserFullMemberOfGroup) {
+        if (oldGroupThread.isLocalUserFullMember) {
             // If the local user had left the group we couldn't trust our local group state - we'd
             // have to trust the remote membership.
             //
@@ -1947,7 +1947,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure we are in the group.
-    if (!gThread.isLocalUserFullOrInvitedMemberOfGroup) {
+    if (!gThread.isLocalUserFullOrInvitedMember) {
         OWSLogWarn(@"Ignoring 'Group Info Request' message for group we no longer belong to.");
         return;
     }

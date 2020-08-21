@@ -275,6 +275,7 @@
 		34AC0A23211C829F00997B47 /* OWSLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC0A21211C829E00997B47 /* OWSLabel.m */; };
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B14D8B24F0012100CC3A9A /* GroupsPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8A24F0012100CC3A9A /* GroupsPerfTest.swift */; };
+		34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */; };
 		34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
 		34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* SplashViewController.swift */; };
@@ -1206,6 +1207,7 @@
 		34B0796C1FCF46B000E248C2 /* MainAppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainAppContext.h; sourceTree = "<group>"; };
 		34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SignalShareExtension.entitlements; sourceTree = "<group>"; };
 		34B14D8A24F0012100CC3A9A /* GroupsPerfTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsPerfTest.swift; sourceTree = "<group>"; };
+		34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupLinkViewController.swift; sourceTree = "<group>"; };
 		34B3F8391E8DF1700035BE1A /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentSharing.h; sourceTree = "<group>"; };
 		34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
 		34B3F83B1E8DF1700035BE1A /* CallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallViewController.swift; sourceTree = "<group>"; };
@@ -2119,6 +2121,7 @@
 			isa = PBXGroup;
 			children = (
 				349439D524360C30001045F7 /* AddGroupMembersViewController.swift */,
+				882BDAAD249050F000C14587 /* AddToGroupViewController.swift */,
 				34235F3724213550008C74CB /* ConversationSettingsViewController.swift */,
 				34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */,
 				34E20D4B24256563002C011E /* ConversationSettingsViewController+Header.swift */,
@@ -2128,14 +2131,14 @@
 				340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */,
 				346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */,
 				34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */,
+				34B14D8C24F02A9500CC3A9A /* GroupLinkViewController.swift */,
 				347B83F82436820C0019A52C /* GroupViewHelper.swift */,
 				347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */,
 				34E6003924251AD50026AD4B /* GroupViewUtils.swift */,
 				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
-				882BDAAD249050F000C14587 /* AddToGroupViewController.swift */,
+				AC12B5FAA0E45C608224A310 /* OWSAddToContactViewController.swift */,
 				347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */,
 				348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */,
-				AC12B5FAA0E45C608224A310 /* OWSAddToContactViewController.swift */,
 			);
 			path = ThreadSettings;
 			sourceTree = "<group>";
@@ -4811,6 +4814,7 @@
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				88A4CC0E246CD6CC0082211F /* OnboardingTransferProgressViewController.swift in Sources */,
 				4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */,
+				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				3416BCAA227763A500E761B4 /* OWSMessageView.m in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,

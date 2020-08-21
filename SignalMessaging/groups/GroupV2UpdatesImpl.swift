@@ -262,7 +262,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     owsFailDebug("Missing localAddress.")
                     return false
                 }
-                let isLocalUserInGroup = groupThread.isLocalUserFullOrInvitedMemberOfGroup
+                let isLocalUserInGroup = groupThread.isLocalUserFullOrInvitedMember
                 // Auth errors are expected if we've left the group,
                 // but we should still try to refresh so we can learn
                 // if we've been re-added.

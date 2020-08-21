@@ -97,8 +97,8 @@ public class GroupManager: NSObject {
 
     public static let maxGroupNameLength: Int = 32
 
-    // GroupsV2 TODO: Finalize this value with Ehren.
-    public static let changeProtoEpoch: UInt32 = 0
+    // Epoch 1: Group Links
+    public static let changeProtoEpoch: UInt32 = 1
 
     // This matches kOversizeTextMessageSizeThreshold.
     public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
@@ -1243,6 +1243,33 @@ public class GroupManager: NSObject {
                              description: "Change group membership access") { groupChangeSet in
                                 groupChangeSet.setAccessForMembers(access)
         }
+    }
+
+    // MARK: - Group Links
+
+    public static func updateLinkModeV2(groupModel: TSGroupModelV2,
+                                        linkMode: GroupsV2LinkMode) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Change group link mode") { groupChangeSet in
+                                groupChangeSet.setLinkMode(linkMode)
+        }
+    }
+
+    public static func resetLinkV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Rotate invite link password") { groupChangeSet in
+                                groupChangeSet.rotateInviteLinkPassword()
+        }
+    }
+
+    public static let inviteLinkPasswordLengthV2: UInt = 16
+
+    public static func generateInviteLinkPasswordV2() -> Data {
+        Cryptography.generateRandomBytes(inviteLinkPasswordLengthV2)
+    }
+
+    public static func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
+        try groupsV2.inviteLink(forGroupModelV2: groupModelV2)
     }
 
     // MARK: - Generic Group Change

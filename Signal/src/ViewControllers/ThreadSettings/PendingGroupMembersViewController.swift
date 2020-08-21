@@ -389,8 +389,8 @@ private extension PendingGroupMembersViewController {
                                                         updatePromiseBlock: {
                                                             self.revokePendingInvitesPromise(addresses: addresses)
         },
-                                                        completion: {
-                                                            self.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] _ in
+                                                            self?.reloadGroupModelAndTableContents()
         })
     }
 
@@ -416,8 +416,8 @@ private extension PendingGroupMembersViewController {
                                                         updatePromiseBlock: {
                                                             self.revokeInvalidInvitesPromise()
         },
-                                                        completion: {
-                                                            self.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] _ in
+                                                            self?.reloadGroupModelAndTableContents()
         })
     }
 

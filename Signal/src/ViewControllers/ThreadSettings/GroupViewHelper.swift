@@ -61,7 +61,7 @@ class GroupViewHelper: NSObject {
         if threadViewModel.hasPendingMessageRequest {
             return false
         }
-        guard isLocalUserFullMemberOfGroup else {
+        guard isLocalUserFullMember else {
             return false
         }
         guard let groupThread = thread as? TSGroupThread else {
@@ -120,7 +120,7 @@ class GroupViewHelper: NSObject {
         if threadViewModel.hasPendingMessageRequest {
             return false
         }
-        guard isLocalUserFullMemberOfGroup else {
+        guard isLocalUserFullMember else {
             return false
         }
         guard let groupThread = thread as? TSGroupThread else {
@@ -152,20 +152,20 @@ class GroupViewHelper: NSObject {
     }
 
     var canResendInvites: Bool {
-        return (!threadViewModel.hasPendingMessageRequest && isLocalUserFullMemberOfGroup)
+        return (!threadViewModel.hasPendingMessageRequest && isLocalUserFullMember)
     }
 
-    var isLocalUserFullMemberOfGroup: Bool {
+    var isLocalUserFullMember: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return true
         }
-        return groupThread.isLocalUserFullMemberOfGroup
+        return groupThread.isLocalUserFullMember
     }
 
-    var isLocalUserFullOrInvitedMemberOfGroup: Bool {
+    var isLocalUserFullOrInvitedMember: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return true
         }
-        return groupThread.isLocalUserFullOrInvitedMemberOfGroup
+        return groupThread.isLocalUserFullOrInvitedMember
     }
 }

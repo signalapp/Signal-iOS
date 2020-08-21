@@ -84,6 +84,37 @@ public extension OWSTableItem {
         return cell
     }
 
+    static func disclosureItem(icon: ThemeIcon,
+                               name: String,
+                               accessoryText: String? = nil,
+                               accessibilityIdentifier: String,
+                               actionBlock: (() -> Void)?) -> OWSTableItem {
+        item(icon: icon,
+             name: name,
+             accessoryText: accessoryText,
+             accessoryType: .disclosureIndicator,
+             accessibilityIdentifier: accessibilityIdentifier,
+             actionBlock: actionBlock)
+    }
+
+    static func item(icon: ThemeIcon,
+                     name: String,
+                     accessoryText: String? = nil,
+                     accessoryType: UITableViewCell.AccessoryType = .none,
+                     accessibilityIdentifier: String,
+                     actionBlock: (() -> Void)?) -> OWSTableItem {
+
+        OWSTableItem(customCellBlock: {
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: icon,
+                                                                itemName: name,
+                                                                accessoryText: accessoryText)
+            cell.accessibilityIdentifier = accessibilityIdentifier
+            cell.accessoryType = accessoryType
+            return cell
+            },
+                     actionBlock: actionBlock)
+    }
+
     static func buildCellWithAccessoryLabel(icon: ThemeIcon,
                                             itemName: String,
                                             accessoryText: String? = nil,

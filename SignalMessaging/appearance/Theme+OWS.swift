@@ -27,9 +27,10 @@ public enum ThemeIcon: UInt {
     case settingsViewMakeGroupAdmin
     case settingsViewRevokeGroupAdmin
     case settingsViewRemoveFromGroup
-    case settingsViewPendingInvites
+    case settingsViewRequestAndInvites
     case settingsAddToGroup
     case settingsMention
+    case settingsLink
 
     case stickerButton
     case cameraButton
@@ -157,7 +158,7 @@ public extension Theme {
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .settingsViewRemoveFromGroup:
             return "leave-24"
-        case .settingsViewPendingInvites:
+        case .settingsViewRequestAndInvites:
             return "pending-invite-24"
         case .settingsTimer:
             return "timer-24"
@@ -182,6 +183,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .settingsMention:
             return "mention-24"
+        case .settingsLink:
+            return "link-24"
 
         // Input Toolbar
         case .stickerButton:

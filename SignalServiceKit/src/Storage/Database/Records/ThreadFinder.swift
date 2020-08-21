@@ -286,7 +286,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         if OWSBlockingManager.shared().isThreadBlocked(thread) { return true }
 
         let isGroupThread = thread is TSGroupThread
-        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserFullOrInvitedMemberOfGroup == true
+        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserFullOrInvitedMember == true
 
         // If this is a group thread and we're not a member, never show the message request.
         if isGroupThread, !isLocalUserInGroup { return false }

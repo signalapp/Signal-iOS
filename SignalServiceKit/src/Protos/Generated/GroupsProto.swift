@@ -883,6 +883,7 @@ extension GroupsProtoRequestingMember.GroupsProtoRequestingMemberBuilder {
 public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
     public typealias RawValue = Int
     case unknown // 0
+    case any // 1
     case member // 2
     case administrator // 3
     case unsatisfiable // 4
@@ -895,6 +896,7 @@ public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
     public init?(rawValue: Int) {
         switch rawValue {
             case 0: self = .unknown
+            case 1: self = .any
             case 2: self = .member
             case 3: self = .administrator
             case 4: self = .unsatisfiable
@@ -905,6 +907,7 @@ public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
     public var rawValue: Int {
         switch self {
             case .unknown: return 0
+            case .any: return 1
             case .member: return 2
             case .administrator: return 3
             case .unsatisfiable: return 4
@@ -916,6 +919,7 @@ public enum GroupsProtoAccessControlAccessRequired: SwiftProtobuf.Enum {
 private func GroupsProtoAccessControlAccessRequiredWrap(_ value: GroupsProtos_AccessControl.AccessRequired) -> GroupsProtoAccessControlAccessRequired {
     switch value {
     case .unknown: return .unknown
+    case .any: return .any
     case .member: return .member
     case .administrator: return .administrator
     case .unsatisfiable: return .unsatisfiable
@@ -926,6 +930,7 @@ private func GroupsProtoAccessControlAccessRequiredWrap(_ value: GroupsProtos_Ac
 private func GroupsProtoAccessControlAccessRequiredUnwrap(_ value: GroupsProtoAccessControlAccessRequired) -> GroupsProtos_AccessControl.AccessRequired {
     switch value {
     case .unknown: return .unknown
+    case .any: return .any
     case .member: return .member
     case .administrator: return .administrator
     case .unsatisfiable: return .unsatisfiable
@@ -4946,18 +4951,18 @@ extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.GroupsProtoGroupIn
 // MARK: - GroupsProtoGroupInviteLinkOneOfContents
 
 public enum GroupsProtoGroupInviteLinkOneOfContents: Equatable {
-    case v1contents(GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1)
+    case contentsV1(GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1)
 }
 
 private func GroupsProtoGroupInviteLinkOneOfContentsWrap(_ value: GroupsProtos_GroupInviteLink.OneOf_Contents) throws -> GroupsProtoGroupInviteLinkOneOfContents {
     switch value {
-    case .v1contents(let value): return .v1contents(try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(value))
+    case .contentsV1(let value): return .contentsV1(try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(value))
     }
 }
 
 private func GroupsProtoGroupInviteLinkOneOfContentsUnwrap(_ value: GroupsProtoGroupInviteLinkOneOfContents) -> GroupsProtos_GroupInviteLink.OneOf_Contents {
     switch value {
-    case .v1contents(let value): return .v1contents(value.proto)
+    case .contentsV1(let value): return .contentsV1(value.proto)
     }
 }
 

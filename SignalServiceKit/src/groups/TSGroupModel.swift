@@ -127,3 +127,17 @@ public class TSGroupModelV2: TSGroupModel {
         return result
     }
 }
+
+// MARK: -
+
+@objc
+public extension TSGroupModelV2 {
+    var isGroupLinkEnabled: Bool {
+        if let inviteLinkPassword = inviteLinkPassword,
+            !inviteLinkPassword.isEmpty,
+            access.canJoinFromInviteLink {
+            return true
+        }
+        return false
+    }
+}

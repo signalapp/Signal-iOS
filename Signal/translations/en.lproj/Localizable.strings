@@ -853,11 +853,17 @@
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
 
+/* Label for 'group link' action in conversation settings view. */
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Sharable Group Link";
+
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+
+/* Label for 'member requests & invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
@@ -909,9 +915,6 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Create New Contact";
-
-/* Indicates that there are no pending member invites in the group. */
-"CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "None";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
@@ -1554,6 +1557,33 @@
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+
+/* Label for the 'approve new members' switch in the 'group link' view. */
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+
+/* Label for the 'enable group link' switch in the 'group link' view. */
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+
+/* Title for the 'manage and share' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+
+/* Footer for the 'member requests' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the sharable group link.";
+
+/* Title for the 'member requests' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+
+/* Label for the 'reset link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+
+/* Title for the 'confirm reset link' alert in the 'group link' view. */
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+
+/* Label for the 'share link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK" = "Share";
+
+/* The title for the 'group link' view. */
+"GROUP_LINK_VIEW_TITLE" = "Sharable Group Link";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
@@ -4107,6 +4137,12 @@
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
+
+/* Label for 'off' state of a switch control. */
+"SWITCH_OFF" = "Off";
+
+/* Label for 'on' state of a switch control. */
+"SWITCH_ON" = "On";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify";
