@@ -850,7 +850,7 @@ extension GroupUpdateCopy {
 
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
-        if let inviterUuid = oldGroupMembership.addedByUuid(forPendingProfileKeyMember: address) {
+        if let inviterUuid = oldGroupMembership.addedByUuid(forInvitedMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
             inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
                                                       transaction: transaction)
@@ -948,7 +948,7 @@ extension GroupUpdateCopy {
 
         var inviterName: String?
         var inviterAddress: SignalServiceAddress?
-        if let inviterUuid = oldGroupMembership.addedByUuid(forPendingProfileKeyMember: address) {
+        if let inviterUuid = oldGroupMembership.addedByUuid(forInvitedMember: address) {
             inviterAddress = SignalServiceAddress(uuid: inviterUuid)
             inviterName = contactsManager.displayName(for: SignalServiceAddress(uuid: inviterUuid),
                                                       transaction: transaction)
@@ -1406,7 +1406,7 @@ extension GroupUpdateCopy {
                                             comment: "Message indicating that the local user has joined the group."))
         case .invited:
             if let localAddress = Self.tsAccountManager.localAddress,
-                let inviterUuid = newGroupMembership.addedByUuid(forPendingProfileKeyMember: localAddress) {
+                let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
                 let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
                 let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
                 let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
@@ -1452,7 +1452,7 @@ extension GroupUpdateCopy {
                                       in groupMembership: GroupMembership) -> MembershipStatus {
         if groupMembership.isFullMember(address) {
             return .normalMember
-        } else if groupMembership.isPendingProfileKeyMember(address) {
+        } else if groupMembership.isInvitedMember(address) {
             return .invited
         } else if groupMembership.isRequestingMember(address) {
             return .requesting

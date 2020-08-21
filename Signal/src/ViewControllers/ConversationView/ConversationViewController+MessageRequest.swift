@@ -103,11 +103,11 @@ extension ConversationViewController: MessageRequestDelegate {
             return
         }
         let groupMembership = groupThread.groupModel.groupMembership
-        guard groupMembership.isPendingProfileKeyMember(localAddress) else {
+        guard groupMembership.isInvitedMember(localAddress) else {
             owsFailDebug("Can't reject invite if not pending.")
             return
         }
-        guard let addedByUuid = groupMembership.addedByUuid(forPendingProfileKeyMember: localAddress) else {
+        guard let addedByUuid = groupMembership.addedByUuid(forInvitedMember: localAddress) else {
             owsFailDebug("Missing addedByUuid.")
             return
         }

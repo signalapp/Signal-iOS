@@ -243,7 +243,7 @@ class DebugUIGroupsV2: DebugUIPage {
             groupMembershipBuilder1.addFullMember(otherAddress0, role: .normal)
             if groupsVersion == .V2,
                 let updaterUuid = updaterAddress?.uuid {
-                groupMembershipBuilder1.addPendingProfileKeyMember(otherAddress1,
+                groupMembershipBuilder1.addInvitedMember(otherAddress1,
                                                          role: .normal,
                                                          addedByUuid: updaterUuid)
             }
@@ -483,7 +483,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 var groupMembershipBuilder2 = defaultModel.groupMembership.asBuilder
                 for member in members {
                     groupMembershipBuilder2.remove(member)
-                    groupMembershipBuilder2.addPendingProfileKeyMember(member, role: .normal, addedByUuid: inviterUuid)
+                    groupMembershipBuilder2.addInvitedMember(member, role: .normal, addedByUuid: inviterUuid)
                 }
                 modelBuilder2.groupMembership = groupMembershipBuilder2.build()
                 let model2 = try modelBuilder2.build(transaction: transaction)

@@ -69,7 +69,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
 
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
-            self.contactsManager.sortSignalServiceAddresses(Array(groupMembership.pendingProfileKeyMembers),
+            self.contactsManager.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
                                                             transaction: transaction)
         }
 
@@ -77,7 +77,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
         var membersInvitedByLocalUser = [SignalServiceAddress]()
         var membersInvitedByOtherUsers = [SignalServiceAddress: [SignalServiceAddress]]()
         for invitedAddress in allPendingMembersSorted {
-            guard let inviterUuid = groupMembership.addedByUuid(forPendingProfileKeyMember: invitedAddress) else {
+            guard let inviterUuid = groupMembership.addedByUuid(forInvitedMember: invitedAddress) else {
                 owsFailDebug("Missing inviter.")
                 continue
             }

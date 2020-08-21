@@ -268,7 +268,7 @@ public class GroupManager: NSObject {
                 // Before we create a v2 group, we need to separate out the
                 // pending and non-pending members.  If we already know we're
                 // going to create a v1 group, we shouldn't separate them.
-                let groupMembership = self.separatePendingProfileKeyMembers(in: proposedGroupMembership,
+                let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
                                                                             oldGroupModel: nil,
                                                                             transaction: transaction)
 
@@ -379,7 +379,7 @@ public class GroupManager: NSObject {
     // * We have a profile key credential for them.
     // * Their account has the "groups v2" capability
     //   (e.g. all of their clients support groups v2.
-    private static func separatePendingProfileKeyMembers(in newGroupMembership: GroupMembership,
+    private static func separateInvitedMembers(in newGroupMembership: GroupMembership,
                                                          oldGroupModel: TSGroupModel?,
                                                          transaction: SDSAnyReadTransaction) -> GroupMembership {
         guard let localUuid = tsAccountManager.localUuid else {
@@ -401,7 +401,7 @@ public class GroupManager: NSObject {
             // Carry over existing members as they stand.
             let existingMembers = oldGroupMembership.allMembersOfAnyKind.intersection(newGroupMembership.allMembersOfAnyKind)
             for address in existingMembers {
-                if oldGroupMembership.isPendingProfileKeyMember(address),
+                if oldGroupMembership.isInvitedMember(address),
                     newGroupMembership.isFullMember(address) {
                     // If we're adding a pending member, treat them as a new member.
                     newMembers.insert(address)
@@ -455,9 +455,9 @@ public class GroupManager: NSObject {
             // instead of adding them.
             if address != localAddress &&
                 DebugFlags.groupsV2forceInvites {
-                builder.addPendingProfileKeyMember(address, role: role, addedByUuid: localUuid)
+                builder.addInvitedMember(address, role: role, addedByUuid: localUuid)
             } else if isPending {
-                builder.addPendingProfileKeyMember(address, role: role, addedByUuid: localUuid)
+                builder.addInvitedMember(address, role: role, addedByUuid: localUuid)
             } else {
                 builder.addFullMember(address, role: role)
             }
@@ -930,7 +930,7 @@ public class GroupManager: NSObject {
         }
         // Before we update a v2 group, we need to separate out the
         // pending and non-pending members.
-        let groupMembership = self.separatePendingProfileKeyMembers(in: proposedGroupMembership,
+        let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
                                                                     oldGroupModel: oldGroupModel,
                                                                     transaction: transaction)
 
@@ -1104,7 +1104,7 @@ public class GroupManager: NSObject {
             }
             return updateGroupV2(groupModel: groupModel,
                                  description: "Accept invite") { groupChangeSet in
-                                    groupChangeSet.promotePendingProfileKeyMember(localUuid)
+                                    groupChangeSet.promoteInvitedMember(localUuid)
             }
         }
     }
@@ -1532,7 +1532,7 @@ public class GroupManager: NSObject {
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
         let groupMembership = groupThread.groupModel.groupMembership
-        let additionalRecipients = groupMembership.pendingProfileKeyOrRequestMembers.filter { address in
+        let additionalRecipients = groupMembership.invitedOrRequestMembers.filter { address in
             return doesUserSupportGroupsV2(address: address,
                                            transaction: transaction)
         }
@@ -1583,7 +1583,7 @@ public class GroupManager: NSObject {
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
         let groupMembership = groupThread.groupModel.groupMembership
-        let additionalRecipients = groupMembership.pendingProfileKeyOrRequestMembers.filter { address in
+        let additionalRecipients = groupMembership.invitedOrRequestMembers.filter { address in
             return doesUserSupportGroupsV2(address: address,
                                            transaction: transaction)
         }

@@ -68,9 +68,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     // Full, pending profile key or pending request members to remove.
     private var membersToRemove = [UUID]()
     private var membersToChangeRole = [UUID: TSGroupMemberRole]()
-    private var pendingProfileKeyMembersToAdd = [UUID: TSGroupMemberRole]()
+    private var invitedMembersToAdd = [UUID: TSGroupMemberRole]()
     private var invalidInvitesToRemove = [Data: InvalidInvite]()
-    private var pendingProfileKeyMembersToPromote = [UUID]()
+    private var invitedMembersToPromote = [UUID]()
 
     // These access properties should only be set if the value is changing.
     private var accessForMembers: GroupV2Access?
@@ -148,10 +148,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 continue
             }
             let isAdministrator = newGroupMembership.isFullOrInvitedAdministrator(uuid)
-            let isPending = newGroupMembership.isPendingProfileKeyMember(uuid)
+            let isPending = newGroupMembership.isInvitedMember(uuid)
             let role: TSGroupMemberRole = isAdministrator ? .administrator : .normal
             if isPending {
-                addPendingProfileKeyMember(uuid, role: role)
+                addInvitedMember(uuid, role: role)
             } else {
                 addMember(uuid, role: role)
             }
@@ -168,7 +168,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         for uuid in oldUserUuids.intersection(newUserUuids) {
-            if oldGroupMembership.isPendingProfileKeyMember(uuid),
+            if oldGroupMembership.isInvitedMember(uuid),
                 newGroupMembership.isFullMember(uuid) {
                 addMember(uuid, role: .normal)
             } else if oldGroupMembership.isRequestingMember(uuid),
@@ -262,9 +262,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     }
 
     @objc
-    public func promotePendingProfileKeyMember(_ uuid: UUID) {
-        assert(!pendingProfileKeyMembersToPromote.contains(uuid))
-        pendingProfileKeyMembersToPromote.append(uuid)
+    public func promoteInvitedMember(_ uuid: UUID) {
+        assert(!invitedMembersToPromote.contains(uuid))
+        invitedMembersToPromote.append(uuid)
     }
 
     public func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole) {
@@ -272,9 +272,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         membersToChangeRole[uuid] = role
     }
 
-    public func addPendingProfileKeyMember(_ uuid: UUID, role: TSGroupMemberRole) {
-        assert(pendingProfileKeyMembersToAdd[uuid] == nil)
-        pendingProfileKeyMembersToAdd[uuid] = role
+    public func addInvitedMember(_ uuid: UUID, role: TSGroupMemberRole) {
+        assert(invitedMembersToAdd[uuid] == nil)
+        invitedMembersToAdd[uuid] = role
     }
 
     public func setShouldLeaveGroupDeclineInvite() {
@@ -346,7 +346,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
         var uuidsForProfileKeyCredentials = Set<UUID>()
         uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
-        uuidsForProfileKeyCredentials.formUnion(pendingProfileKeyMembersToPromote)
+        uuidsForProfileKeyCredentials.formUnion(invitedMembersToPromote)
         // This should be redundant, but we'll also double-check that we have
         // the local profile key credential.
         uuidsForProfileKeyCredentials.insert(localUuid)
@@ -505,7 +505,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                     fullMemberAdministratorCount -= 1
                 }
                 allMemberCount -= 1
-            } else if currentGroupMembership.isPendingProfileKeyMember(uuid) {
+            } else if currentGroupMembership.isInvitedMember(uuid) {
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
@@ -527,7 +527,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
-        for (uuid, role) in self.pendingProfileKeyMembersToAdd {
+        for (uuid, role) in self.invitedMembersToAdd {
             guard !currentGroupMembership.isMemberOfAnyKind(uuid) else {
                 // Another user has already added or invited this member.
                 // They may have been added with a different role.
@@ -633,9 +633,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
-        for uuid in pendingProfileKeyMembersToPromote {
+        for uuid in invitedMembersToPromote {
             // Check that pending member is still invited.
-            guard currentGroupMembership.isPendingProfileKeyMember(uuid) else {
+            guard currentGroupMembership.isInvitedMember(uuid) else {
                 throw GroupsV2Error.redundantChange
             }
             guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
@@ -658,7 +658,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
 
             // Check that we are still invited or in group.
-            if currentGroupMembership.isPendingProfileKeyMember(localUuid) {
+            if currentGroupMembership.isInvitedMember(localUuid) {
                 // Decline invite
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let localUserId = try groupV2Params.userId(forUuid: localUuid)

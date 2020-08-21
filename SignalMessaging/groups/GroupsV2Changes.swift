@@ -296,7 +296,7 @@ public class GroupsV2Changes {
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addPendingProfileKeyMember(uuid, role: role, addedByUuid: addedByUuid)
+            groupMembershipBuilder.addInvitedMember(uuid, role: role, addedByUuid: addedByUuid)
         }
 
         for action in changeActionsProto.deletePendingMembers {
@@ -316,7 +316,7 @@ public class GroupsV2Changes {
                 }
 
                 guard oldGroupMembership.hasInvalidInvite(forUserId: userId) ||
-                    oldGroupMembership.isPendingProfileKeyMember(uuid) else {
+                    oldGroupMembership.isInvitedMember(uuid) else {
                         throw OWSAssertionError("Invalid membership.")
                 }
                 groupMembershipBuilder.removeInvalidInvite(userId: userId)
@@ -343,7 +343,7 @@ public class GroupsV2Changes {
             let userId = uuidCiphertext.serialize().asData
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
 
-            guard oldGroupMembership.isPendingProfileKeyMember(uuid) else {
+            guard oldGroupMembership.isInvitedMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
             guard !oldGroupMembership.isFullMember(uuid) else {

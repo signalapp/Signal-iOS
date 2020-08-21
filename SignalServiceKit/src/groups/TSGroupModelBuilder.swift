@@ -72,10 +72,10 @@ public struct TSGroupModelBuilder {
 
         switch groupsVersion {
         case .V1:
-            if !groupMembership.pendingProfileKeyMembers.isEmpty {
+            if !groupMembership.invitedMembers.isEmpty {
                 owsFailDebug("v1 group has pending profile key members.")
             }
-            if !groupMembership.pendingRequestMembers.isEmpty {
+            if !groupMembership.requestingMembers.isEmpty {
                 owsFailDebug("v1 group has pending request members.")
             }
             return TSGroupModel(groupId: groupId,

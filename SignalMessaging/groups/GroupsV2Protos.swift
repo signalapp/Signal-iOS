@@ -122,7 +122,7 @@ public class GroupsV2Protos {
             guard uuid != localUuid else {
                 continue
             }
-            let isInvited = groupMembership.isPendingProfileKeyMember(uuid)
+            let isInvited = groupMembership.isInvitedMember(uuid)
             guard !isInvited else {
                 continue
             }
@@ -132,7 +132,7 @@ public class GroupsV2Protos {
                                                          role: role,
                                                          groupV2Params: groupV2Params))
         }
-        for address in groupMembership.pendingProfileKeyMembers {
+        for address in groupMembership.invitedMembers {
             guard let uuid = address.uuid else {
                 throw OWSAssertionError("Missing uuid.")
             }

@@ -117,7 +117,7 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
     func setAccessForAttributes(_ value: GroupV2Access)
 
-    func promotePendingProfileKeyMember(_ uuid: UUID)
+    func promoteInvitedMember(_ uuid: UUID)
 
     func setShouldLeaveGroupDeclineInvite()
 

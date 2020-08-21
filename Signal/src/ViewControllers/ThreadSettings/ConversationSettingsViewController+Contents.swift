@@ -808,7 +808,7 @@ extension ConversationSettingsViewController {
         // Only admins can revoke invites.
         let canRevokeInvites = groupViewHelper.canRevokePendingInvites
 
-        let pendingMembers = groupModel.groupMembership.pendingProfileKeyMembers
+        let pendingMembers = groupModel.groupMembership.invitedMembers
         let pendingInviteCount = (canRevokeInvites
             ? pendingMembers.count + groupModel.groupMembership.invalidInvites.count
             : pendingMembers.count)

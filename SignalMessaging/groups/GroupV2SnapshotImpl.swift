@@ -100,7 +100,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 owsFailDebug("Invalid value: \(member.role.rawValue)")
                 continue
             }
-            builder.addPendingProfileKeyMember(member.address, role: role, addedByUuid: member.addedByUuid)
+            builder.addInvitedMember(member.address, role: role, addedByUuid: member.addedByUuid)
         }
 
         for invalidInvite in invalidInvites {

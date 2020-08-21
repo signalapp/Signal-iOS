@@ -20,11 +20,11 @@ public extension TSGroupThread {
         return groupModel.groupMembership.isFullMember(localAddress)
     }
 
-    var isLocalUserPendingProfileKeyMember: Bool {
+    var isLocalUserInvitedMember: Bool {
         guard let localAddress = TSAccountManager.localAddress else {
             return false
         }
-        return groupModel.groupMembership.isPendingProfileKeyMember(localAddress)
+        return groupModel.groupMembership.isInvitedMember(localAddress)
     }
 
     var isLocalUserRequestingMember: Bool {
@@ -39,6 +39,6 @@ public extension TSGroupThread {
             return false
         }
         return (groupModel.groupMembership.isFullMember(localAddress) ||
-            groupModel.groupMembership.isPendingProfileKeyMember(localAddress))
+            groupModel.groupMembership.isInvitedMember(localAddress))
     }
 }

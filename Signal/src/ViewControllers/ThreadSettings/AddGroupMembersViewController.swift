@@ -274,7 +274,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         if groupMembership.isFullMember(address) {
             return true
         }
-        if groupMembership.isPendingProfileKeyMember(address) ||
+        if groupMembership.isInvitedMember(address) ||
             groupMembership.isRequestingMember(address) {
             // We can "add" pending or requesting members if they support gv2
             // and we know their profile key credential.

@@ -35,18 +35,18 @@ extension TSGroupMemberRole: Codable {}
 
 private enum GroupMemberState {
     case fullMember(role: TSGroupMemberRole)
-    case pendingProfileKey(role: TSGroupMemberRole, addedByUuid: UUID)
+    case invited(role: TSGroupMemberRole, addedByUuid: UUID)
     // These members don't yet have any attributes.
-    // We'll add PendingRequestMemberState if they ever do.
-    case pendingRequest
+    // We'll add RequestingMemberState if they ever do.
+    case Requesting
 
     var role: TSGroupMemberRole {
         switch self {
         case .fullMember(let role):
             return role
-        case .pendingProfileKey(let role, _):
+        case .invited(let role, _):
             return role
-        case .pendingRequest:
+        case .Requesting:
             return .`normal`
         }
     }
@@ -64,18 +64,18 @@ private enum GroupMemberState {
         }
     }
 
-    var isPendingProfileKey: Bool {
+    var isInvited: Bool {
         switch self {
-        case .pendingProfileKey:
+        case .invited:
             return true
         default:
             return false
         }
     }
 
-    var isPendingRequest: Bool {
+    var isRequesting: Bool {
         switch self {
-        case .pendingRequest:
+        case .Requesting:
             return true
         default:
             return false
@@ -89,8 +89,8 @@ extension GroupMemberState: Codable {
 
     private enum TypeKey: UInt, Codable {
         case fullMember = 0
-        case pendingProfileKey = 1
-        case pendingRequest = 2
+        case invited = 1
+        case Requesting = 2
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -107,12 +107,12 @@ extension GroupMemberState: Codable {
         case .fullMember:
             let role = try container.decode(TSGroupMemberRole.self, forKey: .role)
             self = .fullMember(role: role)
-        case .pendingProfileKey:
+        case .invited:
             let role = try container.decode(TSGroupMemberRole.self, forKey: .role)
             let addedByUuid = try container.decode(UUID.self, forKey: .addedByUuid)
-            self = .pendingProfileKey(role: role, addedByUuid: addedByUuid)
-        case .pendingRequest:
-            self = .pendingRequest
+            self = .invited(role: role, addedByUuid: addedByUuid)
+        case .Requesting:
+            self = .Requesting
         }
     }
 
@@ -123,12 +123,12 @@ extension GroupMemberState: Codable {
         case .fullMember(let role):
             try container.encode(TypeKey.fullMember, forKey: .typeKey)
             try container.encode(role, forKey: .role)
-        case .pendingProfileKey(let role, let addedByUuid):
-            try container.encode(TypeKey.pendingProfileKey, forKey: .typeKey)
+        case .invited(let role, let addedByUuid):
+            try container.encode(TypeKey.invited, forKey: .typeKey)
             try container.encode(role, forKey: .role)
             try container.encode(addedByUuid, forKey: .addedByUuid)
-        case .pendingRequest:
-            try container.encode(TypeKey.pendingRequest, forKey: .typeKey)
+        case .Requesting:
+            try container.encode(TypeKey.Requesting, forKey: .typeKey)
         }
     }
 }
@@ -140,10 +140,10 @@ extension GroupMemberState: CustomStringConvertible {
         switch self {
         case .fullMember:
             return ".fullMember"
-        case .pendingProfileKey:
-            return ".pendingProfileKey"
-        case .pendingRequest:
-            return ".pendingRequest"
+        case .invited:
+            return ".invited"
+        case .Requesting:
+            return ".Requesting"
         }
     }
 }
@@ -292,7 +292,7 @@ public class GroupMembership: MTLModel {
             let memberState: GroupMemberState
             if legacyMemberState.isPending {
                 if let addedByUuid = legacyMemberState.addedByUuid {
-                    memberState = .pendingProfileKey(role: legacyMemberState.role,
+                    memberState = .invited(role: legacyMemberState.role,
                                                      addedByUuid: addedByUuid)
                 } else {
                     owsFailDebug("Missing addedByUuid.")
@@ -369,23 +369,23 @@ public extension GroupMembership {
         return Set(memberStates.filter { $0.value.isFullMember }.keys)
     }
 
-    var pendingProfileKeyMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isPendingProfileKey }.keys)
+    var invitedMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.filter { $0.value.isInvited }.keys)
     }
 
-    var pendingRequestMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isPendingRequest }.keys)
+    var requestingMembers: Set<SignalServiceAddress> {
+        return Set(memberStates.filter { $0.value.isRequesting }.keys)
     }
 
-    var fullOrPendingProfileKeyMembers: Set<SignalServiceAddress> {
+    var fullOrInvitedMembers: Set<SignalServiceAddress> {
         return Set(memberStates.filter {
-            $0.value.isFullMember || $0.value.isPendingProfileKey
+            $0.value.isFullMember || $0.value.isInvited
         }.keys)
     }
 
-    var pendingProfileKeyOrRequestMembers: Set<SignalServiceAddress> {
+    var invitedOrRequestMembers: Set<SignalServiceAddress> {
         return Set(memberStates.filter {
-            $0.value.isPendingProfileKey || $0.value.isPendingRequest
+            $0.value.isInvited || $0.value.isRequesting
         }.keys)
     }
 
@@ -423,9 +423,9 @@ public extension GroupMembership {
         switch memberState {
         case .fullMember(let role):
             return role == .administrator
-        case .pendingProfileKey(let role, _):
+        case .invited(let role, _):
             return role == .administrator
-        case .pendingRequest:
+        case .Requesting:
             return false
         }
     }
@@ -458,22 +458,22 @@ public extension GroupMembership {
     }
 
     @objc
-    func isPendingProfileKeyMember(_ address: SignalServiceAddress) -> Bool {
+    func isInvitedMember(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false
         }
-        return memberState.isPendingProfileKey
+        return memberState.isInvited
     }
 
-    func isPendingProfileKeyMember(_ uuid: UUID) -> Bool {
-        isPendingProfileKeyMember(SignalServiceAddress(uuid: uuid))
+    func isInvitedMember(_ uuid: UUID) -> Bool {
+        isInvitedMember(SignalServiceAddress(uuid: uuid))
     }
 
     func isRequestingMember(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false
         }
-        return memberState.isPendingRequest
+        return memberState.isRequesting
     }
 
     func isRequestingMember(_ uuid: UUID) -> Bool {
@@ -499,12 +499,12 @@ public extension GroupMembership {
     }
 
     // This method should only be called for "pending profile key" members.
-    func addedByUuid(forPendingProfileKeyMember address: SignalServiceAddress) -> UUID? {
+    func addedByUuid(forInvitedMember address: SignalServiceAddress) -> UUID? {
         guard let memberState = memberStates[address] else {
             return nil
         }
         switch memberState {
-        case .pendingProfileKey(_, let addedByUuid):
+        case .invited(_, let addedByUuid):
             return addedByUuid
         default:
             owsFailDebug("Not a pending profile key member.")
@@ -562,19 +562,19 @@ public extension GroupMembership {
             }
         }
 
-        public mutating func addPendingProfileKeyMember(_ uuid: UUID,
+        public mutating func addInvitedMember(_ uuid: UUID,
                                                         role: TSGroupMemberRole,
                                                         addedByUuid: UUID) {
-            addPendingProfileKeyMember(SignalServiceAddress(uuid: uuid), role: role, addedByUuid: addedByUuid)
+            addInvitedMember(SignalServiceAddress(uuid: uuid), role: role, addedByUuid: addedByUuid)
         }
 
-        public mutating func addPendingProfileKeyMember(_ address: SignalServiceAddress,
+        public mutating func addInvitedMember(_ address: SignalServiceAddress,
                                                         role: TSGroupMemberRole,
                                                         addedByUuid: UUID) {
-            addPendingProfileKeyMembers([address], role: role, addedByUuid: addedByUuid)
+            addInvitedMembers([address], role: role, addedByUuid: addedByUuid)
         }
 
-        public mutating func addPendingProfileKeyMembers(_ addresses: Set<SignalServiceAddress>,
+        public mutating func addInvitedMembers(_ addresses: Set<SignalServiceAddress>,
                                                          role: TSGroupMemberRole,
                                                          addedByUuid: UUID) {
             for address in addresses {
@@ -582,7 +582,7 @@ public extension GroupMembership {
                     owsFailDebug("Duplicate address.")
                     continue
                 }
-                memberStates[address] = .pendingProfileKey(role: role, addedByUuid: addedByUuid)
+                memberStates[address] = .invited(role: role, addedByUuid: addedByUuid)
             }
         }
 
@@ -600,7 +600,7 @@ public extension GroupMembership {
                     owsFailDebug("Duplicate address.")
                     continue
                 }
-                memberStates[address] = .pendingRequest
+                memberStates[address] = .Requesting
             }
         }
 

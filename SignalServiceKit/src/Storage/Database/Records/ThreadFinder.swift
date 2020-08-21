@@ -274,7 +274,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         // TODO: Should we consult isRequestingMember() here?
         if let groupThread = thread as? TSGroupThread,
             groupThread.isGroupV2Thread,
-            groupThread.isLocalUserPendingProfileKeyMember {
+            groupThread.isLocalUserInvitedMember {
             return true
         }
 
