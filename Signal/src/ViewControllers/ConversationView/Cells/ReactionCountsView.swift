@@ -6,8 +6,8 @@ import Foundation
 
 @objc
 class ReactionCountsView: UIStackView {
-    @objc static let height: CGFloat = 22
-    @objc static let inset: CGFloat = 6
+    @objc static let height: CGFloat = 24
+    @objc static let inset: CGFloat = 7
 
     private let pill1 = ReactionPillView()
     private let pill2 = ReactionPillView()
@@ -89,7 +89,7 @@ private class ReactionPillView: UIView {
     let emojiLabel = UILabel()
     let countLabel = UILabel()
 
-    let pillBorderWidth: CGFloat = 1
+    let pillBorderWidth: CGFloat = 1.5
 
     let contentsStackView = UIStackView()
 
@@ -98,7 +98,7 @@ private class ReactionPillView: UIView {
 
         addSubview(contentsStackView)
         contentsStackView.autoSetDimension(.height, toSize: ReactionCountsView.height)
-        contentsStackView.layoutMargins = UIEdgeInsets(top: 3, leading: 6, bottom: 3, trailing: 6)
+        contentsStackView.layoutMargins = UIEdgeInsets(top: 3, leading: 7, bottom: 3, trailing: 7)
         contentsStackView.isLayoutMarginsRelativeArrangement = true
         contentsStackView.spacing = 2
 
@@ -107,7 +107,7 @@ private class ReactionPillView: UIView {
         contentsStackView.addArrangedSubview(emojiLabel)
         contentsStackView.addArrangedSubview(countLabel)
 
-        emojiLabel.font = .boldSystemFont(ofSize: 12)
+        emojiLabel.font = .boldSystemFont(ofSize: 14)
         emojiLabel.textAlignment = .center
 
         countLabel.font = .monospacedDigitSystemFont(ofSize: 12, weight: .bold)
