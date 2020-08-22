@@ -1050,16 +1050,16 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "全てのメッセージを削除";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld件のメッセージを削除しますか?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld件のメッセージを削除しますか？";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "メッセージを削除しますか?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "メッセージを削除しますか？";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "この電話番号を再登録する";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "この装置は登録されていません。この電話番号が別の装置でSignalに登録されている可能性があります。タップして再登録してください。";
+"DEREGISTRATION_WARNING" = "この端末はもう登録されていません。電話番号が別の端末でSignalに登録された可能性があります。タップして再登録します。";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最終利用: %@";
@@ -1131,7 +1131,7 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "移行のための空き領域が不足しています";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signalを最新版にアップデートしてから再試行してください";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signalを最新版にアップデートしてから再度試してください";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "新しいiOS端末にSignalアカウントを移動します。新しい端末を手元に置き、電源を入れてください。";
@@ -1221,7 +1221,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "このグループの設定変更を保存しなくてもよいですか?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "保存されていない変更";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "未保存の変更";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "コピー";
@@ -1338,7 +1338,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "添付ファイルのダウンロードに失敗しました。";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "添付エラー: Signalを最新バージョンに更新してから、相手にメッセージを再送信してもらってください。";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "添付エラー: Signalを最新版にアップデートしてから、メッセージの再送を依頼してください。";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "重複したメッセージを受信しました。";
@@ -1725,7 +1725,7 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@が%2$@の管理者権限を無効にしました。";
 
 /* Info message indicating that the group was updated by an unknown user. */
-"GROUP_UPDATED" = "グループをアップデートしました。";
+"GROUP_UPDATED" = "グループが更新されました。";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED" = "グループのアイコンを削除しました。";
@@ -1749,7 +1749,7 @@
 "GROUP_UPDATED_BY_LOCAL_USER" = "グループを更新しました。";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@がグループを更新しました。";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ がグループを更新しました。";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "グループ名は削除されました。";
@@ -1932,7 +1932,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "この会話はアーカイブされます。新しいメッセージが届いた場合だけ受信箱に表示されます。";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "友達にメッセージを送って始めよう!";
+"INBOX_VIEW_EMPTY_INBOX" = "友達にメッセージを送って始めよう！";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ から着信";
@@ -1941,7 +1941,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "携帯電話やiPadから同期したメッセージを送受信できます。セキュリティのため、会話履歴は新たにリンクした端末には転送されません。";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@は Signal を使っています。";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ がSignalに参加！";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ステッカー";
@@ -1956,16 +1956,16 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "友だちをSignalに招待するため、iOSの設定で連絡先リストのアクセスを設定できます。";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "連絡先へのアクセスを許可する";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "連絡先へのアクセス許可";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友だちをSignalへ招待";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友人をSignalへ招待する";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "検索";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "友だちを招待";
+"INVITE_FRIENDS_PICKER_TITLE" = "友人を招待";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "複数のユーザを同時に招待すると、グループメッセージが開始され、招待先は全員で共有されます。";
@@ -2040,7 +2040,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "この端末は、あなたのグループと通話相手、会話、メッセージにアクセスできます。";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末をリンクしますか?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "この端末をリンクしますか？";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "再試行";
@@ -2049,10 +2049,10 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "リンクしたい端末のQRコードをスキャンしてください。";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "QRコードを読み取る";
+"LINK_NEW_DEVICE_SUBTITLE" = "QRコードをスキャンする";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "新しい端末をリンク";
+"LINK_NEW_DEVICE_TITLE" = "新しい端末をリンクする";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクプレビュー";
@@ -2106,7 +2106,7 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "あとで通知します。";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "@を入力すると新グループで通知";
+"MENTIONS_MEGAPHONE_BODY" = "「新グループ」で @ を入力して注意を引こう";
 
 /* Title for mentions megaphone */
 "MENTIONS_MEGAPHONE_TITLE" = "@メンションのご紹介";
@@ -2175,10 +2175,10 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "送信済み";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "スキップされました";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "スキップ";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "送信中";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "アップロード中";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "内容も添付ファイルもありません";
@@ -2199,16 +2199,16 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "メッセージ";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_ACTION" = "ブロック";
+"MESSAGE_REQUEST_BLOCK_ACTION" = "ブロックする";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ブロックして削除";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ブロックして削除する";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ブロックされたユーザは、あなたにメッセージや通話を発信することができなくなります。";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ブロックされた相手は、あなたへのメッセージ送信や通話発信ができなくなります。";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@をブロックしますか?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ をブロックしますか？";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "このグループから退出して、今後メッセージや更新を受信しなくなります。";
@@ -2571,7 +2571,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "パーミッションを有効化";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "通知機能は、メッセージが届いたり、会話記録の更新を知らせます。";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "通知機能は、メッセージの着信や会話の更新をお知らせます。";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "メッセージの取得";
@@ -2967,10 +2967,10 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "安全番号はSignalユーザの組合せごとに異なります。%@が表示している安全番号があなたとの番号か確認してください。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "古いバージョンのSignalを使っています。最新版にアップデートしてください。";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "古いバージョンのSignalを使っています。検証するにはアップデートしてください。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "相手先が古いバージョンのSignalを使っています。最新版にアップデートするようお願いしてください。";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "相手が古いバージョンのSignalを使っています。検証するにはアップデートをお願いしてください。";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "QRコードは安全番号ではありません。Signalは最新バージョンですか?";
@@ -3462,7 +3462,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "リンクコードを取得できません";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "スマートフォンとリンクするために Signal を更新してください。";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "携帯電話とリンクするため、この端末のSignalをアップデートしてください。";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "非対応バージョン";
@@ -3648,7 +3648,7 @@
 "SETTINGS_BACKUP_PHASE" = "段階";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "進展";
+"SETTINGS_BACKUP_PROGRESS" = "進捗";
 
 /* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "状態";
@@ -3816,7 +3816,7 @@
 "SETTINGS_RELINK_BUTTON" = "再リンク";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "再登録";
+"SETTINGS_REREGISTER_BUTTON" = "再登録する";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "画面ロックまでの時間";
@@ -3897,7 +3897,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "未登録";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Signalを立ち上げ、登録・更新してください。";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Signalを起動してアップデート、登録してください。";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "準備不足";
@@ -4008,7 +4008,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "読み込み中";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "確認する";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "検証する";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "このメッセージは削除されました。";
@@ -4110,10 +4110,10 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "メッセージが届きましたが、Signalの新機能が使用されているため、処理または表示ができませんでした。";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signalをアップデートしてください";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "いますぐSignalをアップデートする";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signalの最新バージョンになりました。新しいタイプのメッセージを表示できるようになりました。";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "最新版のSignalにアップデートしました。この端末でもこのタイプのメッセージを受信できます。";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Signalをアップデートしたので、 %@ にメッセージの再送を依頼してください。";
@@ -4164,10 +4164,10 @@
 "UNSUPPORTED_FEATURE_ERROR" = "この端末では対応されていない機能です。";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "連絡先を更新";
+"UPDATE_CONTACT_ACTION" = "連絡先を更新する";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "グループが更新できませんでした。";
+"UPDATE_GROUP_FAILED" = "グループを更新できませんでした。";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "グループを更新できませんでした。インターネット接続を確認して再度試してください。";
