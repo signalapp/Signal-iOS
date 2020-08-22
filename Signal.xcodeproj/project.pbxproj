@@ -630,6 +630,8 @@
 		88238EA224E9DDB700F28079 /* LocalVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EA124E9DDB700F28079 /* LocalVideoView.swift */; };
 		88238EA424E9DDE900F28079 /* CallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EA324E9DDE900F28079 /* CallButton.swift */; };
 		88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */; };
+		88238EB224F19D0B00F28079 /* Emoji+SkinTones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EB124F19D0900F28079 /* Emoji+SkinTones.swift */; };
+		88238EB424F1B68600F28079 /* Emoji+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88238EB324F1B68600F28079 /* Emoji+String.swift */; };
 		8827004C232071C500F01C46 /* OWSWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8827004B232071C500F01C46 /* OWSWindow.swift */; };
 		8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */; };
 		882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882BDAAD249050F000C14587 /* AddToGroupViewController.swift */; };
@@ -1594,6 +1596,8 @@
 		88238EA324E9DDE900F28079 /* CallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallButton.swift; sourceTree = "<group>"; };
 		88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GestureRecognizers.swift"; sourceTree = "<group>"; };
 		88238EB024EE29F400F28079 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = translations/hr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88238EB124F19D0900F28079 /* Emoji+SkinTones.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+SkinTones.swift"; sourceTree = "<group>"; };
+		88238EB324F1B68600F28079 /* Emoji+String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+String.swift"; sourceTree = "<group>"; };
 		8827004B232071C500F01C46 /* OWSWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSWindow.swift; sourceTree = "<group>"; };
 		8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsTableViewController.swift; sourceTree = "<group>"; };
 		882BDAAD249050F000C14587 /* AddToGroupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToGroupViewController.swift; sourceTree = "<group>"; };
@@ -3202,9 +3206,11 @@
 			isa = PBXGroup;
 			children = (
 				887889B0247F2E72001B5FCF /* Emoji.swift */,
+				880D9026247F90CC003D2B14 /* Emoji+Available.swift */,
 				887889AF247F2E72001B5FCF /* Emoji+Category.swift */,
 				880D9024247F8841003D2B14 /* Emoji+Name.swift */,
-				880D9026247F90CC003D2B14 /* Emoji+Available.swift */,
+				88238EB124F19D0900F28079 /* Emoji+SkinTones.swift */,
+				88238EB324F1B68600F28079 /* Emoji+String.swift */,
 			);
 			path = Emoji;
 			sourceTree = "<group>";
@@ -4729,6 +4735,7 @@
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
 				347B83FD24378DDF0019A52C /* PendingGroupMembersViewController.swift in Sources */,
+				88238EB424F1B68600F28079 /* Emoji+String.swift in Sources */,
 				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
@@ -4882,6 +4889,7 @@
 				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
+				88238EB224F19D0B00F28079 /* Emoji+SkinTones.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				34235F3824213550008C74CB /* ConversationSettingsViewController.swift in Sources */,
 				3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */,
