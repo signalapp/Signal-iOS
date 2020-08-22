@@ -209,21 +209,35 @@ extension ExperienceUpgradeView {
         toastController.presentToastView(fromBottomOfView: fromViewController.view, inset: bottomInset)
     }
 
-    func markAsSnoozed() {
-        databaseStorage.write { transaction in
+    /// - Parameter transaction: An optional transaction to write the completion in.
+    /// If nil is provided for `transaction` then the write will be performed under a synchronous write transaction
+    func markAsSnoozed(transaction: SDSAnyWriteTransaction? = nil) {
+        let performUpdate: (SDSAnyWriteTransaction) -> Void = { transaction in
             ExperienceUpgradeFinder.markAsSnoozed(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite
             )
         }
+        if let transaction = transaction {
+            performUpdate(transaction)
+        } else {
+            databaseStorage.write(block: performUpdate)
+        }
     }
 
-    func markAsComplete() {
-        databaseStorage.write { transaction in
+    /// - Parameter transaction: An optional transaction to write the completion in.
+    /// If nil is provided for `transaction` then the write will be performed under a synchronous write transaction
+    func markAsComplete(transaction: SDSAnyWriteTransaction? = nil) {
+        let performUpdate: (SDSAnyWriteTransaction) -> Void = { transaction in
             ExperienceUpgradeFinder.markAsComplete(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite
             )
+        }
+        if let transaction = transaction {
+            performUpdate(transaction)
+        } else {
+            databaseStorage.write(block: performUpdate)
         }
     }
 }

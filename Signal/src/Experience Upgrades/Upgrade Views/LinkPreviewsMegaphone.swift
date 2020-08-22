@@ -19,7 +19,7 @@ class LinkPreviewsMegaphone: MegaphoneView {
                                                   comment: "Disable button for link previews megaphone")
 
         setButtons(
-            primary: Button(title: okayButtonText) {  [weak self] in
+            primary: Button(title: okayButtonText) { [weak self] in
                 self?.dismissAndSetLinkPreviews(enabled: true)
             },
             secondary: Button(title: disableButtonText) { [weak self] in
@@ -33,10 +33,10 @@ class LinkPreviewsMegaphone: MegaphoneView {
     }
 
     func dismissAndSetLinkPreviews(enabled: Bool) {
-        SDSDatabaseStorage.shared.asyncWrite { tx in
+        SDSDatabaseStorage.shared.write { tx in
             SSKPreferences.setAreLinkPreviewsEnabled(enabled, sendSyncMessage: true, transaction: tx)
+            self.markAsComplete(transaction: tx)
         }
-        markAsComplete()
         dismiss()
     }
 }
