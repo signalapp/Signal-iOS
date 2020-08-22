@@ -152,7 +152,14 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+#if TESTABLE_BUILD
+// During tests, `pipelineSupervisor.unregister` fails an assertion because the shared MockSSKEnvironment
+// becomes nil when a test is about to start, which deallocates this object, which calls this line,
+// which calls MockSSKEnvironment.shared that has become null.
+// TODO this is a band-aid. I would suggest we revisit how we use the singleton pattern.
+#else
     [self.pipelineSupervisor unregisterPipelineStage:self];
+#endif
 }
 
 #pragma mark - Dependencies
