@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -43,8 +43,15 @@ public class ApprovalFooterView: UIView {
         autoresizingMask = .flexibleHeight
         translatesAutoresizingMaskIntoConstraints = false
 
-        backgroundColor = Theme.keyboardBackgroundColor
         layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
+
+        // We extend our background view below the keyboard to avoid any gaps.
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = Theme.keyboardBackgroundColor
+        addSubview(backgroundView)
+        backgroundView.autoPinWidthToSuperview()
+        backgroundView.autoPinEdge(toSuperviewEdge: .top)
+        backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -30)
 
         let topStrokeView = UIView()
         topStrokeView.backgroundColor = Theme.hairlineColor
