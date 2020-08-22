@@ -652,6 +652,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     private func updateLocalVideoLayout() {
         guard localVideoView.superview == view else { return }
 
+        guard !call.isEnded else { return }
+
         guard !isRenderingLocalVanityVideo else {
             view.bringSubviewToFront(topGradientView)
             view.bringSubviewToFront(bottomContainerView)
@@ -1055,11 +1057,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false)
     }
 
-    @objc func didPressMute(sender muteButton: UIButton) {
+    @objc func didPressMute(sender: UIButton) {
         Logger.info("")
-        muteButton.isSelected = !muteButton.isSelected
+        let isMuted = !sender.isSelected
 
-        callUIAdapter.setIsMuted(call: call, isMuted: muteButton.isSelected)
+        callUIAdapter.setIsMuted(call: call, isMuted: isMuted)
     }
 
     @objc func didPressAudioSource(sender button: UIButton) {
@@ -1094,6 +1096,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         if sender == videoAnswerIncomingButton {
             callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: true)
         }
+
+        // We should always be unmuted when we answer an incoming call.
+        // Explicitly setting it so will cause us to prompt for
+        // microphone permissions if necessary.
+        callUIAdapter.setIsMuted(call: call, isMuted: false)
     }
 
     @objc func didPressVideo(sender: UIButton) {
