@@ -146,8 +146,8 @@ private class ReactionPillView: UIView {
     }
 
     private func configureColors(fromLocalUser: Bool) {
-        layer.borderColor = Theme.backgroundColor.cgColor
-        backgroundColor = fromLocalUser ? .ows_accentBlue : Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05
-        countLabel.textColor = fromLocalUser ? .ows_white : Theme.primaryTextColor
+        layer.borderColor = fromLocalUser ? UIColor.ows_accentBlue.cgColor : Theme.backgroundColor.cgColor
+        backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : UIColor.ows_gray05
+        countLabel.textColor = fromLocalUser ? .ows_accentBlue : Theme.primaryTextColor
     }
 }
