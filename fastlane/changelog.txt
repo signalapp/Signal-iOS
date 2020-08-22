@@ -1,3 +1,6 @@
-• We added an unread message counter to the arrow shortcut that appears when you’re looking at old messages. Quickly get to the bottom of what’s new by scrolling down to see what’s up.
-• Inspired by that feeling of reconnecting with an old friend and picking up exactly where you left off, Signal is now able to resume interrupted media downloads when your phone reconnects with the internet.
-• More camera flashes (and fewer camera crashes) for users on older versions of iOS.
+• A new and improved interface for voice and video calls. Dial a friend without jumping through as many hoops, even though there still might be multiple rings.
+• Easily start a video call with a new shortcut that's a more visible way to be visible.
+• Picture-in-picture support within the app keeps your Signal calls in focus even if you focus on another conversation. It isn't multitasking if they still have your undivided attention.
+• Quickly see details like mute status and timers in the conversation header so you don't need to keep them in your head.
+• iPad users with a Magic Keyboard can make more magic happen with the trackpad, like swiping to dismiss a photo in the media view.
+• Less is more when you press "Read More." Long messages now expand within the thread itself instead of taking you to a separate screen.

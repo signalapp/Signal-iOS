@@ -134,7 +134,7 @@ public extension NSMutableAttributedString {
 
     @objc(appendTemplatedImageNamed:font:attributes:)
     func appendTemplatedImage(named imageName: String, font: UIFont, attributes: [NSAttributedString.Key: Any]?) {
-        appendTemplatedImage(named: imageName, font: font, attributes: nil, heightReference: .pointSize)
+        appendTemplatedImage(named: imageName, font: font, attributes: attributes, heightReference: .pointSize)
     }
 
     @objc(appendTemplatedImageNamed:font:attributes:heightReference:)
@@ -185,6 +185,15 @@ public extension NSMutableAttributedString {
 
     @objc(appendImage:font:attributes:heightReference:)
     func appendImage(_ image: UIImage, font: UIFont, attributes: [NSAttributedString.Key: Any]?, heightReference: ImageAttachmentHeightReference) {
+        // Tinting of templated images doesn't work correctly at the start
+        // of a string on iOS 11+12, so we need to append a character before
+        // the icon. We use a thin space. Zero-width space doesn't work.
+        if #available(iOS 13, *) {
+            // Do nothing.
+        } else if image.renderingMode == .alwaysTemplate && length == 0 {
+            append("\u{200a}", attributes: attributes ?? [:])
+        }
+
         let attachment = NSTextAttachment()
         attachment.image = image
 

@@ -334,6 +334,40 @@ extension SignalCall: CallManagerCallReference { }
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
 
+        // If we're disabling the microphone, we don't need permission. Only need
+        // permission to *enable* the microphone.
+        guard !isMuted else {
+            return setIsMutedWithMicrophonePermission(call: call, isMuted: isMuted)
+        }
+
+        // This method can be initiated either from the CallViewController.videoButton or via CallKit
+        // in either case we want to show the alert on the callViewWindow.
+        guard let frontmostViewController =
+                UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
+                                                                 window: OWSWindowManager.shared.callViewWindow) else {
+            owsFailDebug("could not identify frontmostViewController")
+            return
+        }
+
+        frontmostViewController.ows_askForMicrophonePermissions { granted in
+            // Make sure the call is still valid (the one we asked permissions for).
+            guard self.currentCall === call else {
+                Logger.info("ignoring microphone permissions for obsolete call")
+                return
+            }
+
+            guard granted else {
+                return frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
+            }
+
+            // Success callback; microphone permissions are granted.
+            self.setIsMutedWithMicrophonePermission(call: call, isMuted: isMuted)
+        }
+    }
+
+    private func setIsMutedWithMicrophonePermission(call: SignalCall, isMuted: Bool) {
+        AssertIsOnMainThread()
+
         call.isMuted = isMuted
 
         ensureAudioState(call: call)
@@ -345,18 +379,24 @@ extension SignalCall: CallManagerCallReference { }
     func setHasLocalVideo(hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
+        // Keep a reference to the call before permissions were requested...
+        guard let call = self.currentCall else {
+            owsFailDebug("missing currentCall")
+            return
+        }
+
+        // If we're disabling local video, we don't need permission. Only need
+        // permission to *enable* video.
+        guard hasLocalVideo else {
+            return setHasLocalVideoWithCameraPermissions(call: call, hasLocalVideo: hasLocalVideo)
+        }
+
         // This method can be initiated either from the CallViewController.videoButton or via CallKit
         // in either case we want to show the alert on the callViewWindow.
         guard let frontmostViewController =
                 UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
                                                                  window: OWSWindowManager.shared.callViewWindow) else {
             owsFailDebug("could not identify frontmostViewController")
-            return
-        }
-
-        // Keep a reference to the call before permissions were requested...
-        guard let call = self.currentCall else {
-            owsFailDebug("missing currentCall")
             return
         }
 

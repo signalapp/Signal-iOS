@@ -81,7 +81,19 @@ import SignalMessaging
                 frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
                 return
             }
-            callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: isVideo)
+
+            if isVideo {
+                frontmostViewController.ows_askForCameraPermissions { granted in
+                    guard granted else {
+                        Logger.warn("aborting due to missing camera permissions.")
+                        return
+                    }
+
+                    callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: true)
+                }
+            } else {
+                callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
+            }
         }
 
         return true

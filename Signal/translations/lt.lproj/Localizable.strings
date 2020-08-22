@@ -1233,10 +1233,10 @@
 "EMAIL_INVITE_SUBJECT" = "Persijunkime į Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Jūsų įrenginys nėra sukonfigūruotas siųsti el. laiškus. Norėdami siųsti palaikymo užklausą, nusistatykite įrenginyje el. paštą arba siųskite el. laišką, adresu support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "El. paštas neprieinamas";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Veiklos";
@@ -1296,7 +1296,7 @@
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Nepavyko atverti el. pašto programėlės";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Nepavyko sukurti palaikymo užklausos";
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Nepavyko išsiųsti žurnalų.";
@@ -2106,10 +2106,10 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Priminsime vėliau.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
+"MENTIONS_MEGAPHONE_BODY" = "Atkreipkite kažkieno dėmesį „Naujoje grupėję“, parašydami @";
 
 /* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
+"MENTIONS_MEGAPHONE_TITLE" = "Pristatome @paminėjimus";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopijuoti žinutės tekstą";
