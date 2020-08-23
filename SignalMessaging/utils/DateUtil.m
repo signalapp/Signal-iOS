@@ -318,6 +318,27 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return dateTimeString;
 }
 
++ (NSString *)formatTimestampAsDate:(uint64_t)timestamp
+{
+    return [self formatDateAsDate:[NSDate ows_dateWithMillisecondsSince1970:timestamp]];
+}
+
++ (NSString *)formatDateAsDate:(NSDate *)date
+{
+    OWSAssertDebug(date);
+
+    NSString *dateTimeString;
+
+    NSInteger yearsDiff = [self yearsFromFirstDate:date toSecondDate:[NSDate new]];
+    if (yearsDiff > 0) {
+        dateTimeString = [[DateUtil otherYearMessageFormatter] stringFromDate:date];
+    } else {
+        dateTimeString = [[DateUtil thisYearMessageFormatter] stringFromDate:date];
+    }
+
+    return dateTimeString;
+}
+
 + (NSDateFormatter *)otherYearMessageFormatter
 {
     static NSDateFormatter *formatter;

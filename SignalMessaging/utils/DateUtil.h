@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)formatTimestampAsTime:(uint64_t)timestamp;
 + (NSString *)formatDateAsTime:(NSDate *)date;
+
++ (NSString *)formatTimestampAsDate:(uint64_t)timestamp;
++ (NSString *)formatDateAsDate:(NSDate *)date;
 
 + (NSString *)formatMessageTimestamp:(uint64_t)timestamp;
 
