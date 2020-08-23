@@ -10,12 +10,12 @@ class EmojiPickerSheet: UIViewController {
     let handle = UIView()
     weak var backdropView: UIView?
 
-    let completionHandler: (Emoji?) -> Void
+    let completionHandler: (EmojiWithSkinTones?) -> Void
 
     let collectionView = EmojiPickerCollectionView()
     lazy var sectionToolbar = EmojiPickerSectionToolbar(delegate: self)
 
-    init(completionHandler: @escaping (Emoji?) -> Void) {
+    init(completionHandler: @escaping (EmojiWithSkinTones?) -> Void) {
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
@@ -278,7 +278,7 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
 }
 
 extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
-    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: Emoji) {
+    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones) {
         completionHandler(emoji)
         dismiss(animated: true)
     }

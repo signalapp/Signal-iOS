@@ -160,26 +160,25 @@ class EmojiGenerator {
         }
 
         // Conversion from String
-        writeBlock(fileName: "Emoji+String.swift") { fileHandle in
-            fileHandle.writeLine("extension Emoji {")
+        writeBlock(fileName: "EmojiWithSkinTones+String.swift") { fileHandle in
+            fileHandle.writeLine("extension EmojiWithSkinTones {")
 
-            fileHandle.writeLine("    init?(_ string: String) {")
-            fileHandle.writeLine("        guard string.isSingleEmoji else { return nil }")
-            fileHandle.writeLine("        switch string {")
+            fileHandle.writeLine("    init?(rawValue: String) {")
+            fileHandle.writeLine("        guard rawValue.isSingleEmoji else { return nil }")
+            fileHandle.writeLine("        switch rawValue {")
 
             for emojiData in sortedEmojiData {
-                var cases = [emojiData.emoji]
+                fileHandle.writeLine("        case \"\(emojiData.emoji)\": self.init(baseEmoji: .\(emojiData.enumName), skinTones: nil)")
 
                 if let emojiPerSkinTone = emojiData.emojiPerSkinTone {
-                    for emoji in emojiPerSkinTone.values {
-                        cases.append(emoji)
+                    for (skinTones, emoji) in emojiPerSkinTone {
+                        fileHandle.writeLine("        case \"\(emoji)\": self.init(baseEmoji: .\(emojiData.enumName), skinTones: [\(skinTones.map { ".\($0)" }.joined(separator: ", "))])")
                     }
                 }
-
-                fileHandle.writeLine("        case \(cases.map { "\"\($0)\"" }.joined(separator: ", ")): self = .\(emojiData.enumName)")
             }
 
-            fileHandle.writeLine("        default: return nil")
+            // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
+            fileHandle.writeLine("        default: fatalError(\"Unexpected case \\(rawValue)\")")
 
             fileHandle.writeLine("        }")
 

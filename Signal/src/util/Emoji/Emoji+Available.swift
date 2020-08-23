@@ -3,9 +3,9 @@
 //
 
 extension Emoji {
-    static let availableCache = AtomicDictionary<Emoji, Bool>()
-    static let keyValueStore = SDSKeyValueStore(collection: "Emoji+Available")
-    static let iosVersionKey = "iosVersion"
+    private static let availableCache = AtomicDictionary<Emoji, Bool>()
+    private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+Available")
+    private static let iosVersionKey = "iosVersion"
 
     static func warmAvailableCache() {
         owsAssertDebug(!Thread.isMainThread)
