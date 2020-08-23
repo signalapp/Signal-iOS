@@ -6,6 +6,19 @@ public struct EmojiWithSkinTones: Hashable {
     let baseEmoji: Emoji
     let skinTones: [Emoji.SkinTone]?
 
+    init(baseEmoji: Emoji, skinTones: [Emoji.SkinTone]? = nil) {
+        self.baseEmoji = baseEmoji
+
+        // Deduplicate skin tones, while preserving order. This allows for
+        // multi-skin tone emoji, where if you have for example the permutation
+        // [.dark, .dark], it is consolidated to just [.dark], to be initialized
+        // with either variant and result in the correct emoji.
+        self.skinTones = skinTones?.reduce(into: [Emoji.SkinTone]()) { result, skinTone in
+            guard !result.contains(skinTone) else { return }
+            result.append(skinTone)
+        }
+    }
+
     var rawValue: String {
         if let skinTones = skinTones {
             return baseEmoji.emojiPerSkinTonePermutation?[skinTones] ?? baseEmoji.rawValue

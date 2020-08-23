@@ -57,6 +57,10 @@ class EmojiPickerCollectionView: UICollectionView {
         )
 
         backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        panGestureRecognizer.require(toFail: longPressGesture)
+        addGestureRecognizer(longPressGesture)
     }
 
     required init?(coder: NSCoder) {
@@ -125,6 +129,9 @@ class EmojiPickerCollectionView: UICollectionView {
 
     var lowestVisibleSection = 0
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        currentSkinTonePicker?.dismiss()
+        currentSkinTonePicker = nil
+
         let newLowestVisibleSection = indexPathsForVisibleItems.reduce(into: Set<Int>()) { $0.insert($1.section) }.min() ?? 0
 
         guard scrollingToSection == nil || newLowestVisibleSection == scrollingToSection else { return }
@@ -146,6 +153,35 @@ class EmojiPickerCollectionView: UICollectionView {
         scrollingToSection = section
         setContentOffset(CGPoint(x: 0, y: attributes.frame.minY), animated: animated)
     }
+
+    private weak var currentSkinTonePicker: EmojiSkinTonePicker?
+
+    @objc
+    func handleLongPress(sender: UILongPressGestureRecognizer) {
+        guard sender.state == .began else { return }
+
+        let point = sender.location(in: self)
+        guard let indexPath = indexPathForItem(at: point) else { return }
+        guard let emoji = emojiForIndexPath(indexPath) else { return }
+        guard let cell = cellForItem(at: indexPath) else { return }
+
+        currentSkinTonePicker?.dismiss()
+        currentSkinTonePicker = EmojiSkinTonePicker.present(referenceView: cell, emoji: emoji) { [weak self] emoji in
+            guard let self = self else { return }
+
+            if let emoji = emoji {
+                SDSDatabaseStorage.shared.asyncWrite { transaction in
+                    self.recordRecentEmoji(emoji, transaction: transaction)
+                    emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
+                }
+
+                self.pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
+            }
+
+            self.currentSkinTonePicker?.dismiss()
+            self.currentSkinTonePicker = nil
+        }
+    }
 }
 
 extension EmojiPickerCollectionView: UICollectionViewDelegate {
@@ -156,7 +192,6 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
 
         SDSDatabaseStorage.shared.asyncWrite { transaction in
             self.recordRecentEmoji(emoji, transaction: transaction)
-            emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
         }
 
         pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
