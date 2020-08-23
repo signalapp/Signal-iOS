@@ -482,18 +482,16 @@ typedef void (^SystemMessageActionBlock)(void);
         [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:self.viewItem.systemMessageText]];
 
         if (self.shouldShowTimestamp) {
-            static NSDateFormatter *dateFormatter = nil;
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                dateFormatter = [NSDateFormatter new];
-                [dateFormatter setLocalizedDateFormatFromTemplate: @"MMM d, h:mm a"];
-            });
-
             [labelText
                 appendAttributedString:[[NSAttributedString alloc] initWithString:LocalizationNotNeeded(@" · ")]];
-            NSString *timestampText =
-                [dateFormatter stringFromDate:[NSDate ows_dateWithMillisecondsSince1970:interaction.timestamp]];
-            [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:timestampText]];
+
+            NSString *dateString = [DateUtil formatTimestampAsDate:interaction.timestamp];
+            [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:dateString]];
+
+            [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:LocalizationNotNeeded(@" ")]];
+
+            NSString *timeString = [DateUtil formatTimestampAsTime:interaction.timestamp];
+            [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:timeString]];
         }
     }
 
