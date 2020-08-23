@@ -1953,19 +1953,19 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "不正な音声ファイル";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "友だちをSignalに招待するため、iOSの設定で連絡先リストのアクセスを設定できます。";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "連絡先の友達をSignalに招待するには、iOSの設定で連絡先へのアクセスを有効にしてください。";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "連絡先へのアクセス許可";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友人をSignalへ招待する";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "友達をSignalへ招待する";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "検索";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "友人を招待";
+"INVITE_FRIENDS_PICKER_TITLE" = "友達を招待";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "複数のユーザを同時に招待すると、グループメッセージが開始され、招待先は全員で共有されます。";
@@ -3534,7 +3534,7 @@
 "SEND_INVITE_FAILURE" = "招待の送信に失敗しました。後でもう一度行ってください。";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "あなたは友人にSignalを薦めました。";
+"SEND_INVITE_SUCCESS" = "友達をSignalに招待しました！";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "メディアを破棄します";
@@ -3546,7 +3546,7 @@
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "メディアライブラリに戻ります";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "安全ではないSMSで招待しますか?";
+"SEND_SMS_CONFIRM_TITLE" = "安全ではないSMSで友達を招待しますか？";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "この番号をSignalに招待しますか?";
@@ -3660,16 +3660,16 @@
 "SETTINGS_BACKUP_STATUS_IDLE" = "待機中";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "バックアップ中";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "バックアップしています";
 
 /* Indicates that the last backup succeeded. */
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "バックアップ成功";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "ブロックするユーザを追加";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "ブロックするユーザを追加する";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signalに連絡先がありません。";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal上に連絡先がいません。";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "検索結果なし";
@@ -3711,7 +3711,7 @@
 "SETTINGS_INFORMATION_HEADER" = "情報";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "友だちを招待";
+"SETTINGS_INVITE_TITLE" = "友達を招待する";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "私への連絡は@signalappを使ってください。アプリのダウンロード先はhttps://signal.org/download/";
@@ -3885,7 +3885,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%@に対する安全番号が最近変わりました。確認した方がいいかも知れません。";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "最近 %@ に対する安全番号が変わりました。再送する前に、メインのアプリで検証した方が良いかも知れません。";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "読み込みんでいます…";
@@ -3918,10 +3918,10 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "安全番号を表示";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "会話を表示";
+"SHOW_THREAD_BUTTON_TITLE" = "会話を表示する";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Signalのインストールをお勧めします! このリンクから入手してください:";
+"SMS_INVITE_BODY" = "Signalのインストールをお勧めします！このリンクから入手してください:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "なし";
@@ -3978,16 +3978,16 @@
 "STICKERS_UNINSTALL_BUTTON" = "アンインストール";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@に対する安全番号が一致しました。この相手は検証済みにできます。";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ に対する安全番号が一致しました。この相手は検証済みにできます。";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "安全番号が一致しました!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "安全番号が一致しました！";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "お問い合わせ";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "お問い合わせ内容";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "何が起きているか教えてください";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "サポートリクエストを support@signal.org へメールしてください。";
@@ -4020,13 +4020,13 @@
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "この会話に自分用のメモを追加できます。これはリンクした別の端末にも同期します。";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@のメンバー";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ のメンバー";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@、%@、%@のメンバー";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ および %@ のメンバー";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@と%@のメンバー";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ と %@ のメンバー";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@日";
@@ -4134,7 +4134,7 @@
 "UNKNOWN_VALUE" = "不明";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "リンクを解除";
+"UNLINK_ACTION" = "リンクを解除する";
 
 /* Alert message to confirm unlinking a device */
 "UNLINK_CONFIRMATION_ALERT_BODY" = "リンクを解除すると、この端末はメッセージの送受信ができなくなります。";
@@ -4149,7 +4149,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "端末のリンクを解除できませんでした。";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "無名のデバイス";
+"UNNAMED_DEVICE" = "無名の端末";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "未読にする";
@@ -4161,7 +4161,7 @@
 "UNSUPPORTED_ATTACHMENT" = "サポートされていない種類の添付ファイルを受信しました。";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "この端末では対応されていない機能です。";
+"UNSUPPORTED_FEATURE_ERROR" = "この端末はこの機能に対応していません。";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "連絡先を更新する";
@@ -4185,13 +4185,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PINの紹介";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PINを無効化";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PINを無効にする";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "SignalはもうすぐiOS 11以上のみの対応になります。設定 >> 一般 >> ソフトウェアアップデートからアップグレードしてください。";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOSを更新";
+"UPGRADE_IOS_ALERT_TITLE" = "iOSのアップグレード";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signalのユーザ名作成は任意です。ユーザー名を作成すると、他のSignalユーザはあなたの電話番号を知らなくても、あなたにこのユーザ名で連絡できるようになります。";
@@ -4206,7 +4206,7 @@
 "USERNAME_LOOKUP_ERROR" = "ユーザ名の検索でエラーが発生しました。あとで再度試してください。";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@はSignalユーザではありません。ユーザ名が正確か、確認してください";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ はSignalユーザではありません。ユーザ名を確認してください。";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "ユーザが見つかりません";
@@ -4242,22 +4242,22 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@を未検証にしました。";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "別の端末で%@を未検証にしました。";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "別の端末で %@ を未検証にしました。";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@を検証済みにしました。";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@ を検証済みにしました。";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "別の端末で%@を検証済みにしました。";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "別の端末で %@ を検証済みにしました。";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "検証状態が変わりました。";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "安全番号を見る";
+"VERIFY_PRIVACY" = "安全番号を表示する";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "安全番号を確認";
+"VERIFY_PRIVACY_MULTIPLE" = "安全番号を表示する";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "ビデオ通話";
