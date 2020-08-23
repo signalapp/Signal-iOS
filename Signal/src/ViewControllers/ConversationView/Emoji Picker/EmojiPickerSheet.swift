@@ -104,7 +104,7 @@ class EmojiPickerSheet: UIViewController {
         return min(maximizedHeight, 346)
     }
     var maximizedHeight: CGFloat {
-        return CurrentAppContext().frame.height - topLayoutGuide.length - 16
+        return CurrentAppContext().frame.height - topLayoutGuide.length - 32
     }
 
     let maxAnimationDuration: TimeInterval = 0.2
@@ -134,6 +134,8 @@ class EmojiPickerSheet: UIViewController {
     }
 
     @objc func handlePan(_ sender: UIPanGestureRecognizer) {
+        let isCollectionViewPanGesture = sender == collectionView.panGestureRecognizer
+
         switch sender.state {
         case .began, .changed:
             guard beginInteractiveTransitionIfNecessary(sender),
@@ -143,8 +145,10 @@ class EmojiPickerSheet: UIViewController {
             }
 
             // We're in an interactive transition, so don't let the scrollView scroll.
-            collectionView.contentOffset.y = 0
-            collectionView.showsVerticalScrollIndicator = false
+            if isCollectionViewPanGesture {
+                collectionView.contentOffset.y = 0
+                collectionView.showsVerticalScrollIndicator = false
+            }
 
             // We may have panned some distance if we were scrolling before we started
             // this interactive transition. Offset the translation we use to move the
@@ -237,9 +241,12 @@ class EmojiPickerSheet: UIViewController {
     }
 
     func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
-        // If we're at the top of the scrollView, or the view is not
-        // currently maximized, we want to do an interactive transition.
-        guard collectionView.contentOffset.y <= 0 || contentView.height < maximizedHeight else { return false }
+        // If we're at the top of the scrollView, the the view is not
+        // currently maximized, or we're panning outside of the collection
+        // view we want to do an interactive transition.
+        guard collectionView.contentOffset.y <= 0
+            || contentView.height < maximizedHeight
+            || sender != collectionView.panGestureRecognizer else { return false }
 
         if startingTranslation == nil {
             startingTranslation = sender.translation(in: view).y
