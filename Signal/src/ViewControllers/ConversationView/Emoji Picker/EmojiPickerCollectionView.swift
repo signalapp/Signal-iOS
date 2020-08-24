@@ -158,28 +158,36 @@ class EmojiPickerCollectionView: UICollectionView {
 
     @objc
     func handleLongPress(sender: UILongPressGestureRecognizer) {
-        guard sender.state == .began else { return }
 
-        let point = sender.location(in: self)
-        guard let indexPath = indexPathForItem(at: point) else { return }
-        guard let emoji = emojiForIndexPath(indexPath) else { return }
-        guard let cell = cellForItem(at: indexPath) else { return }
+        switch sender.state {
+        case .began:
+            let point = sender.location(in: self)
+            guard let indexPath = indexPathForItem(at: point) else { return }
+            guard let emoji = emojiForIndexPath(indexPath) else { return }
+            guard let cell = cellForItem(at: indexPath) else { return }
 
-        currentSkinTonePicker?.dismiss()
-        currentSkinTonePicker = EmojiSkinTonePicker.present(referenceView: cell, emoji: emoji) { [weak self] emoji in
-            guard let self = self else { return }
+            currentSkinTonePicker?.dismiss()
+            currentSkinTonePicker = EmojiSkinTonePicker.present(referenceView: cell, emoji: emoji) { [weak self] emoji in
+                guard let self = self else { return }
 
-            if let emoji = emoji {
-                SDSDatabaseStorage.shared.asyncWrite { transaction in
-                    self.recordRecentEmoji(emoji, transaction: transaction)
-                    emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
+                if let emoji = emoji {
+                    SDSDatabaseStorage.shared.asyncWrite { transaction in
+                        self.recordRecentEmoji(emoji, transaction: transaction)
+                        emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
+                    }
+
+                    self.pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
                 }
 
-                self.pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
+                self.currentSkinTonePicker?.dismiss()
+                self.currentSkinTonePicker = nil
             }
-
-            self.currentSkinTonePicker?.dismiss()
-            self.currentSkinTonePicker = nil
+        case .changed:
+            currentSkinTonePicker?.didChangeLongPress(sender)
+        case .ended:
+            currentSkinTonePicker?.didEndLongPress(sender)
+        default:
+            break
         }
     }
 }

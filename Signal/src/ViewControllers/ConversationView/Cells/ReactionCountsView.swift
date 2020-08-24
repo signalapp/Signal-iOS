@@ -89,7 +89,7 @@ private class ReactionPillView: UIView {
     let emojiLabel = UILabel()
     let countLabel = UILabel()
 
-    let pillBorderWidth: CGFloat = 1.5
+    let pillBorderWidth: CGFloat = 1
 
     let contentsStackView = UIStackView()
 
@@ -146,8 +146,13 @@ private class ReactionPillView: UIView {
     }
 
     private func configureColors(fromLocalUser: Bool) {
-        layer.borderColor = fromLocalUser ? UIColor.ows_accentBlue.cgColor : Theme.backgroundColor.cgColor
-        backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : UIColor.ows_gray05
-        countLabel.textColor = fromLocalUser ? .ows_accentBlue : Theme.primaryTextColor
+        layer.borderColor = Theme.backgroundColor.cgColor
+        if fromLocalUser {
+            backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray60 : UIColor.ows_gray25
+            countLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray90
+        } else {
+            backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : UIColor.ows_gray05
+            countLabel.textColor = Theme.secondaryTextAndIconColor
+        }
     }
 }

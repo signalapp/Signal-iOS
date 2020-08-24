@@ -200,6 +200,10 @@ class EmojiPickerSheet: UIViewController {
                 finalHeight = maximizedHeight
             case .cancelling:
                 finalHeight = startingHeight
+
+                if isCollectionViewPanGesture {
+                    collectionView.setContentOffset(collectionView.contentOffset, animated: false)
+                }
             }
 
             let remainingDistance = finalHeight - currentHeight

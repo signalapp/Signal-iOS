@@ -33,23 +33,25 @@ class MessageReactionPicker: UIStackView {
 
         super.init(frame: .zero)
 
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backgroundView = addBackgroundView(
-                withBackgroundColor: .ows_blackAlpha80,
-                cornerRadius: pickerDiameter / 2
-            )
-        } else {
-            let backgroundView = UIView()
-            addSubview(backgroundView)
-            backgroundView.autoPinEdgesToSuperviewEdges()
-            backgroundView.layer.cornerRadius = pickerDiameter / 2
-            backgroundView.clipsToBounds = true
-            self.backgroundView = backgroundView
+        backgroundView = addBackgroundView(
+            withBackgroundColor: Theme.actionSheetBackgroundColor,
+            cornerRadius: pickerDiameter / 2
+        )
+//        backgroundView?.clipsToBounds = false
+        backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
+        backgroundView?.layer.shadowRadius = 4
+        backgroundView?.layer.shadowOpacity = 0.05
+        backgroundView?.layer.shadowOffset = .zero
 
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            backgroundView.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-        }
+        let shadowView = UIView()
+        shadowView.backgroundColor = Theme.actionSheetBackgroundColor
+        shadowView.layer.cornerRadius = pickerDiameter / 2
+        shadowView.layer.shadowColor = UIColor.ows_black.cgColor
+        shadowView.layer.shadowRadius = 12
+        shadowView.layer.shadowOpacity = 0.3
+        shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        backgroundView?.addSubview(shadowView)
+        shadowView.autoPinEdgesToSuperviewEdges()
 
         autoSetDimension(.height, toSize: pickerDiameter)
 
@@ -88,7 +90,7 @@ class MessageReactionPicker: UIStackView {
             // Add a circle behind the currently selected emoji
             if self.selectedEmoji == emoji {
                 let selectedBackgroundView = UIView()
-                selectedBackgroundView.backgroundColor = .ows_whiteAlpha30
+                selectedBackgroundView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
                 selectedBackgroundView.clipsToBounds = true
                 selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
                 backgroundView?.addSubview(selectedBackgroundView)
@@ -101,7 +103,7 @@ class MessageReactionPicker: UIStackView {
         if addAnyButton {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setImage(#imageLiteral(resourceName: "any-emoji-32"))
+            button.setImage(Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "any-emoji-32-dark") : #imageLiteral(resourceName: "any-emoji-32-light"))
             button.setPressedBlock { [weak self] in
                 self?.delegate?.didSelectAnyEmoji()
             }

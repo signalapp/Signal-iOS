@@ -76,6 +76,24 @@ class EmojiSkinTonePicker: UIView {
         }
     }
 
+    func didChangeLongPress(_ sender: UILongPressGestureRecognizer) {
+        guard let singleSelectionButtons = singleSelectionButtons else { return }
+
+        let point = sender.location(in: containerView)
+        singleSelectionButtons.forEach { $0.isSelected = $0.frame.contains(point) }
+    }
+
+    func didEndLongPress(_ sender: UILongPressGestureRecognizer) {
+        guard let singleSelectionButtons = singleSelectionButtons else { return }
+
+        let point = sender.location(in: containerView)
+        if let selectedButton = singleSelectionButtons.first(where: { $0.frame.contains(point) }) {
+            selectedButton.sendActions(for: .touchUpInside)
+        } else if !referenceOverlay.frame.contains(sender.location(in: self)) {
+            dismiss()
+        }
+    }
+
     init(emoji: EmojiWithSkinTones, completion: @escaping (EmojiWithSkinTones?) -> Void) {
         owsAssertDebug(emoji.baseEmoji.hasSkinTones)
 
@@ -89,12 +107,12 @@ class EmojiSkinTonePicker: UIView {
         layer.shadowOpacity = 0.25
         layer.shadowRadius = 4
 
-        referenceOverlay.backgroundColor = Theme.backgroundColor
+        referenceOverlay.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
         referenceOverlay.layer.cornerRadius = 9
         addSubview(referenceOverlay)
 
-        containerView.layoutMargins = UIEdgeInsets(top: 9, leading: 19, bottom: 9, trailing: 19)
-        containerView.backgroundColor = Theme.backgroundColor
+        containerView.layoutMargins = UIEdgeInsets(top: 9, leading: 16, bottom: 9, trailing: 16)
+        containerView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
         containerView.layer.cornerRadius = 11
         addSubview(containerView)
         containerView.autoPinWidthToSuperview()
@@ -118,25 +136,32 @@ class EmojiSkinTonePicker: UIView {
         self?.completion(emojiWithSkinTone)
     }
 
+    private var singleSelectionButtons: [UIButton]?
     private func prepareForSingleSkinTone() {
         let hStack = UIStackView()
         hStack.axis = .horizontal
-        hStack.spacing = 6
+        hStack.spacing = 8
         containerView.addSubview(hStack)
         hStack.autoPinEdgesToSuperviewMargins()
 
         hStack.addArrangedSubview(yellowButton)
 
+        hStack.addArrangedSubview(.spacer(withWidth: 2))
+
         let divider = UIView()
         divider.autoSetDimension(.width, toSize: 1)
-        divider.backgroundColor = Theme.hairlineColor
+        divider.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
         hStack.addArrangedSubview(divider)
+
+        hStack.addArrangedSubview(.spacer(withWidth: 2))
 
         let skinToneButtons = self.skinToneButtons(for: emoji) { [weak self] emojiWithSkinTone in
             self?.completion(emojiWithSkinTone)
         }
 
-        skinToneButtons.forEach { hStack.addArrangedSubview($0.button) }
+        singleSelectionButtons = skinToneButtons.map { $0.button }
+        singleSelectionButtons?.forEach { hStack.addArrangedSubview($0) }
+        singleSelectionButtons?.append(yellowButton)
     }
 
     // MARK: - Multiple Skin Tones
@@ -232,7 +257,7 @@ class EmojiSkinTonePicker: UIView {
 
         let divider = UIView()
         divider.autoSetDimension(.height, toSize: 1)
-        divider.backgroundColor = Theme.hairlineColor
+        divider.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
         vStack.addArrangedSubview(divider)
 
         let leftSpacer = UIView.hStretchingSpacer()
@@ -262,7 +287,7 @@ class EmojiSkinTonePicker: UIView {
         let button = OWSButton { handler(emoji) }
         button.titleLabel?.font = .boldSystemFont(ofSize: 32)
         button.setTitle(emoji.rawValue, for: .normal)
-        button.setBackgroundImage(UIImage(color: Theme.cellSelectedColor), for: .selected)
+        button.setBackgroundImage(UIImage(color: Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25), for: .selected)
         button.layer.cornerRadius = 6
         button.clipsToBounds = true
         button.autoSetDimensions(to: CGSize(square: 38))

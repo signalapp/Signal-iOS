@@ -146,7 +146,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     private static var defaultBubbleColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05
+        return Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
     }
 
     @objc
