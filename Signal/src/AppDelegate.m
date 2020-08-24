@@ -56,7 +56,7 @@ static NSString *const kURLHostVerifyPrefix = @"verify";
 
 static NSTimeInterval launchStartedAt;
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, LKAppModeManagerDelegate>
 
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
@@ -189,6 +189,8 @@ static NSTimeInterval launchStartedAt;
     SetCurrentAppContext([MainAppContext new]);
 
     launchStartedAt = CACurrentMediaTime();
+
+    [LKAppModeManager configureWithDelegate:self];
 
     BOOL isLoggingEnabled;
 #ifdef DEBUG
@@ -932,6 +934,35 @@ static NSTimeInterval launchStartedAt;
 }
 
 - (void)stopOpenGroupPollers { [LKPublicChatManager.shared stopPollers]; }
+
+# pragma mark - App Mode
+
+- (LKAppMode)getCurrentAppMode {
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    if (window == nil) { return LKAppModeLight; }
+    UIUserInterfaceStyle userInterfaceStyle = window.traitCollection.userInterfaceStyle;
+    BOOL isLightMode = userInterfaceStyle == UIUserInterfaceStyleUnspecified || userInterfaceStyle == UIUserInterfaceStyleLight;
+    return isLightMode ? LKAppModeLight : LKAppModeDark;
+}
+
+- (void)setCurrentAppModeTo:(LKAppMode)appMode {
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    if (window == nil) { return; }
+    switch (appMode) {
+        case LKAppModeLight: {
+            if (@available(iOS 13.0, *)) {
+                window.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+            }
+            break;
+        }
+        case LKAppModeDark: {
+            if (@available(iOS 13.0, *)) {
+                window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+            }
+            break;
+        }
+    }
+}
 
 # pragma mark - Other
 

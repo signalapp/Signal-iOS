@@ -128,12 +128,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         stackView.pin(to: scrollView)
         view.addSubview(scrollView)
         scrollView.pin(to: view)
-        // Register for notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeSwitchedNotification(_:)), name: .appModeSwitched, object: nil)
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
     
     private func getSettingButtons() -> [UIView] {
@@ -239,12 +233,16 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
             closeButton.tintColor = Colors.text
             navigationItem.leftBarButtonItem = closeButton
-            let appModeIcon = UserDefaults.standard[.isUsingDarkMode] ? #imageLiteral(resourceName: "ic_dark_theme_on") : #imageLiteral(resourceName: "ic_dark_theme_off")
-            let appModeButton = UIBarButtonItem(image: appModeIcon, style: .plain, target: self, action: #selector(switchAppMode))
-            appModeButton.tintColor = Colors.text
             let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCode"), style: .plain, target: self, action: #selector(showQRCode))
             qrCodeButton.tintColor = Colors.text
-            navigationItem.rightBarButtonItems = [ qrCodeButton/*, appModeButton*/ ]
+            var rightBarButtonItems: [UIBarButtonItem] = [ qrCodeButton ]
+            if #available(iOS 13, *) { // Pre iOS 13 the user can't switch actively but the app still responds to system changes
+                let appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_dark_theme_on") : #imageLiteral(resourceName: "ic_dark_theme_off")
+                let appModeButton = UIBarButtonItem(image: appModeIcon, style: .plain, target: self, action: #selector(switchAppMode))
+                appModeButton.tintColor = Colors.text
+                rightBarButtonItems.append(appModeButton)
+            }
+            navigationItem.rightBarButtonItems = rightBarButtonItems
         }
     }
     
@@ -297,9 +295,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
 
     @objc private func switchAppMode() {
-        let isUsingDarkMode = UserDefaults.standard[.isUsingDarkMode]
-        UserDefaults.standard[.isUsingDarkMode] = !isUsingDarkMode
-        NotificationCenter.default.post(name: .appModeSwitched, object: nil)
+        let newAppMode: AppMode = isLightMode ? .dark : .light
+        AppModeManager.shared.setCurrentAppMode(to: newAppMode)
     }
 
     @objc private func showQRCode() {

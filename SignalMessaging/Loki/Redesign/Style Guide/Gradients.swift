@@ -27,14 +27,14 @@ public final class Gradient : NSObject {
 final public class Gradients : NSObject {
 
     @objc public static var defaultLokiBackground: Gradient {
-        switch AppMode.current {
+        switch AppModeManager.shared.currentAppMode {
         case .light: return Gradient(start: UIColor(hex: 0xFCFCFC), end: UIColor(hex: 0xFFFFFF))
         case .dark: return Gradient(start: UIColor(hex: 0x171717), end: UIColor(hex: 0x121212))
         }
     }
 
     @objc public static var homeVCFade: Gradient {
-        switch AppMode.current {
+        switch AppModeManager.shared.currentAppMode {
         case .light: return Gradient(start: UIColor(hex: 0xFFFFFF).withAlphaComponent(0), end: UIColor(hex: 0xFFFFFF))
         case .dark: return Gradient(start: UIColor(hex: 0x000000).withAlphaComponent(0), end: UIColor(hex: 0x000000))
         }
