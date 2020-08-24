@@ -357,8 +357,9 @@ public class GroupMembership: MTLModel {
     }
 }
 
-// MARK: - Swift Accessors
+// MARK: - Swift & Obj-C Accessors
 
+@objc
 public extension GroupMembership {
 
     var fullMemberAdministrators: Set<SignalServiceAddress> {
@@ -404,6 +405,11 @@ public extension GroupMembership {
     var allMemberUuidsOfAnyKind: Set<UUID> {
         return Set(memberStates.keys.compactMap { $0.uuid })
     }
+}
+
+// MARK: - Swift Accessors
+
+public extension GroupMembership {
 
     func role(for uuid: UUID) -> TSGroupMemberRole? {
         return role(for: SignalServiceAddress(uuid: uuid))

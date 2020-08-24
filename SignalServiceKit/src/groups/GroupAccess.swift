@@ -108,6 +108,9 @@ public class GroupAccess: MTLModel {
 
     private static func filter(forAddFromInviteLink value: GroupV2Access) -> GroupV2Access {
         switch value {
+        case .unknown:
+            // .unknown is valid for groups created before group links were added.
+            return value
         case .unsatisfiable, .administrator, .any:
             return value
         default:

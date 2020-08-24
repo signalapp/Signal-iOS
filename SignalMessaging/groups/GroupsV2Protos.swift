@@ -191,6 +191,7 @@ public class GroupsV2Protos {
                 assert(changeActionsProtoData.count > 0)
                 builder.setGroupChange(changeActionsProtoData)
             } else {
+                // This isn't necessarily a bug, but it should be rare.
                 owsFailDebug("Discarding oversize group change proto.")
             }
         }

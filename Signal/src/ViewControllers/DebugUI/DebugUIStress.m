@@ -499,6 +499,10 @@ NS_ASSUME_NONNULL_BEGIN
                                          actionBlock:^{
             [DebugUIStress addDebugMembersToGroup:groupThread];
         }]];
+        if (thread.isGroupV2Thread) {
+            [items addObject:[OWSTableItem itemWithTitle:@"Make all members admins"
+                                             actionBlock:^{ [DebugUIStress makeAllMembersAdmin:groupThread]; }]];
+        }
     }
 
     [items addObject:[OWSTableItem itemWithTitle:@"Make group w. unregistered users"

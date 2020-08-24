@@ -155,6 +155,7 @@ public extension DebugUIStress {
                 for member in validMembersToAdd {
                     Logger.verbose("Adding: \(member)")
                 }
+                Logger.verbose("Adding: \(validMembersToAdd.count)")
                 guard !validMembersToAdd.isEmpty else {
                     throw OWSAssertionError("No valid members to add.")
                 }
@@ -227,6 +228,21 @@ public extension DebugUIStress {
                                                   newGroupModel: newGroupModel,
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
+        }.done(on: .global()) { (_) in
+            Logger.info("Complete.")
+        }.catch(on: .global()) { error in
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    class func makeAllMembersAdmin(_ groupThread: TSGroupThread) {
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
+        let uuids = groupModelV2.groupMembership.fullMembers.compactMap { $0.uuid }
+        firstly { () -> Promise<TSGroupThread> in
+            GroupManager.changeMemberRolesV2(groupModel: groupModelV2, uuids: uuids, role: .administrator)
         }.done(on: .global()) { (_) in
             Logger.info("Complete.")
         }.catch(on: .global()) { error in

@@ -1221,9 +1221,17 @@ public class GroupManager: NSObject {
     public static func changeMemberRoleV2(groupModel: TSGroupModelV2,
                                           uuid: UUID,
                                           role: TSGroupMemberRole) -> Promise<TSGroupThread> {
+        changeMemberRolesV2(groupModel: groupModel, uuids: [uuid], role: role)
+    }
+
+    public static func changeMemberRolesV2(groupModel: TSGroupModelV2,
+                                           uuids: [UUID],
+                                           role: TSGroupMemberRole) -> Promise<TSGroupThread> {
         return updateGroupV2(groupModel: groupModel,
                              description: "Change member role") { groupChangeSet in
-                                groupChangeSet.changeRoleForMember(uuid, role: role)
+                                for uuid in uuids {
+                                    groupChangeSet.changeRoleForMember(uuid, role: role)
+                                }
         }
     }
 
