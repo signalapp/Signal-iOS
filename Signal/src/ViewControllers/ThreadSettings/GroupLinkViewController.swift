@@ -133,12 +133,14 @@ public class GroupLinkViewController: OWSTableViewController {
             if groupModelV2.isGroupLinkEnabled {
                 section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
                                                                                 comment: "Label for the 'share link' button in the 'group link' view."),
+                                                    textColor: Theme.accentBlueColor,
                                                     accessibilityIdentifier: "group_link_view_share_link",
                                                     actionBlock: { [weak self] in
                                                         self?.shareLinkPressed()
                 }))
                 section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
                                                                                 comment: "Label for the 'reset link' button in the 'group link' view."),
+                                                    textColor: Theme.accentBlueColor,
                                                     accessibilityIdentifier: "group_link_view_reset_link",
                                                     actionBlock: { [weak self] in
                                                         self?.resetLinkPressed()
