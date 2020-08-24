@@ -19,7 +19,11 @@ public final class Gradient : NSObject {
         let layer = CAGradientLayer()
         layer.frame = UIScreen.main.bounds
         layer.colors = [ gradient.start.cgColor, gradient.end.cgColor ]
-        self.layer.insertSublayer(layer, at: 0)
+        if let existingSublayer = self.layer.sublayers?[0] {
+            self.layer.replaceSublayer(existingSublayer, with: layer)
+        } else {
+            self.layer.insertSublayer(layer, at: 0)
+        }
     }
 }
 

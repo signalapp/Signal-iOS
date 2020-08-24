@@ -49,6 +49,13 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
     }()
+
+    private lazy var settingButtonsStackView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .vertical
+        result.alignment = .fill
+        return result
+    }()
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -110,9 +117,9 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         topStackView.isLayoutMarginsRelativeArrangement = true
         // Set up setting buttons stack view
-        let settingButtonsStackView = UIStackView(arrangedSubviews: getSettingButtons() )
-        settingButtonsStackView.axis = .vertical
-        settingButtonsStackView.alignment = .fill
+        getSettingButtons().forEach { settingButton in
+            settingButtonsStackView.addArrangedSubview(settingButton)
+        }
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView ])
         stackView.axis = .vertical
@@ -288,6 +295,17 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             }, requiresSync: true)
         }
     }
+
+    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
+        super.handleAppModeChangedNotification(notification)
+        settingButtonsStackView.arrangedSubviews.forEach { settingButton in
+            settingButtonsStackView.removeArrangedSubview(settingButton)
+            settingButton.removeFromSuperview()
+        }
+        getSettingButtons().forEach { settingButton in
+            settingButtonsStackView.addArrangedSubview(settingButton) // Re-do setting buttons
+        }
+    }
     
     // MARK: Interaction
     @objc private func close() {
@@ -297,6 +315,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func switchAppMode() {
         let newAppMode: AppMode = isLightMode ? .dark : .light
         AppModeManager.shared.setCurrentAppMode(to: newAppMode)
+        NotificationCenter.default.post(name: .appModeChanged, object: nil)
     }
 
     @objc private func showQRCode() {

@@ -348,6 +348,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         pathStatusViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPath)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
     }
+
+    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
+        super.handleAppModeChangedNotification(notification)
+        let gradient = Gradients.homeVCFade
+        fadeView.setGradient(gradient) // Re-do gradient
+        tableView.reloadData()
+    }
     
     // MARK: Interaction
     func handleContinueButtonTapped(from seedReminderView: SeedReminderView) {
