@@ -10,12 +10,12 @@ class EmojiPickerSheet: UIViewController {
     let handle = UIView()
     weak var backdropView: UIView?
 
-    let completionHandler: (Emoji?) -> Void
+    let completionHandler: (EmojiWithSkinTones?) -> Void
 
     let collectionView = EmojiPickerCollectionView()
     lazy var sectionToolbar = EmojiPickerSectionToolbar(delegate: self)
 
-    init(completionHandler: @escaping (Emoji?) -> Void) {
+    init(completionHandler: @escaping (EmojiWithSkinTones?) -> Void) {
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .custom
@@ -104,7 +104,7 @@ class EmojiPickerSheet: UIViewController {
         return min(maximizedHeight, 346)
     }
     var maximizedHeight: CGFloat {
-        return CurrentAppContext().frame.height - topLayoutGuide.length - 16
+        return CurrentAppContext().frame.height - topLayoutGuide.length - 32
     }
 
     let maxAnimationDuration: TimeInterval = 0.2
@@ -134,6 +134,8 @@ class EmojiPickerSheet: UIViewController {
     }
 
     @objc func handlePan(_ sender: UIPanGestureRecognizer) {
+        let isCollectionViewPanGesture = sender == collectionView.panGestureRecognizer
+
         switch sender.state {
         case .began, .changed:
             guard beginInteractiveTransitionIfNecessary(sender),
@@ -143,8 +145,10 @@ class EmojiPickerSheet: UIViewController {
             }
 
             // We're in an interactive transition, so don't let the scrollView scroll.
-            collectionView.contentOffset.y = 0
-            collectionView.showsVerticalScrollIndicator = false
+            if isCollectionViewPanGesture {
+                collectionView.contentOffset.y = 0
+                collectionView.showsVerticalScrollIndicator = false
+            }
 
             // We may have panned some distance if we were scrolling before we started
             // this interactive transition. Offset the translation we use to move the
@@ -196,6 +200,10 @@ class EmojiPickerSheet: UIViewController {
                 finalHeight = maximizedHeight
             case .cancelling:
                 finalHeight = startingHeight
+
+                if isCollectionViewPanGesture {
+                    collectionView.setContentOffset(collectionView.contentOffset, animated: false)
+                }
             }
 
             let remainingDistance = finalHeight - currentHeight
@@ -237,9 +245,12 @@ class EmojiPickerSheet: UIViewController {
     }
 
     func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
-        // If we're at the top of the scrollView, or the view is not
-        // currently maximized, we want to do an interactive transition.
-        guard collectionView.contentOffset.y <= 0 || contentView.height < maximizedHeight else { return false }
+        // If we're at the top of the scrollView, the the view is not
+        // currently maximized, or we're panning outside of the collection
+        // view we want to do an interactive transition.
+        guard collectionView.contentOffset.y <= 0
+            || contentView.height < maximizedHeight
+            || sender != collectionView.panGestureRecognizer else { return false }
 
         if startingTranslation == nil {
             startingTranslation = sender.translation(in: view).y
@@ -278,7 +289,7 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
 }
 
 extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
-    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: Emoji) {
+    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones) {
         completionHandler(emoji)
         dismiss(animated: true)
     }

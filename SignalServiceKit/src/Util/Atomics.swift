@@ -255,3 +255,26 @@ public class AtomicArray<T: AnyObject> {
         }
     }
 }
+
+// MARK: -
+
+public class AtomicDictionary<Key: Hashable, Value> {
+    private var values: [Key: Value]
+
+    public required init(_ values: [Key: Value] = [:]) {
+        self.values = values
+    }
+
+    public subscript(_ key: Key) -> Value? {
+        set { Atomics.perform { self.values[key] = newValue } }
+        get { Atomics.perform { self.values[key] } }
+    }
+
+    public func get() -> [Key: Value] {
+        Atomics.perform { self.values }
+    }
+
+    public func set(_ values: [Key: Value]) {
+        Atomics.perform { self.values = values }
+    }
+}

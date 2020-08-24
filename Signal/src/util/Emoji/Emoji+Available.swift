@@ -3,22 +3,79 @@
 //
 
 extension Emoji {
-    static let availableSerialQueue = DispatchQueue(label: "EmojiAvailable")
-    static var availableCache = [Emoji: Bool]()
+    private static let availableCache = AtomicDictionary<Emoji, Bool>()
+    private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+Available")
+    private static let iosVersionKey = "iosVersion"
 
     static func warmAvailableCache() {
-        Emoji.allCases.forEach { _ = $0.available }
+        owsAssertDebug(!Thread.isMainThread)
+
+        var availableCache = [Emoji: Bool]()
+        var uncachedEmoji = [Emoji]()
+
+        let iosVersion = AppVersion.iOSVersionString
+        var iosVersionNeedsUpdate = false
+
+        SDSDatabaseStorage.shared.read { transaction in
+            guard let lastIosVersion = keyValueStore.getString(iosVersionKey, transaction: transaction) else {
+                Logger.info("Building initial emoji availability cache.")
+                iosVersionNeedsUpdate = true
+                uncachedEmoji = Emoji.allCases
+                return
+            }
+
+            guard lastIosVersion == iosVersion else {
+                Logger.info("Re-building emoji availability cache. iOS version upgraded from \(lastIosVersion) -> \(iosVersion)")
+                iosVersionNeedsUpdate = true
+                uncachedEmoji = Emoji.allCases
+                return
+            }
+
+            for emoji in Emoji.allCases {
+                if let available = keyValueStore.getBool(emoji.rawValue, transaction: transaction) {
+                    availableCache[emoji] = available
+                } else {
+                    uncachedEmoji.append(emoji)
+                }
+            }
+        }
+
+        var uncachedAvailability = [Emoji: Bool]()
+        if !uncachedEmoji.isEmpty {
+            Logger.info("Checking emoji availability for \(uncachedEmoji.count) uncached emoji")
+            uncachedEmoji.forEach {
+                let available = isEmojiAvailable($0)
+                uncachedAvailability[$0] = available
+                availableCache[$0] = available
+            }
+        }
+
+        if uncachedAvailability.count > 0 || iosVersionNeedsUpdate {
+            SDSDatabaseStorage.shared.write { transaction in
+                for (emoji, available) in uncachedAvailability {
+                    keyValueStore.setBool(available, key: emoji.rawValue, transaction: transaction)
+                }
+                keyValueStore.setString(iosVersion, key: iosVersionKey, transaction: transaction)
+            }
+        }
+
+        Logger.info("Warmed emoji availability cache with \(availableCache.filter { $0.value }.count) available emoji for iOS \(iosVersion)")
+
+        Self.availableCache.set(availableCache)
+    }
+
+    private static func isEmojiAvailable(_ emoji: Emoji) -> Bool {
+        return emoji.rawValue.isUnicodeStringAvailable
     }
 
     /// Indicates whether the given emoji is available on this iOS
     /// version. We cache the availability in memory.
     var available: Bool {
-        guard let available = Emoji.availableSerialQueue.sync(execute: { Emoji.availableCache[self] }) else {
-            let available = rawValue.isUnicodeStringAvailable
-            Emoji.availableSerialQueue.sync { Emoji.availableCache[self] = available }
+        guard let available = Self.availableCache[self] else {
+            let available = Self.isEmojiAvailable(self)
+            Self.availableCache[self] = available
             return available
         }
-
         return available
     }
 }

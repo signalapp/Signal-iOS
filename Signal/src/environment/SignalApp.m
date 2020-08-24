@@ -50,7 +50,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
     [self handleCrashDetection];
 
-    [self warmAvailableEmojiCache];
+    [self warmAvailableEmojiCacheAsync];
 
     return self;
 }

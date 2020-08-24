@@ -50,30 +50,6 @@ public class ReactionFinder: NSObject {
         return OWSReaction.grdbFetchOne(sql: sql, arguments: [uniqueMessageId, e164], transaction: transaction)
     }
 
-    /// Returns a list of all users who have reacted to this message with a given emoji
-    @objc
-    public func reactors(for emoji: String, transaction: GRDBReadTransaction) -> [SignalServiceAddress] {
-        let sql = """
-            SELECT * FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
-            AND \(reactionColumn: .emoji) = ?
-            ORDER BY \(reactionColumn: .id) DESC
-        """
-        let cursor = OWSReaction.grdbFetchCursor(sql: sql, arguments: [uniqueMessageId, emoji], transaction: transaction)
-
-        var reactors = [SignalServiceAddress]()
-
-        do {
-            while let reaction = try cursor.next() {
-                reactors.append(reaction.reactor)
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
-        }
-
-        return reactors
-    }
-
     /// Returns a list of all reactions to this message
     @objc
     public func allReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
@@ -119,75 +95,6 @@ public class ReactionFinder: NSObject {
         }
 
         return reactions
-    }
-
-    /// Returns a list of all emoji that have been reacted to this message, and the number
-    /// of users who have sent that reaction, ordered from most to least frequent reaction
-    public func emojiCounts(transaction: GRDBReadTransaction) -> [(emoji: String, count: Int)] {
-        let sql = """
-            SELECT COUNT(*) as count, \(reactionColumn: .emoji)
-            FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
-            GROUP BY \(reactionColumn: .emoji)
-            ORDER BY count DESC
-        """
-        let sqlRequest = SQLRequest<Void>(sql: sql, arguments: [uniqueMessageId], cached: true)
-
-        do {
-            let rows = try Row.fetchAll(transaction.database, sqlRequest)
-            return rows.map { (emoji: $0[1], count: $0[0]) }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
-            return []
-        }
-    }
-
-    /// Returns true if any user has reacted to this message
-    @objc
-    public func existsReaction(transaction: GRDBReadTransaction) -> Bool {
-        let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(ReactionRecord.databaseTableName)
-                WHERE \(reactionColumn: .uniqueMessageId) = ?
-                LIMIT 1
-            )
-        """
-        let arguments: StatementArguments = [uniqueMessageId]
-
-        let exists: Bool
-        do {
-            exists = try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
-        } catch {
-            owsFailDebug("Received unexpected error \(error)")
-            exists = false
-        }
-
-        return exists
-    }
-
-    /// Iterate over all the reactions on this message, ordered by creation from oldest to newest
-    @objc
-    public func enumerateReactions(
-        transaction: GRDBReadTransaction,
-        block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
-        let sql = """
-            SELECT *
-            FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
-        """
-        let cursor = OWSReaction.grdbFetchCursor(sql: sql, arguments: [uniqueMessageId], transaction: transaction)
-
-        do {
-            while let reaction = try cursor.next() {
-                var stop: ObjCBool = false
-                block(reaction, &stop)
-                if stop.boolValue { break }
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
-        }
     }
 
     /// A list of all the unique reaction IDs linked to this message, ordered by creation from oldest to neweset

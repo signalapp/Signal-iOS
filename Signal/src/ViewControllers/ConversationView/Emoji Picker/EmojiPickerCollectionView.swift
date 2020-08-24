@@ -5,7 +5,7 @@
 import Foundation
 
 protocol EmojiPickerCollectionViewDelegate: class {
-    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: Emoji)
+    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones)
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int)
 }
 
@@ -17,8 +17,10 @@ class EmojiPickerCollectionView: UICollectionView {
 
     weak var pickerDelegate: EmojiPickerCollectionViewDelegate?
 
-    private let recentEmoji: [Emoji]
+    private let recentEmoji: [EmojiWithSkinTones]
     var hasRecentEmoji: Bool { !recentEmoji.isEmpty }
+
+    private let allAvailableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
 
     static let emojiWidth: CGFloat = 38
     static let margins: CGFloat = 16
@@ -30,12 +32,16 @@ class EmojiPickerCollectionView: UICollectionView {
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
-        recentEmoji = SDSDatabaseStorage.shared.uiRead { transaction in
+        (recentEmoji, allAvailableEmojiByCategory) = SDSDatabaseStorage.shared.uiRead { transaction in
             let rawEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
                 forKey: EmojiPickerCollectionView.recentEmojiKey,
                 transaction: transaction
             ) as? [String] ?? []
-            return rawEmoji.compactMap { Emoji(rawValue: $0) }
+            let recentEmoji = rawEmoji.compactMap { EmojiWithSkinTones(rawValue: $0) }
+            let allAvailableEmojiByCategory = Emoji.allAvailableEmojiByCategoryWithPreferredSkinTones(
+                transaction: transaction
+            )
+            return (recentEmoji, allAvailableEmojiByCategory)
         }
 
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -51,6 +57,10 @@ class EmojiPickerCollectionView: UICollectionView {
         )
 
         backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        panGestureRecognizer.require(toFail: longPressGesture)
+        addGestureRecognizer(longPressGesture)
     }
 
     required init?(coder: NSCoder) {
@@ -64,7 +74,7 @@ class EmojiPickerCollectionView: UICollectionView {
     private var maxRecentEmoji: Int { numberOfColumns * 3 }
     private var categoryIndexOffset: Int { hasRecentEmoji ? 1 : 0}
 
-    func emojiForSection(_ section: Int) -> [Emoji] {
+    func emojiForSection(_ section: Int) -> [EmojiWithSkinTones] {
         guard section > 0 || !hasRecentEmoji else { return Array(recentEmoji[0..<min(maxRecentEmoji, recentEmoji.count)]) }
 
         guard let category = Emoji.Category.allCases[safe: section - categoryIndexOffset] else {
@@ -72,10 +82,15 @@ class EmojiPickerCollectionView: UICollectionView {
             return []
         }
 
-        return category.emoji.filter { $0.available }
+        guard let categoryEmoji = allAvailableEmojiByCategory[category] else {
+            owsFailDebug("Unexpectedly missing emoji for category \(category)")
+            return []
+        }
+
+        return categoryEmoji
     }
 
-    func emojiForIndexPath(_ indexPath: IndexPath) -> Emoji? {
+    func emojiForIndexPath(_ indexPath: IndexPath) -> EmojiWithSkinTones? {
         return emojiForSection(indexPath.section)[safe: indexPath.row]
     }
 
@@ -93,7 +108,7 @@ class EmojiPickerCollectionView: UICollectionView {
         return category.localizedName
     }
 
-    func recordRecentEmoji(_ emoji: Emoji) {
+    func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: SDSAnyWriteTransaction) {
         guard recentEmoji.first != emoji else { return }
 
         var newRecentEmoji = recentEmoji
@@ -105,17 +120,18 @@ class EmojiPickerCollectionView: UICollectionView {
         // Truncate the recent emoji list to a maximum of 50 stored
         newRecentEmoji = Array(newRecentEmoji[0..<min(50, newRecentEmoji.count)])
 
-        SDSDatabaseStorage.shared.asyncWrite { transaction in
-            EmojiPickerCollectionView.keyValueStore.setObject(
-                newRecentEmoji.map { $0.rawValue },
-                key: EmojiPickerCollectionView.recentEmojiKey,
-                transaction: transaction
-            )
-        }
+        EmojiPickerCollectionView.keyValueStore.setObject(
+            newRecentEmoji.map { $0.rawValue },
+            key: EmojiPickerCollectionView.recentEmojiKey,
+            transaction: transaction
+        )
     }
 
     var lowestVisibleSection = 0
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        currentSkinTonePicker?.dismiss()
+        currentSkinTonePicker = nil
+
         let newLowestVisibleSection = indexPathsForVisibleItems.reduce(into: Set<Int>()) { $0.insert($1.section) }.min() ?? 0
 
         guard scrollingToSection == nil || newLowestVisibleSection == scrollingToSection else { return }
@@ -137,6 +153,43 @@ class EmojiPickerCollectionView: UICollectionView {
         scrollingToSection = section
         setContentOffset(CGPoint(x: 0, y: attributes.frame.minY), animated: animated)
     }
+
+    private weak var currentSkinTonePicker: EmojiSkinTonePicker?
+
+    @objc
+    func handleLongPress(sender: UILongPressGestureRecognizer) {
+
+        switch sender.state {
+        case .began:
+            let point = sender.location(in: self)
+            guard let indexPath = indexPathForItem(at: point) else { return }
+            guard let emoji = emojiForIndexPath(indexPath) else { return }
+            guard let cell = cellForItem(at: indexPath) else { return }
+
+            currentSkinTonePicker?.dismiss()
+            currentSkinTonePicker = EmojiSkinTonePicker.present(referenceView: cell, emoji: emoji) { [weak self] emoji in
+                guard let self = self else { return }
+
+                if let emoji = emoji {
+                    SDSDatabaseStorage.shared.asyncWrite { transaction in
+                        self.recordRecentEmoji(emoji, transaction: transaction)
+                        emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
+                    }
+
+                    self.pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
+                }
+
+                self.currentSkinTonePicker?.dismiss()
+                self.currentSkinTonePicker = nil
+            }
+        case .changed:
+            currentSkinTonePicker?.didChangeLongPress(sender)
+        case .ended:
+            currentSkinTonePicker?.didEndLongPress(sender)
+        default:
+            break
+        }
+    }
 }
 
 extension EmojiPickerCollectionView: UICollectionViewDelegate {
@@ -145,7 +198,9 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
             return owsFailDebug("Missing emoji for indexPath \(indexPath)")
         }
 
-        recordRecentEmoji(emoji)
+        SDSDatabaseStorage.shared.asyncWrite { transaction in
+            self.recordRecentEmoji(emoji, transaction: transaction)
+        }
 
         pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
     }
@@ -226,7 +281,7 @@ private class EmojiCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(emoji: Emoji) {
+    func configure(emoji: EmojiWithSkinTones) {
         emojiLabel.text = emoji.rawValue
     }
 }

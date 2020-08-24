@@ -19,60 +19,78 @@ class MessageReactionPicker: UIStackView {
     var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
 
     private var buttonForEmoji = [String: OWSFlatButton]()
-    private var selectedEmoji: String?
+    private var selectedEmoji: EmojiWithSkinTones?
     private weak var delegate: MessageReactionPickerDelegate?
     private var backgroundView: UIView?
     init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate) {
-        self.selectedEmoji = selectedEmoji
+        if let selectedEmoji = selectedEmoji {
+            self.selectedEmoji = EmojiWithSkinTones(rawValue: selectedEmoji)
+            owsAssertDebug(self.selectedEmoji != nil)
+        } else {
+            self.selectedEmoji = nil
+        }
         self.delegate = delegate
 
         super.init(frame: .zero)
 
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backgroundView = addBackgroundView(
-                withBackgroundColor: .ows_blackAlpha80,
-                cornerRadius: pickerDiameter / 2
-            )
-        } else {
-            let backgroundView = UIView()
-            addSubview(backgroundView)
-            backgroundView.autoPinEdgesToSuperviewEdges()
-            backgroundView.layer.cornerRadius = pickerDiameter / 2
-            backgroundView.clipsToBounds = true
-            self.backgroundView = backgroundView
+        backgroundView = addBackgroundView(
+            withBackgroundColor: Theme.actionSheetBackgroundColor,
+            cornerRadius: pickerDiameter / 2
+        )
+//        backgroundView?.clipsToBounds = false
+        backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
+        backgroundView?.layer.shadowRadius = 4
+        backgroundView?.layer.shadowOpacity = 0.05
+        backgroundView?.layer.shadowOffset = .zero
 
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            backgroundView.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-        }
+        let shadowView = UIView()
+        shadowView.backgroundColor = Theme.actionSheetBackgroundColor
+        shadowView.layer.cornerRadius = pickerDiameter / 2
+        shadowView.layer.shadowColor = UIColor.ows_black.cgColor
+        shadowView.layer.shadowRadius = 12
+        shadowView.layer.shadowOpacity = 0.3
+        shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        backgroundView?.addSubview(shadowView)
+        shadowView.autoPinEdgesToSuperviewEdges()
 
         autoSetDimension(.height, toSize: pickerDiameter)
 
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
 
-        var emojiSet = ReactionManager.emojiSet
+        var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.uiRead { transaction in
+            return ReactionManager.emojiSet.compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
+        }
+        owsAssertDebug(emojiSet.count == ReactionManager.emojiSet.count)
+
         var addAnyButton = true
 
-        if let selectedEmoji = selectedEmoji, !emojiSet.contains(selectedEmoji) {
-            emojiSet.append(selectedEmoji)
-            addAnyButton = false
+        if let selectedEmoji = self.selectedEmoji {
+            // If the local user reacted with any of the default emoji set,
+            // regardless of skin tone, we should show it in the normal place
+            // in the picker bar.
+            if let index = emojiSet.map({ $0.baseEmoji }).firstIndex(of: selectedEmoji.baseEmoji) {
+                emojiSet[index] = selectedEmoji
+            } else {
+                emojiSet.append(selectedEmoji)
+                addAnyButton = false
+            }
         }
 
         for emoji in emojiSet {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setTitle(title: emoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
+            button.setTitle(title: emoji.rawValue, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
             button.setPressedBlock { [weak self] in
-                self?.delegate?.didSelectReaction(reaction: emoji, isRemoving: emoji == self?.selectedEmoji)
+                self?.delegate?.didSelectReaction(reaction: emoji.rawValue, isRemoving: emoji == self?.selectedEmoji)
             }
-            buttonForEmoji[emoji] = button
+            buttonForEmoji[emoji.rawValue] = button
             addArrangedSubview(button)
 
             // Add a circle behind the currently selected emoji
-            if selectedEmoji == emoji {
+            if self.selectedEmoji == emoji {
                 let selectedBackgroundView = UIView()
-                selectedBackgroundView.backgroundColor = .ows_whiteAlpha30
+                selectedBackgroundView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
                 selectedBackgroundView.clipsToBounds = true
                 selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
                 backgroundView?.addSubview(selectedBackgroundView)
@@ -85,7 +103,7 @@ class MessageReactionPicker: UIStackView {
         if addAnyButton {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setImage(#imageLiteral(resourceName: "any-emoji-32"))
+            button.setImage(Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "any-emoji-32-dark") : #imageLiteral(resourceName: "any-emoji-32-light"))
             button.setPressedBlock { [weak self] in
                 self?.delegate?.didSelectAnyEmoji()
             }

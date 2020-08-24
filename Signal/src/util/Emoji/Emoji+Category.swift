@@ -491,13 +491,13 @@ extension Emoji {
                     .sleepingAccommodation,
                     .peopleHoldingHands,
                     .twoWomenHoldingHands,
-                    .couple,
+                    .womanAndManHoldingHands,
                     .twoMenHoldingHands,
-                    .couplekiss,
+                    .personKissPerson,
                     .womanKissMan,
                     .manKissMan,
                     .womanKissWoman,
-                    .coupleWithHeart,
+                    .personHeartPerson,
                     .womanHeartMan,
                     .manHeartMan,
                     .womanHeartWoman,
@@ -3512,13 +3512,13 @@ extension Emoji {
         case .sleepingAccommodation: return .smileysAndPeople
         case .peopleHoldingHands: return .smileysAndPeople
         case .twoWomenHoldingHands: return .smileysAndPeople
-        case .couple: return .smileysAndPeople
+        case .womanAndManHoldingHands: return .smileysAndPeople
         case .twoMenHoldingHands: return .smileysAndPeople
-        case .couplekiss: return .smileysAndPeople
+        case .personKissPerson: return .smileysAndPeople
         case .womanKissMan: return .smileysAndPeople
         case .manKissMan: return .smileysAndPeople
         case .womanKissWoman: return .smileysAndPeople
-        case .coupleWithHeart: return .smileysAndPeople
+        case .personHeartPerson: return .smileysAndPeople
         case .womanHeartMan: return .smileysAndPeople
         case .manHeartMan: return .smileysAndPeople
         case .womanHeartWoman: return .smileysAndPeople

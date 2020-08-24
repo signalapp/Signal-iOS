@@ -20,9 +20,7 @@ class EmojiReactorsTableView: UITableView {
         return Environment.shared.contactsManager
     }
 
-    let finder: ReactionFinder
-    init(finder: ReactionFinder) {
-        self.finder = finder
+    init() {
         super.init(frame: .zero, style: .plain)
 
         dataSource = self
@@ -36,8 +34,8 @@ class EmojiReactorsTableView: UITableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configureForAll(transaction: SDSAnyReadTransaction) {
-        reactorItems = finder.allReactions(transaction: transaction.unwrapGrdbRead).compactMap { reaction in
+    func configure(for reactions: [OWSReaction], transaction: SDSAnyReadTransaction) {
+        reactorItems = reactions.compactMap { reaction in
             let thread = TSContactThread.getWithContactAddress(reaction.reactor, transaction: transaction)
             let displayName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
 
@@ -46,21 +44,6 @@ class EmojiReactorsTableView: UITableView {
                 conversationColorName: thread?.conversationColorName ?? .default,
                 displayName: displayName,
                 emoji: reaction.emoji
-            )
-        }
-    }
-
-    func configure(for emoji: String?, transaction: SDSAnyReadTransaction) {
-        guard let emoji = emoji else { return configureForAll(transaction: transaction) }
-        reactorItems = finder.reactors(for: emoji, transaction: transaction.unwrapGrdbRead).compactMap { address in
-            let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
-            let displayName = contactsManager.displayName(for: address, transaction: transaction)
-
-            return ReactorItem(
-                address: address,
-                conversationColorName: thread?.conversationColorName ?? .default,
-                displayName: displayName,
-                emoji: emoji
             )
         }
     }
