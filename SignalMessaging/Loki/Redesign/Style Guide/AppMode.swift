@@ -30,6 +30,7 @@ public final class AppModeManager : NSObject {
 public protocol AppModeManagerDelegate {
 
     func getCurrentAppMode() -> AppMode
+    @objc(setCurrentAppMode:)
     func setCurrentAppMode(to appMode: AppMode)
 }
 

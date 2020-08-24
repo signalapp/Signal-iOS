@@ -327,7 +327,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func switchAppMode() {
         let newAppMode: AppMode = isLightMode ? .dark : .light
         AppModeManager.shared.setCurrentAppMode(to: newAppMode)
-        NotificationCenter.default.post(name: .appModeChanged, object: nil)
     }
 
     @objc private func showQRCode() {
