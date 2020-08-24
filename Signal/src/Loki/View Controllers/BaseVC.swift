@@ -80,6 +80,10 @@ class BaseVC : UIViewController {
         }
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        // TODO: Post an appModeChanged notification?
+    }
+
     @objc internal func handleAppModeChangedNotification(_ notification: Notification) {
         if hasGradient {
             setUpGradientBackground() // Re-do the gradient

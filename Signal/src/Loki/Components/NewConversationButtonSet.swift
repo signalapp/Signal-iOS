@@ -217,6 +217,7 @@ private final class NewConversationButton : UIImageView {
         self.icon = icon
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
     }
     
     override init(frame: CGRect) {
@@ -226,8 +227,12 @@ private final class NewConversationButton : UIImageView {
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(isMainButton:) instead.")
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
-    private func setUpViewHierarchy() {
+    private func setUpViewHierarchy(isUpdate: Bool = false) {
         backgroundColor = isMainButton ? Colors.accent : Colors.newConversationButtonCollapsedBackground
         let size = Values.newConversationButtonCollapsedSize
         layer.cornerRadius = size / 2
@@ -238,8 +243,14 @@ private final class NewConversationButton : UIImageView {
         let iconColor = (isMainButton && isLightMode) ? UIColor.white : Colors.text
         image = icon.asTintedImage(color: iconColor)!
         contentMode = .center
-        widthConstraint = set(.width, to: size)
-        heightConstraint = set(.height, to: size)
+        if !isUpdate {
+            widthConstraint = set(.width, to: size)
+            heightConstraint = set(.height, to: size)
+        }
+    }
+
+    @objc private func handleAppModeChangedNotification(_ notification: Notification) {
+        setUpViewHierarchy(isUpdate: true)
     }
 }
 

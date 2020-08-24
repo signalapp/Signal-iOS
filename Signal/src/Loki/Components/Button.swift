@@ -2,6 +2,7 @@
 final class Button : UIButton {
     private let style: Style
     private let size: Size
+    private var heightConstraint: NSLayoutConstraint!
     
     enum Style {
         case unimportant, regular, prominentOutline, prominentFilled, regularBorderless
@@ -16,6 +17,7 @@ final class Button : UIButton {
         self.size = size
         super.init(frame: .zero)
         setUpStyle()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
     }
     
     override init(frame: CGRect) {
@@ -25,7 +27,11 @@ final class Button : UIButton {
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(style:) instead.")
     }
-    
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     private func setUpStyle() {
         let fillColor: UIColor
         switch style {
@@ -57,7 +63,7 @@ final class Button : UIButton {
         case .medium: height = Values.mediumButtonHeight
         case .large: height = Values.largeButtonHeight
         }
-        set(.height, to: height)
+        if heightConstraint == nil { heightConstraint = set(.height, to: height) }
         layer.cornerRadius = height / 2
         backgroundColor = fillColor
         layer.borderColor = borderColor.cgColor
@@ -65,5 +71,9 @@ final class Button : UIButton {
         let fontSize = (size == .small) ? Values.smallFontSize : Values.mediumFontSize
         titleLabel!.font = .boldSystemFont(ofSize: fontSize)
         setTitleColor(textColor, for: UIControl.State.normal)
+    }
+
+    @objc private func handleAppModeChangedNotification(_ notification: Notification) {
+        setUpStyle()
     }
 }
