@@ -229,7 +229,7 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
     }
 
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
+    func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
         guard let transitionView = transitionView else {
             // transition hasn't started yet.
             return
@@ -247,7 +247,7 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
         if let pendingCompletion = pendingCompletion {
             Logger.verbose("interactive gesture started pendingCompletion during fadeout")
             self.pendingCompletion = nil
-            pendingCompletion()
+            _ = pendingCompletion()
         }
     }
     

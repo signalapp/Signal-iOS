@@ -8,11 +8,12 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
     var interactionInProgress = false
 
     weak var interactiveDismissDelegate: InteractiveDismissDelegate?
-    private weak var viewController: UIViewController?
+    let handlesAnimation : Bool
 
-    init(viewController: UIViewController) {
-        super.init()
+    init(viewController: UIViewController, handlesAnimation: Bool = true) {
         self.viewController = viewController
+        self.handlesAnimation = handlesAnimation
+        super.init()
     }
 
     public func addGestureRecognizer(to view: UIView) {
@@ -24,6 +25,8 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
     // MARK: - Private
 
+    private var initialDimissFrame : CGRect?
+    private weak var viewController: UIViewController?
     private var fastEnoughToCompleteTransition = false
     private var farEnoughToCompleteTransition = false
 
@@ -49,6 +52,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         }
 
         if case .began = gestureRecognizer.state {
+            initialDimissFrame = self.viewController?.view.frame
             gestureRecognizer.setTranslation(.zero, in: coordinateSpace)
         }
 
@@ -72,12 +76,17 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             farEnoughToCompleteTransition = progress >= 0.5
             update(progress)
 
-            interactiveDismissDelegate?.interactiveDismiss(self, didChangeTouchOffset: offset)
+            interactiveDismissDelegate?.interactiveDismissUpdate(self, didChangeTouchOffset: offset)
+            if handlesAnimation {
+                guard let frame = initialDimissFrame else {return}
+                viewController?.view.center = frame.offsetBy(dx: offset.x, dy: offset.y).center
+            }
 
         case .cancelled:
             cancel()
             interactiveDismissDelegate?.interactiveDismissDidCancel(self)
 
+            initialDimissFrame = nil
             interactionInProgress = false
             farEnoughToCompleteTransition = false
             fastEnoughToCompleteTransition = false
@@ -89,9 +98,15 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             } else {
                 cancel()
                 interactiveDismissDelegate?.interactiveDismissDidCancel(self)
+                if handlesAnimation {
+                    guard let frame = initialDimissFrame else {return}
+                    UIView.animate(withDuration: 0.1, animations: {
+                        self.viewController?.view.frame = frame
+                    })
+                }
             }
 
-
+            initialDimissFrame = nil
             interactionInProgress = false
             farEnoughToCompleteTransition = false
             fastEnoughToCompleteTransition = false
@@ -99,52 +114,5 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         default:
             break
         }
-    }
-}
-
-class PhotoDismissAnimationController: NSObject {
-    public let interactionController: UIPercentDrivenInteractiveTransition?
-
-    var transitionView: UIView?
-    var fromMediaFrame: CGRect?
-
-    init(interactionController: UIPercentDrivenInteractiveTransition? = nil) {
-        self.interactionController = interactionController
-    }
-}
-
-extension PhotoDismissAnimationController: UIViewControllerAnimatedTransitioning {
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 5
-    }
-    
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        print(".")
-    }
-    
-}
-
-extension PhotoDismissAnimationController: InteractiveDismissDelegate {
-    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-    }
-
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
-        guard let transitionView = transitionView else {
-            // transition hasn't started yet.
-            return
-        }
-
-        guard let fromMediaFrame = fromMediaFrame else {
-            owsFailDebug("fromMediaFrame was unexpectedly nil")
-            return
-        }
-
-        transitionView.center = fromMediaFrame.offsetBy(dx: offset.x, dy: offset.y).center
-    }
-
-    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-    }
-    
-    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
     }
 }

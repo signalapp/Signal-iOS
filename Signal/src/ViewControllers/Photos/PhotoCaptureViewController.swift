@@ -38,7 +38,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
     var interactiveDismiss : PhotoCaptureInteractiveDismiss!
-    var initialDimissFrame : CGRect?
 
     @objc public lazy var photoCapture = PhotoCapture()
 
@@ -193,21 +192,13 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
     
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-        initialDimissFrame = view.frame
     }
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
-        guard let frame = initialDimissFrame else {return}
-        view.center = frame.offsetBy(dx: offset.x, dy: offset.y).center
+    func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
     }
     func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
         dismiss(animated: true)
-        initialDimissFrame = nil
     }
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-        guard let frame = initialDimissFrame else {return}
-        UIView.animate(withDuration: 0.1, animations: {
-            self.view.frame = frame
-        })
     }
         
     // MARK: -
@@ -1198,35 +1189,3 @@ public class MovieLockView: UIView {
         return view
     }()
 }
-//
-//// MARK: - UIViewControllerTransitioningDelegate
-//
-//extension PhotoCaptureViewController: UIViewControllerTransitioningDelegate {
-//    public func animationController(forPresented presented: UIViewController,
-//                                    presenting: UIViewController,
-//                                    source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-//        return nil
-//    }
-//
-//    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-//        guard self == dismissed else {
-//            owsFailDebug("unexpected presented: \(dismissed)")
-//            return nil
-//        }
-//
-//        let animationController = PhotoDismissAnimationController(interactionController: interactiveDismiss)
-//        interactiveDismiss?.interactiveDismissDelegate = animationController
-//
-//        return animationController
-//    }
-//
-//    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-//        guard let animator = animator as? MediaDismissAnimationController,
-//            let interactionController = animator.interactionController,
-//            interactionController.interactionInProgress
-//            else {
-//                return nil
-//        }
-//        return interactionController
-//    }
-//}
