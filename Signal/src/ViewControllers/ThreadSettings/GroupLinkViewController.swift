@@ -202,14 +202,74 @@ public class GroupLinkViewController: OWSTableViewController {
     }
 
     func shareLinkPressed() {
-        // TODO:
+        showShareLinkAlert()
     }
 
     func resetLinkPressed() {
-        showResetLinkConfirmUI()
+        showResetLinkConfirmAlert()
     }
 
-    private func showResetLinkConfirmUI() {
+    private func showShareLinkAlert() {
+        let actionSheet = ActionSheetController()
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
+                                                                         comment: "Label for the 'share group link via Signal' button in the 'group link' view."),
+                                                style: .destructive) { _ in
+                                                    self.shareLinkViaSignal()
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_COPY_LINK",
+                                                                         comment: "Label for the 'copy link' button in the 'group link' view."),
+                                                style: .destructive) { _ in
+                                                    self.copyLinkToPasteboard()
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE",
+                                                                         comment: "Label for the 'share group link via QR code' button in the 'group link' view."),
+                                                style: .destructive) { _ in
+                                                    self.shareLinkViaQRCode()
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING",
+                                                                         comment: "Label for the 'share group link via iOS sharing UI' button in the 'group link' view."),
+                                                style: .destructive) { _ in
+                                                    self.shareLinkViaSharingUI()
+        })
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    func shareLinkViaSignal() {
+        // TODO:
+    }
+
+    func copyLinkToPasteboard() {
+        guard groupModelV2.isGroupLinkEnabled else {
+            owsFailDebug("Group link not enabled.")
+            return
+        }
+        do {
+            let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+            UIPasteboard.general.url = inviteLinkUrl
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    func shareLinkViaQRCode() {
+        // TODO:
+    }
+
+    func shareLinkViaSharingUI() {
+        guard groupModelV2.isGroupLinkEnabled else {
+            owsFailDebug("Group link not enabled.")
+            return
+        }
+        do {
+            let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+            AttachmentSharing.showShareUI(for: inviteLinkUrl, sender: self)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    private func showResetLinkConfirmAlert() {
         let alertTitle = NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE",
                                            comment: "Title for the 'confirm reset link' alert in the 'group link' view.")
         let actionSheet = ActionSheetController(title: alertTitle)
