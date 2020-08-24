@@ -691,7 +691,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [LKSessionManagementProtocol handleDecryptionError:errorMessage forPublicKey:envelope.source transaction:transaction];
-            if (![LKSessionMetaProtocol isErrorMessageBeforeRestoration:errorMessage]) {
+            if (![LKSessionMetaProtocol isErrorMessageFromBeforeRestoration:errorMessage]) {
                 [errorMessage saveWithTransaction:transaction];
                 [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
             } else {

@@ -95,8 +95,8 @@ public final class SessionMetaProtocol : NSObject {
 
     // MARK: - Receiving
     
-    @objc(isErrorMessageBeforeRestoration:)
-    public static func isErrorMessageBeforeRestoration(_ errorMessage: TSErrorMessage) -> Bool {
+    @objc(isErrorMessageFromBeforeRestoration:)
+    public static func isErrorMessageFromBeforeRestoration(_ errorMessage: TSErrorMessage) -> Bool {
         let restorationTimeInMs = UInt64(storage.getRestorationTime() * 1000)
         return errorMessage.timestamp < restorationTimeInMs
     }
