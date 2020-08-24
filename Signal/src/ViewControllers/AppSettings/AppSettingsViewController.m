@@ -192,6 +192,16 @@
                                               actionBlock:^{
                                                   [weakSelf showAbout];
                                               }]];
+    [section addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_DONATE",
+                                                          @"Title for the 'donate to signal' link in settings.")
+                                       accessoryImage:[UIImage imageNamed:@"open-externally-14"]
+                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"donate")
+                                          actionBlock:^{
+                                              [UIApplication.sharedApplication
+                                                            openURL:[NSURL URLWithString:@"https://signal.org/donate"]
+                                                            options:@{}
+                                                  completionHandler:nil];
+                                          }]];
 
 #ifdef USE_DEBUG_UI
     [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"

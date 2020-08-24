@@ -355,6 +355,34 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
++ (OWSTableItem *)actionItemWithText:(NSString *)text
+                      accessoryImage:(UIImage *)accessoryImage
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(accessoryImage);
+
+    OWSTableItem *item = [OWSTableItem new];
+    item.actionBlock = actionBlock;
+    item.customCellBlock = ^{
+        UITableViewCell *cell = [OWSTableItem newCell];
+        cell.textLabel.text = text;
+        cell.accessibilityIdentifier = accessibilityIdentifier;
+
+        UIImageView *accessoryImageView = [UIImageView new];
+        accessoryImageView.image = [accessoryImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        // Match the OS accessory view colors
+        accessoryImageView.tintColor
+            = Theme.isDarkThemeEnabled ? [UIColor colorWithRGBHex:0x46464a] : [UIColor colorWithRGBHex:0xc4c4c7];
+        [accessoryImageView sizeToFit];
+        cell.accessoryView = accessoryImageView;
+
+        return cell;
+    };
+    return item;
+}
+
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text
 {
     OWSAssertDebug(text.length > 0);

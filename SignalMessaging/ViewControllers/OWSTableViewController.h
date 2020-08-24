@@ -126,6 +126,11 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
              accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
                          actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)actionItemWithText:(NSString *)text
+                      accessoryImage:(UIImage *)accessoryImage
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text;
 
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text customRowHeight:(CGFloat)customRowHeight;
