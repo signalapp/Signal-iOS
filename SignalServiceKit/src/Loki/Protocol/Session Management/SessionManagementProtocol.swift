@@ -164,15 +164,21 @@ public final class SessionManagementProtocol : NSObject {
     // MARK: - Receiving
     
     @objc(handleDecryptionError:forPublicKey:transaction:)
-    public static func handleDecryptionError(_ rawValue: Int32, for publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
-        let type = TSErrorMessageType(rawValue: rawValue)
+    public static func handleDecryptionError(_ errorMessage: TSErrorMessage, for publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        let type = errorMessage.errorType
         let masterPublicKey = storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) ?? publicKey
         let thread = TSContactThread.getOrCreateThread(withContactId: masterPublicKey, transaction: transaction)
+        let restorationTimeInMs = UInt64(storage.getRestorationTime() * 1000)
         // Show the session reset prompt upon certain errors
         switch type {
         case .noSession, .invalidMessage, .invalidKeyException:
-            // Store the source device's public key in case it was a secondary device
-            thread.addSessionRestoreDevice(publicKey, transaction: transaction)
+            if restorationTimeInMs > errorMessage.timestamp {
+                // Automatically rebuild session after restoration
+                sendSessionRequestIfNeeded(to: publicKey, using: transaction)
+            } else {
+                // Store the source device's public key in case it was a secondary device
+                thread.addSessionRestoreDevice(publicKey, transaction: transaction)
+            }
         default: break
         }
     }
@@ -180,7 +186,8 @@ public final class SessionManagementProtocol : NSObject {
     private static func shouldProcessSessionRequest(from publicKey: String, at timestamp: UInt64) -> Bool {
         let sentTimestamp = Storage.getSessionRequestSentTimestamp(for: publicKey)
         let processedTimestamp = Storage.getSessionRequestProcessedTimestamp(for: publicKey)
-        return timestamp > sentTimestamp && timestamp > processedTimestamp
+        let restorationTimestamp = UInt64(storage.getRestorationTime() * 1000)
+        return timestamp > sentTimestamp && timestamp > processedTimestamp && timestamp > restorationTimestamp
     }
 
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:transaction:)

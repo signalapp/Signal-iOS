@@ -526,7 +526,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             NSError *_Nullable underlyingError;
             SSKProtoEnvelope *_Nullable identifiedEnvelope;
 
-            if (![decryptError.domain isEqualToString:@"SignalMetadataKit.SecretSessionKnownSenderError"]) {
+            if (![decryptError.domain isEqualToString:@"SessionMetadataKit.SecretSessionKnownSenderError"]) {
                 underlyingError = decryptError;
                 identifiedEnvelope = envelope;
             } else {
@@ -574,7 +574,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
-            if ([underlyingError.domain isEqualToString:@"SignalMetadataKit.SMKSecretSessionCipherError"]
+            if ([underlyingError.domain isEqualToString:@"SessionMetadataKit.SMKSecretSessionCipherError"]
                 && underlyingError.code == SMKSecretSessionCipherErrorSelfSentMessage) {
                 // Self-sent messages can be safely discarded.
                 failureBlock(underlyingError);
@@ -690,9 +690,17 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
-            [errorMessage saveWithTransaction:transaction];
-            [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forPublicKey:envelope.source transaction:transaction];
-            [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
+            [LKSessionManagementProtocol handleDecryptionError:errorMessage forPublicKey:envelope.source transaction:transaction];
+            if (![LKSessionMetaProtocol isErrorMessageBeforeRestoration:errorMessage]) {
+                [errorMessage saveWithTransaction:transaction];
+                [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
+            } else {
+                // Show the thread if it exists before restoration
+                NSString *masterPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source;
+                TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:masterPublicKey transaction:transaction];
+                contactThread.shouldThreadBeVisible = true;
+                [contactThread saveWithTransaction:transaction];
+            }
         }
     } error:nil];
 }

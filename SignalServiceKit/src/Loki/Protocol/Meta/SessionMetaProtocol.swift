@@ -94,6 +94,12 @@ public final class SessionMetaProtocol : NSObject {
     }
 
     // MARK: - Receiving
+    
+    @objc(isErrorMessageBeforeRestoration:)
+    public static func isErrorMessageBeforeRestoration(_ errorMessage: TSErrorMessage) -> Bool {
+        let restorationTimeInMs = UInt64(storage.getRestorationTime() * 1000)
+        return errorMessage.timestamp < restorationTimeInMs
+    }
 
     @objc(shouldSkipMessageDecryptResult:wrappedIn:)
     public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
