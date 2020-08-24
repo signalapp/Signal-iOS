@@ -73,7 +73,7 @@ class QRCodeView: UIView {
 
     // MARK: -
 
-    func setQR(url: URL) throws { setQR(image: try buildQRImage(url: url)) }
+    func setQR(url: URL) throws { setQR(image: try Self.buildQRImage(url: url)) }
 
     func setQR(image: UIImage) {
         assert(qrCodeView == nil)
@@ -97,7 +97,7 @@ class QRCodeView: UIView {
         }
     }
 
-    private func buildQRImage(url: URL) throws -> UIImage {
+    public static func buildQRImage(url: URL, forExport: Bool = false) throws -> UIImage {
         guard let urlData: Data = url.absoluteString.data(using: .utf8) else {
             throw OWSAssertionError("urlData was unexpectedly nil")
         }
@@ -113,17 +113,25 @@ class QRCodeView: UIView {
         }
 
         // Change the color using CIFilter
+        let foregroundColor: UIColor = (forExport ? .black : Theme.lightThemePrimaryColor)
+        let backgroundColor: UIColor = (forExport ? .white : .clear)
         let colorParameters = [
-            "inputColor0": CIColor(color: Theme.lightThemePrimaryColor), // Foreground
-            "inputColor1": CIColor(color: .clear) // Background
+            "inputColor0": CIColor(color: foregroundColor),
+            "inputColor1": CIColor(color: backgroundColor)
         ]
 
-        let recoloredCIIimage = ciImage.applyingFilter("CIFalseColor", parameters: colorParameters)
+        let recoloredCIImage = ciImage.applyingFilter("CIFalseColor", parameters: colorParameters)
+
+        // When exporting, scale up the output so that each pixel of the
+        // QR code is represented by a 10x10 pixel block.
+        let scaledCIIimage = (forExport
+            ? recoloredCIImage.transformed(by: CGAffineTransform.scale(10.0))
+            : recoloredCIImage)
 
         // UIImages backed by a CIImage won't render without antialiasing, so we convert the backing
         // image to a CGImage, which can be scaled crisply.
         let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(recoloredCIIimage, from: recoloredCIIimage.extent) else {
+        guard let cgImage = context.createCGImage(scaledCIIimage, from: scaledCIIimage.extent) else {
             throw OWSAssertionError("cgImage was unexpectedly nil")
         }
 

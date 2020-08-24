@@ -84,9 +84,12 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     @objc
     func didTapShareCode(_ sender: UIButton) {
-//        let vc = PinSetupViewController.creating { [weak self] _, _ in
-//            self?.dismiss(animated: true)
-//        }
-//        navigationController?.pushViewController(vc, animated: true)
+        do {
+            let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+            let qrCodeImage = try QRCodeView.buildQRImage(url: inviteLinkUrl, forExport: true)
+            AttachmentSharing.showShareUI(for: qrCodeImage)
+        } catch {
+            owsFailDebug("error \(error)")
+        }
     }
 }
