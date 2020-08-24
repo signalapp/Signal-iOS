@@ -117,8 +117,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         topStackView.isLayoutMarginsRelativeArrangement = true
         // Set up setting buttons stack view
-        getSettingButtons().forEach { settingButton in
-            settingButtonsStackView.addArrangedSubview(settingButton)
+        getSettingButtons().forEach { settingButtonOrSeparator in
+            settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator)
         }
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView ])
@@ -302,8 +302,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             settingButtonsStackView.removeArrangedSubview(settingButton)
             settingButton.removeFromSuperview()
         }
-        getSettingButtons().forEach { settingButton in
-            settingButtonsStackView.addArrangedSubview(settingButton) // Re-do setting buttons
+        getSettingButtons().forEach { settingButtonOrSeparator in
+            settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator) // Re-do the setting buttons
         }
     }
     

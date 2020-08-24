@@ -352,7 +352,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
         super.handleAppModeChangedNotification(notification)
         let gradient = Gradients.homeVCFade
-        fadeView.setGradient(gradient) // Re-do gradient
+        fadeView.setGradient(gradient) // Re-do the gradient
         tableView.reloadData()
     }
     
