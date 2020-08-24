@@ -626,16 +626,16 @@ extension MessageSending {
             // Only send to members in the latest known group member list.
             // If a member has left the group since this message was enqueued,
             // they should not receive the message.
-            recipientAddresses.formIntersection(groupThread.groupModel.groupMembers)
-
+            let groupMembership = groupThread.groupModel.groupMembership
+            var currentValidRecipients = groupMembership.nonPendingMembers
             // ...or latest known list of "additional recipients".
             //
             // This is used to send group update messages for v2 groups to
             // pending members who are not included in .sendingRecipientAddresses().
             if GroupManager.shouldMessageHaveAdditionalRecipients(message, groupThread: groupThread) {
-                let additionalRecipients = Set(groupThread.groupModel.groupMembership.pendingMembers)
-                recipientAddresses.formUnion(additionalRecipients)
+                currentValidRecipients.formUnion(groupMembership.pendingMembers)
             }
+            recipientAddresses.formIntersection(currentValidRecipients)
 
             recipientAddresses.subtract(self.blockingManager.blockedAddresses)
 
