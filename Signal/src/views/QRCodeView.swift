@@ -8,18 +8,28 @@ class QRCodeView: UIView {
 
     // MARK: - UIView overrides
 
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    private let useCircularWrapper: Bool
+
+    public required init(useCircularWrapper: Bool = true) {
+        self.useCircularWrapper = useCircularWrapper
+
+        super.init(frame: .zero)
 
         addSubview(qrCodeWrapper)
-        qrCodeWrapper.autoCenterInSuperview()
+
         qrCodeWrapper.autoPinToSquareAspectRatio()
-        qrCodeWrapper.autoSetDimension(
-            .width,
-            toSize: UIDevice.current.isNarrowerThanIPhone6 ? 256 : 311,
-            relation: .greaterThanOrEqual
-        )
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+
+        if useCircularWrapper {
+            qrCodeWrapper.autoCenterInSuperview()
+            qrCodeWrapper.autoSetDimension(
+                .width,
+                toSize: UIDevice.current.isNarrowerThanIPhone6 ? 256 : 311,
+                relation: .greaterThanOrEqual
+            )
+            NSLayoutConstraint.autoSetPriority(.defaultLow) {
+                qrCodeWrapper.autoPinEdgesToSuperviewMargins()
+            }
+        } else {
             qrCodeWrapper.autoPinEdgesToSuperviewMargins()
         }
 
@@ -42,7 +52,9 @@ class QRCodeView: UIView {
 
     lazy var qrCodeWrapper: UIView = {
         let wrapper = UIView()
-        wrapper.backgroundColor = .ows_gray02
+        if useCircularWrapper {
+            wrapper.backgroundColor = .ows_gray02
+        }
         return wrapper
     }()
 
@@ -78,7 +90,11 @@ class QRCodeView: UIView {
         qrCodeWrapper.addSubview(qrCodeView)
         qrCodeView.autoPinToSquareAspectRatio()
         qrCodeView.autoCenterInSuperview()
-        qrCodeView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
+        if useCircularWrapper {
+            qrCodeView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
+        } else {
+            qrCodeView.autoPinEdgesToSuperviewMargins()
+        }
     }
 
     private func buildQRImage(url: URL) throws -> UIImage {

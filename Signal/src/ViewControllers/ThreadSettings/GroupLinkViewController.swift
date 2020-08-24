@@ -34,11 +34,8 @@ public class GroupLinkViewController: OWSTableViewController {
 
     private var groupModelV2: TSGroupModelV2
 
-    private let groupViewHelper: GroupViewHelper
-
-    required init(groupModelV2: TSGroupModelV2, groupViewHelper: GroupViewHelper) {
+    required init(groupModelV2: TSGroupModelV2) {
         self.groupModelV2 = groupModelV2
-        self.groupViewHelper = groupViewHelper
 
         super.init()
     }
@@ -253,7 +250,8 @@ public class GroupLinkViewController: OWSTableViewController {
     }
 
     func shareLinkViaQRCode() {
-        // TODO:
+        let qrCodeView = GroupLinkQRCodeViewController(groupModelV2: groupModelV2)
+        navigationController?.pushViewController(qrCodeView, animated: true)
     }
 
     func shareLinkViaSharingUI() {

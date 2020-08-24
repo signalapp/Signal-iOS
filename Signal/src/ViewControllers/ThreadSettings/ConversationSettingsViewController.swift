@@ -596,8 +596,7 @@ class ConversationSettingsViewController: OWSTableViewController {
             owsFailDebug("Invalid groupModel.")
             return
         }
-        let groupLinkViewController = GroupLinkViewController(groupModelV2: groupModelV2,
-                                                              groupViewHelper: groupViewHelper)
+        let groupLinkViewController = GroupLinkViewController(groupModelV2: groupModelV2)
         groupLinkViewController.groupLinkViewControllerDelegate = self
         navigationController?.pushViewController(groupLinkViewController, animated: true)
     }

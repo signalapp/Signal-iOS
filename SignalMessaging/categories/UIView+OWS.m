@@ -109,7 +109,17 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return [self autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.superview];
 }
 
-- (void)autoPinWidthToWidthOfView:(UIView *)view
+- (void)autoPinEdgesToEdgesOfView:(UIView *)view
+{
+    OWSAssertDebug(view);
+
+    [self autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:view];
+    [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:view];
+    [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:view];
+    [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:view];
+}
+
+- (void)autoPinHorizontalEdgesToEdgesOfView:(UIView *)view
 {
     OWSAssertDebug(view);
 
@@ -117,7 +127,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     [self autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:view];
 }
 
-- (void)autoPinHeightToHeightOfView:(UIView *)view
+- (void)autoPinVerticalEdgesToEdgesOfView:(UIView *)view
 {
     OWSAssertDebug(view);
 

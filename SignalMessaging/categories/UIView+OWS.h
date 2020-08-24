@@ -35,8 +35,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (NSLayoutConstraint *)autoHCenterInSuperview;
 - (NSLayoutConstraint *)autoVCenterInSuperview;
 
-- (void)autoPinWidthToWidthOfView:(UIView *)view;
-- (void)autoPinHeightToHeightOfView:(UIView *)view;
+- (void)autoPinEdgesToEdgesOfView:(UIView *)view;
+- (void)autoPinHorizontalEdgesToEdgesOfView:(UIView *)view;
+- (void)autoPinVerticalEdgesToEdgesOfView:(UIView *)view;
 
 - (NSLayoutConstraint *)autoPinToSquareAspectRatio;
 - (NSLayoutConstraint *)autoPinToAspectRatioWithSize:(CGSize)size;
