@@ -20,12 +20,14 @@ extension Emoji {
             guard let lastIosVersion = keyValueStore.getString(iosVersionKey, transaction: transaction) else {
                 Logger.info("Building initial emoji availability cache.")
                 iosVersionNeedsUpdate = true
+                uncachedEmoji = Emoji.allCases
                 return
             }
 
             guard lastIosVersion == iosVersion else {
                 Logger.info("Re-building emoji availability cache. iOS version upgraded from \(lastIosVersion) -> \(iosVersion)")
                 iosVersionNeedsUpdate = true
+                uncachedEmoji = Emoji.allCases
                 return
             }
 
