@@ -51,6 +51,8 @@ class EmojiGenerator {
         case mediumDark = "1F3FE"
         case dark = "1F3FF"
 
+        var sortId: Int { return SkinTone.allCases.firstIndex(of: self)! }
+
         var unicodeScalar: UnicodeScalar { UnicodeScalar(Int(rawValue, radix: 16)!)! }
     }
 
@@ -91,6 +93,9 @@ class EmojiGenerator {
             case "repeat": return "`repeat`"
             case "100": return "oneHundred"
             case "1234": return "oneTwoThreeFour"
+            case "couplekiss": return "personKissPerson"
+            case "couple": return "womanAndManHoldingHands"
+            case "couple_with_heart": return "personHeartPerson"
             default:
                 let uppperCamelCase = shortName.replacingOccurrences(of: "-", with: "_").components(separatedBy: "_").map(titlecase).joined(separator: "")
                 return String(uppperCamelCase.unicodeScalars.first!).lowercased() + String(uppperCamelCase.unicodeScalars.dropFirst())
@@ -107,10 +112,40 @@ class EmojiGenerator {
             guard let skinVariations = skinVariations else { return nil }
             var emojiPerSkinTone = [[SkinTone]: String]()
             for (key, value) in skinVariations {
-                let skinTones = key.components(separatedBy: "-").map { SkinTone(rawValue: $0)! }
+                let skinTones = key
+                    .components(separatedBy: "-")
+                    .map { SkinTone(rawValue: $0)! }
+                    .reduce(into: [SkinTone]()) { result, skinTone in
+                        guard !result.contains(skinTone) else { return }
+                        result.append(skinTone)
+                    }
                 emojiPerSkinTone[skinTones] = value.emoji
             }
             return emojiPerSkinTone
+        }
+        var sortedEmojiPerSkinTone: [([SkinTone], String)]? {
+            guard let emojiPerSkinTone = emojiPerSkinTone else { return nil }
+            return emojiPerSkinTone.sorted { lhs, rhs in 
+                var index = 0
+                while true {
+                    if index >= lhs.key.count {
+                        return true
+                    }
+
+                    if index >= rhs.key.count {
+                        return false
+                    }
+
+                    let lhsSkinTone = lhs.key[index]
+                    let rhsSkinTone = rhs.key[index]
+
+                    if lhsSkinTone != rhsSkinTone {
+                        return lhsSkinTone.sortId < rhsSkinTone.sortId
+                    }
+
+                    index += 1
+                }
+            }
         }
 
         var allowsMultipleSkinTones: Bool { hasSkinVariations && emojiPerSkinTone!.count > 5 }
@@ -170,15 +205,14 @@ class EmojiGenerator {
             for emojiData in sortedEmojiData {
                 fileHandle.writeLine("        case \"\(emojiData.emoji)\": self.init(baseEmoji: .\(emojiData.enumName), skinTones: nil)")
 
-                if let emojiPerSkinTone = emojiData.emojiPerSkinTone {
-                    for (skinTones, emoji) in emojiPerSkinTone {
+                if let sortedEmojiPerSkinTone = emojiData.sortedEmojiPerSkinTone {
+                    for (skinTones, emoji) in sortedEmojiPerSkinTone {
                         fileHandle.writeLine("        case \"\(emoji)\": self.init(baseEmoji: .\(emojiData.enumName), skinTones: [\(skinTones.map { ".\($0)" }.joined(separator: ", "))])")
                     }
                 }
             }
 
-            // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
-            fileHandle.writeLine("        default: fatalError(\"Unexpected case \\(rawValue)\")")
+            fileHandle.writeLine("        default: return nil")
 
             fileHandle.writeLine("        }")
 
@@ -204,7 +238,7 @@ class EmojiGenerator {
 
             // skin tone helpers
             fileHandle.writeLine("    var hasSkinTones: Bool { return emojiPerSkinTonePermutation != nil }")
-            fileHandle.writeLine("    var allowsMultipleSkinTones: Bool { return skinToneComponentEmoji?.count ?? 0 > 1 }")
+            fileHandle.writeLine("    var allowsMultipleSkinTones: Bool { return hasSkinTones && skinToneComponentEmoji != nil }")
 
             fileHandle.writeLine("")
 
@@ -231,10 +265,10 @@ class EmojiGenerator {
 
             fileHandle.writeLine("        switch self {")
 
-            for emojiData in sortedEmojiData.filter({ $0.emojiPerSkinTone != nil }) {
+            for emojiData in sortedEmojiData.filter({ $0.sortedEmojiPerSkinTone != nil }) {
                 fileHandle.writeLine("        case .\(emojiData.enumName):")
                 fileHandle.writeLine("            return [")
-                for (skinTones, emoji) in emojiData.emojiPerSkinTone! {
+                for (skinTones, emoji) in emojiData.sortedEmojiPerSkinTone! {
                     fileHandle.writeLine("                [\(skinTones.map { ".\($0)" }.joined(separator: ", "))]: \"\(emoji)\",")
                 }
                 fileHandle.writeLine("            ]")

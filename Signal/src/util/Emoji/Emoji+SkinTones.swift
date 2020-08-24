@@ -14,13 +14,13 @@ extension Emoji {
     }
 
     var hasSkinTones: Bool { return emojiPerSkinTonePermutation != nil }
-    var allowsMultipleSkinTones: Bool { return skinToneComponentEmoji?.count ?? 0 > 1 }
+    var allowsMultipleSkinTones: Bool { return hasSkinTones && skinToneComponentEmoji != nil }
 
     var skinToneComponentEmoji: [Emoji]? {
         switch self {
         case .peopleHoldingHands: return [.standingPerson, .standingPerson]
         case .twoWomenHoldingHands: return [.womanStanding, .womanStanding]
-        case .couple: return [.womanStanding, .manStanding]
+        case .womanAndManHoldingHands: return [.womanStanding, .manStanding]
         case .twoMenHoldingHands: return [.manStanding, .manStanding]
         default: return nil
         }
@@ -30,2259 +30,2259 @@ extension Emoji {
         switch self {
         case .wave:
             return [
-                [.mediumDark]: "👋🏾",
                 [.light]: "👋🏻",
-                [.dark]: "👋🏿",
-                [.medium]: "👋🏽",
                 [.mediumLight]: "👋🏼",
+                [.medium]: "👋🏽",
+                [.mediumDark]: "👋🏾",
+                [.dark]: "👋🏿",
             ]
         case .raisedBackOfHand:
             return [
-                [.mediumDark]: "🤚🏾",
                 [.light]: "🤚🏻",
-                [.dark]: "🤚🏿",
-                [.medium]: "🤚🏽",
                 [.mediumLight]: "🤚🏼",
+                [.medium]: "🤚🏽",
+                [.mediumDark]: "🤚🏾",
+                [.dark]: "🤚🏿",
             ]
         case .raisedHandWithFingersSplayed:
             return [
-                [.mediumDark]: "🖐🏾",
                 [.light]: "🖐🏻",
-                [.dark]: "🖐🏿",
-                [.medium]: "🖐🏽",
                 [.mediumLight]: "🖐🏼",
+                [.medium]: "🖐🏽",
+                [.mediumDark]: "🖐🏾",
+                [.dark]: "🖐🏿",
             ]
         case .hand:
             return [
-                [.mediumDark]: "✋🏾",
                 [.light]: "✋🏻",
-                [.dark]: "✋🏿",
-                [.medium]: "✋🏽",
                 [.mediumLight]: "✋🏼",
+                [.medium]: "✋🏽",
+                [.mediumDark]: "✋🏾",
+                [.dark]: "✋🏿",
             ]
         case .spockHand:
             return [
                 [.light]: "🖖🏻",
+                [.mediumLight]: "🖖🏼",
+                [.medium]: "🖖🏽",
                 [.mediumDark]: "🖖🏾",
                 [.dark]: "🖖🏿",
-                [.medium]: "🖖🏽",
-                [.mediumLight]: "🖖🏼",
             ]
         case .okHand:
             return [
-                [.mediumDark]: "👌🏾",
                 [.light]: "👌🏻",
-                [.dark]: "👌🏿",
-                [.medium]: "👌🏽",
                 [.mediumLight]: "👌🏼",
+                [.medium]: "👌🏽",
+                [.mediumDark]: "👌🏾",
+                [.dark]: "👌🏿",
             ]
         case .pinchingHand:
             return [
-                [.dark]: "🤏🏿",
+                [.light]: "🤏🏻",
+                [.mediumLight]: "🤏🏼",
                 [.medium]: "🤏🏽",
                 [.mediumDark]: "🤏🏾",
-                [.mediumLight]: "🤏🏼",
-                [.light]: "🤏🏻",
+                [.dark]: "🤏🏿",
             ]
         case .v:
             return [
-                [.medium]: "✌🏽",
-                [.dark]: "✌🏿",
                 [.light]: "✌🏻",
                 [.mediumLight]: "✌🏼",
+                [.medium]: "✌🏽",
                 [.mediumDark]: "✌🏾",
+                [.dark]: "✌🏿",
             ]
         case .crossedFingers:
             return [
+                [.light]: "🤞🏻",
+                [.mediumLight]: "🤞🏼",
                 [.medium]: "🤞🏽",
                 [.mediumDark]: "🤞🏾",
-                [.mediumLight]: "🤞🏼",
                 [.dark]: "🤞🏿",
-                [.light]: "🤞🏻",
             ]
         case .iLoveYouHandSign:
             return [
-                [.mediumLight]: "🤟🏼",
                 [.light]: "🤟🏻",
+                [.mediumLight]: "🤟🏼",
                 [.medium]: "🤟🏽",
-                [.dark]: "🤟🏿",
                 [.mediumDark]: "🤟🏾",
+                [.dark]: "🤟🏿",
             ]
         case .theHorns:
             return [
-                [.medium]: "🤘🏽",
                 [.light]: "🤘🏻",
-                [.dark]: "🤘🏿",
                 [.mediumLight]: "🤘🏼",
+                [.medium]: "🤘🏽",
                 [.mediumDark]: "🤘🏾",
+                [.dark]: "🤘🏿",
             ]
         case .callMeHand:
             return [
-                [.medium]: "🤙🏽",
-                [.mediumLight]: "🤙🏼",
                 [.light]: "🤙🏻",
+                [.mediumLight]: "🤙🏼",
+                [.medium]: "🤙🏽",
                 [.mediumDark]: "🤙🏾",
                 [.dark]: "🤙🏿",
             ]
         case .pointLeft:
             return [
-                [.mediumDark]: "👈🏾",
-                [.medium]: "👈🏽",
-                [.mediumLight]: "👈🏼",
-                [.dark]: "👈🏿",
                 [.light]: "👈🏻",
+                [.mediumLight]: "👈🏼",
+                [.medium]: "👈🏽",
+                [.mediumDark]: "👈🏾",
+                [.dark]: "👈🏿",
             ]
         case .pointRight:
             return [
-                [.mediumDark]: "👉🏾",
-                [.medium]: "👉🏽",
                 [.light]: "👉🏻",
                 [.mediumLight]: "👉🏼",
+                [.medium]: "👉🏽",
+                [.mediumDark]: "👉🏾",
                 [.dark]: "👉🏿",
             ]
         case .pointUp2:
             return [
-                [.medium]: "👆🏽",
                 [.light]: "👆🏻",
                 [.mediumLight]: "👆🏼",
+                [.medium]: "👆🏽",
                 [.mediumDark]: "👆🏾",
                 [.dark]: "👆🏿",
             ]
         case .middleFinger:
             return [
                 [.light]: "🖕🏻",
-                [.medium]: "🖕🏽",
                 [.mediumLight]: "🖕🏼",
+                [.medium]: "🖕🏽",
                 [.mediumDark]: "🖕🏾",
                 [.dark]: "🖕🏿",
             ]
         case .pointDown:
             return [
-                [.dark]: "👇🏿",
-                [.medium]: "👇🏽",
                 [.light]: "👇🏻",
                 [.mediumLight]: "👇🏼",
+                [.medium]: "👇🏽",
                 [.mediumDark]: "👇🏾",
+                [.dark]: "👇🏿",
             ]
         case .pointUp:
             return [
-                [.mediumLight]: "☝🏼",
-                [.dark]: "☝🏿",
                 [.light]: "☝🏻",
-                [.mediumDark]: "☝🏾",
+                [.mediumLight]: "☝🏼",
                 [.medium]: "☝🏽",
+                [.mediumDark]: "☝🏾",
+                [.dark]: "☝🏿",
             ]
         case .plusOne:
             return [
-                [.dark]: "👍🏿",
                 [.light]: "👍🏻",
-                [.medium]: "👍🏽",
                 [.mediumLight]: "👍🏼",
+                [.medium]: "👍🏽",
                 [.mediumDark]: "👍🏾",
+                [.dark]: "👍🏿",
             ]
         case .negativeOne:
             return [
-                [.dark]: "👎🏿",
                 [.light]: "👎🏻",
-                [.mediumDark]: "👎🏾",
-                [.medium]: "👎🏽",
                 [.mediumLight]: "👎🏼",
+                [.medium]: "👎🏽",
+                [.mediumDark]: "👎🏾",
+                [.dark]: "👎🏿",
             ]
         case .fist:
             return [
-                [.dark]: "✊🏿",
-                [.medium]: "✊🏽",
-                [.mediumLight]: "✊🏼",
                 [.light]: "✊🏻",
+                [.mediumLight]: "✊🏼",
+                [.medium]: "✊🏽",
                 [.mediumDark]: "✊🏾",
+                [.dark]: "✊🏿",
             ]
         case .facepunch:
             return [
-                [.dark]: "👊🏿",
+                [.light]: "👊🏻",
                 [.mediumLight]: "👊🏼",
                 [.medium]: "👊🏽",
-                [.light]: "👊🏻",
                 [.mediumDark]: "👊🏾",
+                [.dark]: "👊🏿",
             ]
         case .leftFacingFist:
             return [
-                [.mediumLight]: "🤛🏼",
                 [.light]: "🤛🏻",
-                [.mediumDark]: "🤛🏾",
+                [.mediumLight]: "🤛🏼",
                 [.medium]: "🤛🏽",
+                [.mediumDark]: "🤛🏾",
                 [.dark]: "🤛🏿",
             ]
         case .rightFacingFist:
             return [
                 [.light]: "🤜🏻",
                 [.mediumLight]: "🤜🏼",
+                [.medium]: "🤜🏽",
                 [.mediumDark]: "🤜🏾",
                 [.dark]: "🤜🏿",
-                [.medium]: "🤜🏽",
             ]
         case .clap:
             return [
-                [.medium]: "👏🏽",
-                [.mediumLight]: "👏🏼",
-                [.dark]: "👏🏿",
-                [.mediumDark]: "👏🏾",
                 [.light]: "👏🏻",
+                [.mediumLight]: "👏🏼",
+                [.medium]: "👏🏽",
+                [.mediumDark]: "👏🏾",
+                [.dark]: "👏🏿",
             ]
         case .raisedHands:
             return [
-                [.mediumLight]: "🙌🏼",
                 [.light]: "🙌🏻",
+                [.mediumLight]: "🙌🏼",
                 [.medium]: "🙌🏽",
-                [.dark]: "🙌🏿",
                 [.mediumDark]: "🙌🏾",
+                [.dark]: "🙌🏿",
             ]
         case .openHands:
             return [
+                [.light]: "👐🏻",
                 [.mediumLight]: "👐🏼",
                 [.medium]: "👐🏽",
                 [.mediumDark]: "👐🏾",
-                [.light]: "👐🏻",
                 [.dark]: "👐🏿",
             ]
         case .palmsUpTogether:
             return [
-                [.medium]: "🤲🏽",
                 [.light]: "🤲🏻",
-                [.dark]: "🤲🏿",
-                [.mediumDark]: "🤲🏾",
                 [.mediumLight]: "🤲🏼",
+                [.medium]: "🤲🏽",
+                [.mediumDark]: "🤲🏾",
+                [.dark]: "🤲🏿",
             ]
         case .pray:
             return [
+                [.light]: "🙏🏻",
                 [.mediumLight]: "🙏🏼",
-                [.dark]: "🙏🏿",
                 [.medium]: "🙏🏽",
                 [.mediumDark]: "🙏🏾",
-                [.light]: "🙏🏻",
+                [.dark]: "🙏🏿",
             ]
         case .writingHand:
             return [
+                [.light]: "✍🏻",
+                [.mediumLight]: "✍🏼",
+                [.medium]: "✍🏽",
                 [.mediumDark]: "✍🏾",
                 [.dark]: "✍🏿",
-                [.mediumLight]: "✍🏼",
-                [.light]: "✍🏻",
-                [.medium]: "✍🏽",
             ]
         case .nailCare:
             return [
-                [.mediumDark]: "💅🏾",
+                [.light]: "💅🏻",
                 [.mediumLight]: "💅🏼",
                 [.medium]: "💅🏽",
+                [.mediumDark]: "💅🏾",
                 [.dark]: "💅🏿",
-                [.light]: "💅🏻",
             ]
         case .selfie:
             return [
-                [.medium]: "🤳🏽",
-                [.dark]: "🤳🏿",
                 [.light]: "🤳🏻",
-                [.mediumDark]: "🤳🏾",
                 [.mediumLight]: "🤳🏼",
+                [.medium]: "🤳🏽",
+                [.mediumDark]: "🤳🏾",
+                [.dark]: "🤳🏿",
             ]
         case .muscle:
             return [
+                [.light]: "💪🏻",
                 [.mediumLight]: "💪🏼",
-                [.dark]: "💪🏿",
                 [.medium]: "💪🏽",
                 [.mediumDark]: "💪🏾",
-                [.light]: "💪🏻",
+                [.dark]: "💪🏿",
             ]
         case .leg:
             return [
+                [.light]: "🦵🏻",
                 [.mediumLight]: "🦵🏼",
+                [.medium]: "🦵🏽",
                 [.mediumDark]: "🦵🏾",
                 [.dark]: "🦵🏿",
-                [.light]: "🦵🏻",
-                [.medium]: "🦵🏽",
             ]
         case .foot:
             return [
+                [.light]: "🦶🏻",
+                [.mediumLight]: "🦶🏼",
+                [.medium]: "🦶🏽",
                 [.mediumDark]: "🦶🏾",
                 [.dark]: "🦶🏿",
-                [.light]: "🦶🏻",
-                [.medium]: "🦶🏽",
-                [.mediumLight]: "🦶🏼",
             ]
         case .ear:
             return [
-                [.mediumDark]: "👂🏾",
-                [.medium]: "👂🏽",
                 [.light]: "👂🏻",
-                [.dark]: "👂🏿",
                 [.mediumLight]: "👂🏼",
+                [.medium]: "👂🏽",
+                [.mediumDark]: "👂🏾",
+                [.dark]: "👂🏿",
             ]
         case .earWithHearingAid:
             return [
                 [.light]: "🦻🏻",
                 [.mediumLight]: "🦻🏼",
-                [.dark]: "🦻🏿",
                 [.medium]: "🦻🏽",
                 [.mediumDark]: "🦻🏾",
+                [.dark]: "🦻🏿",
             ]
         case .nose:
             return [
-                [.medium]: "👃🏽",
                 [.light]: "👃🏻",
-                [.dark]: "👃🏿",
-                [.mediumDark]: "👃🏾",
                 [.mediumLight]: "👃🏼",
+                [.medium]: "👃🏽",
+                [.mediumDark]: "👃🏾",
+                [.dark]: "👃🏿",
             ]
         case .baby:
             return [
-                [.medium]: "👶🏽",
                 [.light]: "👶🏻",
                 [.mediumLight]: "👶🏼",
+                [.medium]: "👶🏽",
                 [.mediumDark]: "👶🏾",
                 [.dark]: "👶🏿",
             ]
         case .child:
             return [
-                [.mediumLight]: "🧒🏼",
-                [.mediumDark]: "🧒🏾",
-                [.medium]: "🧒🏽",
-                [.dark]: "🧒🏿",
                 [.light]: "🧒🏻",
+                [.mediumLight]: "🧒🏼",
+                [.medium]: "🧒🏽",
+                [.mediumDark]: "🧒🏾",
+                [.dark]: "🧒🏿",
             ]
         case .boy:
             return [
-                [.dark]: "👦🏿",
                 [.light]: "👦🏻",
-                [.mediumDark]: "👦🏾",
-                [.medium]: "👦🏽",
                 [.mediumLight]: "👦🏼",
+                [.medium]: "👦🏽",
+                [.mediumDark]: "👦🏾",
+                [.dark]: "👦🏿",
             ]
         case .girl:
             return [
                 [.light]: "👧🏻",
-                [.dark]: "👧🏿",
-                [.mediumDark]: "👧🏾",
                 [.mediumLight]: "👧🏼",
                 [.medium]: "👧🏽",
+                [.mediumDark]: "👧🏾",
+                [.dark]: "👧🏿",
             ]
         case .adult:
             return [
-                [.medium]: "🧑🏽",
-                [.mediumLight]: "🧑🏼",
                 [.light]: "🧑🏻",
-                [.dark]: "🧑🏿",
+                [.mediumLight]: "🧑🏼",
+                [.medium]: "🧑🏽",
                 [.mediumDark]: "🧑🏾",
+                [.dark]: "🧑🏿",
             ]
         case .personWithBlondHair:
             return [
                 [.light]: "👱🏻",
-                [.dark]: "👱🏿",
                 [.mediumLight]: "👱🏼",
-                [.mediumDark]: "👱🏾",
                 [.medium]: "👱🏽",
+                [.mediumDark]: "👱🏾",
+                [.dark]: "👱🏿",
             ]
         case .man:
             return [
-                [.medium]: "👨🏽",
-                [.dark]: "👨🏿",
-                [.mediumLight]: "👨🏼",
                 [.light]: "👨🏻",
+                [.mediumLight]: "👨🏼",
+                [.medium]: "👨🏽",
                 [.mediumDark]: "👨🏾",
+                [.dark]: "👨🏿",
             ]
         case .beardedPerson:
             return [
-                [.medium]: "🧔🏽",
-                [.dark]: "🧔🏿",
-                [.mediumDark]: "🧔🏾",
                 [.light]: "🧔🏻",
                 [.mediumLight]: "🧔🏼",
+                [.medium]: "🧔🏽",
+                [.mediumDark]: "🧔🏾",
+                [.dark]: "🧔🏿",
             ]
         case .redHairedMan:
             return [
-                [.medium]: "👨🏽‍🦰",
-                [.mediumLight]: "👨🏼‍🦰",
                 [.light]: "👨🏻‍🦰",
+                [.mediumLight]: "👨🏼‍🦰",
+                [.medium]: "👨🏽‍🦰",
                 [.mediumDark]: "👨🏾‍🦰",
                 [.dark]: "👨🏿‍🦰",
             ]
         case .curlyHairedMan:
             return [
-                [.mediumDark]: "👨🏾‍🦱",
                 [.light]: "👨🏻‍🦱",
-                [.medium]: "👨🏽‍🦱",
-                [.dark]: "👨🏿‍🦱",
                 [.mediumLight]: "👨🏼‍🦱",
+                [.medium]: "👨🏽‍🦱",
+                [.mediumDark]: "👨🏾‍🦱",
+                [.dark]: "👨🏿‍🦱",
             ]
         case .whiteHairedMan:
             return [
                 [.light]: "👨🏻‍🦳",
+                [.mediumLight]: "👨🏼‍🦳",
                 [.medium]: "👨🏽‍🦳",
                 [.mediumDark]: "👨🏾‍🦳",
                 [.dark]: "👨🏿‍🦳",
-                [.mediumLight]: "👨🏼‍🦳",
             ]
         case .baldMan:
             return [
-                [.mediumLight]: "👨🏼‍🦲",
                 [.light]: "👨🏻‍🦲",
-                [.dark]: "👨🏿‍🦲",
-                [.mediumDark]: "👨🏾‍🦲",
+                [.mediumLight]: "👨🏼‍🦲",
                 [.medium]: "👨🏽‍🦲",
+                [.mediumDark]: "👨🏾‍🦲",
+                [.dark]: "👨🏿‍🦲",
             ]
         case .woman:
             return [
+                [.light]: "👩🏻",
+                [.mediumLight]: "👩🏼",
                 [.medium]: "👩🏽",
                 [.mediumDark]: "👩🏾",
-                [.light]: "👩🏻",
                 [.dark]: "👩🏿",
-                [.mediumLight]: "👩🏼",
             ]
         case .redHairedWoman:
             return [
-                [.medium]: "👩🏽‍🦰",
                 [.light]: "👩🏻‍🦰",
                 [.mediumLight]: "👩🏼‍🦰",
-                [.dark]: "👩🏿‍🦰",
+                [.medium]: "👩🏽‍🦰",
                 [.mediumDark]: "👩🏾‍🦰",
+                [.dark]: "👩🏿‍🦰",
             ]
         case .redHairedPerson:
             return [
-                [.mediumDark]: "🧑🏾‍🦰",
-                [.dark]: "🧑🏿‍🦰",
-                [.medium]: "🧑🏽‍🦰",
                 [.light]: "🧑🏻‍🦰",
                 [.mediumLight]: "🧑🏼‍🦰",
+                [.medium]: "🧑🏽‍🦰",
+                [.mediumDark]: "🧑🏾‍🦰",
+                [.dark]: "🧑🏿‍🦰",
             ]
         case .curlyHairedWoman:
             return [
-                [.dark]: "👩🏿‍🦱",
+                [.light]: "👩🏻‍🦱",
                 [.mediumLight]: "👩🏼‍🦱",
                 [.medium]: "👩🏽‍🦱",
-                [.light]: "👩🏻‍🦱",
                 [.mediumDark]: "👩🏾‍🦱",
+                [.dark]: "👩🏿‍🦱",
             ]
         case .curlyHairedPerson:
             return [
                 [.light]: "🧑🏻‍🦱",
-                [.dark]: "🧑🏿‍🦱",
                 [.mediumLight]: "🧑🏼‍🦱",
-                [.mediumDark]: "🧑🏾‍🦱",
                 [.medium]: "🧑🏽‍🦱",
+                [.mediumDark]: "🧑🏾‍🦱",
+                [.dark]: "🧑🏿‍🦱",
             ]
         case .whiteHairedWoman:
             return [
                 [.light]: "👩🏻‍🦳",
-                [.medium]: "👩🏽‍🦳",
-                [.dark]: "👩🏿‍🦳",
-                [.mediumDark]: "👩🏾‍🦳",
                 [.mediumLight]: "👩🏼‍🦳",
+                [.medium]: "👩🏽‍🦳",
+                [.mediumDark]: "👩🏾‍🦳",
+                [.dark]: "👩🏿‍🦳",
             ]
         case .whiteHairedPerson:
             return [
+                [.light]: "🧑🏻‍🦳",
+                [.mediumLight]: "🧑🏼‍🦳",
+                [.medium]: "🧑🏽‍🦳",
                 [.mediumDark]: "🧑🏾‍🦳",
                 [.dark]: "🧑🏿‍🦳",
-                [.mediumLight]: "🧑🏼‍🦳",
-                [.light]: "🧑🏻‍🦳",
-                [.medium]: "🧑🏽‍🦳",
             ]
         case .baldWoman:
             return [
+                [.light]: "👩🏻‍🦲",
                 [.mediumLight]: "👩🏼‍🦲",
                 [.medium]: "👩🏽‍🦲",
-                [.light]: "👩🏻‍🦲",
-                [.dark]: "👩🏿‍🦲",
                 [.mediumDark]: "👩🏾‍🦲",
+                [.dark]: "👩🏿‍🦲",
             ]
         case .baldPerson:
             return [
-                [.dark]: "🧑🏿‍🦲",
+                [.light]: "🧑🏻‍🦲",
+                [.mediumLight]: "🧑🏼‍🦲",
                 [.medium]: "🧑🏽‍🦲",
                 [.mediumDark]: "🧑🏾‍🦲",
-                [.mediumLight]: "🧑🏼‍🦲",
-                [.light]: "🧑🏻‍🦲",
+                [.dark]: "🧑🏿‍🦲",
             ]
         case .blondHairedWoman:
             return [
-                [.mediumDark]: "👱🏾‍♀️",
                 [.light]: "👱🏻‍♀️",
                 [.mediumLight]: "👱🏼‍♀️",
-                [.dark]: "👱🏿‍♀️",
                 [.medium]: "👱🏽‍♀️",
+                [.mediumDark]: "👱🏾‍♀️",
+                [.dark]: "👱🏿‍♀️",
             ]
         case .blondHairedMan:
             return [
-                [.dark]: "👱🏿‍♂️",
-                [.medium]: "👱🏽‍♂️",
                 [.light]: "👱🏻‍♂️",
-                [.mediumDark]: "👱🏾‍♂️",
                 [.mediumLight]: "👱🏼‍♂️",
+                [.medium]: "👱🏽‍♂️",
+                [.mediumDark]: "👱🏾‍♂️",
+                [.dark]: "👱🏿‍♂️",
             ]
         case .olderAdult:
             return [
-                [.dark]: "🧓🏿",
-                [.mediumDark]: "🧓🏾",
-                [.medium]: "🧓🏽",
-                [.mediumLight]: "🧓🏼",
                 [.light]: "🧓🏻",
+                [.mediumLight]: "🧓🏼",
+                [.medium]: "🧓🏽",
+                [.mediumDark]: "🧓🏾",
+                [.dark]: "🧓🏿",
             ]
         case .olderMan:
             return [
+                [.light]: "👴🏻",
                 [.mediumLight]: "👴🏼",
+                [.medium]: "👴🏽",
                 [.mediumDark]: "👴🏾",
                 [.dark]: "👴🏿",
-                [.light]: "👴🏻",
-                [.medium]: "👴🏽",
             ]
         case .olderWoman:
             return [
-                [.mediumLight]: "👵🏼",
                 [.light]: "👵🏻",
+                [.mediumLight]: "👵🏼",
+                [.medium]: "👵🏽",
                 [.mediumDark]: "👵🏾",
                 [.dark]: "👵🏿",
-                [.medium]: "👵🏽",
             ]
         case .personFrowning:
             return [
-                [.mediumLight]: "🙍🏼",
                 [.light]: "🙍🏻",
+                [.mediumLight]: "🙍🏼",
                 [.medium]: "🙍🏽",
-                [.dark]: "🙍🏿",
                 [.mediumDark]: "🙍🏾",
+                [.dark]: "🙍🏿",
             ]
         case .manFrowning:
             return [
-                [.mediumDark]: "🙍🏾‍♂️",
                 [.light]: "🙍🏻‍♂️",
                 [.mediumLight]: "🙍🏼‍♂️",
                 [.medium]: "🙍🏽‍♂️",
+                [.mediumDark]: "🙍🏾‍♂️",
                 [.dark]: "🙍🏿‍♂️",
             ]
         case .womanFrowning:
             return [
-                [.dark]: "🙍🏿‍♀️",
-                [.mediumLight]: "🙍🏼‍♀️",
-                [.mediumDark]: "🙍🏾‍♀️",
-                [.medium]: "🙍🏽‍♀️",
                 [.light]: "🙍🏻‍♀️",
+                [.mediumLight]: "🙍🏼‍♀️",
+                [.medium]: "🙍🏽‍♀️",
+                [.mediumDark]: "🙍🏾‍♀️",
+                [.dark]: "🙍🏿‍♀️",
             ]
         case .personWithPoutingFace:
             return [
-                [.mediumLight]: "🙎🏼",
-                [.dark]: "🙎🏿",
-                [.medium]: "🙎🏽",
                 [.light]: "🙎🏻",
+                [.mediumLight]: "🙎🏼",
+                [.medium]: "🙎🏽",
                 [.mediumDark]: "🙎🏾",
+                [.dark]: "🙎🏿",
             ]
         case .manPouting:
             return [
-                [.mediumLight]: "🙎🏼‍♂️",
-                [.mediumDark]: "🙎🏾‍♂️",
                 [.light]: "🙎🏻‍♂️",
-                [.dark]: "🙎🏿‍♂️",
+                [.mediumLight]: "🙎🏼‍♂️",
                 [.medium]: "🙎🏽‍♂️",
+                [.mediumDark]: "🙎🏾‍♂️",
+                [.dark]: "🙎🏿‍♂️",
             ]
         case .womanPouting:
             return [
-                [.mediumDark]: "🙎🏾‍♀️",
                 [.light]: "🙎🏻‍♀️",
                 [.mediumLight]: "🙎🏼‍♀️",
-                [.dark]: "🙎🏿‍♀️",
                 [.medium]: "🙎🏽‍♀️",
+                [.mediumDark]: "🙎🏾‍♀️",
+                [.dark]: "🙎🏿‍♀️",
             ]
         case .noGood:
             return [
-                [.dark]: "🙅🏿",
                 [.light]: "🙅🏻",
                 [.mediumLight]: "🙅🏼",
-                [.mediumDark]: "🙅🏾",
                 [.medium]: "🙅🏽",
+                [.mediumDark]: "🙅🏾",
+                [.dark]: "🙅🏿",
             ]
         case .manGesturingNo:
             return [
-                [.mediumLight]: "🙅🏼‍♂️",
-                [.mediumDark]: "🙅🏾‍♂️",
-                [.medium]: "🙅🏽‍♂️",
-                [.dark]: "🙅🏿‍♂️",
                 [.light]: "🙅🏻‍♂️",
+                [.mediumLight]: "🙅🏼‍♂️",
+                [.medium]: "🙅🏽‍♂️",
+                [.mediumDark]: "🙅🏾‍♂️",
+                [.dark]: "🙅🏿‍♂️",
             ]
         case .womanGesturingNo:
             return [
-                [.medium]: "🙅🏽‍♀️",
                 [.light]: "🙅🏻‍♀️",
-                [.dark]: "🙅🏿‍♀️",
                 [.mediumLight]: "🙅🏼‍♀️",
+                [.medium]: "🙅🏽‍♀️",
                 [.mediumDark]: "🙅🏾‍♀️",
+                [.dark]: "🙅🏿‍♀️",
             ]
         case .okWoman:
             return [
                 [.light]: "🙆🏻",
                 [.mediumLight]: "🙆🏼",
-                [.dark]: "🙆🏿",
                 [.medium]: "🙆🏽",
                 [.mediumDark]: "🙆🏾",
+                [.dark]: "🙆🏿",
             ]
         case .manGesturingOk:
             return [
-                [.mediumDark]: "🙆🏾‍♂️",
-                [.mediumLight]: "🙆🏼‍♂️",
                 [.light]: "🙆🏻‍♂️",
+                [.mediumLight]: "🙆🏼‍♂️",
                 [.medium]: "🙆🏽‍♂️",
+                [.mediumDark]: "🙆🏾‍♂️",
                 [.dark]: "🙆🏿‍♂️",
             ]
         case .womanGesturingOk:
             return [
-                [.dark]: "🙆🏿‍♀️",
                 [.light]: "🙆🏻‍♀️",
-                [.medium]: "🙆🏽‍♀️",
                 [.mediumLight]: "🙆🏼‍♀️",
+                [.medium]: "🙆🏽‍♀️",
                 [.mediumDark]: "🙆🏾‍♀️",
+                [.dark]: "🙆🏿‍♀️",
             ]
         case .informationDeskPerson:
             return [
-                [.mediumLight]: "💁🏼",
                 [.light]: "💁🏻",
+                [.mediumLight]: "💁🏼",
                 [.medium]: "💁🏽",
-                [.dark]: "💁🏿",
                 [.mediumDark]: "💁🏾",
+                [.dark]: "💁🏿",
             ]
         case .manTippingHand:
             return [
-                [.dark]: "💁🏿‍♂️",
-                [.mediumLight]: "💁🏼‍♂️",
                 [.light]: "💁🏻‍♂️",
-                [.mediumDark]: "💁🏾‍♂️",
+                [.mediumLight]: "💁🏼‍♂️",
                 [.medium]: "💁🏽‍♂️",
+                [.mediumDark]: "💁🏾‍♂️",
+                [.dark]: "💁🏿‍♂️",
             ]
         case .womanTippingHand:
             return [
-                [.mediumDark]: "💁🏾‍♀️",
-                [.medium]: "💁🏽‍♀️",
                 [.light]: "💁🏻‍♀️",
-                [.dark]: "💁🏿‍♀️",
                 [.mediumLight]: "💁🏼‍♀️",
+                [.medium]: "💁🏽‍♀️",
+                [.mediumDark]: "💁🏾‍♀️",
+                [.dark]: "💁🏿‍♀️",
             ]
         case .raisingHand:
             return [
-                [.mediumDark]: "🙋🏾",
-                [.mediumLight]: "🙋🏼",
                 [.light]: "🙋🏻",
+                [.mediumLight]: "🙋🏼",
                 [.medium]: "🙋🏽",
+                [.mediumDark]: "🙋🏾",
                 [.dark]: "🙋🏿",
             ]
         case .manRaisingHand:
             return [
-                [.medium]: "🙋🏽‍♂️",
-                [.mediumLight]: "🙋🏼‍♂️",
                 [.light]: "🙋🏻‍♂️",
-                [.dark]: "🙋🏿‍♂️",
+                [.mediumLight]: "🙋🏼‍♂️",
+                [.medium]: "🙋🏽‍♂️",
                 [.mediumDark]: "🙋🏾‍♂️",
+                [.dark]: "🙋🏿‍♂️",
             ]
         case .womanRaisingHand:
             return [
+                [.light]: "🙋🏻‍♀️",
+                [.mediumLight]: "🙋🏼‍♀️",
+                [.medium]: "🙋🏽‍♀️",
                 [.mediumDark]: "🙋🏾‍♀️",
                 [.dark]: "🙋🏿‍♀️",
-                [.mediumLight]: "🙋🏼‍♀️",
-                [.light]: "🙋🏻‍♀️",
-                [.medium]: "🙋🏽‍♀️",
             ]
         case .deafPerson:
             return [
-                [.mediumLight]: "🧏🏼",
                 [.light]: "🧏🏻",
-                [.mediumDark]: "🧏🏾",
+                [.mediumLight]: "🧏🏼",
                 [.medium]: "🧏🏽",
+                [.mediumDark]: "🧏🏾",
                 [.dark]: "🧏🏿",
             ]
         case .deafMan:
             return [
                 [.light]: "🧏🏻‍♂️",
-                [.medium]: "🧏🏽‍♂️",
                 [.mediumLight]: "🧏🏼‍♂️",
-                [.dark]: "🧏🏿‍♂️",
+                [.medium]: "🧏🏽‍♂️",
                 [.mediumDark]: "🧏🏾‍♂️",
+                [.dark]: "🧏🏿‍♂️",
             ]
         case .deafWoman:
             return [
-                [.mediumDark]: "🧏🏾‍♀️",
-                [.dark]: "🧏🏿‍♀️",
+                [.light]: "🧏🏻‍♀️",
                 [.mediumLight]: "🧏🏼‍♀️",
                 [.medium]: "🧏🏽‍♀️",
-                [.light]: "🧏🏻‍♀️",
+                [.mediumDark]: "🧏🏾‍♀️",
+                [.dark]: "🧏🏿‍♀️",
             ]
         case .bow:
             return [
-                [.mediumDark]: "🙇🏾",
-                [.dark]: "🙇🏿",
                 [.light]: "🙇🏻",
                 [.mediumLight]: "🙇🏼",
                 [.medium]: "🙇🏽",
+                [.mediumDark]: "🙇🏾",
+                [.dark]: "🙇🏿",
             ]
         case .manBowing:
             return [
                 [.light]: "🙇🏻‍♂️",
                 [.mediumLight]: "🙇🏼‍♂️",
                 [.medium]: "🙇🏽‍♂️",
-                [.dark]: "🙇🏿‍♂️",
                 [.mediumDark]: "🙇🏾‍♂️",
+                [.dark]: "🙇🏿‍♂️",
             ]
         case .womanBowing:
             return [
-                [.medium]: "🙇🏽‍♀️",
                 [.light]: "🙇🏻‍♀️",
                 [.mediumLight]: "🙇🏼‍♀️",
+                [.medium]: "🙇🏽‍♀️",
                 [.mediumDark]: "🙇🏾‍♀️",
                 [.dark]: "🙇🏿‍♀️",
             ]
         case .facePalm:
             return [
-                [.mediumLight]: "🤦🏼",
-                [.dark]: "🤦🏿",
-                [.mediumDark]: "🤦🏾",
-                [.medium]: "🤦🏽",
                 [.light]: "🤦🏻",
+                [.mediumLight]: "🤦🏼",
+                [.medium]: "🤦🏽",
+                [.mediumDark]: "🤦🏾",
+                [.dark]: "🤦🏿",
             ]
         case .manFacepalming:
             return [
-                [.mediumDark]: "🤦🏾‍♂️",
-                [.medium]: "🤦🏽‍♂️",
-                [.dark]: "🤦🏿‍♂️",
-                [.mediumLight]: "🤦🏼‍♂️",
                 [.light]: "🤦🏻‍♂️",
+                [.mediumLight]: "🤦🏼‍♂️",
+                [.medium]: "🤦🏽‍♂️",
+                [.mediumDark]: "🤦🏾‍♂️",
+                [.dark]: "🤦🏿‍♂️",
             ]
         case .womanFacepalming:
             return [
-                [.mediumDark]: "🤦🏾‍♀️",
-                [.mediumLight]: "🤦🏼‍♀️",
-                [.dark]: "🤦🏿‍♀️",
-                [.medium]: "🤦🏽‍♀️",
                 [.light]: "🤦🏻‍♀️",
+                [.mediumLight]: "🤦🏼‍♀️",
+                [.medium]: "🤦🏽‍♀️",
+                [.mediumDark]: "🤦🏾‍♀️",
+                [.dark]: "🤦🏿‍♀️",
             ]
         case .shrug:
             return [
-                [.medium]: "🤷🏽",
-                [.mediumLight]: "🤷🏼",
-                [.dark]: "🤷🏿",
-                [.mediumDark]: "🤷🏾",
                 [.light]: "🤷🏻",
+                [.mediumLight]: "🤷🏼",
+                [.medium]: "🤷🏽",
+                [.mediumDark]: "🤷🏾",
+                [.dark]: "🤷🏿",
             ]
         case .manShrugging:
             return [
-                [.dark]: "🤷🏿‍♂️",
-                [.mediumLight]: "🤷🏼‍♂️",
-                [.mediumDark]: "🤷🏾‍♂️",
                 [.light]: "🤷🏻‍♂️",
+                [.mediumLight]: "🤷🏼‍♂️",
                 [.medium]: "🤷🏽‍♂️",
+                [.mediumDark]: "🤷🏾‍♂️",
+                [.dark]: "🤷🏿‍♂️",
             ]
         case .womanShrugging:
             return [
-                [.medium]: "🤷🏽‍♀️",
-                [.dark]: "🤷🏿‍♀️",
-                [.mediumLight]: "🤷🏼‍♀️",
                 [.light]: "🤷🏻‍♀️",
+                [.mediumLight]: "🤷🏼‍♀️",
+                [.medium]: "🤷🏽‍♀️",
                 [.mediumDark]: "🤷🏾‍♀️",
+                [.dark]: "🤷🏿‍♀️",
             ]
         case .healthWorker:
             return [
                 [.light]: "🧑🏻‍⚕️",
                 [.mediumLight]: "🧑🏼‍⚕️",
                 [.medium]: "🧑🏽‍⚕️",
-                [.dark]: "🧑🏿‍⚕️",
                 [.mediumDark]: "🧑🏾‍⚕️",
+                [.dark]: "🧑🏿‍⚕️",
             ]
         case .maleDoctor:
             return [
-                [.dark]: "👨🏿‍⚕️",
-                [.mediumLight]: "👨🏼‍⚕️",
-                [.mediumDark]: "👨🏾‍⚕️",
-                [.medium]: "👨🏽‍⚕️",
                 [.light]: "👨🏻‍⚕️",
+                [.mediumLight]: "👨🏼‍⚕️",
+                [.medium]: "👨🏽‍⚕️",
+                [.mediumDark]: "👨🏾‍⚕️",
+                [.dark]: "👨🏿‍⚕️",
             ]
         case .femaleDoctor:
             return [
-                [.mediumDark]: "👩🏾‍⚕️",
-                [.medium]: "👩🏽‍⚕️",
-                [.dark]: "👩🏿‍⚕️",
                 [.light]: "👩🏻‍⚕️",
                 [.mediumLight]: "👩🏼‍⚕️",
+                [.medium]: "👩🏽‍⚕️",
+                [.mediumDark]: "👩🏾‍⚕️",
+                [.dark]: "👩🏿‍⚕️",
             ]
         case .student:
             return [
                 [.light]: "🧑🏻‍🎓",
-                [.dark]: "🧑🏿‍🎓",
-                [.mediumDark]: "🧑🏾‍🎓",
                 [.mediumLight]: "🧑🏼‍🎓",
                 [.medium]: "🧑🏽‍🎓",
+                [.mediumDark]: "🧑🏾‍🎓",
+                [.dark]: "🧑🏿‍🎓",
             ]
         case .maleStudent:
             return [
-                [.mediumDark]: "👨🏾‍🎓",
+                [.light]: "👨🏻‍🎓",
                 [.mediumLight]: "👨🏼‍🎓",
                 [.medium]: "👨🏽‍🎓",
-                [.light]: "👨🏻‍🎓",
+                [.mediumDark]: "👨🏾‍🎓",
                 [.dark]: "👨🏿‍🎓",
             ]
         case .femaleStudent:
             return [
+                [.light]: "👩🏻‍🎓",
                 [.mediumLight]: "👩🏼‍🎓",
                 [.medium]: "👩🏽‍🎓",
-                [.dark]: "👩🏿‍🎓",
                 [.mediumDark]: "👩🏾‍🎓",
-                [.light]: "👩🏻‍🎓",
+                [.dark]: "👩🏿‍🎓",
             ]
         case .teacher:
             return [
-                [.mediumLight]: "🧑🏼‍🏫",
                 [.light]: "🧑🏻‍🏫",
+                [.mediumLight]: "🧑🏼‍🏫",
+                [.medium]: "🧑🏽‍🏫",
                 [.mediumDark]: "🧑🏾‍🏫",
                 [.dark]: "🧑🏿‍🏫",
-                [.medium]: "🧑🏽‍🏫",
             ]
         case .maleTeacher:
             return [
+                [.light]: "👨🏻‍🏫",
+                [.mediumLight]: "👨🏼‍🏫",
                 [.medium]: "👨🏽‍🏫",
                 [.mediumDark]: "👨🏾‍🏫",
-                [.mediumLight]: "👨🏼‍🏫",
                 [.dark]: "👨🏿‍🏫",
-                [.light]: "👨🏻‍🏫",
             ]
         case .femaleTeacher:
             return [
+                [.light]: "👩🏻‍🏫",
                 [.mediumLight]: "👩🏼‍🏫",
                 [.medium]: "👩🏽‍🏫",
-                [.light]: "👩🏻‍🏫",
-                [.dark]: "👩🏿‍🏫",
                 [.mediumDark]: "👩🏾‍🏫",
+                [.dark]: "👩🏿‍🏫",
             ]
         case .judge:
             return [
-                [.dark]: "🧑🏿‍⚖️",
-                [.mediumDark]: "🧑🏾‍⚖️",
                 [.light]: "🧑🏻‍⚖️",
-                [.medium]: "🧑🏽‍⚖️",
                 [.mediumLight]: "🧑🏼‍⚖️",
+                [.medium]: "🧑🏽‍⚖️",
+                [.mediumDark]: "🧑🏾‍⚖️",
+                [.dark]: "🧑🏿‍⚖️",
             ]
         case .maleJudge:
             return [
+                [.light]: "👨🏻‍⚖️",
                 [.mediumLight]: "👨🏼‍⚖️",
+                [.medium]: "👨🏽‍⚖️",
                 [.mediumDark]: "👨🏾‍⚖️",
                 [.dark]: "👨🏿‍⚖️",
-                [.medium]: "👨🏽‍⚖️",
-                [.light]: "👨🏻‍⚖️",
             ]
         case .femaleJudge:
             return [
+                [.light]: "👩🏻‍⚖️",
                 [.mediumLight]: "👩🏼‍⚖️",
                 [.medium]: "👩🏽‍⚖️",
-                [.light]: "👩🏻‍⚖️",
-                [.dark]: "👩🏿‍⚖️",
                 [.mediumDark]: "👩🏾‍⚖️",
+                [.dark]: "👩🏿‍⚖️",
             ]
         case .farmer:
             return [
-                [.medium]: "🧑🏽‍🌾",
-                [.mediumLight]: "🧑🏼‍🌾",
-                [.mediumDark]: "🧑🏾‍🌾",
                 [.light]: "🧑🏻‍🌾",
+                [.mediumLight]: "🧑🏼‍🌾",
+                [.medium]: "🧑🏽‍🌾",
+                [.mediumDark]: "🧑🏾‍🌾",
                 [.dark]: "🧑🏿‍🌾",
             ]
         case .maleFarmer:
             return [
-                [.mediumLight]: "👨🏼‍🌾",
-                [.mediumDark]: "👨🏾‍🌾",
                 [.light]: "👨🏻‍🌾",
+                [.mediumLight]: "👨🏼‍🌾",
                 [.medium]: "👨🏽‍🌾",
+                [.mediumDark]: "👨🏾‍🌾",
                 [.dark]: "👨🏿‍🌾",
             ]
         case .femaleFarmer:
             return [
+                [.light]: "👩🏻‍🌾",
                 [.mediumLight]: "👩🏼‍🌾",
                 [.medium]: "👩🏽‍🌾",
-                [.light]: "👩🏻‍🌾",
-                [.dark]: "👩🏿‍🌾",
                 [.mediumDark]: "👩🏾‍🌾",
+                [.dark]: "👩🏿‍🌾",
             ]
         case .cook:
             return [
+                [.light]: "🧑🏻‍🍳",
+                [.mediumLight]: "🧑🏼‍🍳",
                 [.medium]: "🧑🏽‍🍳",
                 [.mediumDark]: "🧑🏾‍🍳",
-                [.mediumLight]: "🧑🏼‍🍳",
                 [.dark]: "🧑🏿‍🍳",
-                [.light]: "🧑🏻‍🍳",
             ]
         case .maleCook:
             return [
+                [.light]: "👨🏻‍🍳",
+                [.mediumLight]: "👨🏼‍🍳",
+                [.medium]: "👨🏽‍🍳",
                 [.mediumDark]: "👨🏾‍🍳",
                 [.dark]: "👨🏿‍🍳",
-                [.light]: "👨🏻‍🍳",
-                [.medium]: "👨🏽‍🍳",
-                [.mediumLight]: "👨🏼‍🍳",
             ]
         case .femaleCook:
             return [
                 [.light]: "👩🏻‍🍳",
+                [.mediumLight]: "👩🏼‍🍳",
                 [.medium]: "👩🏽‍🍳",
                 [.mediumDark]: "👩🏾‍🍳",
-                [.mediumLight]: "👩🏼‍🍳",
                 [.dark]: "👩🏿‍🍳",
             ]
         case .mechanic:
             return [
-                [.mediumLight]: "🧑🏼‍🔧",
                 [.light]: "🧑🏻‍🔧",
+                [.mediumLight]: "🧑🏼‍🔧",
                 [.medium]: "🧑🏽‍🔧",
-                [.dark]: "🧑🏿‍🔧",
                 [.mediumDark]: "🧑🏾‍🔧",
+                [.dark]: "🧑🏿‍🔧",
             ]
         case .maleMechanic:
             return [
-                [.dark]: "👨🏿‍🔧",
-                [.medium]: "👨🏽‍🔧",
                 [.light]: "👨🏻‍🔧",
                 [.mediumLight]: "👨🏼‍🔧",
+                [.medium]: "👨🏽‍🔧",
                 [.mediumDark]: "👨🏾‍🔧",
+                [.dark]: "👨🏿‍🔧",
             ]
         case .femaleMechanic:
             return [
-                [.mediumDark]: "👩🏾‍🔧",
-                [.medium]: "👩🏽‍🔧",
-                [.dark]: "👩🏿‍🔧",
                 [.light]: "👩🏻‍🔧",
                 [.mediumLight]: "👩🏼‍🔧",
+                [.medium]: "👩🏽‍🔧",
+                [.mediumDark]: "👩🏾‍🔧",
+                [.dark]: "👩🏿‍🔧",
             ]
         case .factoryWorker:
             return [
-                [.mediumDark]: "🧑🏾‍🏭",
-                [.medium]: "🧑🏽‍🏭",
                 [.light]: "🧑🏻‍🏭",
                 [.mediumLight]: "🧑🏼‍🏭",
+                [.medium]: "🧑🏽‍🏭",
+                [.mediumDark]: "🧑🏾‍🏭",
                 [.dark]: "🧑🏿‍🏭",
             ]
         case .maleFactoryWorker:
             return [
+                [.light]: "👨🏻‍🏭",
                 [.mediumLight]: "👨🏼‍🏭",
+                [.medium]: "👨🏽‍🏭",
                 [.mediumDark]: "👨🏾‍🏭",
                 [.dark]: "👨🏿‍🏭",
-                [.light]: "👨🏻‍🏭",
-                [.medium]: "👨🏽‍🏭",
             ]
         case .femaleFactoryWorker:
             return [
+                [.light]: "👩🏻‍🏭",
                 [.mediumLight]: "👩🏼‍🏭",
+                [.medium]: "👩🏽‍🏭",
                 [.mediumDark]: "👩🏾‍🏭",
                 [.dark]: "👩🏿‍🏭",
-                [.light]: "👩🏻‍🏭",
-                [.medium]: "👩🏽‍🏭",
             ]
         case .officeWorker:
             return [
-                [.dark]: "🧑🏿‍💼",
-                [.mediumDark]: "🧑🏾‍💼",
                 [.light]: "🧑🏻‍💼",
-                [.medium]: "🧑🏽‍💼",
                 [.mediumLight]: "🧑🏼‍💼",
+                [.medium]: "🧑🏽‍💼",
+                [.mediumDark]: "🧑🏾‍💼",
+                [.dark]: "🧑🏿‍💼",
             ]
         case .maleOfficeWorker:
             return [
-                [.mediumDark]: "👨🏾‍💼",
+                [.light]: "👨🏻‍💼",
                 [.mediumLight]: "👨🏼‍💼",
                 [.medium]: "👨🏽‍💼",
-                [.light]: "👨🏻‍💼",
+                [.mediumDark]: "👨🏾‍💼",
                 [.dark]: "👨🏿‍💼",
             ]
         case .femaleOfficeWorker:
             return [
-                [.mediumLight]: "👩🏼‍💼",
-                [.dark]: "👩🏿‍💼",
                 [.light]: "👩🏻‍💼",
-                [.mediumDark]: "👩🏾‍💼",
+                [.mediumLight]: "👩🏼‍💼",
                 [.medium]: "👩🏽‍💼",
+                [.mediumDark]: "👩🏾‍💼",
+                [.dark]: "👩🏿‍💼",
             ]
         case .scientist:
             return [
-                [.dark]: "🧑🏿‍🔬",
-                [.mediumLight]: "🧑🏼‍🔬",
-                [.mediumDark]: "🧑🏾‍🔬",
                 [.light]: "🧑🏻‍🔬",
+                [.mediumLight]: "🧑🏼‍🔬",
                 [.medium]: "🧑🏽‍🔬",
+                [.mediumDark]: "🧑🏾‍🔬",
+                [.dark]: "🧑🏿‍🔬",
             ]
         case .maleScientist:
             return [
-                [.mediumDark]: "👨🏾‍🔬",
                 [.light]: "👨🏻‍🔬",
-                [.medium]: "👨🏽‍🔬",
                 [.mediumLight]: "👨🏼‍🔬",
+                [.medium]: "👨🏽‍🔬",
+                [.mediumDark]: "👨🏾‍🔬",
                 [.dark]: "👨🏿‍🔬",
             ]
         case .femaleScientist:
             return [
-                [.medium]: "👩🏽‍🔬",
-                [.mediumLight]: "👩🏼‍🔬",
                 [.light]: "👩🏻‍🔬",
+                [.mediumLight]: "👩🏼‍🔬",
+                [.medium]: "👩🏽‍🔬",
                 [.mediumDark]: "👩🏾‍🔬",
                 [.dark]: "👩🏿‍🔬",
             ]
         case .technologist:
             return [
+                [.light]: "🧑🏻‍💻",
+                [.mediumLight]: "🧑🏼‍💻",
                 [.medium]: "🧑🏽‍💻",
                 [.mediumDark]: "🧑🏾‍💻",
-                [.mediumLight]: "🧑🏼‍💻",
-                [.light]: "🧑🏻‍💻",
                 [.dark]: "🧑🏿‍💻",
             ]
         case .maleTechnologist:
             return [
-                [.dark]: "👨🏿‍💻",
                 [.light]: "👨🏻‍💻",
-                [.mediumDark]: "👨🏾‍💻",
-                [.medium]: "👨🏽‍💻",
                 [.mediumLight]: "👨🏼‍💻",
+                [.medium]: "👨🏽‍💻",
+                [.mediumDark]: "👨🏾‍💻",
+                [.dark]: "👨🏿‍💻",
             ]
         case .femaleTechnologist:
             return [
-                [.dark]: "👩🏿‍💻",
                 [.light]: "👩🏻‍💻",
                 [.mediumLight]: "👩🏼‍💻",
                 [.medium]: "👩🏽‍💻",
                 [.mediumDark]: "👩🏾‍💻",
+                [.dark]: "👩🏿‍💻",
             ]
         case .singer:
             return [
-                [.dark]: "🧑🏿‍🎤",
-                [.medium]: "🧑🏽‍🎤",
-                [.mediumDark]: "🧑🏾‍🎤",
                 [.light]: "🧑🏻‍🎤",
                 [.mediumLight]: "🧑🏼‍🎤",
+                [.medium]: "🧑🏽‍🎤",
+                [.mediumDark]: "🧑🏾‍🎤",
+                [.dark]: "🧑🏿‍🎤",
             ]
         case .maleSinger:
             return [
                 [.light]: "👨🏻‍🎤",
-                [.dark]: "👨🏿‍🎤",
+                [.mediumLight]: "👨🏼‍🎤",
                 [.medium]: "👨🏽‍🎤",
                 [.mediumDark]: "👨🏾‍🎤",
-                [.mediumLight]: "👨🏼‍🎤",
+                [.dark]: "👨🏿‍🎤",
             ]
         case .femaleSinger:
             return [
-                [.mediumLight]: "👩🏼‍🎤",
                 [.light]: "👩🏻‍🎤",
+                [.mediumLight]: "👩🏼‍🎤",
+                [.medium]: "👩🏽‍🎤",
                 [.mediumDark]: "👩🏾‍🎤",
                 [.dark]: "👩🏿‍🎤",
-                [.medium]: "👩🏽‍🎤",
             ]
         case .artist:
             return [
-                [.mediumLight]: "🧑🏼‍🎨",
                 [.light]: "🧑🏻‍🎨",
-                [.dark]: "🧑🏿‍🎨",
-                [.mediumDark]: "🧑🏾‍🎨",
+                [.mediumLight]: "🧑🏼‍🎨",
                 [.medium]: "🧑🏽‍🎨",
+                [.mediumDark]: "🧑🏾‍🎨",
+                [.dark]: "🧑🏿‍🎨",
             ]
         case .maleArtist:
             return [
-                [.mediumDark]: "👨🏾‍🎨",
                 [.light]: "👨🏻‍🎨",
-                [.medium]: "👨🏽‍🎨",
                 [.mediumLight]: "👨🏼‍🎨",
+                [.medium]: "👨🏽‍🎨",
+                [.mediumDark]: "👨🏾‍🎨",
                 [.dark]: "👨🏿‍🎨",
             ]
         case .femaleArtist:
             return [
-                [.mediumLight]: "👩🏼‍🎨",
                 [.light]: "👩🏻‍🎨",
+                [.mediumLight]: "👩🏼‍🎨",
+                [.medium]: "👩🏽‍🎨",
                 [.mediumDark]: "👩🏾‍🎨",
                 [.dark]: "👩🏿‍🎨",
-                [.medium]: "👩🏽‍🎨",
             ]
         case .pilot:
             return [
-                [.dark]: "🧑🏿‍✈️",
-                [.medium]: "🧑🏽‍✈️",
                 [.light]: "🧑🏻‍✈️",
                 [.mediumLight]: "🧑🏼‍✈️",
+                [.medium]: "🧑🏽‍✈️",
                 [.mediumDark]: "🧑🏾‍✈️",
+                [.dark]: "🧑🏿‍✈️",
             ]
         case .malePilot:
             return [
-                [.medium]: "👨🏽‍✈️",
                 [.light]: "👨🏻‍✈️",
-                [.dark]: "👨🏿‍✈️",
                 [.mediumLight]: "👨🏼‍✈️",
+                [.medium]: "👨🏽‍✈️",
                 [.mediumDark]: "👨🏾‍✈️",
+                [.dark]: "👨🏿‍✈️",
             ]
         case .femalePilot:
             return [
                 [.light]: "👩🏻‍✈️",
-                [.medium]: "👩🏽‍✈️",
-                [.dark]: "👩🏿‍✈️",
                 [.mediumLight]: "👩🏼‍✈️",
+                [.medium]: "👩🏽‍✈️",
                 [.mediumDark]: "👩🏾‍✈️",
+                [.dark]: "👩🏿‍✈️",
             ]
         case .astronaut:
             return [
                 [.light]: "🧑🏻‍🚀",
                 [.mediumLight]: "🧑🏼‍🚀",
-                [.dark]: "🧑🏿‍🚀",
                 [.medium]: "🧑🏽‍🚀",
                 [.mediumDark]: "🧑🏾‍🚀",
+                [.dark]: "🧑🏿‍🚀",
             ]
         case .maleAstronaut:
             return [
-                [.medium]: "👨🏽‍🚀",
-                [.mediumLight]: "👨🏼‍🚀",
                 [.light]: "👨🏻‍🚀",
-                [.dark]: "👨🏿‍🚀",
+                [.mediumLight]: "👨🏼‍🚀",
+                [.medium]: "👨🏽‍🚀",
                 [.mediumDark]: "👨🏾‍🚀",
+                [.dark]: "👨🏿‍🚀",
             ]
         case .femaleAstronaut:
             return [
-                [.mediumDark]: "👩🏾‍🚀",
-                [.medium]: "👩🏽‍🚀",
-                [.dark]: "👩🏿‍🚀",
                 [.light]: "👩🏻‍🚀",
                 [.mediumLight]: "👩🏼‍🚀",
+                [.medium]: "👩🏽‍🚀",
+                [.mediumDark]: "👩🏾‍🚀",
+                [.dark]: "👩🏿‍🚀",
             ]
         case .firefighter:
             return [
                 [.light]: "🧑🏻‍🚒",
-                [.mediumDark]: "🧑🏾‍🚒",
-                [.medium]: "🧑🏽‍🚒",
                 [.mediumLight]: "🧑🏼‍🚒",
+                [.medium]: "🧑🏽‍🚒",
+                [.mediumDark]: "🧑🏾‍🚒",
                 [.dark]: "🧑🏿‍🚒",
             ]
         case .maleFirefighter:
             return [
-                [.mediumDark]: "👨🏾‍🚒",
                 [.light]: "👨🏻‍🚒",
                 [.mediumLight]: "👨🏼‍🚒",
-                [.dark]: "👨🏿‍🚒",
                 [.medium]: "👨🏽‍🚒",
+                [.mediumDark]: "👨🏾‍🚒",
+                [.dark]: "👨🏿‍🚒",
             ]
         case .femaleFirefighter:
             return [
-                [.mediumDark]: "👩🏾‍🚒",
-                [.mediumLight]: "👩🏼‍🚒",
                 [.light]: "👩🏻‍🚒",
+                [.mediumLight]: "👩🏼‍🚒",
                 [.medium]: "👩🏽‍🚒",
+                [.mediumDark]: "👩🏾‍🚒",
                 [.dark]: "👩🏿‍🚒",
             ]
         case .cop:
             return [
-                [.mediumLight]: "👮🏼",
-                [.mediumDark]: "👮🏾",
-                [.medium]: "👮🏽",
                 [.light]: "👮🏻",
+                [.mediumLight]: "👮🏼",
+                [.medium]: "👮🏽",
+                [.mediumDark]: "👮🏾",
                 [.dark]: "👮🏿",
             ]
         case .malePoliceOfficer:
             return [
                 [.light]: "👮🏻‍♂️",
-                [.medium]: "👮🏽‍♂️",
                 [.mediumLight]: "👮🏼‍♂️",
-                [.dark]: "👮🏿‍♂️",
+                [.medium]: "👮🏽‍♂️",
                 [.mediumDark]: "👮🏾‍♂️",
+                [.dark]: "👮🏿‍♂️",
             ]
         case .femalePoliceOfficer:
             return [
-                [.medium]: "👮🏽‍♀️",
-                [.dark]: "👮🏿‍♀️",
-                [.mediumLight]: "👮🏼‍♀️",
-                [.mediumDark]: "👮🏾‍♀️",
                 [.light]: "👮🏻‍♀️",
+                [.mediumLight]: "👮🏼‍♀️",
+                [.medium]: "👮🏽‍♀️",
+                [.mediumDark]: "👮🏾‍♀️",
+                [.dark]: "👮🏿‍♀️",
             ]
         case .sleuthOrSpy:
             return [
-                [.mediumDark]: "🕵🏾",
-                [.mediumLight]: "🕵🏼",
                 [.light]: "🕵🏻",
+                [.mediumLight]: "🕵🏼",
                 [.medium]: "🕵🏽",
+                [.mediumDark]: "🕵🏾",
                 [.dark]: "🕵🏿",
             ]
         case .maleDetective:
             return [
-                [.dark]: "🕵🏿‍♂️",
                 [.light]: "🕵🏻‍♂️",
-                [.medium]: "🕵🏽‍♂️",
                 [.mediumLight]: "🕵🏼‍♂️",
+                [.medium]: "🕵🏽‍♂️",
                 [.mediumDark]: "🕵🏾‍♂️",
+                [.dark]: "🕵🏿‍♂️",
             ]
         case .femaleDetective:
             return [
                 [.light]: "🕵🏻‍♀️",
-                [.medium]: "🕵🏽‍♀️",
-                [.dark]: "🕵🏿‍♀️",
                 [.mediumLight]: "🕵🏼‍♀️",
+                [.medium]: "🕵🏽‍♀️",
                 [.mediumDark]: "🕵🏾‍♀️",
+                [.dark]: "🕵🏿‍♀️",
             ]
         case .guardsman:
             return [
-                [.medium]: "💂🏽",
                 [.light]: "💂🏻",
+                [.mediumLight]: "💂🏼",
+                [.medium]: "💂🏽",
                 [.mediumDark]: "💂🏾",
                 [.dark]: "💂🏿",
-                [.mediumLight]: "💂🏼",
             ]
         case .maleGuard:
             return [
+                [.light]: "💂🏻‍♂️",
                 [.mediumLight]: "💂🏼‍♂️",
                 [.medium]: "💂🏽‍♂️",
                 [.mediumDark]: "💂🏾‍♂️",
-                [.light]: "💂🏻‍♂️",
                 [.dark]: "💂🏿‍♂️",
             ]
         case .femaleGuard:
             return [
-                [.mediumDark]: "💂🏾‍♀️",
-                [.medium]: "💂🏽‍♀️",
                 [.light]: "💂🏻‍♀️",
-                [.dark]: "💂🏿‍♀️",
                 [.mediumLight]: "💂🏼‍♀️",
+                [.medium]: "💂🏽‍♀️",
+                [.mediumDark]: "💂🏾‍♀️",
+                [.dark]: "💂🏿‍♀️",
             ]
         case .constructionWorker:
             return [
-                [.mediumDark]: "👷🏾",
                 [.light]: "👷🏻",
-                [.dark]: "👷🏿",
-                [.medium]: "👷🏽",
                 [.mediumLight]: "👷🏼",
+                [.medium]: "👷🏽",
+                [.mediumDark]: "👷🏾",
+                [.dark]: "👷🏿",
             ]
         case .maleConstructionWorker:
             return [
-                [.medium]: "👷🏽‍♂️",
-                [.mediumLight]: "👷🏼‍♂️",
-                [.dark]: "👷🏿‍♂️",
-                [.mediumDark]: "👷🏾‍♂️",
                 [.light]: "👷🏻‍♂️",
+                [.mediumLight]: "👷🏼‍♂️",
+                [.medium]: "👷🏽‍♂️",
+                [.mediumDark]: "👷🏾‍♂️",
+                [.dark]: "👷🏿‍♂️",
             ]
         case .femaleConstructionWorker:
             return [
                 [.light]: "👷🏻‍♀️",
+                [.mediumLight]: "👷🏼‍♀️",
                 [.medium]: "👷🏽‍♀️",
                 [.mediumDark]: "👷🏾‍♀️",
                 [.dark]: "👷🏿‍♀️",
-                [.mediumLight]: "👷🏼‍♀️",
             ]
         case .prince:
             return [
-                [.mediumDark]: "🤴🏾",
                 [.light]: "🤴🏻",
-                [.medium]: "🤴🏽",
                 [.mediumLight]: "🤴🏼",
+                [.medium]: "🤴🏽",
+                [.mediumDark]: "🤴🏾",
                 [.dark]: "🤴🏿",
             ]
         case .princess:
             return [
-                [.medium]: "👸🏽",
-                [.mediumLight]: "👸🏼",
-                [.dark]: "👸🏿",
-                [.mediumDark]: "👸🏾",
                 [.light]: "👸🏻",
+                [.mediumLight]: "👸🏼",
+                [.medium]: "👸🏽",
+                [.mediumDark]: "👸🏾",
+                [.dark]: "👸🏿",
             ]
         case .manWithTurban:
             return [
-                [.dark]: "👳🏿",
+                [.light]: "👳🏻",
                 [.mediumLight]: "👳🏼",
                 [.medium]: "👳🏽",
-                [.light]: "👳🏻",
                 [.mediumDark]: "👳🏾",
+                [.dark]: "👳🏿",
             ]
         case .manWearingTurban:
             return [
                 [.light]: "👳🏻‍♂️",
-                [.dark]: "👳🏿‍♂️",
-                [.mediumDark]: "👳🏾‍♂️",
-                [.medium]: "👳🏽‍♂️",
                 [.mediumLight]: "👳🏼‍♂️",
+                [.medium]: "👳🏽‍♂️",
+                [.mediumDark]: "👳🏾‍♂️",
+                [.dark]: "👳🏿‍♂️",
             ]
         case .womanWearingTurban:
             return [
+                [.light]: "👳🏻‍♀️",
                 [.mediumLight]: "👳🏼‍♀️",
                 [.medium]: "👳🏽‍♀️",
-                [.light]: "👳🏻‍♀️",
                 [.mediumDark]: "👳🏾‍♀️",
                 [.dark]: "👳🏿‍♀️",
             ]
         case .manWithGuaPiMao:
             return [
-                [.medium]: "👲🏽",
                 [.light]: "👲🏻",
-                [.dark]: "👲🏿",
                 [.mediumLight]: "👲🏼",
+                [.medium]: "👲🏽",
                 [.mediumDark]: "👲🏾",
+                [.dark]: "👲🏿",
             ]
         case .personWithHeadscarf:
             return [
-                [.mediumDark]: "🧕🏾",
-                [.dark]: "🧕🏿",
-                [.medium]: "🧕🏽",
                 [.light]: "🧕🏻",
                 [.mediumLight]: "🧕🏼",
+                [.medium]: "🧕🏽",
+                [.mediumDark]: "🧕🏾",
+                [.dark]: "🧕🏿",
             ]
         case .manInTuxedo:
             return [
-                [.dark]: "🤵🏿",
+                [.light]: "🤵🏻",
                 [.mediumLight]: "🤵🏼",
                 [.medium]: "🤵🏽",
                 [.mediumDark]: "🤵🏾",
-                [.light]: "🤵🏻",
+                [.dark]: "🤵🏿",
             ]
         case .brideWithVeil:
             return [
-                [.mediumDark]: "👰🏾",
-                [.medium]: "👰🏽",
                 [.light]: "👰🏻",
                 [.mediumLight]: "👰🏼",
+                [.medium]: "👰🏽",
+                [.mediumDark]: "👰🏾",
                 [.dark]: "👰🏿",
             ]
         case .pregnantWoman:
             return [
-                [.mediumDark]: "🤰🏾",
-                [.dark]: "🤰🏿",
                 [.light]: "🤰🏻",
                 [.mediumLight]: "🤰🏼",
                 [.medium]: "🤰🏽",
+                [.mediumDark]: "🤰🏾",
+                [.dark]: "🤰🏿",
             ]
         case .breastFeeding:
             return [
+                [.light]: "🤱🏻",
                 [.mediumLight]: "🤱🏼",
                 [.medium]: "🤱🏽",
-                [.dark]: "🤱🏿",
-                [.light]: "🤱🏻",
                 [.mediumDark]: "🤱🏾",
+                [.dark]: "🤱🏿",
             ]
         case .angel:
             return [
-                [.dark]: "👼🏿",
-                [.medium]: "👼🏽",
-                [.mediumLight]: "👼🏼",
-                [.mediumDark]: "👼🏾",
                 [.light]: "👼🏻",
+                [.mediumLight]: "👼🏼",
+                [.medium]: "👼🏽",
+                [.mediumDark]: "👼🏾",
+                [.dark]: "👼🏿",
             ]
         case .santa:
             return [
-                [.medium]: "🎅🏽",
-                [.mediumDark]: "🎅🏾",
                 [.light]: "🎅🏻",
                 [.mediumLight]: "🎅🏼",
+                [.medium]: "🎅🏽",
+                [.mediumDark]: "🎅🏾",
                 [.dark]: "🎅🏿",
             ]
         case .mrsClaus:
             return [
+                [.light]: "🤶🏻",
+                [.mediumLight]: "🤶🏼",
                 [.medium]: "🤶🏽",
                 [.mediumDark]: "🤶🏾",
-                [.mediumLight]: "🤶🏼",
                 [.dark]: "🤶🏿",
-                [.light]: "🤶🏻",
             ]
         case .superhero:
             return [
-                [.dark]: "🦸🏿",
-                [.mediumDark]: "🦸🏾",
                 [.light]: "🦸🏻",
                 [.mediumLight]: "🦸🏼",
                 [.medium]: "🦸🏽",
+                [.mediumDark]: "🦸🏾",
+                [.dark]: "🦸🏿",
             ]
         case .maleSuperhero:
             return [
-                [.dark]: "🦸🏿‍♂️",
-                [.mediumLight]: "🦸🏼‍♂️",
                 [.light]: "🦸🏻‍♂️",
-                [.mediumDark]: "🦸🏾‍♂️",
+                [.mediumLight]: "🦸🏼‍♂️",
                 [.medium]: "🦸🏽‍♂️",
+                [.mediumDark]: "🦸🏾‍♂️",
+                [.dark]: "🦸🏿‍♂️",
             ]
         case .femaleSuperhero:
             return [
                 [.light]: "🦸🏻‍♀️",
-                [.dark]: "🦸🏿‍♀️",
-                [.mediumDark]: "🦸🏾‍♀️",
                 [.mediumLight]: "🦸🏼‍♀️",
                 [.medium]: "🦸🏽‍♀️",
+                [.mediumDark]: "🦸🏾‍♀️",
+                [.dark]: "🦸🏿‍♀️",
             ]
         case .supervillain:
             return [
-                [.dark]: "🦹🏿",
                 [.light]: "🦹🏻",
                 [.mediumLight]: "🦹🏼",
                 [.medium]: "🦹🏽",
                 [.mediumDark]: "🦹🏾",
+                [.dark]: "🦹🏿",
             ]
         case .maleSupervillain:
             return [
-                [.dark]: "🦹🏿‍♂️",
-                [.mediumDark]: "🦹🏾‍♂️",
-                [.medium]: "🦹🏽‍♂️",
-                [.mediumLight]: "🦹🏼‍♂️",
                 [.light]: "🦹🏻‍♂️",
+                [.mediumLight]: "🦹🏼‍♂️",
+                [.medium]: "🦹🏽‍♂️",
+                [.mediumDark]: "🦹🏾‍♂️",
+                [.dark]: "🦹🏿‍♂️",
             ]
         case .femaleSupervillain:
             return [
                 [.light]: "🦹🏻‍♀️",
                 [.mediumLight]: "🦹🏼‍♀️",
-                [.dark]: "🦹🏿‍♀️",
-                [.mediumDark]: "🦹🏾‍♀️",
                 [.medium]: "🦹🏽‍♀️",
+                [.mediumDark]: "🦹🏾‍♀️",
+                [.dark]: "🦹🏿‍♀️",
             ]
         case .mage:
             return [
-                [.dark]: "🧙🏿",
+                [.light]: "🧙🏻",
                 [.mediumLight]: "🧙🏼",
                 [.medium]: "🧙🏽",
-                [.light]: "🧙🏻",
                 [.mediumDark]: "🧙🏾",
+                [.dark]: "🧙🏿",
             ]
         case .maleMage:
             return [
-                [.mediumDark]: "🧙🏾‍♂️",
-                [.mediumLight]: "🧙🏼‍♂️",
                 [.light]: "🧙🏻‍♂️",
+                [.mediumLight]: "🧙🏼‍♂️",
                 [.medium]: "🧙🏽‍♂️",
+                [.mediumDark]: "🧙🏾‍♂️",
                 [.dark]: "🧙🏿‍♂️",
             ]
         case .femaleMage:
             return [
-                [.dark]: "🧙🏿‍♀️",
-                [.mediumLight]: "🧙🏼‍♀️",
                 [.light]: "🧙🏻‍♀️",
+                [.mediumLight]: "🧙🏼‍♀️",
                 [.medium]: "🧙🏽‍♀️",
                 [.mediumDark]: "🧙🏾‍♀️",
+                [.dark]: "🧙🏿‍♀️",
             ]
         case .fairy:
             return [
-                [.dark]: "🧚🏿",
-                [.mediumLight]: "🧚🏼",
-                [.mediumDark]: "🧚🏾",
-                [.medium]: "🧚🏽",
                 [.light]: "🧚🏻",
+                [.mediumLight]: "🧚🏼",
+                [.medium]: "🧚🏽",
+                [.mediumDark]: "🧚🏾",
+                [.dark]: "🧚🏿",
             ]
         case .maleFairy:
             return [
+                [.light]: "🧚🏻‍♂️",
                 [.mediumLight]: "🧚🏼‍♂️",
                 [.medium]: "🧚🏽‍♂️",
                 [.mediumDark]: "🧚🏾‍♂️",
-                [.light]: "🧚🏻‍♂️",
                 [.dark]: "🧚🏿‍♂️",
             ]
         case .femaleFairy:
             return [
-                [.mediumLight]: "🧚🏼‍♀️",
                 [.light]: "🧚🏻‍♀️",
+                [.mediumLight]: "🧚🏼‍♀️",
                 [.medium]: "🧚🏽‍♀️",
-                [.dark]: "🧚🏿‍♀️",
                 [.mediumDark]: "🧚🏾‍♀️",
+                [.dark]: "🧚🏿‍♀️",
             ]
         case .vampire:
             return [
-                [.medium]: "🧛🏽",
-                [.dark]: "🧛🏿",
-                [.mediumDark]: "🧛🏾",
                 [.light]: "🧛🏻",
                 [.mediumLight]: "🧛🏼",
+                [.medium]: "🧛🏽",
+                [.mediumDark]: "🧛🏾",
+                [.dark]: "🧛🏿",
             ]
         case .maleVampire:
             return [
-                [.dark]: "🧛🏿‍♂️",
-                [.mediumDark]: "🧛🏾‍♂️",
+                [.light]: "🧛🏻‍♂️",
                 [.mediumLight]: "🧛🏼‍♂️",
                 [.medium]: "🧛🏽‍♂️",
-                [.light]: "🧛🏻‍♂️",
+                [.mediumDark]: "🧛🏾‍♂️",
+                [.dark]: "🧛🏿‍♂️",
             ]
         case .femaleVampire:
             return [
+                [.light]: "🧛🏻‍♀️",
                 [.mediumLight]: "🧛🏼‍♀️",
                 [.medium]: "🧛🏽‍♀️",
-                [.light]: "🧛🏻‍♀️",
-                [.dark]: "🧛🏿‍♀️",
                 [.mediumDark]: "🧛🏾‍♀️",
+                [.dark]: "🧛🏿‍♀️",
             ]
         case .merperson:
             return [
+                [.light]: "🧜🏻",
                 [.mediumLight]: "🧜🏼",
                 [.medium]: "🧜🏽",
-                [.light]: "🧜🏻",
-                [.dark]: "🧜🏿",
                 [.mediumDark]: "🧜🏾",
+                [.dark]: "🧜🏿",
             ]
         case .merman:
             return [
-                [.mediumDark]: "🧜🏾‍♂️",
-                [.medium]: "🧜🏽‍♂️",
-                [.mediumLight]: "🧜🏼‍♂️",
                 [.light]: "🧜🏻‍♂️",
+                [.mediumLight]: "🧜🏼‍♂️",
+                [.medium]: "🧜🏽‍♂️",
+                [.mediumDark]: "🧜🏾‍♂️",
                 [.dark]: "🧜🏿‍♂️",
             ]
         case .mermaid:
             return [
-                [.dark]: "🧜🏿‍♀️",
                 [.light]: "🧜🏻‍♀️",
+                [.mediumLight]: "🧜🏼‍♀️",
                 [.medium]: "🧜🏽‍♀️",
                 [.mediumDark]: "🧜🏾‍♀️",
-                [.mediumLight]: "🧜🏼‍♀️",
+                [.dark]: "🧜🏿‍♀️",
             ]
         case .elf:
             return [
+                [.light]: "🧝🏻",
+                [.mediumLight]: "🧝🏼",
                 [.medium]: "🧝🏽",
                 [.mediumDark]: "🧝🏾",
-                [.mediumLight]: "🧝🏼",
                 [.dark]: "🧝🏿",
-                [.light]: "🧝🏻",
             ]
         case .maleElf:
             return [
-                [.mediumDark]: "🧝🏾‍♂️",
                 [.light]: "🧝🏻‍♂️",
-                [.medium]: "🧝🏽‍♂️",
-                [.dark]: "🧝🏿‍♂️",
                 [.mediumLight]: "🧝🏼‍♂️",
+                [.medium]: "🧝🏽‍♂️",
+                [.mediumDark]: "🧝🏾‍♂️",
+                [.dark]: "🧝🏿‍♂️",
             ]
         case .femaleElf:
             return [
-                [.dark]: "🧝🏿‍♀️",
                 [.light]: "🧝🏻‍♀️",
                 [.mediumLight]: "🧝🏼‍♀️",
                 [.medium]: "🧝🏽‍♀️",
                 [.mediumDark]: "🧝🏾‍♀️",
+                [.dark]: "🧝🏿‍♀️",
             ]
         case .massage:
             return [
-                [.mediumDark]: "💆🏾",
-                [.dark]: "💆🏿",
-                [.medium]: "💆🏽",
                 [.light]: "💆🏻",
                 [.mediumLight]: "💆🏼",
+                [.medium]: "💆🏽",
+                [.mediumDark]: "💆🏾",
+                [.dark]: "💆🏿",
             ]
         case .manGettingMassage:
             return [
                 [.light]: "💆🏻‍♂️",
                 [.mediumLight]: "💆🏼‍♂️",
-                [.mediumDark]: "💆🏾‍♂️",
                 [.medium]: "💆🏽‍♂️",
+                [.mediumDark]: "💆🏾‍♂️",
                 [.dark]: "💆🏿‍♂️",
             ]
         case .womanGettingMassage:
             return [
                 [.light]: "💆🏻‍♀️",
-                [.medium]: "💆🏽‍♀️",
                 [.mediumLight]: "💆🏼‍♀️",
-                [.dark]: "💆🏿‍♀️",
+                [.medium]: "💆🏽‍♀️",
                 [.mediumDark]: "💆🏾‍♀️",
+                [.dark]: "💆🏿‍♀️",
             ]
         case .haircut:
             return [
                 [.light]: "💇🏻",
-                [.dark]: "💇🏿",
                 [.mediumLight]: "💇🏼",
-                [.mediumDark]: "💇🏾",
                 [.medium]: "💇🏽",
+                [.mediumDark]: "💇🏾",
+                [.dark]: "💇🏿",
             ]
         case .manGettingHaircut:
             return [
                 [.light]: "💇🏻‍♂️",
+                [.mediumLight]: "💇🏼‍♂️",
                 [.medium]: "💇🏽‍♂️",
                 [.mediumDark]: "💇🏾‍♂️",
-                [.mediumLight]: "💇🏼‍♂️",
                 [.dark]: "💇🏿‍♂️",
             ]
         case .womanGettingHaircut:
             return [
                 [.light]: "💇🏻‍♀️",
-                [.mediumDark]: "💇🏾‍♀️",
                 [.mediumLight]: "💇🏼‍♀️",
-                [.dark]: "💇🏿‍♀️",
                 [.medium]: "💇🏽‍♀️",
+                [.mediumDark]: "💇🏾‍♀️",
+                [.dark]: "💇🏿‍♀️",
             ]
         case .walking:
             return [
                 [.light]: "🚶🏻",
-                [.medium]: "🚶🏽",
-                [.dark]: "🚶🏿",
                 [.mediumLight]: "🚶🏼",
+                [.medium]: "🚶🏽",
                 [.mediumDark]: "🚶🏾",
+                [.dark]: "🚶🏿",
             ]
         case .manWalking:
             return [
                 [.light]: "🚶🏻‍♂️",
-                [.mediumDark]: "🚶🏾‍♂️",
-                [.medium]: "🚶🏽‍♂️",
                 [.mediumLight]: "🚶🏼‍♂️",
+                [.medium]: "🚶🏽‍♂️",
+                [.mediumDark]: "🚶🏾‍♂️",
                 [.dark]: "🚶🏿‍♂️",
             ]
         case .womanWalking:
             return [
-                [.mediumDark]: "🚶🏾‍♀️",
-                [.dark]: "🚶🏿‍♀️",
                 [.light]: "🚶🏻‍♀️",
                 [.mediumLight]: "🚶🏼‍♀️",
                 [.medium]: "🚶🏽‍♀️",
+                [.mediumDark]: "🚶🏾‍♀️",
+                [.dark]: "🚶🏿‍♀️",
             ]
         case .standingPerson:
             return [
                 [.light]: "🧍🏻",
                 [.mediumLight]: "🧍🏼",
-                [.dark]: "🧍🏿",
-                [.mediumDark]: "🧍🏾",
                 [.medium]: "🧍🏽",
+                [.mediumDark]: "🧍🏾",
+                [.dark]: "🧍🏿",
             ]
         case .manStanding:
             return [
                 [.light]: "🧍🏻‍♂️",
                 [.mediumLight]: "🧍🏼‍♂️",
+                [.medium]: "🧍🏽‍♂️",
                 [.mediumDark]: "🧍🏾‍♂️",
                 [.dark]: "🧍🏿‍♂️",
-                [.medium]: "🧍🏽‍♂️",
             ]
         case .womanStanding:
             return [
-                [.medium]: "🧍🏽‍♀️",
                 [.light]: "🧍🏻‍♀️",
-                [.dark]: "🧍🏿‍♀️",
                 [.mediumLight]: "🧍🏼‍♀️",
+                [.medium]: "🧍🏽‍♀️",
                 [.mediumDark]: "🧍🏾‍♀️",
+                [.dark]: "🧍🏿‍♀️",
             ]
         case .kneelingPerson:
             return [
-                [.mediumLight]: "🧎🏼",
                 [.light]: "🧎🏻",
-                [.dark]: "🧎🏿",
+                [.mediumLight]: "🧎🏼",
                 [.medium]: "🧎🏽",
                 [.mediumDark]: "🧎🏾",
+                [.dark]: "🧎🏿",
             ]
         case .manKneeling:
             return [
-                [.medium]: "🧎🏽‍♂️",
                 [.light]: "🧎🏻‍♂️",
-                [.mediumDark]: "🧎🏾‍♂️",
                 [.mediumLight]: "🧎🏼‍♂️",
+                [.medium]: "🧎🏽‍♂️",
+                [.mediumDark]: "🧎🏾‍♂️",
                 [.dark]: "🧎🏿‍♂️",
             ]
         case .womanKneeling:
             return [
-                [.mediumDark]: "🧎🏾‍♀️",
-                [.dark]: "🧎🏿‍♀️",
+                [.light]: "🧎🏻‍♀️",
                 [.mediumLight]: "🧎🏼‍♀️",
                 [.medium]: "🧎🏽‍♀️",
-                [.light]: "🧎🏻‍♀️",
+                [.mediumDark]: "🧎🏾‍♀️",
+                [.dark]: "🧎🏿‍♀️",
             ]
         case .personWithProbingCane:
             return [
                 [.light]: "🧑🏻‍🦯",
-                [.mediumDark]: "🧑🏾‍🦯",
-                [.medium]: "🧑🏽‍🦯",
                 [.mediumLight]: "🧑🏼‍🦯",
+                [.medium]: "🧑🏽‍🦯",
+                [.mediumDark]: "🧑🏾‍🦯",
                 [.dark]: "🧑🏿‍🦯",
             ]
         case .manWithProbingCane:
             return [
-                [.dark]: "👨🏿‍🦯",
+                [.light]: "👨🏻‍🦯",
                 [.mediumLight]: "👨🏼‍🦯",
                 [.medium]: "👨🏽‍🦯",
-                [.light]: "👨🏻‍🦯",
                 [.mediumDark]: "👨🏾‍🦯",
+                [.dark]: "👨🏿‍🦯",
             ]
         case .womanWithProbingCane:
             return [
                 [.light]: "👩🏻‍🦯",
-                [.mediumDark]: "👩🏾‍🦯",
-                [.dark]: "👩🏿‍🦯",
                 [.mediumLight]: "👩🏼‍🦯",
                 [.medium]: "👩🏽‍🦯",
+                [.mediumDark]: "👩🏾‍🦯",
+                [.dark]: "👩🏿‍🦯",
             ]
         case .personInMotorizedWheelchair:
             return [
-                [.mediumLight]: "🧑🏼‍🦼",
-                [.dark]: "🧑🏿‍🦼",
                 [.light]: "🧑🏻‍🦼",
+                [.mediumLight]: "🧑🏼‍🦼",
                 [.medium]: "🧑🏽‍🦼",
                 [.mediumDark]: "🧑🏾‍🦼",
+                [.dark]: "🧑🏿‍🦼",
             ]
         case .manInMotorizedWheelchair:
             return [
+                [.light]: "👨🏻‍🦼",
                 [.mediumLight]: "👨🏼‍🦼",
                 [.medium]: "👨🏽‍🦼",
-                [.light]: "👨🏻‍🦼",
-                [.dark]: "👨🏿‍🦼",
                 [.mediumDark]: "👨🏾‍🦼",
+                [.dark]: "👨🏿‍🦼",
             ]
         case .womanInMotorizedWheelchair:
             return [
-                [.dark]: "👩🏿‍🦼",
                 [.light]: "👩🏻‍🦼",
-                [.mediumDark]: "👩🏾‍🦼",
-                [.medium]: "👩🏽‍🦼",
                 [.mediumLight]: "👩🏼‍🦼",
+                [.medium]: "👩🏽‍🦼",
+                [.mediumDark]: "👩🏾‍🦼",
+                [.dark]: "👩🏿‍🦼",
             ]
         case .personInManualWheelchair:
             return [
-                [.medium]: "🧑🏽‍🦽",
-                [.mediumLight]: "🧑🏼‍🦽",
-                [.mediumDark]: "🧑🏾‍🦽",
                 [.light]: "🧑🏻‍🦽",
+                [.mediumLight]: "🧑🏼‍🦽",
+                [.medium]: "🧑🏽‍🦽",
+                [.mediumDark]: "🧑🏾‍🦽",
                 [.dark]: "🧑🏿‍🦽",
             ]
         case .manInManualWheelchair:
             return [
-                [.medium]: "👨🏽‍🦽",
                 [.light]: "👨🏻‍🦽",
                 [.mediumLight]: "👨🏼‍🦽",
+                [.medium]: "👨🏽‍🦽",
                 [.mediumDark]: "👨🏾‍🦽",
                 [.dark]: "👨🏿‍🦽",
             ]
         case .womanInManualWheelchair:
             return [
-                [.mediumLight]: "👩🏼‍🦽",
-                [.dark]: "👩🏿‍🦽",
-                [.mediumDark]: "👩🏾‍🦽",
-                [.medium]: "👩🏽‍🦽",
                 [.light]: "👩🏻‍🦽",
+                [.mediumLight]: "👩🏼‍🦽",
+                [.medium]: "👩🏽‍🦽",
+                [.mediumDark]: "👩🏾‍🦽",
+                [.dark]: "👩🏿‍🦽",
             ]
         case .runner:
             return [
+                [.light]: "🏃🏻",
                 [.mediumLight]: "🏃🏼",
+                [.medium]: "🏃🏽",
                 [.mediumDark]: "🏃🏾",
                 [.dark]: "🏃🏿",
-                [.medium]: "🏃🏽",
-                [.light]: "🏃🏻",
             ]
         case .manRunning:
             return [
-                [.medium]: "🏃🏽‍♂️",
                 [.light]: "🏃🏻‍♂️",
-                [.dark]: "🏃🏿‍♂️",
-                [.mediumDark]: "🏃🏾‍♂️",
                 [.mediumLight]: "🏃🏼‍♂️",
+                [.medium]: "🏃🏽‍♂️",
+                [.mediumDark]: "🏃🏾‍♂️",
+                [.dark]: "🏃🏿‍♂️",
             ]
         case .womanRunning:
             return [
-                [.medium]: "🏃🏽‍♀️",
-                [.dark]: "🏃🏿‍♀️",
-                [.mediumLight]: "🏃🏼‍♀️",
                 [.light]: "🏃🏻‍♀️",
+                [.mediumLight]: "🏃🏼‍♀️",
+                [.medium]: "🏃🏽‍♀️",
                 [.mediumDark]: "🏃🏾‍♀️",
+                [.dark]: "🏃🏿‍♀️",
             ]
         case .dancer:
             return [
-                [.medium]: "💃🏽",
-                [.dark]: "💃🏿",
-                [.mediumLight]: "💃🏼",
                 [.light]: "💃🏻",
+                [.mediumLight]: "💃🏼",
+                [.medium]: "💃🏽",
                 [.mediumDark]: "💃🏾",
+                [.dark]: "💃🏿",
             ]
         case .manDancing:
             return [
-                [.medium]: "🕺🏽",
-                [.mediumLight]: "🕺🏼",
-                [.dark]: "🕺🏿",
                 [.light]: "🕺🏻",
+                [.mediumLight]: "🕺🏼",
+                [.medium]: "🕺🏽",
                 [.mediumDark]: "🕺🏾",
+                [.dark]: "🕺🏿",
             ]
         case .manInBusinessSuitLevitating:
             return [
-                [.medium]: "🕴🏽",
+                [.light]: "🕴🏻",
                 [.mediumLight]: "🕴🏼",
+                [.medium]: "🕴🏽",
                 [.mediumDark]: "🕴🏾",
                 [.dark]: "🕴🏿",
-                [.light]: "🕴🏻",
             ]
         case .personInSteamyRoom:
             return [
                 [.light]: "🧖🏻",
-                [.mediumDark]: "🧖🏾",
                 [.mediumLight]: "🧖🏼",
                 [.medium]: "🧖🏽",
+                [.mediumDark]: "🧖🏾",
                 [.dark]: "🧖🏿",
             ]
         case .manInSteamyRoom:
             return [
-                [.medium]: "🧖🏽‍♂️",
                 [.light]: "🧖🏻‍♂️",
                 [.mediumLight]: "🧖🏼‍♂️",
-                [.dark]: "🧖🏿‍♂️",
+                [.medium]: "🧖🏽‍♂️",
                 [.mediumDark]: "🧖🏾‍♂️",
+                [.dark]: "🧖🏿‍♂️",
             ]
         case .womanInSteamyRoom:
             return [
                 [.light]: "🧖🏻‍♀️",
-                [.medium]: "🧖🏽‍♀️",
                 [.mediumLight]: "🧖🏼‍♀️",
+                [.medium]: "🧖🏽‍♀️",
                 [.mediumDark]: "🧖🏾‍♀️",
                 [.dark]: "🧖🏿‍♀️",
             ]
         case .personClimbing:
             return [
-                [.mediumDark]: "🧗🏾",
+                [.light]: "🧗🏻",
                 [.mediumLight]: "🧗🏼",
                 [.medium]: "🧗🏽",
-                [.light]: "🧗🏻",
+                [.mediumDark]: "🧗🏾",
                 [.dark]: "🧗🏿",
             ]
         case .manClimbing:
             return [
-                [.mediumDark]: "🧗🏾‍♂️",
-                [.medium]: "🧗🏽‍♂️",
-                [.mediumLight]: "🧗🏼‍♂️",
-                [.dark]: "🧗🏿‍♂️",
                 [.light]: "🧗🏻‍♂️",
+                [.mediumLight]: "🧗🏼‍♂️",
+                [.medium]: "🧗🏽‍♂️",
+                [.mediumDark]: "🧗🏾‍♂️",
+                [.dark]: "🧗🏿‍♂️",
             ]
         case .womanClimbing:
             return [
-                [.mediumDark]: "🧗🏾‍♀️",
                 [.light]: "🧗🏻‍♀️",
                 [.mediumLight]: "🧗🏼‍♀️",
-                [.dark]: "🧗🏿‍♀️",
                 [.medium]: "🧗🏽‍♀️",
+                [.mediumDark]: "🧗🏾‍♀️",
+                [.dark]: "🧗🏿‍♀️",
             ]
         case .horseRacing:
             return [
-                [.dark]: "🏇🏿",
-                [.mediumLight]: "🏇🏼",
-                [.mediumDark]: "🏇🏾",
                 [.light]: "🏇🏻",
+                [.mediumLight]: "🏇🏼",
                 [.medium]: "🏇🏽",
+                [.mediumDark]: "🏇🏾",
+                [.dark]: "🏇🏿",
             ]
         case .snowboarder:
             return [
-                [.mediumLight]: "🏂🏼",
-                [.mediumDark]: "🏂🏾",
-                [.medium]: "🏂🏽",
                 [.light]: "🏂🏻",
+                [.mediumLight]: "🏂🏼",
+                [.medium]: "🏂🏽",
+                [.mediumDark]: "🏂🏾",
                 [.dark]: "🏂🏿",
             ]
         case .golfer:
             return [
-                [.medium]: "🏌🏽",
-                [.dark]: "🏌🏿",
                 [.light]: "🏌🏻",
                 [.mediumLight]: "🏌🏼",
+                [.medium]: "🏌🏽",
                 [.mediumDark]: "🏌🏾",
+                [.dark]: "🏌🏿",
             ]
         case .manGolfing:
             return [
-                [.medium]: "🏌🏽‍♂️",
-                [.mediumLight]: "🏌🏼‍♂️",
-                [.dark]: "🏌🏿‍♂️",
-                [.mediumDark]: "🏌🏾‍♂️",
                 [.light]: "🏌🏻‍♂️",
+                [.mediumLight]: "🏌🏼‍♂️",
+                [.medium]: "🏌🏽‍♂️",
+                [.mediumDark]: "🏌🏾‍♂️",
+                [.dark]: "🏌🏿‍♂️",
             ]
         case .womanGolfing:
             return [
                 [.light]: "🏌🏻‍♀️",
-                [.dark]: "🏌🏿‍♀️",
-                [.medium]: "🏌🏽‍♀️",
                 [.mediumLight]: "🏌🏼‍♀️",
+                [.medium]: "🏌🏽‍♀️",
                 [.mediumDark]: "🏌🏾‍♀️",
+                [.dark]: "🏌🏿‍♀️",
             ]
         case .surfer:
             return [
-                [.mediumDark]: "🏄🏾",
-                [.dark]: "🏄🏿",
-                [.medium]: "🏄🏽",
                 [.light]: "🏄🏻",
                 [.mediumLight]: "🏄🏼",
+                [.medium]: "🏄🏽",
+                [.mediumDark]: "🏄🏾",
+                [.dark]: "🏄🏿",
             ]
         case .manSurfing:
             return [
                 [.light]: "🏄🏻‍♂️",
-                [.mediumDark]: "🏄🏾‍♂️",
                 [.mediumLight]: "🏄🏼‍♂️",
                 [.medium]: "🏄🏽‍♂️",
+                [.mediumDark]: "🏄🏾‍♂️",
                 [.dark]: "🏄🏿‍♂️",
             ]
         case .womanSurfing:
             return [
-                [.medium]: "🏄🏽‍♀️",
                 [.light]: "🏄🏻‍♀️",
-                [.dark]: "🏄🏿‍♀️",
                 [.mediumLight]: "🏄🏼‍♀️",
+                [.medium]: "🏄🏽‍♀️",
                 [.mediumDark]: "🏄🏾‍♀️",
+                [.dark]: "🏄🏿‍♀️",
             ]
         case .rowboat:
             return [
-                [.mediumDark]: "🚣🏾",
-                [.dark]: "🚣🏿",
                 [.light]: "🚣🏻",
                 [.mediumLight]: "🚣🏼",
                 [.medium]: "🚣🏽",
+                [.mediumDark]: "🚣🏾",
+                [.dark]: "🚣🏿",
             ]
         case .manRowingBoat:
             return [
+                [.light]: "🚣🏻‍♂️",
+                [.mediumLight]: "🚣🏼‍♂️",
                 [.medium]: "🚣🏽‍♂️",
                 [.mediumDark]: "🚣🏾‍♂️",
                 [.dark]: "🚣🏿‍♂️",
-                [.mediumLight]: "🚣🏼‍♂️",
-                [.light]: "🚣🏻‍♂️",
             ]
         case .womanRowingBoat:
             return [
-                [.dark]: "🚣🏿‍♀️",
-                [.mediumDark]: "🚣🏾‍♀️",
-                [.mediumLight]: "🚣🏼‍♀️",
                 [.light]: "🚣🏻‍♀️",
+                [.mediumLight]: "🚣🏼‍♀️",
                 [.medium]: "🚣🏽‍♀️",
+                [.mediumDark]: "🚣🏾‍♀️",
+                [.dark]: "🚣🏿‍♀️",
             ]
         case .swimmer:
             return [
-                [.dark]: "🏊🏿",
                 [.light]: "🏊🏻",
-                [.medium]: "🏊🏽",
                 [.mediumLight]: "🏊🏼",
+                [.medium]: "🏊🏽",
                 [.mediumDark]: "🏊🏾",
+                [.dark]: "🏊🏿",
             ]
         case .manSwimming:
             return [
+                [.light]: "🏊🏻‍♂️",
                 [.mediumLight]: "🏊🏼‍♂️",
+                [.medium]: "🏊🏽‍♂️",
                 [.mediumDark]: "🏊🏾‍♂️",
                 [.dark]: "🏊🏿‍♂️",
-                [.medium]: "🏊🏽‍♂️",
-                [.light]: "🏊🏻‍♂️",
             ]
         case .womanSwimming:
             return [
-                [.mediumDark]: "🏊🏾‍♀️",
-                [.mediumLight]: "🏊🏼‍♀️",
-                [.dark]: "🏊🏿‍♀️",
                 [.light]: "🏊🏻‍♀️",
+                [.mediumLight]: "🏊🏼‍♀️",
                 [.medium]: "🏊🏽‍♀️",
+                [.mediumDark]: "🏊🏾‍♀️",
+                [.dark]: "🏊🏿‍♀️",
             ]
         case .personWithBall:
             return [
-                [.mediumDark]: "⛹🏾",
-                [.mediumLight]: "⛹🏼",
                 [.light]: "⛹🏻",
-                [.dark]: "⛹🏿",
+                [.mediumLight]: "⛹🏼",
                 [.medium]: "⛹🏽",
+                [.mediumDark]: "⛹🏾",
+                [.dark]: "⛹🏿",
             ]
         case .manBouncingBall:
             return [
-                [.dark]: "⛹🏿‍♂️",
-                [.mediumDark]: "⛹🏾‍♂️",
+                [.light]: "⛹🏻‍♂️",
                 [.mediumLight]: "⛹🏼‍♂️",
                 [.medium]: "⛹🏽‍♂️",
-                [.light]: "⛹🏻‍♂️",
+                [.mediumDark]: "⛹🏾‍♂️",
+                [.dark]: "⛹🏿‍♂️",
             ]
         case .womanBouncingBall:
             return [
-                [.medium]: "⛹🏽‍♀️",
-                [.mediumLight]: "⛹🏼‍♀️",
                 [.light]: "⛹🏻‍♀️",
-                [.dark]: "⛹🏿‍♀️",
+                [.mediumLight]: "⛹🏼‍♀️",
+                [.medium]: "⛹🏽‍♀️",
                 [.mediumDark]: "⛹🏾‍♀️",
+                [.dark]: "⛹🏿‍♀️",
             ]
         case .weightLifter:
             return [
-                [.medium]: "🏋🏽",
-                [.mediumLight]: "🏋🏼",
-                [.dark]: "🏋🏿",
                 [.light]: "🏋🏻",
+                [.mediumLight]: "🏋🏼",
+                [.medium]: "🏋🏽",
                 [.mediumDark]: "🏋🏾",
+                [.dark]: "🏋🏿",
             ]
         case .manLiftingWeights:
             return [
-                [.dark]: "🏋🏿‍♂️",
                 [.light]: "🏋🏻‍♂️",
                 [.mediumLight]: "🏋🏼‍♂️",
                 [.medium]: "🏋🏽‍♂️",
                 [.mediumDark]: "🏋🏾‍♂️",
+                [.dark]: "🏋🏿‍♂️",
             ]
         case .womanLiftingWeights:
             return [
-                [.medium]: "🏋🏽‍♀️",
-                [.dark]: "🏋🏿‍♀️",
-                [.mediumDark]: "🏋🏾‍♀️",
                 [.light]: "🏋🏻‍♀️",
                 [.mediumLight]: "🏋🏼‍♀️",
+                [.medium]: "🏋🏽‍♀️",
+                [.mediumDark]: "🏋🏾‍♀️",
+                [.dark]: "🏋🏿‍♀️",
             ]
         case .bicyclist:
             return [
-                [.dark]: "🚴🏿",
-                [.mediumDark]: "🚴🏾",
-                [.medium]: "🚴🏽",
                 [.light]: "🚴🏻",
                 [.mediumLight]: "🚴🏼",
+                [.medium]: "🚴🏽",
+                [.mediumDark]: "🚴🏾",
+                [.dark]: "🚴🏿",
             ]
         case .manBiking:
             return [
-                [.mediumLight]: "🚴🏼‍♂️",
-                [.dark]: "🚴🏿‍♂️",
-                [.mediumDark]: "🚴🏾‍♂️",
                 [.light]: "🚴🏻‍♂️",
+                [.mediumLight]: "🚴🏼‍♂️",
                 [.medium]: "🚴🏽‍♂️",
+                [.mediumDark]: "🚴🏾‍♂️",
+                [.dark]: "🚴🏿‍♂️",
             ]
         case .womanBiking:
             return [
                 [.light]: "🚴🏻‍♀️",
                 [.mediumLight]: "🚴🏼‍♀️",
+                [.medium]: "🚴🏽‍♀️",
                 [.mediumDark]: "🚴🏾‍♀️",
                 [.dark]: "🚴🏿‍♀️",
-                [.medium]: "🚴🏽‍♀️",
             ]
         case .mountainBicyclist:
             return [
                 [.light]: "🚵🏻",
-                [.dark]: "🚵🏿",
                 [.mediumLight]: "🚵🏼",
                 [.medium]: "🚵🏽",
                 [.mediumDark]: "🚵🏾",
+                [.dark]: "🚵🏿",
             ]
         case .manMountainBiking:
             return [
                 [.light]: "🚵🏻‍♂️",
-                [.dark]: "🚵🏿‍♂️",
                 [.mediumLight]: "🚵🏼‍♂️",
                 [.medium]: "🚵🏽‍♂️",
                 [.mediumDark]: "🚵🏾‍♂️",
+                [.dark]: "🚵🏿‍♂️",
             ]
         case .womanMountainBiking:
             return [
+                [.light]: "🚵🏻‍♀️",
+                [.mediumLight]: "🚵🏼‍♀️",
                 [.medium]: "🚵🏽‍♀️",
                 [.mediumDark]: "🚵🏾‍♀️",
                 [.dark]: "🚵🏿‍♀️",
-                [.mediumLight]: "🚵🏼‍♀️",
-                [.light]: "🚵🏻‍♀️",
             ]
         case .personDoingCartwheel:
             return [
-                [.medium]: "🤸🏽",
-                [.mediumLight]: "🤸🏼",
-                [.mediumDark]: "🤸🏾",
                 [.light]: "🤸🏻",
+                [.mediumLight]: "🤸🏼",
+                [.medium]: "🤸🏽",
+                [.mediumDark]: "🤸🏾",
                 [.dark]: "🤸🏿",
             ]
         case .manCartwheeling:
             return [
-                [.dark]: "🤸🏿‍♂️",
-                [.mediumLight]: "🤸🏼‍♂️",
-                [.mediumDark]: "🤸🏾‍♂️",
-                [.medium]: "🤸🏽‍♂️",
                 [.light]: "🤸🏻‍♂️",
+                [.mediumLight]: "🤸🏼‍♂️",
+                [.medium]: "🤸🏽‍♂️",
+                [.mediumDark]: "🤸🏾‍♂️",
+                [.dark]: "🤸🏿‍♂️",
             ]
         case .womanCartwheeling:
             return [
                 [.light]: "🤸🏻‍♀️",
-                [.medium]: "🤸🏽‍♀️",
-                [.dark]: "🤸🏿‍♀️",
                 [.mediumLight]: "🤸🏼‍♀️",
+                [.medium]: "🤸🏽‍♀️",
                 [.mediumDark]: "🤸🏾‍♀️",
+                [.dark]: "🤸🏿‍♀️",
             ]
         case .waterPolo:
             return [
                 [.light]: "🤽🏻",
-                [.medium]: "🤽🏽",
-                [.dark]: "🤽🏿",
                 [.mediumLight]: "🤽🏼",
+                [.medium]: "🤽🏽",
                 [.mediumDark]: "🤽🏾",
+                [.dark]: "🤽🏿",
             ]
         case .manPlayingWaterPolo:
             return [
                 [.light]: "🤽🏻‍♂️",
+                [.mediumLight]: "🤽🏼‍♂️",
                 [.medium]: "🤽🏽‍♂️",
                 [.mediumDark]: "🤽🏾‍♂️",
-                [.mediumLight]: "🤽🏼‍♂️",
                 [.dark]: "🤽🏿‍♂️",
             ]
         case .womanPlayingWaterPolo:
             return [
+                [.light]: "🤽🏻‍♀️",
+                [.mediumLight]: "🤽🏼‍♀️",
+                [.medium]: "🤽🏽‍♀️",
                 [.mediumDark]: "🤽🏾‍♀️",
                 [.dark]: "🤽🏿‍♀️",
-                [.light]: "🤽🏻‍♀️",
-                [.medium]: "🤽🏽‍♀️",
-                [.mediumLight]: "🤽🏼‍♀️",
             ]
         case .handball:
             return [
-                [.mediumDark]: "🤾🏾",
                 [.light]: "🤾🏻",
                 [.mediumLight]: "🤾🏼",
-                [.dark]: "🤾🏿",
                 [.medium]: "🤾🏽",
+                [.mediumDark]: "🤾🏾",
+                [.dark]: "🤾🏿",
             ]
         case .manPlayingHandball:
             return [
+                [.light]: "🤾🏻‍♂️",
+                [.mediumLight]: "🤾🏼‍♂️",
                 [.medium]: "🤾🏽‍♂️",
                 [.mediumDark]: "🤾🏾‍♂️",
                 [.dark]: "🤾🏿‍♂️",
-                [.light]: "🤾🏻‍♂️",
-                [.mediumLight]: "🤾🏼‍♂️",
             ]
         case .womanPlayingHandball:
             return [
+                [.light]: "🤾🏻‍♀️",
+                [.mediumLight]: "🤾🏼‍♀️",
                 [.medium]: "🤾🏽‍♀️",
                 [.mediumDark]: "🤾🏾‍♀️",
                 [.dark]: "🤾🏿‍♀️",
-                [.mediumLight]: "🤾🏼‍♀️",
-                [.light]: "🤾🏻‍♀️",
             ]
         case .juggling:
             return [
-                [.dark]: "🤹🏿",
+                [.light]: "🤹🏻",
+                [.mediumLight]: "🤹🏼",
                 [.medium]: "🤹🏽",
                 [.mediumDark]: "🤹🏾",
-                [.mediumLight]: "🤹🏼",
-                [.light]: "🤹🏻",
+                [.dark]: "🤹🏿",
             ]
         case .manJuggling:
             return [
-                [.dark]: "🤹🏿‍♂️",
-                [.mediumDark]: "🤹🏾‍♂️",
+                [.light]: "🤹🏻‍♂️",
                 [.mediumLight]: "🤹🏼‍♂️",
                 [.medium]: "🤹🏽‍♂️",
-                [.light]: "🤹🏻‍♂️",
+                [.mediumDark]: "🤹🏾‍♂️",
+                [.dark]: "🤹🏿‍♂️",
             ]
         case .womanJuggling:
             return [
+                [.light]: "🤹🏻‍♀️",
                 [.mediumLight]: "🤹🏼‍♀️",
                 [.medium]: "🤹🏽‍♀️",
                 [.mediumDark]: "🤹🏾‍♀️",
                 [.dark]: "🤹🏿‍♀️",
-                [.light]: "🤹🏻‍♀️",
             ]
         case .personInLotusPosition:
             return [
-                [.mediumDark]: "🧘🏾",
-                [.mediumLight]: "🧘🏼",
                 [.light]: "🧘🏻",
-                [.dark]: "🧘🏿",
+                [.mediumLight]: "🧘🏼",
                 [.medium]: "🧘🏽",
+                [.mediumDark]: "🧘🏾",
+                [.dark]: "🧘🏿",
             ]
         case .manInLotusPosition:
             return [
-                [.medium]: "🧘🏽‍♂️",
-                [.dark]: "🧘🏿‍♂️",
-                [.mediumLight]: "🧘🏼‍♂️",
-                [.mediumDark]: "🧘🏾‍♂️",
                 [.light]: "🧘🏻‍♂️",
+                [.mediumLight]: "🧘🏼‍♂️",
+                [.medium]: "🧘🏽‍♂️",
+                [.mediumDark]: "🧘🏾‍♂️",
+                [.dark]: "🧘🏿‍♂️",
             ]
         case .womanInLotusPosition:
             return [
                 [.light]: "🧘🏻‍♀️",
-                [.medium]: "🧘🏽‍♀️",
                 [.mediumLight]: "🧘🏼‍♀️",
+                [.medium]: "🧘🏽‍♀️",
                 [.mediumDark]: "🧘🏾‍♀️",
                 [.dark]: "🧘🏿‍♀️",
             ]
         case .bath:
             return [
-                [.dark]: "🛀🏿",
+                [.light]: "🛀🏻",
+                [.mediumLight]: "🛀🏼",
                 [.medium]: "🛀🏽",
                 [.mediumDark]: "🛀🏾",
-                [.mediumLight]: "🛀🏼",
-                [.light]: "🛀🏻",
+                [.dark]: "🛀🏿",
             ]
         case .sleepingAccommodation:
             return [
-                [.dark]: "🛌🏿",
+                [.light]: "🛌🏻",
+                [.mediumLight]: "🛌🏼",
                 [.medium]: "🛌🏽",
                 [.mediumDark]: "🛌🏾",
-                [.mediumLight]: "🛌🏼",
-                [.light]: "🛌🏻",
+                [.dark]: "🛌🏿",
             ]
         case .peopleHoldingHands:
             return [
+                [.light]: "🧑🏻‍🤝‍🧑🏻",
                 [.light, .mediumLight]: "🧑🏻‍🤝‍🧑🏼",
-                [.mediumDark, .dark]: "🧑🏾‍🤝‍🧑🏿",
-                [.mediumDark, .medium]: "🧑🏾‍🤝‍🧑🏽",
-                [.light, .mediumDark]: "🧑🏻‍🤝‍🧑🏾",
-                [.dark, .dark]: "🧑🏿‍🤝‍🧑🏿",
-                [.mediumLight, .dark]: "🧑🏼‍🤝‍🧑🏿",
-                [.medium, .dark]: "🧑🏽‍🤝‍🧑🏿",
-                [.mediumLight, .mediumLight]: "🧑🏼‍🤝‍🧑🏼",
-                [.mediumDark, .mediumDark]: "🧑🏾‍🤝‍🧑🏾",
-                [.medium, .medium]: "🧑🏽‍🤝‍🧑🏽",
-                [.light, .light]: "🧑🏻‍🤝‍🧑🏻",
-                [.medium, .light]: "🧑🏽‍🤝‍🧑🏻",
-                [.mediumDark, .light]: "🧑🏾‍🤝‍🧑🏻",
-                [.dark, .mediumDark]: "🧑🏿‍🤝‍🧑🏾",
                 [.light, .medium]: "🧑🏻‍🤝‍🧑🏽",
+                [.light, .mediumDark]: "🧑🏻‍🤝‍🧑🏾",
+                [.light, .dark]: "🧑🏻‍🤝‍🧑🏿",
+                [.mediumLight]: "🧑🏼‍🤝‍🧑🏼",
+                [.mediumLight, .light]: "🧑🏼‍🤝‍🧑🏻",
+                [.mediumLight, .medium]: "🧑🏼‍🤝‍🧑🏽",
                 [.mediumLight, .mediumDark]: "🧑🏼‍🤝‍🧑🏾",
+                [.mediumLight, .dark]: "🧑🏼‍🤝‍🧑🏿",
+                [.medium]: "🧑🏽‍🤝‍🧑🏽",
+                [.medium, .light]: "🧑🏽‍🤝‍🧑🏻",
                 [.medium, .mediumLight]: "🧑🏽‍🤝‍🧑🏼",
                 [.medium, .mediumDark]: "🧑🏽‍🤝‍🧑🏾",
-                [.mediumLight, .light]: "🧑🏼‍🤝‍🧑🏻",
-                [.dark, .medium]: "🧑🏿‍🤝‍🧑🏽",
-                [.dark, .mediumLight]: "🧑🏿‍🤝‍🧑🏼",
-                [.mediumLight, .medium]: "🧑🏼‍🤝‍🧑🏽",
+                [.medium, .dark]: "🧑🏽‍🤝‍🧑🏿",
+                [.mediumDark]: "🧑🏾‍🤝‍🧑🏾",
+                [.mediumDark, .light]: "🧑🏾‍🤝‍🧑🏻",
                 [.mediumDark, .mediumLight]: "🧑🏾‍🤝‍🧑🏼",
+                [.mediumDark, .medium]: "🧑🏾‍🤝‍🧑🏽",
+                [.mediumDark, .dark]: "🧑🏾‍🤝‍🧑🏿",
+                [.dark]: "🧑🏿‍🤝‍🧑🏿",
                 [.dark, .light]: "🧑🏿‍🤝‍🧑🏻",
-                [.light, .dark]: "🧑🏻‍🤝‍🧑🏿",
+                [.dark, .mediumLight]: "🧑🏿‍🤝‍🧑🏼",
+                [.dark, .medium]: "🧑🏿‍🤝‍🧑🏽",
+                [.dark, .mediumDark]: "🧑🏿‍🤝‍🧑🏾",
             ]
         case .twoWomenHoldingHands:
             return [
-                [.mediumLight]: "👭🏼",
-                [.dark, .mediumLight]: "👩🏿‍🤝‍👩🏼",
-                [.mediumDark, .light]: "👩🏾‍🤝‍👩🏻",
-                [.mediumLight, .light]: "👩🏼‍🤝‍👩🏻",
-                [.light, .dark]: "👩🏻‍🤝‍👩🏿",
-                [.mediumDark]: "👭🏾",
-                [.dark, .mediumDark]: "👩🏿‍🤝‍👩🏾",
-                [.mediumDark, .mediumLight]: "👩🏾‍🤝‍👩🏼",
-                [.medium]: "👭🏽",
-                [.light, .mediumDark]: "👩🏻‍🤝‍👩🏾",
-                [.mediumLight, .mediumDark]: "👩🏼‍🤝‍👩🏾",
-                [.dark]: "👭🏿",
-                [.mediumDark, .medium]: "👩🏾‍🤝‍👩🏽",
-                [.dark, .light]: "👩🏿‍🤝‍👩🏻",
-                [.light, .medium]: "👩🏻‍🤝‍👩🏽",
-                [.medium, .dark]: "👩🏽‍🤝‍👩🏿",
                 [.light]: "👭🏻",
-                [.dark, .medium]: "👩🏿‍🤝‍👩🏽",
                 [.light, .mediumLight]: "👩🏻‍🤝‍👩🏼",
-                [.medium, .mediumLight]: "👩🏽‍🤝‍👩🏼",
+                [.light, .medium]: "👩🏻‍🤝‍👩🏽",
+                [.light, .mediumDark]: "👩🏻‍🤝‍👩🏾",
+                [.light, .dark]: "👩🏻‍🤝‍👩🏿",
+                [.mediumLight]: "👭🏼",
+                [.mediumLight, .light]: "👩🏼‍🤝‍👩🏻",
                 [.mediumLight, .medium]: "👩🏼‍🤝‍👩🏽",
-                [.medium, .mediumDark]: "👩🏽‍🤝‍👩🏾",
-                [.mediumDark, .dark]: "👩🏾‍🤝‍👩🏿",
+                [.mediumLight, .mediumDark]: "👩🏼‍🤝‍👩🏾",
                 [.mediumLight, .dark]: "👩🏼‍🤝‍👩🏿",
+                [.medium]: "👭🏽",
                 [.medium, .light]: "👩🏽‍🤝‍👩🏻",
+                [.medium, .mediumLight]: "👩🏽‍🤝‍👩🏼",
+                [.medium, .mediumDark]: "👩🏽‍🤝‍👩🏾",
+                [.medium, .dark]: "👩🏽‍🤝‍👩🏿",
+                [.mediumDark]: "👭🏾",
+                [.mediumDark, .light]: "👩🏾‍🤝‍👩🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍🤝‍👩🏼",
+                [.mediumDark, .medium]: "👩🏾‍🤝‍👩🏽",
+                [.mediumDark, .dark]: "👩🏾‍🤝‍👩🏿",
+                [.dark]: "👭🏿",
+                [.dark, .light]: "👩🏿‍🤝‍👩🏻",
+                [.dark, .mediumLight]: "👩🏿‍🤝‍👩🏼",
+                [.dark, .medium]: "👩🏿‍🤝‍👩🏽",
+                [.dark, .mediumDark]: "👩🏿‍🤝‍👩🏾",
             ]
-        case .couple:
+        case .womanAndManHoldingHands:
             return [
-                [.mediumLight]: "👫🏼",
-                [.dark, .mediumLight]: "👩🏿‍🤝‍👨🏼",
-                [.mediumDark, .light]: "👩🏾‍🤝‍👨🏻",
-                [.mediumLight, .light]: "👩🏼‍🤝‍👨🏻",
-                [.mediumDark]: "👫🏾",
-                [.light, .dark]: "👩🏻‍🤝‍👨🏿",
-                [.dark, .mediumDark]: "👩🏿‍🤝‍👨🏾",
-                [.mediumDark, .mediumLight]: "👩🏾‍🤝‍👨🏼",
-                [.medium]: "👫🏽",
-                [.mediumLight, .mediumDark]: "👩🏼‍🤝‍👨🏾",
-                [.dark]: "👫🏿",
-                [.light, .mediumDark]: "👩🏻‍🤝‍👨🏾",
-                [.mediumDark, .medium]: "👩🏾‍🤝‍👨🏽",
-                [.dark, .light]: "👩🏿‍🤝‍👨🏻",
-                [.light, .medium]: "👩🏻‍🤝‍👨🏽",
-                [.medium, .dark]: "👩🏽‍🤝‍👨🏿",
                 [.light]: "👫🏻",
-                [.dark, .medium]: "👩🏿‍🤝‍👨🏽",
                 [.light, .mediumLight]: "👩🏻‍🤝‍👨🏼",
+                [.light, .medium]: "👩🏻‍🤝‍👨🏽",
+                [.light, .mediumDark]: "👩🏻‍🤝‍👨🏾",
+                [.light, .dark]: "👩🏻‍🤝‍👨🏿",
+                [.mediumLight]: "👫🏼",
+                [.mediumLight, .light]: "👩🏼‍🤝‍👨🏻",
                 [.mediumLight, .medium]: "👩🏼‍🤝‍👨🏽",
+                [.mediumLight, .mediumDark]: "👩🏼‍🤝‍👨🏾",
+                [.mediumLight, .dark]: "👩🏼‍🤝‍👨🏿",
+                [.medium]: "👫🏽",
+                [.medium, .light]: "👩🏽‍🤝‍👨🏻",
                 [.medium, .mediumLight]: "👩🏽‍🤝‍👨🏼",
                 [.medium, .mediumDark]: "👩🏽‍🤝‍👨🏾",
+                [.medium, .dark]: "👩🏽‍🤝‍👨🏿",
+                [.mediumDark]: "👫🏾",
+                [.mediumDark, .light]: "👩🏾‍🤝‍👨🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍🤝‍👨🏼",
+                [.mediumDark, .medium]: "👩🏾‍🤝‍👨🏽",
                 [.mediumDark, .dark]: "👩🏾‍🤝‍👨🏿",
-                [.mediumLight, .dark]: "👩🏼‍🤝‍👨🏿",
-                [.medium, .light]: "👩🏽‍🤝‍👨🏻",
+                [.dark]: "👫🏿",
+                [.dark, .light]: "👩🏿‍🤝‍👨🏻",
+                [.dark, .mediumLight]: "👩🏿‍🤝‍👨🏼",
+                [.dark, .medium]: "👩🏿‍🤝‍👨🏽",
+                [.dark, .mediumDark]: "👩🏿‍🤝‍👨🏾",
             ]
         case .twoMenHoldingHands:
             return [
-                [.mediumLight]: "👬🏼",
-                [.dark, .mediumLight]: "👨🏿‍🤝‍👨🏼",
-                [.mediumDark, .light]: "👨🏾‍🤝‍👨🏻",
-                [.mediumLight, .light]: "👨🏼‍🤝‍👨🏻",
-                [.light, .dark]: "👨🏻‍🤝‍👨🏿",
-                [.mediumDark]: "👬🏾",
-                [.dark, .mediumDark]: "👨🏿‍🤝‍👨🏾",
-                [.mediumDark, .mediumLight]: "👨🏾‍🤝‍👨🏼",
-                [.medium]: "👬🏽",
-                [.light, .mediumDark]: "👨🏻‍🤝‍👨🏾",
-                [.dark]: "👬🏿",
-                [.mediumLight, .mediumDark]: "👨🏼‍🤝‍👨🏾",
-                [.mediumDark, .medium]: "👨🏾‍🤝‍👨🏽",
-                [.dark, .light]: "👨🏿‍🤝‍👨🏻",
-                [.light, .medium]: "👨🏻‍🤝‍👨🏽",
-                [.medium, .dark]: "👨🏽‍🤝‍👨🏿",
                 [.light]: "👬🏻",
-                [.dark, .medium]: "👨🏿‍🤝‍👨🏽",
                 [.light, .mediumLight]: "👨🏻‍🤝‍👨🏼",
+                [.light, .medium]: "👨🏻‍🤝‍👨🏽",
+                [.light, .mediumDark]: "👨🏻‍🤝‍👨🏾",
+                [.light, .dark]: "👨🏻‍🤝‍👨🏿",
+                [.mediumLight]: "👬🏼",
+                [.mediumLight, .light]: "👨🏼‍🤝‍👨🏻",
                 [.mediumLight, .medium]: "👨🏼‍🤝‍👨🏽",
+                [.mediumLight, .mediumDark]: "👨🏼‍🤝‍👨🏾",
+                [.mediumLight, .dark]: "👨🏼‍🤝‍👨🏿",
+                [.medium]: "👬🏽",
+                [.medium, .light]: "👨🏽‍🤝‍👨🏻",
                 [.medium, .mediumLight]: "👨🏽‍🤝‍👨🏼",
                 [.medium, .mediumDark]: "👨🏽‍🤝‍👨🏾",
+                [.medium, .dark]: "👨🏽‍🤝‍👨🏿",
+                [.mediumDark]: "👬🏾",
+                [.mediumDark, .light]: "👨🏾‍🤝‍👨🏻",
+                [.mediumDark, .mediumLight]: "👨🏾‍🤝‍👨🏼",
+                [.mediumDark, .medium]: "👨🏾‍🤝‍👨🏽",
                 [.mediumDark, .dark]: "👨🏾‍🤝‍👨🏿",
-                [.mediumLight, .dark]: "👨🏼‍🤝‍👨🏿",
-                [.medium, .light]: "👨🏽‍🤝‍👨🏻",
+                [.dark]: "👬🏿",
+                [.dark, .light]: "👨🏿‍🤝‍👨🏻",
+                [.dark, .mediumLight]: "👨🏿‍🤝‍👨🏼",
+                [.dark, .medium]: "👨🏿‍🤝‍👨🏽",
+                [.dark, .mediumDark]: "👨🏿‍🤝‍👨🏾",
             ]
         default: return nil
         }
