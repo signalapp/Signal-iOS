@@ -59,7 +59,6 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         case .began:
             interactionInProgress = true
             interactiveDismissDelegate?.interactiveDismissDidBegin(self)
-            //viewController?.dismiss(animated: true);
 
         case .changed:
             let velocity = abs(gestureRecognizer.velocity(in: coordinateSpace).y)
@@ -86,11 +85,12 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         case .ended:
             if shouldCompleteTransition {
                 finish()
+                interactiveDismissDelegate?.interactiveDismissDidFinish(self)
             } else {
                 cancel()
+                interactiveDismissDelegate?.interactiveDismissDidCancel(self)
             }
 
-            interactiveDismissDelegate?.interactiveDismissDidFinish(self)
 
             interactionInProgress = false
             farEnoughToCompleteTransition = false
