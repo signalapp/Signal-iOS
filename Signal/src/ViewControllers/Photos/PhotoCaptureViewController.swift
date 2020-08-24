@@ -102,8 +102,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         topBar.autoPinWidthToSuperview()
         topBarOffset = topBar.autoPinEdge(toSuperviewEdge: .top)
         topBar.autoSetDimension(.height, toSize: 44)
-        
-        initialFrame = view.frame
     }
 
     var topBarOffset: NSLayoutConstraint!
@@ -195,6 +193,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
     
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        initialFrame = view.frame
     }
     func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
         guard let frame = initialFrame else {return}
