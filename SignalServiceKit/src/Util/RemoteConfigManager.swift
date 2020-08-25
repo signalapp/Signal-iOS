@@ -131,7 +131,7 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var attachmentUploadV3: Bool {
         if DebugFlags.forceAttachmentUploadV3 { return true }
-        return isEnabled(.attachmentUploadV3_v1)
+        return isEnabled(.attachmentUploadV3v1)
     }
 
     // MARK: -
@@ -233,7 +233,7 @@ private struct Flags {
         case mentions
         case uuidSafetyNumbers
         case modernContactDiscovery
-        case attachmentUploadV3_v1
+        case attachmentUploadV3v1
     }
 
     // Values defined in this array remain set once they are
