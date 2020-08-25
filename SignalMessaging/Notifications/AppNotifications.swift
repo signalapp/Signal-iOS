@@ -24,6 +24,9 @@ public enum AppNotificationCategory: CaseIterable {
     case incomingMessageWithActions
     case incomingMessageWithoutActions
     case incomingMessageFromNoLongerVerifiedIdentity
+    case incomingReactionWithActions
+    case incomingReactionWithoutActions
+    case incomingReactionFromNoLongerVerifiedIdentity
     case infoOrErrorMessage
     case threadlessErrorMessage
     case incomingCall
@@ -61,6 +64,12 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingMessage"
         case .incomingMessageFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
+        case .incomingReactionWithActions:
+            return "Signal.AppNotificationCategory.incomingReactionWithActions"
+        case .incomingReactionWithoutActions:
+            return "Signal.AppNotificationCategory.incomingReactionWithoutActions"
+        case .incomingReactionFromNoLongerVerifiedIdentity:
+            return "Signal.AppNotificationCategory.incomingReactionFromNoLongerVerifiedIdentity"
         case .infoOrErrorMessage:
             return "Signal.AppNotificationCategory.infoOrErrorMessage"
         case .threadlessErrorMessage:
@@ -86,9 +95,12 @@ extension AppNotificationCategory {
             } else {
                 return [.markAsRead, .reply]
             }
-        case .incomingMessageWithoutActions:
-            return []
-        case .incomingMessageFromNoLongerVerifiedIdentity:
+        case .incomingReactionWithActions:
+            return [.markAsRead, .reply]
+        case .incomingMessageWithoutActions,
+             .incomingMessageFromNoLongerVerifiedIdentity,
+             .incomingReactionWithoutActions,
+             .incomingReactionFromNoLongerVerifiedIdentity:
             return []
         case .infoOrErrorMessage:
             return []
@@ -548,11 +560,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let category: AppNotificationCategory
         if didIdentityChange {
-            category = .incomingMessageFromNoLongerVerifiedIdentity
+            category = .incomingReactionFromNoLongerVerifiedIdentity
         } else if !shouldShowActions {
-            category = .incomingMessageWithoutActions
+            category = .incomingReactionWithoutActions
         } else {
-            category = .incomingMessageWithActions
+            category = .incomingReactionWithActions
         }
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
