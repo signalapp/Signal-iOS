@@ -242,11 +242,16 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         return;
     }
 
-    SignedPreKeyRecord *_Nullable currentRecord = [self.signedPreKeyStore loadSignedPreKey:keyId.intValue];
+    __block SignedPreKeyRecord *_Nullable currentRecord;
+    __block NSArray *allSignedPrekeys;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        currentRecord = [self.signedPreKeyStore loadSignedPreKey:keyId.intValue transaction:transaction];
+        allSignedPrekeys = [self.signedPreKeyStore loadSignedPreKeysWithTransaction:transaction];
+    }];
     if (!currentRecord) {
         OWSFailDebug(@"Couldn't find signed prekey for id: %@", keyId);
+        return;
     }
-    NSArray *allSignedPrekeys = [self.signedPreKeyStore loadSignedPreKeys];
     NSArray *oldSignedPrekeys
         = (currentRecord != nil ? [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys]
                                 : allSignedPrekeys);
@@ -258,9 +263,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     
     // Sort the signed prekeys in ascending order of generation time.
     oldSignedPrekeys = [oldSignedPrekeys sortedArrayUsingComparator:^NSComparisonResult(
-                                                                                        SignedPreKeyRecord *_Nonnull left, SignedPreKeyRecord *_Nonnull right) {
-        return [left.generatedAt compare:right.generatedAt];
-    }];
+        SignedPreKeyRecord *left, SignedPreKeyRecord *right) { return [left.generatedAt compare:right.generatedAt]; }];
 
     NSUInteger oldSignedPreKeyCount = oldSignedPrekeys.count;
 
@@ -275,18 +278,18 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
         // Always keep at least 3 keys, accepted or otherwise.
         if (oldSignedPreKeyCount <= 3) {
-            continue;
+            break;
         }
 
         // Never delete signed prekeys until they are N days old.
         if (fabs([signedPrekey.generatedAt timeIntervalSinceNow]) < kSignedPreKeysDeletionTime) {
-            continue;
+            break;
         }
 
         // We try to keep a minimum of 3 "old, accepted" signed prekeys.
         if (signedPrekey.wasAcceptedByService) {
             if (oldAcceptedSignedPreKeyCount <= 3) {
-                continue;
+                break;
             } else {
                 oldAcceptedSignedPreKeyCount--;
             }
@@ -299,7 +302,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         }
 
         oldSignedPreKeyCount--;
-        [self.signedPreKeyStore removeSignedPreKey:signedPrekey.Id];
+
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [self.signedPreKeyStore removeSignedPreKey:signedPrekey.Id transaction:transaction];
+        });
     }
 }
 
@@ -329,6 +335,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                                   }
                                   BOOL shouldRemove = fabs(record.createdAt.timeIntervalSinceNow) > expirationInterval;
                                   if (shouldRemove) {
+                                      OWSLogInfo(@"Removing prekey id: %lu.", (unsigned long)record.Id);
                                       [keysToRemove addObject:key];
                                   }
                               }];

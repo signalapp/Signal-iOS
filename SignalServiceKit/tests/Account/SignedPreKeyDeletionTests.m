@@ -1,23 +1,68 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
 #import "SSKSignedPreKeyStore.h"
 #import "TSPreKeyManager.h"
 #import <AxolotlKit/SignedPrekeyRecord.h>
+#import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@interface  TSPreKeyManager (Testing)
+@interface TSPreKeyManager (Testing)
 
 + (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId;
 
 @end
 
+#pragma mark -
+
 @interface SignedPreKeyDeletionTests : SSKBaseTestObjC
 
 @end
 
+#pragma mark -
+
+@interface SSKSignedPreKeyStore (Tests)
+
+@end
+
+#pragma mark -
+
+@implementation SSKSignedPreKeyStore (Tests)
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
+- (nullable SignedPreKeyRecord *)loadSignedPreKey:(int)signedPreKeyId
+{
+    __block SignedPreKeyRecord *_Nullable result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self loadSignedPreKey:signedPreKeyId transaction:transaction];
+    }];
+    return result;
+}
+
+@end
+
+#pragma mark -
+
 @implementation SignedPreKeyDeletionTests
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)setUp {
     [super setUp];
@@ -34,7 +79,11 @@
 
 - (NSUInteger)signedPreKeyCount
 {
-    return [self.signedPreKeyStore loadSignedPreKeys].count;
+    __block NSUInteger result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.signedPreKeyStore loadSignedPreKeysWithTransaction:transaction].count;
+    }];
+    return result;
 }
 
 - (void)testSignedPreKeyDeletion {
@@ -51,7 +100,9 @@
                                                                     keyPair:[Curve25519 generateKeyPair]
                                                                   signature:[NSData new]
                                                                 generatedAt:generatedAt];
-        [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record];
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
+        });
     }
 
     // Sanity check
@@ -81,7 +132,9 @@
                                                                 generatedAt:generatedAt];
         // we only retain accepted keys
         [record markAsAcceptedByService];
-        [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record];
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
+        });
     }
 
     // Sanity check
@@ -110,7 +163,9 @@
                                                                     keyPair:[Curve25519 generateKeyPair]
                                                                   signature:[NSData new]
                                                                 generatedAt:generatedAt];
-        [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record];
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
+        });
     }
 
     // Sanity check

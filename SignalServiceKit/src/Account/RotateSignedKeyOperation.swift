@@ -7,6 +7,9 @@ import PromiseKit
 
 @objc(SSKRotateSignedPreKeyOperation)
 public class RotateSignedPreKeyOperation: OWSOperation {
+
+    // MARK: - Dependencies
+
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
@@ -19,6 +22,12 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         return SSKEnvironment.shared.signedPreKeyStore
     }
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     public override func run() {
         Logger.debug("")
 
@@ -30,12 +39,20 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
 
         firstly(on: .global()) { () -> Promise<Void> in
-            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.databaseStorage.write { transaction in
+                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                         signedPreKeyRecord: signedPreKeyRecord,
+                                                         transaction: transaction)
+            }
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord)
         }.done(on: .global()) { () in
             Logger.info("Successfully uploaded signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
-            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.databaseStorage.write { transaction in
+                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                         signedPreKeyRecord: signedPreKeyRecord,
+                                                         transaction: transaction)
+            }
             self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             TSPreKeyManager.clearPreKeyUpdateFailureCount()

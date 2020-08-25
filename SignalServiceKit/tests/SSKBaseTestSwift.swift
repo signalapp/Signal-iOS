@@ -21,7 +21,7 @@ public class SSKBaseTestSwift: XCTestCase {
     public override func setUp() {
         super.setUp()
 
-        DDLog.add(DDTTYLogger.sharedInstance)
+        DDLog.add(DDTTYLogger.sharedInstance!)
 
         ClearCurrentAppContextForTests()
         SetCurrentAppContext(TestAppContext())

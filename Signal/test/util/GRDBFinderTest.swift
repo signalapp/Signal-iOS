@@ -201,10 +201,13 @@ class GRDBFinderTest: SignalBaseTest {
         }
 
         self.write { transaction in
-            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
-            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
-            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
-            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
+            for _ in (0..<4) {
+                finder.addJob(envelopeData: randomData(),
+                              plaintextData: randomData(),
+                              wasReceivedByUD: false,
+                              serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                              transaction: transaction)
+            }
         }
 
         self.read { transaction in

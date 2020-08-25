@@ -120,7 +120,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageReceiver.handleReceivedEnvelopeData(envelopeData)
+        messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp())
 
         waitForExpectations(timeout: 1.0)
     }
@@ -177,7 +177,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
-        messageReceiver.handleReceivedEnvelopeData(envelopeData)
+        messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp())
 
         waitForExpectations(timeout: 1.0)
     }

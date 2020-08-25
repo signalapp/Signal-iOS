@@ -117,48 +117,80 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 }
 
 - (nullable SignedPreKeyRecord *)loadSignedPreKey:(int)signedPreKeyId
+                                  protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
-    __block SignedPreKeyRecord *_Nullable result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.keyStore signedPreKeyRecordForKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
-                                             transaction:transaction];
-    }];
-    return result;
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
+
+    return [self loadSignedPreKey:signedPreKeyId transaction:transaction];
 }
 
-- (NSArray *)loadSignedPreKeys
+- (nullable SignedPreKeyRecord *)loadSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction
 {
-    __block NSArray *signedPreKeyRecords;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        signedPreKeyRecords = [self.keyStore allValuesWithTransaction:transaction];
-    }];
-    return signedPreKeyRecords;
+    return [self.keyStore signedPreKeyRecordForKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
+                                       transaction:transaction];
 }
 
-- (void)storeSignedPreKey:(int)signedPreKeyId signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
+- (NSArray<SignedPreKeyRecord *> *)loadSignedPreKeysWithProtocolContext:
+    (nullable id<SPKProtocolReadContext>)protocolContext
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.keyStore setSignedPreKeyRecord:signedPreKeyRecord
-                                      forKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
-                                 transaction:transaction];
-    });
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
+
+    return [self loadSignedPreKeysWithTransaction:transaction];
 }
 
-- (BOOL)containsSignedPreKey:(int)signedPreKeyId
+- (NSArray<SignedPreKeyRecord *> *)loadSignedPreKeysWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    __block SignedPreKeyRecord *signedPreKeyRecord;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        signedPreKeyRecord = [self.keyStore signedPreKeyRecordForKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
-                                                         transaction:transaction];
-    }];
-    return (signedPreKeyRecord != nil);
+    return [self.keyStore allValuesWithTransaction:transaction];
 }
 
-- (void)removeSignedPreKey:(int)signedPrekeyId
+- (void)storeSignedPreKey:(int)signedPreKeyId
+       signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
+          protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:signedPrekeyId] transaction:transaction];
-    });
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
+
+    [self storeSignedPreKey:signedPreKeyId signedPreKeyRecord:signedPreKeyRecord transaction:transaction];
+}
+
+- (void)storeSignedPreKey:(int)signedPreKeyId
+       signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
+              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.keyStore setSignedPreKeyRecord:signedPreKeyRecord
+                                  forKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
+                             transaction:transaction];
+}
+
+- (BOOL)containsSignedPreKey:(int)signedPreKeyId protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
+{
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
+
+    return [self containsSignedPreKey:signedPreKeyId transaction:transaction];
+}
+
+- (BOOL)containsSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyStore signedPreKeyRecordForKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
+                                       transaction:transaction];
+}
+
+- (void)removeSignedPreKey:(int)signedPrekeyId protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
+{
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
+
+    [self removeSignedPreKey:signedPrekeyId transaction:transaction];
+}
+
+- (void)removeSignedPreKey:(int)signedPrekeyId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Removing signed prekey id: %lu.", (unsigned long)signedPrekeyId);
+
+    [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:signedPrekeyId] transaction:transaction];
 }
 
 - (nullable NSNumber *)currentSignedPrekeyId
@@ -172,6 +204,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 - (void)setCurrentSignedPrekeyId:(int)value
 {
+    OWSLogInfo(@"%lu.", (unsigned long)value);
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.metadataStore setObject:@(value) key:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
     });

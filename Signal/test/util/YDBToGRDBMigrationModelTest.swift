@@ -190,8 +190,12 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapWrite { transaction in
             // SSKMessageDecryptJobRecord
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData1, transaction: transaction.asAnyWrite)
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData2, transaction: transaction.asAnyWrite)
+            messageDecryptJobQueue.add(envelopeData: messageDecryptData1,
+                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                       transaction: transaction.asAnyWrite)
+            messageDecryptJobQueue.add(envelopeData: messageDecryptData2,
+                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                       transaction: transaction.asAnyWrite)
             // OWSSessionResetJobRecord
             sessionResetJobQueue.add(contactThread: contactThread1, transaction: transaction.asAnyWrite)
             sessionResetJobQueue.add(contactThread: contactThread2, transaction: transaction.asAnyWrite)
@@ -205,8 +209,12 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             messageSenderJobQueue.add(message: outgoingMessage2.asPreparer, transaction: transaction.asAnyWrite)
             messageSenderJobQueue.add(message: outgoingMessage3.asPreparer, transaction: transaction.asAnyWrite)
             // OWSMessageDecryptJob
-            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData3, transaction: transaction.asAnyWrite)
-            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData4, transaction: transaction.asAnyWrite)
+            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData3,
+                                            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                            transaction: transaction.asAnyWrite)
+            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData4,
+                                            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                            transaction: transaction.asAnyWrite)
         }
 
         self.yapRead { transaction in
@@ -355,8 +363,12 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
         self.yapWrite { transaction in
             // SSKMessageDecryptJobRecord
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData1, transaction: transaction.asAnyWrite)
-            messageDecryptJobQueue.add(envelopeData: messageDecryptData2, transaction: transaction.asAnyWrite)
+            messageDecryptJobQueue.add(envelopeData: messageDecryptData1,
+                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                       transaction: transaction.asAnyWrite)
+            messageDecryptJobQueue.add(envelopeData: messageDecryptData2,
+                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                       transaction: transaction.asAnyWrite)
             // OWSSessionResetJobRecord
             sessionResetJobQueue.add(contactThread: contactThread1, transaction: transaction.asAnyWrite)
             sessionResetJobQueue.add(contactThread: contactThread2, transaction: transaction.asAnyWrite)
@@ -370,8 +382,12 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             messageSenderJobQueue.add(message: outgoingMessage2.asPreparer, transaction: transaction.asAnyWrite)
             messageSenderJobQueue.add(message: outgoingMessage3.asPreparer, transaction: transaction.asAnyWrite)
             // OWSMessageDecryptJob
-            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData3, transaction: transaction.asAnyWrite)
-            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData4, transaction: transaction.asAnyWrite)
+            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData3,
+                                            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                            transaction: transaction.asAnyWrite)
+            messageDecryptJobFinder2.addJob(forEnvelopeData: messageDecryptData4,
+                                            serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                            transaction: transaction.asAnyWrite)
         }
 
         self.yapRead { transaction in
