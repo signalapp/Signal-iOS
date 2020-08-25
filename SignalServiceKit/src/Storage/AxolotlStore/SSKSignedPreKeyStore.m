@@ -131,18 +131,30 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
                                        transaction:transaction];
 }
 
-- (NSArray<SignedPreKeyRecord *> *)loadSignedPreKeysWithProtocolContext:
-    (nullable id<SPKProtocolReadContext>)protocolContext
+- (NSArray<SignedPreKeyRecord *> *)loadSignedPreKeysWithProtocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
     SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
-
+    
     return [self loadSignedPreKeysWithTransaction:transaction];
 }
 
 - (NSArray<SignedPreKeyRecord *> *)loadSignedPreKeysWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.keyStore allValuesWithTransaction:transaction];
+}
+
+- (NSArray<NSString *> *)availableSignedPreKeyIdsWithProtocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
+{
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
+    
+    return [self availableSignedPreKeyIdsWithTransaction:transaction];
+}
+
+- (NSArray<NSString *> *)availableSignedPreKeyIdsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyStore allKeysWithTransaction:transaction];
 }
 
 - (void)storeSignedPreKey:(int)signedPreKeyId
