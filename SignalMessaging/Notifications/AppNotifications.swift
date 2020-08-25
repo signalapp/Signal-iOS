@@ -24,6 +24,7 @@ public enum AppNotificationCategory: CaseIterable {
     case incomingMessageWithActions
     case incomingMessageWithoutActions
     case incomingMessageFromNoLongerVerifiedIdentity
+    case incomingReactionWithActions
     case infoOrErrorMessage
     case threadlessErrorMessage
     case incomingCall
@@ -61,6 +62,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingMessage"
         case .incomingMessageFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
+        case .incomingReactionWithActions:
+            return "Signal.AppNotificationCategory.incomingReactionWithActions"
         case .infoOrErrorMessage:
             return "Signal.AppNotificationCategory.infoOrErrorMessage"
         case .threadlessErrorMessage:
@@ -86,9 +89,10 @@ extension AppNotificationCategory {
             } else {
                 return [.markAsRead, .reply]
             }
-        case .incomingMessageWithoutActions:
-            return []
-        case .incomingMessageFromNoLongerVerifiedIdentity:
+        case .incomingReactionWithActions:
+            return [.markAsRead, .reply]
+        case .incomingMessageWithoutActions,
+             .incomingMessageFromNoLongerVerifiedIdentity:
             return []
         case .infoOrErrorMessage:
             return []
@@ -552,7 +556,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            category = .incomingMessageWithActions
+            category = .incomingReactionWithActions
         }
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
