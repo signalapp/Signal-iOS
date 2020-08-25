@@ -1276,8 +1276,17 @@ public class GroupManager: NSObject {
         Cryptography.generateRandomBytes(inviteLinkPasswordLengthV2)
     }
 
-    public static func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        try groupsV2.inviteLink(forGroupModelV2: groupModelV2)
+    public static func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
+        try groupsV2.groupInviteLink(forGroupModelV2: groupModelV2)
+    }
+
+    public static func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
+        groupsV2.parseGroupInviteLink(url)
+    }
+
+    @objc
+    public static func isGroupInviteLink(_ url: URL) -> Bool {
+        nil != groupsV2.parseGroupInviteLink(url)
     }
 
     // MARK: - Generic Group Change

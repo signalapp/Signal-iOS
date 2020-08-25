@@ -86,7 +86,7 @@ public class GroupAccess: MTLModel {
         super.init()
     }
 
-    private static func filter(forMembers value: GroupV2Access) -> GroupV2Access {
+    public static func filter(forMembers value: GroupV2Access) -> GroupV2Access {
         switch value {
         case .member, .administrator:
             return value
@@ -96,7 +96,7 @@ public class GroupAccess: MTLModel {
         }
     }
 
-    private static func filter(forAttributes value: GroupV2Access) -> GroupV2Access {
+    public static func filter(forAttributes value: GroupV2Access) -> GroupV2Access {
         switch value {
         case .member, .administrator:
             return value
@@ -106,7 +106,7 @@ public class GroupAccess: MTLModel {
         }
     }
 
-    private static func filter(forAddFromInviteLink value: GroupV2Access) -> GroupV2Access {
+    public static func filter(forAddFromInviteLink value: GroupV2Access) -> GroupV2Access {
         switch value {
         case .unknown:
             // .unknown is valid for groups created before group links were added.

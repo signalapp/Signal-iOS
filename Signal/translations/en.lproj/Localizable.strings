@@ -1558,6 +1558,21 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
 
+/* Indicator for group conversations in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
+
+/* Label for the 'join' button in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+
+/* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Loading…";
+
+/* Message text for the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+
+/* Message for the 'invalid group invite link' alert. */
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Invalid group invite link.";
+
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
 

@@ -377,6 +377,51 @@ public class GroupsV2Protos {
 
     // MARK: -
 
+    public class func parseGroupInviteLinkPreview(_ protoData: Data,
+                                                  groupV2Params: GroupV2Params) throws -> GroupInviteLinkPreview {
+        let joinInfoProto = try GroupsProtoGroupJoinInfo.init(serializedData: protoData)
+        // TODO: What is publicKey for?
+        guard let publicKey = joinInfoProto.publicKey,
+            !publicKey.isEmpty else {
+                throw OWSAssertionError("Missing or invalid publicKey.")
+        }
+        guard let titleData = joinInfoProto.title,
+            !titleData.isEmpty else {
+                throw OWSAssertionError("Missing or invalid titleData.")
+        }
+        guard let title = groupV2Params.decryptGroupName(titleData) else {
+            throw OWSAssertionError("Missing or invalid title.")
+        }
+
+        // TODO: Finalize name.
+        let avatarPath: String? = joinInfoProto.avatar
+        guard joinInfoProto.hasMemberCount,
+            joinInfoProto.hasAddFromInviteLink else {
+            throw OWSAssertionError("Missing or invalid memberCount.")
+        }
+        let memberCount = joinInfoProto.memberCount
+
+        guard let protoAccess = joinInfoProto.addFromInviteLink else {
+            throw OWSAssertionError("Missing or invalid addFromInviteLinkAccess.")
+        }
+        let rawAccess = GroupV2Access.access(forProtoAccess: protoAccess)
+        let addFromInviteLinkAccess = GroupAccess.filter(forAddFromInviteLink: rawAccess)
+        guard addFromInviteLinkAccess != .unknown else {
+            throw OWSAssertionError("Unknown addFromInviteLinkAccess.")
+        }
+        guard joinInfoProto.hasRevision else {
+            throw OWSAssertionError("Missing or invalid revision.")
+        }
+        let revision = joinInfoProto.revision
+        return GroupInviteLinkPreview(title: title,
+                                      avatarPath: avatarPath,
+                                      memberCount: memberCount,
+                                      addFromInviteLinkAccess: addFromInviteLinkAccess,
+                                      revision: revision)
+    }
+
+    // MARK: -
+
     // We do not treat an empty response with no changes as an error.
     public class func parseChangesFromService(groupChangesProto: GroupsProtoGroupChanges,
                                               downloadedAvatars: GroupV2DownloadedAvatars,

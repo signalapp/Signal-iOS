@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
 
 - (void)didTapStickerPack:(StickerPackInfo *)stickerPackInfo NS_SWIFT_NAME(didTapStickerPack(_:));
+- (void)didTapGroupInviteLink:(NSURL *)url NS_SWIFT_NAME(didTapGroupInviteLink(_:));
 
 - (void)didTapMention:(Mention *)mention NS_SWIFT_NAME(didTapMention(_:));
 

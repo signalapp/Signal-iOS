@@ -2556,6 +2556,14 @@ typedef enum : NSUInteger {
     [self showStickerPack:stickerPackInfo];
 }
 
+- (void)didTapGroupInviteLink:(NSURL *)url
+{
+    OWSAssertIsOnMainThread();
+    OWSCAssertDebug([GroupManager isGroupInviteLink:url]);
+
+    [GroupInviteLinksUI openGroupInviteLink:url fromViewController:self];
+}
+
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
 {
     OWSAssertIsOnMainThread();
@@ -2678,6 +2686,10 @@ typedef enum : NSUInteger {
             [packView presentFrom:self animated:YES];
             return;
         }
+    }
+
+    if ([GroupManager isGroupInviteLink:url]) {
+        [self didTapGroupInviteLink:url];
     }
 
     [UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];

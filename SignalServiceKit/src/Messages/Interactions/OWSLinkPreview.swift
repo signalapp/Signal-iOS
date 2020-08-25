@@ -289,6 +289,8 @@ public class OWSLinkPreviewManager: NSObject {
 
         if StickerPackInfo.isStickerPackShare(url) {
             return fetchLinkPreview(forStickerPackUrl: url)
+        } else if GroupManager.isGroupInviteLink(url) {
+            return fetchLinkPreview(forGroupInviteLink: url)
         } else {
             return fetchLinkPreview(forGenericUrl: url)
         }
@@ -297,6 +299,19 @@ public class OWSLinkPreviewManager: NSObject {
     // MARK: - Private
 
     private func fetchLinkPreview(forStickerPackUrl url: URL) -> Promise<OWSLinkPreviewDraft> {
+        firstly(on: Self.workQueue) {
+            self.linkPreviewDraft(forStickerShare: url)
+
+        }.map(on: Self.workQueue) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
+            guard linkPreviewDraft.isValid() else {
+                throw LinkPreviewError.noPreview
+            }
+            return linkPreviewDraft
+        }
+    }
+
+    private func fetchLinkPreview(forGroupInviteLink url: URL) -> Promise<OWSLinkPreviewDraft> {
+        // TODO:
         firstly(on: Self.workQueue) {
             self.linkPreviewDraft(forStickerShare: url)
 
@@ -569,6 +584,9 @@ fileprivate extension OWSLinkPreviewManager {
         }
         if StickerPackInfo.isStickerPackShare(url) {
             return stickerPackShareDomain(forUrl: url)
+        }
+        if GroupManager.isGroupInviteLink(url) {
+            return "signal.org"
         }
         return url.host
     }

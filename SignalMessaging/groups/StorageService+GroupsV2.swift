@@ -80,6 +80,20 @@ public extension StorageService {
                                        authCredential: authCredential)
     }
 
+    static func buildFetchGroupInviteLinkPreviewRequest(inviteLinkPassword: Data,
+                                                        groupV2Params: GroupV2Params,
+                                                        sessionManager: AFHTTPSessionManager,
+                                                        authCredential: AuthCredential) throws -> NSURLRequest {
+
+        let urlPath = "/v1/groups/join/\(inviteLinkPassword.asBase64Url)"
+        return try buildGroupV2Request(protoData: nil,
+                                       urlPath: urlPath,
+                                       httpMethod: "GET",
+                                       groupV2Params: groupV2Params,
+                                       sessionManager: sessionManager,
+                                       authCredential: authCredential)
+    }
+
     private static func buildGroupV2Request(protoData: Data?,
                                             urlPath: String,
                                             httpMethod: String,

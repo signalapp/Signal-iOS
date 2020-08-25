@@ -38,7 +38,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         qrCodeViewWrapper.isLayoutMarginsRelativeArrangement = true
 
         do {
-            let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
             try qrCodeView.setQR(url: inviteLinkUrl)
         } catch {
             owsFailDebug("error \(error)")
@@ -53,7 +53,6 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byWordWrapping
 
-        // Primary button
         let shareCodeButton = OWSFlatButton.button(title: NSLocalizedString("GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
                                                                             comment: "Label for the 'share code' button in the 'group link QR code' view."),
                                                    font: UIFont.ows_dynamicTypeBody.ows_semibold(),
@@ -85,7 +84,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
     @objc
     func didTapShareCode(_ sender: UIButton) {
         do {
-            let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
             let qrCodeImage = try QRCodeView.buildQRImage(url: inviteLinkUrl, forExport: true)
             AttachmentSharing.showShareUI(for: qrCodeImage)
         } catch {

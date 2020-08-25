@@ -78,8 +78,6 @@ public protocol GroupsV2: AnyObject {
     func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction)
 
     func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
-
-    func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL
 }
 
 // MARK: -
@@ -119,6 +117,16 @@ public protocol GroupsV2Swift: GroupsV2 {
                                       groupSecretParamsData: Data) throws -> Promise<TSGroupThread>
 
     func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) -> Promise<String>
+
+    func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL
+
+    func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo?
+
+    func fetchGroupInviteLinkPreview(inviteLinkPassword: Data,
+                                     groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview>
+
+    func fetchGroupInviteLinkAvatar(avatarUrlPath: String,
+                                    groupSecretParamsData: Data) -> Promise<Data>
 }
 
 // MARK: -
@@ -301,6 +309,40 @@ public class GroupV2ContextInfo: NSObject {
         self.masterKeyData = masterKeyData
         self.groupSecretParamsData = groupSecretParamsData
         self.groupId = groupId
+    }
+}
+
+// MARK: -
+
+public struct GroupInviteLinkInfo {
+    public let masterKey: Data
+    public let inviteLinkPassword: Data
+
+    public init(masterKey: Data, inviteLinkPassword: Data) {
+        self.masterKey = masterKey
+        self.inviteLinkPassword = inviteLinkPassword
+    }
+}
+
+// MARK: -
+
+public struct GroupInviteLinkPreview {
+    public let title: String
+    public let avatarPath: String?
+    public let memberCount: UInt32
+    public let addFromInviteLinkAccess: GroupV2Access
+    public let revision: UInt32
+
+    public init(title: String,
+                avatarPath: String?,
+                memberCount: UInt32,
+                addFromInviteLinkAccess: GroupV2Access,
+                revision: UInt32) {
+        self.title = title
+        self.avatarPath = avatarPath
+        self.memberCount = memberCount
+        self.addFromInviteLinkAccess = addFromInviteLinkAccess
+        self.revision = revision
     }
 }
 
@@ -504,7 +546,21 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         owsFail("Not implemented.")
     }
 
-    public func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
+    public func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
+        owsFail("Not implemented.")
+    }
+
+    public func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
+        owsFail("Not implemented.")
+    }
+
+    public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data,
+                                            groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview> {
+        owsFail("Not implemented.")
+    }
+
+    public func fetchGroupInviteLinkAvatar(avatarUrlPath: String,
+                                           groupSecretParamsData: Data) -> Promise<Data> {
         owsFail("Not implemented.")
     }
 }

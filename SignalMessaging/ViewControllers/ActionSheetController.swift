@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class ActionSheetController: OWSViewController {
+open class ActionSheetController: OWSViewController {
 
     private let contentView = UIView()
     private let stackView = UIStackView()
