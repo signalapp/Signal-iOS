@@ -416,17 +416,20 @@ extension GroupUpdateCopy {
         var membershipCounts = MembershipCounts()
 
         let allUsersUnsorted = oldGroupMembership.allUsers.union(newGroupMembership.allUsers)
-        let allUsersSorted = allUsersUnsorted.sorted { (left, right) -> Bool in
-            // If local user had a membership update, ensure it appears first.
-            if left == localAddress {
-                return true
-            } else if right == localAddress {
-                return false
-            } else {
-                // Use an arbitrary sort to ensure the output is deterministic.
-                return left.stringForDisplay > right.stringForDisplay
-            }
+        var allUsersSorted = allUsersUnsorted.sorted { (left, right) -> Bool in
+            // Use an arbitrary sort to ensure the output is deterministic.
+            return left.stringForDisplay > right.stringForDisplay
         }
+        // If local user had a membership update, ensure it appears _first_.
+        if allUsersSorted.contains(localAddress) {
+            allUsersSorted = [localAddress] + allUsersSorted.filter { $0 != localAddress}
+        }
+        // If the updater has changed their membership status, ensure it appears _last_.
+        // This trumps the re-ordering of the local user above.
+        if let groupUpdateSourceAddress = groupUpdateSourceAddress {
+            allUsersSorted = allUsersSorted.filter { $0 != groupUpdateSourceAddress} + [groupUpdateSourceAddress]
+        }
+
         for address in allUsersSorted {
             let oldMembershipStatus = membershipStatus(of: address, in: oldGroupMembership)
             let newMembershipStatus = membershipStatus(of: address, in: newGroupMembership)
