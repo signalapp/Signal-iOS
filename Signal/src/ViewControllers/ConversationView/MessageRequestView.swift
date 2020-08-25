@@ -93,10 +93,9 @@ class MessageRequestView: UIStackView {
             databaseStorage.uiRead { transaction in
         hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
             }
-        // If phone number privacy feature is not enabled, we expect this
-        // flow to never be hit when hasSentMessages would be false unless
-        // the thread has been blocked.
-        assert(!hasSentMessages || isThreadBlocked || FeatureFlags.phoneNumberPrivacy)
+        // We expect this flow to never be hit when hasSentMessages
+        // would be false unless the thread has been blocked.
+        assert(!hasSentMessages || isThreadBlocked)
 
             addArrangedSubview(prepareMessageRequestPrompt(hasSentMessages: hasSentMessages,
         isThreadBlocked: isThreadBlocked))

@@ -1313,8 +1313,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             }
         }
 
-        [groupBuilder setMembersE164:membersE164];
-        [groupBuilder setMembers:members];
+        if (!SSKFeatureFlags.phoneNumberSharing) {
+            [groupBuilder setMembersE164:membersE164];
+            [groupBuilder setMembers:members];
+        } else {
+            OWSFailDebug(@"Groups v1 must be discontinued before we roll out phone number sharing settings");
+        }
 
         [groupBuilder setName:groupModel.groupName];
     }
@@ -1400,8 +1404,15 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp];
 
-    quoteBuilder.authorE164 = quotedMessage.authorAddress.phoneNumber;
-    quoteBuilder.authorUuid = quotedMessage.authorAddress.uuidString;
+    if (quotedMessage.authorAddress.phoneNumber && !SSKFeatureFlags.phoneNumberSharing) {
+        quoteBuilder.authorE164 = quotedMessage.authorAddress.phoneNumber;
+    }
+
+    if (quotedMessage.authorAddress.uuidString) {
+        quoteBuilder.authorUuid = quotedMessage.authorAddress.uuidString;
+    } else {
+        OWSAssertDebug(!SSKFeatureFlags.phoneNumberSharing);
+    }
 
     BOOL hasQuotedText = NO;
     BOOL hasQuotedAttachment = NO;

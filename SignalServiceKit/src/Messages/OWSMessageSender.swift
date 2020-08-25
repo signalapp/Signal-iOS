@@ -497,14 +497,14 @@ public class MessageSendInfo: NSObject {
     public let recipients: [SignalServiceAddress]
 
     @objc
-    public let senderCertificate: SMKSenderCertificate
+    public let senderCertificates: SenderCertificates
 
     required init(thread: TSThread,
                   recipients: [SignalServiceAddress],
-                  senderCertificate: SMKSenderCertificate) {
+                  senderCertificates: SenderCertificates) {
         self.thread = thread
         self.recipients = recipients
-        self.senderCertificate = senderCertificate
+        self.senderCertificates = senderCertificates
     }
 }
 
@@ -527,23 +527,25 @@ extension MessageSending {
     }
 
     private static func prepareSend(of message: TSOutgoingMessage) -> Promise<MessageSendInfo> {
-        firstly(on: .global()) { () -> Promise<SMKSenderCertificate> in
-            let (promise, resolver) = Promise<SMKSenderCertificate>.pending()
-            self.udManager.ensureSenderCertificate(certificateExpirationPolicy: .permissive,
-                                                   success: { senderCertificate in
-                                                    resolver.fulfill(senderCertificate)
+        firstly(on: .global()) { () -> Promise<SenderCertificates> in
+            let (promise, resolver) = Promise<SenderCertificates>.pending()
+            self.udManager.ensureSenderCertificates(
+                certificateExpirationPolicy: .permissive,
+                success: { senderCertificates in
+                    resolver.fulfill(senderCertificates)
             },
-                                                   failure: { error in
-                                                    resolver.reject(error)
-            })
+                failure: { error in
+                    resolver.reject(error)
+            }
+            )
             return promise
-        }.then(on: .global()) { senderCertificate in
-            self.prepareRecipients(of: message, senderCertificate: senderCertificate)
+        }.then(on: .global()) { senderCertificates in
+            self.prepareRecipients(of: message, senderCertificates: senderCertificates)
         }
     }
 
     private static func prepareRecipients(of message: TSOutgoingMessage,
-                                          senderCertificate: SMKSenderCertificate) -> Promise<MessageSendInfo> {
+                                          senderCertificates: SenderCertificates) -> Promise<MessageSendInfo> {
 
         firstly(on: .global()) { () -> MessageSendInfo in
             guard let localAddress = tsAccountManager.localAddress else {
@@ -558,13 +560,13 @@ extension MessageSending {
                 // Sync messages are just sent to the local user.
                 return MessageSendInfo(thread: thread,
                                        recipients: [localAddress],
-                                       senderCertificate: senderCertificate)
+                                       senderCertificates: senderCertificates)
             }
 
             let proposedRecipients = try self.unsentRecipients(of: message, thread: thread)
             return MessageSendInfo(thread: thread,
                                    recipients: proposedRecipients,
-                                   senderCertificate: senderCertificate)
+                                   senderCertificates: senderCertificates)
         }.then(on: .global()) { (sendInfo: MessageSendInfo) -> Promise<MessageSendInfo> in
             // We might need to use CDS to fill in missing UUIDs and/or identify
             // which recipients are unregistered.
@@ -574,7 +576,7 @@ extension MessageSending {
                 // Replace recipients with validRecipients.
                 MessageSendInfo(thread: sendInfo.thread,
                                 recipients: validRecipients,
-                                senderCertificate: sendInfo.senderCertificate)
+                                senderCertificates: sendInfo.senderCertificates)
             }
         }.map(on: .global()) { (sendInfo: MessageSendInfo) -> MessageSendInfo in
             // Mark skipped recipients as such.  We skip because:
