@@ -56,7 +56,9 @@ public class CreatePreKeysOperation: OWSOperation {
         firstly(on: .global()) {
             self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
         }.then(on: .global()) { () -> Promise<Void> in
-            self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
+            self.accountServiceClient.setPreKeys(identityKey: identityKey,
+                                                 signedPreKeyRecord: signedPreKeyRecord,
+                                                 preKeyRecords: preKeyRecords)
         }.done {
             signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in

@@ -315,6 +315,7 @@ public class MessageProcessing: NSObject {
         serialQueue.async {
             self.tryToResolveWebsocketDrainedPromises()
             self.tryToResolveAllMessageFetchingAndProcessingPromises()
+            self.tryToResolveMessageFetchingPromises()
         }
     }
 
@@ -365,6 +366,7 @@ public class MessageProcessing: NSObject {
         serialQueue.async {
             self.tryToResolveSpecificMessageFetchJobPromises()
             self.tryToResolveAllMessageFetchingAndProcessingPromises()
+            self.tryToResolveMessageFetchingPromises()
         }
     }
 

@@ -55,7 +55,7 @@ public class RefreshPreKeysOperation: OWSOperation {
         firstly(on: .global()) { () -> Promise<Void> in
             self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
         }.then(on: .global()) { () -> Promise<Int> in
-            return self.accountServiceClient.getPreKeysCount()
+            self.accountServiceClient.getPreKeysCount()
         }.then(on: .global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.info("preKeysCount: \(preKeysCount)")
             guard preKeysCount < kEphemeralPreKeysMinimumCount || self.signedPreKeyStore.currentSignedPrekeyId() == nil else {
