@@ -393,8 +393,7 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing or invalid title.")
         }
 
-        // TODO: Finalize name.
-        let avatarPath: String? = joinInfoProto.avatar
+        let avatarUrlPath: String? = joinInfoProto.avatar
         guard joinInfoProto.hasMemberCount,
             joinInfoProto.hasAddFromInviteLink else {
             throw OWSAssertionError("Missing or invalid memberCount.")
@@ -414,7 +413,7 @@ public class GroupsV2Protos {
         }
         let revision = joinInfoProto.revision
         return GroupInviteLinkPreview(title: title,
-                                      avatarPath: avatarPath,
+                                      avatarUrlPath: avatarUrlPath,
                                       memberCount: memberCount,
                                       addFromInviteLinkAccess: addFromInviteLinkAccess,
                                       revision: revision)

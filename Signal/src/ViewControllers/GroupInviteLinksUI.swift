@@ -197,11 +197,11 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         }.done { [weak self] (groupInviteLinkPreview: GroupInviteLinkPreview) in
             self?.applyGroupInviteLinkPreview(groupInviteLinkPreview)
 
-            if let avatarPath = groupInviteLinkPreview.avatarPath {
-                self?.loadGroupAvatar(avatarPath: avatarPath)
+            if let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
+                self?.loadGroupAvatar(avatarUrlPath: avatarUrlPath)
             }
         }.catch { error in
-            // TODO: Add retry?
+            // TODO: Retry errors?
             if IsNetworkConnectivityFailure(error) {
                 Logger.warn("Error: \(error)")
             } else {
@@ -210,9 +210,9 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         }
     }
 
-    private func loadGroupAvatar(avatarPath: String) {
+    private func loadGroupAvatar(avatarUrlPath: String) {
         firstly(on: .global()) {
-            self.groupsV2.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarPath,
+            self.groupsV2.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
                                                      groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
         }.done { [weak self] (groupAvatar: Data) in
             self?.applyGroupAvatar(groupAvatar)

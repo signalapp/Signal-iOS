@@ -328,18 +328,18 @@ public struct GroupInviteLinkInfo {
 
 public struct GroupInviteLinkPreview {
     public let title: String
-    public let avatarPath: String?
+    public let avatarUrlPath: String?
     public let memberCount: UInt32
     public let addFromInviteLinkAccess: GroupV2Access
     public let revision: UInt32
 
     public init(title: String,
-                avatarPath: String?,
+                avatarUrlPath: String?,
                 memberCount: UInt32,
                 addFromInviteLinkAccess: GroupV2Access,
                 revision: UInt32) {
         self.title = title
-        self.avatarPath = avatarPath
+        self.avatarUrlPath = avatarUrlPath
         self.memberCount = memberCount
         self.addFromInviteLinkAccess = addFromInviteLinkAccess
         self.revision = revision
