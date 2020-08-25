@@ -37,7 +37,6 @@ class MessageReactionPicker: UIStackView {
             withBackgroundColor: Theme.actionSheetBackgroundColor,
             cornerRadius: pickerDiameter / 2
         )
-//        backgroundView?.clipsToBounds = false
         backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
         backgroundView?.layer.shadowRadius = 4
         backgroundView?.layer.shadowOpacity = 0.05

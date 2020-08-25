@@ -20,6 +20,8 @@ class EmojiSkinTonePicker: UIView {
     ) -> EmojiSkinTonePicker? {
         guard emoji.baseEmoji.hasSkinTones else { return nil }
 
+        ImpactHapticFeedback.impactOccured(style: .light)
+
         let picker = EmojiSkinTonePicker(emoji: emoji, completion: completion)
 
         guard let superview = referenceView.superview else {
@@ -79,17 +81,31 @@ class EmojiSkinTonePicker: UIView {
     func didChangeLongPress(_ sender: UILongPressGestureRecognizer) {
         guard let singleSelectionButtons = singleSelectionButtons else { return }
 
-        let point = sender.location(in: containerView)
-        singleSelectionButtons.forEach { $0.isSelected = $0.frame.contains(point) }
+        if referenceOverlay.frame.contains(sender.location(in: self)) {
+            singleSelectionButtons.forEach { $0.isSelected = false }
+        } else {
+            let point = sender.location(in: containerView)
+            let previouslySelectedButton = singleSelectionButtons.first { $0.isSelected }
+            singleSelectionButtons.forEach { $0.isSelected = $0.frame.insetBy(dx: -3, dy: -80).contains(point) }
+            let selectedButton = singleSelectionButtons.first { $0.isSelected }
+
+            if let selectedButton = selectedButton, selectedButton != previouslySelectedButton {
+                SelectionHapticFeedback().selectionChanged()
+            }
+        }
     }
 
     func didEndLongPress(_ sender: UILongPressGestureRecognizer) {
         guard let singleSelectionButtons = singleSelectionButtons else { return }
 
         let point = sender.location(in: containerView)
-        if let selectedButton = singleSelectionButtons.first(where: { $0.frame.contains(point) }) {
+        if referenceOverlay.frame.contains(sender.location(in: self)) {
+            // Do nothing.
+        } else if let selectedButton = singleSelectionButtons.first(where: {
+            $0.frame.insetBy(dx: -3, dy: -80).contains(point)
+        }) {
             selectedButton.sendActions(for: .touchUpInside)
-        } else if !referenceOverlay.frame.contains(sender.location(in: self)) {
+        } else {
             dismiss()
         }
     }
