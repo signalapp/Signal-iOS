@@ -517,7 +517,7 @@ static NSTimeInterval launchStartedAt;
                 [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
                 // connected, failed or hung up before the app existed should be marked as missed.
-                [[[OWSIncompleteCallsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+//                [[[OWSIncompleteCallsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
             });
         } else {
@@ -526,7 +526,7 @@ static NSTimeInterval launchStartedAt;
             // Unregistered user should have no unread messages. e.g. if you delete your account.
             [AppEnvironment.shared.notificationPresenter clearAllNotifications];
 
-            [self.socketManager requestSocketOpen];
+//            [self.socketManager requestSocketOpen];
 
             UITapGestureRecognizer *gesture =
                 [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
@@ -540,8 +540,8 @@ static NSTimeInterval launchStartedAt;
         // At this point, potentially lengthy DB locking migrations could be running.
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.socketManager requestSocketOpen];
-            [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
+//            [self.socketManager requestSocketOpen];
+//            [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
 
             NSString *userPublicKey = self.tsAccountManager.localNumber;
 
