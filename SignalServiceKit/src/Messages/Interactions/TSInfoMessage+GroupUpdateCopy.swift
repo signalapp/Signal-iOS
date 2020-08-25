@@ -415,8 +415,22 @@ extension GroupUpdateCopy {
     mutating func addMembershipUpdates(oldGroupMembership: GroupMembership) {
         var membershipCounts = MembershipCounts()
 
-        let allUsers = oldGroupMembership.allUsers.union(newGroupMembership.allUsers)
-        for address in allUsers {
+        let allUsersUnsorted = oldGroupMembership.allUsers.union(newGroupMembership.allUsers)
+        var allUsersSorted = allUsersUnsorted.sorted { (left, right) -> Bool in
+            // Use an arbitrary sort to ensure the output is deterministic.
+            return left.stringForDisplay > right.stringForDisplay
+        }
+        // If local user had a membership update, ensure it appears _first_.
+        if allUsersSorted.contains(localAddress) {
+            allUsersSorted = [localAddress] + allUsersSorted.filter { $0 != localAddress}
+        }
+        // If the updater has changed their membership status, ensure it appears _last_.
+        // This trumps the re-ordering of the local user above.
+        if let groupUpdateSourceAddress = groupUpdateSourceAddress {
+            allUsersSorted = allUsersSorted.filter { $0 != groupUpdateSourceAddress} + [groupUpdateSourceAddress]
+        }
+
+        for address in allUsersSorted {
             let oldMembershipStatus = membershipStatus(of: address, in: oldGroupMembership)
             let newMembershipStatus = membershipStatus(of: address, in: newGroupMembership)
 
