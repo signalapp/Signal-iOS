@@ -25,8 +25,6 @@ public enum AppNotificationCategory: CaseIterable {
     case incomingMessageWithoutActions
     case incomingMessageFromNoLongerVerifiedIdentity
     case incomingReactionWithActions
-    case incomingReactionWithoutActions
-    case incomingReactionFromNoLongerVerifiedIdentity
     case infoOrErrorMessage
     case threadlessErrorMessage
     case incomingCall
@@ -66,10 +64,6 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
         case .incomingReactionWithActions:
             return "Signal.AppNotificationCategory.incomingReactionWithActions"
-        case .incomingReactionWithoutActions:
-            return "Signal.AppNotificationCategory.incomingReactionWithoutActions"
-        case .incomingReactionFromNoLongerVerifiedIdentity:
-            return "Signal.AppNotificationCategory.incomingReactionFromNoLongerVerifiedIdentity"
         case .infoOrErrorMessage:
             return "Signal.AppNotificationCategory.infoOrErrorMessage"
         case .threadlessErrorMessage:
@@ -98,9 +92,7 @@ extension AppNotificationCategory {
         case .incomingReactionWithActions:
             return [.markAsRead, .reply]
         case .incomingMessageWithoutActions,
-             .incomingMessageFromNoLongerVerifiedIdentity,
-             .incomingReactionWithoutActions,
-             .incomingReactionFromNoLongerVerifiedIdentity:
+             .incomingMessageFromNoLongerVerifiedIdentity:
             return []
         case .infoOrErrorMessage:
             return []
@@ -560,9 +552,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let category: AppNotificationCategory
         if didIdentityChange {
-            category = .incomingReactionFromNoLongerVerifiedIdentity
+            category = .incomingMessageFromNoLongerVerifiedIdentity
         } else if !shouldShowActions {
-            category = .incomingReactionWithoutActions
+            category = .incomingMessageWithoutActions
         } else {
             category = .incomingReactionWithActions
         }

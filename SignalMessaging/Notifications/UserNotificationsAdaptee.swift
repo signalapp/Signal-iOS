@@ -139,8 +139,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let trigger: UNNotificationTrigger?
         let checkForCancel = (category == .incomingMessageWithActions ||
             category == .incomingMessageWithoutActions ||
-            category == .incomingReactionWithActions ||
-            category == .incomingReactionWithoutActions)
+            category == .incomingReactionWithActions)
         if checkForCancel && hasReceivedSyncMessageRecently {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
@@ -280,13 +279,11 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         case .incomingMessageWithActions,
              .incomingMessageWithoutActions,
              .incomingReactionWithActions,
-             .incomingReactionWithoutActions,
              .infoOrErrorMessage:
             // If the app is in the foreground, show these notifications
             // unless the corresponding conversation is already open.
             break
         case .incomingMessageFromNoLongerVerifiedIdentity,
-             .incomingReactionFromNoLongerVerifiedIdentity,
              .threadlessErrorMessage,
              .incomingCall,
              .missedCallWithActions,
