@@ -30,6 +30,10 @@ public class CreatePreKeysOperation: OWSOperation {
         return SDSDatabaseStorage.shared
     }
 
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     public override func run() {
@@ -49,7 +53,9 @@ public class CreatePreKeysOperation: OWSOperation {
         }
         self.preKeyStore.storePreKeyRecords(preKeyRecords)
 
-        firstly {
+        firstly(on: .global()) {
+            self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
+        }.then(on: .global()) { () -> Promise<Void> in
             self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
         }.done {
             signedPreKeyRecord.markAsAcceptedByService()

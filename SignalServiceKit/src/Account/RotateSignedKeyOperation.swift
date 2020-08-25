@@ -26,6 +26,10 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         return SDSDatabaseStorage.shared
     }
 
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     public override func run() {
@@ -39,6 +43,8 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
 
         firstly(on: .global()) { () -> Promise<Void> in
+            self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
+        }.then(on: .global()) { () -> Promise<Void> in
             self.databaseStorage.write { transaction in
                 self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
                                                          signedPreKeyRecord: signedPreKeyRecord,

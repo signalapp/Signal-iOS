@@ -38,6 +38,10 @@ public class RefreshPreKeysOperation: OWSOperation {
         return SDSDatabaseStorage.shared
     }
 
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: -
 
     public override func run() {
@@ -48,7 +52,9 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
-        firstly(on: .global()) { () -> Promise<Int> in
+        firstly(on: .global()) { () -> Promise<Void> in
+            self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
+        }.then(on: .global()) { () -> Promise<Int> in
             return self.accountServiceClient.getPreKeysCount()
         }.then(on: .global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.info("preKeysCount: \(preKeysCount)")

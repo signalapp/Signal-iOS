@@ -94,9 +94,22 @@ public class MessageProcessing: NSObject {
     //       reflected in this promise yet.
     @objc
     public func flushMessageDecryptionAndProcessingPromise() -> AnyPromise {
-        return AnyPromise(decryptStepPromise().then { _ in
-            return self.processingStepPromise()
+        AnyPromise(firstly {
+            decryptStepPromise()
+        }.then { _ in
+            self.processingStepPromise()
         })
+    }
+
+    // MARK: - Flush message fetching and decryption
+
+    // NOTE: This promise does _NOT_ include message processing.
+    public func flushMessageFetchingAndDecryptionPromise() -> Promise<Void> {
+        firstly {
+            messageFetchingPromise()
+        }.then { _ in
+            self.decryptStepPromise()
+        }
     }
 
     // MARK: - Decrypt Step
@@ -402,6 +415,77 @@ public class MessageProcessing: NSObject {
     }
 
     private var isAllMessageFetchingAndProcessingComplete: Bool {
+        guard isMessageFetchingComplete else {
+            return false
+        }
+
+        let hasPendingDecryptionOrProcess = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
+            guard !self.isDecryptingIncomingMessages(transaction: transaction) else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("isDecryptingIncomingMessages")
+                }
+                return true
+            }
+            guard !self.isProcessingIncomingMessages(transaction: transaction) else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("isProcessingIncomingMessages")
+                }
+                return true
+            }
+            return false
+        }
+        guard !hasPendingDecryptionOrProcess else {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("hasPendingDecryptionOrProcess")
+            }
+            return false
+        }
+        return true
+    }
+
+    // MARK: - Message fetching
+
+    // This should only be accessed on serialQueue.
+    private var messageFetchingResolvers = [Resolver<Void>]()
+
+    @objc
+    public func messageFetchingPromiseObjc() -> AnyPromise {
+        return AnyPromise(messageFetchingPromise())
+    }
+
+    public func messageFetchingPromise() -> Promise<Void> {
+        let (promise, resolver) = Promise<Void>.pending()
+
+        serialQueue.async {
+            self.messageFetchingResolvers.append(resolver)
+
+            self.tryToResolveMessageFetchingPromises()
+        }
+
+        return promise
+    }
+
+    private func tryToResolveMessageFetchingPromises() {
+        assertOnQueue(serialQueue)
+
+        let resolvers = self.messageFetchingResolvers
+        guard !resolvers.isEmpty else {
+            // No pending resolvers to resolve.
+            return
+        }
+        guard isMessageFetchingComplete else {
+            // Not complete.
+            return
+        }
+
+        self.messageFetchingResolvers = []
+
+        for resolver in resolvers {
+            resolver.fulfill(())
+        }
+    }
+
+    private var isMessageFetchingComplete: Bool {
         guard tsAccountManager.isRegisteredAndReady else {
             owsFailDebug("Not registered.")
             return false
@@ -438,29 +522,10 @@ public class MessageProcessing: NSObject {
             return false
         }
 
-        let hasPendingDecryptionOrProcess = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
-            guard !self.isDecryptingIncomingMessages(transaction: transaction) else {
-                if DebugFlags.isMessageProcessingVerbose {
-                    Logger.verbose("isDecryptingIncomingMessages")
-                }
-                return true
-            }
-            guard !self.isProcessingIncomingMessages(transaction: transaction) else {
-                if DebugFlags.isMessageProcessingVerbose {
-                    Logger.verbose("isProcessingIncomingMessages")
-                }
-                return true
-            }
-            return false
-        }
-        guard !hasPendingDecryptionOrProcess else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("hasPendingDecryptionOrProcess")
-            }
-            return false
-        }
         return true
     }
+
+    // MARK: -
 
     @objc
     fileprivate func registrationStateDidChange() {
@@ -468,6 +533,7 @@ public class MessageProcessing: NSObject {
 
         serialQueue.async {
             self.tryToResolveAllMessageFetchingAndProcessingPromises()
+            self.tryToResolveMessageFetchingPromises()
         }
     }
 }
