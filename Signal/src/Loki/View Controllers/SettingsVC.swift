@@ -210,11 +210,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     // MARK: Updating
-    @objc private func handleAppModeSwitchedNotification(_ notification: Notification) {
-        updateNavigationBarButtons()
-        // TODO: Redraw UI
-    }
-
     private func handleIsEditingDisplayNameChanged() {
         updateNavigationBarButtons()
         UIView.animate(withDuration: 0.25) {
