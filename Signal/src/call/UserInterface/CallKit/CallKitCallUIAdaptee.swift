@@ -147,11 +147,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.removeCall(call)
     }
 
-    func reportIncomingCall(_ call: SignalCall, callerName: String) {
+    func reportIncomingCall(_ call: SignalCall, callerName: String, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
         Logger.info("")
-
-        self.showCall(call)
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
@@ -179,10 +177,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
              since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
              */
             guard error == nil else {
+                completion(error)
                 Logger.error("failed to report new incoming call, error: \(error!)")
                 return
             }
 
+            completion(nil)
+
+            self.showCall(call)
             self.callManager.addCall(call)
         }
     }
