@@ -29,8 +29,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return SSKEnvironment.shared.networkManager
     }
 
-    private var sessionManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().storageServiceSessionManager
+    private var urlSession: OWSURLSession {
+        return OWSSignalService.sharedInstance().storageServiceURLSession
     }
 
     private var profileManager: OWSProfileManager {
@@ -199,7 +199,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise<Void>(error: error)
         }
 
-        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+        let requestBuilder: RequestBuilder = { (authCredential) in
             return DispatchQueue.global().async(.promise) { () -> [UUID] in
                 // Gather the UUIDs for all members.
                 // We cannot gather profile key credentials for pending members, by definition.
@@ -219,7 +219,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                        localUuid: localUuid)
                 return try StorageService.buildNewGroupRequest(groupProto: groupProto,
                                                                groupV2Params: groupV2Params,
-                                                               sessionManager: sessionManager,
                                                                authCredential: authCredential)
             }
         }
@@ -273,7 +272,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         var isFirstAttempt = true
-        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+        let requestBuilder: RequestBuilder = { (authCredential) in
             return firstly { () -> Promise<Void> in
                 if isFirstAttempt {
                     isFirstAttempt = false
@@ -296,21 +295,20 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return changeSet.buildGroupChangeProto(currentGroupModel: groupModel,
                                                        currentDisappearingMessageToken: disappearingMessageToken)
             }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> NSURLRequest in
-                return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
-                                                                  groupV2Params: groupV2Params,
-                                                                  sessionManager: sessionManager,
-                                                                  authCredential: authCredential,
-                                                                  groupInviteLinkPassword: nil)
+                try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
+                                                           groupV2Params: groupV2Params,
+                                                           authCredential: authCredential,
+                                                           groupInviteLinkPassword: nil)
             }
         }
 
         return firstly {
-            return self.performServiceRequest(requestBuilder: requestBuilder,
-                                              groupId: groupId,
-                                              behavior403: .fetchGroupUpdates)
-        }.then(on: .global()) { (response: ServiceResponse) -> Promise<UpdatedV2Group> in
+            self.performServiceRequest(requestBuilder: requestBuilder,
+                                       groupId: groupId,
+                                       behavior403: .fetchGroupUpdates)
+        }.then(on: .global()) { (response: OWSHTTPResponse) -> Promise<UpdatedV2Group> in
 
-            guard let changeActionsProtoData = response.responseObject as? Data else {
+            guard let changeActionsProtoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData,
@@ -402,22 +400,21 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise.value("some/invalid/url/path")
         }
 
-        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
-                return try StorageService.buildGroupAvatarUploadFormRequest(groupV2Params: groupV2Params,
-                                                                            sessionManager: sessionManager,
-                                                                            authCredential: authCredential)
+        let requestBuilder: RequestBuilder = { (authCredential) in
+            firstly(on: .global()) { () -> NSURLRequest in
+                try StorageService.buildGroupAvatarUploadFormRequest(groupV2Params: groupV2Params,
+                                                                     authCredential: authCredential)
             }
         }
 
-        return firstly { () -> Promise<ServiceResponse> in
+        return firstly { () -> Promise<OWSHTTPResponse> in
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
                                               behavior403: .fetchGroupUpdates)
-        }.map(on: .global()) { (response: ServiceResponse) -> GroupsProtoAvatarUploadAttributes in
+        }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoAvatarUploadAttributes in
 
-            guard let protoData = response.responseObject as? Data else {
+            guard let protoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoAvatarUploadAttributes(serializedData: protoData)
@@ -462,21 +459,20 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private func fetchCurrentGroupV2Snapshot(groupV2Params: GroupV2Params,
                                              localUuid: UUID,
                                              justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
-        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
-                return try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
-                                                                                  sessionManager: sessionManager,
-                                                                                  authCredential: authCredential)
+        let requestBuilder: RequestBuilder = { (authCredential) in
+            firstly(on: .global()) { () -> NSURLRequest in
+                try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
+                                                                           authCredential: authCredential)
             }
         }
 
-        return firstly { () -> Promise<ServiceResponse> in
+        return firstly { () -> Promise<OWSHTTPResponse> in
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
                                               behavior403: .removeFromGroup)
-        }.map(on: .global()) { (response: ServiceResponse) -> GroupsProtoGroup in
-            guard let groupProtoData = response.responseObject as? Data else {
+        }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoGroup in
+            guard let groupProtoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoGroup(serializedData: groupProtoData)
@@ -523,7 +519,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                          includeCurrentRevision: Bool,
                                          firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
 
-        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+        let requestBuilder: RequestBuilder = { (authCredential) in
             return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
                 let (fromRevision, requireSnapshotForFirstChange) =
                     try self.databaseStorage.read { (transaction) throws -> (UInt32, Bool) in
@@ -548,20 +544,19 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
                                                                               fromRevision: fromRevision,
                                                                               requireSnapshotForFirstChange: requireSnapshotForFirstChange,
-                                                                              sessionManager: sessionManager,
                                                                               authCredential: authCredential)
             }
         }
 
-        return firstly { () -> Promise<ServiceResponse> in
+        return firstly { () -> Promise<OWSHTTPResponse> in
             // We can't remove the local user from the group on 403.
             // For example, user might just be joining the group
             // using an invite OR have just been re-added after leaving.
-            return self.performServiceRequest(requestBuilder: requestBuilder,
-                                              groupId: groupId,
-                                              behavior403: .ignore)
-        }.map(on: .global()) { (response: ServiceResponse) -> GroupsProtoGroupChanges in
-            guard let groupChangesProtoData = response.responseObject as? Data else {
+            self.performServiceRequest(requestBuilder: requestBuilder,
+                                       groupId: groupId,
+                                       behavior403: .ignore)
+        }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoGroupChanges in
+            guard let groupChangesProtoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoGroupChanges(serializedData: groupChangesProtoData)
@@ -746,14 +741,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Perform Request
 
-    private struct ServiceResponse {
-        let task: URLSessionDataTask
-        let response: URLResponse
-        let responseObject: Any?
-    }
-
     private typealias AuthCredentialMap = [UInt32: AuthCredential]
-    private typealias RequestBuilder = (AuthCredential, AFHTTPSessionManager) -> Promise<NSURLRequest>
+    private typealias RequestBuilder = (AuthCredential) throws -> Promise<NSURLRequest>
 
     // Represents how we should respond to 403 status codes.
     private enum Behavior403 {
@@ -766,21 +755,20 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
                                        groupId: Data?,
                                        behavior403: Behavior403,
-                                       remainingRetries: UInt = 3) -> Promise<ServiceResponse> {
+                                       remainingRetries: UInt = 3) -> Promise<OWSHTTPResponse> {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
         }
-        let sessionManager = self.sessionManager
 
         return firstly {
             self.ensureTemporalCredentials(localUuid: localUuid)
         }.then(on: .global()) { (authCredential: AuthCredential) -> Promise<NSURLRequest> in
-            return requestBuilder(authCredential, sessionManager)
-        }.then(on: .global()) { (request: NSURLRequest) -> Promise<ServiceResponse> in
-            let (promise, resolver) = Promise<ServiceResponse>.pending()
+            try requestBuilder(authCredential)
+        }.then(on: .global()) { (request: NSURLRequest) -> Promise<OWSHTTPResponse> in
+            let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
             firstly {
-                self.performServiceRequestAttempt(request: request, sessionManager: sessionManager)
-            }.done(on: .global()) { (response: ServiceResponse) in
+                self.performServiceRequestAttempt(request: request)
+            }.done(on: .global()) { (response: OWSHTTPResponse) in
                 resolver.fulfill(response)
             }.catch(on: .global()) { (error: Error) in
 
@@ -791,7 +779,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                        groupId: groupId,
                                                        behavior403: behavior403,
                                                        remainingRetries: remainingRetries - 1)
-                        }.done(on: .global()) { (response: ServiceResponse) in
+                        }.done(on: .global()) { (response: OWSHTTPResponse) in
                             resolver.fulfill(response)
                         }.catch(on: .global()) { (error: Error) in
                             resolver.reject(error)
@@ -872,76 +860,41 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    private func performServiceRequestAttempt(request: NSURLRequest,
-                                              sessionManager: AFHTTPSessionManager) -> Promise<ServiceResponse> {
+    // TODO: We don't need to pass in urlSession.
+    private func performServiceRequestAttempt(request: NSURLRequest) -> Promise<OWSHTTPResponse> {
+
+        let urlSession = self.urlSession
+        urlSession.failOnError = false
 
         Logger.info("Making group request: \(String(describing: request.httpMethod)) \(request)")
 
-        return Promise { resolver in
-            var blockTask: URLSessionDataTask?
-            let task = sessionManager.dataTask(
-                with: request as URLRequest,
-                uploadProgress: nil,
-                downloadProgress: nil
-            ) { response, responseObject, error in
+        return firstly { () -> Promise<OWSHTTPResponse> in
+            urlSession.dataTaskPromise(request: request)
+        }.map(on: .global()) { (response: OWSHTTPResponse) -> OWSHTTPResponse in
+            guard response.statusCode == 200 else {
+                throw OWSAssertionError("Invalid response: \(response.statusCode)")
+            }
 
-                guard let blockTask = blockTask else {
-                    return resolver.reject(OWSAssertionError("Missing blockTask."))
-                }
+            // NOTE: responseObject may be nil; not all group v2 responses have bodies.
+            Logger.info("Request succeeded: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
 
-                if let error = error {
-                    if error.isNetworkFailureOrTimeout {
-                        Logger.warn("Request error: \(error)")
-                        return resolver.reject(error)
-                    }
+            return response
+        }.recover(on: .global()) { (error: Error) -> Promise<OWSHTTPResponse> in
+            if error.isNetworkFailureOrTimeout {
+                throw error
+            }
 
-                    #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: blockTask)
-                    #endif
-
-                    if let statusCode = error.httpStatusCode {
-                        if [401, 403, 409].contains(statusCode) {
-                            // These status codes will be handled by performServiceRequest.
-                            Logger.warn("Request error: \(error)")
-                            #if TESTABLE_BUILD
-                            TSNetworkManager.logCurl(for: blockTask)
-                            #endif
-                            return resolver.reject(error)
-                        }
-                    }
-
-                    Logger.warn("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
-                    owsFailDebug("Request error: \(error)")
-                    #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: blockTask)
-                    #endif
-                    return resolver.reject(error)
-                }
-
-                guard let response = response as? HTTPURLResponse else {
-                    Logger.warn("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
-                    owsFailDebug("Request missing response.")
-                    #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: blockTask)
-                    #endif
-                    return resolver.reject(OWSAssertionError("Unexpected response type."))
-                }
-
-                switch response.statusCode {
-                case 200:
-                    Logger.info("Request succeeded: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
-                    // NOTE: responseObject may be nil; not all group v2 responses have bodies.
-                    let serviceResponse = ServiceResponse(task: blockTask, response: response, responseObject: responseObject)
-                    resolver.fulfill(serviceResponse)
-                default:
-                    #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: blockTask)
-                    #endif
-                    resolver.reject(OWSAssertionError("Invalid response: \(response.statusCode)"))
+            if let statusCode = error.httpStatusCode {
+                if [401, 403, 409].contains(statusCode) {
+                    // These status codes will be handled by performServiceRequest.
+                    Logger.warn("Request error: \(error)")
+                    throw error
                 }
             }
-            blockTask = task
-            task.resume()
+
+            Logger.warn("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
+            owsFailDebug("Request error: \(error)")
+            throw error
         }
     }
 
@@ -1383,21 +1336,20 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise(error: error)
         }
 
-        let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
-            firstly(on: .global()) {
+        let requestBuilder: RequestBuilder = { (authCredential) in
+            firstly(on: .global()) { () -> NSURLRequest in
                 try StorageService.buildFetchGroupInviteLinkPreviewRequest(inviteLinkPassword: inviteLinkPassword,
                                                                            groupV2Params: groupV2Params,
-                                                                           sessionManager: sessionManager,
                                                                            authCredential: authCredential)
             }
         }
 
-        return firstly(on: .global()) { () -> Promise<ServiceResponse> in
+        return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
             self.performServiceRequest(requestBuilder: requestBuilder,
                                        groupId: nil,
                                        behavior403: .fail)
-        }.map(on: .global()) { (response: ServiceResponse) -> GroupInviteLinkPreview in
-            guard let protoData = response.responseObject as? Data else {
+        }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupInviteLinkPreview in
+            guard let protoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsV2Protos.parseGroupInviteLinkPreview(protoData, groupV2Params: groupV2Params)
@@ -1535,27 +1487,26 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                   inviteLinkPassword: Data,
                                                   groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
 
-        return firstly(on: .global()) { () -> Promise<ServiceResponse> in
-            let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+        return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+            let requestBuilder: RequestBuilder = { (authCredential) in
                 return firstly { () -> Promise<GroupsProtoGroupChangeActions> in
                     self.buildChangeActionsProtoToJoinGroupLink(groupId: groupId,
                                                                 groupSecretParamsData: groupSecretParamsData,
                                                                 inviteLinkPassword: inviteLinkPassword,
                                                                 groupV2Params: groupV2Params)
                 }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> NSURLRequest in
-                    return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
-                                                                      groupV2Params: groupV2Params,
-                                                                      sessionManager: sessionManager,
-                                                                      authCredential: authCredential,
-                                                                      groupInviteLinkPassword: inviteLinkPassword)
+                    try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
+                                                               groupV2Params: groupV2Params,
+                                                               authCredential: authCredential,
+                                                               groupInviteLinkPassword: inviteLinkPassword)
                 }
             }
 
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
                                               behavior403: .fail)
-        }.then(on: .global()) { (response: ServiceResponse) -> Promise<TSGroupThread> in
-            guard let changeActionsProtoData = response.responseObject as? Data else {
+        }.then(on: .global()) { (response: OWSHTTPResponse) -> Promise<TSGroupThread> in
+            guard let changeActionsProtoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             // The PATCH request that adds us to the group (as a full or requesting member)
@@ -1626,7 +1577,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
             case .administrator:
-                // TODO: This isn't working yet.                
+                // TODO: This isn't working yet.
                 let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                                      groupV2Params: groupV2Params))

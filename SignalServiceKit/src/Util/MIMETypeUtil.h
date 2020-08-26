@@ -19,6 +19,7 @@ extern NSString *const OWSMimeTypeImageHeif;
 extern NSString *const OWSMimeTypePdf;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
 extern NSString *const OWSMimeTypeProtobuf;
+extern NSString *const OWSMimeTypeJson;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentUTI;

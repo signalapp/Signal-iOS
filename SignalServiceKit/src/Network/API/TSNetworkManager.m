@@ -4,6 +4,7 @@
 
 #import "TSNetworkManager.h"
 #import "AppContext.h"
+#import "MIMETypeUtil.h"
 #import "NSError+OWSOperation.h"
 #import "NSURLSessionDataTask+OWS_HTTP.h"
 #import "OWSError.h"
@@ -456,7 +457,7 @@ dispatch_queue_t NetworkManagerQueue()
     // Body/parameters (e.g. JSON payload)
     if (task.originalRequest.HTTPBody.length > 0) {
         NSString *_Nullable contentType = task.originalRequest.allHTTPHeaderFields[@"Content-Type"];
-        BOOL isJson = [contentType isEqualToString:@"application/json"];
+        BOOL isJson = [contentType isEqualToString:OWSMimeTypeJson];
         BOOL isProtobuf = [contentType isEqualToString:@"application/x-protobuf"];
         if (isJson) {
             NSString *jsonBody = [[NSString alloc] initWithData:task.originalRequest.HTTPBody
