@@ -160,8 +160,10 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 UIGraphicsEndImageContext()
                 return image!
             }
-            button.setBackgroundImage(getImage(withColor: Colors.buttonBackground), for: UIControl.State.normal)
-            button.setBackgroundImage(getImage(withColor: Colors.settingButtonSelected), for: UIControl.State.highlighted)
+            let backgroundColor = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
+            button.setBackgroundImage(getImage(withColor: backgroundColor), for: UIControl.State.normal)
+            let selectedColor = isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)
+            button.setBackgroundImage(getImage(withColor: selectedColor), for: UIControl.State.highlighted)
             button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
             button.set(.height, to: Values.settingButtonHeight)
             return button
