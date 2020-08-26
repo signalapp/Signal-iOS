@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIImage+OWS.h"
@@ -259,8 +259,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData
 {
-    ImageData *imageData = [avatarData imageDataWithPath:nil mimeType:nil];
-    if (!imageData.isValid) {
+    ImageMetadata *imageMetadata = [avatarData imageMetadataWithPath:nil mimeType:nil];
+    if (!imageMetadata.isValid) {
         return nil;
     }
 
@@ -268,8 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
     // on linked devices (e.g. in a call view).  If so, we should also modify `avatarDataForCNContact`
     // to _not_ use `thumbnailImageData`.  This would make contact syncs much more expensive, however.
     const CGFloat kMaxAvatarDimensionPixels = 600;
-    if (imageData.imageFormat == ImageFormat_Jpeg && imageData.pixelSize.width <= kMaxAvatarDimensionPixels
-        && imageData.pixelSize.height <= kMaxAvatarDimensionPixels) {
+    if (imageMetadata.imageFormat == ImageFormat_Jpeg && imageMetadata.pixelSize.width <= kMaxAvatarDimensionPixels
+        && imageMetadata.pixelSize.height <= kMaxAvatarDimensionPixels) {
         return avatarData;
     }
 
@@ -290,8 +290,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogVerbose(@"Converted avatar to JPEG: %lu -> %lu, %@ %@.",
         (unsigned long)avatarData.length,
         (unsigned long)jpegData.length,
-        NSStringForImageFormat(imageData.imageFormat),
-        NSStringFromCGSize(imageData.pixelSize));
+        NSStringForImageFormat(imageMetadata.imageFormat),
+        NSStringFromCGSize(imageMetadata.pixelSize));
 
     return jpegData;
 }

@@ -21,7 +21,7 @@ NSString *NSStringForImageFormat(ImageFormat value);
 
 #pragma mark -
 
-@interface ImageData : NSObject
+@interface ImageMetadata : NSObject
 
 @property (nonatomic, readonly) BOOL isValid;
 
@@ -57,15 +57,15 @@ NSString *NSStringForImageFormat(ImageFormat value);
 + (BOOL)ows_hasStickerLikePropertiesWithPath:(NSString *)filePath;
 - (BOOL)ows_hasStickerLikeProperties;
 
-#pragma mark - Image Data
+#pragma mark - Image Metadata
 
 // declaredMimeType is optional.
 // If present, it is used to validate the file format contents.
-+ (ImageData *)imageDataWithPath:(NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
++ (ImageMetadata *)imageMetadataWithPath:(NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
 
 // filePath and declaredMimeType are optional.
 // If present, they are used to validate the file format contents.
-- (ImageData *)imageDataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
+- (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
 
 @end
 
