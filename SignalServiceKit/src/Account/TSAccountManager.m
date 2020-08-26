@@ -574,13 +574,22 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 }
 
 - (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
+                  updateStorageService:(BOOL)updateStorageService
                            transaction:(SDSAnyWriteTransaction *)transaction
 {
+    if (!SSKFeatureFlags.phoneNumberDiscoverability) {
+        return;
+    }
+
     @synchronized(self) {
         [self.keyValueStore setBool:isDiscoverableByPhoneNumber
                                 key:TSAccountManager_IsDiscoverableByPhoneNumber
                         transaction:transaction];
         [self loadAccountStateWithTransaction:transaction];
+    }
+
+    if (updateStorageService) {
+        [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
     }
 }
 

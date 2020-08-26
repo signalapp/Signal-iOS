@@ -113,6 +113,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 - (BOOL)isDiscoverableByPhoneNumber;
 - (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
+                  updateStorageService:(BOOL)updateStorageService
                            transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number

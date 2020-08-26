@@ -1989,6 +1989,56 @@ extension StorageServiceProtoGroupV2Record.StorageServiceProtoGroupV2RecordBuild
 
 #endif
 
+// MARK: - StorageServiceProtoAccountRecordPhoneNumberSharingMode
+
+public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case everybody // 0
+    case contactsOnly // 1
+    case nobody // 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .everybody
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .everybody
+            case 1: self = .contactsOnly
+            case 2: self = .nobody
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .everybody: return 0
+            case .contactsOnly: return 1
+            case .nobody: return 2
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoAccountRecordPhoneNumberSharingModeWrap(_ value: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode) -> StorageServiceProtoAccountRecordPhoneNumberSharingMode {
+    switch value {
+    case .everybody: return .everybody
+    case .contactsOnly: return .contactsOnly
+    case .nobody: return .nobody
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoAccountRecordPhoneNumberSharingModeUnwrap(_ value: StorageServiceProtoAccountRecordPhoneNumberSharingMode) -> StorageServiceProtos_AccountRecord.PhoneNumberSharingMode {
+    switch value {
+    case .everybody: return .everybody
+    case .contactsOnly: return .contactsOnly
+    case .nobody: return .nobody
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
 // MARK: - StorageServiceProtoAccountRecord
 
 public class StorageServiceProtoAccountRecord: NSObject, Codable {
@@ -2031,6 +2081,12 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         }
         if hasLinkPreviews {
             builder.setLinkPreviews(linkPreviews)
+        }
+        if let _value = phoneNumberSharingMode {
+            builder.setPhoneNumberSharingMode(_value)
+        }
+        if hasDiscoverableByPhoneNumber {
+            builder.setDiscoverableByPhoneNumber(discoverableByPhoneNumber)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2106,6 +2162,14 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
 
         public func setLinkPreviews(_ valueParam: Bool) {
             proto.linkPreviews = valueParam
+        }
+
+        public func setPhoneNumberSharingMode(_ valueParam: StorageServiceProtoAccountRecordPhoneNumberSharingMode) {
+            proto.phoneNumberSharingMode = StorageServiceProtoAccountRecordPhoneNumberSharingModeUnwrap(valueParam)
+        }
+
+        public func setDiscoverableByPhoneNumber(_ valueParam: Bool) {
+            proto.discoverableByPhoneNumber = valueParam
         }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2202,6 +2266,31 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         return proto.linkPreviews
     }
     public var hasLinkPreviews: Bool {
+        return true
+    }
+
+    public var phoneNumberSharingMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode? {
+        guard hasPhoneNumberSharingMode else {
+            return nil
+        }
+        return StorageServiceProtoAccountRecordPhoneNumberSharingModeWrap(proto.phoneNumberSharingMode)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedPhoneNumberSharingMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode {
+        if !hasPhoneNumberSharingMode {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: AccountRecord.phoneNumberSharingMode.")
+        }
+        return StorageServiceProtoAccountRecordPhoneNumberSharingModeWrap(proto.phoneNumberSharingMode)
+    }
+    public var hasPhoneNumberSharingMode: Bool {
+        return true
+    }
+
+    public var discoverableByPhoneNumber: Bool {
+        return proto.discoverableByPhoneNumber
+    }
+    public var hasDiscoverableByPhoneNumber: Bool {
         return true
     }
 

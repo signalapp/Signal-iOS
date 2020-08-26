@@ -347,7 +347,11 @@ public class AccountManager: NSObject {
             // explicitly ask the user if they want to turn it off.
             if FeatureFlags.phoneNumberDiscoverability {
                 self.databaseStorage.write { transaction in
-                    self.tsAccountManager.setIsDiscoverableByPhoneNumber(false, transaction: transaction)
+                    self.tsAccountManager.setIsDiscoverableByPhoneNumber(
+                        false,
+                        updateStorageService: false,
+                        transaction: transaction
+                    )
                 }
             }
 
