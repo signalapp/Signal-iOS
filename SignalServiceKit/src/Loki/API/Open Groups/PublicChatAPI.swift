@@ -131,6 +131,7 @@ public final class PublicChatAPI : DotNetAPI {
                                 print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                                 return nil
                         }
+                        let servertTimestamp = UInt64(date.timeIntervalSince1970) * 1000
                         var profilePicture: PublicChatMessage.ProfilePicture? = nil
                         let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
                         if let userAnnotations = user["annotations"] as? [JSON], let profilePictureAnnotation = userAnnotations.first(where: { $0["type"] as? String == profilePictureType }),
@@ -170,7 +171,7 @@ public final class PublicChatAPI : DotNetAPI {
                                 width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                         }
                         let result = PublicChatMessage(serverID: serverID, senderPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: profilePicture,
-                            body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTime: date)
+                            body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTimestamp: servertTimestamp)
                         guard result.hasValidSignature() else {
                             print("[Loki] Ignoring public chat message with invalid signature.")
                             return nil
@@ -184,7 +185,7 @@ public final class PublicChatAPI : DotNetAPI {
                             return nil
                         }
                         return result
-                    }.sorted { $0.serverTime!.compare($1.serverTime!) == ComparisonResult.orderedAscending }
+                    }.sorted { $0.serverTimestamp < $1.serverTimestamp}
                 }
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -219,7 +220,7 @@ public final class PublicChatAPI : DotNetAPI {
                                 throw DotNetAPIError.parsingFailed
                             }
                             let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                            return PublicChatMessage(serverID: serverID, senderPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature, serverTime: date)
+                            return PublicChatMessage(serverID: serverID, senderPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature, serverTimestamp: timestamp)
                         }
                     }
                 }.handlingInvalidAuthTokenIfNeeded(for: server)

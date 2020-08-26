@@ -14,8 +14,8 @@ public final class PublicChatMessage : NSObject {
     public var attachments: [Attachment] = []
     public let signature: Signature?
     
-    // MARK: Server Time (use for sorting)
-    public let serverTime: Date?
+    // MARK: Server Timestamp (use for sorting)
+    public let serverTimestamp: UInt64
     
     @objc(serverID)
     public var objc_serverID: UInt64 { return serverID ?? 0 }
@@ -75,7 +75,7 @@ public final class PublicChatMessage : NSObject {
     }
     
     // MARK: Initialization
-    public init(serverID: UInt64?, senderPublicKey: String, displayName: String, profilePicture: ProfilePicture?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?, serverTime: Date? = nil) {
+    public init(serverID: UInt64?, senderPublicKey: String, displayName: String, profilePicture: ProfilePicture?, body: String, type: String, timestamp: UInt64, quote: Quote?, attachments: [Attachment], signature: Signature?, serverTimestamp: UInt64) {
         self.serverID = serverID
         self.senderPublicKey = senderPublicKey
         self.displayName = displayName
@@ -86,11 +86,11 @@ public final class PublicChatMessage : NSObject {
         self.quote = quote
         self.attachments = attachments
         self.signature = signature
-        self.serverTime = serverTime
+        self.serverTimestamp = serverTimestamp
         super.init()
     }
     
-    @objc public convenience init(senderPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64, serverTime: Date? = nil) {
+    @objc public convenience init(senderPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64, quotedMessageTimestamp: UInt64, quoteePublicKey: String?, quotedMessageBody: String?, quotedMessageServerID: UInt64, signatureData: Data?, signatureVersion: UInt64, serverTimestamp: UInt64) {
         let quote: Quote?
         if quotedMessageTimestamp != 0, let quoteeHexEncodedPublicKey = quoteePublicKey, let quotedMessageBody = quotedMessageBody {
             let quotedMessageServerID = (quotedMessageServerID != 0) ? quotedMessageServerID : nil
@@ -104,7 +104,7 @@ public final class PublicChatMessage : NSObject {
         } else {
             signature = nil
         }
-        self.init(serverID: nil, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: nil, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature, serverTime: serverTime)
+        self.init(serverID: nil, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: nil, body: body, type: type, timestamp: timestamp, quote: quote, attachments: [], signature: signature, serverTimestamp: serverTimestamp)
     }
     
     // MARK: Crypto
@@ -119,7 +119,7 @@ public final class PublicChatMessage : NSObject {
             return nil
         }
         let signature = Signature(data: signatureData, version: signatureVersion)
-        return PublicChatMessage(serverID: serverID, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: profilePicture, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTime: serverTime)
+        return PublicChatMessage(serverID: serverID, senderPublicKey: senderPublicKey, displayName: displayName, profilePicture: profilePicture, body: body, type: type, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTimestamp: serverTimestamp)
     }
     
     internal func hasValidSignature() -> Bool {
