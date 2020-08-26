@@ -114,7 +114,6 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_indexSignalRecipients
         case dataMigration_kbsStateCleanup
         case dataMigration_turnScreenSecurityOnForExistingUsers
-        case dataMigration_fixThreeSixteenDowngraders
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -950,18 +949,6 @@ public class GRDBSchemaMigrator: NSObject {
             ) else { return }
 
             preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite)
-        }
-        
-        migrator.registerMigration(MigrationId.dataMigration_fixThreeSixteenDowngraders.rawValue) { db in
-            do {
-                // Backfill all incoming messages with "0" as their timestamp
-                try db.execute(sql: "UPDATE model_TSInteraction SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.incomingMessage.rawValue)")
-                
-                // Backfill all jobs with "0" as their timestamp
-                try db.execute(sql: "UPDATE model_SSKJobRecord SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.messageDecryptJobRecord.rawValue)")
-            } catch {
-                owsFail("Error: \(error)")
-            }
         }
     }
 }
