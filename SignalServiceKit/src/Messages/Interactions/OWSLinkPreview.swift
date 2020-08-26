@@ -498,7 +498,9 @@ public class OWSLinkPreviewManager: NSObject {
         }.then(on: Self.workQueue) { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
             let coverInfo = stickerPack.coverInfo
             // tryToDownloadSticker will use locally saved data if possible.
-            return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
+            return firstly {
+                StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo)
+            }.map(on: .global()) { (coverData) -> OWSLinkPreviewDraft in
                 // Try to build thumbnail from cover webp.
                 var pngImageData: Data?
                 if let stillImage = (coverData as NSData).stillForWebpData() {
