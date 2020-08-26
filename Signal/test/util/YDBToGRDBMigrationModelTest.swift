@@ -366,6 +366,7 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             outgoingMessage1.anyInsert(transaction: transaction.asAnyWrite)
             outgoingMessage2.anyInsert(transaction: transaction.asAnyWrite)
             outgoingMessage3.anyInsert(transaction: transaction.asAnyWrite)
+            // FIXME: The lines below fails without `#if TESTABLE_BUILD` block in SSKMessageSenderJobRecord.
             messageSenderJobQueue.add(message: outgoingMessage1.asPreparer, transaction: transaction.asAnyWrite)
             messageSenderJobQueue.add(message: outgoingMessage2.asPreparer, transaction: transaction.asAnyWrite)
             messageSenderJobQueue.add(message: outgoingMessage3.asPreparer, transaction: transaction.asAnyWrite)
@@ -599,6 +600,7 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             do {
                 let interactions = TSInteraction.anyFetchAll(transaction: transaction.asAnyRead)
                 for interaction in interactions {
+                    // FIXME: The line below fails without `#if TESTABLE_BUILD` block in TSMessage.
                     interaction.anyRemove(transaction: transaction.asAnyWrite)
                 }
             }
