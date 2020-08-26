@@ -269,8 +269,8 @@ public class GroupManager: NSObject {
                 // pending and non-pending members.  If we already know we're
                 // going to create a v1 group, we shouldn't separate them.
                 let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
-                                                                            oldGroupModel: nil,
-                                                                            transaction: transaction)
+                                                                  oldGroupModel: nil,
+                                                                  transaction: transaction)
 
                 guard groupMembership.isFullMember(localAddress) else {
                     throw OWSAssertionError("Missing localAddress.")
@@ -380,8 +380,8 @@ public class GroupManager: NSObject {
     // * Their account has the "groups v2" capability
     //   (e.g. all of their clients support groups v2.
     private static func separateInvitedMembers(in newGroupMembership: GroupMembership,
-                                                         oldGroupModel: TSGroupModel?,
-                                                         transaction: SDSAnyReadTransaction) -> GroupMembership {
+                                               oldGroupModel: TSGroupModel?,
+                                               transaction: SDSAnyReadTransaction) -> GroupMembership {
         guard let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("Missing localUuid.")
             return newGroupMembership
@@ -931,8 +931,8 @@ public class GroupManager: NSObject {
         // Before we update a v2 group, we need to separate out the
         // pending and non-pending members.
         let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
-                                                                    oldGroupModel: oldGroupModel,
-                                                                    transaction: transaction)
+                                                          oldGroupModel: oldGroupModel,
+                                                          transaction: transaction)
 
         // Don't try to modify a v2 group if we're not a member.
         guard groupMembership.isFullMember(localAddress) else {
@@ -1011,9 +1011,11 @@ public class GroupManager: NSObject {
             return simpleUpdate()
         }
 
-        return updateGroupV2(groupModel: groupModel,
-                             description: "Update disappearing messages") { groupChangeSet in
-            groupChangeSet.setNewDisappearingMessageToken(disappearingMessageToken)
+        return firstly {
+            updateGroupV2(groupModel: groupModel,
+                          description: "Update disappearing messages") { groupChangeSet in
+                            groupChangeSet.setNewDisappearingMessageToken(disappearingMessageToken)
+            }
         }.asVoid()
     }
 
@@ -1290,22 +1292,23 @@ public class GroupManager: NSObject {
     }
 
     public static func joinGroupViaInviteLink(groupId: Data,
-                                           groupSecretParamsData: Data,
-                                           inviteLinkPassword: Data) -> Promise<TSGroupThread> {
+                                              groupSecretParamsData: Data,
+                                              inviteLinkPassword: Data) -> Promise<TSGroupThread> {
         let description = "Join Group Invite Link"
 
         return firstly(on: .global()) {
-            self.databaseStorage.write { transaction in
-                self.profileManager.addGroupId(toProfileWhitelist: groupId,
-                                               wasLocallyInitiated: true,
-                                               transaction: transaction)
-            }
-        }.then(on: .global()) { _ throws -> Promise<Void> in
             self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             self.groupsV2.joinGroupViaInviteLink(groupId: groupId,
                                                  groupSecretParamsData: groupSecretParamsData,
                                                  inviteLinkPassword: inviteLinkPassword)
+        }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
+            self.databaseStorage.write { transaction in
+                self.profileManager.addGroupId(toProfileWhitelist: groupId,
+                                               wasLocallyInitiated: true,
+                                               transaction: transaction)
+            }
+            return groupThread
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
             GroupsV2Error.timeout
         }
@@ -1401,10 +1404,10 @@ public class GroupManager: NSObject {
     }
 
     public static func tryToFillInMissingUuids(for addresses: [SignalServiceAddress],
-                                                isBlocking: Bool) -> Promise<Void> {
+                                               isBlocking: Bool) -> Promise<Void> {
         guard RemoteConfig.modernContactDiscovery else {
-                // Can't fill in UUIDs using legacy contact intersections.
-                return Promise.value(())
+            // Can't fill in UUIDs using legacy contact intersections.
+            return Promise.value(())
         }
 
         let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
@@ -1523,9 +1526,9 @@ public class GroupManager: NSObject {
                 if let attachment = attachment {
                     // v1 group update with avatar.
                     return self.messageSender.sendTemporaryAttachment(.promise,
-                                                               dataSource: attachment.dataSource,
-                                                               contentType: attachment.contentType,
-                                                               message: message)
+                                                                      dataSource: attachment.dataSource,
+                                                                      contentType: attachment.contentType,
+                                                                      message: message)
                 } else {
                     // v1 group update without avatar.
                     return self.messageSender.sendMessage(.promise, message.asPreparer)
