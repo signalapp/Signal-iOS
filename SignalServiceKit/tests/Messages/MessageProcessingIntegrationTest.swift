@@ -118,6 +118,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         observer.appendDatabaseWriteDelegate(databaseDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
+        envelopeBuilder.setSourceUuid(bobClient.uuid.uuidString)
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData)
