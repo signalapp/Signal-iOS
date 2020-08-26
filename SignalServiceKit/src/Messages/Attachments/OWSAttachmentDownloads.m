@@ -378,19 +378,30 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         });
     };
 
-    dispatch_async([OWSDispatch attachmentsQueue], ^{
-        [self downloadFromLocation:attachmentPointer.downloadURL
-            job:job
-            success:^(NSString *encryptedDataFilePath) {
-                [self decryptAttachmentPath:encryptedDataFilePath
-                          attachmentPointer:attachmentPointer
-                                    success:markAndHandleSuccess
-                                    failure:markAndHandleFailure];
-            }
-            failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
-                markAndHandleFailure(error);
-            }];
-    });
+    __block NSUInteger retryCount = 0;
+    NSUInteger maxRetryCount = 4;
+    __block void (^attempt)();
+    attempt = ^() {
+        dispatch_async([OWSDispatch attachmentsQueue], ^{
+            [self downloadFromLocation:attachmentPointer.downloadURL
+                job:job
+                success:^(NSString *encryptedDataFilePath) {
+                    [self decryptAttachmentPath:encryptedDataFilePath
+                              attachmentPointer:attachmentPointer
+                                        success:markAndHandleSuccess
+                                        failure:markAndHandleFailure];
+                }
+                failure:^(NSURLSessionTask *task, NSError *error) {
+                    if (retryCount == maxRetryCount) {
+                        markAndHandleFailure(error);
+                    } else {
+                        retryCount += 1;
+                        attempt();
+                    }
+                }];
+        });
+    };
+    attempt();
 }
 
 - (void)decryptAttachmentPath:(NSString *)encryptedDataFilePath
@@ -630,6 +641,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             }
             successHandler(tempFilePath);
         }];
+
     [task resume];
 }
 
