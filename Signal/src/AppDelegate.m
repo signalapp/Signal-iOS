@@ -962,12 +962,14 @@ static NSTimeInterval launchStartedAt;
             if (@available(iOS 13.0, *)) {
                 window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
             }
+            window.backgroundColor = UIColor.whiteColor;
             break;
         }
         case LKAppModeDark: {
             if (@available(iOS 13.0, *)) {
                 window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
             }
+            window.backgroundColor = UIColor.blackColor;
             break;
         }
     }

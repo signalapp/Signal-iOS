@@ -10,7 +10,7 @@ import SessionServiceKit
 import PromiseKit
 
 @objc
-public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
+public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate, AppModeManagerDelegate {
 
     // MARK: - Dependencies
 
@@ -42,6 +42,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController: self)
         SetCurrentAppContext(appContext)
+
+        AppModeManager.configure(delegate: self)
 
         DebugLogger.shared().enableTTYLogging()
         if _isDebugAssertConfiguration() {
@@ -1032,6 +1034,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // If video file already existed on disk as an mp4, then the host app didn't need to
         // apply any conversion, so no need to relocate the app.
         return !itemProvider.registeredTypeIdentifiers.contains(kUTTypeMPEG4 as String)
+    }
+
+    // MARK: App Mode
+
+    public func getCurrentAppMode() -> AppMode {
+        guard let window = self.view.window else { return .light }
+        let userInterfaceStyle = window.traitCollection.userInterfaceStyle
+        let isLightMode = (userInterfaceStyle == .light || userInterfaceStyle == .unspecified)
+        return isLightMode ? .light : .dark
+    }
+
+    public func setCurrentAppMode(to appMode: AppMode) {
+        return // Not applicable to share extensions
     }
 }
 

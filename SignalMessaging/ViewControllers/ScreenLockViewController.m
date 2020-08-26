@@ -41,7 +41,9 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     self.view.backgroundColor = UIColor.clearColor;
     CAGradientLayer *layer = [CAGradientLayer new];
     layer.frame = UIScreen.mainScreen.bounds;
-    layer.colors = @[ (id)[UIColor colorWithRGBHex:0x171717].CGColor, (id)[UIColor colorWithRGBHex:0x121212].CGColor ];
+    UIColor *gradientStartColor = LKAppModeUtilities.isLightMode ? [UIColor colorWithRGBHex:0xFCFCFC] : [UIColor colorWithRGBHex:0x171717];
+    UIColor *gradientEndColor = LKAppModeUtilities.isLightMode ? [UIColor colorWithRGBHex:0xFFFFFF] : [UIColor colorWithRGBHex:0x121212];
+    layer.colors = @[ (id)gradientStartColor.CGColor, (id)gradientEndColor.CGColor ];
     [self.view.layer insertSublayer:layer atIndex:0];
 
     UIView *edgesView = [UIView containerView];
@@ -64,7 +66,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     OWSFlatButton *button =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Session", @"")
                                   font:[UIFont boldSystemFontOfSize:LKValues.mediumFontSize]
-                            titleColor:UIColor.whiteColor
+                            titleColor:LKAppModeUtilities.isLightMode ? UIColor.blackColor : UIColor.whiteColor
                        backgroundColor:UIColor.clearColor
                                 target:self
                               selector:@selector(showUnlockUI)];

@@ -10,7 +10,7 @@ public extension NSObject {
                                      selector: Selector) -> UIView {
         let button = OWSButton()
         button.setImage(imageName: imageName)
-        button.tintColor = Colors.text
+        button.tintColor = isLightMode ? UIColor.black : UIColor.white
         button.addTarget(self, action: selector, for: .touchUpInside)
         return button
     }
@@ -51,9 +51,10 @@ public extension UIViewController {
         navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationBar.shadowImage = UIImage()
         navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        navigationBar.backgroundColor = Colors.navigationBarBackground
-        let backgroundImage = UIImage(color: Colors.navigationBarBackground)
+        let color = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x161616)
+        navigationBar.barTintColor = color
+        navigationBar.backgroundColor = color
+        let backgroundImage = UIImage(color: color)
         navigationBar.setBackgroundImage(backgroundImage, for: .default)
     }
 }

@@ -46,10 +46,6 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 {
     OWSAssertIsOnMainThread();
 
-    if (!CurrentAppContext().isMainApp) {
-        return NO;
-    }
-
     return LKAppModeUtilities.isDarkMode;
 }
 
@@ -60,18 +56,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 - (void)setIsDarkThemeEnabled:(BOOL)value
 {
-    OWSAssertIsOnMainThread();
-
-    self.isDarkThemeEnabledNumber = @(value);
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
-                                                            forKey:ThemeKeyThemeEnabled
-                                                      inCollection:ThemeCollection];
-
-    [UIUtil setupSignalAppearence];
-
-    [UIView performWithoutAnimation:^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil userInfo:nil];
-    }];
+    return;
 }
 
 + (UIColor *)backgroundColor
@@ -196,7 +181,6 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 {
     return UIKeyboardAppearanceDark;
 }
-
 
 #pragma mark - Search Bar
 

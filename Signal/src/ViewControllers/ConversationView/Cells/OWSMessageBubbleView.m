@@ -366,10 +366,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         CGFloat maxGradientHeight = 40.f;
         CAGradientLayer *gradientLayer = [CAGradientLayer new];
-        CGFloat whiteLevel = LKAppModeUtilities.isLightMode ? 1.f : 0.f;
         gradientLayer.colors = @[
-            (id)[UIColor colorWithWhite:whiteLevel alpha:0.f].CGColor,
-            (id)[UIColor colorWithWhite:whiteLevel alpha:0.4f].CGColor,
+            (id)[UIColor colorWithWhite:0.0f alpha:0.f].CGColor,
+            (id)[UIColor colorWithWhite:0.0f alpha:0.4f].CGColor,
         ];
         OWSLayerView *gradientView =
             [[OWSLayerView alloc] initWithFrame:CGRectZero
@@ -806,24 +805,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)loadViewForMediaAlbum
 {
     OWSAssertDebug(self.viewItem.mediaAlbumItems);
-
-    BOOL isProxied = NO;
-    if ([self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class]) {
-        TSOutgoingMessage *message = (TSOutgoingMessage *)self.viewItem.interaction;
-        if ([message.thread isKindOfClass:TSGroupThread.class]) {
-            TSGroupThread *groupThread = (TSGroupThread *)message.thread;
-            isProxied = (groupThread.groupModel.groupType == closedGroup);
-        } else if ([message.thread isKindOfClass:TSContactThread.class]) {
-            isProxied = YES;
-        }
-    }
     
     OWSMediaAlbumCellView *albumView =
         [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
                                                     items:self.viewItem.mediaAlbumItems
                                                isOutgoing:self.isOutgoing
                                           maxMessageWidth:self.conversationStyle.maxMessageWidth
-                                                isProxied:isProxied];
+                                            isOnionRouted:YES];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
     };

@@ -144,7 +144,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
         let backgroundDuration: TimeInterval = 0.1
         UIView.animate(withDuration: backgroundDuration) {
-            let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.7 : 0.4
+            let alpha: CGFloat = isDarkMode ? 0.7 : 0.4
             self.view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
         }
 
@@ -272,7 +272,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
 
         super.init(frame: frame)
 
-        backgroundColor = (Theme.isDarkThemeEnabled
+        backgroundColor = (isDarkMode
             ? UIColor.ows_gray90
             : UIColor.ows_gray05)
         addSubview(actionStackView)
@@ -398,27 +398,25 @@ class MenuActionView: UIButton {
         isUserInteractionEnabled = true
         backgroundColor = defaultBackgroundColor
 
+        let textColor = isLightMode ? UIColor.black : UIColor.white
+
         var image = action.image
-        if Theme.isDarkThemeEnabled {
-            image = image.withRenderingMode(.alwaysTemplate)
-        }
+        image = image.withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
-        if Theme.isDarkThemeEnabled {
-            imageView.tintColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        }
+        imageView.tintColor = textColor.withAlphaComponent(Values.unimportantElementOpacity)
         let imageWidth: CGFloat = 24
         imageView.autoSetDimensions(to: CGSize(width: imageWidth, height: imageWidth))
         imageView.isUserInteractionEnabled = false
 
         let titleLabel = UILabel()
         titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
-        titleLabel.textColor = Colors.text
+        titleLabel.textColor = textColor
         titleLabel.text = action.title
         titleLabel.isUserInteractionEnabled = false
 
         let subtitleLabel = UILabel()
         subtitleLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        subtitleLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        subtitleLabel.textColor = textColor.withAlphaComponent(Values.unimportantElementOpacity)
         subtitleLabel.text = action.subtitle
         subtitleLabel.isUserInteractionEnabled = false
 
@@ -443,11 +441,11 @@ class MenuActionView: UIButton {
     }
 
     private var defaultBackgroundColor: UIColor {
-        return Colors.cellBackground
+        return isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
     }
 
     private var highlightedBackgroundColor: UIColor {
-        return Colors.cellSelected
+        return isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)
     }
 
     override var isHighlighted: Bool {
