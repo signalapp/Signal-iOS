@@ -51,11 +51,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         return view
     }()
     
-    override init() {
-        super.init()
-        self.modalPresentationStyle = .overCurrentContext
-    }
-
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         photoCapture.stopCapture().done {

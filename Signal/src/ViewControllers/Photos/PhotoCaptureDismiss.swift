@@ -27,17 +27,11 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
     private var initialDimissFrame : CGRect?
     private weak var viewController: UIViewController?
-    private var fastEnoughToCompleteTransition = false
     private var farEnoughToCompleteTransition = false
 
     private var shouldCompleteTransition: Bool {
         if farEnoughToCompleteTransition {
             Logger.verbose("farEnoughToCompleteTransition")
-            return true
-        }
-
-        if fastEnoughToCompleteTransition {
-            Logger.verbose("fastEnoughToCompleteTransition")
             return true
         }
 
@@ -56,8 +50,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             gestureRecognizer.setTranslation(.zero, in: coordinateSpace)
         }
 
-        let totalDistance: CGFloat = 100
-        let velocityThreshold: CGFloat = 500
+        let distanceToTriggerDismiss: CGFloat = 200
 
         switch gestureRecognizer.state {
         case .began:
@@ -65,26 +58,17 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             interactiveDismissDelegate?.interactiveDismissDidBegin(self)
 
         case .changed:
-            let velocity = abs(gestureRecognizer.velocity(in: coordinateSpace).y)
-            if velocity > velocityThreshold {
-                fastEnoughToCompleteTransition = true
-            }
-
             let offset = gestureRecognizer.translation(in: coordinateSpace)
-            let progress = abs(offset.y) / totalDistance
+            let progress = abs(offset.y) / distanceToTriggerDismiss
             // `farEnoughToCompleteTransition` is cancelable if the user reverses direction
-            farEnoughToCompleteTransition = progress >= 0.5
+            farEnoughToCompleteTransition = progress >= 1
             update(progress)
 
             interactiveDismissDelegate?.interactiveDismissUpdate(self, didChangeTouchOffset: offset)
             if handlesAnimation {
                 guard let frame = initialDimissFrame else {return}
-                // Only allow swipe down to dismiss
-                var y = offset.y
-                if y < 0 {
-                    y = 0
-                }
-                viewController?.view.center = frame.offsetBy(dx: 0, dy: y).center
+                let delta = self.constainSwipe(offset: offset)
+                viewController?.view.center = frame.offsetBy(dx: delta.x, dy: delta.y).center
             }
 
         case .cancelled:
@@ -94,7 +78,6 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             initialDimissFrame = nil
             interactionInProgress = false
             farEnoughToCompleteTransition = false
-            fastEnoughToCompleteTransition = false
 
         case .ended:
             if shouldCompleteTransition {
@@ -114,10 +97,18 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             initialDimissFrame = nil
             interactionInProgress = false
             farEnoughToCompleteTransition = false
-            fastEnoughToCompleteTransition = false
 
         default:
             break
         }
+    }
+    
+    private func constainSwipe(offset: CGPoint) -> CGPoint {
+        // Don't allow the swipe to move the view upwards off the screen
+        var y = offset.y
+        if y < 0 {
+            y = 0
+        }
+        return CGPoint(x: 0, y: y)
     }
 }

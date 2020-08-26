@@ -3186,9 +3186,10 @@ typedef enum : NSUInteger {
             SendMediaNavigationController *pickerModal =
                 [SendMediaNavigationController showingCameraFirstWithPhotoCapture:photoCapture];
             pickerModal.sendMediaNavDelegate = self;
+            pickerModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
 
             [self dismissKeyBoard];
-            [self presentFullScreenViewController:pickerModal animated:YES completion:nil];
+            [self presentViewController:pickerModal animated:YES completion:nil];
         }];
     }];
 }
