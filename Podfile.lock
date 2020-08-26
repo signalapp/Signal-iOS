@@ -21,9 +21,9 @@ PODS:
     - SignalCoreKit
     - SwiftProtobuf
   - blurhash (0.0.1)
-  - CocoaLumberjack (3.6.0):
-    - CocoaLumberjack/Core (= 3.6.0)
-  - CocoaLumberjack/Core (3.6.0)
+  - CocoaLumberjack (3.6.2):
+    - CocoaLumberjack/Core (= 3.6.2)
+  - CocoaLumberjack/Core (3.6.2)
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
@@ -267,7 +267,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - AFNetworking
-    - CocoaLumberjack
     - GRDB.swift
     - libwebp
     - lottie-ios
@@ -279,6 +278,8 @@ SPEC REPOS:
     - SSZipArchive
     - SwiftProtobuf
     - YYImage
+  trunk:
+    - CocoaLumberjack
 
 EXTERNAL SOURCES:
   Argon2:
@@ -329,7 +330,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   AxolotlKit:
-    :commit: debc5cb31197bcdbbd8e5d7d03320105e6c169a6
+    :commit: 97ae15634e386b4fd403484e5e2680e72d283bb4
     :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
     :commit: c0538ea830d4ecc0f4dfcaf3dc53c0003847df20
@@ -353,7 +354,7 @@ CHECKOUT OPTIONS:
     :commit: 257a74ae350fa55701b8f272ea1be98caa7aea0b
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: 3fcb31137b80518607ceed7107516ecabe857699
+    :commit: 7addcc1c4bb837b3ad44a05f72bf18ad8869b30c
     :git: https://github.com/signalapp/SignalMetadataKit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -373,7 +374,7 @@ SPEC CHECKSUMS:
   Argon2: b11fcfa58057e2522356ddc6a817cd875297edfe
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
   blurhash: 150e9ffe986f028a38f7b469b5a279eab45352df
-  CocoaLumberjack: 78b0c238666f4f58db069738ec176f4519557516
+  CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   GRKOpenSSLFramework: 4abc733a8fcbc37060619a86a54202d2938dd70e
