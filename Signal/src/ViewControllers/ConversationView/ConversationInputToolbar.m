@@ -1337,7 +1337,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         return;
     }
 
-    NSURL *previewUrl = [self.linkPreviewManager findFirstValidURLInSearchString:self.inputTextView.text];
+    NSURL *previewUrl = [self.linkPreviewManager findFirstValidUrlInSearchString:self.inputTextView.text];
     if (!previewUrl.absoluteString.length) {
         [self clearLinkPreviewStateAndView];
         return;
@@ -1355,7 +1355,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self ensureLinkPreviewViewWithState:[LinkPreviewLoading new]];
 
     __weak ConversationInputToolbar *weakSelf = self;
-    [self.linkPreviewManager fetchLinkPreviewForURL:previewUrl]
+    [self.linkPreviewManager fetchLinkPreviewForUrl:previewUrl]
         .then(^(OWSLinkPreviewDraft *linkPreviewDraft) {
             ConversationInputToolbar *_Nullable strongSelf = weakSelf;
             if (!strongSelf) {
@@ -1365,14 +1365,13 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                 // Obsolete callback.
                 return;
             }
-            inputLinkPreview.previewUrl = linkPreviewDraft.url;
             inputLinkPreview.linkPreviewDraft = linkPreviewDraft;
             LinkPreviewDraft *viewState = [[LinkPreviewDraft alloc] initWithLinkPreviewDraft:linkPreviewDraft];
             [strongSelf ensureLinkPreviewViewWithState:viewState];
         })
         .catch(^(id error) {
             // The link preview could not be loaded.
-            [weakSelf clearLinkPreviewStateAndView];
+            [weakSelf clearLinkPreviewView];
         });
 }
 

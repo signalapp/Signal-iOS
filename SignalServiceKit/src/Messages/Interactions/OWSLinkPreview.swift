@@ -121,13 +121,13 @@ public class OWSLinkPreview: MTLModel {
         }
         let urlString = previewProto.url
 
-        guard let url = URL(string: urlString), url.isPermittedLinkPreviewURL else {
-            Logger.error("Could not parse preview URL.")
+        guard let url = URL(string: urlString), url.isPermittedLinkPreviewUrl else {
+            Logger.error("Could not parse preview url.")
             throw LinkPreviewError.invalidPreview
         }
 
         guard let body = body, body.contains(urlString) else {
-            Logger.error("URL not present in body")
+            Logger.error("Url not present in body")
             throw LinkPreviewError.invalidPreview
         }
 
@@ -258,9 +258,9 @@ public class OWSLinkPreviewManager: NSObject {
 
     // MARK: - Public
 
-    @objc(findFirstValidURLInSearchString:)
-    public func findFirstValidURL(in searchString: String) -> URL? {
-        guard areLinkPreviewsEnabled() else { return nil }
+    @objc(findFirstValidUrlInSearchString:)
+    public func findFirstValidUrl(in searchString: String) -> URL? {
+        guard areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
             owsFailDebug("Could not create NSDataDetector")
             return nil
@@ -272,18 +272,18 @@ public class OWSLinkPreviewManager: NSObject {
             range: NSRange(searchString.startIndex..<searchString.endIndex, in: searchString))
 
         return allMatches
-            .first(where: { $0.url?.isPermittedLinkPreviewURL == true })?
+            .first(where: { $0.url?.isPermittedLinkPreviewUrl == true })?
             .url
     }
 
-    @objc(fetchLinkPreviewForURL:)
+    @objc(fetchLinkPreviewForUrl:)
     public func fetchLinkPreview(for url: URL) -> AnyPromise {
         let promise: Promise<OWSLinkPreviewDraft> = fetchLinkPreview(for: url)
         return AnyPromise(promise)
     }
 
     public func fetchLinkPreview(for url: URL) -> Promise<OWSLinkPreviewDraft> {
-        guard areLinkPreviewsEnabled() else {
+        guard areLinkPreviewsEnabledWithSneakyTransaction() else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
 
@@ -317,12 +317,12 @@ public class OWSLinkPreviewManager: NSObject {
             let title = opengraph.title
             let draft = OWSLinkPreviewDraft(url: url, title: title)
 
-            guard let imageURLString = opengraph.imageURL, let imageURL = URL(string: imageURLString) else {
+            guard let imageUrlString = opengraph.imageUrl, let imageUrl = URL(string: imageUrlString) else {
                 return Promise.value((draft, nil))
             }
 
             return firstly(on: Self.workQueue) { () -> Promise<Data> in
-                self.fetchImageResource(from: imageURL)
+                self.fetchImageResource(from: imageUrl)
             }.map(on: Self.workQueue) { data -> (OWSLinkPreviewDraft, Data?) in
                 return (draft, data)
             }.recover(on: Self.workQueue) { _ -> Promise<(OWSLinkPreviewDraft, Data?)> in
@@ -340,29 +340,9 @@ public class OWSLinkPreviewManager: NSObject {
 
     }
 
-    // MARK: - Private, URL Parsing
-
-    private func parseFirstValidURL(in searchString: String) -> URL? {
-
-        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
-            owsFailDebug("Could not create NSDataDetector")
-            return nil
-        }
-
-        let allMatches = detector.matches(
-            in: searchString,
-            options: [],
-            range: NSRange(searchString.startIndex..<searchString.endIndex, in: searchString)
-        )
-
-        return allMatches
-            .first(where: { $0.url?.isPermittedLinkPreviewURL == true })?
-            .url
-    }
-
     // MARK: - Private, Utilities
 
-    func areLinkPreviewsEnabled() -> Bool {
+    func areLinkPreviewsEnabledWithSneakyTransaction() -> Bool {
         return databaseStorage.read { transaction in
             SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
@@ -394,7 +374,7 @@ public class OWSLinkPreviewManager: NSObject {
             }
         }
         sessionManager.setTaskWillPerformHTTPRedirectionBlock { (_, _, _, request) -> URLRequest? in
-            if request.url?.isPermittedLinkPreviewURL == true {
+            if request.url?.isPermittedLinkPreviewUrl == true {
                 return request
             } else {
                 return nil
@@ -440,17 +420,26 @@ public class OWSLinkPreviewManager: NSObject {
                     Logger.warn("Invalid response: \(type(of: task.response)).")
                     throw LinkPreviewError.fetchFailure
                 }
-                guard let imageData = responseObject as? Data,
-                      let image = UIImage(data: imageData) else {
+                guard let rawData = responseObject as? Data,
+                      rawData.count < Self.maxFetchedContentSize else {
+
                     Logger.warn("Response object could not be parsed")
                     throw LinkPreviewError.invalidPreview
                 }
 
+                let imageData = (rawData as NSData).imageData(withPath: nil, mimeType: nil)
+                guard imageData.isValid,
+                      imageData.pixelSize.height > 0,
+                      imageData.pixelSize.width > 0,
+                      let image = UIImage(data: rawData) else {
+                    Logger.warn("Invalid image data")
+                    throw LinkPreviewError.invalidPreview
+                }
+
                 let maxDimension: CGFloat = 1024
-                let imageSize = image.pixelSize()
 
                 let scaledImage: UIImage?
-                if imageSize.height > maxDimension || imageSize.width > maxDimension {
+                if imageData.pixelSize.height > maxDimension || imageData.pixelSize.width > maxDimension {
                     scaledImage = image.resized(withMaxDimensionPixels: 1024)
                 } else {
                     scaledImage = image
@@ -483,7 +472,7 @@ public class OWSLinkPreviewManager: NSObject {
         Logger.verbose("url: \(url)")
 
         guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) else {
-            Logger.error("Could not parse URL.")
+            Logger.error("Could not parse url.")
             return Promise(error: LinkPreviewError.invalidPreview)
         }
 
@@ -537,13 +526,13 @@ fileprivate extension URL {
             return nil
         }
         guard let mimeType = MIMETypeUtil.mimeType(forFileExtension: pathExtension) else {
-            Logger.error("Image URL has unknown content type: \(pathExtension).")
+            Logger.error("Image url has unknown content type: \(pathExtension).")
             return nil
         }
         return mimeType
     }
 
-    var isPermittedLinkPreviewURL: Bool {
+    var isPermittedLinkPreviewUrl: Bool {
         guard let scheme = scheme?.lowercased(), scheme.count > 0 else { return false }
         guard let hostname = host, hostname.count > 0 else { return false }
 
@@ -589,7 +578,7 @@ fileprivate extension OWSLinkPreviewManager {
             return nil
         }
         guard url.path.count > 1 else {
-            // URL must have non-empty path.
+            // Url must have non-empty path.
             return nil
         }
         return domain

@@ -6,12 +6,12 @@ import Foundation
 
 struct OpenGraphContent {
     let title: String?
-    let imageURL: String?
+    let imageUrl: String?
 
     init(parsing rawHTML: String) {
         let parsedTags = Self.parseOGTags(rawHTML: rawHTML)
         self.title = parsedTags["title"]
-        self.imageURL = parsedTags["image"]
+        self.imageUrl = parsedTags["image"]
     }
 }
 
@@ -67,7 +67,7 @@ private extension NSRegularExpression {
         return allMatches.map { (match) -> [String] in
             (0..<match.numberOfRanges)
                 .compactMap { rangeIdx in Range(match.range(at: rangeIdx), in: searchString) }
-                .compactMap { range in String(searchString[range]) }
+                .map { range in String(searchString[range]) }
         }
     }
 
