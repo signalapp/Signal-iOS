@@ -111,19 +111,21 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 }
 
 - (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
+                      protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
-    __block PreKeyRecord *_Nullable result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.keyStore preKeyRecordForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
-    }];
-    return result;
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
+
+    return [self.keyStore preKeyRecordForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
 - (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
+    protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.keyStore setPreKeyRecord:record forKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
-    });
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
+    
+    [self.keyStore setPreKeyRecord:record forKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
 - (void)removePreKey:(int)preKeyId

@@ -4,10 +4,44 @@
 
 #import "SSKBaseTestObjC.h"
 #import "SSKPreKeyStore.h"
+#import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface SSKPreKeyStoreTests : SSKBaseTestObjC
 
 @end
+
+#pragma mark -
+
+@interface SSKPreKeyStore (Tests)
+
+@end
+
+#pragma mark -
+
+@implementation SSKPreKeyStore (Tests)
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
+- (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
+{
+    __block PreKeyRecord *_Nullable result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self loadPreKey:preKeyId protocolContext:transaction];
+    }];
+    return result;
+}
+
+@end
+
+#pragma mark -
 
 @implementation SSKPreKeyStoreTests
 
@@ -45,7 +79,6 @@
     XCTAssert([[self.preKeyStore loadPreKey:firstPreKeyRecord.Id].keyPair.publicKey
         isEqualToData:firstPreKeyRecord.keyPair.publicKey]);
 }
-
 
 - (void)testRemovingPreKeys
 {

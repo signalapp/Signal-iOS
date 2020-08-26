@@ -12,6 +12,8 @@ let kEphemeralPreKeysMinimumCount: UInt = 35
 @objc(SSKRefreshPreKeysOperation)
 public class RefreshPreKeysOperation: OWSOperation {
 
+    // MARK: - Dependencies
+
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
@@ -32,6 +34,16 @@ public class RefreshPreKeysOperation: OWSOperation {
         return OWSIdentityManager.shared()
     }
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    private var messageProcessing: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
+    // MARK: -
+
     public override func run() {
         Logger.debug("")
 
@@ -40,9 +52,11 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
-        firstly(on: .global()) { () -> Promise<Int> in
-            return self.accountServiceClient.getPreKeysCount()
-        }.then(on: DispatchQueue.global()) { (preKeysCount: Int) -> Promise<Void> in
+        firstly(on: .global()) { () -> Promise<Void> in
+            self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
+        }.then(on: .global()) { () -> Promise<Int> in
+            self.accountServiceClient.getPreKeysCount()
+        }.then(on: .global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.info("preKeysCount: \(preKeysCount)")
             guard preKeysCount < kEphemeralPreKeysMinimumCount || self.signedPreKeyStore.currentSignedPrekeyId() == nil else {
                 Logger.debug("Available keys sufficient: \(preKeysCount)")
@@ -53,7 +67,11 @@ public class RefreshPreKeysOperation: OWSOperation {
             let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
             let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
 
-            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.databaseStorage.write { transaction in
+                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                         signedPreKeyRecord: signedPreKeyRecord,
+                                                         transaction: transaction)
+            }
             self.preKeyStore.storePreKeyRecords(preKeyRecords)
 
             return firstly(on: .global()) { () -> Promise<Void> in
@@ -61,7 +79,11 @@ public class RefreshPreKeysOperation: OWSOperation {
             }.done(on: .global()) { () in
                 signedPreKeyRecord.markAsAcceptedByService()
 
-                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+                self.databaseStorage.write { transaction in
+                    self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                             signedPreKeyRecord: signedPreKeyRecord,
+                                                             transaction: transaction)
+                }
                 self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
