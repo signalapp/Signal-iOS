@@ -12,8 +12,8 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-        aliceClient = FakeSignalClient.generate(e164Identifier: "alice")
-        bobClient = FakeSignalClient.generate(e164Identifier: "bob")
+        aliceClient = FakeSignalClient.generate(e164Identifier: "+122233alice")
+        bobClient = FakeSignalClient.generate(e164Identifier: "+12223334bob")
     }
 
     let runner = TestProtocolRunner()
