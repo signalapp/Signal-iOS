@@ -340,6 +340,17 @@ public class AccountManager: NSObject {
                 throw OWSAssertionError("phoneNumberAwaitingVerification was unexpectedly nil")
             }
 
+            // When we enable the ability to change whether you're discoverable
+            // by phone number, new registrations must not be discoverable by
+            // default. We set this flag prior to attempting to register with
+            // the service and will adjust it later during onboarding when we
+            // explicitly ask the user if they want to turn it off.
+            if FeatureFlags.phoneNumberDiscoverability {
+                self.databaseStorage.write { transaction in
+                    self.tsAccountManager.setIsDiscoverableByPhoneNumber(false, transaction: transaction)
+                }
+            }
+
             let request = OWSRequestFactory.verifyPrimaryDeviceRequest(verificationCode: verificationCode,
                                                                        phoneNumber: phoneNumber,
                                                                        authKey: serverAuthToken,

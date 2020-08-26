@@ -88,11 +88,11 @@ class TestingViewController: OWSTableViewController {
 
         do {
             let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("If CDS has recently indicated that a user is unregistered, message sending will automatically skip these recipients.")
-            section.add(OWSTableItem.switch(withText: LocalizationNotNeeded("CDS: Ignore unregistered users in message sends"),
-                                            isOn: { FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends },
+            section.footerTitle = LocalizationNotNeeded("If CDS has recently indicated that a user is undiscoverable, message sending will automatically skip these recipients.")
+            section.add(OWSTableItem.switch(withText: LocalizationNotNeeded("CDS: Ignore undiscoverable users in message sends"),
+                                            isOn: { FeatureFlags.ignoreCDSUndiscoverableUsersInMessageSends },
                                             target: self,
-                                            selector: #selector(didToggleIgnoreCDSUnregisteredUsersInMessageSends)))
+                                            selector: #selector(didToggleIgnoreCDSUndiscoverableUsersInMessageSends)))
             contents.addSection(section)
         }
 
@@ -130,7 +130,7 @@ class TestingViewController: OWSTableViewController {
     }
 
     @objc
-    func didToggleIgnoreCDSUnregisteredUsersInMessageSends(_ sender: UISwitch) {
-        FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends = sender.isOn
+    func didToggleIgnoreCDSUndiscoverableUsersInMessageSends(_ sender: UISwitch) {
+        FeatureFlags.ignoreCDSUndiscoverableUsersInMessageSends = sender.isOn
     }
 }

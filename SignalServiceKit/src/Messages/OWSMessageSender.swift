@@ -679,14 +679,14 @@ extension MessageSending {
             return Promise.value(addresses)
         }
 
-        let knownUnregistered = ContactDiscoveryTask.addressesRecentlyMarkedAsUnregistered(invalidRecipients)
-        if Set(knownUnregistered) == Set(invalidRecipients) {
-            // If CDS has recently indicated that all of the invalid recipients are unregistered,
-            // assume they are still unregistered and skip them.
+        let knownUndiscoverable = ContactDiscoveryTask.addressesRecentlyMarkedAsUndiscoverable(invalidRecipients)
+        if Set(knownUndiscoverable) == Set(invalidRecipients) {
+            // If CDS has recently indicated that all of the invalid recipients are undiscoverable,
+            // assume they are still undiscoverable and skip them.
             //
-            // If _any_ invalid recipient isn't known to be unregistered,
+            // If _any_ invalid recipient isn't known to be undiscoverable,
             // use CDS to look up all invalid recipients.
-            Logger.warn("Skipping invalid recipient(s) which are known to be unregistered: \(invalidRecipients.count)")
+            Logger.warn("Skipping invalid recipient(s) which are known to be undiscoverable: \(invalidRecipients.count)")
             let validRecipients = Set(addresses).subtracting(invalidRecipients)
             return Promise.value(Array(validRecipients))
         }
