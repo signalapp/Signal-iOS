@@ -75,7 +75,7 @@ public final class PublicChatPoller : NSObject {
                 }
                  */
                 // Sorting the messages by timestamp before importing them fixes an issue where messages that quote older messages can't find those older messages
-                messages.sorted { $0.timestamp < $1.timestamp }.forEach { message in
+                messages.sorted { $0.serverTime!.compare($1.serverTime!) == ComparisonResult.orderedAscending }.forEach { message in
                     var wasSentByCurrentUser = false
                     OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
                         wasSentByCurrentUser = LokiDatabaseUtilities.isUserLinkedDevice(message.senderPublicKey, transaction: transaction)
