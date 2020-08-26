@@ -34,6 +34,10 @@ public class CreatePreKeysOperation: OWSOperation {
         return SSKEnvironment.shared.messageProcessing
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
     // MARK: -
 
     public override func run() {
@@ -53,8 +57,11 @@ public class CreatePreKeysOperation: OWSOperation {
         }
         self.preKeyStore.storePreKeyRecords(preKeyRecords)
 
-        firstly(on: .global()) {
-            self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
+        firstly(on: .global()) { () -> Promise<Void> in
+            guard self.tsAccountManager.isRegisteredAndReady else {
+                return Promise.value(())
+            }
+            return self.messageProcessing.flushMessageFetchingAndDecryptionPromise()
         }.then(on: .global()) { () -> Promise<Void> in
             self.accountServiceClient.setPreKeys(identityKey: identityKey,
                                                  signedPreKeyRecord: signedPreKeyRecord,
