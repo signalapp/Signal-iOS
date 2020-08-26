@@ -149,7 +149,7 @@ public class Promises {
             resolver.fulfill(value)
         }.catch(on: .global()) { (error: Error) -> Void in
             guard remainingRetries > 0,
-                !IsNetworkConnectivityFailure(error) else {
+                IsNetworkConnectivityFailure(error) else {
                     resolver.reject(error)
                     return
             }

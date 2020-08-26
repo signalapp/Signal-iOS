@@ -1328,7 +1328,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         let protoBase64Url = protoData.asBase64Url
 
-        let urlString = "https://signal.group/\(protoBase64Url)"
+        let urlString = "https://signal.group/#\(protoBase64Url)"
         guard let url = URL(string: urlString) else {
             throw OWSAssertionError("Could not construct url.")
         }
@@ -1340,12 +1340,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             url.host == "signal.group" else {
                 return nil
         }
-        let pathComponents = url.pathComponents.filter { $0 != "/" }
-        guard pathComponents.count == 1,
-            let protoBase64Url = pathComponents.first,
+        guard let protoBase64Url = url.fragment,
             !protoBase64Url.isEmpty else {
-                owsFailDebug("Missing encoded data.")
-                return nil
+            owsFailDebug("Missing encoded data.")
+            return nil
         }
         do {
             let protoData = try Data.data(fromBase64Url: protoBase64Url)
@@ -1628,7 +1626,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
             case .administrator:
-                // TODO: This isn't in prod yet.                
+                // TODO: This isn't working yet.                
                 let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                                      groupV2Params: groupV2Params))
