@@ -28,6 +28,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
     OWSRegistrationState_Reregistering,
 };
 
+NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
+
 @interface TSAccountManager : NSObject
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;

@@ -49,6 +49,22 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
 NSString *const TSAccountManager_DeviceName = @"TSAccountManager_DeviceName";
 NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
+NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
+{
+    switch (value) {
+        case OWSRegistrationState_Unregistered:
+            return @"Unregistered";
+        case OWSRegistrationState_PendingBackupRestore:
+            return @"PendingBackupRestore";
+        case OWSRegistrationState_Registered:
+            return @"Registered";
+        case OWSRegistrationState_Deregistered:
+            return @"Deregistered";
+        case OWSRegistrationState_Reregistering:
+            return @"Reregistering";
+    }
+}
+
 // A cache of frequently-accessed database state.
 //
 // * Instances of TSAccountState are immutable.

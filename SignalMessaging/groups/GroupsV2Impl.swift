@@ -280,7 +280,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     return Promise.value(())
                 }
                 return self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
-                    groupSecretParamsData: groupSecretParamsData).asVoid()
+                                                                                             groupSecretParamsData: groupSecretParamsData).asVoid()
             }.map(on: .global()) { _ throws -> (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) in
                 return try self.databaseStorage.read { transaction in
                     guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -978,7 +978,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         guard RemoteConfig.groupsV2GoodCitizen,
             RemoteConfig.versionedProfileFetches else {
-            return Promise(error: GroupsV2Error.gv2NotEnabled)
+                return Promise(error: GroupsV2Error.gv2NotEnabled)
         }
 
         // 1. Use known credentials, where possible.
@@ -1439,6 +1439,19 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise(error: error)
         }
 
+        return Promises.performWithImmediateRetry { () -> Promise<TSGroupThread> in
+            self.joinGroupViaInviteLinkAttempt(groupId: groupId,
+                                               groupSecretParamsData: groupSecretParamsData,
+                                               inviteLinkPassword: inviteLinkPassword,
+                                               groupV2Params: groupV2Params)
+        }
+    }
+
+    private func joinGroupViaInviteLinkAttempt(groupId: Data,
+                                               groupSecretParamsData: Data,
+                                               inviteLinkPassword: Data,
+                                               groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
+
         // There are many edge cases around joining groups via invite links.
         //
         // * We might have previously been a member or not.
@@ -1508,6 +1521,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return Promise.value(groupThread)
             } else if groupMembership.isInvitedMember(localUuid) {
                 // We're already an invited member; try to join by accepting the invite.
+                // That will make us a full member; requesting to join via
+                // the invite link might make us a requesting member.
                 return self.updateGroupV2(groupModel: groupModelV2) { groupChangeSet in
                     groupChangeSet.promoteInvitedMember(localUuid)
                 }
@@ -1613,9 +1628,16 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
             case .administrator:
+                // TODO: It's not clear from the spec how to build this action
+                // and this isn't working yet.
+                let localProfileKey = self.profileManager.localProfileKey()
+                let localProfileKeyData = localProfileKey.keyData
+                
                 let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
-                actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
-                                                                           groupV2Params: groupV2Params))
+                actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(uuid: localUuid,
+                                                                                     profileKeyCredential: localProfileKeyCredential,
+                                                                                     profileKey: localProfileKeyData,
+                                                                                     groupV2Params: groupV2Params))
                 actionsBuilder.addAddRequestingMembers(try actionBuilder.build())
             default:
                 throw OWSAssertionError("Invalid addFromInviteLinkAccess.")

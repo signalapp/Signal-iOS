@@ -60,7 +60,7 @@ public class GroupInviteLinksUI: NSObject {
         // TODO: Design.
         if let existingGroupThread = (databaseStorage.read { transaction in
             TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
-        }) {
+        }), existingGroupThread.isLocalUserFullMember {
             SignalApp.shared().presentConversation(for: existingGroupThread, animated: true)
             return
         }
@@ -284,17 +284,23 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             return
         }
 
-        firstly(on: .global()) {
-            GroupManager.joinGroupViaInviteLink(groupId: self.groupV2ContextInfo.groupId,
-                                             groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
-                                             inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword)
-        }.done { [weak self] (groupThread: TSGroupThread) in
-            self?.dismiss(animated: true) {
-                SignalApp.shared().presentConversation(for: groupThread, animated: true)
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalActivityIndicator in
+            firstly(on: .global()) {
+                GroupManager.joinGroupViaInviteLink(groupId: self.groupV2ContextInfo.groupId,
+                                                    groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                                                    inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword)
+            }.done { [weak self] (groupThread: TSGroupThread) in
+                modalActivityIndicator.dismiss {
+                    self?.dismiss(animated: true) {
+                        SignalApp.shared().presentConversation(for: groupThread, animated: true)
+                    }
+                }
+            }.catch { _ in
+                modalActivityIndicator.dismiss {
+                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
+                                                                              comment: "Error message indicating that the local user does not support groups v2."))
+                }
             }
-        }.catch { _ in
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
-                                                                      comment: "Error message indicating that the local user does not support groups v2."))
         }
     }
 

@@ -133,3 +133,39 @@ public func firstly<T>(on dispatchQueue: DispatchQueue,
                        execute body: @escaping () throws -> T) -> Promise<T> {
     return dispatchQueue.async(.promise, execute: body)
 }
+
+// MARK: -
+
+public class Promises {
+
+    public static func performWithImmediateRetry<T>(promiseBlock: @escaping () -> Promise<T>,
+                                                    remainingRetries: UInt = 3) -> Promise<T> {
+
+        let (promise, resolver) = Promise<T>.pending()
+
+        firstly(on: .global()) { () -> Promise<T> in
+            return promiseBlock()
+        }.done(on: .global()) { (value: T) -> Void  in
+            resolver.fulfill(value)
+        }.catch(on: .global()) { (error: Error) -> Void in
+            guard remainingRetries > 0,
+                !IsNetworkConnectivityFailure(error) else {
+                    resolver.reject(error)
+                    return
+            }
+
+            Logger.warn("Error: \(error)")
+
+            firstly(on: .global()) { () -> Promise<T> in
+                return Self.performWithImmediateRetry(promiseBlock: promiseBlock,
+                                                      remainingRetries: remainingRetries - 1)
+            }.done(on: .global()) { (value: T) in
+                resolver.fulfill(value)
+            }.catch(on: .global()) { (error: Error)in
+                resolver.reject(error)
+            }
+        }
+
+        return promise
+    }
+}
