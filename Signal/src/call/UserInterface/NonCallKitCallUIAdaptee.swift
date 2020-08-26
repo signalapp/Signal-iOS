@@ -44,7 +44,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.callService.handleOutgoingCall(call)
     }
 
-    func reportIncomingCall(_ call: SignalCall, callerName: String) {
+    func reportIncomingCall(_ call: SignalCall, callerName: String, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
 
         Logger.debug("")
@@ -52,6 +52,8 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.showCall(call)
 
         startNotifiyingForIncomingCall(call, callerName: callerName)
+
+        completion(nil)
     }
 
     private var incomingCallNotificationTimer: Timer?

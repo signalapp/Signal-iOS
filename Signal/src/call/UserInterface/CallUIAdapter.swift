@@ -15,7 +15,7 @@ protocol CallUIAdaptee {
     var hasManualRinger: Bool { get }
 
     func startOutgoingCall(call: SignalCall)
-    func reportIncomingCall(_ call: SignalCall, callerName: String)
+    func reportIncomingCall(_ call: SignalCall, callerName: String, completion: @escaping (Error?) -> Void)
     func reportMissedCall(_ call: SignalCall, callerName: String)
     func answerCall(localId: UUID)
     func answerCall(_ call: SignalCall)
@@ -191,7 +191,13 @@ extension CallUIAdaptee {
 
         Logger.verbose("callerName: \(callerName)")
 
-        adaptee(for: call).reportIncomingCall(call, callerName: callerName)
+        adaptee(for: call).reportIncomingCall(call, callerName: callerName) { error in
+            AssertIsOnMainThread()
+
+            guard let error = error else { return }
+            owsFailDebug("Failed to report incoming call with error \(error)")
+            self.callService.handleFailedCall(failedCall: call, error: error)
+        }
     }
 
     internal func reportMissedCall(_ call: SignalCall) {
