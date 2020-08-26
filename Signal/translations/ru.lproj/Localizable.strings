@@ -2570,7 +2570,7 @@
 "view_fake_chat_bubble_5" = "Друзья не позволят друзьям использовать ненадежные мессенджеры. Пользуйтесь на здоровье.";
 
 "vc_register_title" = "Познакомьтесь со своим Session ID";
-"vc_register_explanation" = "Ваш Session ID - это уникальный адрес, который могут использовать другие люди для связи с вами при помощи Session. Поскольку ваш Session ID никак не связан с вашей настоящей личностью, он по определению является полностью анонимным и конфиденциальным.";
+"vc_register_explanation" = "Ваш Session ID - это уникальный адрес, который другие пользователи могут использовать для связи с вами при помощи Session. Поскольку ваш Session ID никак не связан с вашей настоящей личностью, он по определению является полностью анонимным и конфиденциальным.";
 "vc_register_public_key_copied_message" = "Скопировано в буфер обмена";
 
 "vc_restore_title" = "Восстановите свой аккаунт";
@@ -2638,7 +2638,6 @@
 "vc_create_closed_group_empty_state_button_title" = "Начать Сессию";
 "vc_create_closed_group_group_name_missing_error" = "Пожалуйста, введите название группы";
 "vc_create_closed_group_group_name_too_long_error" = "Пожалуйста, введите более короткое имя группы";
-"vc_create_closed_group_not_enough_group_members_error" = "Пожалуйста, выберите как минимум 2 участников группы";
 "vc_create_closed_group_too_many_group_members_error" = "В закрытой группе не может быть больше 10 участников";
 "vc_create_closed_group_invalid_session_id_error" = "Один из участников вашей группы имеет недопустимый Session ID";
 
