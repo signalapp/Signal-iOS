@@ -111,6 +111,11 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (BOOL)isOnboarded;
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (BOOL)isDiscoverableByPhoneNumber;
+- (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
+                  updateStorageService:(BOOL)updateStorageService
+                           transaction:(SDSAnyWriteTransaction *)transaction;
+
 #pragma mark - Register with phone number
 
 - (void)verifyAccountWithRequest:(TSRequest *)request

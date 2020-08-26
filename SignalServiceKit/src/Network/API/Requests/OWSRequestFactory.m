@@ -480,6 +480,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         accountAttributes[@"name"] = encryptedDeviceName.base64EncodedString;
     }
 
+    if (SSKFeatureFlags.phoneNumberDiscoverability) {
+        accountAttributes[@"discoverableByPhoneNumber"] = @(self.tsAccountManager.isDiscoverableByPhoneNumber);
+    }
+
     accountAttributes[@"capabilities"] = self.deviceCapabilities;
 
     return [accountAttributes copy];

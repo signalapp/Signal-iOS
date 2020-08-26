@@ -135,6 +135,9 @@ public class FeatureFlags: BaseFlags {
     public static let phoneNumberSharing = false
 
     @objc
+    public static let phoneNumberDiscoverability = false
+
+    @objc
     public static let complainAboutSlowDBWrites = true
 
     // Don't consult this flags; consult RemoteConfig.usernames.
@@ -179,17 +182,17 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let attachmentUploadV3ForV1GroupAvatars = false
 
-    private static let _ignoreCDSUnregisteredUsersInMessageSends = AtomicBool(true)
+    private static let _ignoreCDSUndiscoverableUsersInMessageSends = AtomicBool(true)
     @objc
-    public static var ignoreCDSUnregisteredUsersInMessageSends: Bool {
+    public static var ignoreCDSUndiscoverableUsersInMessageSends: Bool {
         get {
             guard build.includes(.qa) else {
                 return true
             }
-            return _ignoreCDSUnregisteredUsersInMessageSends.get()
+            return _ignoreCDSUndiscoverableUsersInMessageSends.get()
         }
         set {
-            _ignoreCDSUnregisteredUsersInMessageSends.set(newValue)
+            _ignoreCDSUndiscoverableUsersInMessageSends.set(newValue)
         }
     }
 

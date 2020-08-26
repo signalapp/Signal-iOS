@@ -568,6 +568,22 @@ extension StorageServiceProtoAccountRecord {
         return .shared()
     }
 
+    static var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
+    var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
+    static var udManager: OWSUDManager {
+        return SSKEnvironment.shared.udManager
+    }
+
+    var udManager: OWSUDManager {
+        return SSKEnvironment.shared.udManager
+    }
+
     // MARK: -
 
     static func build(
@@ -611,6 +627,12 @@ extension StorageServiceProtoAccountRecord {
 
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         builder.setLinkPreviews(linkPreviewsEnabled)
+
+        let phoneNumberSharingMode = udManager.phoneNumberSharingMode
+        builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
+
+        let isDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber()
+        builder.setDiscoverableByPhoneNumber(isDiscoverableByPhoneNumber)
 
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -703,7 +725,54 @@ extension StorageServiceProtoAccountRecord {
             SSKPreferences.setAreLinkPreviewsEnabled(linkPreviews, transaction: transaction)
         }
 
+        let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode
+        if phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
+            if let localMode = phoneNumberSharingMode?.asLocalMode {
+                udManager.setPhoneNumberSharingMode(
+                    localMode,
+                    updateStorageService: false,
+                    transaction: transaction.unwrapGrdbWrite
+                )
+            } else {
+                Logger.error("Unknown phone number sharing mode \(String(describing: phoneNumberSharingMode))")
+            }
+        }
+
+        let localIsDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber()
+        if discoverableByPhoneNumber != localIsDiscoverableByPhoneNumber {
+            tsAccountManager.setIsDiscoverableByPhoneNumber(
+                discoverableByPhoneNumber,
+                updateStorageService: false,
+                transaction: transaction
+            )
+        }
+
         return mergeState
+    }
+}
+
+// MARK: -
+
+extension PhoneNumberSharingMode {
+    var asProtoMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode {
+        switch self {
+        case .everybody: return .everybody
+        case .contactsOnly: return .contactsOnly
+        case .nobody: return .nobody
+        }
+    }
+}
+
+extension StorageServiceProtoAccountRecordPhoneNumberSharingMode {
+    var asLocalMode: PhoneNumberSharingMode? {
+        switch self {
+        case .everybody: return .everybody
+        case .contactsOnly: return .contactsOnly
+        case .nobody: return .nobody
+        default:
+            owsFailDebug("unexpected case \(self)")
+            return nil
+        }
     }
 }
 

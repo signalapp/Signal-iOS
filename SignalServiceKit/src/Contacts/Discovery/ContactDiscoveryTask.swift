@@ -71,15 +71,15 @@ public class ContactDiscoveryTask: NSObject {
         }.map(on: workQueue) { (discoveredContacts) -> Set<SignalRecipient> in
             let discoveredIdentifiers = Set(discoveredContacts.compactMap { $0.e164 })
 
-            let addressesToRegister = discoveredContacts
+            let discoveredAddresses = discoveredContacts
                 .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164, trustLevel: .high) }
 
-            let addressesToUnregister = self.e164FetchSet
+            let undiscoverableAddresses = self.e164FetchSet
                 .subtracting(discoveredIdentifiers)
-                .map { SignalServiceAddress(uuid: nil, phoneNumber: $0, trustLevel: .high)}
+                .map { SignalServiceAddress(uuid: nil, phoneNumber: $0, trustLevel: .low) }
 
-            return self.storeResults(registering: addressesToRegister,
-                                     unregistering: addressesToUnregister,
+            return self.storeResults(discoveredAddresses: discoveredAddresses,
+                                     undiscoverableAddresses: undiscoverableAddresses,
                                      database: database)
 
         }.recover(on: workQueue) { error -> Promise<Set<SignalRecipient>> in
@@ -105,25 +105,43 @@ public class ContactDiscoveryTask: NSObject {
         }
     }
 
-    private func storeResults(registering toRegister: [SignalServiceAddress],
-                              unregistering toUnregister: [SignalServiceAddress],
-                              database: SDSDatabaseStorage?) -> Set<SignalRecipient> {
+    private func storeResults(
+        discoveredAddresses: [SignalServiceAddress],
+        undiscoverableAddresses: [SignalServiceAddress],
+        database: SDSDatabaseStorage?
+    ) -> Set<SignalRecipient> {
 
-        Self.markUsersAsRecentlyKnownToBeUnregistered(toUnregister)
+        // It's possible we have an undiscoverable address that has a UUID in a number of
+        // scenarios such as (but not exclusive to) the following;
+        // * You do "find by phone number" for someone you've previously interacted with
+        //   and had a UUID for who is no longer registered.
+        // * You do an intersection to lookup someone who has shared their phone number with you
+        //   (via message send) but has chose to be undiscoverable by CDS lookups.
+        //
+        // When any of these scenarios occur, we cannot know with certainty if the user is
+        // unregistered or has only turned off discoverability, so we *only* mark the addreses
+        // without any UUIDs as unregistered. Everything else we ignore and will identify their
+        // current registration status for when either attempting to send a message or fetch
+        // their profile in the future.
+        let phoneNumberOnlyUndiscoverableAddresses = undiscoverableAddresses.filter { $0.uuid == nil }
+
+        Self.markUsersAsRecentlyKnownToBeUndiscoverable(phoneNumberOnlyUndiscoverableAddresses)
 
         guard let database = database else {
-            // Just return a set of in-memory SignalRecipients built from toRegister
+            // Just return a set of in-memory SignalRecipients built from discoveredAddresses
             owsAssertDebug(CurrentAppContext().isRunningTests)
-            return Set(toRegister.map { SignalRecipient(address: $0) })
+            return Set(discoveredAddresses.map { SignalRecipient(address: $0) })
         }
 
         return database.write { tx in
-            let recipientSet = Set(toRegister.map { address -> SignalRecipient in
+            let recipientSet = Set(discoveredAddresses.map { address -> SignalRecipient in
                 return SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: tx)
             })
-            toUnregister.forEach { address in
+
+            phoneNumberOnlyUndiscoverableAddresses.forEach { address in
                 SignalRecipient.mark(asUnregistered: address, transaction: tx)
             }
+
             return recipientSet
         }
     }
@@ -151,37 +169,42 @@ public extension ContactDiscoveryTask {
     }
 }
 
-// MARK: - Unregistered Users
+// MARK: - Undiscoverable Users
 
 @objc
 public extension ContactDiscoveryTask {
 
     private static let unfairLock = UnfairLock()
-    private static let unregisteredUserCache = NSCache<NSString, NSDate>()
+    private static let undiscoverableUserCache = NSCache<NSString, NSDate>()
 
-    fileprivate static func markUsersAsRecentlyKnownToBeUnregistered(_ addresses: [SignalServiceAddress]) {
+    fileprivate static func markUsersAsRecentlyKnownToBeUndiscoverable(_ addresses: [SignalServiceAddress]) {
         guard !addresses.isEmpty else {
             return
         }
-        guard FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends else {
+        guard FeatureFlags.ignoreCDSUndiscoverableUsersInMessageSends else {
             return
         }
-        Logger.verbose("Marking users as known to be unregistered: \(addresses.count)")
+        Logger.verbose("Marking users as known to be undiscoverable: \(addresses.count)")
 
-        let markAsUnregisteredDate = Date() as NSDate
+        let markAsUndiscoverableDate = Date() as NSDate
         unfairLock.withLock {
             for address in addresses {
                 guard let phoneNumber = address.phoneNumber else {
                     owsFailDebug("Address missing phoneNumber.")
                     continue
                 }
-                Self.unregisteredUserCache.setObject(markAsUnregisteredDate, forKey: phoneNumber as NSString)
+                guard address.uuid == nil else {
+                    // Addresses that have UUIDs should never be treated as undiscoverable.
+                    owsFailDebug("address unexpectedly had UUID")
+                    continue
+                }
+                Self.undiscoverableUserCache.setObject(markAsUndiscoverableDate, forKey: phoneNumber as NSString)
             }
         }
     }
 
-    static func addressesRecentlyMarkedAsUnregistered(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
-        guard FeatureFlags.ignoreCDSUnregisteredUsersInMessageSends else {
+    static func addressesRecentlyMarkedAsUndiscoverable(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
+        guard FeatureFlags.ignoreCDSUndiscoverableUsersInMessageSends else {
             return []
         }
         return unfairLock.withLock {
@@ -191,14 +214,19 @@ public extension ContactDiscoveryTask {
                     owsFailDebug("Address missing phone number.")
                     return false
                 }
-                guard let markAsUnregisteredDate = Self.unregisteredUserCache.object(forKey: phoneNumber as NSString) else {
-                    // Not marked as unregistered.
+                guard address.uuid == nil else {
+                    // Addresses that have UUIDs should never be treated as undiscoverable.
+                    owsFailDebug("address unexpectedly had UUID")
                     return false
                 }
-                // Consider the user as unregistered if CDS indicated they were
-                // unregistered in the last N minutes.
+                guard let markAsUndiscoverableDate = Self.undiscoverableUserCache.object(forKey: phoneNumber as NSString) else {
+                    // Not marked as undiscoverable.
+                    return false
+                }
+                // Consider the user as undiscoverable if CDS indicated they
+                // didn't exist in the last N minutes.
                 let acceptableInterval: TimeInterval = kHourInterval
-                return abs(markAsUnregisteredDate.timeIntervalSinceNow) <= acceptableInterval
+                return abs(markAsUndiscoverableDate.timeIntervalSinceNow) <= acceptableInterval
             }
         }
     }

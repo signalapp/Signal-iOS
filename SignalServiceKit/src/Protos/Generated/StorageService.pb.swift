@@ -394,10 +394,58 @@ struct StorageServiceProtos_AccountRecord {
 
   var linkPreviews: Bool = false
 
+  var phoneNumberSharingMode: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode = .everybody
+
+  var discoverableByPhoneNumber: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case everybody // = 0
+    case contactsOnly // = 1
+    case nobody // = 2
+    case UNRECOGNIZED(Int)
+
+    init() {
+      self = .everybody
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .everybody
+      case 1: self = .contactsOnly
+      case 2: self = .nobody
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .everybody: return 0
+      case .contactsOnly: return 1
+      case .nobody: return 2
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
 
   init() {}
 }
+
+#if swift(>=4.2)
+
+extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [StorageServiceProtos_AccountRecord.PhoneNumberSharingMode] = [
+    .everybody,
+    .contactsOnly,
+    .nobody
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
@@ -950,7 +998,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     6: .same(proto: "readReceipts"),
     7: .same(proto: "sealedSenderIndicators"),
     8: .same(proto: "typingIndicators"),
-    9: .same(proto: "linkPreviews")
+    9: .same(proto: "linkPreviews"),
+    12: .same(proto: "phoneNumberSharingMode"),
+    13: .same(proto: "discoverableByPhoneNumber")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -966,6 +1016,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       case 8: try decoder.decodeSingularBoolField(value: &self.typingIndicators)
       case 9: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
       case 10: try decoder.decodeSingularBoolField(value: &self.noteToSelfMarkedUnread)
+      case 12: try decoder.decodeSingularEnumField(value: &self.phoneNumberSharingMode)
+      case 13: try decoder.decodeSingularBoolField(value: &self.discoverableByPhoneNumber)
       default: break
       }
     }
@@ -1002,6 +1054,12 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if self.noteToSelfMarkedUnread != false {
       try visitor.visitSingularBoolField(value: self.noteToSelfMarkedUnread, fieldNumber: 10)
     }
+    if self.phoneNumberSharingMode != .everybody {
+      try visitor.visitSingularEnumField(value: self.phoneNumberSharingMode, fieldNumber: 12)
+    }
+    if self.discoverableByPhoneNumber != false {
+      try visitor.visitSingularBoolField(value: self.discoverableByPhoneNumber, fieldNumber: 13)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1016,7 +1074,17 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.sealedSenderIndicators != rhs.sealedSenderIndicators {return false}
     if lhs.typingIndicators != rhs.typingIndicators {return false}
     if lhs.linkPreviews != rhs.linkPreviews {return false}
+    if lhs.phoneNumberSharingMode != rhs.phoneNumberSharingMode {return false}
+    if lhs.discoverableByPhoneNumber != rhs.discoverableByPhoneNumber {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "EVERYBODY"),
+    1: .same(proto: "CONTACTS_ONLY"),
+    2: .same(proto: "NOBODY")
+  ]
 }

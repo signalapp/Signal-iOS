@@ -39,6 +39,7 @@ NSString *const TSAccountManager_IsOnboardedKey = @"TSAccountManager_IsOnboarded
 NSString *const TSAccountManager_IsTransferInProgressKey = @"TSAccountManager_IsTransferInProgressKey";
 NSString *const TSAccountManager_WasTransferredKey = @"TSAccountManager_WasTransferredKey";
 NSString *const TSAccountManager_HasPendingRestoreDecisionKey = @"TSAccountManager_HasPendingRestoreDecisionKey";
+NSString *const TSAccountManager_IsDiscoverableByPhoneNumber = @"TSAccountManager_IsDiscoverableByPhoneNumber";
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
 NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
@@ -66,6 +67,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 @property (nonatomic, readonly) BOOL isRegistered;
 @property (nonatomic, readonly) BOOL isDeregistered;
 @property (nonatomic, readonly) BOOL isOnboarded;
+@property (nonatomic, readonly) BOOL isDiscoverableByPhoneNumber;
 
 @property (nonatomic, readonly) BOOL isTransferInProgress;
 @property (nonatomic, readonly) BOOL wasTransferred;
@@ -109,6 +111,10 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                             defaultValue:1 // lazily migrate legacy primary devices
                              transaction:transaction];
     _isOnboarded = [keyValueStore getBool:TSAccountManager_IsOnboardedKey defaultValue:NO transaction:transaction];
+
+    _isDiscoverableByPhoneNumber = [keyValueStore getBool:TSAccountManager_IsDiscoverableByPhoneNumber
+                                             defaultValue:YES
+                                              transaction:transaction];
 
     _isTransferInProgress = [keyValueStore getBool:TSAccountManager_IsTransferInProgressKey
                                       defaultValue:NO
@@ -559,6 +565,31 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     @synchronized(self) {
         [self.keyValueStore setBool:isOnboarded key:TSAccountManager_IsOnboardedKey transaction:transaction];
         [self loadAccountStateWithTransaction:transaction];
+    }
+}
+
+- (BOOL)isDiscoverableByPhoneNumber
+{
+    return [self getOrLoadAccountStateWithSneakyTransaction].isDiscoverableByPhoneNumber;
+}
+
+- (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
+                  updateStorageService:(BOOL)updateStorageService
+                           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!SSKFeatureFlags.phoneNumberDiscoverability) {
+        return;
+    }
+
+    @synchronized(self) {
+        [self.keyValueStore setBool:isDiscoverableByPhoneNumber
+                                key:TSAccountManager_IsDiscoverableByPhoneNumber
+                        transaction:transaction];
+        [self loadAccountStateWithTransaction:transaction];
+    }
+
+    if (updateStorageService) {
+        [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
     }
 }
 

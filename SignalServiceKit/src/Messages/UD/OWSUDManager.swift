@@ -136,6 +136,14 @@ public class OWSUDSendingAccess: NSObject {
     func shouldAllowUnrestrictedAccessLocal() -> Bool
     @objc
     func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
+
+    var phoneNumberSharingMode: PhoneNumberSharingMode { get }
+
+    func setPhoneNumberSharingMode(
+        _ mode: PhoneNumberSharingMode,
+        updateStorageService: Bool,
+        transaction: GRDBWriteTransaction
+    )
 }
 
 // MARK: -
@@ -712,16 +720,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: - Phone Number Sharing
 
-    public enum PhoneNumberSharingMode: Int {
-        case everybody
-        case contactsOnly
-        case nobody
-    }
-
     private static let phoneNumberSharingModeKey = "phoneNumberSharingMode"
     private var phoneNumberSharingModeCached = AtomicOptional<PhoneNumberSharingMode>(nil)
 
     public var phoneNumberSharingMode: PhoneNumberSharingMode {
+        guard FeatureFlags.phoneNumberSharing else { return .everybody }
         return phoneNumberSharingModeCached.get() ?? .everybody
     }
 
@@ -731,8 +734,25 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         phoneNumberSharingModeCached.set(mode)
     }
 
-    public func setPhoneNumberSharingMode(_ mode: PhoneNumberSharingMode, transaction: GRDBWriteTransaction) {
+    public func setPhoneNumberSharingMode(
+        _ mode: PhoneNumberSharingMode,
+        updateStorageService: Bool,
+        transaction: GRDBWriteTransaction
+    ) {
+        guard FeatureFlags.phoneNumberSharing else { return }
+
         keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: transaction.asAnyWrite)
         phoneNumberSharingModeCached.set(mode)
+
+        if updateStorageService {
+            SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+        }
     }
+}
+
+@objc
+public enum PhoneNumberSharingMode: Int {
+    case everybody
+    case contactsOnly
+    case nobody
 }

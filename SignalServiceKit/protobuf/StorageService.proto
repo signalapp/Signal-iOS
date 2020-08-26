@@ -108,14 +108,22 @@ message GroupV2Record {
 }
 
 message AccountRecord {
-  bytes  profileKey             = 1;
-  string givenName              = 2;
-  string familyName             = 3;
-  string avatarUrl              = 4;
-  bool   noteToSelfArchived     = 5;
-  bool   noteToSelfMarkedUnread = 10;
-  bool   readReceipts           = 6;
-  bool   sealedSenderIndicators = 7;
-  bool   typingIndicators       = 8;
-  bool   linkPreviews           = 9;
+  enum PhoneNumberSharingMode {
+    EVERYBODY     = 0;
+    CONTACTS_ONLY = 1;
+    NOBODY        = 2;
+  }
+
+  bytes                  profileKey                = 1;
+  string                 givenName                 = 2;
+  string                 familyName                = 3;
+  string                 avatarUrl                 = 4;
+  bool                   noteToSelfArchived        = 5;
+  bool                   noteToSelfMarkedUnread    = 10;
+  bool                   readReceipts              = 6;
+  bool                   sealedSenderIndicators    = 7;
+  bool                   typingIndicators          = 8;
+  bool                   linkPreviews              = 9;
+  PhoneNumberSharingMode phoneNumberSharingMode    = 12;
+  bool                   discoverableByPhoneNumber = 13;
 }
