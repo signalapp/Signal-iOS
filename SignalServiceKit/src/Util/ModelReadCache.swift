@@ -209,7 +209,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                 // NOTE: We don't need to update the cache; the SDS
                 // model extensions will populate the cache for us.
                 if readFromCache(cacheKey: cacheKey)?.value == nil {
-                    owsFailDebug("Missing value in cache: \(cacheKey.key), \(logName)")
+                    let cacheKeyForValue = adapter.cacheKey(forValue: value)
+                    let canUseCacheForValue = canUseCache(cacheKey: cacheKey, transaction: transaction)
+                    owsFailDebug("Missing value in cache: \(cacheKey.key), cacheKeyForValue: \(cacheKeyForValue), canUseCacheForValue: \(canUseCacheForValue), \(logName)")
                 }
             }
             #endif
