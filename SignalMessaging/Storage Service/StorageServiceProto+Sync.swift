@@ -769,7 +769,9 @@ extension StorageServiceProtoAccountRecordPhoneNumberSharingMode {
         case .everybody: return .everybody
         case .contactsOnly: return .contactsOnly
         case .nobody: return .nobody
-        default: return nil
+        default:
+            owsFailDebug("unexpected case \(self)")
+            return nil
         }
     }
 }
