@@ -489,7 +489,6 @@ public class MessageProcessing: NSObject {
 
     private var isMessageFetchingComplete: Bool {
         guard tsAccountManager.isRegisteredAndReady else {
-            owsFailDebug("Not registered.")
             return false
         }
         // In the share extension, don't block on latest
