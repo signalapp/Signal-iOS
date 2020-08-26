@@ -236,10 +236,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
 
     @objc
     public class func isPreMessageRequestsThread(_ thread: TSThread, transaction: GRDBReadTransaction) -> Bool {
-        // Once we roll out phone number privacy, all threads will see message requests.
-        // For now, we grandfather legacy threads where you haven't shared your profile.
-        guard !FeatureFlags.phoneNumberPrivacy else { return false }
-
+        // Grandfather legacy threads where you haven't shared your profile.
         guard !thread.isNoteToSelf else { return false }
 
         let interactionFinder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)

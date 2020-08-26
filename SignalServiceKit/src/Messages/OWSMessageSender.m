@@ -648,7 +648,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (AnyPromise *)sendPromiseForRecipients:(NSArray<SignalRecipient *> *)recipients
                                  message:(TSOutgoingMessage *)message
                                   thread:(TSThread *)thread
-                       senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
+                      senderCertificates:(nullable SenderCertificates *)senderCertificates
                           sendErrorBlock:(void (^_Nonnull)(SignalRecipient *recipient, NSError *))sendErrorBlock
 {
     OWSAssertDebug(!NSThread.isMainThread);
@@ -658,12 +658,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // 1. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
-    if (senderCertificate != nil) {
+    if (senderCertificates != nil) {
         for (SignalRecipient *recipient in recipients) {
             if (!recipient.address.isLocalAddress) {
                 sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
                                                                               requireSyncAccess:YES
-                                                                              senderCertificate:senderCertificate];
+                                                                             senderCertificates:senderCertificates];
             }
         }
     }
@@ -744,7 +744,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     TSThread *thread = sendInfo.thread;
     NSArray<SignalServiceAddress *> *recipientAddresses = sendInfo.recipients;
-    SMKSenderCertificate *senderCertificate = sendInfo.senderCertificate;
+    SenderCertificates *senderCertificates = sendInfo.senderCertificates;
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
@@ -774,17 +774,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     [self unlockPreKeyUpdateFailuresPromise]
         .thenInBackground(^(id value) {
-            return [self
-                sendPromiseForRecipients:recipients
-                                 message:message
-                                  thread:thread
-                       senderCertificate:senderCertificate
-                          sendErrorBlock:^(SignalRecipient *recipient, NSError *error) {
-                              @synchronized(sendErrors) {
-                                  [sendErrors addObject:error];
-                                  sendErrorPerRecipient[recipient.address] = error;
-                              }
-                          }];
+            return [self sendPromiseForRecipients:recipients
+                                          message:message
+                                           thread:thread
+                               senderCertificates:senderCertificates
+                                   sendErrorBlock:^(SignalRecipient *recipient, NSError *error) {
+                                       @synchronized(sendErrors) {
+                                           [sendErrors addObject:error];
+                                           sendErrorPerRecipient[recipient.address] = error;
+                                       }
+                                   }];
         })
         .thenInBackground(^(id value) {
             successHandler();

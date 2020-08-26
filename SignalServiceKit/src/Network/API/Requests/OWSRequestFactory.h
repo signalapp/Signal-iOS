@@ -152,7 +152,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 #pragma mark - UD
 
-+ (TSRequest *)udSenderCertificateRequest;
++ (TSRequest *)udSenderCertificateRequestWithUuidOnly:(BOOL)uuidOnly
+    NS_SWIFT_NAME(udSenderCertificateRequest(uuidOnly:));
 
 #pragma mark - Usernames
 

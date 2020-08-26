@@ -66,6 +66,16 @@ public class OWSUDAccess: NSObject {
 }
 
 @objc
+public class SenderCertificates: NSObject {
+    let defaultCert: SMKSenderCertificate
+    let uuidOnlyCert: SMKSenderCertificate
+    init(defaultCert: SMKSenderCertificate, uuidOnlyCert: SMKSenderCertificate) {
+        self.defaultCert = defaultCert
+        self.uuidOnlyCert = uuidOnlyCert
+    }
+}
+
+@objc
 public class OWSUDSendingAccess: NSObject {
 
     @objc
@@ -106,19 +116,19 @@ public class OWSUDSendingAccess: NSObject {
     @objc
     func udSendingAccess(forAddress address: SignalServiceAddress,
                          requireSyncAccess: Bool,
-                         senderCertificate: SMKSenderCertificate) -> OWSUDSendingAccess?
+                         senderCertificates: SenderCertificates) -> OWSUDSendingAccess?
 
     // MARK: Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
     // logic can access the strongly typed certificate data.
     @objc
-    func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
-                                  success:@escaping (SMKSenderCertificate) -> Void,
+    func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
+                                  success:@escaping (SenderCertificates) -> Void,
                                   failure:@escaping (Error) -> Void)
 
     @objc
-    func removeSenderCertificate(transaction: SDSAnyWriteTransaction)
+    func removeSenderCertificates(transaction: SDSAnyWriteTransaction)
 
     // MARK: Unrestricted Access
 
@@ -190,6 +200,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         databaseStorage.read { transaction in
+            self.cachePhoneNumberSharingMode(transaction: transaction.unwrapGrdbRead)
+
             self.unfairLock.withLock {
                 self.phoneNumberAccessStore.enumerateKeysAndObjects(transaction: transaction) { (phoneNumber: String, anyValue: Any, _) in
                     guard let mode = parseUnidentifiedAccessMode(anyValue) else {
@@ -228,7 +240,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         // if it needs it.
         DispatchQueue.global().async {
             // Any error is silently ignored.
-            _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
+            _ = self.ensureSenderCertificates(certificateExpirationPolicy: .strict)
         }
     }
 
@@ -238,7 +250,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         owsAssertDebug(AppReadiness.isAppReady)
 
         // Any error is silently ignored.
-        _ = ensureSenderCertificate(certificateExpirationPolicy: .strict)
+        _ = ensureSenderCertificates(certificateExpirationPolicy: .strict)
     }
 
     @objc
@@ -247,7 +259,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         owsAssertDebug(AppReadiness.isAppReady)
 
         // Any error is silently ignored.
-        _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
+        _ = ensureSenderCertificates(certificateExpirationPolicy: .strict)
     }
 
     // MARK: -
@@ -469,10 +481,25 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func udSendingAccess(forAddress address: SignalServiceAddress,
                                 requireSyncAccess: Bool,
-                                senderCertificate: SMKSenderCertificate) -> OWSUDSendingAccess? {
+                                senderCertificates: SenderCertificates) -> OWSUDSendingAccess? {
         guard let udAccess = self.udAccess(forAddress: address, requireSyncAccess: requireSyncAccess) else {
             return nil
         }
+
+        let senderCertificate: SMKSenderCertificate
+        switch phoneNumberSharingMode {
+        case .everybody:
+            senderCertificate = senderCertificates.defaultCert
+        case .contactsOnly:
+            if SSKEnvironment.shared.contactsManager.isSystemContact(address: address) {
+                senderCertificate = senderCertificates.defaultCert
+            } else {
+                senderCertificate = senderCertificates.uuidOnlyCert
+            }
+        case .nobody:
+            senderCertificate = senderCertificates.uuidOnlyCert
+        }
+
         return OWSUDSendingAccess(udAccess: udAccess, senderCertificate: senderCertificate)
     }
 
@@ -480,17 +507,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     #if DEBUG
     @objc
-    public func hasSenderCertificate() -> Bool {
-        return senderCertificate(certificateExpirationPolicy: .permissive) != nil
+    public func hasSenderCertificate(uuidOnly: Bool) -> Bool {
+        return senderCertificate(uuidOnly: uuidOnly, certificateExpirationPolicy: .permissive) != nil
     }
     #endif
 
-    private func senderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SMKSenderCertificate? {
+    private func senderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SMKSenderCertificate? {
         var certificateDateValue: Date?
         var certificateDataValue: Data?
         databaseStorage.read { transaction in
-            certificateDateValue = self.keyValueStore.getDate(self.senderCertificateDateKey(), transaction: transaction)
-            certificateDataValue = self.keyValueStore.getData(self.senderCertificateKey(), transaction: transaction)
+            certificateDateValue = self.keyValueStore.getDate(self.senderCertificateDateKey(uuidOnly: uuidOnly), transaction: transaction)
+            certificateDataValue = self.keyValueStore.getData(self.senderCertificateKey(uuidOnly: uuidOnly), transaction: transaction)
         }
 
         if certificateExpirationPolicy == .strict {
@@ -522,58 +549,77 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    func setSenderCertificate(certificateData: Data) {
+    func setSenderCertificate(uuidOnly: Bool, certificateData: Data) {
         databaseStorage.write { transaction in
-            self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(), transaction: transaction)
-            self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(), transaction: transaction)
+            self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(uuidOnly: uuidOnly), transaction: transaction)
+            self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(uuidOnly: uuidOnly), transaction: transaction)
         }
     }
 
     @objc
-    public func removeSenderCertificate(transaction: SDSAnyWriteTransaction) {
-        keyValueStore.removeValue(forKey: senderCertificateDateKey(), transaction: transaction)
-        keyValueStore.removeValue(forKey: senderCertificateKey(), transaction: transaction)
+    public func removeSenderCertificates(transaction: SDSAnyWriteTransaction) {
+        keyValueStore.removeValue(forKey: senderCertificateDateKey(uuidOnly: true), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateKey(uuidOnly: true), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateDateKey(uuidOnly: false), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateKey(uuidOnly: false), transaction: transaction)
     }
 
-    private func senderCertificateKey() -> String {
-        return TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
+    private func senderCertificateKey(uuidOnly: Bool) -> String {
+        let baseKey = TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
+        if uuidOnly {
+            return "\(baseKey)-withoutPhoneNumber"
+        } else {
+            return baseKey
+        }
     }
 
-    private func senderCertificateDateKey() -> String {
-        return TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateDateKey_Production : kUDCurrentSenderCertificateDateKey_Staging
+    private func senderCertificateDateKey(uuidOnly: Bool) -> String {
+        let baseKey = TSConstants.isUsingProductionService ? kUDCurrentSenderCertificateDateKey_Production : kUDCurrentSenderCertificateDateKey_Staging
+        if uuidOnly {
+            return "\(baseKey)-withoutPhoneNumber"
+        } else {
+            return baseKey
+        }
     }
 
     @objc
-    public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
-                                         success: @escaping (SMKSenderCertificate) -> Void,
+    public func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
+                                         success: @escaping (SenderCertificates) -> Void,
                                          failure: @escaping (Error) -> Void) {
-        ensureSenderCertificate(certificateExpirationPolicy: certificateExpirationPolicy)
+        ensureSenderCertificates(certificateExpirationPolicy: certificateExpirationPolicy)
             .done(success)
             .catch(failure)
     }
 
-    public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
+    public func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificates> {
         guard tsAccountManager.isRegisteredAndReady else {
             // We don't want to assert but we should log and fail.
             return Promise(error: OWSGenericError("Not registered and ready."))
         }
+        let defaultPromise = ensureSenderCertificate(uuidOnly: false, certificateExpirationPolicy: certificateExpirationPolicy)
+        let uuidOnlyPromise = ensureSenderCertificate(uuidOnly: true, certificateExpirationPolicy: certificateExpirationPolicy)
+        return when(fulfilled: defaultPromise, uuidOnlyPromise).map { defaultCert, uuidOnlyCert in
+            return SenderCertificates(defaultCert: defaultCert, uuidOnlyCert: uuidOnlyCert)
+        }
+    }
 
+    public func ensureSenderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
         // If there is a valid cached sender certificate, use that.
-        if let certificate = senderCertificate(certificateExpirationPolicy: certificateExpirationPolicy) {
+        if let certificate = senderCertificate(uuidOnly: uuidOnly, certificateExpirationPolicy: certificateExpirationPolicy) {
             return Promise.value(certificate)
         }
 
         return firstly {
-            requestSenderCertificate()
+            requestSenderCertificate(uuidOnly: uuidOnly)
         }.map { (certificate: SMKSenderCertificate) in
-            self.setSenderCertificate(certificateData: certificate.serializedData)
+            self.setSenderCertificate(uuidOnly: uuidOnly, certificateData: certificate.serializedData)
             return certificate
         }
     }
 
-    private func requestSenderCertificate() -> Promise<SMKSenderCertificate> {
+    private func requestSenderCertificate(uuidOnly: Bool) -> Promise<SMKSenderCertificate> {
         return firstly {
-            SignalServiceRestClient().requestUDSenderCertificate()
+            SignalServiceRestClient().requestUDSenderCertificate(uuidOnly: uuidOnly)
         }.map { certificateData -> SMKSenderCertificate in
             let certificate = try SMKSenderCertificate(serializedData: certificateData)
 
@@ -591,13 +637,18 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return false
         }
 
-        guard certificate.senderAddress.e164 == tsAccountManager.localNumber else {
+        guard certificate.senderAddress.e164 == nil || certificate.senderAddress.e164 == tsAccountManager.localNumber else {
             Logger.warn("Sender certificate has incorrect phone number")
             return false
         }
 
         guard certificate.senderAddress.uuid == nil || certificate.senderAddress.uuid == tsAccountManager.localUuid else {
             Logger.warn("Sender certificate has incorrect UUID")
+            return false
+        }
+
+        guard certificate.senderAddress.uuid != nil || certificate.senderAddress.e164 != nil else {
+            Logger.warn("Sender certificate does not have a valid address.")
             return false
         }
 
@@ -657,5 +708,31 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }.catch { error in
             Logger.warn("Error: \(error)")
         }
+    }
+
+    // MARK: - Phone Number Sharing
+
+    public enum PhoneNumberSharingMode: Int {
+        case everybody
+        case contactsOnly
+        case nobody
+    }
+
+    private static let phoneNumberSharingModeKey = "phoneNumberSharingMode"
+    private var phoneNumberSharingModeCached = AtomicOptional<PhoneNumberSharingMode>(nil)
+
+    public var phoneNumberSharingMode: PhoneNumberSharingMode {
+        return phoneNumberSharingModeCached.get() ?? .everybody
+    }
+
+    private func cachePhoneNumberSharingMode(transaction: GRDBReadTransaction) {
+        guard let rawMode = keyValueStore.getInt(Self.phoneNumberSharingModeKey, transaction: transaction.asAnyRead),
+            let mode = PhoneNumberSharingMode(rawValue: rawMode) else { return }
+        phoneNumberSharingModeCached.set(mode)
+    }
+
+    public func setPhoneNumberSharingMode(_ mode: PhoneNumberSharingMode, transaction: GRDBWriteTransaction) {
+        keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: transaction.asAnyWrite)
+        phoneNumberSharingModeCached.set(mode)
     }
 }
