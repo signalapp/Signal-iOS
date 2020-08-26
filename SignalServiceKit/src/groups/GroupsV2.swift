@@ -127,6 +127,10 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func fetchGroupInviteLinkAvatar(avatarUrlPath: String,
                                     groupSecretParamsData: Data) -> Promise<Data>
+
+    func joinGroupViaInviteLink(groupId: Data,
+                                groupSecretParamsData: Data,
+                                inviteLinkPassword: Data) -> Promise<TSGroupThread>
 }
 
 // MARK: -
@@ -223,11 +227,11 @@ public protocol GroupV2Updates: AnyObject {
 
 public protocol GroupV2UpdatesSwift: GroupV2Updates {
     func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
-                                                           groupSecretParamsData: Data) -> Promise<Void>
+                                                           groupSecretParamsData: Data) -> Promise<TSGroupThread>
 
     func tryToRefreshV2GroupThread(groupId: Data,
                                    groupSecretParamsData: Data,
-                                   groupUpdateMode: GroupUpdateMode) -> Promise<Void>
+                                   groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread>
 
     func updateGroupWithChangeActions(groupId: Data,
                                       changeActionsProto: GroupsProtoGroupChangeActions,
@@ -563,6 +567,12 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
                                            groupSecretParamsData: Data) -> Promise<Data> {
         owsFail("Not implemented.")
     }
+
+    public func joinGroupViaInviteLink(groupId: Data,
+                                       groupSecretParamsData: Data,
+                                       inviteLinkPassword: Data) -> Promise<TSGroupThread> {
+        owsFail("Not implemented.")
+    }
 }
 
 // MARK: -
@@ -580,13 +590,13 @@ public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift {
     }
 
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
-                                                                  groupSecretParamsData: Data) -> Promise<Void> {
+                                                                  groupSecretParamsData: Data) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
     public func tryToRefreshV2GroupThread(groupId: Data,
                                           groupSecretParamsData: Data,
-                                          groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

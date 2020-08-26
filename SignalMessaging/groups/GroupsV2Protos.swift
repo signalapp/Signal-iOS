@@ -38,7 +38,6 @@ public class GroupsV2Protos {
         let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
                                                          groupV2Params: groupV2Params)
         builder.setPresentation(presentationData)
-
         return try builder.build()
     }
 
@@ -59,6 +58,15 @@ public class GroupsV2Protos {
         }
         builder.setMember(try memberBuilder.build())
 
+        return try builder.build()
+    }
+
+    public class func buildRequestingMemberProto(profileKeyCredential: ProfileKeyCredential,
+                                                 groupV2Params: GroupV2Params) throws -> GroupsProtoRequestingMember {
+        let builder = GroupsProtoRequestingMember.builder()
+        let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
+                                                         groupV2Params: groupV2Params)
+        builder.setPresentation(presentationData)
         return try builder.build()
     }
 

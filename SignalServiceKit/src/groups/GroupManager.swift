@@ -1289,15 +1289,37 @@ public class GroupManager: NSObject {
         nil != groupsV2.parseGroupInviteLink(url)
     }
 
+    public static func joinGroupViaInviteLink(groupId: Data,
+                                           groupSecretParamsData: Data,
+                                           inviteLinkPassword: Data) -> Promise<TSGroupThread> {
+        let description = "Join Group Invite Link"
+
+        return firstly(on: .global()) {
+            self.databaseStorage.write { transaction in
+                self.profileManager.addGroupId(toProfileWhitelist: groupId,
+                                               wasLocallyInitiated: true,
+                                               transaction: transaction)
+            }
+        }.then(on: .global()) { _ throws -> Promise<Void> in
+            self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+            self.groupsV2.joinGroupViaInviteLink(groupId: groupId,
+                                                 groupSecretParamsData: groupSecretParamsData,
+                                                 inviteLinkPassword: inviteLinkPassword)
+        }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
+            GroupsV2Error.timeout
+        }
+    }
+
     // MARK: - Generic Group Change
 
     public static func updateGroupV2(groupModel: TSGroupModelV2,
                                      description: String,
                                      changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
         return firstly {
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
+            self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return self.groupsV2.updateGroupV2(groupModel: groupModel, changeSetBlock: changeSetBlock)
+            self.groupsV2.updateGroupV2(groupModel: groupModel, changeSetBlock: changeSetBlock)
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
                     GroupsV2Error.timeout

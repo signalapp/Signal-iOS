@@ -280,7 +280,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     return Promise.value(())
                 }
                 return self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
-                                                                                             groupSecretParamsData: groupSecretParamsData)
+                    groupSecretParamsData: groupSecretParamsData).asVoid()
             }.map(on: .global()) { _ throws -> (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) in
                 return try self.databaseStorage.read { transaction in
                     guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -299,7 +299,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
                                                                   groupV2Params: groupV2Params,
                                                                   sessionManager: sessionManager,
-                                                                  authCredential: authCredential)
+                                                                  authCredential: authCredential,
+                                                                  groupInviteLinkPassword: nil)
             }
         }
 
@@ -335,7 +336,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
                                                     changeActionsProtoData: updatedV2Group.changeActionsProtoData)
             }.map(on: .global()) { (_) -> TSGroupThread in
-                    return updatedV2Group.groupThread
+                return updatedV2Group.groupThread
             }
         }
     }
@@ -376,10 +377,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                     groupV2Params: groupV2Params)
         }.map(on: .global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> TSGroupThread in
             return try self.databaseStorage.write { transaction in
-                return try self.groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
-                                                                            changeActionsProto: changeActionsProto,
-                                                                            downloadedAvatars: downloadedAvatars,
-                                                                            transaction: transaction)
+                try self.groupV2Updates.updateGroupWithChangeActions(groupId: groupId,
+                                                                     changeActionsProto: changeActionsProto,
+                                                                     downloadedAvatars: downloadedAvatars,
+                                                                     transaction: transaction)
             }
         }
     }
@@ -1420,6 +1421,207 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                  groupV2Params: groupV2Params)
         }.map(on: .global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> Data in
             try downloadedAvatars.avatarData(for: avatarUrlPath)
+        }
+    }
+
+    public func joinGroupViaInviteLink(groupId: Data,
+                                       groupSecretParamsData: Data,
+                                       inviteLinkPassword: Data) -> Promise<TSGroupThread> {
+
+        guard RemoteConfig.groupsV2GoodCitizen else {
+            return Promise(error: GroupsV2Error.gv2NotEnabled)
+        }
+
+        let groupV2Params: GroupV2Params
+        do {
+            groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        } catch {
+            return Promise(error: error)
+        }
+
+        // There are many edge cases around joining groups via invite links.
+        //
+        // * We might have previously been a member or not.
+        // * We might previously have requested to join and been denied.
+        // * The group might or might not already exist in the database.
+        // * We might already be a full member.
+        // * We might already have a pending invite (in which case we should
+        //   accept that invite rather than request to join).
+        // * The invite link may have been rescinded.
+        return firstly(on: .global()) { () -> Promise<TSGroupThread> in
+            // Check if...
+            //
+            // * We're already in the group.
+            // * We already have a pending invite. If so, use it.
+            //
+            // Note: this will typically fail.
+            self.joinGroupViaInviteLinkUsingAlternateMeans(groupId: groupId,
+                                                           groupSecretParamsData: groupSecretParamsData,
+                                                           inviteLinkPassword: inviteLinkPassword,
+                                                           groupV2Params: groupV2Params)
+        }.recover(on: .global()) { (error: Error) -> Promise<TSGroupThread> in
+            guard !IsNetworkConnectivityFailure(error) else {
+                throw error
+            }
+            Logger.warn("Error: \(error)")
+            return self.joinGroupViaInviteLinkUsingPatch(groupId: groupId,
+                                                         groupSecretParamsData: groupSecretParamsData,
+                                                         inviteLinkPassword: inviteLinkPassword,
+                                                         groupV2Params: groupV2Params)
+        }
+    }
+
+    private func joinGroupViaInviteLinkUsingAlternateMeans(groupId: Data,
+                                                           groupSecretParamsData: Data,
+                                                           inviteLinkPassword: Data,
+                                                           groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
+
+        return firstly(on: .global()) { () -> Promise<TSGroupThread> in
+            // First try to fetch latest group state from service.
+            // This will fail for users trying to join via group link
+            // who are not yet in the group.
+            self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
+                                                                                  groupSecretParamsData: groupSecretParamsData)
+        }.recover(on: .global()) { (error: Error) -> Promise<TSGroupThread> in
+            guard !IsNetworkConnectivityFailure(error) else {
+                throw error
+            }
+            // If the latest group state cannot be fetched from the
+            // service, try to load group state from the database.
+            if let groupThread = (self.databaseStorage.read { transaction in
+                TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+            }) {
+                return Promise.value(groupThread)
+            }
+            throw GroupsV2Error.groupNotInDatabase
+        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+            guard let localUuid = self.tsAccountManager.localUuid else {
+                throw OWSAssertionError("Missing localUuid.")
+            }
+            guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
+            }
+            let groupMembership = groupModelV2.groupMembership
+            if groupMembership.isFullMember(localUuid) ||
+                groupMembership.isRequestingMember(localUuid) {
+                // We're already in the group.
+                return Promise.value(groupThread)
+            } else if groupMembership.isInvitedMember(localUuid) {
+                // We're already an invited member; try to join by accepting the invite.
+                return self.updateGroupV2(groupModel: groupModelV2) { groupChangeSet in
+                    groupChangeSet.promoteInvitedMember(localUuid)
+                }
+            } else {
+                throw GroupsV2Error.localUserNotInGroup
+            }
+        }
+    }
+
+    private func joinGroupViaInviteLinkUsingPatch(groupId: Data,
+                                                  groupSecretParamsData: Data,
+                                                  inviteLinkPassword: Data,
+                                                  groupV2Params: GroupV2Params) -> Promise<TSGroupThread> {
+
+        return firstly(on: .global()) { () -> Promise<ServiceResponse> in
+            let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
+                return firstly { () -> Promise<GroupsProtoGroupChangeActions> in
+                    self.buildChangeActionsProtoToJoinGroupLink(groupId: groupId,
+                                                                groupSecretParamsData: groupSecretParamsData,
+                                                                inviteLinkPassword: inviteLinkPassword,
+                                                                groupV2Params: groupV2Params)
+                }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> NSURLRequest in
+                    return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
+                                                                      groupV2Params: groupV2Params,
+                                                                      sessionManager: sessionManager,
+                                                                      authCredential: authCredential,
+                                                                      groupInviteLinkPassword: inviteLinkPassword)
+                }
+            }
+
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: groupId,
+                                              behavior403: .fail)
+        }.then(on: .global()) { (response: ServiceResponse) -> Promise<TSGroupThread> in
+            guard let changeActionsProtoData = response.responseObject as? Data else {
+                throw OWSAssertionError("Invalid responseObject.")
+            }
+            // The PATCH request that adds us to the group (as a full or requesting member)
+            // only return the "change actions" proto data, but not a full snapshot
+            // so we need to seperately GET the latest group state and update the database.
+            //
+            // Download and update database with the group state.
+            return firstly {
+                // TODO: maybe this should return a TSGroupThread.
+                self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
+                                                                                      groupSecretParamsData: groupSecretParamsData)
+            }.then(on: .global()) { _ -> Promise<TSGroupThread> in
+                guard let groupThread = (self.databaseStorage.read { transaction in
+                    TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+                }) else {
+                    throw OWSAssertionError("Missing group thread.")
+                }
+
+                return firstly {
+                    GroupManager.sendGroupUpdateMessage(thread: groupThread,
+                                                        changeActionsProtoData: changeActionsProtoData)
+                }.map(on: .global()) { (_) -> TSGroupThread in
+                    return groupThread
+                }
+            }
+        }
+    }
+
+    private func buildChangeActionsProtoToJoinGroupLink(groupId: Data,
+                                                        groupSecretParamsData: Data,
+                                                        inviteLinkPassword: Data,
+                                                        groupV2Params: GroupV2Params) -> Promise<GroupsProtoGroupChangeActions> {
+
+        guard let localUuid = self.tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
+        }
+
+        return firstly(on: .global()) { () -> Promise<GroupInviteLinkPreview> in
+            // We re-fetch the GroupInviteLinkPreview with every attempt in order to get the latest:
+            //
+            // * revision
+            // * addFromInviteLinkAccess
+            self.fetchGroupInviteLinkPreview(inviteLinkPassword: inviteLinkPassword,
+                                             groupSecretParamsData: groupSecretParamsData)
+        }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, ProfileKeyCredential)> in
+            return firstly(on: .global()) { () -> Promise<ProfileKeyCredentialMap> in
+                self.loadProfileKeyCredentialData(for: [localUuid])
+            }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> (GroupInviteLinkPreview, ProfileKeyCredential) in
+                guard let localProfileKeyCredential = profileKeyCredentialMap[localUuid] else {
+                    throw OWSAssertionError("Missing localProfileKeyCredential.")
+                }
+                return (groupInviteLinkPreview, localProfileKeyCredential)
+            }
+        }.map(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, localProfileKeyCredential: ProfileKeyCredential) -> GroupsProtoGroupChangeActions in
+            let actionsBuilder = GroupsProtoGroupChangeActions.builder()
+
+            let oldRevision = groupInviteLinkPreview.revision
+            let newRevision = oldRevision + 1
+            Logger.verbose("Revision: \(oldRevision) -> \(newRevision)")
+            actionsBuilder.setRevision(newRevision)
+
+            switch groupInviteLinkPreview.addFromInviteLinkAccess {
+            case .any:
+                let role = TSGroupMemberRole.`normal`
+                let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
+                actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: localProfileKeyCredential,
+                                                                           role: role.asProtoRole,
+                                                                           groupV2Params: groupV2Params))
+                actionsBuilder.addAddMembers(try actionBuilder.build())
+            case .administrator:
+                let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
+                actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
+                                                                           groupV2Params: groupV2Params))
+                actionsBuilder.addAddRequestingMembers(try actionBuilder.build())
+            default:
+                throw OWSAssertionError("Invalid addFromInviteLinkAccess.")
+            }
+
+            return try actionsBuilder.build()
         }
     }
 

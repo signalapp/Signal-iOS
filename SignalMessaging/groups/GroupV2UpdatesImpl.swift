@@ -63,7 +63,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     // MARK: -
 
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
-                                                                  groupSecretParamsData: Data) -> Promise<Void> {
+                                                                  groupSecretParamsData: Data) -> Promise<TSGroupThread> {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
         return tryToRefreshV2GroupThread(groupId: groupId,
                                          groupSecretParamsData: groupSecretParamsData,
@@ -85,15 +85,15 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func tryToRefreshV2GroupThread(_ groupThread: TSGroupThread,
                                            groupUpdateMode: GroupUpdateMode) {
-        firstly { () -> Promise<Void> in
+        firstly(on: .global()) { () -> Promise<Void> in
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 return Promise.value(())
             }
             let groupId = groupModel.groupId
             let groupSecretParamsData = groupModel.secretParamsData
-            return tryToRefreshV2GroupThread(groupId: groupId,
-                                             groupSecretParamsData: groupSecretParamsData,
-                                             groupUpdateMode: groupUpdateMode)
+            return self.tryToRefreshV2GroupThread(groupId: groupId,
+                                                  groupSecretParamsData: groupSecretParamsData,
+                                                  groupUpdateMode: groupUpdateMode).asVoid()
         }.catch(on: .global()) { error in
             Logger.warn("Group refresh failed: \(error).")
         }
@@ -101,7 +101,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     public func tryToRefreshV2GroupThread(groupId: Data,
                                           groupSecretParamsData: Data,
-                                          groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
 
         let isThrottled = serialQueue.sync { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
@@ -115,9 +115,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) > refreshFrequency
         }
 
-        guard !isThrottled else {
-            Logger.verbose("Skipping redundant v2 group refresh.")
-            return Promise.value(())
+        if let groupThread = (databaseStorage.read { transaction in
+            TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        }) {
+            guard !isThrottled else {
+                Logger.verbose("Skipping redundant v2 group refresh.")
+                return Promise.value(groupThread)
+            }
         }
 
         let operation = GroupV2UpdateOperation(groupV2Updates: self,
@@ -183,8 +187,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         let groupSecretParamsData: Data
         let groupUpdateMode: GroupUpdateMode
 
-        let promise: Promise<Void>
-        let resolver: Resolver<Void>
+        let promise: Promise<TSGroupThread>
+        let resolver: Resolver<TSGroupThread>
 
         // MARK: -
 
@@ -197,7 +201,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             self.groupSecretParamsData = groupSecretParamsData
             self.groupUpdateMode = groupUpdateMode
 
-            let (promise, resolver) = Promise<Void>.pending()
+            let (promise, resolver) = Promise<TSGroupThread>.pending()
             self.promise = promise
             self.resolver = resolver
 
@@ -218,10 +222,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }.then(on: .global()) { _ in
                 self.groupV2Updates.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
                                                             groupUpdateMode: self.groupUpdateMode)
-            }.done(on: .global()) { _ in
+            }.done(on: .global()) { (groupThread: TSGroupThread) in
                 Logger.verbose("Group refresh succeeded.")
 
                 self.reportSuccess()
+                self.resolver.fulfill(groupThread)
             }.catch(on: .global()) { (error) in
 
                 let nsError: NSError = error as NSError
@@ -258,10 +263,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     Logger.warn("Missing group thread.")
                     return true
                 }
-                guard let localAddress = self.tsAccountManager.localAddress else {
-                    owsFailDebug("Missing localAddress.")
-                    return false
-                }
                 let isLocalUserInGroup = groupThread.isLocalUserFullOrInvitedMember
                 // Auth errors are expected if we've left the group,
                 // but we should still try to refresh so we can learn
@@ -271,7 +272,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
 
         public override func didSucceed() {
-            resolver.fulfill(())
+            // Do nothing.
         }
 
         public override func didReportError(_ error: Error) {

@@ -81,6 +81,14 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
     // MARK: -
 
     private let groupInviteLinkInfo: GroupInviteLinkInfo
@@ -269,6 +277,34 @@ class GroupInviteLinksActionSheet: ActionSheetController {
 
     @objc
     func didTapJoin(_ sender: UIButton) {
-        // TODO:
+        guard doesLocalUserSupportGroupsV2 else {
+            // TODO: Add copy from design.
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
+                                                                      comment: "Error message indicating that the local user does not support groups v2."))
+            return
+        }
+
+        firstly(on: .global()) {
+            GroupManager.joinGroupViaInviteLink(groupId: self.groupV2ContextInfo.groupId,
+                                             groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                                             inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword)
+        }.done { [weak self] (groupThread: TSGroupThread) in
+            self?.dismiss(animated: true) {
+                SignalApp.shared().presentConversation(for: groupThread, animated: true)
+            }
+        }.catch { _ in
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
+                                                                      comment: "Error message indicating that the local user does not support groups v2."))
+        }
+    }
+
+    private var doesLocalUserSupportGroupsV2: Bool {
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("missing local address")
+            return false
+        }
+        return databaseStorage.read { transaction in
+            GroupManager.doesUserSupportGroupsV2(address: localAddress, transaction: transaction)
+        }
     }
 }
