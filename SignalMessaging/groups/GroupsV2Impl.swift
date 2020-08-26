@@ -1628,15 +1628,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
             case .administrator:
-                // TODO: It's not clear from the spec how to build this action
-                // and this isn't working yet.
-                let localProfileKey = self.profileManager.localProfileKey()
-                let localProfileKeyData = localProfileKey.keyData
-                
+                // TODO: This isn't in prod yet.                
                 let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
-                actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(uuid: localUuid,
-                                                                                     profileKeyCredential: localProfileKeyCredential,
-                                                                                     profileKey: localProfileKeyData,
+                actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                                      groupV2Params: groupV2Params))
                 actionsBuilder.addAddRequestingMembers(try actionBuilder.build())
             default:

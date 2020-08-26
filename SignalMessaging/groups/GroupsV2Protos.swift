@@ -61,18 +61,12 @@ public class GroupsV2Protos {
         return try builder.build()
     }
 
-    public class func buildRequestingMemberProto(uuid: UUID,
-                                                 profileKeyCredential: ProfileKeyCredential,
-                                                 profileKey: Data,
+    public class func buildRequestingMemberProto(profileKeyCredential: ProfileKeyCredential,
                                                  groupV2Params: GroupV2Params) throws -> GroupsProtoRequestingMember {
         let builder = GroupsProtoRequestingMember.builder()
         let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
                                                          groupV2Params: groupV2Params)
         builder.setPresentation(presentationData)
-        let userId = try groupV2Params.userId(forUuid: uuid)
-        builder.setUserID(userId)
-        builder.setProfileKey(profileKey)
-        builder.setTimestamp(NSDate.ows_millisecondTimeStamp())
         return try builder.build()
     }
 
