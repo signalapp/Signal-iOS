@@ -860,7 +860,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    // TODO: We don't need to pass in urlSession.
     private func performServiceRequestAttempt(request: NSURLRequest) -> Promise<OWSHTTPResponse> {
 
         let urlSession = self.urlSession

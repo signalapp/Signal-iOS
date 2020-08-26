@@ -147,7 +147,6 @@ public class OWSURLSession: NSObject {
             } else {
                 #if TESTABLE_BUILD
                 TSNetworkManager.logCurl(for: task)
-                #endif
 
                 if let responseData = responseData,
                     let httpUrlResponse = response as? HTTPURLResponse,
@@ -156,6 +155,7 @@ public class OWSURLSession: NSObject {
                     let jsonString = String(data: responseData, encoding: .utf8) {
                     Logger.verbose("Response JSON: \(jsonString)")
                 }
+                #endif
 
                 if failOnError {
                     owsFailDebug("Request failed: \(error)")
