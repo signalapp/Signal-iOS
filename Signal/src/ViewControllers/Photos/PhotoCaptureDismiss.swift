@@ -79,7 +79,12 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             interactiveDismissDelegate?.interactiveDismissUpdate(self, didChangeTouchOffset: offset)
             if handlesAnimation {
                 guard let frame = initialDimissFrame else {return}
-                viewController?.view.center = frame.offsetBy(dx: offset.x, dy: offset.y).center
+                // Only allow swipe down to dismiss
+                var y = offset.y
+                if y < 0 {
+                    y = 0
+                }
+                viewController?.view.center = frame.offsetBy(dx: 0, dy: y).center
             }
 
         case .cancelled:

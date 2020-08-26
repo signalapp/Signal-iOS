@@ -50,6 +50,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         view.setContentHuggingHigh()
         return view
     }()
+    
+    override init() {
+        super.init()
+        self.modalPresentationStyle = .overCurrentContext
+    }
 
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
@@ -117,9 +122,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         view.addGestureRecognizer(tapToFocusGesture)
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
         
-        interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: self)
-        interactiveDismiss.interactiveDismissDelegate = self
-        interactiveDismiss.addGestureRecognizer(to: view)
+        if let navController = self.navigationController {
+            interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navController)
+            interactiveDismiss.interactiveDismissDelegate = self
+            interactiveDismiss.addGestureRecognizer(to: view)
+        }
 
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
     }
@@ -187,13 +194,14 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             // we pin to a constant rather than margin, because on notched devices the
             // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
             // is locked to portrait.
-            topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+            // Only grab this once -- otherwise when we swipe to dismiss this is updated and the top bar jumps to having zero offset
+            if topBarOffset.constant == 0 {
+                topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+            }
         }
     }
     
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-    }
-    func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
     }
     func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
         dismiss(animated: true)
