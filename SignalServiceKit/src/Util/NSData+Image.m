@@ -36,6 +36,27 @@ NSString *NSStringForImageFormat(ImageFormat value)
     }
 }
 
+NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
+{
+    switch (value) {
+        case ImageFormat_Png:
+            return OWSMimeTypeImagePng;
+        case ImageFormat_Gif:
+            return OWSMimeTypeImageGif;
+        case ImageFormat_Tiff:
+            return OWSMimeTypeImageTiff1;
+        case ImageFormat_Jpeg:
+            return OWSMimeTypeImageJpeg;
+        case ImageFormat_Bmp:
+            return OWSMimeTypeImageBmp1;
+        case ImageFormat_Webp:
+            return OWSMimeTypeImageWebp;
+        default:
+            OWSCFailDebug(@"Unknown ImageFormat.");
+            return nil;
+    }
+}
+
 #pragma mark -
 
 @interface ImageMetadata ()
@@ -67,6 +88,11 @@ NSString *NSStringForImageFormat(ImageFormat value)
     ImageMetadata *imageMetadata = [ImageMetadata new];
     OWSAssertDebug(!imageMetadata.isValid);
     return imageMetadata;
+}
+
+- (nullable NSString *)mimeType
+{
+    return MIMETypeForImageFormat(self.imageFormat);
 }
 
 @end

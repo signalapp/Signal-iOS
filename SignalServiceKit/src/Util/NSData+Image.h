@@ -19,6 +19,8 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 NSString *NSStringForImageFormat(ImageFormat value);
 
+NSString *_Nullable MIMETypeForImageFormat(ImageFormat value);
+
 #pragma mark -
 
 @interface ImageMetadata : NSObject
@@ -29,6 +31,8 @@ NSString *NSStringForImageFormat(ImageFormat value);
 @property (nonatomic, readonly) ImageFormat imageFormat;
 @property (nonatomic, readonly) CGSize pixelSize;
 @property (nonatomic, readonly) BOOL hasAlpha;
+
+@property (nonatomic, readonly, nullable) NSString *mimeType;
 
 @end
 

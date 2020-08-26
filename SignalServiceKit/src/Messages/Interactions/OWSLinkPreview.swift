@@ -327,32 +327,38 @@ public class OWSLinkPreviewManager: NSObject {
         firstly(on: Self.workQueue) { () -> Promise<String> in
             self.fetchStringResource(from: url)
 
-        }.then(on: Self.workQueue) { (rawHTML) -> Promise<(OWSLinkPreviewDraft, Data?)> in
+        }.then(on: Self.workQueue) { (rawHTML) -> Promise<OWSLinkPreviewDraft> in
             let opengraph = OpenGraphContent(parsing: rawHTML)
             let title = opengraph.title
-            let draft = OWSLinkPreviewDraft(url: url, title: title)
 
             guard let imageUrlString = opengraph.imageUrl, let imageUrl = URL(string: imageUrlString) else {
-                return Promise.value((draft, nil))
+                let draft = OWSLinkPreviewDraft(url: url, title: title)
+                return Promise.value(draft)
             }
 
             return firstly(on: Self.workQueue) { () -> Promise<Data> in
                 self.fetchImageResource(from: imageUrl)
-            }.map(on: Self.workQueue) { data -> (OWSLinkPreviewDraft, Data?) in
-                return (draft, data)
-            }.recover(on: Self.workQueue) { _ -> Promise<(OWSLinkPreviewDraft, Data?)> in
-                return Promise.value((draft, nil))
+            }.then(on: Self.workQueue) { (imageData: Data) -> Promise<PreviewThumbnail?> in
+                Self.previewThumbnail(srcImageData: imageData, srcMimeType: nil)
+            }.map(on: Self.workQueue) { (previewThumbnail: PreviewThumbnail?) -> OWSLinkPreviewDraft in
+                guard let previewThumbnail = previewThumbnail else {
+                    return OWSLinkPreviewDraft(url: url, title: title)
+                }
+                return OWSLinkPreviewDraft(url: url,
+                                           title: title,
+                                           imageData: previewThumbnail.imageData,
+                                           imageMimeType: previewThumbnail.mimetype)
+            }.recover(on: Self.workQueue) { (_) -> Promise<OWSLinkPreviewDraft> in
+                let draft = OWSLinkPreviewDraft(url: url, title: title)
+                return Promise.value(draft)
             }
 
-        }.map(on: Self.workQueue) { (draft, imageData) -> OWSLinkPreviewDraft in
-            draft.imageData = imageData
-            draft.imageMimeType = OWSMimeTypeImageJpeg
+        }.map(on: Self.workQueue) { (draft) -> OWSLinkPreviewDraft in
             guard draft.isValid() else {
                 throw LinkPreviewError.noPreview
             }
             return draft
         }
-
     }
 
     // MARK: - Private, Utilities
@@ -436,37 +442,10 @@ public class OWSLinkPreviewManager: NSObject {
                 }
                 guard let rawData = responseObject as? Data,
                       rawData.count < Self.maxFetchedContentSize else {
-
                     Logger.warn("Response object could not be parsed")
                     throw LinkPreviewError.invalidPreview
                 }
-
-                let imageMetadata = (rawData as NSData).imageMetadata(withPath: nil, mimeType: nil)
-                let pixelSize = imageMetadata.pixelSize
-                guard imageMetadata.isValid,
-                      pixelSize.height > 0,
-                      pixelSize.width > 0,
-                      let image = UIImage(data: rawData) else {
-                    Logger.warn("Invalid image data")
-                    throw LinkPreviewError.invalidPreview
-                }
-
-                let maxDimension: CGFloat = 1024
-
-                let scaledImage: UIImage?
-                if pixelSize.height > maxDimension || pixelSize.width > maxDimension {
-                    scaledImage = image.resized(withMaxDimensionPixels: 1024)
-                } else {
-                    scaledImage = image
-                }
-                let compressedImageData = scaledImage?.jpegData(compressionQuality: 0.8)
-
-                if let compressedImageData = compressedImageData {
-                    return compressedImageData
-                } else {
-                    Logger.error("Failed to resize/compress image.")
-                    throw LinkPreviewError.invalidPreview
-                }
+                return rawData
             }
         }
     }
@@ -481,6 +460,88 @@ public class OWSLinkPreviewManager: NSObject {
     // If this ever changes, we can switch back to our default User-Agent
     private static let userAgentString = "WhatsApp"
 
+    // MARK: - Preview Thumbnails
+
+    private struct PreviewThumbnail {
+        let imageData: Data
+        let mimetype: String
+    }
+
+    private static func previewThumbnail(srcImageData: Data?, srcMimeType: String?) -> Promise<PreviewThumbnail?> {
+        guard let srcImageData = srcImageData else {
+            return Promise.value(nil)
+        }
+        return firstly(on: Self.workQueue) { () -> PreviewThumbnail? in
+            let imageMetadata = (srcImageData as NSData).imageData(withPath: nil, mimeType: srcMimeType)
+            guard imageMetadata.isValid else {
+                return nil
+            }
+            let hasValidFormat = imageMetadata.imageFormat != .unknown
+            guard hasValidFormat else {
+                return nil
+            }
+
+            let maxImageSize: CGFloat = 1024
+
+            switch imageMetadata.imageFormat {
+            case .unknown:
+                owsFailDebug("Invalid imageFormat.")
+                return nil
+            case .webp:
+                guard let stillImage = (srcImageData as NSData).stillForWebpData() else {
+                    owsFailDebug("Couldn't derive still image for Webp.")
+                    return nil
+                }
+
+                var stillThumbnail = stillImage
+                let imageSize = stillImage.size
+                let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+                if shouldResize {
+                    guard let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) else {
+                        owsFailDebug("Couldn't resize image.")
+                        return nil
+                    }
+                    stillThumbnail = resizedImage
+                }
+
+                guard let stillData = stillThumbnail.pngData() else {
+                    owsFailDebug("Couldn't derive still image for Webp.")
+                    return nil
+                }
+                return PreviewThumbnail(imageData: stillData, mimetype: OWSMimeTypeImagePng)
+            default:
+                guard let mimeType = imageMetadata.mimeType else {
+                    owsFailDebug("Unknown mimetype for thumbnail.")
+                    return nil
+                }
+
+                let imageSize = imageMetadata.pixelSize
+                let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+                if (imageMetadata.imageFormat == .jpeg || imageMetadata.imageFormat == .png),
+                    !shouldResize {
+                    // If we don't need to resize or convert the file format,
+                    // return the original data.
+                    return PreviewThumbnail(imageData: srcImageData, mimetype: mimeType)
+                }
+
+                guard let srcImage = UIImage(data: srcImageData) else {
+                    owsFailDebug("Could not parse image.")
+                    return nil
+                }
+
+                guard let dstImage = srcImage.resized(withMaxDimensionPoints: maxImageSize) else {
+                    owsFailDebug("Could not resize image.")
+                    return nil
+                }
+                guard let dstData = dstImage.jpegData(compressionQuality: 0.8) else {
+                    owsFailDebug("Could not write resized image.")
+                    return nil
+                }
+                return PreviewThumbnail(imageData: dstData, mimetype: OWSMimeTypeImageJpeg)
+            }
+        }
+    }
+
     // MARK: - Stickers
 
     func linkPreviewDraft(forStickerShare url: URL) -> Promise<OWSLinkPreviewDraft> {
@@ -494,41 +555,22 @@ public class OWSLinkPreviewManager: NSObject {
         // tryToDownloadStickerPack will use locally saved data if possible.
         return firstly(on: Self.workQueue) {
             StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
-
         }.then(on: Self.workQueue) { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
             let coverInfo = stickerPack.coverInfo
             // tryToDownloadSticker will use locally saved data if possible.
-            return firstly {
+            return firstly { () -> Promise<Data> in
                 StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo)
-            }.map(on: .global()) { (coverData) -> OWSLinkPreviewDraft in
-                // Try to build thumbnail from cover webp.
-                var pngImageData: Data?
-                if let stillImage = (coverData as NSData).stillForWebpData() {
-                    var stillThumbnail = stillImage
-                    let maxImageSize: CGFloat = 1024
-                    let imageSize = stillImage.size
-                    let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
-                    if shouldResize {
-                        if let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) {
-                            stillThumbnail = resizedImage
-                        } else {
-                            owsFailDebug("Could not resize image.")
-                        }
-                    }
-
-                    if let stillData = stillThumbnail.pngData() {
-                        pngImageData = stillData
-                    } else {
-                        owsFailDebug("Could not encode as JPEG.")
-                    }
-                } else {
-                    owsFailDebug("Could not extract still.")
+            }.then(on: Self.workQueue) { (coverData) -> Promise<PreviewThumbnail?> in
+                Self.previewThumbnail(srcImageData: coverData, srcMimeType: OWSMimeTypeImageWebp)
+            }.map(on: Self.workQueue) { (previewThumbnail: PreviewThumbnail?) -> OWSLinkPreviewDraft in
+                guard let previewThumbnail = previewThumbnail else {
+                    return OWSLinkPreviewDraft(url: url,
+                                               title: stickerPack.title?.filterForDisplay)
                 }
-
                 return OWSLinkPreviewDraft(url: url,
                                            title: stickerPack.title?.filterForDisplay,
-                                           imageData: pngImageData,
-                                           imageMimeType: OWSMimeTypeImagePng)
+                                           imageData: previewThumbnail.imageData,
+                                           imageMimeType: previewThumbnail.mimetype)
             }
         }
     }
