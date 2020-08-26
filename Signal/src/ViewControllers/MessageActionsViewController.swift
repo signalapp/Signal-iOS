@@ -204,6 +204,7 @@ class MessageActionsViewController: UIViewController {
             self.bottomBar.alpha = 1
             animateAlongside?()
         }) { _ in
+            ImpactHapticFeedback.impactOccured(style: .light)
             completion?()
         }
     }
@@ -335,10 +336,7 @@ class MessageActionsViewController: UIViewController {
     func didEndLongpress() {
         // If the long press never moved, do nothing when we release.
         // The menu should continue to display until the user dismisses.
-        guard gestureExitedDeadZone else {
-            ImpactHapticFeedback.impactOccured(style: .light)
-            return
-        }
+        guard gestureExitedDeadZone else { return }
 
         // If there's not a focused reaction, dismiss the menu with no action
         guard let focusedEmoji = quickReactionPicker?.focusedEmoji else {
