@@ -859,6 +859,8 @@ struct GroupsProtos_GroupJoinInfo {
 
   var revision: UInt32 = 0
 
+  var pendingAdminApproval: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -2196,7 +2198,8 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
     3: .same(proto: "avatar"),
     4: .same(proto: "memberCount"),
     5: .same(proto: "addFromInviteLink"),
-    6: .same(proto: "revision")
+    6: .same(proto: "revision"),
+    7: .same(proto: "pendingAdminApproval")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2208,6 +2211,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
       case 4: try decoder.decodeSingularUInt32Field(value: &self.memberCount)
       case 5: try decoder.decodeSingularEnumField(value: &self.addFromInviteLink)
       case 6: try decoder.decodeSingularUInt32Field(value: &self.revision)
+      case 7: try decoder.decodeSingularBoolField(value: &self.pendingAdminApproval)
       default: break
       }
     }
@@ -2232,6 +2236,9 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if self.revision != 0 {
       try visitor.visitSingularUInt32Field(value: self.revision, fieldNumber: 6)
     }
+    if self.pendingAdminApproval != false {
+      try visitor.visitSingularBoolField(value: self.pendingAdminApproval, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2242,6 +2249,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if lhs.memberCount != rhs.memberCount {return false}
     if lhs.addFromInviteLink != rhs.addFromInviteLink {return false}
     if lhs.revision != rhs.revision {return false}
+    if lhs.pendingAdminApproval != rhs.pendingAdminApproval {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
