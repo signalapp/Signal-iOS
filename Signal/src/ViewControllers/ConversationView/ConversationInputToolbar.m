@@ -38,7 +38,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 @interface InputLinkPreview : NSObject
 
-@property (nonatomic) NSString *previewUrl;
+@property (nonatomic) NSURL *previewUrl;
 @property (nonatomic, nullable) OWSLinkPreviewDraft *linkPreviewDraft;
 
 @end
@@ -1337,17 +1337,13 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         return;
     }
 
-    // It's key that we use the *raw/unstripped* text, so we can reconcile cursor position with the
-    // selectedRange.
-    NSString *_Nullable previewUrl = [self.linkPreviewManager previewUrlForRawBodyText:self.inputTextView.text
-                                                                         selectedRange:self.inputTextView.selectedRange
-                                                                       whitelistedOnly:YES];
-    if (previewUrl.length < 1) {
+    NSURL *previewUrl = [self.linkPreviewManager findFirstValidURLInSearchString:self.inputTextView.text];
+    if (!previewUrl.absoluteString.length) {
         [self clearLinkPreviewStateAndView];
         return;
     }
 
-    if (self.inputLinkPreview && [self.inputLinkPreview.previewUrl isEqualToString:previewUrl]) {
+    if ([self.inputLinkPreview.previewUrl isEqual:previewUrl]) {
         // No need to update.
         return;
     }
@@ -1359,7 +1355,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self ensureLinkPreviewViewWithState:[LinkPreviewLoading new]];
 
     __weak ConversationInputToolbar *weakSelf = self;
-    [self.linkPreviewManager tryToBuildPreviewInfoObjcWithPreviewUrl:previewUrl]
+    [self.linkPreviewManager fetchLinkPreviewForURL:previewUrl]
         .then(^(OWSLinkPreviewDraft *linkPreviewDraft) {
             ConversationInputToolbar *_Nullable strongSelf = weakSelf;
             if (!strongSelf) {
@@ -1369,13 +1365,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                 // Obsolete callback.
                 return;
             }
+            inputLinkPreview.previewUrl = linkPreviewDraft.url;
             inputLinkPreview.linkPreviewDraft = linkPreviewDraft;
             LinkPreviewDraft *viewState = [[LinkPreviewDraft alloc] initWithLinkPreviewDraft:linkPreviewDraft];
             [strongSelf ensureLinkPreviewViewWithState:viewState];
         })
         .catch(^(id error) {
             // The link preview could not be loaded.
-            [weakSelf clearLinkPreviewView];
+            [weakSelf clearLinkPreviewStateAndView];
         });
 }
 

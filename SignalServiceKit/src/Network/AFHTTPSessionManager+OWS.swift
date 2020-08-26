@@ -59,7 +59,6 @@ public extension AFHTTPSessionManager {
                     TSNetworkManager.logCurl(for: task)
                     #endif
                 }
-                owsFailDebug("Request failed: \(error)")
             }
             resolver.reject(error)
         }
