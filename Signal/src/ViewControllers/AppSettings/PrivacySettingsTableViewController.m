@@ -548,7 +548,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [SSKPreferences setAreLinkPreviewsEnabledAndSendSyncMessage:sender.isOn transaction:transaction];
+        [ExperienceUpgradeManager clearExperienceUpgrade:OWSObjcExperienceUpgradeIdLinkPreviews
+                                             transaction:transaction.unwrapGrdbWrite];
+        [SSKPreferences setAreLinkPreviewsEnabled:sender.isOn sendSyncMessage:YES transaction:transaction];
     });
 }
 

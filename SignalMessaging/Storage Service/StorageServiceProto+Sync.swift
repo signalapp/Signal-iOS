@@ -625,6 +625,9 @@ extension StorageServiceProtoAccountRecord {
         let typingIndicatorsEnabled = typingIndicatorsManager.areTypingIndicatorsEnabled()
         builder.setTypingIndicators(typingIndicatorsEnabled)
 
+        let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
+        builder.setProxiedLinkPreviews(proxiedLinkPreviewsEnabled)
+
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         builder.setLinkPreviews(linkPreviewsEnabled)
 
@@ -723,6 +726,11 @@ extension StorageServiceProtoAccountRecord {
         let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         if linkPreviews != linkPreviewsEnabled {
             SSKPreferences.setAreLinkPreviewsEnabled(linkPreviews, transaction: transaction)
+        }
+
+        let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
+        if proxiedLinkPreviews != proxiedLinkPreviewsEnabled {
+            SSKPreferences.setAreLegacyLinkPreviewsEnabled(proxiedLinkPreviews, transaction: transaction)
         }
 
         let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode

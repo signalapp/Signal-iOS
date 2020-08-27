@@ -265,8 +265,9 @@ DEPENDENCIES:
   - ZXingObjC (from `https://github.com/zxingify/zxingify-objc.git`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - AFNetworking
+    - CocoaLumberjack
     - GRDB.swift
     - libwebp
     - lottie-ios
@@ -278,8 +279,6 @@ SPEC REPOS:
     - SSZipArchive
     - SwiftProtobuf
     - YYImage
-  trunk:
-    - CocoaLumberjack
 
 EXTERNAL SOURCES:
   Argon2:

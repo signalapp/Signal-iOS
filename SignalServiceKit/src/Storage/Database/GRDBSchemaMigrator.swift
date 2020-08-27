@@ -114,6 +114,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_indexSignalRecipients
         case dataMigration_kbsStateCleanup
         case dataMigration_turnScreenSecurityOnForExistingUsers
+        case dataMigration_disableLinkPreviewForExistingUsers
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -949,6 +950,20 @@ public class GRDBSchemaMigrator: NSObject {
             ) else { return }
 
             preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_disableLinkPreviewForExistingUsers.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            let linkPreviewsWereEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction.asAnyRead)
+
+            if linkPreviewsWereEnabled {
+                // Disable link previews until user interacts with megaphone
+                SSKPreferences.setAreLinkPreviewsEnabled(false, transaction: transaction.asAnyWrite)
+            } else {
+                // We don't want to show the megaphone for users that already had link previews disabled
+                ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .linkPreviews, transaction: transaction)
+            }
         }
     }
 }

@@ -384,13 +384,16 @@ struct StorageServiceProtos_AccountRecord {
 
   var noteToSelfArchived: Bool = false
 
-  var noteToSelfMarkedUnread: Bool = false
-
   var readReceipts: Bool = false
 
   var sealedSenderIndicators: Bool = false
 
   var typingIndicators: Bool = false
+
+  /// Legacy link previews flag
+  var proxiedLinkPreviews: Bool = false
+
+  var noteToSelfMarkedUnread: Bool = false
 
   var linkPreviews: Bool = false
 
@@ -994,11 +997,12 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     3: .same(proto: "familyName"),
     4: .same(proto: "avatarUrl"),
     5: .same(proto: "noteToSelfArchived"),
-    10: .same(proto: "noteToSelfMarkedUnread"),
     6: .same(proto: "readReceipts"),
     7: .same(proto: "sealedSenderIndicators"),
     8: .same(proto: "typingIndicators"),
-    9: .same(proto: "linkPreviews"),
+    9: .same(proto: "proxiedLinkPreviews"),
+    10: .same(proto: "noteToSelfMarkedUnread"),
+    11: .same(proto: "linkPreviews"),
     12: .same(proto: "phoneNumberSharingMode"),
     13: .same(proto: "discoverableByPhoneNumber")
   ]
@@ -1014,8 +1018,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       case 6: try decoder.decodeSingularBoolField(value: &self.readReceipts)
       case 7: try decoder.decodeSingularBoolField(value: &self.sealedSenderIndicators)
       case 8: try decoder.decodeSingularBoolField(value: &self.typingIndicators)
-      case 9: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
+      case 9: try decoder.decodeSingularBoolField(value: &self.proxiedLinkPreviews)
       case 10: try decoder.decodeSingularBoolField(value: &self.noteToSelfMarkedUnread)
+      case 11: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
       case 12: try decoder.decodeSingularEnumField(value: &self.phoneNumberSharingMode)
       case 13: try decoder.decodeSingularBoolField(value: &self.discoverableByPhoneNumber)
       default: break
@@ -1048,11 +1053,14 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if self.typingIndicators != false {
       try visitor.visitSingularBoolField(value: self.typingIndicators, fieldNumber: 8)
     }
-    if self.linkPreviews != false {
-      try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 9)
+    if self.proxiedLinkPreviews != false {
+      try visitor.visitSingularBoolField(value: self.proxiedLinkPreviews, fieldNumber: 9)
     }
     if self.noteToSelfMarkedUnread != false {
       try visitor.visitSingularBoolField(value: self.noteToSelfMarkedUnread, fieldNumber: 10)
+    }
+    if self.linkPreviews != false {
+      try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 11)
     }
     if self.phoneNumberSharingMode != .everybody {
       try visitor.visitSingularEnumField(value: self.phoneNumberSharingMode, fieldNumber: 12)
@@ -1069,10 +1077,11 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.familyName != rhs.familyName {return false}
     if lhs.avatarURL != rhs.avatarURL {return false}
     if lhs.noteToSelfArchived != rhs.noteToSelfArchived {return false}
-    if lhs.noteToSelfMarkedUnread != rhs.noteToSelfMarkedUnread {return false}
     if lhs.readReceipts != rhs.readReceipts {return false}
     if lhs.sealedSenderIndicators != rhs.sealedSenderIndicators {return false}
     if lhs.typingIndicators != rhs.typingIndicators {return false}
+    if lhs.proxiedLinkPreviews != rhs.proxiedLinkPreviews {return false}
+    if lhs.noteToSelfMarkedUnread != rhs.noteToSelfMarkedUnread {return false}
     if lhs.linkPreviews != rhs.linkPreviews {return false}
     if lhs.phoneNumberSharingMode != rhs.phoneNumberSharingMode {return false}
     if lhs.discoverableByPhoneNumber != rhs.discoverableByPhoneNumber {return false}
