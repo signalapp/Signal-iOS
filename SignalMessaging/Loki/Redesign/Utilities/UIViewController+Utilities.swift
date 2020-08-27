@@ -1,0 +1,31 @@
+
+@objc(LKViewControllerUtilities)
+public final class ViewControllerUtilities : NSObject {
+
+    private override init() { }
+
+    @objc(setUpDefaultSessionStyleForVC:withTitle:)
+    public static func setUpDefaultSessionStyle(for vc: UIViewController, title: String) {
+        // Set gradient background
+        vc.view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        vc.view.setGradient(gradient)
+        // Set navigation bar background color
+        if let navigationBar = vc.navigationController?.navigationBar {
+            navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+            navigationBar.shadowImage = UIImage()
+            navigationBar.isTranslucent = false
+            navigationBar.barTintColor = Colors.navigationBarBackground
+        }
+        // Customize title
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        vc.navigationItem.titleView = titleLabel
+        // Set up back button
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
+        backButton.tintColor = Colors.text
+        vc.navigationItem.backBarButtonItem = backButton
+    }
+}
