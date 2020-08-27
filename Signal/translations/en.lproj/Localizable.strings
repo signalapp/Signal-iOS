@@ -1882,6 +1882,15 @@
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
 
+/* Label for the 'member requests' mode of the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+
+/* Label for the 'pending invites' mode of the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+
+/* The title for the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group updated.";
 
@@ -2848,6 +2857,9 @@
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ invited %2$@ people";
 
+/* Label indicating that a group has no pending member requests. */
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No invites to show.";
 
@@ -2884,20 +2896,23 @@
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
 
-/* Footer for the 'invites by other group members' section of the 'pending group members' view. */
+/* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
 
-/* Title for the 'invalid invites' section of the 'pending group members' view. */
+/* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the sharable group link.";
+
+/* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
 
-/* Title for the 'invites by other group members' section of the 'pending group members' view. */
+/* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
 
-/* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+/* Title for the 'pending member requests' section of the 'member requests and invites' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
 
-/* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
+/* Title for the 'people you invited' section of the 'member requests and invites' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";

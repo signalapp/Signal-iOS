@@ -1555,6 +1555,18 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                               avatarData: avatarData,
                                                               revisionForPlaceholderModel: revisionForPlaceholderModel)
             }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+                let isPlaceholder: Bool
+                if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
+                    isPlaceholder = groupModel.isPlaceholder
+                } else {
+                    isPlaceholder = false
+                }
+                guard !isPlaceholder else {
+                    // There's no point in sending a group update for a placeholder
+                    // group, since we don't know who to send it to.
+                    return Promise.value(groupThread)
+                }
+
                 return firstly {
                     GroupManager.sendGroupUpdateMessage(thread: groupThread, changeActionsProtoData: nil)
                 }.map(on: .global()) { (_) -> TSGroupThread in

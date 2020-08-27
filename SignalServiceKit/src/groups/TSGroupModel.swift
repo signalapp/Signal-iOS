@@ -146,9 +146,9 @@ public extension TSGroupModelV2 {
 
         switch access.addFromInviteLink {
         case .any:
-            return .enabledWithApproval
-        case .administrator:
             return .enabledWithoutApproval
+        case .administrator:
+            return .enabledWithApproval
         default:
             return .disabled
         }
