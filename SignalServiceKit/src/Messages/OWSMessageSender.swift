@@ -637,6 +637,7 @@ extension MessageSending {
             if GroupManager.shouldMessageHaveAdditionalRecipients(message, groupThread: groupThread) {
                 currentValidRecipients.formUnion(groupMembership.pendingMembers)
             }
+            currentValidRecipients.remove(localAddress)
             recipientAddresses.formIntersection(currentValidRecipients)
 
             recipientAddresses.subtract(self.blockingManager.blockedAddresses)
