@@ -47,7 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.backgroundColor = UIColor.clearColor;
     CAGradientLayer *layer = [CAGradientLayer new];
     layer.frame = UIScreen.mainScreen.bounds;
-    layer.colors = @[ (id)[UIColor colorWithRGBHex:0x171717].CGColor, (id)[UIColor colorWithRGBHex:0x121212].CGColor ];
+    UIColor *gradientStartColor = LKAppModeUtilities.isLightMode ? [UIColor colorWithRGBHex:0xFCFCFC] : [UIColor colorWithRGBHex:0x171717];
+    UIColor *gradientEndColor = LKAppModeUtilities.isLightMode ? [UIColor colorWithRGBHex:0xFFFFFF] : [UIColor colorWithRGBHex:0x121212];
+    layer.colors = @[ (id)gradientStartColor.CGColor, (id)gradientEndColor.CGColor ];
     [self.view.layer insertSublayer:layer atIndex:0];
     
     // Loki: Set navigation bar background color

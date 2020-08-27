@@ -217,6 +217,7 @@ private final class NewConversationButton : UIImageView {
         self.icon = icon
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
     }
     
     override init(frame: CGRect) {
@@ -226,20 +227,31 @@ private final class NewConversationButton : UIImageView {
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(isMainButton:) instead.")
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
-    private func setUpViewHierarchy() {
-        backgroundColor = isMainButton ? Colors.accent : Colors.newConversationButtonCollapsedBackground
+    private func setUpViewHierarchy(isUpdate: Bool = false) {
+        let newConversationButtonCollapsedBackground = isLightMode ? UIColor(hex: 0xF5F5F5) : UIColor(hex: 0x1F1F1F)
+        backgroundColor = isMainButton ? Colors.accent : newConversationButtonCollapsedBackground
         let size = Values.newConversationButtonCollapsedSize
         layer.cornerRadius = size / 2
         let glowColor = isMainButton ? Colors.newConversationButtonShadow : (isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black)
         let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: false, radius: isLightMode ? 4 : 6)
         setCircularGlow(with: glowConfiguration)
         layer.masksToBounds = false
-        let iconColor = (isMainButton && isLightMode) ? UIColor.white : Colors.text
+        let iconColor = (isMainButton && isLightMode) ? UIColor.white : (isLightMode ? UIColor.black : UIColor.white)
         image = icon.asTintedImage(color: iconColor)!
         contentMode = .center
-        widthConstraint = set(.width, to: size)
-        heightConstraint = set(.height, to: size)
+        if !isUpdate {
+            widthConstraint = set(.width, to: size)
+            heightConstraint = set(.height, to: size)
+        }
+    }
+
+    @objc private func handleAppModeChangedNotification(_ notification: Notification) {
+        setUpViewHierarchy(isUpdate: true)
     }
 }
 

@@ -5,12 +5,12 @@ public enum LKUserDefaults {
     public enum Bool : Swift.String {
         case hasLaunchedOnce
         case hasSeenGIFMetadataWarning
+        case hasSeenLightModeSheet
         case hasSeenMultiDeviceRemovalSheet
         case hasSeenOpenGroupSuggestionSheet
         case hasViewedSeed
         /// Whether the device was unlinked as a slave device (used to notify the user on the landing screen).
         case wasUnlinked
-        case isUsingDarkMode
         case isUsingFullAPNs
     }
 
@@ -20,6 +20,10 @@ public enum LKUserDefaults {
 
     public enum Double : Swift.String {
         case lastDeviceTokenUpload = "lastDeviceTokenUploadTime"
+    }
+
+    public enum Int: Swift.String {
+        case appMode
     }
     
     public enum String {
@@ -53,6 +57,11 @@ public extension UserDefaults {
     public subscript(double: LKUserDefaults.Double) -> Double {
         get { return self.double(forKey: double.rawValue) }
         set { set(newValue, forKey: double.rawValue) }
+    }
+
+    public subscript(int: LKUserDefaults.Int) -> Int {
+        get { return self.integer(forKey: int.rawValue) }
+        set { set(newValue, forKey: int.rawValue) }
     }
     
     public subscript(string: LKUserDefaults.String) -> String? {

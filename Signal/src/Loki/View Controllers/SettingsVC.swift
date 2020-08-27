@@ -49,6 +49,13 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         return result
     }()
+
+    private lazy var settingButtonsStackView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .vertical
+        result.alignment = .fill
+        return result
+    }()
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -110,9 +117,9 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         topStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
         topStackView.isLayoutMarginsRelativeArrangement = true
         // Set up setting buttons stack view
-        let settingButtonsStackView = UIStackView(arrangedSubviews: getSettingButtons() )
-        settingButtonsStackView.axis = .vertical
-        settingButtonsStackView.alignment = .fill
+        getSettingButtons().forEach { settingButtonOrSeparator in
+            settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator)
+        }
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView ])
         stackView.axis = .vertical
@@ -128,12 +135,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         stackView.pin(to: scrollView)
         view.addSubview(scrollView)
         scrollView.pin(to: view)
-        // Register for notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeSwitchedNotification(_:)), name: .appModeSwitched, object: nil)
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
     
     private func getSettingButtons() -> [UIView] {
@@ -159,8 +160,10 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 UIGraphicsEndImageContext()
                 return image!
             }
-            button.setBackgroundImage(getImage(withColor: Colors.buttonBackground), for: UIControl.State.normal)
-            button.setBackgroundImage(getImage(withColor: Colors.settingButtonSelected), for: UIControl.State.highlighted)
+            let backgroundColor = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
+            button.setBackgroundImage(getImage(withColor: backgroundColor), for: UIControl.State.normal)
+            let selectedColor = isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)
+            button.setBackgroundImage(getImage(withColor: selectedColor), for: UIControl.State.highlighted)
             button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
             button.set(.height, to: Values.settingButtonHeight)
             return button
@@ -209,11 +212,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     // MARK: Updating
-    @objc private func handleAppModeSwitchedNotification(_ notification: Notification) {
-        updateNavigationBarButtons()
-        // TODO: Redraw UI
-    }
-
     private func handleIsEditingDisplayNameChanged() {
         updateNavigationBarButtons()
         UIView.animate(withDuration: 0.25) {
@@ -239,12 +237,27 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
             closeButton.tintColor = Colors.text
             navigationItem.leftBarButtonItem = closeButton
-            let appModeIcon = UserDefaults.standard[.isUsingDarkMode] ? #imageLiteral(resourceName: "ic_dark_theme_on") : #imageLiteral(resourceName: "ic_dark_theme_off")
-            let appModeButton = UIBarButtonItem(image: appModeIcon, style: .plain, target: self, action: #selector(switchAppMode))
-            appModeButton.tintColor = Colors.text
-            let qrCodeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QRCode"), style: .plain, target: self, action: #selector(showQRCode))
-            qrCodeButton.tintColor = Colors.text
-            navigationItem.rightBarButtonItems = [ qrCodeButton/*, appModeButton*/ ]
+            if #available(iOS 13, *) { // Pre iOS 13 the user can't switch actively but the app still responds to system changes
+                let appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_dark_theme_on").withTintColor(.white) : #imageLiteral(resourceName: "ic_dark_theme_off").withTintColor(.black)
+                let appModeButton = UIButton()
+                appModeButton.setImage(appModeIcon, for: UIControl.State.normal)
+                appModeButton.tintColor = Colors.text
+                appModeButton.addTarget(self, action: #selector(switchAppMode), for: UIControl.Event.touchUpInside)
+                let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").withTintColor(.white) : #imageLiteral(resourceName: "QRCode").withTintColor(.black)
+                let qrCodeButton = UIButton()
+                qrCodeButton.setImage(qrCodeIcon, for: UIControl.State.normal)
+                qrCodeButton.tintColor = Colors.text
+                qrCodeButton.addTarget(self, action: #selector(showQRCode), for: UIControl.Event.touchUpInside)
+                let stackView = UIStackView(arrangedSubviews: [ appModeButton, qrCodeButton ])
+                stackView.axis = .horizontal
+                stackView.spacing = Values.mediumSpacing
+                navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
+            } else {
+                let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").asTintedImage(color: .white) : #imageLiteral(resourceName: "QRCode").asTintedImage(color: .black)
+                let qrCodeButton = UIBarButtonItem(image: qrCodeIcon, style: .plain, target: self, action: #selector(showQRCode))
+                qrCodeButton.tintColor = Colors.text
+                navigationItem.rightBarButtonItem = qrCodeButton
+            }
         }
     }
     
@@ -290,6 +303,18 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             }, requiresSync: true)
         }
     }
+
+    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
+        super.handleAppModeChangedNotification(notification)
+        updateNavigationBarButtons()
+        settingButtonsStackView.arrangedSubviews.forEach { settingButton in
+            settingButtonsStackView.removeArrangedSubview(settingButton)
+            settingButton.removeFromSuperview()
+        }
+        getSettingButtons().forEach { settingButtonOrSeparator in
+            settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator) // Re-do the setting buttons
+        }
+    }
     
     // MARK: Interaction
     @objc private func close() {
@@ -297,9 +322,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
 
     @objc private func switchAppMode() {
-        let isUsingDarkMode = UserDefaults.standard[.isUsingDarkMode]
-        UserDefaults.standard[.isUsingDarkMode] = !isUsingDarkMode
-        NotificationCenter.default.post(name: .appModeSwitched, object: nil)
+        let newAppMode: AppMode = isLightMode ? .dark : .light
+        AppModeManager.shared.setCurrentAppMode(to: newAppMode)
     }
 
     @objc private func showQRCode() {
