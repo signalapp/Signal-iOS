@@ -5,7 +5,7 @@ public final class ViewControllerUtilities : NSObject {
     private override init() { }
 
     @objc(setUpDefaultSessionStyleForVC:withTitle:customBackButton:)
-    public static func setUpDefaultSessionStyle(for vc: UIViewController, title: String, hasCustomBackButton: Bool) {
+    public static func setUpDefaultSessionStyle(for vc: UIViewController, title: String?, hasCustomBackButton: Bool) {
         // Set gradient background
         vc.view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
@@ -18,11 +18,13 @@ public final class ViewControllerUtilities : NSObject {
             navigationBar.barTintColor = Colors.navigationBarBackground
         }
         // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = title
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        vc.navigationItem.titleView = titleLabel
+        if let title = title {
+            let titleLabel = UILabel()
+            titleLabel.text = title
+            titleLabel.textColor = Colors.text
+            titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+            vc.navigationItem.titleView = titleLabel
+        }
         // Set up back button
         if hasCustomBackButton {
             let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
