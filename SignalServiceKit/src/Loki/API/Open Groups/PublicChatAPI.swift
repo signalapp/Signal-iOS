@@ -122,13 +122,16 @@ public final class PublicChatAPI : DotNetAPI {
                     return rawMessages.flatMap { message in
                         let isDeleted = (message["is_deleted"] as? Int == 1)
                         guard !isDeleted else { return nil }
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
                         guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first(where: { $0["type"] as? String == publicChatMessageType }), let value = annotation["value"] as? JSON,
                             let serverID = message["id"] as? UInt64, let hexEncodedSignatureData = value["sig"] as? String, let signatureVersion = value["sigver"] as? UInt64,
                             let body = message["text"] as? String, let user = message["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String,
-                            let timestamp = value["timestamp"] as? UInt64 else {
+                            let timestamp = value["timestamp"] as? UInt64, let dateAsString = message["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
                                 print("[Loki] Couldn't parse message for public chat channel with ID: \(channel) on server: \(server) from: \(message).")
                                 return nil
                         }
+                        let servertTimestamp = UInt64(date.timeIntervalSince1970) * 1000
                         var profilePicture: PublicChatMessage.ProfilePicture? = nil
                         let displayName = user["name"] as? String ?? NSLocalizedString("Anonymous", comment: "")
                         if let userAnnotations = user["annotations"] as? [JSON], let profilePictureAnnotation = userAnnotations.first(where: { $0["type"] as? String == profilePictureType }),
@@ -168,7 +171,7 @@ public final class PublicChatAPI : DotNetAPI {
                                 width: width, height: height, caption: caption, url: url, linkPreviewURL: linkPreviewURL, linkPreviewTitle: linkPreviewTitle)
                         }
                         let result = PublicChatMessage(serverID: serverID, senderPublicKey: hexEncodedPublicKey, displayName: displayName, profilePicture: profilePicture,
-                            body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature)
+                            body: body, type: publicChatMessageType, timestamp: timestamp, quote: quote, attachments: attachments, signature: signature, serverTimestamp: servertTimestamp)
                         guard result.hasValidSignature() else {
                             print("[Loki] Ignoring public chat message with invalid signature.")
                             return nil
@@ -182,7 +185,7 @@ public final class PublicChatAPI : DotNetAPI {
                             return nil
                         }
                         return result
-                    }.sorted { $0.timestamp < $1.timestamp }
+                    }.sorted { $0.serverTimestamp < $1.serverTimestamp}
                 }
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -217,7 +220,7 @@ public final class PublicChatAPI : DotNetAPI {
                                 throw DotNetAPIError.parsingFailed
                             }
                             let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                            return PublicChatMessage(serverID: serverID, senderPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
+                            return PublicChatMessage(serverID: serverID, senderPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature, serverTimestamp: timestamp)
                         }
                     }
                 }.handlingInvalidAuthTokenIfNeeded(for: server)

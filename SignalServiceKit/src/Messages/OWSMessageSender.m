@@ -1043,7 +1043,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         NSString *body = (message.body != nil && message.body.length > 0) ? message.body : [NSString stringWithFormat:@"%@", @(message.timestamp)]; // Workaround for the fact that the back-end doesn't accept messages without a body
         LKPublicChatMessage *groupMessage = [[LKPublicChatMessage alloc] initWithSenderPublicKey:userPublicKey displayName:displayName body:body type:LKPublicChatAPI.publicChatMessageType
-         timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteePublicKey:quoteePublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
+                                                                                       timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteePublicKey:quoteePublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0 serverTimestamp:0];
         OWSLinkPreview *linkPreview = message.linkPreview;
         if (linkPreview != nil) {
             TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:linkPreview.imageAttachmentId];
