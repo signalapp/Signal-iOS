@@ -1694,11 +1694,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 throw OWSAssertionError("Invalid addFromInviteLinkAccess.")
             }
 
-            let actionsProto = try actionsBuilder.build()
-            Logger.verbose("actionsProto: \(actionsProto.debugDescription)")
-            let actionsProtoData = try actionsBuilder.buildSerializedData()
-            Logger.verbose("actionsProtoData: \(actionsProtoData.hexadecimalString)")
-
             return try actionsBuilder.build()
         }
     }

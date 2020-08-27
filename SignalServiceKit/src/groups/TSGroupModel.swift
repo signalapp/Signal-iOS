@@ -151,7 +151,6 @@ public extension TSGroupModelV2 {
             return .enabledWithoutApproval
         default:
             return .disabled
-
         }
     }
 
