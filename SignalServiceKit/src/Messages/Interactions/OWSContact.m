@@ -334,18 +334,18 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 {
     if (_displayName.length < 1) {
         CNContact *_Nullable cnContact = [self systemContactForName];
-        if (cnContact.nickname != nil) {
+        if (cnContact.nickname.length > 0) {
             _displayName = cnContact.nickname.ows_stripped;
         } else {
             _displayName = [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName];
         }
     }
     if (_displayName.length < 1) {
-        if (_nickname.length < 1) {
+        if (_nickname.length > 0) {
+            _displayName = self.nickname;
+        } else {
             // Fall back to using the organization name.
             _displayName = self.organizationName;
-        } else {
-            _displayName = self.nickname;
         }
     }
 }
