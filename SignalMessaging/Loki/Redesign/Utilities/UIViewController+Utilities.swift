@@ -4,8 +4,8 @@ public final class ViewControllerUtilities : NSObject {
 
     private override init() { }
 
-    @objc(setUpDefaultSessionStyleForVC:withTitle:)
-    public static func setUpDefaultSessionStyle(for vc: UIViewController, title: String) {
+    @objc(setUpDefaultSessionStyleForVC:withTitle:customBackButton:)
+    public static func setUpDefaultSessionStyle(for vc: UIViewController, title: String, hasCustomBackButton: Bool) {
         // Set gradient background
         vc.view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
@@ -24,8 +24,10 @@ public final class ViewControllerUtilities : NSObject {
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         vc.navigationItem.titleView = titleLabel
         // Set up back button
-        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        vc.navigationItem.backBarButtonItem = backButton
+        if hasCustomBackButton {
+            let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
+            backButton.tintColor = Colors.text
+            vc.navigationItem.backBarButtonItem = backButton
+        }
     }
 }
