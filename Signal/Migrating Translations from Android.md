@@ -1,3 +1,5 @@
+TODO: Make a script that does this
+
 * Replace <string name=“ → “
 * Replace “> → “ = “
 * Replace </string> → “;
