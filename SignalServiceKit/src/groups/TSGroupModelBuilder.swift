@@ -25,6 +25,7 @@ public struct TSGroupModelBuilder {
     public var newGroupSeed: NewGroupSeed?
     public var avatarUrlPath: String?
     public var inviteLinkPassword: Data?
+    public var isPlaceholder: Bool = false
 
     public init() {}
 
@@ -41,6 +42,7 @@ public struct TSGroupModelBuilder {
         self.groupSecretParamsData = groupV2Snapshot.groupSecretParamsData
         self.avatarUrlPath = groupV2Snapshot.avatarUrlPath
         self.inviteLinkPassword = groupV2Snapshot.inviteLinkPassword
+        self.isPlaceholder = false
     }
 
     public func build(transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
@@ -78,6 +80,7 @@ public struct TSGroupModelBuilder {
             if !groupMembership.requestingMembers.isEmpty {
                 owsFailDebug("v1 group has pending request members.")
             }
+            owsAssertDebug(!isPlaceholder)
             return TSGroupModel(groupId: groupId,
                                 name: name,
                                 avatarData: avatarData,
@@ -96,7 +99,8 @@ public struct TSGroupModelBuilder {
                                   revision: groupV2Revision,
                                   secretParamsData: groupSecretParamsData,
                                   avatarUrlPath: avatarUrlPath,
-                                  inviteLinkPassword: inviteLinkPassword)
+                                  inviteLinkPassword: inviteLinkPassword,
+                                  isPlaceholder: isPlaceholder)
         }
     }
 
@@ -189,6 +193,8 @@ public extension TSGroupModel {
             builder.groupSecretParamsData = v2.secretParamsData
             builder.avatarUrlPath = v2.avatarUrlPath
             builder.inviteLinkPassword = v2.inviteLinkPassword
+            // Do not copy isPlaceholder; we want to discard this
+            // value when updating group models.
         }
         return builder
     }

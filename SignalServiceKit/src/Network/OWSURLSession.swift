@@ -40,6 +40,14 @@ public enum HTTPVerb {
     }
 }
 
+// MARK: -
+
+public enum OWSHTTPError: Error {
+    case requestError(statusCode: Int, httpUrlResponse: HTTPURLResponse)
+}
+
+// MARK: -
+
 private var URLSessionProgressBlockHandle: UInt8 = 0
 
 public struct OWSHTTPResponse {
@@ -92,6 +100,10 @@ public class OWSURLSession: NSObject {
     @objc
     public var failOnError: Bool = true
 
+    // By default OWSURLSession treats 4xx and 5xx responses as errors.
+    @objc
+    public var require2xxOr3xx: Bool = true
+
     @objc(addExtraHeader:withValue:)
     public func addExtraHeader(_ header: String, value: String) {
         owsAssertDebug(!header.isEmpty)
@@ -140,6 +152,7 @@ public class OWSURLSession: NSObject {
                                             responseData: Data?,
                                             response: URLResponse?,
                                             error: Error?,
+                                            require2xxOr3xx: Bool,
                                             failOnError: Bool) {
         if let error = error {
             if IsNetworkConnectivityFailure(error) {
@@ -170,6 +183,15 @@ public class OWSURLSession: NSObject {
             resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
             return
         }
+
+        if require2xxOr3xx {
+            let statusCode = httpUrlResponse.statusCode
+            guard statusCode >= 200, statusCode < 400 else {
+                resolver.reject(OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse))
+                return
+            }
+        }
+
         resolver.fulfill(OWSHTTPResponse(task: task, httpUrlResponse: httpUrlResponse, responseData: responseData))
     }
 
@@ -400,6 +422,7 @@ public extension OWSURLSession {
                            data requestData: Data,
                            progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
 
+        let require2xxOr3xx = self.require2xxOr3xx
         let failOnError = self.failOnError
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
         var taskReference: URLSessionDataTask?
@@ -414,6 +437,7 @@ public extension OWSURLSession {
                                       responseData: responseData,
                                       response: response,
                                       error: error,
+                                      require2xxOr3xx: require2xxOr3xx,
                                       failOnError: failOnError)
         }
         taskReference = task
@@ -437,6 +461,7 @@ public extension OWSURLSession {
                            dataUrl: URL,
                            progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
 
+        let require2xxOr3xx = self.require2xxOr3xx
         let failOnError = self.failOnError
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
         var taskReference: URLSessionDataTask?
@@ -451,6 +476,7 @@ public extension OWSURLSession {
                                       responseData: responseData,
                                       response: response,
                                       error: error,
+                                      require2xxOr3xx: require2xxOr3xx,
                                       failOnError: failOnError)
         }
         taskReference = task
@@ -488,6 +514,7 @@ public extension OWSURLSession {
 
     func dataTaskPromise(request: URLRequest) -> Promise<OWSHTTPResponse> {
 
+        let require2xxOr3xx = self.require2xxOr3xx
         let failOnError = self.failOnError
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
         var taskReference: URLSessionDataTask?
@@ -502,6 +529,7 @@ public extension OWSURLSession {
                                       responseData: responseData,
                                       response: response,
                                       error: error,
+                                      require2xxOr3xx: require2xxOr3xx,
                                       failOnError: failOnError)
         }
         taskReference = task

@@ -1293,7 +1293,9 @@ public class GroupManager: NSObject {
 
     public static func joinGroupViaInviteLink(groupId: Data,
                                               groupSecretParamsData: Data,
-                                              inviteLinkPassword: Data) -> Promise<TSGroupThread> {
+                                              inviteLinkPassword: Data,
+                                              groupInviteLinkPreview: GroupInviteLinkPreview,
+                                              avatarData: Data?) -> Promise<TSGroupThread> {
         let description = "Join Group Invite Link"
 
         return firstly(on: .global()) {
@@ -1301,7 +1303,9 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             self.groupsV2.joinGroupViaInviteLink(groupId: groupId,
                                                  groupSecretParamsData: groupSecretParamsData,
-                                                 inviteLinkPassword: inviteLinkPassword)
+                                                 inviteLinkPassword: inviteLinkPassword,
+                                                 groupInviteLinkPreview: groupInviteLinkPreview,
+                                                 avatarData: avatarData)
         }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
             self.databaseStorage.write { transaction in
                 self.profileManager.addGroupId(toProfileWhitelist: groupId,

@@ -117,6 +117,11 @@ public extension TSNetworkManager {
                 return nil
             }
             return NSNumber(value: statusCode)
+        case OWSHTTPError.requestError(let statusCode, _):
+            guard statusCode > 0 else {
+                return nil
+            }
+            return NSNumber(value: statusCode)
         default:
             return nil
         }

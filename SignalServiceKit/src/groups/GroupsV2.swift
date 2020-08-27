@@ -18,6 +18,8 @@ public enum GroupsV2Error: Error {
     case lastAdminCantLeaveGroup
     case tooManyMembers
     case gv2NotEnabled
+    case localUserIsAlreadyRequestingMember
+    case requestingMemberCantLoadGroupState
 }
 
 // MARK: -
@@ -130,7 +132,9 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func joinGroupViaInviteLink(groupId: Data,
                                 groupSecretParamsData: Data,
-                                inviteLinkPassword: Data) -> Promise<TSGroupThread>
+                                inviteLinkPassword: Data,
+                                groupInviteLinkPreview: GroupInviteLinkPreview,
+                                avatarData: Data?) -> Promise<TSGroupThread>
 }
 
 // MARK: -
@@ -336,17 +340,20 @@ public struct GroupInviteLinkPreview {
     public let memberCount: UInt32
     public let addFromInviteLinkAccess: GroupV2Access
     public let revision: UInt32
+    public let isLocalUserRequestingMember: Bool
 
     public init(title: String,
                 avatarUrlPath: String?,
                 memberCount: UInt32,
                 addFromInviteLinkAccess: GroupV2Access,
-                revision: UInt32) {
+                revision: UInt32,
+                isLocalUserRequestingMember: Bool) {
         self.title = title
         self.avatarUrlPath = avatarUrlPath
         self.memberCount = memberCount
         self.addFromInviteLinkAccess = addFromInviteLinkAccess
         self.revision = revision
+        self.isLocalUserRequestingMember = isLocalUserRequestingMember
     }
 }
 
@@ -570,7 +577,9 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func joinGroupViaInviteLink(groupId: Data,
                                        groupSecretParamsData: Data,
-                                       inviteLinkPassword: Data) -> Promise<TSGroupThread> {
+                                       inviteLinkPassword: Data,
+                                       groupInviteLinkPreview: GroupInviteLinkPreview,
+                                       avatarData: Data?) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 }
