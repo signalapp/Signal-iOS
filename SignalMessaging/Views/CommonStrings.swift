@@ -72,6 +72,9 @@ import Foundation
 
     @objc
     static public let switchOff = NSLocalizedString("SWITCH_OFF", comment: "Label for 'off' state of a switch control.")
+
+    @objc
+    static public let sendMessage = NSLocalizedString("ACTION_SEND_MESSAGE", comment: "Label for button that lets you send a message to a contact.")
 }
 
 @objc
