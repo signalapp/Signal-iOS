@@ -132,10 +132,10 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static let phoneNumberSharing = false
+    public static let phoneNumberSharing = build.includes(.dev)
 
     @objc
-    public static let phoneNumberDiscoverability = false
+    public static let phoneNumberDiscoverability = build.includes(.dev)
 
     @objc
     public static let complainAboutSlowDBWrites = true

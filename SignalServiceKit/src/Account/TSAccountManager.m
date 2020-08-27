@@ -588,6 +588,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         [self loadAccountStateWithTransaction:transaction];
     }
 
+    [self updateAccountAttributesIfNecessary];
+
     if (updateStorageService) {
         [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
     }
