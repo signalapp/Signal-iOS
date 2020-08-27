@@ -87,7 +87,7 @@ public class GroupLinkViewController: OWSTableViewController {
                 rowLabel.lineBreakMode = .byTruncatingTail
 
                 let switchView = UISwitch()
-                switchView.isOn = groupModelV2.isGroupLinkEnabled
+                switchView.isOn = groupModelV2.isGroupInviteLinkEnabled
                 switchView.addTarget(self, action: switchAction, for: .valueChanged)
                 switchView.isEnabled = canEditGroupLinkSettings
 
@@ -102,7 +102,7 @@ public class GroupLinkViewController: OWSTableViewController {
                 cell.contentView.addSubview(vStack)
                 vStack.autoPinEdgesToSuperviewMargins()
 
-                if groupModelV2.isGroupLinkEnabled {
+                if groupModelV2.isGroupInviteLinkEnabled {
                     do {
                         let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
                         let urlLabel = UILabel()
@@ -127,7 +127,7 @@ public class GroupLinkViewController: OWSTableViewController {
                 UIApplication.shared.open(SupportConstants.supportURL, options: [:])
             }))
 
-            if groupModelV2.isGroupLinkEnabled {
+            if groupModelV2.isGroupInviteLinkEnabled {
                 section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
                                                                                 comment: "Label for the 'share link' button in the 'group link' view."),
                                                     textColor: Theme.accentBlueColor,
@@ -158,7 +158,7 @@ public class GroupLinkViewController: OWSTableViewController {
             section.add(OWSTableItem.switch(withText: NSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
                                                                         comment: "Label for the 'approve new members' switch in the 'group link' view."),
                                             isOn: { groupModelV2.access.addFromInviteLink == .administrator },
-                                            isEnabledBlock: { canEditGroupLinkSettings && groupModelV2.isGroupLinkEnabled },
+                                            isEnabledBlock: { canEditGroupLinkSettings && groupModelV2.isGroupInviteLinkEnabled },
                                             target: self,
                                             selector: #selector(didToggleApproveNewMembers(_:))))
             contents.addSection(section)
@@ -185,15 +185,15 @@ public class GroupLinkViewController: OWSTableViewController {
     @objc
     func didToggleGroupLinkEnabled(_ sender: UISwitch) {
         let approveNewMembers = groupModelV2.access.addFromInviteLink == .administrator
-        let linkMode = self.linkMode(isGroupLinkEnabled: sender.isOn,
+        let linkMode = self.linkMode(isGroupInviteLinkEnabled: sender.isOn,
                                      approveNewMembers: approveNewMembers)
         updateLinkMode(linkMode: linkMode)
     }
 
     @objc
     func didToggleApproveNewMembers(_ sender: UISwitch) {
-        let isGroupLinkEnabled = groupModelV2.isGroupLinkEnabled
-        let linkMode = self.linkMode(isGroupLinkEnabled: isGroupLinkEnabled,
+        let isGroupInviteLinkEnabled = groupModelV2.isGroupInviteLinkEnabled
+        let linkMode = self.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
                                      approveNewMembers: sender.isOn)
         updateLinkMode(linkMode: linkMode)
     }
@@ -237,7 +237,7 @@ public class GroupLinkViewController: OWSTableViewController {
     }
 
     func copyLinkToPasteboard() {
-        guard groupModelV2.isGroupLinkEnabled else {
+        guard groupModelV2.isGroupInviteLinkEnabled else {
             owsFailDebug("Group link not enabled.")
             return
         }
@@ -255,7 +255,7 @@ public class GroupLinkViewController: OWSTableViewController {
     }
 
     func shareLinkViaSharingUI() {
-        guard groupModelV2.isGroupLinkEnabled else {
+        guard groupModelV2.isGroupInviteLinkEnabled else {
             owsFailDebug("Group link not enabled.")
             return
         }
@@ -309,8 +309,8 @@ private extension GroupLinkViewController {
         }
     }
 
-    private func linkMode(isGroupLinkEnabled: Bool, approveNewMembers: Bool) -> GroupsV2LinkMode {
-        if isGroupLinkEnabled {
+    private func linkMode(isGroupInviteLinkEnabled: Bool, approveNewMembers: Bool) -> GroupsV2LinkMode {
+        if isGroupInviteLinkEnabled {
             return (approveNewMembers ? .enabledWithApproval : .enabledWithoutApproval)
         } else {
             return .disabled

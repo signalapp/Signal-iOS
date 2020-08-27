@@ -159,6 +159,8 @@ public class GroupAccess: MTLModel {
     }
 }
 
+// MARK: -
+
 @objc
 public extension GroupAccess {
     var canJoinFromInviteLink: Bool {

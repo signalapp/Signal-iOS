@@ -810,7 +810,7 @@ extension ConversationSettingsViewController {
 
         }))
 
-        let groupLinkStatus = (groupModelV2.isGroupLinkEnabled
+        let groupLinkStatus = (groupModelV2.isGroupInviteLinkEnabled
             ? CommonStrings.switchOn
             : CommonStrings.switchOff)
         section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
