@@ -13,8 +13,7 @@ public final class PublicChatMessage : NSObject {
     public let quote: Quote?
     public var attachments: [Attachment] = []
     public let signature: Signature?
-    
-    // MARK: Server Timestamp (use for sorting)
+    /// - Note: Used for sorting.
     public let serverTimestamp: UInt64
     
     @objc(serverID)

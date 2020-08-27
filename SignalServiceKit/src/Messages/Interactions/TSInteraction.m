@@ -189,14 +189,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     OWSAssertDebug(other);
 
-    // Loki: Sort the messages by the sender's timestamp (Signal uses sortId)
+    // Sort the messages by the sender's timestamp (Signal uses sortId)
     uint64_t sortId1 = self.timestamp;
     uint64_t sortId2 = other.timestamp;
-    
-    // Loki: In open groups, we use the server time to sort the messages
-    //       SortId represents the order that a message is processed
-    //       Since we have sorted the messages in the poller using server time
-    //       SortId can represent the order by server time.
+
+    // In open groups messages should be sorted by their server timestamp. `sortId` represents the order in which messages
+    // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
+    // effectively the same as sorting by server timestamp.
     if (self.thread.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)self.thread;
         if (thread.isPublicChat) {
