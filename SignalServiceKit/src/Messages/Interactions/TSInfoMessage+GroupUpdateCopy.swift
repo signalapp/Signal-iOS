@@ -1253,11 +1253,26 @@ extension GroupUpdateCopy {
     mutating func addUserRequestWasApproved(for address: SignalServiceAddress) {
         let isLocalUser = localAddress == address
         if isLocalUser {
-            // TODO: Should we embed the name of the user who approved us?
-            addItem(.userMembershipState,
-                    address: address,
-                    copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED",
-                                            comment: "Message indicating that the local user's request to join the group was approved."))
+            switch updater {
+            case .localUser:
+                // This could happen if the user requested to join a group
+                // and became a requesting member, then tried to join the
+                // group again and was added because the group stopped
+                // requiring approval in the interim.
+                addItem(.userMembershipState_added,
+                        address: address,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                                                comment: "Message indicating that the local user has joined the group."))
+            case .otherUser(let updaterName, _):
+                let format = NSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
+                                               comment: "Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}.")
+                addItem(.userMembershipState, address: address, format: format, updaterName)
+            case .unknown:
+                addItem(.userMembershipState_added,
+                        address: address,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                                                comment: "Message indicating that the local user has joined the group."))
+            }
         } else {
             let requesterName = contactsManager.displayName(for: address, transaction: transaction)
             switch updater {
