@@ -186,6 +186,8 @@ class MessageActionsViewController: UIViewController {
             return owsFailDebug("trying to dismiss when already presented")
         }
 
+        ImpactHapticFeedback.impactOccured(style: .light)
+
         window.addSubview(view)
         prepareConstraints()
 
@@ -204,7 +206,6 @@ class MessageActionsViewController: UIViewController {
             self.bottomBar.alpha = 1
             animateAlongside?()
         }) { _ in
-            ImpactHapticFeedback.impactOccured(style: .light)
             completion?()
         }
     }
