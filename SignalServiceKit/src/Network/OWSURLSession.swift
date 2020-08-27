@@ -10,6 +10,7 @@ public enum HTTPVerb {
     case post
     case put
     case head
+    case patch
 
     public var httpMethod: String {
         switch self {
@@ -21,6 +22,8 @@ public enum HTTPVerb {
             return "PUT"
         case .head:
             return "HEAD"
+        case .patch:
+            return "PATCH"
         }
     }
 
@@ -34,6 +37,8 @@ public enum HTTPVerb {
             return .put
         case "HEAD":
             return .head
+        case "PATCH":
+            return .patch
         default:
             throw OWSAssertionError("Unknown verb: \(String(describing: verb))")
         }

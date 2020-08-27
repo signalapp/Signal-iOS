@@ -150,20 +150,25 @@ struct GroupUpdateCopy {
                            oldDisappearingMessageToken: DisappearingMessageToken?,
                            newDisappearingMessageToken: DisappearingMessageToken?) {
 
-        if isReplacingPlaceholder {
-            // TODO:
-        } else if let oldGroupModel = oldGroupModel {
+        if let oldGroupModel = oldGroupModel {
+
             let oldGroupMembership = oldGroupModel.groupMembership
-            addMembershipUpdates(oldGroupMembership: oldGroupMembership)
 
-            addAttributesUpdates(oldGroupModel: oldGroupModel)
+            if isReplacingPlaceholder {
+                addMembershipUpdates(oldGroupMembership: oldGroupMembership,
+                                     forLocalUserOnly: true)
+            } else {
+                addMembershipUpdates(oldGroupMembership: oldGroupMembership)
 
-            addAccessUpdates(oldGroupModel: oldGroupModel)
+                addAttributesUpdates(oldGroupModel: oldGroupModel)
 
-            addDisappearingMessageUpdates(oldToken: oldDisappearingMessageToken,
-                                          newToken: newDisappearingMessageToken)
+                addAccessUpdates(oldGroupModel: oldGroupModel)
 
-            addGroupLinkUpdates(oldGroupModel: oldGroupModel)
+                addDisappearingMessageUpdates(oldToken: oldDisappearingMessageToken,
+                                              newToken: newDisappearingMessageToken)
+
+                addGroupInviteLinkUpdates(oldGroupModel: oldGroupModel)
+            }
         } else {
             // We're just learning of the group.
             addGroupWasInserted()
@@ -427,7 +432,7 @@ extension GroupUpdateCopy {
         var inviteRevokedCount: UInt = 0
     }
 
-    mutating func addMembershipUpdates(oldGroupMembership: GroupMembership) {
+    mutating func addMembershipUpdates(oldGroupMembership: GroupMembership, forLocalUserOnly: Bool = false) {
         var membershipCounts = MembershipCounts()
 
         let allUsersUnsorted = oldGroupMembership.allMembersOfAnyKind.union(newGroupMembership.allMembersOfAnyKind)
@@ -446,6 +451,10 @@ extension GroupUpdateCopy {
         }
 
         for address in allUsersSorted {
+            if forLocalUserOnly, address != localAddress {
+                continue
+            }
+
             let oldMembershipStatus = membershipStatus(of: address, in: oldGroupMembership)
             let newMembershipStatus = membershipStatus(of: address, in: newGroupMembership)
 
@@ -459,7 +468,8 @@ extension GroupUpdateCopy {
                 case .invited:
                     addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(for: address)
                 case .requesting:
-                    owsFailDebug("This transition is unexpected")
+                    // This could happen if a user leaves a group, the requests to rejoin
+                    // and we do have access to the intervening revisions.
                     addUserRequestedToJoinGroup(for: address)
                 case .none:
                     addUserLeftOrWasKickedOutOfGroup(for: address)
@@ -501,7 +511,7 @@ extension GroupUpdateCopy {
                     addUserWasInvitedToTheGroup(for: address,
                                                 membershipCounts: &membershipCounts)
                 case .requesting:
-                // Membership status didn't change.
+                    // Membership status didn't change.
                     break
                 case .none:
                     addUserRequestWasRejected(for: address)
@@ -509,7 +519,11 @@ extension GroupUpdateCopy {
             case .none:
                 switch newMembershipStatus {
                 case .normalMember:
-                    addUserWasAddedToTheGroup(for: address)
+                    if newGroupMembership.didJoinFromInviteLink(forFullMember: address) {
+                        addUserJoinedFromInviteLink(for: address)
+                    } else {
+                        addUserWasAddedToTheGroup(for: address)
+                    }
                 case .invited:
                     addUserWasInvitedToTheGroup(for: address,
                                                 membershipCounts: &membershipCounts)
@@ -1144,6 +1158,55 @@ extension GroupUpdateCopy {
         }
     }
 
+    mutating func addUserJoinedFromInviteLink(for address: SignalServiceAddress) {
+
+        let isLocalUser = localAddress == address
+        if isLocalUser {
+            switch updater {
+            case .localUser:
+                addItem(.userMembershipState_added,
+                        address: address,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK",
+                                                comment: "Message indicating that the local user has joined the group."))
+            case .otherUser:
+                owsFailDebug("A user should never join the group via invite link unless they are the updater.")
+                addItem(.userMembershipState_added,
+                        address: address,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                                                comment: "Message indicating that the local user has joined the group."))
+            case .unknown:
+                addItem(.userMembershipState_added,
+                        address: address,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                                                comment: "Message indicating that the local user has joined the group."))
+            }
+        } else {
+            let userName = contactsManager.displayName(for: address, transaction: transaction)
+
+            switch updater {
+            case .otherUser(let updaterName, let updaterAddress):
+                if address == updaterAddress {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT",
+                                                   comment: "Message indicating that another user has joined the group. Embeds {{remote user name}}.")
+                    addItem(.userMembershipState_added,
+                            address: address,
+                            format: format,
+                            updaterName)
+                    return
+                }
+            default:
+                break
+            }
+
+            owsFailDebug("A user should not be able to join the group directly via group invite link unless they are the updater.")
+            let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT",
+                                           comment: "Message indicating that a remote user was added to the group. Embeds {{remote user name}}.")
+            addItem(.userMembershipState_added,
+                    address: address,
+                    format: format, userName)
+        }
+    }
+
     mutating func addUserWasInvitedToTheGroup(for address: SignalServiceAddress,
                                               membershipCounts: inout MembershipCounts) {
 
@@ -1382,9 +1445,9 @@ extension GroupUpdateCopy {
         }
     }
 
-    // MARK: -
+    // MARK: - Group Invite Links
 
-    mutating func addGroupLinkUpdates(oldGroupModel: TSGroupModel) {
+    mutating func addGroupInviteLinkUpdates(oldGroupModel: TSGroupModel) {
         guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
             return
         }

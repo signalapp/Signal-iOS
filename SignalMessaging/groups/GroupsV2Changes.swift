@@ -161,7 +161,7 @@ public class GroupsV2Changes {
             }
             groupMembershipBuilder.removeInvalidInvite(userId: userId)
             groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addFullMember(uuid, role: role)
+            groupMembershipBuilder.addFullMember(uuid, role: role, didJoinFromInviteLink: didJoinFromInviteLink)
 
             guard let profileKeyCiphertextData = member.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")

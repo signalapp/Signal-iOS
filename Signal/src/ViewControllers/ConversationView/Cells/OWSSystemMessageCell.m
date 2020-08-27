@@ -406,6 +406,7 @@ typedef void (^SystemMessageActionBlock)(void);
         case GroupUpdateTypeUserMembershipState:
         case GroupUpdateTypeUserMembershipState_invalidInvitesRemoved:
         case GroupUpdateTypeUserMembershipState_invalidInvitesAdded:
+        case GroupUpdateTypeGroupInviteLink:
             iconName = [Theme iconName:ThemeIconGroup16];
             break;
         case GroupUpdateTypeUserMembershipState_invitesDeclined:
