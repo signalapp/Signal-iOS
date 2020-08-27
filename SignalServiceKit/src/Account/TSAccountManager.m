@@ -68,6 +68,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 @property (nonatomic, readonly) BOOL isDeregistered;
 @property (nonatomic, readonly) BOOL isOnboarded;
 @property (nonatomic, readonly) BOOL isDiscoverableByPhoneNumber;
+@property (nonatomic, readonly) BOOL hasDefinedIsDiscoverableByPhoneNumber;
 
 @property (nonatomic, readonly) BOOL isTransferInProgress;
 @property (nonatomic, readonly) BOOL wasTransferred;
@@ -112,9 +113,22 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                              transaction:transaction];
     _isOnboarded = [keyValueStore getBool:TSAccountManager_IsOnboardedKey defaultValue:NO transaction:transaction];
 
+
+    // When we enable the ability to change whether you're discoverable
+    // by phone number, new registrations must not be discoverable by
+    // default. In order to accomodate this, the default "isDiscoverable"
+    // flag will be NO until you have successfully registered (aka defined
+    // a local phone number).
+    BOOL isDiscoverableByDefault = YES;
+    if (SSKFeatureFlags.phoneNumberDiscoverability) {
+        isDiscoverableByDefault = self.isRegistered;
+    }
+
     _isDiscoverableByPhoneNumber = [keyValueStore getBool:TSAccountManager_IsDiscoverableByPhoneNumber
-                                             defaultValue:YES
+                                             defaultValue:isDiscoverableByDefault
                                               transaction:transaction];
+    _hasDefinedIsDiscoverableByPhoneNumber = [keyValueStore hasValueForKey:TSAccountManager_IsDiscoverableByPhoneNumber
+                                                               transaction:transaction];
 
     _isTransferInProgress = [keyValueStore getBool:TSAccountManager_IsTransferInProgressKey
                                       defaultValue:NO
@@ -573,6 +587,11 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     return [self getOrLoadAccountStateWithSneakyTransaction].isDiscoverableByPhoneNumber;
 }
 
+- (BOOL)hasDefinedIsDiscoverableByPhoneNumber
+{
+    return [self getOrLoadAccountStateWithSneakyTransaction].hasDefinedIsDiscoverableByPhoneNumber;
+}
+
 - (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
                   updateStorageService:(BOOL)updateStorageService
                            transaction:(SDSAnyWriteTransaction *)transaction
@@ -588,9 +607,13 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         [self loadAccountStateWithTransaction:transaction];
     }
 
-    if (updateStorageService) {
-        [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
-    }
+    [transaction addAsyncCompletion:^{
+        [self updateAccountAttributes];
+
+        if (updateStorageService) {
+            [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
+        }
+    }];
 }
 
 #pragma mark - Network Requests

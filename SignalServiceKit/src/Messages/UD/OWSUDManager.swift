@@ -745,7 +745,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         phoneNumberSharingModeCached.set(mode)
 
         if updateStorageService {
-            SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+            transaction.addSyncCompletion {
+                SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
         }
     }
 }
