@@ -48,7 +48,7 @@ struct IOSProtos_BackupSnapshot {
 
     /// @required
     var entityData: Data {
-      get {return _entityData ?? Data()}
+      get {return _entityData ?? SwiftProtobuf.Internal.emptyData}
       set {_entityData = newValue}
     }
     /// Returns true if `entityData` has been explicitly set.
@@ -142,7 +142,7 @@ struct IOSProtos_DeviceName {
 
   /// @required
   var ephemeralPublic: Data {
-    get {return _ephemeralPublic ?? Data()}
+    get {return _ephemeralPublic ?? SwiftProtobuf.Internal.emptyData}
     set {_ephemeralPublic = newValue}
   }
   /// Returns true if `ephemeralPublic` has been explicitly set.
@@ -152,7 +152,7 @@ struct IOSProtos_DeviceName {
 
   /// @required
   var syntheticIv: Data {
-    get {return _syntheticIv ?? Data()}
+    get {return _syntheticIv ?? SwiftProtobuf.Internal.emptyData}
     set {_syntheticIv = newValue}
   }
   /// Returns true if `syntheticIv` has been explicitly set.
@@ -162,7 +162,7 @@ struct IOSProtos_DeviceName {
 
   /// @required
   var ciphertext: Data {
-    get {return _ciphertext ?? Data()}
+    get {return _ciphertext ?? SwiftProtobuf.Internal.emptyData}
     set {_ciphertext = newValue}
   }
   /// Returns true if `ciphertext` has been explicitly set.

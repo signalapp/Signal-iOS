@@ -109,7 +109,7 @@ struct KeyBackupProtos_BackupRequest {
   // methods supported on all messages.
 
   var serviceID: Data {
-    get {return _serviceID ?? Data()}
+    get {return _serviceID ?? SwiftProtobuf.Internal.emptyData}
     set {_serviceID = newValue}
   }
   /// Returns true if `serviceID` has been explicitly set.
@@ -118,7 +118,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearServiceID() {self._serviceID = nil}
 
   var backupID: Data {
-    get {return _backupID ?? Data()}
+    get {return _backupID ?? SwiftProtobuf.Internal.emptyData}
     set {_backupID = newValue}
   }
   /// Returns true if `backupID` has been explicitly set.
@@ -127,7 +127,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearBackupID() {self._backupID = nil}
 
   var token: Data {
-    get {return _token ?? Data()}
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -145,7 +145,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearValidFrom() {self._validFrom = nil}
 
   var data: Data {
-    get {return _data ?? Data()}
+    get {return _data ?? SwiftProtobuf.Internal.emptyData}
     set {_data = newValue}
   }
   /// Returns true if `data` has been explicitly set.
@@ -154,7 +154,7 @@ struct KeyBackupProtos_BackupRequest {
   mutating func clearData() {self._data = nil}
 
   var pin: Data {
-    get {return _pin ?? Data()}
+    get {return _pin ?? SwiftProtobuf.Internal.emptyData}
     set {_pin = newValue}
   }
   /// Returns true if `pin` has been explicitly set.
@@ -199,7 +199,7 @@ struct KeyBackupProtos_BackupResponse {
   mutating func clearStatus() {self._status = nil}
 
   var token: Data {
-    get {return _token ?? Data()}
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -258,7 +258,7 @@ struct KeyBackupProtos_RestoreRequest {
   // methods supported on all messages.
 
   var serviceID: Data {
-    get {return _serviceID ?? Data()}
+    get {return _serviceID ?? SwiftProtobuf.Internal.emptyData}
     set {_serviceID = newValue}
   }
   /// Returns true if `serviceID` has been explicitly set.
@@ -267,7 +267,7 @@ struct KeyBackupProtos_RestoreRequest {
   mutating func clearServiceID() {self._serviceID = nil}
 
   var backupID: Data {
-    get {return _backupID ?? Data()}
+    get {return _backupID ?? SwiftProtobuf.Internal.emptyData}
     set {_backupID = newValue}
   }
   /// Returns true if `backupID` has been explicitly set.
@@ -276,7 +276,7 @@ struct KeyBackupProtos_RestoreRequest {
   mutating func clearBackupID() {self._backupID = nil}
 
   var token: Data {
-    get {return _token ?? Data()}
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -294,7 +294,7 @@ struct KeyBackupProtos_RestoreRequest {
   mutating func clearValidFrom() {self._validFrom = nil}
 
   var pin: Data {
-    get {return _pin ?? Data()}
+    get {return _pin ?? SwiftProtobuf.Internal.emptyData}
     set {_pin = newValue}
   }
   /// Returns true if `pin` has been explicitly set.
@@ -328,7 +328,7 @@ struct KeyBackupProtos_RestoreResponse {
   mutating func clearStatus() {self._status = nil}
 
   var token: Data {
-    get {return _token ?? Data()}
+    get {return _token ?? SwiftProtobuf.Internal.emptyData}
     set {_token = newValue}
   }
   /// Returns true if `token` has been explicitly set.
@@ -337,7 +337,7 @@ struct KeyBackupProtos_RestoreResponse {
   mutating func clearToken() {self._token = nil}
 
   var data: Data {
-    get {return _data ?? Data()}
+    get {return _data ?? SwiftProtobuf.Internal.emptyData}
     set {_data = newValue}
   }
   /// Returns true if `data` has been explicitly set.
@@ -413,7 +413,7 @@ struct KeyBackupProtos_DeleteRequest {
   // methods supported on all messages.
 
   var serviceID: Data {
-    get {return _serviceID ?? Data()}
+    get {return _serviceID ?? SwiftProtobuf.Internal.emptyData}
     set {_serviceID = newValue}
   }
   /// Returns true if `serviceID` has been explicitly set.
@@ -422,7 +422,7 @@ struct KeyBackupProtos_DeleteRequest {
   mutating func clearServiceID() {self._serviceID = nil}
 
   var backupID: Data {
-    get {return _backupID ?? Data()}
+    get {return _backupID ?? SwiftProtobuf.Internal.emptyData}
     set {_backupID = newValue}
   }
   /// Returns true if `backupID` has been explicitly set.

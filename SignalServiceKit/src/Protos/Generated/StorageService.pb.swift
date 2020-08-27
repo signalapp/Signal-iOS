@@ -24,10 +24,10 @@ struct StorageServiceProtos_StorageItem {
   // methods supported on all messages.
 
   /// @required
-  var key: Data = Data()
+  var key: Data = SwiftProtobuf.Internal.emptyData
 
   /// @required
-  var value: Data = Data()
+  var value: Data = SwiftProtobuf.Internal.emptyData
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -56,7 +56,7 @@ struct StorageServiceProtos_StorageManifest {
   var version: UInt64 = 0
 
   /// @required
-  var value: Data = Data()
+  var value: Data = SwiftProtobuf.Internal.emptyData
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -120,7 +120,7 @@ struct StorageServiceProtos_ManifestRecord {
     // methods supported on all messages.
 
     /// @required
-    var data: Data = Data()
+    var data: Data = SwiftProtobuf.Internal.emptyData
 
     /// @required
     var type: StorageServiceProtos_ManifestRecord.Key.TypeEnum = .unknown
@@ -258,9 +258,9 @@ struct StorageServiceProtos_ContactRecord {
 
   var serviceE164: String = String()
 
-  var profileKey: Data = Data()
+  var profileKey: Data = SwiftProtobuf.Internal.emptyData
 
-  var identityKey: Data = Data()
+  var identityKey: Data = SwiftProtobuf.Internal.emptyData
 
   var identityState: StorageServiceProtos_ContactRecord.IdentityState = .default
 
@@ -333,7 +333,7 @@ struct StorageServiceProtos_GroupV1Record {
   // methods supported on all messages.
 
   /// @required
-  var id: Data = Data()
+  var id: Data = SwiftProtobuf.Internal.emptyData
 
   var blocked: Bool = false
 
@@ -354,7 +354,7 @@ struct StorageServiceProtos_GroupV2Record {
   // methods supported on all messages.
 
   /// @required
-  var masterKey: Data = Data()
+  var masterKey: Data = SwiftProtobuf.Internal.emptyData
 
   var blocked: Bool = false
 
@@ -374,7 +374,7 @@ struct StorageServiceProtos_AccountRecord {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var profileKey: Data = Data()
+  var profileKey: Data = SwiftProtobuf.Internal.emptyData
 
   var givenName: String = String()
 
@@ -1061,6 +1061,12 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     }
     if self.linkPreviews != false {
       try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 11)
+    }
+    if self.phoneNumberSharingMode != .everybody {
+      try visitor.visitSingularEnumField(value: self.phoneNumberSharingMode, fieldNumber: 12)
+    }
+    if self.discoverableByPhoneNumber != false {
+      try visitor.visitSingularBoolField(value: self.discoverableByPhoneNumber, fieldNumber: 13)
     }
     try unknownFields.traverse(visitor: &visitor)
   }

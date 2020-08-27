@@ -25,7 +25,7 @@ struct FingerprintProtos_LogicalFingerprint {
 
   /// @required
   var identityData: Data {
-    get {return _identityData ?? Data()}
+    get {return _identityData ?? SwiftProtobuf.Internal.emptyData}
     set {_identityData = newValue}
   }
   /// Returns true if `identityData` has been explicitly set.

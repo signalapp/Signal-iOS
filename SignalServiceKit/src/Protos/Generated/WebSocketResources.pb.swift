@@ -49,7 +49,7 @@ struct WebSocketProtos_WebSocketRequestMessage {
   mutating func clearPath() {self._path = nil}
 
   var body: Data {
-    get {return _body ?? Data()}
+    get {return _body ?? SwiftProtobuf.Internal.emptyData}
     set {_body = newValue}
   }
   /// Returns true if `body` has been explicitly set.
@@ -116,7 +116,7 @@ struct WebSocketProtos_WebSocketResponseMessage {
   var headers: [String] = []
 
   var body: Data {
-    get {return _body ?? Data()}
+    get {return _body ?? SwiftProtobuf.Internal.emptyData}
     set {_body = newValue}
   }
   /// Returns true if `body` has been explicitly set.

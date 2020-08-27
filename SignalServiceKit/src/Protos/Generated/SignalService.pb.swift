@@ -76,7 +76,7 @@ struct SignalServiceProtos_Envelope {
 
   /// Contains an encrypted DataMessage
   var legacyMessage: Data {
-    get {return _legacyMessage ?? Data()}
+    get {return _legacyMessage ?? SwiftProtobuf.Internal.emptyData}
     set {_legacyMessage = newValue}
   }
   /// Returns true if `legacyMessage` has been explicitly set.
@@ -86,7 +86,7 @@ struct SignalServiceProtos_Envelope {
 
   /// Contains an encrypted Content
   var content: Data {
-    get {return _content ?? Data()}
+    get {return _content ?? SwiftProtobuf.Internal.emptyData}
     set {_content = newValue}
   }
   /// Returns true if `content` has been explicitly set.
@@ -211,7 +211,7 @@ struct SignalServiceProtos_TypingMessage {
   mutating func clearAction() {self._action = nil}
 
   var groupID: Data {
-    get {return _groupID ?? Data()}
+    get {return _groupID ?? SwiftProtobuf.Internal.emptyData}
     set {_groupID = newValue}
   }
   /// Returns true if `groupID` has been explicitly set.
@@ -379,7 +379,7 @@ struct SignalServiceProtos_CallMessage {
   /// Signal-iOS sends profile key with call messages
   /// for earlier discovery.
   var profileKey: Data {
-    get {return _profileKey ?? Data()}
+    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
     set {_profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
@@ -451,7 +451,7 @@ struct SignalServiceProtos_CallMessage {
     mutating func clearType() {self._type = nil}
 
     var opaque: Data {
-      get {return _opaque ?? Data()}
+      get {return _opaque ?? SwiftProtobuf.Internal.emptyData}
       set {_opaque = newValue}
     }
     /// Returns true if `opaque` has been explicitly set.
@@ -523,7 +523,7 @@ struct SignalServiceProtos_CallMessage {
     mutating func clearSdp() {self._sdp = nil}
 
     var opaque: Data {
-      get {return _opaque ?? Data()}
+      get {return _opaque ?? SwiftProtobuf.Internal.emptyData}
       set {_opaque = newValue}
     }
     /// Returns true if `opaque` has been explicitly set.
@@ -586,7 +586,7 @@ struct SignalServiceProtos_CallMessage {
     mutating func clearSdp() {self._sdp = nil}
 
     var opaque: Data {
-      get {return _opaque ?? Data()}
+      get {return _opaque ?? SwiftProtobuf.Internal.emptyData}
       set {_opaque = newValue}
     }
     /// Returns true if `opaque` has been explicitly set.
@@ -784,7 +784,7 @@ struct SignalServiceProtos_DataMessage {
   mutating func clearExpireTimer() {_uniqueStorage()._expireTimer = nil}
 
   var profileKey: Data {
-    get {return _storage._profileKey ?? Data()}
+    get {return _storage._profileKey ?? SwiftProtobuf.Internal.emptyData}
     set {_uniqueStorage()._profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
@@ -1547,7 +1547,7 @@ struct SignalServiceProtos_DataMessage {
 
     /// @required
     var packID: Data {
-      get {return _packID ?? Data()}
+      get {return _packID ?? SwiftProtobuf.Internal.emptyData}
       set {_packID = newValue}
     }
     /// Returns true if `packID` has been explicitly set.
@@ -1557,7 +1557,7 @@ struct SignalServiceProtos_DataMessage {
 
     /// @required
     var packKey: Data {
-      get {return _packKey ?? Data()}
+      get {return _packKey ?? SwiftProtobuf.Internal.emptyData}
       set {_packKey = newValue}
     }
     /// Returns true if `packKey` has been explicitly set.
@@ -1766,7 +1766,7 @@ struct SignalServiceProtos_NullMessage {
   // methods supported on all messages.
 
   var padding: Data {
-    get {return _padding ?? Data()}
+    get {return _padding ?? SwiftProtobuf.Internal.emptyData}
     set {_padding = newValue}
   }
   /// Returns true if `padding` has been explicitly set.
@@ -1862,7 +1862,7 @@ struct SignalServiceProtos_Verified {
   mutating func clearDestinationUuid() {self._destinationUuid = nil}
 
   var identityKey: Data {
-    get {return _identityKey ?? Data()}
+    get {return _identityKey ?? SwiftProtobuf.Internal.emptyData}
     set {_identityKey = newValue}
   }
   /// Returns true if `identityKey` has been explicitly set.
@@ -1880,7 +1880,7 @@ struct SignalServiceProtos_Verified {
   mutating func clearState() {self._state = nil}
 
   var nullMessage: Data {
-    get {return _nullMessage ?? Data()}
+    get {return _nullMessage ?? SwiftProtobuf.Internal.emptyData}
     set {_nullMessage = newValue}
   }
   /// Returns true if `nullMessage` has been explicitly set.
@@ -2007,7 +2007,7 @@ struct SignalServiceProtos_SyncMessage {
   mutating func clearConfiguration() {self._configuration = nil}
 
   var padding: Data {
-    get {return _padding ?? Data()}
+    get {return _padding ?? SwiftProtobuf.Internal.emptyData}
     set {_padding = newValue}
   }
   /// Returns true if `padding` has been explicitly set.
@@ -2409,7 +2409,7 @@ struct SignalServiceProtos_SyncMessage {
 
     /// @required
     var packID: Data {
-      get {return _packID ?? Data()}
+      get {return _packID ?? SwiftProtobuf.Internal.emptyData}
       set {_packID = newValue}
     }
     /// Returns true if `packID` has been explicitly set.
@@ -2419,7 +2419,7 @@ struct SignalServiceProtos_SyncMessage {
 
     /// @required
     var packKey: Data {
-      get {return _packKey ?? Data()}
+      get {return _packKey ?? SwiftProtobuf.Internal.emptyData}
       set {_packKey = newValue}
     }
     /// Returns true if `packKey` has been explicitly set.
@@ -2569,7 +2569,7 @@ struct SignalServiceProtos_SyncMessage {
     // methods supported on all messages.
 
     var storageService: Data {
-      get {return _storageService ?? Data()}
+      get {return _storageService ?? SwiftProtobuf.Internal.emptyData}
       set {_storageService = newValue}
     }
     /// Returns true if `storageService` has been explicitly set.
@@ -2608,7 +2608,7 @@ struct SignalServiceProtos_SyncMessage {
     mutating func clearThreadUuid() {self._threadUuid = nil}
 
     var groupID: Data {
-      get {return _groupID ?? Data()}
+      get {return _groupID ?? SwiftProtobuf.Internal.emptyData}
       set {_groupID = newValue}
     }
     /// Returns true if `groupID` has been explicitly set.
@@ -2745,7 +2745,7 @@ struct SignalServiceProtos_AttachmentPointer {
   mutating func clearContentType() {self._contentType = nil}
 
   var key: Data {
-    get {return _key ?? Data()}
+    get {return _key ?? SwiftProtobuf.Internal.emptyData}
     set {_key = newValue}
   }
   /// Returns true if `key` has been explicitly set.
@@ -2763,7 +2763,7 @@ struct SignalServiceProtos_AttachmentPointer {
   mutating func clearSize() {self._size = nil}
 
   var thumbnail: Data {
-    get {return _thumbnail ?? Data()}
+    get {return _thumbnail ?? SwiftProtobuf.Internal.emptyData}
     set {_thumbnail = newValue}
   }
   /// Returns true if `thumbnail` has been explicitly set.
@@ -2772,7 +2772,7 @@ struct SignalServiceProtos_AttachmentPointer {
   mutating func clearThumbnail() {self._thumbnail = nil}
 
   var digest: Data {
-    get {return _digest ?? Data()}
+    get {return _digest ?? SwiftProtobuf.Internal.emptyData}
     set {_digest = newValue}
   }
   /// Returns true if `digest` has been explicitly set.
@@ -2914,7 +2914,7 @@ struct SignalServiceProtos_GroupContext {
 
   /// @required
   var id: Data {
-    get {return _id ?? Data()}
+    get {return _id ?? SwiftProtobuf.Internal.emptyData}
     set {_id = newValue}
   }
   /// Returns true if `id` has been explicitly set.
@@ -3034,7 +3034,7 @@ struct SignalServiceProtos_GroupContextV2 {
   // methods supported on all messages.
 
   var masterKey: Data {
-    get {return _masterKey ?? Data()}
+    get {return _masterKey ?? SwiftProtobuf.Internal.emptyData}
     set {_masterKey = newValue}
   }
   /// Returns true if `masterKey` has been explicitly set.
@@ -3052,7 +3052,7 @@ struct SignalServiceProtos_GroupContextV2 {
   mutating func clearRevision() {self._revision = nil}
 
   var groupChange: Data {
-    get {return _groupChange ?? Data()}
+    get {return _groupChange ?? SwiftProtobuf.Internal.emptyData}
     set {_groupChange = newValue}
   }
   /// Returns true if `groupChange` has been explicitly set.
@@ -3130,7 +3130,7 @@ struct SignalServiceProtos_ContactDetails {
   mutating func clearVerified() {self._verified = nil}
 
   var profileKey: Data {
-    get {return _profileKey ?? Data()}
+    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
     set {_profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
@@ -3229,7 +3229,7 @@ struct SignalServiceProtos_GroupDetails {
 
   /// @required
   var id: Data {
-    get {return _id ?? Data()}
+    get {return _id ?? SwiftProtobuf.Internal.emptyData}
     set {_id = newValue}
   }
   /// Returns true if `id` has been explicitly set.

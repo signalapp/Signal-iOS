@@ -50,15 +50,15 @@ struct GroupsProtos_Member {
   // methods supported on all messages.
 
   /// The UuidCiphertext
-  var userID: Data = Data()
+  var userID: Data = SwiftProtobuf.Internal.emptyData
 
   var role: GroupsProtos_Member.Role = .unknown
 
   /// The ProfileKeyCiphertext
-  var profileKey: Data = Data()
+  var profileKey: Data = SwiftProtobuf.Internal.emptyData
 
   /// ProfileKeyCredentialPresentation
-  var presentation: Data = Data()
+  var presentation: Data = SwiftProtobuf.Internal.emptyData
 
   /// The Group.revision this member joined at
   var joinedAtRevision: UInt32 = 0
@@ -132,7 +132,7 @@ struct GroupsProtos_PendingMember {
   mutating func clearMember() {self._member = nil}
 
   /// The UID who invited this member
-  var addedByUserID: Data = Data()
+  var addedByUserID: Data = SwiftProtobuf.Internal.emptyData
 
   /// The time the invitation occurred
   var timestamp: UInt64 = 0
@@ -214,16 +214,16 @@ struct GroupsProtos_Group {
   // methods supported on all messages.
 
   /// GroupPublicParams
-  var publicKey: Data = Data()
+  var publicKey: Data = SwiftProtobuf.Internal.emptyData
 
   /// Encrypted title
-  var title: Data = Data()
+  var title: Data = SwiftProtobuf.Internal.emptyData
 
   /// Pointer to encrypted avatar (‘key’ from AvatarUploadAttributes)
   var avatar: String = String()
 
   /// Encrypted timer
-  var disappearingMessagesTimer: Data = Data()
+  var disappearingMessagesTimer: Data = SwiftProtobuf.Internal.emptyData
 
   var accessControl: GroupsProtos_AccessControl {
     get {return _accessControl ?? GroupsProtos_AccessControl()}
@@ -254,10 +254,10 @@ struct GroupsProtos_GroupChange {
   // methods supported on all messages.
 
   /// The serialized actions
-  var actions: Data = Data()
+  var actions: Data = SwiftProtobuf.Internal.emptyData
 
   /// Server’s signature over serialized actions
-  var serverSignature: Data = Data()
+  var serverSignature: Data = SwiftProtobuf.Internal.emptyData
 
   var changeEpoch: UInt32 = 0
 
@@ -269,7 +269,7 @@ struct GroupsProtos_GroupChange {
     // methods supported on all messages.
 
     /// Who made the change
-    var sourceUuid: Data = Data()
+    var sourceUuid: Data = SwiftProtobuf.Internal.emptyData
 
     /// The change revision number
     var revision: UInt32 = 0
@@ -373,7 +373,7 @@ struct GroupsProtos_GroupChange {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var deletedUserID: Data = Data()
+      var deletedUserID: Data = SwiftProtobuf.Internal.emptyData
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -385,7 +385,7 @@ struct GroupsProtos_GroupChange {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var userID: Data = Data()
+      var userID: Data = SwiftProtobuf.Internal.emptyData
 
       var role: GroupsProtos_Member.Role = .unknown
 
@@ -399,7 +399,7 @@ struct GroupsProtos_GroupChange {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var presentation: Data = Data()
+      var presentation: Data = SwiftProtobuf.Internal.emptyData
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -432,7 +432,7 @@ struct GroupsProtos_GroupChange {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var deletedUserID: Data = Data()
+      var deletedUserID: Data = SwiftProtobuf.Internal.emptyData
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -444,7 +444,7 @@ struct GroupsProtos_GroupChange {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var presentation: Data = Data()
+      var presentation: Data = SwiftProtobuf.Internal.emptyData
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -456,7 +456,7 @@ struct GroupsProtos_GroupChange {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var title: Data = Data()
+      var title: Data = SwiftProtobuf.Internal.emptyData
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -480,7 +480,7 @@ struct GroupsProtos_GroupChange {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var timer: Data = Data()
+      var timer: Data = SwiftProtobuf.Internal.emptyData
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -596,7 +596,7 @@ struct GroupsProtos_GroupAttributeBlob {
   var avatar: Data {
     get {
       if case .avatar(let v)? = content {return v}
-      return Data()
+      return SwiftProtobuf.Internal.emptyData
     }
     set {content = .avatar(newValue)}
   }

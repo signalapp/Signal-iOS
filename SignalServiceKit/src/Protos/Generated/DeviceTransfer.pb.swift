@@ -46,7 +46,7 @@ struct DeviceTransferProtos_Default {
   var key: String = String()
 
   /// @required
-  var encodedValue: Data = Data()
+  var encodedValue: Data = SwiftProtobuf.Internal.emptyData
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -59,7 +59,7 @@ struct DeviceTransferProtos_Database {
   // methods supported on all messages.
 
   /// @required
-  var key: Data = Data()
+  var key: Data = SwiftProtobuf.Internal.emptyData
 
   /// @required
   var database: DeviceTransferProtos_File {
