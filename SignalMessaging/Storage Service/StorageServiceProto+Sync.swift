@@ -634,8 +634,8 @@ extension StorageServiceProtoAccountRecord {
         let phoneNumberSharingMode = udManager.phoneNumberSharingMode
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
-        let isDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber()
-        builder.setDiscoverableByPhoneNumber(isDiscoverableByPhoneNumber)
+        let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber()
+        builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
 
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -746,10 +746,11 @@ extension StorageServiceProtoAccountRecord {
             }
         }
 
-        let localIsDiscoverableByPhoneNumber = tsAccountManager.isDiscoverableByPhoneNumber()
-        if discoverableByPhoneNumber != localIsDiscoverableByPhoneNumber {
+        let localNotDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber()
+        if notDiscoverableByPhoneNumber != localNotDiscoverableByPhoneNumber
+            || !tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber() {
             tsAccountManager.setIsDiscoverableByPhoneNumber(
-                discoverableByPhoneNumber,
+                !notDiscoverableByPhoneNumber,
                 updateStorageService: false,
                 transaction: transaction
             )

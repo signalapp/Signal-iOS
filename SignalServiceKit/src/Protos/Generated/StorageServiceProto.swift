@@ -2088,8 +2088,8 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         if let _value = phoneNumberSharingMode {
             builder.setPhoneNumberSharingMode(_value)
         }
-        if hasDiscoverableByPhoneNumber {
-            builder.setDiscoverableByPhoneNumber(discoverableByPhoneNumber)
+        if hasNotDiscoverableByPhoneNumber {
+            builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2175,8 +2175,8 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
             proto.phoneNumberSharingMode = StorageServiceProtoAccountRecordPhoneNumberSharingModeUnwrap(valueParam)
         }
 
-        public func setDiscoverableByPhoneNumber(_ valueParam: Bool) {
-            proto.discoverableByPhoneNumber = valueParam
+        public func setNotDiscoverableByPhoneNumber(_ valueParam: Bool) {
+            proto.notDiscoverableByPhoneNumber = valueParam
         }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2301,10 +2301,10 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         return true
     }
 
-    public var discoverableByPhoneNumber: Bool {
-        return proto.discoverableByPhoneNumber
+    public var notDiscoverableByPhoneNumber: Bool {
+        return proto.notDiscoverableByPhoneNumber
     }
-    public var hasDiscoverableByPhoneNumber: Bool {
+    public var hasNotDiscoverableByPhoneNumber: Bool {
         return true
     }
 
