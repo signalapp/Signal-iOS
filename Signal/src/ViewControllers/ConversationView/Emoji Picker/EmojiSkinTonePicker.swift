@@ -11,7 +11,6 @@ class EmojiSkinTonePicker: UIView {
 
     private let referenceOverlay = UIView()
     private let containerView = UIView()
-    private lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismiss))
 
     class func present(
         referenceView: UIView,
@@ -30,7 +29,6 @@ class EmojiSkinTonePicker: UIView {
         }
 
         superview.addSubview(picker)
-        superview.addGestureRecognizer(picker.tapGestureRecognizer)
 
         picker.referenceOverlay.autoMatch(.width, to: .width, of: referenceView)
         picker.referenceOverlay.autoMatch(.height, to: .height, of: referenceView, withOffset: 30)
@@ -74,7 +72,6 @@ class EmojiSkinTonePicker: UIView {
     func dismiss() {
         UIView.animate(withDuration: 0.12, animations: { self.alpha = 0 }) { _ in
             self.removeFromSuperview()
-            self.superview?.removeGestureRecognizer(self.tapGestureRecognizer)
         }
     }
 
