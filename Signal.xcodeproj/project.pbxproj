@@ -710,6 +710,7 @@
 		88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */; };
 		88D1BCB924F73C05009A1738 /* PhoneNumberSharingSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */; };
 		88D1BCBB24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */; };
+		88D1BCBE24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCBD24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */; };
 		88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */; };
 		88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */; };
 		88D1D40622EF8F1100F472C5 /* ThreadDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40522EF8F1100F472C5 /* ThreadDetailsCell.swift */; };
@@ -1742,9 +1743,10 @@
 		88C659AF24688335002AC115 /* SelfSignedIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentity.swift; sourceTree = "<group>"; };
 		88C6FC3A24D0C73C001BAABB /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
 		88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPinSettingsTableViewController.swift; sourceTree = "<group>"; };
-		88D1BCBC24F74991009A1738 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = translations/fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberSharingSettingsTableViewController.swift; sourceTree = "<group>"; };
 		88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberDiscoverabilitySettingsTableViewController.swift; sourceTree = "<group>"; };
+		88D1BCBC24F74991009A1738 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = translations/fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88D1BCBD24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberDiscoverabilityViewController.swift; sourceTree = "<group>"; };
 		88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestView.swift; sourceTree = "<group>"; };
 		88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsInteraction.swift; sourceTree = "<group>"; };
 		88D1D40522EF8F1100F472C5 /* ThreadDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsCell.swift; sourceTree = "<group>"; };
@@ -2062,6 +2064,7 @@
 				3448E15D221333F5004B052E /* OnboardingController.swift */,
 				3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */,
 				3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */,
+				88D1BCBD24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */,
 				3448E15F22134C88004B052E /* OnboardingSplashViewController.swift */,
 				34A4C61D221613D00042EF2E /* OnboardingVerificationViewController.swift */,
 				346E9D5321B040B600562252 /* RegistrationController.swift */,
@@ -4919,6 +4922,7 @@
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
+				88D1BCBE24F75226009A1738 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */,
 				88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,

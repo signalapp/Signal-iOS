@@ -4,6 +4,28 @@
 
 import Foundation
 
+struct PhoneNumberDiscoverability {
+    static func nameForDiscoverability(_ isDiscoverable: Bool) -> String {
+        if isDiscoverable {
+            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_EVERYBODY",
+                                     comment: "A user friendly name for the 'everybody' phone number discoverability mode.")
+        } else {
+            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_NOBODY",
+                                     comment: "A user friendly name for the 'nobody' phone number discoverability mode.")
+        }
+    }
+
+    static func descriptionForDiscoverability(_ isDiscoverable: Bool) -> String {
+        if isDiscoverable {
+            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION",
+                                     comment: "A user friendly description of the 'everybody' phone number discoverability mode.")
+        } else {
+            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION",
+            comment: "A user friendly description of the 'nobody' phone number discoverability mode.")
+        }
+    }
+}
+
 @objc
 class PhoneNumberDiscoverabilitySettingsTableViewController: OWSTableViewController {
     static var tsAccountManager: TSAccountManager {
@@ -20,29 +42,12 @@ class PhoneNumberDiscoverabilitySettingsTableViewController: OWSTableViewControl
 
     @objc
     class var nameForCurrentDiscoverability: String {
-        return nameForDiscoverability(tsAccountManager.isDiscoverableByPhoneNumber())
-    }
-
-    class func nameForDiscoverability(_ isDiscoverable: Bool) -> String {
-        if isDiscoverable {
-            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_EVERYBODY",
-                                     comment: "A user friendly name for the 'everybody' phone number discoverability mode.")
-        } else {
-            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_NOBODY",
-                                     comment: "A user friendly name for the 'nobody' phone number discoverability mode.")
-        }
+        return PhoneNumberDiscoverability.nameForDiscoverability(tsAccountManager.isDiscoverableByPhoneNumber())
     }
 
     @objc
     class var descriptionForCurrentDiscoverability: String {
-        if tsAccountManager.isDiscoverableByPhoneNumber() {
-            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION",
-                                     comment: "A user friendly description of the 'everybody' phone number discoverability mode.")
-        } else {
-            return NSLocalizedString("PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION",
-                                     comment: "A user friendly description of the 'nobody' phone number discoverability mode.")
-
-        }
+        return PhoneNumberDiscoverability.descriptionForDiscoverability(tsAccountManager.isDiscoverableByPhoneNumber())
     }
 
     override func viewDidLoad() {
@@ -73,7 +78,7 @@ class PhoneNumberDiscoverabilitySettingsTableViewController: OWSTableViewControl
 
     func discoverabilityItem(_ isDiscoverable: Bool) -> OWSTableItem {
         return OWSTableItem(
-            text: Self.nameForDiscoverability(isDiscoverable),
+            text: PhoneNumberDiscoverability.nameForDiscoverability(isDiscoverable),
             actionBlock: { [weak self] in
                 self?.changeDiscoverability(isDiscoverable)
             },
