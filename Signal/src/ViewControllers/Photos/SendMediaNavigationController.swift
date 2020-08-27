@@ -561,10 +561,25 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
-                Logger.debug("built all attachments")
+            let approvalItemsPromise = when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises)
+            firstly { () -> Promise<Swift.Result<[AttachmentApprovalItem], Error>> in
+                return race(
+                    approvalItemsPromise.map { attachmentApprovalItems -> Swift.Result<[AttachmentApprovalItem], Error> in
+                        Swift.Result.success(attachmentApprovalItems)
+                    },
+                    modal.wasCancelledPromise.map { _ -> Swift.Result<[AttachmentApprovalItem], Error> in
+                        Swift.Result.failure(OWSGenericError("Modal was cancelled."))
+                    })
+            }.map { (result: Swift.Result<[AttachmentApprovalItem], Error>) in
                 modal.dismiss {
-                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems, animated: true)
+                    switch result {
+                    case .success(let attachmentApprovalItems):
+                        Logger.debug("built all attachments")
+                        self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems, animated: true)
+                    case .failure:
+                        // Do nothing.
+                        break
+                    }
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")
@@ -575,7 +590,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false,
+                                                     canCancel: true,
                                                      backgroundBlock: backgroundBlock)
     }
 
