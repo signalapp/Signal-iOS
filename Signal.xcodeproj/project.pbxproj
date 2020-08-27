@@ -573,6 +573,7 @@
 		BFF3FB9730634F37D25903F4 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D17BB5C25D615AB49813100C /* Pods_Signal.framework */; };
 		C31A6C5A247F214E001123EF /* UIView+Glow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C59247F214E001123EF /* UIView+Glow.swift */; };
 		C31A6C5C247F2CF3001123EF /* CGRect+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */; };
+		C329FEEC24F7277900B1C64C /* LightModeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEEB24F7277900B1C64C /* LightModeSheet.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
@@ -1365,6 +1366,7 @@
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		C31A6C59247F214E001123EF /* UIView+Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Glow.swift"; sourceTree = "<group>"; };
 		C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Utilities.swift"; sourceTree = "<group>"; };
+		C329FEEB24F7277900B1C64C /* LightModeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightModeSheet.swift; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
@@ -2716,6 +2718,7 @@
 				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
 				B8CCF63E23975CFB0091D419 /* JoinPublicChatVC.swift */,
 				B82B40872399EB0E00A248E7 /* LandingVC.swift */,
+				C329FEEB24F7277900B1C64C /* LightModeSheet.swift */,
 				B85357C423A1F13800AAF6CD /* LinkDeviceVC.swift */,
 				B85357C623A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
@@ -3843,6 +3846,7 @@
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				B82B408E239DC00D00A248E7 /* DisplayNameVC.swift in Sources */,
+				C329FEEC24F7277900B1C64C /* LightModeSheet.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,

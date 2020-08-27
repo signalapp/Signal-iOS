@@ -5,6 +5,7 @@ public enum LKUserDefaults {
     public enum Bool : Swift.String {
         case hasLaunchedOnce
         case hasSeenGIFMetadataWarning
+        case hasSeenLightModeSheet
         case hasSeenMultiDeviceRemovalSheet
         case hasSeenOpenGroupSuggestionSheet
         case hasViewedSeed
