@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Kutsu Signaliin";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Lähetä viesti";
 
 /* Label for 'share contact' button. */
@@ -291,7 +290,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Ääniviesti";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "Äänipuhelu";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Kaiutin";
@@ -453,10 +452,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Soita uudelleen";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Saapuva äänipuhelu…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Vastaamatta jäänyt äänipuhelu";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Voit sallia mikrofonin käytön Asetukset-ohjelmasta tehdäksesi puheluita ja lähettääksesi ääniviestejä Signalilla.";
@@ -483,10 +482,10 @@
 "CALL_USER_ALERT_TITLE" = "Soita?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Saapuva videopuhelu…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Vastaamatta jäänyt videopuhelu";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Vastaa ilman videota";
@@ -966,7 +965,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Ladataan lisää viestejä...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Lue lisää";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Istunnon alustaminen mahdollistaa uusien viestien vastaanottamisen yhteystiedolta %@. Vanhoja, jo korruptoituneita viestejä ei kuitenkaan ole mahdollista enää palauttaa.";
@@ -1539,7 +1538,7 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "Virheellisiä kutsuja peruttiin.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Et voi lisätä %@ käyttäjää automaattisesti tähän ryhmään. Heidät on kutsuttu liittymään, eivätkä näe ryhmäviestejä ennen kuin he hyväksyvät kutsun.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Et voi lisätä käyttäjää %@ automaattisesti tähän ryhmään. Heidät on kutsuttu liittymään, eivätkä näe ryhmäviestejä ennen kuin he hyväksyvät kutsun.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "Kutsu lähetetty";
@@ -1617,7 +1616,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Sinä";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "Äänipuhelu";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Ei muita jäseniä.";
@@ -1917,10 +1916,10 @@
 "IN_CALL_RINGING" = "Soi…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Äänipuhelu…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Videopuhelu…";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Vastattu. Suojataan…";
@@ -1935,7 +1934,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Anna postilaatikollesi jotain, mistä se voisi olla ylpeä. Aloita lähettämällä viesti ystävälle.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ soitti sinulle";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Voit lähettää tai vastaanottaa synkronoituja viestejä puhelimesta tai iPadista.\nTurvallisuutesi vuoksi keskusteluhistoriaa ei siirretä uusiin yhdistettyihin laitteisiin.";
@@ -2062,6 +2061,15 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Laitteen yhdistäminen epäonnistui";
+
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Ota pois käytöstä";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Etsi nimen tai osoitteen perusteella";
@@ -2373,7 +2381,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Et saa ilmoituksia mykistetyistä keskusteluista.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "Mykistetty";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ohita";
@@ -2655,13 +2663,13 @@
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ asetti katoavat viestit pois päältä.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ asetti viestien katoamisajan: %@";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ asetti viestien katoamisajaksi %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signalissa ilmenee tällä hetkellä teknisiä ongelmia. Työskentelemme parhaillaan palvelun palauttamiseksi.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "Soitit yhteystiedolle %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF-tiedostoa ei voitu näyttää";
@@ -2823,7 +2831,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Poista PIN käytöstä";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Jos poistat PIN-koodin käytöstä, menetät kaikki tietosi rekiströityessäsi Signalin kanssa uudelleen, ellet siirrä tietojasi toisesta iOS-laitteesta. Et voi ottaa rekisteröinnin lukitusta käyttöön niin kauan kun PIN-koodi on poistettu käytöstä.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Varoitus";
@@ -2835,7 +2843,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN-koodin luominen epäonnistui";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN-koodit pitävät Signalin luona tallennetut tiedot salattuina, jotta vain sinä pääset niihin käsiksi. Profiilisi, asetuksesi ja yhteystietosi palautuvat kun asennat Signalin uudelleen. Et tule tarvitsemaan PIN-koodia sovelluksen avaamiseen.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Lisätietoja PIN-koodeista";
@@ -2862,7 +2870,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Poista käytöstä";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Poistaaksesi PIN-koodin käytöstä, sinun on ensin poistettava rekisteröinnin lukitus.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Poista rekisteröinnin lukitus käytöstä?";
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Poista kaikki";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Tuki ";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Käyttöehdot ja yksityisyydensuoja";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Lähetä esikatselukuva linkeistä";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Esikatselu tukee sivustoja Imgur, Instagram, Pinterest, Reddit ja YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Hae linkkien esikatselut suoraan verkkosivustoilta lähettämiisi viesteihin.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Linkkien esikatselukuvat";
@@ -4179,7 +4190,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lisätietoja PIN-koodeista";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodit pitävät Signalin luona tallennetut tiedot salattuina, jotta vain sinä pääset niihin käsiksi. Profiilisi, asetuksesi ja yhteystietosi palautuvat kun asennat Signalin uudelleen. Et tule tarvitsemaan PIN-koodia sovelluksen avaamiseen.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Esittelemme PIN-koodit";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Asennus on suoritettava loppuun, ennen kuin voit jatkaa.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Sinä asetit viestien katoamisajan: %@";
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Sinä asetit viestien katoamisajaksi %@.";

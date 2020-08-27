@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Signal로 초대";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "메시지 보내기";
 
 /* Label for 'share contact' button. */
@@ -2063,6 +2062,15 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "기기 연결 실패";
 
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "비활성화";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "이름, 주소로 검색";
 
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "모든 자료를 삭제합니다";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "도움";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "이용약관 및 개인정보 처리방침";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "링크 미리보기 보내기";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Imgur, Instagram, Pinterest, Reddit, YouTube 링크에 미리 보기가 지원됩니다.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "링크 미리보기";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "계속하기 전 먼저 설정을 완료해야 합니다.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "사라지는 메시지 시간을 %@(으)로 설정했습니다.";

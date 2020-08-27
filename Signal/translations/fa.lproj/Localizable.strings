@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "دعوت به Signal";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "ارسال پیام";
 
 /* Label for 'share contact' button. */
@@ -2063,6 +2062,15 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "خطا در اتصال دستگاه جدید";
 
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "غیرفعال کردن";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "جستجو بر اساس نام یا آدرس";
 
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "پاک کردن همه چیز";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "راهنمایی";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "شرایط و سیاست های حفظ حریم خصوصی";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "ارسال پیش‌نمایش‌های لینک";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "پیش‌نمایش‌ها برای پیوند‌های Imgur ،Reddit Pinterest ،Instagram و Youtube پشتیبانی می‌شوند.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "پیش‌نمایش پیوند‌ها را به صورت مستقیم از وب‌سایت‌ها برای پیام‌هایی که ارسال می‌کنید، دریافت کنید.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "پیش‌نمایش‌های لینک";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "قبل از ادامه باید راه اندازی برنامه را تکمیل کنید.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "شما زمان ناپدید شدن پیام‌ها را روی %@ تنظیم کردید.";

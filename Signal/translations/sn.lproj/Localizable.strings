@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Koka kuSignal";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Tumira tsamba";
 
 /* Label for 'share contact' button. */
@@ -291,7 +290,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Tsamba yezwi";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "Nhare yezwi";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Tepfenura";
@@ -453,10 +452,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Chaya zvakare";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "Nhare yezwi iri kupinda...";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "Nhare yezwi yapotswa";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Unogona kubatidza chitauriso mu app ye iOS Seting kuti uchaye nhare uye kurekodha tsamba dzemazwi mu Signal.";
@@ -483,10 +482,10 @@
 "CALL_USER_ALERT_TITLE" = "Chaira?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Incoming video call…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "Nhare ye vhidhiyo iri kupinda...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Missed video call";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "Vapotsa nhare ye vhidhiyo";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Pindura pasina vhidhiyo";
@@ -735,13 +734,13 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Tumira Debug Log?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Tumira ne Debug Log";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Tumira pasina Debug Log";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Vhura muma Maps";
@@ -867,13 +866,13 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Sarudza anoshandura nhengo dze boka:";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Ndizise pese";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Usandizivise kana yakanyararudzwa";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Wana ziviso kana wadomwa munhaurwa yakanyararidzwa?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Kudomwa";
@@ -966,7 +965,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Iri kutora dzimwe tsamba...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Verenga zvakadzama";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Kutangidza nguva kunokubvumira kugamuchira tsamba dzichazouya kubva %@,asi haidzore tsamba dzagara dzaipa.";
@@ -1002,7 +1001,7 @@
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Yatadza kukopa malog.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Yatadza kubatanidza ma log.";
 
 /* Error indicating that a debug log could not be uploaded. */
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
@@ -1617,7 +1616,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Iwe";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Audio Call";
+"GROUP_MEMBERS_CALL" = "Nhare yezwi";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Hamuna nhengo";
@@ -1794,19 +1793,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "What are Legacy Groups?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Chii chinonzi mapoka ekare?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can’t be converted into New Groups, but you can create a New Group with the same members.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Mapoka ekare haakwanise kuitwa Mapoka matsva,asi unogona kuita Boka itsva ne nhengo dzimwe chete.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Ndinowedzera sei mapoka ekare?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Kuti ugadzire boka Itsva, nhengo dzese dzinofanirwa kuwedzera Signal yavo kuenda kuvhezheni ya zvino.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. New Groups";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Mapoka ekare vs Mapoka Matsva";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
@@ -1824,7 +1823,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Mapoka ekare";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Ziva zvakawanda";
@@ -1842,7 +1841,7 @@
 "HELP_CONTACT_US" = "Tibate";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "Muzinda merutsigiro";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Nhaurwa dziri mudura";
@@ -1917,10 +1916,10 @@
 "IN_CALL_RINGING" = "Iri kurira...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "Nhare yezwi...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Nhare ye vhidhiyo...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Yapindurwa.Iri kuchengetedzwa...";
@@ -1935,7 +1934,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Ipa homwe yako zvekunyora.Tanga nekunyorera shamwari yako tsamba.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ akuchaira";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Unogona kutumira kana kuenzanisa tsamba kubva kunhare kana iPad.Kuitira kuchengetedzwa kwako,nhoroondo ye nhaurwa haitamiswe kuenda kumudziyo wakabatanidzwa mutsva.";
@@ -2062,6 +2061,15 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Kubatanidza kwaramba";
+
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Dzima";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Tsvaga ne zita kana kero.";
@@ -2661,7 +2669,7 @@
 "OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "Wachaira %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF ratadza kuratidzwa";
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Dzima zvese";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Rubatsiro";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Unofanirwa kupedza kunyoresa usati waenderera mberi.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Waita kuti nguva yetsamba dzinonyangadika ive %@.";

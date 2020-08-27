@@ -1740,6 +1740,7 @@
 		88C659AF24688335002AC115 /* SelfSignedIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentity.swift; sourceTree = "<group>"; };
 		88C6FC3A24D0C73C001BAABB /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
 		88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPinSettingsTableViewController.swift; sourceTree = "<group>"; };
+		88D1BCBC24F74991009A1738 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = translations/fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestView.swift; sourceTree = "<group>"; };
 		88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsInteraction.swift; sourceTree = "<group>"; };
 		88D1D40522EF8F1100F472C5 /* ThreadDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsCell.swift; sourceTree = "<group>"; };
@@ -5203,6 +5204,7 @@
 				888A280524B3E9820045D639 /* es */,
 				884596F024B93E32002F66D3 /* cy */,
 				88238EB024EE29F400F28079 /* hr */,
+				88D1BCBC24F74991009A1738 /* fi */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

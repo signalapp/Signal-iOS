@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Пригласить в Signal";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Отправить сообщение";
 
 /* Label for 'share contact' button. */
@@ -2063,6 +2062,15 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Не удалось привязать устройство";
 
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Отключить";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Поиск по названию или адресу";
 
@@ -2241,10 +2249,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Заблокировать";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своим именем и фото с этим человеком? Вы не получите никаких сообщений, пока не разблокируете его.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своими именем и фото с этим человеком? Вы не получите никаких сообщений, пока не разблокируете его.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Разблокировать эту группу и поделиться своим именем и фото с её участниками? Вы не будете получать сообщений, пока не разблокируете эту группу.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Разблокировать эту группу и поделиться своими именем и фото с её участниками? Вы не будете получать сообщений, пока не разблокируете эту группу.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Разблокировать эту группу? Её участники не узнают, что вы видели их сообщения, пока вы не разблокируете группу.";
@@ -2262,10 +2270,10 @@
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Вы были приглашены в эту группу %@. Вы хотите разрешить участникам этой группы отправлять вам сообщения?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своим именем и фото с этим человеком? Он не узнает, что вы видели его сообщение, пока вы не примете.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своими именем и фото с этим человеком? Он не узнает, что вы видели его сообщение, пока вы не примете.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Присоединиться к этой группе и поделиться своим именем и фото с её участниками? Они не узнают, что вы видели их сообщения, пока вы не примете.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Присоединиться к этой группе и поделиться своими именем и фото с её участниками? Они не узнают, что вы видели их сообщения, пока вы не примете.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Присоединиться к этой группе? Её участники не узнают, что вы видели их сообщения, пока вы не примете запрос.";
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Удалить всё";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Помощь";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Условия и Политика конфиденциальности";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Отправлять предпросмотры ссылок";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Предварительный просмотр поддерживается для ссылок Imgur, Instagram, Pinterest, Reddit и YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Получать предпросмотры ссылок напрямую от сайтов для сообщений, которые вы отправляете.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Предпросмотры ссылок";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Вы должны завершить регистрацию перед продолжением.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Вы установили время исчезновения сообщений — %@.";

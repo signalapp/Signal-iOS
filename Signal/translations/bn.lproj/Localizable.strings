@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Signal এ আমন্ত্রন জানান";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "বার্তা পাঠান";
 
 /* Label for 'share contact' button. */
@@ -2063,6 +2062,15 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ডিভাইস সংযুক্তি ব্যর্থ";
 
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "অক্ষম";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "নাম বা ঠিকানা অনুসন্ধান করুন";
 
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "সবকিছু মুছে দিন";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "সাহায্য";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "শর্তাদি এবং গোপনীয়তা নীতি";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "লিঙ্কের পূর্বরূপগুলি পাঠান";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "ইমগুর, ইনস্টাগ্রাম, পিন্টারেস্ট, রেডডিট এবং ইউটিউব লিঙ্কগুলির জন্য পূর্বরূপগুলি সমর্থিত।";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "লিঙ্ক পূর্বরূপসমূহ";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "এগিয়ে যাওয়ার আগে আপনাকে অবশ্যই সেটআপ শেষ করতে হবে।";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "আপনি অদৃশ্য হয়ে যাওয়া বার্তার সময়কাল %@ নির্ধারন করেছেন।";

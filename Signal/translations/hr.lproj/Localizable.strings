@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Pozovi u Signal";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Pošalji poruku";
 
 /* Label for 'share contact' button. */
@@ -201,7 +200,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Privitak";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Preuzimanje nije uspjelo. Dodirni za pokušaj.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Preuzimanje nije uspjelo. Dodirnite za ponovni pokušaj.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Pogreška prilikom slanja privitka";
@@ -591,7 +590,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Pretraga po korisničkom imenu";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Možete omogućiti pristup kontaktima u postavkama iOS-a kako biste vidjeli koji su od vaših kontakata korisnici Signala.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Možete omogućiti pristup kontaktima u postavkama iOS-a kako biste vidjeli koji od vaših kontakata su korisnici Signala.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ovo će resetirati aplikaciju brisanjem vaših poruka i uklanjanjem registracije s poslužiteljem. Aplikacija će se zatvoriti nakon dovršetka ovog postupka.";
@@ -969,7 +968,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Pročitaj više";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetovanje sesije će vam omogućiti da primate buduće poruke od %@, ali neće oporaviti već korumpirane poruke.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Poništavanje sesije omogućiti će vam primanje budućih poruka od %@, ali neće oporaviti već oštećene poruke.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Odaberi kȏd države";
@@ -1068,7 +1067,7 @@
 "DEVICE_LINKED_AT_LABEL" = "Povezano: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Neuspjelo ažuriranje liste uređaja.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Ažuriranje popisa uređaja nije uspjelo.";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Zaustavi prijenos";
@@ -1176,7 +1175,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Poruke u ovom razgovoru će nestati nakon %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kada je aktivirano, poslane i primljene poruke u ovom razgovoru će nestati nakon što budu viđene.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kad je omogućeno, poruke poslane i primljene u ovom razgovoru nestati će nakon što su ih vidjele.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Trenutno poruke nestaju nakon %@";
@@ -1227,7 +1226,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiraj";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hej,\n\nOdnedavno koristim Signal kako bi svoje razgovore na mom iPhoneu zadržao privatnim. Volio bi da ga i ti instaliraš, tako da budemo sigurni da samo ja i ti možemo čitati naše poruke i čuti naše razgovore.\n\nSignal je dostupan za iPhone i Android. Preuzmite ga ovdje : %@\n\nSignal radi kao tvoja postojeća aplikacija za razmjenu poruka. Možemo slati slike i video, vršiti pozive i započeti grupne razgovore. Najbolje stvar je što nitko drugi osim nas ništa od toga ne može vidjeti, pa čak ni ljudi koje čine Signal.\n\nMožeš pročitati više o Open Whisper System i Signalu, ljudima koji stoje iza ovog projekta, ovdje: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nU posljednje vrijeme pomoću Signala održavam svoje razgovore privatnima na svojem iPhoneu. Volio bih da ga i ti instaliraš, tako da možemo biti sigurni da samo ti i ja možemo čitati naše poruke ili čuti naše pozive.\n\nSignal je dostupan za iPhone i Android. Preuzmi ga ovdje: %@\n\nSignal funkcionira poput tvoje postojeće aplikacije za razmjenu poruka. Možemo slati slike i video, pozivati i započeti grupne razgovore. Najbolji dio je što nitko drugi ne može vidjeti, pa čak ni ljudi koji stvaraju Signal!\n\nViše o Open Whisper Systems i ljudima koji stvaraju Signal, možete pročitati ovdje: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Prebacimo se na Signal";
@@ -1266,10 +1265,10 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Putovanja i mjesta";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Nitko od vaših kontakata ne koristi Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Nijedan od vaših kontakata ne koristi Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Zašto ne pošaljete pozivnicu nekome?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Zašto ne pozovete nekoga?";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Ne možete omogućiti zaključavanje registracije.";
@@ -1278,7 +1277,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Zauzeto";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Neuspjeli poziv.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Poziv nije uspio.";
 
 /* Label indicating that this OS version is no longer supported. */
 "END_OF_LIFE_OS_WARNING" = "Najnovije značajke Signala neće raditi na ovoj verziji iOS-a. Molimo ažurirajte ovaj uređaj kako bi nastavili dobivati ažuriranja za Signal.";
@@ -1290,7 +1289,7 @@
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Spremanje videa nije uspjelo.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Slanje poruke nije uspjelo!";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Slanje poruke nije uspjelo.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Neuspješno otvaranje aplikacije e-pošte";
@@ -1308,7 +1307,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Neuspješno slanje poruke korisniku jer ste ga blokirali.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal se nije uspio spojiti na internet. Molimo pokušajte opet.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal se nije uspio povezati s internetom. Pokušajte ponovno.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Slanje poruke nije uspjelo zbog nedostatka valjanih primatelja.";
@@ -1326,13 +1325,13 @@
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Ovaj uređaj više nije registriran s Vašim telefonskim brojem. Molimo ponovno instalirajte Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Pogreška poslužitelja. Molimo pokušajte opet kasnije.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Pogreška poslužitelja. Molimo pokušajte ponovo kasnije.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ne koristi Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt nije korisnik Signala.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo.";
@@ -1341,10 +1340,10 @@
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Greška privitka: Zamolite ovaj kontakt da ponovno pošalje poruku nakon što ažurira svoj Signal na posljednju verziju.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Primljena dupla poruka.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Primljena je dvostruka poruka.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Ključ primaoca nije validan.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Ključ primatelja nije valjan.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Primljena poruka nije sinkronizirana.";
@@ -1353,7 +1352,7 @@
 "ERROR_MESSAGE_INVALID_VERSION" = "Primljena poruka nije kompatibilna s ovom verzijom.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Nema raspoloživih sesija za kontakt.";
+"ERROR_MESSAGE_NO_SESSION" = "Nema dostupne sesije za kontakt.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sigurnosni broj je promijenjen.";
@@ -1362,10 +1361,10 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Vaš sigurnosni broj sa %@ je promijenjen.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Došlo je do nepoznate pogreške.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Dogodila se nepoznata pogreška.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj promijenjen.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Promijenjen je sigurnosni broj.";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Mrežna greška";
@@ -1392,10 +1391,10 @@
 "EXPIRATION_WARNING_TODAY" = "Vaša će verzija Signala isteći danas. Dodirnite za ažuriranje na najnoviju inačicu.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjelih pokušaja s ovim kontaktom. Molimo pokušajte opet kasnije.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjeha s ovim kontaktom. Pokušajte ponovo kasnije.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj s %@ se nedavno promjenio. Možda bi htjeli verificirati ovu promjenu prije nego opet pošaljete poruku.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj s %@ je nedavno promijenjen. Možda želite potvrditi prije nego što ponovo pošaljete poruku.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Provjera sigurnosnog broja nije uspjela!";
@@ -1404,7 +1403,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Označi provjerenim";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Ponovo pokreni sesiju.";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Poništi sesiju";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Završi kreiranje grupe";
@@ -1974,7 +1973,7 @@
 "KEEP_MESSAGES_DURATION" = "Poruke nestaju nakon %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Poruke neće nestajati.";
+"KEEP_MESSAGES_FOREVER" = "Poruke ne nestaju.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Idi na Svu mediju";
@@ -2031,22 +2030,22 @@
 "LEAVE_GROUP_FAILED" = "Došlo je do greške prilikom napuštanja grupe.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Ovaj QR kod nije ispravan. Molimo da skenirate QR kod prikazan na uređaju koji pokušavate povezati.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Ovaj QR kȏd nije važeći. Provjerite skenirate li QR kȏd prikazan na uređaju koji želite povezati.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Neuspješno povezivanje uređaja";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Povezivanje uređaja nije uspjelo";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ovaj uređaj će moći vidjeti Vaše grupe i kontakte, pristupiti Vašim razgovorima i slati poruke u Vaše ime.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Ovaj će uređaj moći vidjeti vaše grupe i kontakte, pristupiti vašim razgovorima i slati poruke u vaše ime.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Poveži ovaj uređaj?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Pokušaj";
+"LINK_DEVICE_RESTART" = "Pokušajte ponovno";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skenirajte QR kod prikazan na uređaju koji želite povezati.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skenirajte QR kȏd prikazan na uređaju kojeg želite povezati.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Skeniraj QR kȏd";
@@ -2061,7 +2060,16 @@
 "LINKED_DEVICES_TITLE" = "Povezani uređaji";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Neuspješno povezivanje uređaja";
+"LINKING_DEVICE_FAILED_TITLE" = "Povezivanje uređaja nije uspjelo";
+
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Onemogući";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Pretraži po imenu ili adresi";
@@ -2070,7 +2078,7 @@
 "LOCATION_PICKER_TITLE" = "Odaberi lokaciju";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "Prijavljivanje";
+"LOGGING_SECTION" = "Zapisnici";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Poruka";
@@ -2346,7 +2354,7 @@
 "MISSED_CALL" = "Propušten poziv";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Možete omogućiti pristup kameri kroz postavke iOS-a kako bi ostvarili viedo pozive u Signalu.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Možete omogućiti pristup kameri u postavkama iOS-a za upućivanje video poziva u Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal treba pristup vašoj kameri.";
@@ -2364,10 +2372,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal treba pristup Vašim fotografijama za ovu značajku.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "Ne možete povezati viđe uređaja.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Ne možete povezati više uređaja.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosegnuli ste maksimalni broj uređaja koje možete istovremeno povezati sa svojim računom. Molimo uklonite neki uređaj i pokušajte opet.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosegli ste maksimum uređaja koje trenutno možete povezati sa svojim računom. Uklonite uređaj i pokušajte ponovo.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Nećete primati obavijesti za utišane razgovore.";
@@ -2379,7 +2387,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Preskoči";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Provjerite ako ste povezani s mrežom i pokušajte opet.";
+"NETWORK_ERROR_RECOVERY" = "Provjerite jeste li na mreži i pokušajte ponovo.";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Nađi po broju telefona";
@@ -2484,13 +2492,13 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Uključiti obavijesti?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Radnje uključuju \"Označi kao pročitano\", \"Odgovori\" i \"Nazovi\".";
+"NOTIFICATIONS_FOOTER_WARNING" = "Radnje uključuju \"Označi kao pročitano\", \"Odgovori\" i \"Uzvrati poziv\".";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Bez imena i sadržaja";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Zvukovi u aplikaciji";
+"NOTIFICATIONS_SECTION_INAPP" = "Sviraj dok je aplikacija otvorena";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Zvukovi";
@@ -2955,37 +2963,37 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Ukloni iz provjerenih";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao sigurnosni broj sa %@. Da li provjeravate ispravan kontakt?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao vaš sigurnosni broj s %@. Potvrđujete li ispravan kontakt?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Broj u vašem međuspremniku ne izgleda kao ispravan sigurnosni broj za ovaj razgovor.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Broj u vašem međuspremniku ne izgleda kao točan sigurnosni broj za ovaj razgovor.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ne može pronaći nijedan sigurnosni broj u međuspremniku. Da li ste ga ispravno kopirali?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal nije uspio pronaći nijedan sigurnosni broj u međuspremniku. Jeste li ga ispravno kopirali?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Svaki korisnički par na Signalu dijeli poseban sigurnosni broj. Duplo provjerite da %@ prikazuje *vaš* poseban sigurnosni broj.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Svaki par Signal korisnika ima poseban sigurnosni broj. Dvaput provjerite da %@ prikazuje *vaš* jedinstveni sigurnosni broj.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Pokrećete staru verziju Signala. Potrebno je ažuriranje prije provjere.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Imate staru verziju Signala. Prije potvrde morate ažurirati aplikaciju.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vaš partner pokreće staru verziju Signala. Potrebna je nadogradnja prije provjere.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vaš partner koristi staru verziju Signala. Nužno je da ažurira aplikaciju prije nego što možete potvrditi.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirani kod ne izgleda kao sigurnosni broj. Jeste li oboje na najnovijim verzijama Signala?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirani kôd ne izgleda kao sigurnosni broj. Koristite li oboje najnoviju verziju Signala?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite provjeriti sigurnost end-to-end šifriranja sa %@, uporedite brojeve iznad sa brojevima na njegovom/njezinom uređaju.\n\nAlternativno, možete skenirati kôd na njegovom/njezinom telefonu ili upitati ih da skeniraju vaš kôd.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite provjeriti sigurnost vašeg end-to-end šifriranja s %@, usporedite gore navedene brojeve s brojevima na njihovom uređaju.\nTakođer možete skenirati kȏd na njihovom telefonu ili zatražiti da skeniraju vaš kȏd.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Provjeri sigurnosni broj";
+"PRIVACY_VERIFICATION_TITLE" = "Provjerite sigurnosni broj";
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "Označi provjerenim/om";
 
 /* No comment provided by engineer. */
-"PROCEED_BUTTON" = "Nastavljanje";
+"PROCEED_BUTTON" = "Nastavi";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ je promijenio svoje ime na profilu iz %@ u %@.";
@@ -3045,13 +3053,13 @@
 "PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
 
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Odgovor";
+"PUSH_MANAGER_REPLY" = "Odgovori";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Uspješna ponovna registracija za \"push\" obavijesti.";
+"PUSH_REGISTER_SUCCESS" = "Ponovna registracija push obavijesti je uspješna.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "\"Push\" obavijesti";
+"PUSH_REGISTER_TITLE" = "Push obavijesti";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -3174,16 +3182,16 @@
 "REGISTER_CONTACTS_WELCOME" = "Dobrodošli!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Pokušaj opet";
+"REGISTER_FAILED_TRY_AGAIN" = "Pokušajte ponovo";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "Pokušali ste previše puta. Molimo pričekajte malo prije novog pokušaja.";
+"REGISTER_RATE_LIMITING_BODY" = "Prevelik broj pokušaja. Molimo pričekajte minutu prije novog pokušaja.";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "Pokušali ste previše puta. Molimo pričekajte malo prije novog pokušaja.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Neuspješna ponovna registracija za \"push\" obavijesti.";
+"REGISTRATION_BODY" = "Ponovna registracija push obavijesti nije uspjela.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Kȏd države";
@@ -3195,22 +3203,22 @@
 "REGISTRATION_ERROR" = "Pogreška prilikom registracije";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Ne možemo aktivirati vaš račun dok ne verifikujete kôd koji smo vam poslali.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Ne možemo aktivirati vaš račun dok ne potvrdite kȏd koji smo vam poslali.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Telefonski broj u ovom formatu nije podržan, molimo kontaktirajte podršku.";
+"REGISTRATION_NON_VALID_NUMBER" = "Format ovog telefonskog broja nije podržan. Molimo kontaktirajte službu za podršku.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonski broj";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "Morate se registrirati prije nego možete poslati poruku.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Morate se registrirati prije slanja poruke.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Provjera nije uspjela";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Brojevi koje ste unijeli ne poklapaju se sa onima koje smo vam poslali. Može li ponovna provjera?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Uneseni brojevi ne odgovaraju onome što smo vam poslali. Želite li još jednom provjeriti?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Netočan PIN registracijskog zaključavanja.";
@@ -3228,7 +3236,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nema telefonskog broja";
 
 /* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "Odbaci";
+"REJECT_CALL_BUTTON_TITLE" = "Odbij";
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonski broj koji pokušavate registrirati je već registriran na drugom poslužitelju, molimo odjavite ga i pokušajte opet.";
@@ -3267,10 +3275,10 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Naš Signal sigurnosni broj:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaš sigurnosni broj sa %@ je promijenjen. Možda ga želite provjeriti.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaš sigurnosni broj s %@ je promijenjen. Možda ga želite provjeriti.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Skenirajte QR kôd na uređaju vašeg kontakta.";
+"SCAN_CODE_INSTRUCTIONS" = "Skenirajte QR kȏd na uređaju vašeg kontakta.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Skeniraj QR kôd";
@@ -3444,7 +3452,7 @@
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Ime, korisničko ime ili broj";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Traži po imenu ili broju";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Pretraži po imenu ili broju";
 
 /* placeholder text in an empty search field */
 "SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Traži";
@@ -3522,7 +3530,7 @@
 "SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Nedavni razgovori";
 
 /* No comment provided by engineer. */
-"SEND_AGAIN_BUTTON" = "Šalji ponovo";
+"SEND_AGAIN_BUTTON" = "Pošalji ponovo";
 
 /* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Pošalji";
@@ -3531,7 +3539,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "Poruka nije poslana.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Slanje pozivnice nije uspjelo, molimo pokušajte opet kasnije.";
+"SEND_INVITE_FAILURE" = "Slanje pozivnice nije uspjelo, pokušajte ponovno kasnije.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Pozvali ste prijatelja da koristi Signal!";
@@ -3546,10 +3554,10 @@
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Vrati se u galeriju";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Pošalji pozivnicu prijatelju putem obične SMS poruke?";
+"SEND_SMS_CONFIRM_TITLE" = "Pozvati prijatelja putem nesigurnog SMS-a?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Želite li poslati pozivnicu na Signal sljedećem broju:";
+"SEND_SMS_INVITE_TITLE" = "Želite li pozvati sljedeći broj na Signal:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "O aplikaciji";
@@ -3582,7 +3590,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Zaobilazak cenzure";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Omogući debug zapisnike";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Omogući zapisnike pogreške";
 
 /* Label for the 'advanced pin settings' button. */
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "Napredne postavke PIN-a";
@@ -3600,7 +3608,7 @@
 "SETTINGS_ADVANCED_PINS_HEADER" = "Signal PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Pošalji debug zapisnik";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Pošalji zapisnik pogreške";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Napredno";
@@ -3687,7 +3695,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Izbriši povijest razgovora";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicencirano po GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nGPLv3 licenca";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Izbriši račun";
@@ -3700,6 +3708,9 @@
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Izbriši sve";
+
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Pomoć";
@@ -3714,7 +3725,7 @@
 "SETTINGS_INVITE_TITLE" = "Pošalji pozivnicu prijateljima";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Možete me kontaktirati pomoću @signalapp. Preuzmite sada: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Možete me kontaktirati koristeći @signalapp. Nabavite ga sada: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk poruke";
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Uvjeti i pravila o privatnosti";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Pošalji preglede veza";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pregledi su podržani za Imgur, Instagram, Pinterest, Reddit i YouTube poveznice.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Pregledi poveznica";
@@ -3834,7 +3845,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Omogući sigurnost zaslona";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Sprječava pregled Signala kod pojavljivanja prilikom promjene aplikacija.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Spriječava prikaz pregleda Signala prilikom promjene aplikacija.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Zvukovi";
@@ -3921,7 +3932,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Prikaži razgovor";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Pozivam vas da instalirate Signal! Ovdje je link:";
+"SMS_INVITE_BODY" = "Pozivam te da instaliraš Signal! Ovdje je poveznica:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Bez zvuka";
@@ -3978,7 +3989,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "Deinstaliraj";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaš sigurnosni broj sa %@ se podudara. Možete označiti ovaj kontakt provjerenim.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaš sigurnosni broj se podudara s %@. Možete označiti ovaj kontakt provjerenim.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sigurnosni broj se podudara!";
@@ -4095,7 +4106,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Korisnik nije u vašim kontaktima. Da li želite blokirati ovog korisnika?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Nepoznat kontakt";
+"UNKNOWN_CONTACT_NAME" = "Nepoznati kontakt";
 
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Nepoznata država";
@@ -4134,34 +4145,34 @@
 "UNKNOWN_VALUE" = "Nepoznato";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Prekini vezu";
+"UNLINK_ACTION" = "Poništi vezu";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Ovaj uređaj više neće moći slati i primati poruke ako ga odspojite.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Ovaj uređaj više neće moći slati i primati poruke ako je odspojen.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Prekini vezu sa \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Poništi vezu s \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "Uređaj više nije povezan. Ponovno povežite Signal sa svojim telefonom kako bi nastavili slati poruke.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal nije u mogućnosti prekinuti vezu sa vašim uređajem.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal nije uspio poništiti vezu s vašim uređajem.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Neimenovani uređaj";
+"UNNAMED_DEVICE" = "Bezimeni uređaj";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Označi kao nepročitano";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Odjava sa Signala nije uspjela.";
+"UNREGISTER_SIGNAL_FAIL" = "Poništavanje registracije s Signala nije uspjelo.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Primljeni privitak nije podržan.";
+"UNSUPPORTED_ATTACHMENT" = "Primljena je nepodržana vrsta privitka.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Vaš uređaj ne podržava ovu mogućnost.";
+"UNSUPPORTED_FEATURE_ERROR" = "Vaš uređaj ne podržava ovu značajku.";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Ažuriraj kontakt";
@@ -4254,7 +4265,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Status provjere je promijenjen.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Vidi sigurnosni broj";
+"VERIFY_PRIVACY" = "Prikaži sigurnosni broj";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Pregledajte sigurnosne brojeve";
@@ -4284,7 +4295,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Glasovna poruka";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dovrši postavljanje Signala za Desktop.";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Izbrisali ste ovu poruku.";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Morate dovršiti postavljanje prije nego nastavite.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavili ste da poruke nestaju za %@. ";

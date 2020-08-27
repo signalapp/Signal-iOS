@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Nodig uit voor Signal";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Bericht verzenden";
 
 /* Label for 'share contact' button. */
@@ -855,7 +854,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Beheerder maken";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ zal dit groepsgesprek en de deelnemers kunnen aanpassen";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Leden";
@@ -867,10 +866,10 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Kies wie groepslidmaatschap mag aanpassen.";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Geef me altijd een bericht";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Geef me geen bericht als gedempt";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Wil je notificaties ontvangen wanneer iemand je mentioned in een gedempt gesprek?";
@@ -966,7 +965,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Meer berichten aan het laden …";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Meer lezen";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Je sessie opnieuw instellen zal je toestaan toekomstige berichten van %@ te ontvangen, maar het zal reeds beschadigde berichten niet herstellen.";
@@ -1503,40 +1502,40 @@
 "GROUP_CREATION_FAILED" = "Niet alle leden konden aan de groep worden toegevoegd. Tik om opnieuw te proberen.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "Een ongeldige uitnodiging was toegevoegd.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Je hebt een ongeldige uitnodiging toegevoegd.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Je hebt ongeldige uitnodigingen toegevoegd.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ heeft een ongeldige uitnodiging toegevoegd.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ heeft ongeldige uitnodigingen toegevoegd.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "Ongeldige uitnodigingen waren toegevoegd.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "Een ongeldige uitnodiging was ingetrokken.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Je hebt een ongeldige uitnodiging ingetrokken.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Je hebt ongeldige uitnodigingen ingetrokken.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ heeft een ongeldige uitnodiging ingetrokken.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ heeft ongeldige uitnodigingen ingetrokken.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "Ongeldige uitnodigingen zijn ingetrokken.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ personen kunnen door jou niet direct worden toegevoegd aan de groep, vanwege de voorkeuren welke zij voor zichzelf hebben ingesteld. Ze hebben een uitnodiging ontvangen om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen voordat ze de uitnodiging hebben aanvaard.";
@@ -1689,7 +1688,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "Één persoon is uitgenodigd om lid te worden van de groep.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ is uitgenodigd om lid te worden van de groep.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Je hebt %@ uitgenodigd om lid te worden van de groep.";
@@ -1800,7 +1799,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Verouderde groepen kunnen niet worden omgezet in nieuwe groepen, maar je kunt wel een nieuwe groep aanmaken met dezelfde leden.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "How do I “upgrade” a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Hoe kan ik een oude groep upgraden?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Om een nieuwe groep aan te maken moeten alle leden hun Signal app bijwerken naar de meest recente versie.";
@@ -1935,7 +1934,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Geef je postvak iets om over naar huis te schrijven. Begin door een vriend of kennis een bericht te zenden.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ heeft je gebeld";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Je kunt gesynchroniseerde berichten verzenden van zowel je telefoon als je iPad.\nVoor je eigen veiligheid wordt je gespreksgeschiedenis niet overgedragen naar nieuw gekoppelde apparaten.";
@@ -2062,6 +2061,15 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Koppelen van apparaat mislukt";
+
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Uitschakelen";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Zoek op naam of adres";
@@ -2373,7 +2381,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Je zult geen meldingen krijgen voor gedempte gesprekken.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "Gedempt";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Overslaan";
@@ -2661,7 +2669,7 @@
 "OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk om zo snel als mogelijk de dienst te hervatten.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "Je hebt %@ opgeroepen";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "Dit PDF-bestand kan niet worden weergegeven";
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Alles wissen";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Hulp";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Voorwaarden en privacybeleid";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Verzend voorbeeldweergaven";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Verzend ook een voorbeeldafbeelding bij een bericht waarin een koppeling naar Imgur, Instagram, Pinterest, Reddit of YouTube in staat.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Sta Signal toe om voor elke koppeling naar een website die je verzendt een voorbeeldafbeelding genereren en bij te voegen. Echter, als je dit inschakelt zouden websites kunnen detecteren dat je ze in je bericht vermeld.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Voorbeeldweergaven";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Je moet de configuratie voltooien voor je verder kunt gaan.";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelfwissende berichten op %@ ingesteld.";

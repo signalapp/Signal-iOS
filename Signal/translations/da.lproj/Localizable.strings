@@ -31,8 +31,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Invitér til Signal";
 
-/* Label for 'send message' button in contact view.
-   Label for button that lets you send a message to a contact. */
+/* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Send besked";
 
 /* Label for 'share contact' button. */
@@ -855,7 +854,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Gør til administrator";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ vil være i stand til at redigere gruppen og dens medlemmer.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ vil være i stand til at redigere gruppen og dens medlemmer";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Medlemmer";
@@ -867,7 +866,7 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Vælg hvem der kan redigere medlemskab af gruppen";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Altid underret";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Underret altid";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Underret ikke hvis udsat";
@@ -1293,7 +1292,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Beskeden kunne ikke sendes";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Fejl ved åbning af e-mail appen";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Fejl ved åbning af e-mail app´en";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Supportanmodning kunne ikke oprettes";
@@ -1503,40 +1502,40 @@
 "GROUP_CREATION_FAILED" = "Ikke alle medlemmer kunne blive tilføjet gruppen. Tap for at prøve igen";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "En ugyldig invitation blev tilføjet.";
+"GROUP_INVALID_INVITES_ADDED_1" = "En ugyldig invitation blev tilføjet";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Du tilføjede en ugyldig invitation.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "Du tilføjede en ugyldig invitation";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Du tilføjede ugyldige invitationer.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Du tilføjede ugyldige invitationer";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ tilføjede en ugyldig invitation.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ tilføjede en ugyldig invitation";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ tilføjede ugyldige invitationer.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ tilføjede ugyldige invitationer";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Ugyldige invitationer blev tilføjet.";
+"GROUP_INVALID_INVITES_ADDED_N" = "Ugyldige invitationer blev tilføjet";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "En ugyldig invitation blev tilbagetrukket.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "En ugyldig invitation blev tilbagetrukket";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Du tilbagetrak en ugyldig invitation.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Du tilbagetrak en ugyldig invitation";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Du tilbagetrak ugyldige invitationer.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Du tilbagetrak ugyldige invitationer";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ tilbagetrak en ugyldig invitation.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ tilbagetrak en ugyldig invitation";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ tilbagetrak ugyldige invitationer.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ tilbagetrak ugyldige invitationer";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Ugyldige invitationer blev tilbagetrukket.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "Ugyldige invitationer blev trukket tilbage";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kan ikke automatisk blive tilføjet gruppen af dig. Brugeren er blevet inviteret til at deltage, og vil ingen beskeder se fra gruppen, før invitationen accepteres";
@@ -1689,7 +1688,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "1 person blev inviteret til gruppen";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ blev inviteret til gruppen.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ blev inviteret til gruppen";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Du inviterede %@ til gruppen";
@@ -1809,19 +1808,19 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Forældede vs. nye grupper";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Der oprettes en Forældet gruppe, fordi 1 medlem anvender en ældre version af Signal. Du kan oprette en ny stilgruppe med dem, når de har opdateret Signal, eller fjern dem, før du opretter gruppen.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Der oprettes en forældet gruppe, fordi 1 medlem anvender en ældre version af Signal. Du kan oprette en ny stilgruppe med dem, når de har opdateret Signal, eller fjern dem, før du opretter gruppen";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Der oprettes en Forældet gruppe, fordi %@ medlemmer anvender en ældre version af Signal. Du kan oprette en ny stilgruppe med dem, når de har opdateret Signal, eller fjern dem, før du opretter gruppen.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Der oprettes en forældet gruppe, fordi %@ medlemmer anvender en ældre version af Signal. Du kan oprette en ny stilgruppe med dem, når de har opdateret Signal, eller fjern dem, før du opretter gruppen";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 medlem støtter ikke nye grupper, så denne gruppe vil være en forældet gruppe. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 medlem støtter ikke nye grupper, så gruppen vil være en forældet gruppe %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ medlemmer støtter ikke nye grupper, så denne gruppe vil være en forældet gruppe. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ medlemmer støtter ikke nye grupper, så gruppen vil være en forældet gruppe %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dette er en forældet gruppe. Opret en ny gruppe for at få adgang til funktioner som gruppeadministratorer. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dette er en forældet gruppe. Opret en ny gruppe for at få adgang til funktioner som gruppeadministratorer %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Forældet gruppe";
@@ -2063,6 +2062,15 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Tilknytning af ny enhed fejlede";
 
+/* Body for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+
+/* Disable button for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Déaktiver";
+
+/* Title for link previews megaphone */
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Søg efter navn eller adresse";
 
@@ -2247,7 +2255,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Fjern blokering af denne gruppe og del dit navn og foto med dens medlemmer? Du modtager ikke nogen beskeder, før du fjerner blokeringen.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Fjern blokering af denne gruppe? De ved ikke, at du har set deres beskeder, før du fjerner blokeringen af dem.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Fjern blokering af denne gruppe? De ved ikke, at du har set deres beskeder, før du fjerner blokeringen af dem";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Slet";
@@ -2268,7 +2276,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Bliv medlem af denne gruppe og del dit navn og foto med dens medlemmer? De ved ikke, at du har set deres beskeder, indtil du accepterer det.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Bliv medlem af denne gruppe? De ved ikke, at du har set deres beskeder, før du accepterer.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Bliv medlem af gruppen? De ved ikke at du har set deres beskeder, før du accepterer";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Del profil";
@@ -3701,6 +3709,9 @@
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Slet alt";
 
+/* Title for the 'donate to signal' link in settings. */
+"SETTINGS_DONATE" = "Donate to Signal";
+
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Hjælp";
 
@@ -3723,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og privatlivspolitik";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send links med forhåndsvisning";
+"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Eksempelvisning er understøttet for Imgur, Instagram, Pinterest, Reddit og YouTube links";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Hent eksempelvisninger af links direkte fra websteder til beskeder, som du sender";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Forhåndsvisning af links";
@@ -4295,6 +4306,5 @@
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Du skal fuldføre opsætningen før du fortsætter";
 
-/* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.
-   Info Message when you enabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
+/* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Beskeder med tidsudløb udløber efter %@";
