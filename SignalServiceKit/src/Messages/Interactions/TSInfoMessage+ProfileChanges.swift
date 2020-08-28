@@ -25,9 +25,12 @@ public extension TSInfoMessage {
         }
 
         let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
-        saveProfileUpdateMessage(thread: contactThread)
+        if contactThread.shouldThreadBeVisible {
+            saveProfileUpdateMessage(thread: contactThread)
+        }
 
         for groupThread in TSGroupThread.groupThreads(with: address, transaction: transaction) {
+            guard groupThread.isLocalUserInGroup && groupThread.shouldThreadBeVisible else { continue }
             saveProfileUpdateMessage(thread: groupThread)
         }
     }
