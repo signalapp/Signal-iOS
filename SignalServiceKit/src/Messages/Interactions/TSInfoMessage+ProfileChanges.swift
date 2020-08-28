@@ -21,6 +21,7 @@ public extension TSInfoMessage {
                 messageType: .profileUpdate,
                 infoMessageUserInfo: [.profileChanges: profileChanges]
             )
+            profileUpdateMessage.wasRead = true
             profileUpdateMessage.anyInsert(transaction: transaction)
         }
 
