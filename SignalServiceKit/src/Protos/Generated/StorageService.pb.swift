@@ -399,7 +399,7 @@ struct StorageServiceProtos_AccountRecord {
 
   var phoneNumberSharingMode: StorageServiceProtos_AccountRecord.PhoneNumberSharingMode = .everybody
 
-  var discoverableByPhoneNumber: Bool = false
+  var notDiscoverableByPhoneNumber: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1004,7 +1004,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     10: .same(proto: "noteToSelfMarkedUnread"),
     11: .same(proto: "linkPreviews"),
     12: .same(proto: "phoneNumberSharingMode"),
-    13: .same(proto: "discoverableByPhoneNumber")
+    13: .same(proto: "notDiscoverableByPhoneNumber")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1022,7 +1022,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       case 10: try decoder.decodeSingularBoolField(value: &self.noteToSelfMarkedUnread)
       case 11: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
       case 12: try decoder.decodeSingularEnumField(value: &self.phoneNumberSharingMode)
-      case 13: try decoder.decodeSingularBoolField(value: &self.discoverableByPhoneNumber)
+      case 13: try decoder.decodeSingularBoolField(value: &self.notDiscoverableByPhoneNumber)
       default: break
       }
     }
@@ -1065,8 +1065,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if self.phoneNumberSharingMode != .everybody {
       try visitor.visitSingularEnumField(value: self.phoneNumberSharingMode, fieldNumber: 12)
     }
-    if self.discoverableByPhoneNumber != false {
-      try visitor.visitSingularBoolField(value: self.discoverableByPhoneNumber, fieldNumber: 13)
+    if self.notDiscoverableByPhoneNumber != false {
+      try visitor.visitSingularBoolField(value: self.notDiscoverableByPhoneNumber, fieldNumber: 13)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1084,7 +1084,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.noteToSelfMarkedUnread != rhs.noteToSelfMarkedUnread {return false}
     if lhs.linkPreviews != rhs.linkPreviews {return false}
     if lhs.phoneNumberSharingMode != rhs.phoneNumberSharingMode {return false}
-    if lhs.discoverableByPhoneNumber != rhs.discoverableByPhoneNumber {return false}
+    if lhs.notDiscoverableByPhoneNumber != rhs.notDiscoverableByPhoneNumber {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -95,21 +95,46 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak PrivacySettingsTableViewController *weakSelf = self;
 
-    OWSTableSection *blocklistSection = [OWSTableSection new];
-    blocklistSection.headerTitle
-        = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
-    [blocklistSection
-        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE",
-                                                         @"Label for the block list section of the settings view")
-                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"blocklist"]
-                                         actionBlock:^{
-                                             [weakSelf showBlocklist];
-                                         }]];
-    [contents addSection:blocklistSection];
+    OWSTableSection *whoCanSection = [OWSTableSection new];
+    whoCanSection.headerTitle = NSLocalizedString(@"SETTINGS_WHO_CAN", @"Label for the 'who can' privacy settings.");
+
+    if (SSKFeatureFlags.phoneNumberSharing) {
+        [whoCanSection
+            addItem:[OWSTableItem
+                         disclosureItemWithText:NSLocalizedString(@"SETTINGS_PHONE_NUMBER_SHARING",
+                                                    @"Label for the 'phone number sharing' setting.")
+                                     detailText:PhoneNumberSharingSettingsTableViewController.nameForCurrentMode
+                        accessibilityIdentifier:[NSString
+                                                    stringWithFormat:@"settings.privacy.%@", @"phone_number_sharing"]
+                                    actionBlock:^{
+                                        PhoneNumberSharingSettingsTableViewController *vc =
+                                            [PhoneNumberSharingSettingsTableViewController new];
+                                        [weakSelf.navigationController pushViewController:vc animated:YES];
+                                    }]];
+    }
+
+    if (SSKFeatureFlags.phoneNumberDiscoverability) {
+        [whoCanSection
+            addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PHONE_NUMBER_DISCOVERABILITY",
+                                                             @"Label for the 'phone number discoverability' setting.")
+                                              detailText:PhoneNumberDiscoverabilitySettingsTableViewController
+                                                             .nameForCurrentDiscoverability
+                                 accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
+                                                                   @"phone_number_discoverability"]
+                                             actionBlock:^{
+                                                 PhoneNumberDiscoverabilitySettingsTableViewController *vc =
+                                                     [PhoneNumberDiscoverabilitySettingsTableViewController new];
+                                                 [weakSelf.navigationController pushViewController:vc animated:YES];
+                                             }]];
+    }
+
+    if (whoCanSection.itemCount > 0) {
+        [contents addSection:whoCanSection];
+    }
 
     OWSTableSection *readReceiptsSection = [OWSTableSection new];
     readReceiptsSection.headerTitle
-        = NSLocalizedString(@"SETTINGS_READ_RECEIPT", @"Label for the 'read receipts' setting.");
+        = NSLocalizedString(@"SETTINGS_MESSAGING", @"Label for the 'messaging' privacy settings.");
     readReceiptsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_READ_RECEIPTS_SECTION_FOOTER", @"An explanation of the 'read receipts' setting.");
     [readReceiptsSection
@@ -127,8 +152,6 @@ NS_ASSUME_NONNULL_BEGIN
     [contents addSection:readReceiptsSection];
 
     OWSTableSection *typingIndicatorsSection = [OWSTableSection new];
-    typingIndicatorsSection.headerTitle
-        = NSLocalizedString(@"SETTINGS_TYPING_INDICATORS", @"Label for the 'typing indicators' setting.");
     typingIndicatorsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_TYPING_INDICATORS_FOOTER", @"An explanation of the 'typing indicators' setting.");
     [typingIndicatorsSection
@@ -144,6 +167,87 @@ NS_ASSUME_NONNULL_BEGIN
                     target:weakSelf
                     selector:@selector(didToggleTypingIndicatorsSwitch:)]];
     [contents addSection:typingIndicatorsSection];
+
+    OWSTableSection *linkPreviewsSection = [OWSTableSection new];
+    [linkPreviewsSection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_LINK_PREVIEWS",
+                                                     @"Setting for enabling & disabling link previews.")
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"link_previews"]
+                    isOnBlock:^{
+                        if (!weakSelf) {
+                            return NO;
+                        }
+                        PrivacySettingsTableViewController *strongSelf = weakSelf;
+
+                        __block BOOL areLinkPreviewsEnabled;
+                        [strongSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                            areLinkPreviewsEnabled = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction];
+                        }];
+                        return areLinkPreviewsEnabled;
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleLinkPreviewsEnabled:)]];
+    linkPreviewsSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_LINK_PREVIEWS_FOOTER", @"Footer for setting for enabling & disabling link previews.");
+    [contents addSection:linkPreviewsSection];
+
+    OWSTableSection *blocklistSection = [OWSTableSection new];
+    blocklistSection.footerTitle
+        = NSLocalizedString(@"SETTINGS_BLOCK_LIST_FOOTER", @"An explanation of the 'blocked' setting");
+    [blocklistSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE",
+                                                         @"Label for the block list section of the settings view")
+                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"blocklist"]
+                                         actionBlock:^{
+                                             [weakSelf showBlocklist];
+                                         }]];
+    [contents addSection:blocklistSection];
+
+    // Allow calls to connect directly vs. using TURN exclusively
+    OWSTableSection *callingSection = [OWSTableSection new];
+    callingSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
+    callingSection.footerTitle = NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
+        @"User settings section footer, a detailed explanation");
+    [callingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
+                                                                 @"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
+                                                                 @"Table cell label")
+                                accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
+                                                                  @"calling_hide_ip_address"]
+                                isOnBlock:^{
+                                    return [Environment.shared.preferences doCallsHideIPAddress];
+                                }
+                                isEnabledBlock:^{
+                                    return YES;
+                                }
+                                target:weakSelf
+                                selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
+    [contents addSection:callingSection];
+
+    if (CallUIAdapter.isCallkitDisabledForLocale) {
+        // Hide all CallKit-related prefs; CallKit is disabled.
+    } else {
+        OWSTableSection *callKitSection = [OWSTableSection new];
+        [callKitSection
+            addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
+                                                         @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
+                                                         @"Short table cell label")
+                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"callkit_history"]
+                        isOnBlock:^{
+                            return [Environment.shared.preferences isSystemCallLogEnabled];
+                        }
+                        isEnabledBlock:^{
+                            return YES;
+                        }
+                        target:weakSelf
+                        selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
+        callKitSection.footerTitle = NSLocalizedString(
+            @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
+        [contents addSection:callKitSection];
+    }
 
     // Show the change pin and reglock sections
     if (self.accountManager.isRegisteredPrimaryDevice) {
@@ -280,62 +384,6 @@ NS_ASSUME_NONNULL_BEGIN
                     selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
 
-        // Allow calls to connect directly vs. using TURN exclusively
-        OWSTableSection *callingSection = [OWSTableSection new];
-        callingSection.headerTitle
-            = NSLocalizedString(@"SETTINGS_SECTION_TITLE_CALLING", @"settings topic header for table section");
-        callingSection.footerTitle = NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
-            @"User settings section footer, a detailed explanation");
-        [callingSection
-            addItem:[OWSTableItem
-                        switchItemWithText:NSLocalizedString(@"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
-                                               @"Table cell label")
-                        accessibilityIdentifier:[NSString
-                                                    stringWithFormat:@"settings.privacy.%@", @"calling_hide_ip_address"]
-                        isOnBlock:^{
-                            return [Environment.shared.preferences doCallsHideIPAddress];
-                        }
-                        isEnabledBlock:^{
-                            return YES;
-                        }
-                        target:weakSelf
-                        selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
-        [contents addSection:callingSection];
-
-        if (CallUIAdapter.isCallkitDisabledForLocale) {
-            // Hide all CallKit-related prefs; CallKit is disabled.
-        } else {
-            OWSTableSection *callKitSection = [OWSTableSection new];
-            [callKitSection
-                addItem:[OWSTableItem
-                            switchItemWithText:NSLocalizedString(
-                                                   @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
-                                                   @"Short table cell label")
-                            accessibilityIdentifier:[NSString
-                                                        stringWithFormat:@"settings.privacy.%@", @"callkit_history"]
-                            isOnBlock:^{
-                                return [Environment.shared.preferences isSystemCallLogEnabled];
-                            }
-                            isEnabledBlock:^{
-                                return YES;
-                            }
-                            target:weakSelf
-                            selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
-            callKitSection.footerTitle = NSLocalizedString(
-                @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
-            [contents addSection:callKitSection];
-        }
-
-    OWSTableSection *historyLogsSection = [OWSTableSection new];
-    historyLogsSection.headerTitle = NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
-    [historyLogsSection
-        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"")
-                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"clear_logs"]
-                                         actionBlock:^{
-                                             [weakSelf clearHistoryLogs];
-                                         }]];
-    [contents addSection:historyLogsSection];
-
     OWSTableSection *unidentifiedDeliveryIndicatorsSection = [OWSTableSection new];
     unidentifiedDeliveryIndicatorsSection.headerTitle
         = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE", @"table section label");
@@ -429,33 +477,15 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:unidentifiedDeliveryUnrestrictedSection];
     }
 
-    OWSTableSection *linkPreviewsSection = [OWSTableSection new];
-    [linkPreviewsSection
-        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_LINK_PREVIEWS",
-                                                     @"Setting for enabling & disabling link previews.")
-                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"link_previews"]
-                    isOnBlock:^{
-                        if (!weakSelf) {
-                            return NO;
-                        }
-                        PrivacySettingsTableViewController *strongSelf = weakSelf;
-
-                        __block BOOL areLinkPreviewsEnabled;
-                        [strongSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                            areLinkPreviewsEnabled = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction];
-                        }];
-                        return areLinkPreviewsEnabled;
-                    }
-                    isEnabledBlock:^{
-                        return YES;
-                    }
-                    target:weakSelf
-                    selector:@selector(didToggleLinkPreviewsEnabled:)]];
-    linkPreviewsSection.headerTitle = NSLocalizedString(
-        @"SETTINGS_LINK_PREVIEWS_HEADER", @"Header for setting for enabling & disabling link previews.");
-    linkPreviewsSection.footerTitle = NSLocalizedString(
-        @"SETTINGS_LINK_PREVIEWS_FOOTER", @"Footer for setting for enabling & disabling link previews.");
-    [contents addSection:linkPreviewsSection];
+    OWSTableSection *historyLogsSection = [OWSTableSection new];
+    historyLogsSection.headerTitle = NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
+    [historyLogsSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"")
+                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"clear_logs"]
+                                         actionBlock:^{
+                                             [weakSelf clearHistoryLogs];
+                                         }]];
+    [contents addSection:historyLogsSection];
 
     self.contents = contents;
 }

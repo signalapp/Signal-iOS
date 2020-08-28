@@ -148,6 +148,7 @@ public class OnboardingController: NSObject {
         case verifiedPhoneNumber
         case verifiedLinkedDevice
         case restorePin
+        case phoneNumberDiscoverability
         case setupProfile
         case setupPin
     }
@@ -157,7 +158,7 @@ public class OnboardingController: NSObject {
         case .provisioning:
             return [.verifiedLinkedDevice]
         case .registering:
-            var milestones: [OnboardingMilestone] = [.verifiedPhoneNumber, .setupProfile]
+            var milestones: [OnboardingMilestone] = [.verifiedPhoneNumber, .phoneNumberDiscoverability, .setupProfile]
 
             let hasPendingPinRestoration = databaseStorage.read {
                 KeyBackupService.hasPendingRestoration(transaction: $0)
@@ -213,6 +214,10 @@ public class OnboardingController: NSObject {
             milestones.append(.verifiedLinkedDevice)
         }
 
+        if !FeatureFlags.phoneNumberDiscoverability || tsAccountManager.hasDefinedIsDiscoverableByPhoneNumber() {
+            milestones.append(.phoneNumberDiscoverability)
+        }
+
         if profileManager.hasProfileName {
             milestones.append(.setupProfile)
         }
@@ -258,6 +263,8 @@ public class OnboardingController: NSObject {
             return Onboarding2FAViewController(onboardingController: self, isUsingKBS: true)
         case .setupPin:
             return buildPinSetupViewController()
+        case .phoneNumberDiscoverability:
+            return OnboardingPhoneNumberDiscoverabilityViewController(onboardingController: self)
         }
     }
 
