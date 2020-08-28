@@ -63,8 +63,16 @@ NS_ASSUME_NONNULL_BEGIN
         interactionIndexMap[viewItem.interaction.uniqueId] = @(i);
         [interactionIds addObject:viewItem.interaction.uniqueId];
 
-        if (viewItem.unreadIndicator != nil) {
-            _unreadIndicatorIndex = @(i);
+        if (viewItem.unreadIndicator != nil && [viewItem.interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
+            id<OWSReadTracking> interaction = (id<OWSReadTracking>)viewItem.interaction;
+
+            // Under normal circumstances !interaction.read should always evaluate to true at this point, but
+            // there is a bug that can somehow cause it to be false leading to conversations permanently being
+            // stuck with "unread" messages.
+
+            if (!interaction.read) {
+                _unreadIndicatorIndex = @(i);
+            }
         }
     }
     _interactionIndexMap = [interactionIndexMap copy];

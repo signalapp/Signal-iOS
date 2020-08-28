@@ -3607,7 +3607,6 @@ typedef enum : NSUInteger {
 // and won't update the UI state immediately.
 - (void)didScrollToBottom
 {
-
     id<ConversationViewItem> _Nullable lastVisibleViewItem = [self.viewItems lastObject];
     if (lastVisibleViewItem) {
         uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
