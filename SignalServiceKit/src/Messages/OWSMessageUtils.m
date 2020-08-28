@@ -18,6 +18,7 @@
 #import "TSThread.h"
 #import "UIImage+OWS.h"
 #import <YapDatabase/YapDatabase.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -65,6 +66,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)unreadMessagesCount
 {
+    __block NSUInteger count = 0;
+
+    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
+        NSArray<NSString *> *allGroups = [unreadMessages allGroups];
+        for (NSString *groupID in allGroups) {
+            [unreadMessages enumerateKeysAndObjectsInGroup:groupID
+                                                usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+                    OWSFailDebug(@"Unexpected object in unread messages: %@", [object class]);
+                    return;
+                }
+                id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
+                if (unread.read) {
+                    [LKLogger print:@"Found an already read message in the * unread * messages list."];
+                    return;
+                }
+                count += 1;
+            }];
+        }
+    }];
+
+    return count;
+
     __block NSUInteger numberOfItems;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];

@@ -2638,7 +2638,6 @@
 "vc_create_closed_group_empty_state_button_title" = "Empezar una Session";
 "vc_create_closed_group_group_name_missing_error" = "Por favor, ingresa un nombre de grupo";
 "vc_create_closed_group_group_name_too_long_error" = "Por favor, ingresa un nombre de grupo más corto";
-"vc_create_closed_group_not_enough_group_members_error" = "Por favor, elige al menos 2 miembros del grupo";
 "vc_create_closed_group_too_many_group_members_error" = "Un grupo cerrado no puede tener más de 10 miembros";
 "vc_create_closed_group_invalid_session_id_error" = "Uno de los miembros de tu grupo tiene un ID de Session no válido";
 

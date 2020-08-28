@@ -171,8 +171,8 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard name.count < 64 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
-        guard selectedContacts.count >= 2 else {
-            return showError(title: NSLocalizedString("vc_create_closed_group_not_enough_group_members_error", comment: ""))
+        guard selectedContacts.count >= 1 else {
+            return showError(title: "Please pick at least 1 group member")
         }
         guard selectedContacts.count < 50 else { // Minus one because we're going to include self later
             return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
@@ -211,8 +211,8 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard name.count < 64 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
-        guard selectedContacts.count >= 2 else {
-            return showError(title: NSLocalizedString("vc_create_closed_group_not_enough_group_members_error", comment: ""))
+        guard selectedContacts.count >= 1 else {
+            return showError(title: "Please pick at least 1 group member")
         }
         guard selectedContacts.count < 10 else { // Minus one because we're going to include self later
             return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))

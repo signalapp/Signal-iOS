@@ -5,6 +5,7 @@
 #import "TSInteraction.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSThread.h"
+#import "TSGroupThread.h"
 #import <SessionCoreKit/NSDate+OWS.h>
 #import <SessionServiceKit/SessionServiceKit-Swift.h>
 
@@ -188,9 +189,20 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     OWSAssertDebug(other);
 
-    // Loki: Sort the messages by the sender's timestamp (Signal uses sortId)
+    // Sort the messages by the sender's timestamp (Signal uses sortId)
     uint64_t sortId1 = self.timestamp;
     uint64_t sortId2 = other.timestamp;
+
+    // In open groups messages should be sorted by their server timestamp. `sortId` represents the order in which messages
+    // were processed. Since in the open group poller we sort messages by their server timestamp, sorting by `sortId` is
+    // effectively the same as sorting by server timestamp.
+    if (self.thread.isGroupThread) {
+        TSGroupThread *thread = (TSGroupThread *)self.thread;
+        if (thread.isPublicChat) {
+            sortId1 = self.sortId;
+            sortId2 = other.sortId;
+        }
+    }
 
     if (sortId1 > sortId2) {
         return NSOrderedDescending;
