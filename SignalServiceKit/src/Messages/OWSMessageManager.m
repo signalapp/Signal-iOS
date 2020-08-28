@@ -915,6 +915,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
                                             serverID:0
+                                     serverTimestamp:0
                                    attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                                        OWSAssertDebug(attachmentStreams.count == 1);
                                        TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -943,6 +944,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [OWSRecordTranscriptJob
                     processIncomingSentMessageTranscript:transcript
                                                 serverID:(serverID ?: 0)
+                                         serverTimestamp:(uint64_t)envelope.serverTimestamp
                                        attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                                            OWSLogDebug(@"successfully fetched transcript attachments: %lu",
                                                (unsigned long)attachmentStreams.count);
