@@ -41,6 +41,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
+@synthesize timestamp = _timestamp;
+
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
                                                 ofClass:(Class)clazz
                                         withTransaction:(YapDatabaseReadTransaction *)transaction
@@ -175,9 +177,25 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Date operations
 
+- (uint64_t)timestamp
+{
+    if (self.thread.isGroupThread) {
+        TSGroupThread *thread = (TSGroupThread *)self.thread;
+        if (thread.isPublicChat) {
+            return _receivedAtTimestamp;
+        }
+    }
+    return _timestamp;
+}
+
 - (uint64_t)timestampForLegacySorting
 {
     return self.timestamp;
+}
+
+- (void)setServerTimestampAsReceiveTimestamp:(uint64_t)receivedAtTimestamp
+{
+    _receivedAtTimestamp = receivedAtTimestamp;
 }
 
 - (NSDate *)receivedAtDate

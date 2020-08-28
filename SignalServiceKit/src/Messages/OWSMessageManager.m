@@ -1417,6 +1417,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
                 
+                //For open group messages, use server timestamp as the receive timestamp
+                if (oldGroupThread.isPublicChat) {
+                    [incomingMessage setServerTimestampAsReceiveTimestamp:(uint64_t)envelope.serverTimestamp];
+                }
+                
                 // Loki: Set open group server ID if needed
                 if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) {
                     incomingMessage.openGroupServerMessageID = dataMessage.publicChatInfo.serverID;
