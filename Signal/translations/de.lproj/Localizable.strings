@@ -920,7 +920,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Als Admin entfernen";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ als Gruppenadmin entfernen?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ als Gruppen-Admin entfernen?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Unterhaltung durchsuchen";
@@ -1820,7 +1820,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ Mitglieder unterstützen keine Neu-Gruppen, daher wird diese Gruppe als Alt-Gruppe erstellt. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dies ist eine Alt-Gruppe. Bitte erstelle für neue Funktionen wie Gruppenadmins eine Neu-Gruppe. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dies ist eine Alt-Gruppe. Bitte erstelle für neue Funktionen wie Gruppen-Admins eine Neu-Gruppe. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Alt-Gruppe";
@@ -1829,7 +1829,7 @@
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Mehr erfahren";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Wähle vor Verlassen der Gruppe mindestens einen neuen Gruppenadmin.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Wähle vor Verlassen der Gruppe mindestens einen neuen Gruppen-Admin.";
 
 /* Title for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Neuen Admin wählen";
@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Gerät konnte nicht gekoppelt werden";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Link-Vorschauen werden jetzt für alle Seiten erzeugt.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Deaktivieren";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Vorschauen für jeden Link";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Nach Name oder Adresse suchen";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Alles löschen";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "An Signal spenden";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Hilfe";
@@ -3734,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Bedingungen & Datenschutzerklärung";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Link-Vorschauen erstellen";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Rufe für zu versendende Nachrichten Link-Vorschauen direkt von Webseiten ab.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Wenn deine Nachricht einen Link enthält, wird eine Vorschau der verlinkten Seite erstellt.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link-Vorschauen";
