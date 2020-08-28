@@ -348,7 +348,12 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
                                     OWSFailDebug(@"Unexpected object in unseen messages: %@", [object class]);
                                     return;
                                 }
-                                [messages addObject:(id<OWSReadTracking>)object];
+                                id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
+                                if (unread.read) {
+                                    [LKLogger print:@"Found an already read message in the * unseen * messages list."];
+                                    return;
+                                }
+                                [messages addObject:unread];
                             }];
 
     return [messages copy];
@@ -356,7 +361,24 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.uniqueId];
+    __block NSUInteger count = 0;
+
+    YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
+    [unreadMessages enumerateKeysAndObjectsInGroup:self.uniqueId
+                                        usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+        if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+            OWSFailDebug(@"Unexpected object in unread messages: %@", [object class]);
+            return;
+        }
+        id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
+        if (unread.read) {
+            [LKLogger print:@"Found an already read message in the * unread * messages list."];
+            return;
+        }
+        count += 1;
+    }];
+
+    return count;
 }
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
