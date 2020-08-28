@@ -39,7 +39,6 @@
 #import "OWSWindowManager.h"
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
-#import "ProfileViewController.h"
 #import "RemoteVideoView.h"
 #import "OWSQRCodeScanningViewController.h"
 #import "SignalApp.h"

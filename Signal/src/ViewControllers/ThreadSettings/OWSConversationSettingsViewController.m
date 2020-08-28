@@ -303,34 +303,14 @@ const CGFloat kIconViewLength = 24;
 
     [self updateTableContents];
     
-    // Loki: Set gradient background
-    self.tableView.backgroundColor = UIColor.clearColor;
-    LKGradient *gradient = LKGradients.defaultLokiBackground;
-    self.view.backgroundColor = UIColor.clearColor;
-    [self.view setGradient:gradient];
-    
-    // Loki: Set navigation bar background color
-    UINavigationBar *navigationBar = self.navigationController.navigationBar;
-    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    navigationBar.shadowImage = [UIImage new];
-    [navigationBar setTranslucent:NO];
-    navigationBar.barTintColor = LKColors.navigationBarBackground;
-    
-    // Loki: Customize title
-    UILabel *titleLabel = [UILabel new];
+    NSString *title;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        titleLabel.text = NSLocalizedString(@"Settings", @"");
+        title = NSLocalizedString(@"Settings", @"");
     } else {
-        titleLabel.text = NSLocalizedString(@"Group Settings", @"");
+        title = NSLocalizedString(@"Group Settings", @"");
     }
-    titleLabel.textColor = LKColors.text;
-    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
-    self.navigationItem.titleView = titleLabel;
-    
-    // Loki: Set up back button
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
-    backButton.tintColor = LKColors.text;
-    self.navigationItem.backBarButtonItem = backButton;
+    [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:title customBackButton:YES];
+    self.tableView.backgroundColor = UIColor.clearColor;
 }
 
 - (void)viewDidAppear:(BOOL)animated
