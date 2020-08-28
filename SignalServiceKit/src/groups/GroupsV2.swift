@@ -424,7 +424,7 @@ public struct GroupV2DownloadedAvatars {
 
 // MARK: -
 
-public struct InvalidInvite {
+public struct InvalidInvite: Equatable {
     public let userId: Data
     public let addedByUserId: Data
 

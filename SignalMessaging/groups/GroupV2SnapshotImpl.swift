@@ -9,26 +9,6 @@ import ZKGroup
 
 public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
-    public struct Member {
-        let userID: Data
-        let uuid: UUID
-        var address: SignalServiceAddress {
-            return SignalServiceAddress(uuid: uuid)
-        }
-        let role: GroupsProtoMemberRole
-    }
-
-    public struct PendingMember {
-        let userID: Data
-        let uuid: UUID
-        var address: SignalServiceAddress {
-            return SignalServiceAddress(uuid: uuid)
-        }
-        let timestamp: UInt64
-        let role: GroupsProtoMemberRole
-        let addedByUuid: UUID
-    }
-
     public let groupSecretParamsData: Data
 
     public let groupProto: GroupsProtoGroup
@@ -40,9 +20,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     public let avatarUrlPath: String?
     public let avatarData: Data?
 
-    private let members: [Member]
-    private let pendingMembers: [PendingMember]
-    private let invalidInvites: [InvalidInvite]
+    public let groupMembership: GroupMembership
 
     public let groupAccess: GroupAccess
 
@@ -62,9 +40,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 title: String,
                 avatarUrlPath: String?,
                 avatarData: Data?,
-                members: [Member],
-                pendingMembers: [PendingMember],
-                invalidInvites: [InvalidInvite],
+                groupMembership: GroupMembership,
                 groupAccess: GroupAccess,
                 inviteLinkPassword: Data?,
                 disappearingMessageToken: DisappearingMessageToken,
@@ -76,37 +52,10 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         self.title = title
         self.avatarUrlPath = avatarUrlPath
         self.avatarData = avatarData
-        self.members = members
-        self.pendingMembers = pendingMembers
-        self.invalidInvites = invalidInvites
+        self.groupMembership = groupMembership
         self.groupAccess = groupAccess
         self.inviteLinkPassword = inviteLinkPassword
         self.disappearingMessageToken = disappearingMessageToken
         self.profileKeys = profileKeys
-    }
-
-    public var groupMembership: GroupMembership {
-        var builder = GroupMembership.Builder()
-        for member in members {
-            guard let role = TSGroupMemberRole.role(for: member.role) else {
-                owsFailDebug("Invalid value: \(member.role.rawValue)")
-                continue
-            }
-            builder.addFullMember(member.address, role: role)
-        }
-
-        for member in pendingMembers {
-            guard let role = TSGroupMemberRole.role(for: member.role) else {
-                owsFailDebug("Invalid value: \(member.role.rawValue)")
-                continue
-            }
-            builder.addInvitedMember(member.address, role: role, addedByUuid: member.addedByUuid)
-        }
-
-        for invalidInvite in invalidInvites {
-            builder.addInvalidInvite(userId: invalidInvite.userId, addedByUserId: invalidInvite.addedByUserId)
-        }
-
-        return builder.build()
     }
 }
