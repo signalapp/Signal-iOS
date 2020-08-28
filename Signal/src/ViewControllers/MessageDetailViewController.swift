@@ -252,6 +252,12 @@ class MessageDetailViewController: OWSViewController {
                 .failed,
                 .skipped
             ]
+
+            let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
+            let messageRecipientAddressesSorted = databaseStorage.read { transaction in
+                self.contactsManager.sortSignalServiceAddresses(messageRecipientAddressesUnsorted, transaction: transaction)
+            }
+
             for recipientStatusGroup in recipientStatusGroups {
                 var groupRows = [UIView]()
 
@@ -263,9 +269,7 @@ class MessageDetailViewController: OWSViewController {
                     groupRows.append(divider)
                 }
 
-                let messageRecipientAddresses = outgoingMessage.recipientAddresses()
-
-                for recipientAddress in messageRecipientAddresses {
+                for recipientAddress in messageRecipientAddressesSorted {
                     guard let recipientState = outgoingMessage.recipientState(for: recipientAddress) else {
                         owsFailDebug("no message status for recipient: \(recipientAddress).")
                         continue
