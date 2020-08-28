@@ -1747,16 +1747,15 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSArray<TSAttachment *> *attachments = [message allAttachmentsWithTransaction:transaction.unwrapGrdbRead];
+        [self.attachmentDownloads downloadAttachmentsForMessage:message
             bypassPendingMessageRequest:NO
-            transaction:transaction
+            attachments:attachments
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
             }
-            failure:^(NSError *error) {
-                OWSLogWarn(@"Failed to redownload message with error: %@", error);
-            }];
+            failure:^(NSError *error) { OWSLogWarn(@"Failed to redownload message with error: %@", error); }];
     }];
 }
 
@@ -2574,16 +2573,15 @@ typedef enum : NSUInteger {
 
     // Start downloads for message.
     TSMessage *message = (TSMessage *)viewItem.interaction;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self.attachmentDownloads downloadAllAttachmentsForMessage:message
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSArray<TSAttachment *> *attachments = [message allAttachmentsWithTransaction:transaction.unwrapGrdbRead];
+        [self.attachmentDownloads downloadAttachmentsForMessage:message
             bypassPendingMessageRequest:YES
-            transaction:transaction
+            attachments:attachments
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully downloaded attachment in thread: %@", message.threadWithSneakyTransaction);
             }
-            failure:^(NSError *error) {
-                OWSLogWarn(@"Failed to download message with error: %@", error);
-            }];
+            failure:^(NSError *error) { OWSLogWarn(@"Failed to download message with error: %@", error); }];
     }];
 }
 
