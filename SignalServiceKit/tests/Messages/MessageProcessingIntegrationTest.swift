@@ -69,7 +69,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
     // MARK: - Tests
 
-    func test_contactMessage_e164Envelope() {
+    func test_contactMessage_e164AndUuidEnvelope() {
         storageCoordinator.useGRDBForTests()
 
         // Re-initialize this state now that we've just switched databases.
@@ -119,13 +119,14 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
+        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp())
 
         waitForExpectations(timeout: 1.0)
     }
 
-    func test_contactMessage_UUIDEnvelope() {
+    func test_contactMessage_UuidOnlyEnvelope() {
         guard RemoteConfig.allowUUIDOnlyContacts else {
             // This test is known to be failing.
             // It's intended as TDD for the upcoming UUID work.

@@ -255,11 +255,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)combineLeftName:(NSString *)leftName withRightName:(NSString *)rightName usingSeparator:(NSString *)separator {
     const BOOL leftNameNonEmpty = (leftName.length > 0);
     const BOOL rightNameNonEmpty = (rightName.length > 0);
-    
-    if (self.nickname) {
+
+    if (self.nickname.length > 0) {
         return self.nickname;
     }
-    
+
     if (leftNameNonEmpty && rightNameNonEmpty) {
         return [NSString stringWithFormat:@"%@%@%@", leftName, separator, rightName];
     } else if (leftNameNonEmpty) {

@@ -38,11 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
                                         userInfo:@{ NSDebugDescriptionErrorKey : @"message wasn't saved" }];
             return nil;
         }
-        // FIXME: A line in YDBToGRDBMigrationModelTest fails when we run this line of code.
-        #if TESTABLE_BUILD
-        #else
-        _isMediaMessage = [message hasMediaAttachmentsWithTransaction:transaction.unwrapGrdbRead];
-        #endif
+
+        // This path gets hit during the YDB->GRDB migration *tests*, at which point
+        // it's unsafe to assume we have a GRDB transaction. We can safely skip this
+        // step during the tests when we don't.
+        if (!CurrentAppContext().isRunningTests || !transaction.isYapRead) {
+            _isMediaMessage = [message hasMediaAttachmentsWithTransaction:transaction.unwrapGrdbRead];
+        }
+
         _invisibleMessage = nil;
     } else {
         _messageId = nil;

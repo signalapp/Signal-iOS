@@ -21,10 +21,6 @@ public class SSKMessageDecryptJobQueue: NSObject, JobQueue {
         }
     }
 
-    deinit {
-        pipelineSupervisor.unregister(pipelineStage: self)
-    }
-
     // MARK: 
 
     @objc(enqueueEnvelopeData:serverDeliveryTimestamp:)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -132,12 +132,14 @@
 //
 // Note that it may be better for the `deleteAction` method to have a completion block
 // so the expectation can be fulfulled in there. Maybe revisit later.
-- (void)waitForPreviousAsyncMethodCompletion {
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Allow the async method to be dispatched before the test ends"];
+- (void)waitForPreviousAsyncMethodCompletion
+{
+    XCTestExpectation *expectation =
+        [[XCTestExpectation alloc] initWithDescription:@"Allow the async method to be dispatched before the test ends"];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [expectation fulfill];
     });
-    [self waitForExpectations:@[expectation] timeout:10.0];
+    [self waitForExpectations:@[ expectation ] timeout:10.0];
 }
 
 // Test Delete
