@@ -533,11 +533,19 @@ public class OWSLinkPreviewManager: NSObject {
                     owsFailDebug("Could not resize image.")
                     return nil
                 }
-                guard let dstData = dstImage.jpegData(compressionQuality: 0.8) else {
-                    owsFailDebug("Could not write resized image.")
-                    return nil
+                if imageMetadata.hasAlpha {
+                    guard let dstData = dstImage.pngData() else {
+                        owsFailDebug("Could not write resized image to PNG.")
+                        return nil
+                    }
+                    return PreviewThumbnail(imageData: dstData, mimetype: OWSMimeTypeImagePng)
+                } else {
+                    guard let dstData = dstImage.jpegData(compressionQuality: 0.8) else {
+                        owsFailDebug("Could not write resized image to JPEG.")
+                        return nil
+                    }
+                    return PreviewThumbnail(imageData: dstData, mimetype: OWSMimeTypeImageJpeg)
                 }
-                return PreviewThumbnail(imageData: dstData, mimetype: OWSMimeTypeImageJpeg)
             }
         }
     }
