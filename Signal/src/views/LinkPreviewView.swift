@@ -138,7 +138,9 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return CGSize.zero
         }
-        return attachmentStream.imageSize()
+        let pixelSize = attachmentStream.imageSize()
+        return CGSize(width: (pixelSize.width / UIScreen.main.scale),
+                      height: (pixelSize.height / UIScreen.main.scale))
     }
 
     @objc
@@ -713,7 +715,7 @@ public class LinkPreviewView: UIStackView {
             owsFailDebug("Could not load image.")
             return nil
         }
-        let imageView = UIImageView()
+        let imageView = LinkPreviewImageView(hasAsymmetricalRounding: self.hasAsymmetricalRounding)
         imageView.image = image
         return imageView
     }
