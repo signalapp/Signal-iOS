@@ -26,6 +26,8 @@ class EmojiPickerCollectionView: UICollectionView {
     static let margins: CGFloat = 16
     static let minimumSpacing: CGFloat = 10
 
+    lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissSkinTonePicker))
+
     init() {
         layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(square: EmojiPickerCollectionView.emojiWidth)
@@ -61,6 +63,9 @@ class EmojiPickerCollectionView: UICollectionView {
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
         panGestureRecognizer.require(toFail: longPressGesture)
         addGestureRecognizer(longPressGesture)
+
+        addGestureRecognizer(tapGestureRecognizer)
+        tapGestureRecognizer.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -189,6 +194,22 @@ class EmojiPickerCollectionView: UICollectionView {
         default:
             break
         }
+    }
+
+    @objc
+    func dismissSkinTonePicker() {
+        currentSkinTonePicker?.dismiss()
+        currentSkinTonePicker = nil
+    }
+}
+
+extension EmojiPickerCollectionView: UIGestureRecognizerDelegate {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == tapGestureRecognizer {
+            return currentSkinTonePicker != nil
+        }
+
+        return true
     }
 }
 
