@@ -205,8 +205,16 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            // Note: For GRDB, didUpdate(keyValueStore:) currently returns true
+            //       if any key value stores was updated.
+            if self.storageCoordinator.state == .YDB ||
+                self.storageCoordinator.state == .ydbTests {
+                XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
+                XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            } else {
+                XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+                XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            }
             XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
             XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
@@ -383,8 +391,16 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            // Note: For GRDB, didUpdate(keyValueStore:) currently returns true
+            //       if any key value stores was updated.
+            if self.storageCoordinator.state == .YDB ||
+                self.storageCoordinator.state == .ydbTests {
+                XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
+                XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            } else {
+                XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+                XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+            }
             XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
             XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
