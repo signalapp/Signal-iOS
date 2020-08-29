@@ -59,7 +59,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
         case .changed:
             let offset = gestureRecognizer.translation(in: coordinateSpace)
-            let progress = abs(offset.y) / distanceToTriggerDismiss
+            let progress = offset.y / distanceToTriggerDismiss
             // `farEnoughToCompleteTransition` is cancelable if the user reverses direction
             farEnoughToCompleteTransition = progress >= 1
             update(progress)
