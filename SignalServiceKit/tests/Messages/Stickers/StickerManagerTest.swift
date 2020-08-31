@@ -52,6 +52,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "Wait for sticker to be installed.")
         StickerManager.installSticker(stickerInfo: stickerInfo,
                                       stickerData: stickerData,
+                                      contentType: OWSMimeTypeWebp,
                                       emojiString: "🌼🇨🇦") {
                                         expectation.fulfill()
         }
@@ -100,6 +101,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "Wait for sticker to be installed.")
         StickerManager.installSticker(stickerInfo: stickerInfo,
                                       stickerData: stickerData,
+                                      contentType: OWSMimeTypeWebp,
                                       emojiString: "🌼🇨🇦") {
                                         expectation.fulfill()
         }
