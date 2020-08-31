@@ -1526,13 +1526,13 @@
 "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "Hai revocato un invito non valido.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Hai revocato invito non validi.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Hai revocato inviti non validi.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ ha revocato un invito non valido.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ ha revocato inviti non valido.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ ha revocato inviti non validi.";
 
 /* Message indicating that multiple invalid invites were revoked. */
 "GROUP_INVALID_INVITES_REMOVED_N" = "Gli inviti non validi sono stati revocati.";
@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Associazione dispositivo non riuscita";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Le anteprime dei link verranno ora generate per tutti i siti.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Disabilita";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Visualizza l'anteprima di qualsiasi link";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cerca per nome o indirizzo";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Elimina tutto";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Dona a Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Aiuto";
@@ -3734,7 +3734,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Politica e termini sulla privacy";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Genera anteprime dei link";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Recupera le anteprime dei link direttamente dai siti web per i messaggi che invii.";

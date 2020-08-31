@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "裝置連結失敗";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "現在將為所有網站產生連結預覽。";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "關閉";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "預覽任何連結";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "以名字或地址來搜尋";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "刪除所有內容記錄";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "捐贈 Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "幫助";
@@ -3734,7 +3734,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "條款和隱私政策";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "產生連結預覽";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "直接從網站上檢索你傳送的訊息的連結預覽。";

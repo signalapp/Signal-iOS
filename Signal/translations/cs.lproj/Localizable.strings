@@ -869,7 +869,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Vždy poslat notifikaci";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Neupozorňovat pokud je ztlumeno";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Přijmout upozornění při zmínce ve ztišených rozhovorech?";
@@ -1232,10 +1232,10 @@
 "EMAIL_INVITE_SUBJECT" = "Přejděme na Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Vaše zařízení není nastaveno pro odesílání emailů. Pokud chcete kontaktovat podporu, nastavte na svém zařízení email, nebo napište na support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "Email není dostupný";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Činnosti";

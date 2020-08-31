@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Łączenie urządzenia nie powiodło się";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Podglądy linków będą teraz generowane dla wszystkich stron.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Wyłączone";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Podgląd każdego linku";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Szukaj po nazwie lub adresie";
@@ -2684,7 +2684,7 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ zaprosił(a) %2$@ osób(y)";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Brak zaproszeń";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Brak zaproszeń.";
 
 /* Title of 're-send invite' button. */
 "PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Ponów zaproszenie";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Usuń wszystko";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Datek na Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Pomoc";
@@ -3734,7 +3734,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Regulamin & Polityka Prywatności";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Twórz podglądy linków";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Pobieraj podglądy linków we wiadomościach bezpośrednio ze stron internetowych.";

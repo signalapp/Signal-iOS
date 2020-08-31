@@ -1142,7 +1142,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Ouvrez Signal sur votre ancien appareil, approchez-le et assurez-vous que le Wi-Fi et le Bluetooth sont activés sur les deux appareils.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positionnez ce code QR dans le cadre de votre autre appareil.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positionnez ce code QR dans le cadre de votre autre appareil.";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "En attente de l’autre appareil…";
@@ -1157,7 +1157,7 @@
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Connexion…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Positionnez le code QR dans le cercle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Positionnez le code QR dans le cercle";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Tenez votre nouvel appareil devant l’appareil photo";
@@ -2030,7 +2030,7 @@
 "LEAVE_GROUP_FAILED" = "Une erreur s’est produite en quittant le groupe.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n’est pas valide. Veuillez vous assurer de balayer le code QR affiché sur l’appareil que vous souhaitez relier.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n’est pas valide. Veuillez vous assurer de balayer le code QR affiché sur l’appareil que vous souhaitez relier.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Échec de liaison de l’appareil";
@@ -2045,10 +2045,10 @@
 "LINK_DEVICE_RESTART" = "Réessayer";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Balayez le code QR affiché sur l’appareil que vous souhaitez relier.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Balayez le code QR affiché sur l’appareil que vous souhaitez relier.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Balayer le code QR";
+"LINK_NEW_DEVICE_SUBTITLE" = "Balayer le code QR";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Relier un nouvel appareil";
@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Échec de liaison de l’appareil";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Les aperçus de liens seront désormais générés pour tous les sites.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Désactiver";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Prévisualiser n’importe quel lien";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Chercher par nom ou adresse";
@@ -3278,10 +3278,10 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Votre numéro de sécurité avec %@ a changé. Vous devriez peut-être le confirmer.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Balayez le code QR sur l’appareil de votre contact.";
+"SCAN_CODE_INSTRUCTIONS" = "Balayez le code QR sur l’appareil de votre contact.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Balayer le code QR";
+"SCAN_QR_CODE_VIEW_TITLE" = "Balayer le code QR";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instantané";
@@ -3515,7 +3515,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtenez de l’aide ici pour relier votre iPad";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Balayer le code QR avec votre téléphone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Balayer le code QR avec votre téléphone";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Pour transférer votre compte, lancez Signal sur votre ancien iPad";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Tout supprimer";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Faire un don à Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Aide ";
@@ -3734,7 +3734,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Conditions générales et politique de confidentialité";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Générer des aperçus de liens";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Pour les messages que vous envoyez, récupérez des aperçus de lien directement des sites Web.";
