@@ -9,6 +9,7 @@ import PromiseKit
 public enum StickerType: UInt {
     case webp
     case signalLottie
+    case apng
 
     public static func stickerType(forContentType contentType: String?) -> StickerType {
         if let contentType = contentType {
@@ -17,6 +18,8 @@ public enum StickerType: UInt {
                 return .webp
             case OWSMimeTypeLottieSticker:
                 return .signalLottie
+            case OWSMimeTypeImagePng:
+                return .apng
             default:
                 owsFailDebug("Unknown content type: \(contentType)")
                 return .webp
@@ -33,6 +36,8 @@ public enum StickerType: UInt {
             return OWSMimeTypeWebp
         case .signalLottie:
             return OWSMimeTypeLottieSticker
+        case .apng:
+            return OWSMimeTypeImagePng
         }
     }
 
@@ -42,6 +47,8 @@ public enum StickerType: UInt {
             return "webp"
         case .signalLottie:
             return kLottieStickerFileExtension
+        case .apng:
+            return "png"
         }
     }
 }

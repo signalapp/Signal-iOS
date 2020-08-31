@@ -61,12 +61,13 @@ public class StickerView: NSObject {
 
         let stickerView: UIView
         switch stickerType {
-        case .webp:
+        case .webp, .apng:
             guard let stickerImage = YYImage(contentsOfFile: stickerDataUrl.path) else {
                 owsFailDebug("Sticker could not be parsed.")
                 return nil
             }
             let yyView = YYAnimatedImageView()
+            yyView.alwaysInfiniteLoop = true
             yyView.contentMode = .scaleAspectFit
             yyView.image = stickerImage
             stickerView = yyView
