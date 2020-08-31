@@ -199,56 +199,6 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return censorshipConfiguration.domainFrontBaseURL;
 }
 
-- (AFHTTPSessionManager *)buildSignalServiceSessionManager
-{
-    if (self.isCensorshipCircumventionActive) {
-        OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
-        OWSLogInfo(@"using reflector HTTPSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
-        return [self reflectorSignalServiceSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
-    } else {
-        return self.defaultSignalServiceSessionManager;
-    }
-}
-
-- (AFHTTPSessionManager *)defaultSignalServiceSessionManager
-{
-    NSURL *baseURL = [[NSURL alloc] initWithString:TSConstants.textSecureServerURL];
-    OWSAssertDebug(baseURL);
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
-
-    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
-    sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
-    // Disable default cookie handling for all requests.
-    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
-
-    return sessionManager;
-}
-
-- (AFHTTPSessionManager *)reflectorSignalServiceSessionManagerWithCensorshipConfiguration:
-    (OWSCensorshipConfiguration *)censorshipConfiguration
-{
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-
-    NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
-    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:TSConstants.serviceCensorshipPrefix];
-    AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
-
-    sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
-
-    sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    [sessionManager.requestSerializer setValue:TSConstants.censorshipReflectorHost
-                            forHTTPHeaderField:@"Host"];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
-    // Disable default cookie handling for all requests.
-    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
-
-    return sessionManager;
-}
-
 #pragma mark - CDN
 
 - (AFHTTPSessionManager *)cdnSessionManagerForCdnNumber:(UInt32)cdnNumber
@@ -490,7 +440,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     [self updateHasCensoredPhoneNumber];
 }
 
-#pragma mark - Manual Censorship Circumvention
+#pragma mark - Censorship Circumvention
 
 - (OWSCensorshipConfiguration *)buildCensorshipConfiguration
 {

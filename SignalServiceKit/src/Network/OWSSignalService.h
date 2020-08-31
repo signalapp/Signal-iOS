@@ -30,12 +30,6 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 /// For uploading and downloading blobs on the specified CDN.
 - (OWSURLSession *)cdnURLSessionForCdnNumber:(UInt32)cdnNumber;
 
-/// For interacting with the Signal Service
-- (AFHTTPSessionManager *)buildSignalServiceSessionManager;
-
-/// For interacting with the Signal Service
-- (OWSURLSession *)urlSessionForSignalService;
-
 #pragma mark - Censorship Circumvention
 
 @property (atomic, readonly) BOOL isCensorshipCircumventionActive;
@@ -46,6 +40,8 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 /// should only be accessed if censorship circumvention is active.
 @property (nonatomic, readonly) NSURL *domainFrontBaseURL;
+
+- (OWSCensorshipConfiguration *)buildCensorshipConfiguration;
 
 @end
 
