@@ -144,7 +144,7 @@ public class FeatureFlags: BaseFlags {
     static let usernamesSupported = build.includes(.dev)
 
     // Don't consult this flags; consult RemoteConfig.groupsV2...
-    static let groupsV2Supported = true
+    static var groupsV2Supported: Bool { !CurrentAppContext().isRunningTests }
 
     @objc
     public static let groupsV2embedProtosInGroupUpdates = true
@@ -301,7 +301,6 @@ public class DebugFlags: BaseFlags {
         }
     }
 
-    // This flag auto-enables the groupv2 flags in RemoteConfig.
     static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     // If set, client will invite instead of adding other users.

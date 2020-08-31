@@ -156,7 +156,6 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self.pipelineSupervisor unregisterPipelineStage:self];
 }
 
 #pragma mark - Dependencies
@@ -272,6 +271,13 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         return;
     }
 
+    if (!SSKEnvironment.shared.storageCoordinator.isStorageReady) {
+        // Don't process queues. This should only happen in tests.
+        OWSAssertDebug(CurrentAppContext().isRunningTests);
+        self.isDrainingQueue = NO;
+        return;
+    }
+
     // We want a value that is just high enough to yield perf benefits.
     const NSUInteger kIncomingMessageBatchSize = 32;
     // If the app is in the background, use batch size of 1.
@@ -296,7 +302,8 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         return;
     }
 
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    __block OWSBackgroundTask *_Nullable backgroundTask =
+        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     __block NSArray<OWSMessageContentJob *> *processedJobs;
     __block NSUInteger jobCount;
@@ -307,9 +314,6 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         
         jobCount = [self.finder jobCountWithTransaction:transaction];
     });
-
-    OWSAssertDebug(backgroundTask);
-    backgroundTask = nil;
 
     OWSLogVerbose(@"completed %lu/%lu jobs. %lu jobs left.",
         (unsigned long)processedJobs.count,
@@ -322,6 +326,9 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
     // batching.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5f * NSEC_PER_SEC)), self.serialQueue, ^{
         [self drainQueueWorkStep];
+
+        OWSAssertDebug(backgroundTask);
+        backgroundTask = nil;
     });
 }
 

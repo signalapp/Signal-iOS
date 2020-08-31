@@ -273,21 +273,6 @@ class ObservedDatabaseChanges: NSObject {
             return _lastError
         }
     }
-
-    // MARK: -
-
-    func reset() {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        _collections.removeAll()
-        _tableNames.removeAll()
-        threads.reset()
-        interactions.reset()
-        attachments.reset()
-        _lastError = nil
-    }
 }
 
 // MARK: -
@@ -371,14 +356,6 @@ private struct ObservedModelChanges {
         get {
             return _deletedRowIds
         }
-    }
-
-    mutating func reset() {
-        _rowIds.removeAll()
-        _uniqueIds.removeAll()
-        _deletedRowIds.removeAll()
-        _deletedUniqueIds.removeAll()
-        rowIdToUniqueIdMap.removeAll()
     }
 }
 

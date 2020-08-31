@@ -58,8 +58,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         self.wait(for: [sentAfterReadyExpectation], timeout: 0.1)
     }
 
-    #if BROKEN_TESTS
-
     func test_respectsQueueOrder() {
         let message1: TSOutgoingMessage = OutgoingMessageFactory().create()
         let message2: TSOutgoingMessage = OutgoingMessageFactory().create()
@@ -163,7 +161,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
             // back to a background queue), but the production code is simpler if we just manually
             // kick every retry in the test case.            
             XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
-            self.wait(for: [expectedResend], timeout: 0.1)
+            self.wait(for: [expectedResend], timeout: 1)
         }
 
         // Verify one retry left
@@ -224,8 +222,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertEqual(1, jobRecord.failureCount)
         XCTAssertEqual(.permanentlyFailed, jobRecord.status)
     }
-
-    #endif
 
     // MARK: Private
 

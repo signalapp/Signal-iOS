@@ -515,8 +515,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     #if DEBUG
     @objc
-    public func hasSenderCertificate(uuidOnly: Bool) -> Bool {
-        return senderCertificate(uuidOnly: uuidOnly, certificateExpirationPolicy: .permissive) != nil
+    public func hasSenderCertificates() -> Bool {
+        return senderCertificate(uuidOnly: true, certificateExpirationPolicy: .permissive) != nil
+            && senderCertificate(uuidOnly: false, certificateExpirationPolicy: .permissive) != nil
     }
     #endif
 

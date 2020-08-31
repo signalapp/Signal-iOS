@@ -28,12 +28,14 @@ NSString *const kAliceRecipientId = @"+13213214321";
                       withSyncMessage:(SSKProtoSyncMessage *)syncMessage
                         plaintextData:(NSData *)plaintextData
                       wasReceivedByUD:(BOOL)wasReceivedByUD
+              serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                           transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withDataMessage:(SSKProtoDataMessage *)dataMessage
                  plaintextData:(NSData *)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
+       serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
@@ -104,6 +106,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
                                             withSyncMessage:[messageBuilder buildIgnoringErrors]
                                               plaintextData:nil
                                             wasReceivedByUD:NO
+                                    serverDeliveryTimestamp:0
                                                 transaction:transaction];
     }];
 
@@ -141,6 +144,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
                                      withDataMessage:[messageBuilder buildIgnoringErrors]
                                        plaintextData:nil
                                      wasReceivedByUD:NO
+                             serverDeliveryTimestamp:0
                                          transaction:transaction];
     }];
 
@@ -186,6 +190,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
                                      withDataMessage:[messageBuilder buildIgnoringErrors]
                                        plaintextData:nil
                                      wasReceivedByUD:NO
+                             serverDeliveryTimestamp:0
                                          transaction:transaction];
     }];
 

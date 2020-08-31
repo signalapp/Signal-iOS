@@ -205,8 +205,12 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+
+            // Note: For GRDB, didUpdate(keyValueStore:) currently returns true
+            //       if any key value stores was updated.
+            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+
             XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
             XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
@@ -253,7 +257,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         XCTAssertNotNil(mockObserver.lastChange)
         if let lastChange = mockObserver.lastChange {
             XCTAssertTrue(lastChange.didUpdateInteractions)
-            XCTAssertFalse(lastChange.didUpdateThreads)
+            XCTAssertTrue(lastChange.didUpdateThreads)
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
@@ -383,8 +387,12 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: keyValueStore))
-            XCTAssertFalse(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+
+            // Note: For GRDB, didUpdate(keyValueStore:) currently returns true
+            //       if any key value stores was updated.
+            XCTAssertTrue(lastChange.didUpdate(keyValueStore: keyValueStore))
+            XCTAssertTrue(lastChange.didUpdate(keyValueStore: otherKeyValueStore))
+
             XCTAssertTrue(lastChange.didUpdate(interaction: lastMessage!))
             XCTAssertFalse(lastChange.didUpdate(interaction: unsavedMessage!))
         }
@@ -431,7 +439,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         XCTAssertNotNil(mockObserver.lastChange)
         if let lastChange = mockObserver.lastChange {
             XCTAssertTrue(lastChange.didUpdateInteractions)
-            XCTAssertFalse(lastChange.didUpdateThreads)
+            XCTAssertTrue(lastChange.didUpdateThreads)
             XCTAssertTrue(lastChange.didUpdateInteractionsOrThreads)
             XCTAssertFalse(lastChange.didUpdateModel(collection: OWSDevice.collection()))
             XCTAssertFalse(lastChange.didUpdateModel(collection: "invalid collection name"))

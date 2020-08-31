@@ -385,7 +385,7 @@ public class OWSLinkPreviewManager: NSObject {
 
     }
 
-    private func fetchStringResource(from url: URL) -> Promise<String> {
+    func fetchStringResource(from url: URL) -> Promise<String> {
         firstly(on: Self.workQueue) { () -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
             let sessionManager = self.createSessionManager()
             return sessionManager.getPromise(url.absoluteString)

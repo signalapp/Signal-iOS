@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewItem.h"
@@ -126,6 +126,22 @@
     return [self viewItemWithAttachmentMimetype:@"audio/mp3" filename:@"test-mp3.mp3"];
 }
 
+// This method passes on the execution and wait for it to come back for 10 seconds
+// so that the previous call to a method that involves async execution on the same queue
+// can run and return the execution back to the test.
+//
+// Note that it may be better for the `deleteAction` method to have a completion block
+// so the expectation can be fulfulled in there. Maybe revisit later.
+- (void)waitForPreviousAsyncMethodCompletion
+{
+    XCTestExpectation *expectation =
+        [[XCTestExpectation alloc] initWithDescription:@"Allow the async method to be dispatched before the test ends"];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [expectation fulfill];
+    });
+    [self waitForExpectations:@[ expectation ] timeout:10.0];
+}
+
 // Test Delete
 
 - (void)testPerformDeleteEditingActionWithNonMediaMessage
@@ -134,6 +150,7 @@
 
     XCTAssertNotNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
     [viewItem deleteAction];
+    [self waitForPreviousAsyncMethodCompletion];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
 }
 
@@ -154,6 +171,7 @@
     XCTAssertNotNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
+    [self waitForPreviousAsyncMethodCompletion];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
     XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
@@ -176,6 +194,7 @@
     XCTAssertNotNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
+    [self waitForPreviousAsyncMethodCompletion];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
     XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
@@ -198,6 +217,7 @@
     XCTAssertNotNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
+    [self waitForPreviousAsyncMethodCompletion];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
     XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
@@ -220,6 +240,7 @@
     XCTAssertNotNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
+    [self waitForPreviousAsyncMethodCompletion];
     XCTAssertNil([self fetchMessageWithUniqueId:viewItem.interaction.uniqueId]);
     XCTAssertNil([self fetchAttachmentWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);

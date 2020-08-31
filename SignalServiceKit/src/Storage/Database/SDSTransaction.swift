@@ -379,3 +379,31 @@ public extension SDSAnyWriteTransaction {
         }
     }
 }
+
+// MARK: -
+
+@objc
+public extension SDSAnyReadTransaction {
+    var isYapRead: Bool {
+        switch readTransaction {
+        case .yapRead:
+            return true
+        case .grdbRead:
+            return false
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public extension SDSAnyWriteTransaction {
+    var isYapWrite: Bool {
+        switch writeTransaction {
+        case .yapWrite:
+            return true
+        case .grdbWrite:
+            return false
+        }
+    }
+}
