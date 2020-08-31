@@ -177,13 +177,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Date operations
 
-- (uint64_t)timestamp
+- (uint64_t)timestampForUI
 {
-    if (self.thread.isGroupThread) {
-        TSGroupThread *thread = (TSGroupThread *)self.thread;
-        if (thread.isPublicChat) {
-            return _receivedAtTimestamp;
-        }
+    if (_shouldUseServerTime) {
+        return _receivedAtTimestamp;
     }
     return _timestamp;
 }
@@ -195,6 +192,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp
 {
+    _shouldUseServerTime = YES;
     _receivedAtTimestamp = receivedAtTimestamp;
 }
 
