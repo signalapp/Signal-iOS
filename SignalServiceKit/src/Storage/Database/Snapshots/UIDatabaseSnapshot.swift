@@ -335,7 +335,7 @@ extension UIDatabaseObserver: TransactionObserver {
                 let attachmentUniqueIds = pendingChanges.attachmentUniqueIds
                 let attachmentDeletedUniqueIds = pendingChanges.attachmentDeletedUniqueIds
                 let collections = pendingChanges.collections
-                pendingChanges.reset()
+                pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
 
                 DispatchQueue.main.async {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
@@ -403,7 +403,11 @@ extension UIDatabaseObserver: TransactionObserver {
 
     private var targetUpdateInterval: Double {
         AssertIsOnMainThread()
-
+        #if TESTABLE_BUILD
+        // Don't wait before updating snapshots in tests
+        // because some tests checks snapshots immediately
+        if CurrentAppContext().isRunningTests { return 0 }
+        #endif
         // We want the UI to feel snappy and responsive, which means
         // low latency in view updates.
         //
@@ -484,7 +488,7 @@ extension UIDatabaseObserver: TransactionObserver {
         NotificationCenter.default.post(name: Self.didUpdateUIDatabaseSnapshotNotification, object: nil)
 
         defer {
-            self.committedChanges.reset()
+            committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
         }
 
         Logger.verbose("databaseSnapshotDidUpdate")
@@ -511,7 +515,7 @@ extension UIDatabaseObserver: TransactionObserver {
         owsFailDebug("TODO: test this if we ever use it.")
 
         UIDatabaseObserver.serializedSync {
-            pendingChanges.reset()
+            pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
 
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {

@@ -653,7 +653,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     [self removeAllReactionsWithTransaction:transaction];
 
-    [self removeAllMentionsWithTransaction:transaction];
+    // This path gets hit during the YDB->GRDB migration *tests*, at which point
+    // it's unsafe to assume we have a GRDB transaction. We can safely skip this
+    // step during the tests when we don't.
+    if (!transaction.isYapWrite) {
+        [self removeAllMentionsWithTransaction:transaction];
+    }
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction

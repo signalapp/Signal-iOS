@@ -103,41 +103,20 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         Assert(bodyText: "alice bob jim http://a.com", extractsLink: nil)
 
         Assert(bodyText: "https://www.youtube.com/watch?v=tP-Ipsat90c",
-               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+               extractsLink: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
 
         Assert(bodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim",
-               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+               extractsLink: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
 
         // If there are more than one, take the first.
         Assert(bodyText: "alice bob https://www.youtube.com/watch?v=tP-Ipsat90c jim https://www.youtube.com/watch?v=other-url carol",
-               extractsLink: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+               extractsLink: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
     }
-
-    func testUtils() {
-        XCTAssertNil(OWSLinkPreviewManager.fileExtension(forImageUrl: ""))
-        XCTAssertNil(OWSLinkPreviewManager.fileExtension(forImageUrl: "https://www.some.host/path/imagename"))
-        XCTAssertNil(OWSLinkPreviewManager.fileExtension(forImageUrl: "https://www.some.host/path/imagename."))
-
-        XCTAssertEqual(OWSLinkPreviewManager.fileExtension(forImageUrl: "https://www.some.host/path/imagename.jpg"), "jpg")
-        XCTAssertEqual(OWSLinkPreviewManager.fileExtension(forImageUrl: "https://www.some.host/path/imagename.gif"), "gif")
-        XCTAssertEqual(OWSLinkPreviewManager.fileExtension(forImageUrl: "https://www.some.host/path/imagename.png"), "png")
-        XCTAssertEqual(OWSLinkPreviewManager.fileExtension(forImageUrl: "https://www.some.host/path/imagename.boink"), "boink")
-
-        XCTAssertNil(OWSLinkPreviewManager.mimetype(forImageFileExtension: ""))
-        XCTAssertNil(OWSLinkPreviewManager.mimetype(forImageFileExtension: "boink"))
-        XCTAssertNil(OWSLinkPreviewManager.mimetype(forImageFileExtension: "tiff"))
-        XCTAssertNil(OWSLinkPreviewManager.mimetype(forImageFileExtension: "gif"))
-
-        XCTAssertEqual(OWSLinkPreviewManager.mimetype(forImageFileExtension: "jpg"), OWSMimeTypeImageJpeg)
-        XCTAssertEqual(OWSLinkPreviewManager.mimetype(forImageFileExtension: "png"), OWSMimeTypeImagePng)
-    }
-
-    #if BROKEN_TESTS
 
     func testLinkDownloadAndParsing() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.tryToBuildPreviewInfo(previewUrl: "https://www.youtube.com/watch?v=tP-Ipsat90c")
+        linkPreviewManager.fetchLinkPreview(for: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
             .done { (draft: OWSLinkPreviewDraft) in
                 XCTAssertNotNil(draft)
 
@@ -154,13 +133,10 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
 
-    #endif
-
     func testLinkDataParsing_Empty() {
         let linkText = ""
-        let linkData = linkText.data(using: .utf8)!
 
-        let content = try! linkPreviewManager.parse(linkData: linkData)
+        let content = OpenGraphContent(parsing: linkText)
         XCTAssertNotNil(content)
 
         XCTAssertNil(content.title)
@@ -170,23 +146,20 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkDataParsing() {
         let linkText = ("<meta property=\"og:title\" content=\"Randomness is Random - Numberphile\">" +
                         "<meta property=\"og:image\" content=\"https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg\">")
-        let linkData = linkText.data(using: .utf8)!
 
-        let content = try! linkPreviewManager.parse(linkData: linkData)
+        let content = OpenGraphContent(parsing: linkText)
         XCTAssertNotNil(content)
 
         XCTAssertEqual(content.title, "Randomness is Random - Numberphile")
         XCTAssertEqual(content.imageUrl, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 
-    #if BROKEN_TESTS
-
     func testLinkParsingWithRealData1() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.youtube.com/watch?v=tP-Ipsat90c")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Randomness is Random - Numberphile")
@@ -205,9 +178,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData2() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://youtu.be/tP-Ipsat90c")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://youtu.be/tP-Ipsat90c")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Randomness is Random - Numberphile")
@@ -226,9 +199,10 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData3() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string:
+            "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "r/memes - I drew all the boys together and i did it for the internet")
@@ -247,9 +221,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData4() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "r/WhitePeopleTwitter - Why")
@@ -268,13 +242,18 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData5() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://imgur.com/gallery/KFCL8fm")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/KFCL8fm")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
-                XCTAssertNil(content.title)
-                XCTAssertEqual(content.imageUrl, "https://i.imgur.com/Y3wjlwY.jpg?fb")
+                XCTAssertEqual(content.title, "imgur.com")
+
+                // Actual URL can change based on network response
+                //
+                // It seems like some parts of the URL are stable, but if this continues to be brittle we may choose
+                // to remove it or stub the network response
+                XCTAssertTrue(content.imageUrl!.hasPrefix("https://i.imgur.com/Y3wjlwY."))
 
                 expectation.fulfill()
             }.catch { (error) in
@@ -289,9 +268,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData6() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://imgur.com/gallery/FMdwTiV")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/FMdwTiV")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Freddy would be proud!")
@@ -310,9 +289,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData_instagram_web_link() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Signal on Instagram: “I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/”")
@@ -337,9 +316,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData_instagram_app_sharesheet() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Signal on Instagram: “I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/”")
@@ -364,9 +343,9 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData9() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://imgur.com/gallery/igHOwDM")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/igHOwDM")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
                 XCTAssertEqual(content.title, "Sheet dance")
@@ -385,12 +364,12 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData10() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.pinterest.com/norat0464/test-board/")
-            .done { (linkData) in
-                let content = try! self.linkPreviewManager.parse(linkData: linkData)
+        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.pinterest.com/norat0464/test-board/")!)
+            .done { linkText in
+                let content = OpenGraphContent(parsing: linkText)
                 XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.title, "Test Board on Pinterest")
+                XCTAssertEqual(content.title, "Test board")
                 XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/3e/85/f8/3e85f88e7be0dd1418a5b430d2ee8a55.jpg")
 
                 expectation.fulfill()
@@ -402,8 +381,6 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
-
-    #endif
 
     // When using regular expressions to parse link titles, we need to use
     // String.utf16.count, not String.count in the range.
@@ -425,90 +402,12 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                                          range: NSRange(location: 0, length: text.utf16.count)))
     }
 
-    func testCursorPositions() {
-        // sanity check
-        Assert(bodyText: "https://www.youtube.com/watch?v=testCursorPositionsa",
-               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsa",
-               selectedRange: nil)
-
-        // Don't extract link if cursor is touching text
-        let text2 = "https://www.youtube.com/watch?v=testCursorPositionsb"
-        XCTAssertEqual(text2.count, 52)
-        Assert(bodyText: text2,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 51, length: 0))
-
-        Assert(bodyText: text2,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 51, length: 10))
-
-        Assert(bodyText: text2,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 0, length: 0))
-
-        // Unless the cursor is at the end of the text
-        Assert(bodyText: text2,
-               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsb",
-               selectedRange: NSRange(location: 52, length: 0))
-
-        // Once extracted, keep the existing link preview, even if the cursor moves back.
-        Assert(bodyText: text2,
-               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsb",
-               selectedRange: NSRange(location: 51, length: 0))
-
-        let text3 = "foo https://www.youtube.com/watch?v=testCursorPositionsc bar"
-        XCTAssertEqual(text3.count, 60)
-
-        // front edge
-        Assert(bodyText: text3,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 4, length: 0))
-
-        // middle
-        Assert(bodyText: text3,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 4, length: 0))
-
-        // rear edge
-        Assert(bodyText: text3,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 56, length: 0))
-
-        // extract link if selecting after link
-        Assert(bodyText: text3,
-               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsc",
-               selectedRange: NSRange(location: 57, length: 0))
-
-        let text4 = "bar https://www.youtube.com/watch?v=testCursorPositionsd foo"
-        XCTAssertEqual(text4.count, 60)
-
-        // front edge
-        Assert(bodyText: text4,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 4, length: 0))
-
-        // middle
-        Assert(bodyText: text4,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 20, length: 0))
-
-        // rear edge
-        Assert(bodyText: text4,
-               extractsLink: nil,
-               selectedRange: NSRange(location: 56, length: 0))
-
-        // extract link if selecting before link
-        Assert(bodyText: text4,
-               extractsLink: "https://www.youtube.com/watch?v=testCursorPositionsd",
-               selectedRange: NSRange(location: 3, length: 0))
-    }
-
     var linkPreviewManager: OWSLinkPreviewManager {
         return SSKEnvironment.shared.linkPreviewManager
     }
 
-    private func Assert(bodyText: String, extractsLink link: String?, selectedRange: NSRange? = nil, file: StaticString = #file, line: UInt = #line) {
-        let actual = linkPreviewManager.previewUrl(forMessageBodyText: bodyText, selectedRange: selectedRange, whitelistedOnly: false)
+    private func Assert(bodyText: String, extractsLink link: URL?, file: StaticString = #file, line: UInt = #line) {
+        let actual = linkPreviewManager.findFirstValidUrl(in: bodyText)
         XCTAssertEqual(actual, link, file: file, line: line)
     }
 }

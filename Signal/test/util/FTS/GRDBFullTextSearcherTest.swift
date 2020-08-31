@@ -12,10 +12,6 @@ import Contacts
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
-    func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
-        return true
-    }
-
     private var mockDisplayNameMap = [SignalServiceAddress: String]()
 
     func setMockDisplayName(_ name: String, for address: SignalServiceAddress) {
@@ -72,6 +68,10 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
 
     func isSystemContact(withSignalAccount recipientId: String) -> Bool {
         return true
+    }
+
+    func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
+        return (mockDisplayNameMap[address] ?? "").count > 0
     }
 
     func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {

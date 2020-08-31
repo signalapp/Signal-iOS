@@ -30,7 +30,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     let aliceE164 = "+13213214321"
     let aliceUuid = UUID()
     lazy var aliceAddress = SignalServiceAddress(uuid: aliceUuid, phoneNumber: aliceE164)
-    lazy var senderCertificate = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto().serializedData())
+    lazy var defaultSenderCert = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto(uuidOnly: false).serializedData())
+    lazy var uuidOnlySenderCert = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto(uuidOnly: true).serializedData())
 
     override func setUp() {
         super.setUp()
@@ -46,7 +47,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         udManager.certificateValidator = MockCertificateValidator()
-        udManager.setSenderCertificate(certificateData: senderCertificate.serializedData)
+        udManager.setSenderCertificate(uuidOnly: true, certificateData: uuidOnlySenderCert.serializedData)
+        udManager.setSenderCertificate(uuidOnly: false, certificateData: defaultSenderCert.serializedData)
     }
 
     override func tearDown() {
@@ -57,7 +59,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     // MARK: - Tests
 
     func testMode_self() {
-        XCTAssert(udManager.hasSenderCertificate())
+        XCTAssert(udManager.hasSenderCertificates())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -105,7 +107,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
 
     func testMode_noProfileKey() {
-        XCTAssert(udManager.hasSenderCertificate())
+        XCTAssert(udManager.hasSenderCertificates())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -161,7 +163,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
 
     func testMode_withProfileKey() {
-        XCTAssert(udManager.hasSenderCertificate())
+        XCTAssert(udManager.hasSenderCertificates())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -222,7 +224,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
 
     func test_senderAccess() {
-        XCTAssert(udManager.hasSenderCertificate())
+        XCTAssert(udManager.hasSenderCertificates())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -244,12 +246,12 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         let completed = self.expectation(description: "completed")
-        udManager.ensureSenderCertificate(certificateExpirationPolicy: .strict).done { senderCertificate in
+        udManager.ensureSenderCertificates(certificateExpirationPolicy: .strict).done { senderCertificates in
             do {
-                let sendingAccess = self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificate: senderCertificate)!
+                let sendingAccess = self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificates: senderCertificates)!
                 XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
                 XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-                XCTAssertEqual(sendingAccess.senderCertificate.serializedData, self.senderCertificate.serializedData)
+                XCTAssertEqual(sendingAccess.senderCertificate.serializedData, self.defaultSenderCert.serializedData)
             }
         }.done {
             completed.fulfill()
@@ -271,7 +273,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         return try! wrapperProto.build()
     }
 
-    func buildSenderCertificateProto() -> SMKProtoSenderCertificate {
+    func buildSenderCertificateProto(uuidOnly: Bool) -> SMKProtoSenderCertificate {
         let expires = NSDate.ows_millisecondTimeStamp() + kWeekInMs
         let identityKey = try! Curve25519.generateKeyPair().ecPublicKey().serialized
         let signer = buildServerCertificateProto()
@@ -279,7 +281,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                                               expires: expires,
                                                                               identityKey: identityKey,
                                                                               signer: signer)
-        certificateBuilder.setSenderE164(aliceE164)
+        if !uuidOnly { certificateBuilder.setSenderE164(aliceE164) }
         certificateBuilder.setSenderUuid(aliceUuid.uuidString)
         let certificateData = try! certificateBuilder.buildSerializedData()
 
