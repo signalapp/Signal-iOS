@@ -339,7 +339,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
                                    securityPolicy:OWSURLSession.signalServiceSecurityPolicy
                                     configuration:OWSURLSession.defaultURLSessionConfiguration
                       censorshipCircumventionHost:nil
-                          httpShouldHandleCookies:NO];
+                                     extraHeaders:@{}];
 }
 
 - (AFHTTPSessionManager *)reflectorCDNSessionManagerWithCensorshipConfiguration:
@@ -374,8 +374,9 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
                                                         securityPolicy:censorshipConfiguration.domainFrontSecurityPolicy
                                                          configuration:OWSURLSession.defaultURLSessionConfiguration
                                            censorshipCircumventionHost:cdnServerUrl
-                                               httpShouldHandleCookies:NO];
-    [urlSession addExtraHeader:@"Host" withValue:TSConstants.censorshipReflectorHost];
+                                                          extraHeaders:@{
+                                                              @"Host" : TSConstants.censorshipReflectorHost,
+                                                          }];
     return urlSession;
 }
 
@@ -455,11 +456,14 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     NSURL *baseURL = [[NSURL alloc] initWithString:TSConstants.storageServiceURL];
     OWSAssertDebug(baseURL);
 
-    return [[OWSURLSession alloc] initWithBaseUrl:baseURL
-                                   securityPolicy:OWSHTTPSecurityPolicy.sharedPolicy
-                                    configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
-                      censorshipCircumventionHost:nil
-                          httpShouldHandleCookies:NO];
+    OWSURLSession *urlSession =
+        [[OWSURLSession alloc] initWithBaseUrl:baseURL
+                                securityPolicy:OWSHTTPSecurityPolicy.sharedPolicy
+                                 configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
+                   censorshipCircumventionHost:nil
+                                  extraHeaders:@{}];
+    urlSession.shouldHandleRemoteDeprecation = true;
+    return urlSession;
 }
 
 - (OWSURLSession *)reflectorStorageServiceURLSessionWithCensorshipConfiguration:
@@ -471,7 +475,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
                                    securityPolicy:censorshipConfiguration.domainFrontSecurityPolicy
                                     configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
                       censorshipCircumventionHost:TSConstants.censorshipReflectorHost
-                          httpShouldHandleCookies:NO];
+                                     extraHeaders:@{}];
 }
 
 #pragma mark - Events

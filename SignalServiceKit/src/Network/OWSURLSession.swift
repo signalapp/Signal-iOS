@@ -98,9 +98,9 @@ public class OWSURLSession: NSObject {
     // TODO: Replace AFSecurityPolicy.
     private let securityPolicy: AFSecurityPolicy
 
-    private var extraHeaders = [String: String]()
+    private let extraHeaders: [String: String]
 
-    private let httpShouldHandleCookies: Bool
+    private let httpShouldHandleCookies = AtomicBool(false)
 
     @objc
     public let censorshipCircumventionHost: String?
@@ -110,20 +110,38 @@ public class OWSURLSession: NSObject {
         censorshipCircumventionHost != nil
     }
 
+    private let _failOnError = AtomicBool(true)
     @objc
-    public var failOnError: Bool = true
+    public var failOnError: Bool {
+        get {
+            _failOnError.get()
+        }
+        set {
+            _failOnError.set(newValue)
+        }
+    }
 
     // By default OWSURLSession treats 4xx and 5xx responses as errors.
+    private let _require2xxOr3xx = AtomicBool(true)
     @objc
-    public var require2xxOr3xx: Bool = true
+    public var require2xxOr3xx: Bool {
+        get {
+            _require2xxOr3xx.get()
+        }
+        set {
+            _require2xxOr3xx.set(newValue)
+        }
+    }
 
-    @objc(addExtraHeader:withValue:)
-    public func addExtraHeader(_ header: String, value: String) {
-        owsAssertDebug(!header.isEmpty)
-        owsAssertDebug(!value.isEmpty)
-        owsAssertDebug(extraHeaders[header] == nil)
-
-        extraHeaders[header] = value
+    private let _shouldHandleRemoteDeprecation = AtomicBool(false)
+    @objc
+    public var shouldHandleRemoteDeprecation: Bool {
+        get {
+            _shouldHandleRemoteDeprecation.get()
+        }
+        set {
+            _shouldHandleRemoteDeprecation.set(newValue)
+        }
     }
 
     private lazy var session: URLSession = {
@@ -150,25 +168,42 @@ public class OWSURLSession: NSObject {
                 securityPolicy: AFSecurityPolicy,
                 configuration: URLSessionConfiguration,
                 censorshipCircumventionHost: String? = nil,
-                httpShouldHandleCookies: Bool = false) {
+                extraHeaders: [String: String] = [:]) {
         self.baseUrl = baseUrl
         self.securityPolicy = securityPolicy
         self.configuration = configuration
         self.censorshipCircumventionHost = censorshipCircumventionHost
-        self.httpShouldHandleCookies = httpShouldHandleCookies
+        self.extraHeaders = extraHeaders
 
         super.init()
     }
 
+    private struct RequestConfig {
+        let task: URLSessionTask
+        let require2xxOr3xx: Bool
+        let failOnError: Bool
+        let shouldHandleRemoteDeprecation: Bool
+    }
+
+    private func requestConfig(forTask task: URLSessionTask) -> RequestConfig {
+        // Snapshot session state at time request is made.
+        RequestConfig(task: task,
+                      require2xxOr3xx: require2xxOr3xx,
+                      failOnError: failOnError,
+                      shouldHandleRemoteDeprecation: shouldHandleRemoteDeprecation)
+    }
+
     private class func handleTaskCompletion(resolver: Resolver<OWSHTTPResponse>,
-                                            task: URLSessionTask,
+                                            requestConfig: RequestConfig,
                                             responseData: Data?,
                                             response: URLResponse?,
-                                            error: Error?,
-                                            require2xxOr3xx: Bool,
-                                            failOnError: Bool) {
+                                            error: Error?) {
 
-        checkForRemoteDeprecation(task: task, response: response)
+        let task = requestConfig.task
+
+        if requestConfig.shouldHandleRemoteDeprecation {
+            checkForRemoteDeprecation(task: task, response: response)
+        }
 
         if let error = error {
             if IsNetworkConnectivityFailure(error) {
@@ -186,7 +221,7 @@ public class OWSURLSession: NSObject {
                 }
                 #endif
 
-                if failOnError {
+                if requestConfig.failOnError {
                     owsFailDebug("Request failed: \(error)")
                 } else {
                     Logger.error("Request failed: \(error)")
@@ -200,7 +235,7 @@ public class OWSURLSession: NSObject {
             return
         }
 
-        if require2xxOr3xx {
+        if requestConfig.require2xxOr3xx {
             let statusCode = httpUrlResponse.statusCode
             guard statusCode >= 200, statusCode < 400 else {
                 resolver.reject(OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse))
@@ -219,7 +254,7 @@ public class OWSURLSession: NSObject {
                 return
         }
 
-//        AppExpiry.shared.appExpiredStatusCode
+        AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
     }
 
     // TODO: Add downloadTaskPromise().
@@ -267,7 +302,7 @@ public class OWSURLSession: NSObject {
         }
 
         request.httpBody = body
-        request.httpShouldHandleCookies = httpShouldHandleCookies
+        request.httpShouldHandleCookies = httpShouldHandleCookies.get()
         return request
     }
 
@@ -460,25 +495,21 @@ public extension OWSURLSession {
                            data requestData: Data,
                            progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
 
-        let require2xxOr3xx = self.require2xxOr3xx
-        let failOnError = self.failOnError
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
-        var taskReference: URLSessionDataTask?
+        var requestConfig: RequestConfig?
         let task = session.uploadTask(with: request, from: requestData) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            guard let task = taskReference else {
-                owsFailDebug("Missing task.")
+            guard let requestConfig = requestConfig else {
+                owsFailDebug("Missing requestConfig.")
                 return
             }
-            self.setProgressBlock(nil, forTask: task)
+            self.setProgressBlock(nil, forTask: requestConfig.task)
             Self.handleTaskCompletion(resolver: resolver,
-                                      task: task,
+                                      requestConfig: requestConfig,
                                       responseData: responseData,
                                       response: response,
-                                      error: error,
-                                      require2xxOr3xx: require2xxOr3xx,
-                                      failOnError: failOnError)
+                                      error: error)
         }
-        taskReference = task
+        requestConfig = self.requestConfig(forTask: task)
         setProgressBlock(progressBlock, forTask: task)
         task.resume()
         return promise
@@ -499,25 +530,21 @@ public extension OWSURLSession {
                            dataUrl: URL,
                            progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
 
-        let require2xxOr3xx = self.require2xxOr3xx
-        let failOnError = self.failOnError
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
-        var taskReference: URLSessionDataTask?
+        var requestConfig: RequestConfig?
         let task = session.uploadTask(with: request, fromFile: dataUrl) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            guard let task = taskReference else {
-                owsFailDebug("Missing task.")
+            guard let requestConfig = requestConfig else {
+                owsFailDebug("Missing requestConfig.")
                 return
             }
-            self.setProgressBlock(nil, forTask: task)
+            self.setProgressBlock(nil, forTask: requestConfig.task)
             Self.handleTaskCompletion(resolver: resolver,
-                                      task: task,
+                                      requestConfig: requestConfig,
                                       responseData: responseData,
                                       response: response,
-                                      error: error,
-                                      require2xxOr3xx: require2xxOr3xx,
-                                      failOnError: failOnError)
+                                      error: error)
         }
-        taskReference = task
+        requestConfig = self.requestConfig(forTask: task)
         setProgressBlock(progressBlock, forTask: task)
         task.resume()
         return promise
@@ -552,25 +579,21 @@ public extension OWSURLSession {
 
     func dataTaskPromise(request: URLRequest) -> Promise<OWSHTTPResponse> {
 
-        let require2xxOr3xx = self.require2xxOr3xx
-        let failOnError = self.failOnError
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
-        var taskReference: URLSessionDataTask?
+        var requestConfig: RequestConfig?
         let task = session.dataTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            guard let task = taskReference else {
-                owsFailDebug("Missing task.")
+            guard let requestConfig = requestConfig else {
+                owsFailDebug("Missing requestConfig.")
                 return
             }
-            self.setProgressBlock(nil, forTask: task)
+            self.setProgressBlock(nil, forTask: requestConfig.task)
             Self.handleTaskCompletion(resolver: resolver,
-                                      task: task,
+                                      requestConfig: requestConfig,
                                       responseData: responseData,
                                       response: response,
-                                      error: error,
-                                      require2xxOr3xx: require2xxOr3xx,
-                                      failOnError: failOnError)
+                                      error: error)
         }
-        taskReference = task
+        requestConfig = self.requestConfig(forTask: task)
         task.resume()
         return promise
     }
