@@ -55,6 +55,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // Send a closed group update message to all members (and their linked devices) using established channels
         var promises: [Promise<Void>] = []
         for member in members { // Not `membersAndLinkedDevices` as this internally takes care of multi device already
+            guard member != userPublicKey else { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
