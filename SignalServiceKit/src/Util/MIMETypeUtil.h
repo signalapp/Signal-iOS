@@ -22,6 +22,8 @@ extern NSString *const OWSMimeTypeProtobuf;
 extern NSString *const OWSMimeTypeJson;
 extern NSString *const OWSMimeTypeWebp;
 extern NSString *const OWSMimeTypeLottieSticker;
+extern NSString *const OWSMimeTypeImageApng1;
+extern NSString *const OWSMimeTypeImageApng2;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentUTI;

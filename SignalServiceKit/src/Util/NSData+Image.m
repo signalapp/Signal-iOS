@@ -30,9 +30,12 @@ NSString *NSStringForImageFormat(ImageFormat value)
             return @"ImageFormat_Bmp";
         case ImageFormat_Webp:
             return @"ImageFormat_Webp";
-        default:
-            OWSCFailDebug(@"Unknown ImageFormat.");
-            return @"Unknown";
+        case ImageFormat_LottieSticker:
+            return @"ImageFormat_LottieSticker";
+        case ImageFormat_AnimatedWebp:
+            return @"ImageFormat_AnimatedWebp";
+        case ImageFormat_Apng:
+            return @"ImageFormat_Apng";
     }
 }
 
@@ -181,14 +184,36 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         case ImageFormat_Heif:
             return OWSMimeTypeImageHeif;
         case ImageFormat_LottieSticker:
+            if (!SSKFeatureFlags.supportAnimatedStickers_Lottie) {
+                return false;
+            }
             return OWSMimeTypeLottieSticker;
+        case ImageFormat_AnimatedWebp:
+            if (!SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp) {
+                return false;
+            }
+            // Clients will differentiate still and animated WEBP based on file contents.
+            return OWSMimeTypeImageWebp;
+        case ImageFormat_Apng:
+            if (!SSKFeatureFlags.supportAnimatedStickers_Apng) {
+                return false;
+            }
+            // Clients will differentiate APNG and PNG based on file contents.
+            return OWSMimeTypeImagePng;
     }
 }
 
 + (BOOL)isAnimatedWithImageFormat:(ImageFormat)imageFormat
 {
-    // TODO: ImageFormat_Webp
-    return imageFormat == ImageFormat_Gif || imageFormat == ImageFormat_LottieSticker;
+    switch (imageFormat) {
+        case ImageFormat_Gif:
+        case ImageFormat_LottieSticker:
+        case ImageFormat_AnimatedWebp:
+        case ImageFormat_Apng:
+            return YES;
+        default:
+            return NO;
+    }
 }
 
 - (BOOL)ows_hasValidImageFormat:(ImageFormat)imageFormat
@@ -212,8 +237,13 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         case ImageFormat_Webp:
         case ImageFormat_Heic:
         case ImageFormat_Heif:
-        case ImageFormat_LottieSticker:
             return YES;
+        case ImageFormat_LottieSticker:
+            return SSKFeatureFlags.supportAnimatedStickers_Lottie;
+        case ImageFormat_Apng:
+            return SSKFeatureFlags.supportAnimatedStickers_Apng;
+        case ImageFormat_AnimatedWebp:
+            return SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp;
     }
 }
 
@@ -243,7 +273,22 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         case ImageFormat_Heif:
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeif] == NSOrderedSame);
         case ImageFormat_LottieSticker:
+            if (!SSKFeatureFlags.supportAnimatedStickers_Lottie) {
+                return false;
+            }
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeLottieSticker] == NSOrderedSame);
+        case ImageFormat_Apng:
+            if (!SSKFeatureFlags.supportAnimatedStickers_Apng) {
+                return false;
+            }
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImagePng] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageApng1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageApng2] == NSOrderedSame);
+        case ImageFormat_AnimatedWebp:
+            if (!SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp) {
+                return false;
+            }
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageWebp] == NSOrderedSame);
     }
 }
 
