@@ -13,6 +13,7 @@ import PromiseKit
 @objc(LKClosedGroupsProtocol)
 public final class ClosedGroupsProtocol : NSObject {
     public static let isSharedSenderKeysEnabled = false
+    public static let groupSizeLimit = 10
 
     // MARK: - Sending
 
