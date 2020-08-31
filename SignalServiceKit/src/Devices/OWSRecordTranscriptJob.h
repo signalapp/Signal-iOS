@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
                                     serverID:(uint64_t)serverID
+                             serverTimestamp:(uint64_t)serverTimestamp
                            attachmentHandler:(void (^)(
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
