@@ -193,7 +193,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return self.timestamp;
 }
 
-- (void)setServerTimestampAsReceiveTimestamp:(uint64_t)receivedAtTimestamp
+- (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp
 {
     _receivedAtTimestamp = receivedAtTimestamp;
 }

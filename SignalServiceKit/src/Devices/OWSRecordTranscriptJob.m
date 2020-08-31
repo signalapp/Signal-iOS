@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (transcript.thread.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)transcript.thread;
         if (thread.isPublicChat) {
-            [outgoingMessage setServerTimestampAsReceiveTimestamp:serverTimestamp];
+            [outgoingMessage setServerTimestampToReceivedTimestamp:serverTimestamp];
         }
     }
     

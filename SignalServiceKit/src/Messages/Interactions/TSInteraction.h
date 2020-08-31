@@ -42,9 +42,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 /// Used for public chats where a message sent from a slave device is interpreted as having been sent from the master device.
 @property (nonatomic) NSString *actualSenderHexEncodedPublicKey;
 
-- (void)setServerTimestampAsReceiveTimestamp:(uint64_t)receivedAtTimestamp;
-
-- (uint64_t)timestamp;
+- (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp;
 
 - (NSDate *)receivedAtDate;
 

@@ -1419,9 +1419,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
                 
-                //For open group messages, use server timestamp as the receive timestamp
+                // For open group messages, use the server timestamp as the received timestamp
                 if (oldGroupThread.isPublicChat) {
-                    [incomingMessage setServerTimestampAsReceiveTimestamp:(uint64_t)envelope.serverTimestamp];
+                    [incomingMessage setServerTimestampToReceivedTimestamp:(uint64_t)envelope.serverTimestamp];
                 }
                 
                 // Loki: Set open group server ID if needed
