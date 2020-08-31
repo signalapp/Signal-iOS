@@ -1005,15 +1005,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         self.messageCellType = OWSMessageCellType_OversizeTextDownloading;
         self.attachmentPointer = (TSAttachmentPointer *)oversizeTextAttachmentPointer;
         return;
-    } else {
-        NSString *_Nullable bodyText = message.body;
-        OWSAssertDebug(bodyText.length > 0);
-        if (bodyText && bodyText.length > 0) {
-            self.displayableBodyText = [self displayableBodyTextForText:bodyText
-                                                                 ranges:message.bodyRanges
-                                                          interactionId:message.uniqueId
-                                                            transaction:transaction];
-        }
+    } else if (message.body.length > 0) {
+        self.displayableBodyText = [self displayableBodyTextForText:message.body
+                                                             ranges:message.bodyRanges
+                                                      interactionId:message.uniqueId
+                                                        transaction:transaction];
     }
 
     NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction.unwrapGrdbRead];

@@ -201,11 +201,16 @@ NS_ASSUME_NONNULL_BEGIN
                                 receivedQuotedAttachmentInfos:@[]];
         }
 
-        NSString *localText = quotedMessage.body;
-        if (localText.length > 0) {
-            body = localText;
+        if (quotedMessage.body.length > 0) {
+            body = quotedMessage.body;
+            bodyRanges = quotedMessage.bodyRanges;
+
+        } else if (quotedMessage.contactShare.name.displayName.length > 0) {
+            // Contact share bodies are special-cased in OWSQuotedReplyModel
+            // We need to account for that here.
+            body = [@"👤 " stringByAppendingString:quotedMessage.contactShare.name.displayName];
+            bodyRanges = nil;
         }
-        bodyRanges = quotedMessage.bodyRanges;
     } else {
         OWSLogWarn(@"Could not find quoted message: %llu", timestamp);
         contentSource = TSQuotedMessageContentSourceRemote;
