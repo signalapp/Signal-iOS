@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AccountServiceClient;
+@class AppExpiry;
 @class BulkProfileFetch;
 @class BulkUUIDLookup;
 @class EarlyMessageManager;
@@ -110,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
-    NS_DESIGNATED_INITIALIZER;
+                              appExpiry:(AppExpiry *)appExpiry NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -170,6 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ModelReadCaches *modelReadCaches;
 @property (nonatomic, readonly) EarlyMessageManager *earlyMessageManager;
 @property (nonatomic, readonly) OWSMessagePipelineSupervisor *messagePipelineSupervisor;
+@property (nonatomic, readonly) AppExpiry *appExpiry;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 

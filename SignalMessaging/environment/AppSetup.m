@@ -122,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessagePipelineSupervisor *messagePipelineSupervisor =
             [OWSMessagePipelineSupervisor createStandardSupervisor];
         ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
+        AppExpiry *appExpiry = [AppExpiry new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -182,7 +183,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 versionedProfiles:versionedProfiles
                                                                   modelReadCaches:modelReadCaches
                                                               earlyMessageManager:earlyMessageManager
-                                                        messagePipelineSupervisor:messagePipelineSupervisor]];
+                                                        messagePipelineSupervisor:messagePipelineSupervisor
+                                                                        appExpiry:appExpiry]];
 
         appSpecificSingletonBlock();
 

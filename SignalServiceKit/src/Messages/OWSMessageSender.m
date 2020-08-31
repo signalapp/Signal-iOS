@@ -226,7 +226,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 - (void)run
 {
-    if (SSKAppExpiry.isExpired) {
+    if (AppExpiry.isExpired) {
         OWSLogWarn(@"Unable to send because the application has expired.");
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppExpired,
             NSLocalizedString(

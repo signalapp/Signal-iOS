@@ -77,6 +77,14 @@ public struct OWSHTTPResponse {
 @objc
 public class OWSURLSession: NSObject {
 
+    // MARK: - Dependencies
+
+    private static var appExpiry: AppExpiry {
+        return AppExpiry.shared
+    }
+
+    // MARK: -
+
     private static let operationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.underlyingQueue = .global()
@@ -159,6 +167,9 @@ public class OWSURLSession: NSObject {
                                             error: Error?,
                                             require2xxOr3xx: Bool,
                                             failOnError: Bool) {
+
+        checkForRemoteDeprecation(task: task, response: response)
+
         if let error = error {
             if IsNetworkConnectivityFailure(error) {
                 Logger.warn("Request failed: \(error)")
@@ -200,6 +211,17 @@ public class OWSURLSession: NSObject {
         resolver.fulfill(OWSHTTPResponse(task: task, httpUrlResponse: httpUrlResponse, responseData: responseData))
     }
 
+    private class func checkForRemoteDeprecation(task: URLSessionTask,
+                                                 response: URLResponse?) {
+
+        guard let httpResponse = response as? HTTPURLResponse,
+            httpResponse.statusCode == AppExpiry.appExpiredStatusCode else {
+                return
+        }
+
+//        AppExpiry.shared.appExpiredStatusCode
+    }
+
     // TODO: Add downloadTaskPromise().
 
     // MARK: -
@@ -238,9 +260,20 @@ public class OWSURLSession: NSObject {
             request.addValue(headerValue, forHTTPHeaderField: headerField)
         }
 
+        let userAgentHeader = "User-Agent"
+        if !headerSet.contains(userAgentHeader.lowercased()) {
+            request.addValue(Self.signalIosUserAgent,
+                             forHTTPHeaderField: userAgentHeader)
+        }
+
         request.httpBody = body
         request.httpShouldHandleCookies = httpShouldHandleCookies
         return request
+    }
+
+    @objc
+    public static var signalIosUserAgent: String {
+        "Signal-iOS/\(AppVersion.sharedInstance().currentAppVersionLong)"
     }
 
     private func buildUrl(_ urlString: String) -> URL? {

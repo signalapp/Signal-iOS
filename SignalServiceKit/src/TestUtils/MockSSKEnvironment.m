@@ -110,6 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     ModelReadCaches *modelReadCaches = [ModelReadCaches new];
     EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
     OWSMessagePipelineSupervisor *messagePipelineSupervisor = [OWSMessagePipelineSupervisor createStandardSupervisor];
+    AppExpiry *appExpiry = [AppExpiry new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -158,7 +159,8 @@ NS_ASSUME_NONNULL_BEGIN
                         versionedProfiles:versionedProfiles
                           modelReadCaches:modelReadCaches
                       earlyMessageManager:earlyMessageManager
-                messagePipelineSupervisor:messagePipelineSupervisor];
+                messagePipelineSupervisor:messagePipelineSupervisor
+                                appExpiry:appExpiry];
 
     if (!self) {
         return nil;

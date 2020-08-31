@@ -55,6 +55,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) ModelReadCaches *modelReadCaches;
 @property (nonatomic) EarlyMessageManager *earlyMessageManager;
 @property (nonatomic) OWSMessagePipelineSupervisor *messagePipelineSupervisor;
+@property (nonatomic) AppExpiry *appExpiry;
 
 @end
 
@@ -114,6 +115,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
+                              appExpiry:(AppExpiry *)appExpiry
 {
     self = [super init];
     if (!self) {
@@ -166,6 +168,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(bulkUUIDLookup);
     OWSAssertDebug(modelReadCaches);
     OWSAssertDebug(earlyMessageManager);
+    OWSAssertDebug(appExpiry);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -215,6 +218,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _modelReadCaches = modelReadCaches;
     _earlyMessageManager = earlyMessageManager;
     _messagePipelineSupervisor = messagePipelineSupervisor;
+    _appExpiry = appExpiry;
 
     return self;
 }

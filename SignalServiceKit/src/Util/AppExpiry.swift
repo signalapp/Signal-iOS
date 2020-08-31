@@ -4,10 +4,71 @@
 
 import Foundation
 
-@objc(SSKAppExpiry)
 public class AppExpiry: NSObject {
+
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
+    @objc
+    public static let appExpiredStatusCode: UInt = 499
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "AppExpiry")
+
+    private let hasAppExpiredAtCurrentVersion = AtomicBool(false)
+    private static let expiredAtVersionKey = "expiredAtVersionKey"
+
+    @objc
+    public required override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.warmCaches()
+        }
+    }
+
+    private func warmCaches() {
+        let value = databaseStorage.read { transaction -> Bool in
+            guard let expiredAtVersion = self.keyValueStore.getString(Self.expiredAtVersionKey,
+                                                                      transaction: transaction) else {
+                                                                        return false
+            }
+            // "Expired at version"
+            return expiredAtVersion == AppVersion.sharedInstance().currentAppVersion
+        }
+        hasAppExpiredAtCurrentVersion.set(value)
+    }
+
+    @objc
+    public func setHasAppExpiredAtCurrentVersion() {
+        hasAppExpiredAtCurrentVersion.set(true)
+
+        databaseStorage.asyncWrite { transaction in
+            self.keyValueStore.setString(AppVersion.sharedInstance().currentAppVersion,
+                                         key: Self.expiredAtVersionKey,
+                                         transaction: transaction)
+        }
+    }
+
+    @objc
+    public class var shared: AppExpiry {
+        SSKEnvironment.shared.appExpiry
+    }
+
     @objc
     public static var daysUntilBuildExpiry: Int {
+        shared.daysUntilBuildExpiry
+    }
+
+    @objc
+    public var daysUntilBuildExpiry: Int {
         guard let buildAge = Calendar.current.dateComponents(
             [.day],
             from: CurrentAppContext().buildTime,
@@ -21,14 +82,30 @@ public class AppExpiry: NSObject {
 
     @objc
     public static var isExpiringSoon: Bool {
+        shared.isExpiringSoon
+    }
+
+    @objc
+    public var isExpiringSoon: Bool {
         guard !isEndOfLifeOSVersion else { return false }
         return daysUntilBuildExpiry <= 10
     }
 
     @objc
     public static var isExpired: Bool {
-        guard !isEndOfLifeOSVersion else { return false }
+        shared.isExpired
+    }
+
+    @objc
+    public var isExpired: Bool {
+        guard !isEndOfLifeOSVersion else { return true }
+        guard !hasAppExpiredAtCurrentVersion.get() else { return true }
         return daysUntilBuildExpiry <= 0
+    }
+
+    @objc
+    public static var isEndOfLifeOSVersion: Bool {
+        shared.isEndOfLifeOSVersion
     }
 
     /// Indicates if this iOS version is no longer supported. If so,
@@ -38,7 +115,7 @@ public class AppExpiry: NSObject {
     ///
     /// Currently, only iOS 11 and greater are officially supported.
     @objc
-    public static var isEndOfLifeOSVersion: Bool {
+    public var isEndOfLifeOSVersion: Bool {
         if #available(iOS 11, *) {
             return false
         } else {

@@ -596,9 +596,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.deregisteredView.hidden
         = !TSAccountManager.sharedInstance.isDeregistered || TSAccountManager.sharedInstance.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
-    self.endOfLifeOSView.hidden = !SSKAppExpiry.isEndOfLifeOSVersion;
+    self.endOfLifeOSView.hidden = !AppExpiry.isEndOfLifeOSVersion;
 
-    self.expiredView.hidden = !SSKAppExpiry.isExpiringSoon;
+    self.expiredView.hidden = !AppExpiry.isExpiringSoon;
     [self.expiredView updateText];
 
     self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.deregisteredView.isHidden
