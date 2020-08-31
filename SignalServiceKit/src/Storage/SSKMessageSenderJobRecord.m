@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
         // This path gets hit during the YDB->GRDB migration *tests*, at which point
         // it's unsafe to assume we have a GRDB transaction. We can safely skip this
         // step during the tests when we don't.
-        if (!CurrentAppContext().isRunningTests || !transaction.isYapRead) {
+        if (!transaction.isYapRead) {
             _isMediaMessage = [message hasMediaAttachmentsWithTransaction:transaction.unwrapGrdbRead];
         }
 

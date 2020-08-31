@@ -335,7 +335,7 @@ extension UIDatabaseObserver: TransactionObserver {
                 let attachmentUniqueIds = pendingChanges.attachmentUniqueIds
                 let attachmentDeletedUniqueIds = pendingChanges.attachmentDeletedUniqueIds
                 let collections = pendingChanges.collections
-                pendingChanges.reset()
+                pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
 
                 DispatchQueue.main.async {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
@@ -406,7 +406,7 @@ extension UIDatabaseObserver: TransactionObserver {
         #if TESTABLE_BUILD
         // Don't wait before updating snapshots in tests
         // because some tests checks snapshots immediately
-        return 0.0
+        if CurrentAppContext().isRunningTests { return 0 }
         #endif
         // We want the UI to feel snappy and responsive, which means
         // low latency in view updates.
@@ -488,11 +488,6 @@ extension UIDatabaseObserver: TransactionObserver {
         NotificationCenter.default.post(name: Self.didUpdateUIDatabaseSnapshotNotification, object: nil)
 
         defer {
-            // This line used to call `self.committedChanges.reset()` but it was harmful
-            // because the instance can still be referred to by observers by passing its reference
-            // below in the delegate callbacks.
-            // Create a new instance instead of reusing and resetting it to give the new call a clear start
-            // while the observers can still keep the previous instance if they have to.
             committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
         }
 
@@ -520,7 +515,7 @@ extension UIDatabaseObserver: TransactionObserver {
         owsFailDebug("TODO: test this if we ever use it.")
 
         UIDatabaseObserver.serializedSync {
-            pendingChanges.reset()
+            pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
 
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
