@@ -97,8 +97,8 @@ public class GroupManager: NSObject {
 
     public static let maxGroupNameLength: Int = 32
 
-    // GroupsV2 TODO: Finalize this value with Ehren.
-    public static let changeProtoEpoch: UInt32 = 0
+    // Epoch 1: Group Links
+    public static let changeProtoEpoch: UInt32 = 1
 
     // This matches kOversizeTextMessageSizeThreshold.
     public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
@@ -246,9 +246,9 @@ public class GroupManager: NSObject {
             // The group creator is an administrator;
             // the other members are normal users.
             var builder = GroupMembership.Builder()
-            builder.addNonPendingMembers(Set(membersParam), role: .normal)
+            builder.addFullMembers(Set(membersParam), role: .normal)
             builder.remove(localAddress)
-            builder.addNonPendingMember(localAddress, role: .administrator)
+            builder.addFullMember(localAddress, role: .administrator)
             return builder.build()
         }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // If we might create a v2 group,
@@ -258,7 +258,7 @@ public class GroupManager: NSObject {
                 return Promise.value(groupMembership)
             }
             return firstly { () -> Promise<Void> in
-                self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
+                self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allMembersOfAnyKind))
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership
             }
@@ -268,11 +268,11 @@ public class GroupManager: NSObject {
                 // Before we create a v2 group, we need to separate out the
                 // pending and non-pending members.  If we already know we're
                 // going to create a v1 group, we shouldn't separate them.
-                let groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
-                                                                  oldGroupModel: nil,
-                                                                  transaction: transaction)
+                let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
+                                                                            oldGroupModel: nil,
+                                                                            transaction: transaction)
 
-                guard groupMembership.nonPendingMembers.contains(localAddress) else {
+                guard groupMembership.isFullMember(localAddress) else {
                     throw OWSAssertionError("Missing localAddress.")
                 }
 
@@ -379,9 +379,9 @@ public class GroupManager: NSObject {
     // * We have a profile key credential for them.
     // * Their account has the "groups v2" capability
     //   (e.g. all of their clients support groups v2.
-    private static func separatePendingMembers(in newGroupMembership: GroupMembership,
-                                               oldGroupModel: TSGroupModel?,
-                                               transaction: SDSAnyReadTransaction) -> GroupMembership {
+    private static func separateInvitedMembers(in newGroupMembership: GroupMembership,
+                                                         oldGroupModel: TSGroupModel?,
+                                                         transaction: SDSAnyReadTransaction) -> GroupMembership {
         guard let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("Missing localUuid.")
             return newGroupMembership
@@ -396,14 +396,18 @@ public class GroupManager: NSObject {
             builder.copyInvalidInvites(from: oldGroupMembership)
 
             assert(oldGroupModel.groupsVersion == .V2)
-            newMembers = newGroupMembership.allUsers.subtracting(oldGroupMembership.allUsers)
+            newMembers = newGroupMembership.allMembersOfAnyKind.subtracting(oldGroupMembership.allMembersOfAnyKind)
 
             // Carry over existing members as they stand.
-            let existingMembers = oldGroupMembership.allUsers.intersection(newGroupMembership.allUsers)
+            let existingMembers = oldGroupMembership.allMembersOfAnyKind.intersection(newGroupMembership.allMembersOfAnyKind)
             for address in existingMembers {
-                if oldGroupMembership.isPendingMember(address),
-                    newGroupMembership.isNonPendingMember(address) {
+                if oldGroupMembership.isInvitedMember(address),
+                    newGroupMembership.isFullMember(address) {
                     // If we're adding a pending member, treat them as a new member.
+                    newMembers.insert(address)
+                } else if oldGroupMembership.isRequestingMember(address),
+                    newGroupMembership.isFullMember(address) {
+                    // If we're adding a requesting member, treat them as a new member.
                     newMembers.insert(address)
                 } else {
                     builder.copyMember(address, from: oldGroupMembership)
@@ -413,14 +417,14 @@ public class GroupManager: NSObject {
             // Creating new group
 
             // First, skip separation when creating v1 groups.
-            guard canUseV2(for: newGroupMembership.allUsers, transaction: transaction) else {
+            guard canUseV2(for: newGroupMembership.allMembersOfAnyKind, transaction: transaction) else {
                 // If any member of a new group doesn't support groups v2,
                 // we're going to create a v1 group.  In that case, we
                 // don't want to separate out pending members.
                 return newGroupMembership
             }
 
-            newMembers = newGroupMembership.allUsers
+            newMembers = newGroupMembership.allMembersOfAnyKind
         }
 
         // We only need to separate new members.
@@ -451,11 +455,11 @@ public class GroupManager: NSObject {
             // instead of adding them.
             if address != localAddress &&
                 DebugFlags.groupsV2forceInvites {
-                builder.addPendingMember(address, role: role, addedByUuid: localUuid)
+                builder.addInvitedMember(address, role: role, addedByUuid: localUuid)
             } else if isPending {
-                builder.addPendingMember(address, role: role, addedByUuid: localUuid)
+                builder.addInvitedMember(address, role: role, addedByUuid: localUuid)
             } else {
-                builder.addNonPendingMember(address, role: role)
+                builder.addFullMember(address, role: role)
             }
         }
         return builder.build()
@@ -574,7 +578,7 @@ public class GroupManager: NSObject {
         let groupMembership = GroupMembership(v1Members: Set(members))
         // GroupsV2 TODO: Let tests specify access levels.
         // GroupsV2 TODO: Fill in avatarUrlPath when we test v2 groups.
-        let groupAccess = GroupAccess.allAccess
+        let groupAccess = GroupAccess.defaultForV1
         // Use buildGroupModel() to fill in defaults, like it was a new group.
 
         var builder = TSGroupModelBuilder()
@@ -654,7 +658,7 @@ public class GroupManager: NSObject {
             throw OWSAssertionError("Missing localAddress.")
         }
         return (groupModel.groupsVersion == .V1 &&
-            groupModel.groupMembership.isPendingOrNonPendingMember(localAddress))
+            groupModel.groupMembership.isMemberOfAnyKind(localAddress))
     }
 
     // MARK: - Update Existing Group (Remote)
@@ -667,10 +671,6 @@ public class GroupManager: NSObject {
                                                      disappearingMessageToken: DisappearingMessageToken?,
                                                      groupUpdateSourceAddress: SignalServiceAddress?,
                                                      transaction: SDSAnyWriteTransaction) throws -> UpsertGroupResult {
-        guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSAssertionError("Missing localAddress.")
-        }
-
         let groupId = proposedGroupModel.groupId
         let updateInfo: UpdateInfo
         do {
@@ -794,7 +794,7 @@ public class GroupManager: NSObject {
             guard RemoteConfig.groupsV2GoodCitizen else {
                 return Promise.value(())
             }
-            return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allUsers), isBlocking: true, ignoreErrors: true)
+            return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allMembersOfAnyKind), isBlocking: true, ignoreErrors: true)
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
@@ -884,7 +884,7 @@ public class GroupManager: NSObject {
         // Always ensure we're a member of any v1 group we're updating.
         var builder = proposedGroupModel.groupMembership.asBuilder
         builder.remove(localAddress)
-        builder.addNonPendingMember(localAddress, role: .normal)
+        builder.addFullMember(localAddress, role: .normal)
         let groupMembership = builder.build()
 
         var groupModelBuilder = proposedGroupModel.asBuilder
@@ -923,23 +923,19 @@ public class GroupManager: NSObject {
         let oldDMConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: thread, transaction: transaction)
         let newDMConfiguration = dmConfiguration ?? oldDMConfiguration
 
-        for address in proposedGroupMembership.allUsers {
+        for address in proposedGroupMembership.allMembersOfAnyKind {
             guard address.uuid != nil else {
                 throw OWSAssertionError("Group v2 member missing uuid.")
             }
         }
         // Before we update a v2 group, we need to separate out the
         // pending and non-pending members.
-        let groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
-                                                          oldGroupModel: oldGroupModel,
-                                                          transaction: transaction)
-
-        guard groupMembership.nonPendingMembers.contains(localAddress) else {
-            throw OWSAssertionError("Missing localAddress.")
-        }
+        let groupMembership = self.separateInvitedMembers(in: proposedGroupMembership,
+                                                                    oldGroupModel: oldGroupModel,
+                                                                    transaction: transaction)
 
         // Don't try to modify a v2 group if we're not a member.
-        guard groupMembership.nonPendingMembers.contains(localAddress) else {
+        guard groupMembership.isFullMember(localAddress) else {
             throw OWSAssertionError("Missing localAddress.")
         }
 
@@ -1108,7 +1104,7 @@ public class GroupManager: NSObject {
             }
             return updateGroupV2(groupModel: groupModel,
                                  description: "Accept invite") { groupChangeSet in
-                                    groupChangeSet.promotePendingMember(localUuid)
+                                    groupChangeSet.promoteInvitedMember(localUuid)
             }
         }
     }
@@ -1135,7 +1131,7 @@ public class GroupManager: NSObject {
             }
             let oldGroupModel = groupThread.groupModel
             // Note that we consult allUsers which includes pending members.
-            guard oldGroupModel.groupMembership.allUsers.contains(localAddress) else {
+            guard oldGroupModel.groupMembership.isMemberOfAnyKind(localAddress) else {
                 throw OWSAssertionError("Local user is not a member of the group.")
             }
 
@@ -1185,7 +1181,7 @@ public class GroupManager: NSObject {
                                                                transaction: SDSAnyWriteTransaction,
                                                                success: (() -> Void)?) {
 
-        guard groupThread.isLocalUserPendingOrNonPendingMember else {
+        guard groupThread.isLocalUserMemberOfAnyKind else {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
         }
@@ -1225,9 +1221,17 @@ public class GroupManager: NSObject {
     public static func changeMemberRoleV2(groupModel: TSGroupModelV2,
                                           uuid: UUID,
                                           role: TSGroupMemberRole) -> Promise<TSGroupThread> {
+        changeMemberRolesV2(groupModel: groupModel, uuids: [uuid], role: role)
+    }
+
+    public static func changeMemberRolesV2(groupModel: TSGroupModelV2,
+                                           uuids: [UUID],
+                                           role: TSGroupMemberRole) -> Promise<TSGroupThread> {
         return updateGroupV2(groupModel: groupModel,
                              description: "Change member role") { groupChangeSet in
-                                groupChangeSet.changeRoleForMember(uuid, role: role)
+                                for uuid in uuids {
+                                    groupChangeSet.changeRoleForMember(uuid, role: role)
+                                }
         }
     }
 
@@ -1247,6 +1251,33 @@ public class GroupManager: NSObject {
                              description: "Change group membership access") { groupChangeSet in
                                 groupChangeSet.setAccessForMembers(access)
         }
+    }
+
+    // MARK: - Group Links
+
+    public static func updateLinkModeV2(groupModel: TSGroupModelV2,
+                                        linkMode: GroupsV2LinkMode) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Change group link mode") { groupChangeSet in
+                                groupChangeSet.setLinkMode(linkMode)
+        }
+    }
+
+    public static func resetLinkV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Rotate invite link password") { groupChangeSet in
+                                groupChangeSet.rotateInviteLinkPassword()
+        }
+    }
+
+    public static let inviteLinkPasswordLengthV2: UInt = 16
+
+    public static func generateInviteLinkPasswordV2() -> Data {
+        Cryptography.generateRandomBytes(inviteLinkPasswordLengthV2)
+    }
+
+    public static func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
+        try groupsV2.inviteLink(forGroupModelV2: groupModelV2)
     }
 
     // MARK: - Generic Group Change
@@ -1535,7 +1566,8 @@ public class GroupManager: NSObject {
         // We need to send v2 group updates to pending members
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
-        let additionalRecipients = groupThread.groupModel.groupMembership.pendingMembers.filter { address in
+        let groupMembership = groupThread.groupModel.groupMembership
+        let additionalRecipients = groupMembership.invitedOrRequestMembers.filter { address in
             return doesUserSupportGroupsV2(address: address,
                                            transaction: transaction)
         }
@@ -1585,7 +1617,8 @@ public class GroupManager: NSObject {
         // We need to send v2 group updates to pending members
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
-        let additionalRecipients = groupThread.groupModel.groupMembership.pendingMembers.filter { address in
+        let groupMembership = groupThread.groupModel.groupMembership
+        let additionalRecipients = groupMembership.invitedOrRequestMembers.filter { address in
             return doesUserSupportGroupsV2(address: address,
                                            transaction: transaction)
         }
@@ -1931,7 +1964,7 @@ public class GroupManager: NSObject {
         // if we're a member of the group. We don't want to do this if we're just a
         // pending member or are leaving/have already left the group.
         let groupMembership = groupThread.groupModel.groupMembership
-        guard groupMembership.isPendingOrNonPendingMember(localAddress) else {
+        guard groupMembership.isMemberOfAnyKind(localAddress) else {
             return
         }
         profileManager.addThread(toProfileWhitelist: groupThread, transaction: transaction)

@@ -55,6 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.class.messageSenderJobQueue;
 }
 
++ (OWSMessageSender *)messageSender
+{
+    return SSKEnvironment.shared.messageSender;
+}
+
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
@@ -483,10 +488,21 @@ NS_ASSUME_NONNULL_BEGIN
                                          actionBlock:^{
             [DebugUIStress cloneAsV2Group:groupThread];
         }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Copy members to another group"
+                                         actionBlock:^{
+                                             UIViewController *fromViewController =
+                                                 [[UIApplication sharedApplication] frontmostViewController];
+                                             [DebugUIStress copyToAnotherGroup:groupThread
+                                                            fromViewController:fromViewController];
+                                         }]];
         [items addObject:[OWSTableItem itemWithTitle:@"Add debug members to group"
                                          actionBlock:^{
             [DebugUIStress addDebugMembersToGroup:groupThread];
         }]];
+        if (thread.isGroupV2Thread) {
+            [items addObject:[OWSTableItem itemWithTitle:@"Make all members admins"
+                                             actionBlock:^{ [DebugUIStress makeAllMembersAdmin:groupThread]; }]];
+        }
     }
 
     [items addObject:[OWSTableItem itemWithTitle:@"Make group w. unregistered users"
@@ -531,9 +547,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(message);
 
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    });
+    BOOL isDynamic = [message isKindOfClass:[OWSDynamicOutgoingMessage class]];
+    BOOL shouldSendDurably = !isDynamic;
+
+    if (shouldSendDurably) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+        });
+    } else {
+        [self.messageSender sendMessage:message.asPreparer
+            success:^{ OWSLogInfo(@"Success."); }
+            failure:^(NSError *error) { OWSFailDebug(@"Error: %@", error); }];
+    }
 }
 
 + (void)sendStressMessage:(TSThread *)thread

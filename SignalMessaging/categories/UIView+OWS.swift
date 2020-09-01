@@ -236,6 +236,18 @@ public extension UIView {
             completion: completion
         )
     }
+
+    func autoPinHeight(toHeightOf otherView: UIView) {
+        translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint(item: self, attribute: .height, relatedBy: .equal, toItem: otherView, attribute: .height, multiplier: 1, constant: 0).autoInstall()
+    }
+
+    func autoPinWidth(toWidthOf otherView: UIView) {
+        translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint(item: self, attribute: .width, relatedBy: .equal, toItem: otherView, attribute: .width, multiplier: 1, constant: 0).autoInstall()
+    }
 }
 
 // MARK: -

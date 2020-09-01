@@ -1671,7 +1671,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
-            if (groupThread.isLocalUserInGroup || groupThread.isGroupV2Thread) {
+            if (groupThread.isLocalUserMemberOfAnyKind || groupThread.isGroupV2Thread) {
                 [groupThread softDeleteThreadWithTransaction:transaction];
             } else {
                 [groupThread anyRemoveWithTransaction:transaction];

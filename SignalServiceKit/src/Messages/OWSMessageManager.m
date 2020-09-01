@@ -719,7 +719,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         if (groupThread) {
-            if (!groupThread.isLocalUserInGroup) {
+            if (!groupThread.isLocalUserFullMember) {
                 OWSLogInfo(@"Ignoring messages for left group.");
                 return nil;
             }
@@ -806,21 +806,16 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
 
-        if (!groupThread.isLocalUserInGroup) {
-            // We don't want to process messages for groups in which we are a pending member.
-            OWSLogInfo(@"Ignoring messages for left group.");
-            return nil;
-        }
         if (!envelope.sourceAddress) {
             OWSFailDebug(@"Missing sender address.");
             return nil;
         }
-        if (!groupThread.isLocalUserInGroup) {
+        if (!groupThread.isLocalUserFullMember) {
             // We don't want to process messages for groups in which we are a pending member.
             OWSLogInfo(@"Ignoring messages for left group.");
             return nil;
         }
-        if (![groupModel.groupMembership isNonPendingMember:envelope.sourceAddress]) {
+        if (![groupModel.groupMembership isFullMember:envelope.sourceAddress]) {
             // We don't want to process group messages for non-members.
             OWSLogInfo(@"Ignoring messages for user not in group: %@.", envelope.sourceAddress);
             return nil;
@@ -1138,7 +1133,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (typingMessage.hasGroupID) {
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:typingMessage.groupID
                                                                    transaction:transaction];
-        if (groupThread != nil && !groupThread.isLocalUserInGroup) {
+        if (groupThread != nil && !groupThread.isLocalUserFullOrInvitedMember) {
             OWSLogInfo(@"Ignoring messages for left group.");
             return;
         }
@@ -1243,7 +1238,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Group update for invalid group version.");
             return;
         }
-        if (oldGroupThread.isLocalUserInGroup) {
+        if (oldGroupThread.isLocalUserFullMember) {
             // If the local user had left the group we couldn't trust our local group state - we'd
             // have to trust the remote membership.
             //
@@ -1952,7 +1947,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure we are in the group.
-    if (!gThread.isLocalUserInGroup) {
+    if (!gThread.isLocalUserFullOrInvitedMember) {
         OWSLogWarn(@"Ignoring 'Group Info Request' message for group we no longer belong to.");
         return;
     }

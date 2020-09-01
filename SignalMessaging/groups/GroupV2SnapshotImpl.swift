@@ -44,8 +44,9 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     private let pendingMembers: [PendingMember]
     private let invalidInvites: [InvalidInvite]
 
-    public let accessControlForAttributes: GroupsProtoAccessControlAccessRequired
-    public let accessControlForMembers: GroupsProtoAccessControlAccessRequired
+    public let groupAccess: GroupAccess
+
+    public let inviteLinkPassword: Data?
 
     public let disappearingMessageToken: DisappearingMessageToken
 
@@ -64,8 +65,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 members: [Member],
                 pendingMembers: [PendingMember],
                 invalidInvites: [InvalidInvite],
-                accessControlForAttributes: GroupsProtoAccessControlAccessRequired,
-                accessControlForMembers: GroupsProtoAccessControlAccessRequired,
+                groupAccess: GroupAccess,
+                inviteLinkPassword: Data?,
                 disappearingMessageToken: DisappearingMessageToken,
                 profileKeys: [UUID: Data]) {
 
@@ -78,8 +79,8 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         self.members = members
         self.pendingMembers = pendingMembers
         self.invalidInvites = invalidInvites
-        self.accessControlForAttributes = accessControlForAttributes
-        self.accessControlForMembers = accessControlForMembers
+        self.groupAccess = groupAccess
+        self.inviteLinkPassword = inviteLinkPassword
         self.disappearingMessageToken = disappearingMessageToken
         self.profileKeys = profileKeys
     }
@@ -91,7 +92,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 owsFailDebug("Invalid value: \(member.role.rawValue)")
                 continue
             }
-            builder.addNonPendingMember(member.address, role: role)
+            builder.addFullMember(member.address, role: role)
         }
 
         for member in pendingMembers {
@@ -99,7 +100,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 owsFailDebug("Invalid value: \(member.role.rawValue)")
                 continue
             }
-            builder.addPendingMember(member.address, role: role, addedByUuid: member.addedByUuid)
+            builder.addInvitedMember(member.address, role: role, addedByUuid: member.addedByUuid)
         }
 
         for invalidInvite in invalidInvites {
@@ -107,10 +108,5 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         }
 
         return builder.build()
-    }
-
-    public var groupAccess: GroupAccess {
-        return GroupAccess(members: GroupAccess.groupV2Access(forProtoAccess: accessControlForMembers),
-                           attributes: GroupAccess.groupV2Access(forProtoAccess: accessControlForAttributes))
     }
 }

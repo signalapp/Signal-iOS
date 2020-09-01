@@ -73,7 +73,13 @@ public extension DebugUIStress {
     // Creates a new group (by cloning the current group) without informing the,
     // other members. This can be used to test "group info requests", etc.
     class func cloneAsV2Group(_ groupThread: TSGroupThread) {
-        firstly { () -> Promise<TSGroupThread> in
+        firstly { () -> Promise<Void> in
+            let members: [SignalServiceAddress] = groupThread.groupModel.groupMembers
+            for member in members {
+                Logger.verbose("Candidate member: \(member)")
+            }
+            return GroupManager.tryToEnableGroupsV2(for: members, isBlocking: true, ignoreErrors: true)
+        }.then { () -> Promise<TSGroupThread> in
             guard RemoteConfig.groupsV2CreateGroups,
                 GroupManager.defaultGroupsVersion == .V2 else {
                     throw OWSAssertionError("Groups v2 not enabled.")
@@ -87,6 +93,9 @@ public extension DebugUIStress {
                 }
                 return members
             }
+            for member in members {
+                Logger.verbose("Member: \(member)")
+            }
             let groupName = Self.nameForClonedGroup(groupThread) + " (v2)"
             return GroupManager.localCreateNewGroup(members: members,
                                                     groupId: nil,
@@ -97,6 +106,75 @@ public extension DebugUIStress {
         }.done { (groupThread) in
             assert(groupThread.groupModel.groupsVersion == .V2)
 
+            Logger.info("Complete.")
+
+            SignalApp.shared().presentConversation(for: groupThread, animated: true)
+        }.catch(on: .global()) { error in
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    class func copyToAnotherGroup(_ srcGroupThread: TSGroupThread, fromViewController: UIViewController) {
+        let groupThreads = self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> [TSGroupThread] in
+            TSThread.anyFetchAll(transaction: transaction).compactMap { $0 as? TSGroupThread }
+        }
+        guard !groupThreads.isEmpty else {
+            owsFailDebug("No groups.")
+            return
+        }
+        let groupThreadPicker = GroupThreadPicker(groupThreads: groupThreads) { (dstGroupThread: TSGroupThread) in
+            Self.copyToAnotherGroup(srcGroupThread: srcGroupThread, dstGroupThread: dstGroupThread)
+        }
+        fromViewController.present(groupThreadPicker, animated: true)
+    }
+
+    class func copyToAnotherGroup(srcGroupThread: TSGroupThread, dstGroupThread: TSGroupThread) {
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing localAddress.")
+            return
+        }
+
+        let membersToAdd = srcGroupThread.groupMembership.allMembersOfAnyKind.subtracting(dstGroupThread.groupMembership.allMembersOfAnyKind)
+        firstly { () -> Promise<Void> in
+            for member in membersToAdd {
+                Logger.verbose("Candidate member: \(member)")
+            }
+            return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd), isBlocking: true, ignoreErrors: true)
+        }.then { () -> Promise<TSGroupThread> in
+            let oldGroupModel = dstGroupThread.groupModel
+            let newGroupModel = try self.databaseStorage.read { (transaction: SDSAnyReadTransaction) throws -> TSGroupModel in
+                let validMembersToAdd: [SignalServiceAddress]
+                if dstGroupThread.isGroupV1Thread {
+                    validMembersToAdd = membersToAdd.filter { $0.phoneNumber != nil }
+                } else {
+                    validMembersToAdd = membersToAdd.filter { address in
+                        GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
+                    }
+                }
+
+                for member in validMembersToAdd {
+                    Logger.verbose("Adding: \(member)")
+                }
+                Logger.verbose("Adding: \(validMembersToAdd.count)")
+                guard !validMembersToAdd.isEmpty else {
+                    throw OWSAssertionError("No valid members to add.")
+                }
+
+                var groupModelBuilder = oldGroupModel.asBuilder
+                var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
+                groupMembershipBuilder.addFullMembers(Set(validMembersToAdd), role: .`normal`)
+                groupModelBuilder.groupMembership = groupMembershipBuilder.build()
+                return try groupModelBuilder.build(transaction: transaction)
+            }
+            guard oldGroupModel.groupsVersion == newGroupModel.groupsVersion else {
+                throw OWSAssertionError("Group Version failure.")
+            }
+
+            return GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
+                                                         newGroupModel: newGroupModel,
+                                                         dmConfiguration: nil,
+                                                         groupUpdateSourceAddress: localAddress)
+        }.done { (groupThread) in
             Logger.info("Complete.")
 
             SignalApp.shared().presentConversation(for: groupThread, animated: true)
@@ -121,12 +199,12 @@ public extension DebugUIStress {
                 var groupMembershipBuilder = oldGroupMembership.asBuilder
                 for address in membersToAdd {
                     assert(address.isValid)
-                    guard !oldGroupMembership.isPendingOrNonPendingMember(address) else {
+                    guard !oldGroupMembership.isMemberOfAnyKind(address) else {
                         Logger.warn("Recipient is already in group.")
                         continue
                     }
                     // GroupManager will separate out members as pending if necessary.
-                    groupMembershipBuilder.addNonPendingMember(address, role: .normal)
+                    groupMembershipBuilder.addFullMember(address, role: .normal)
                 }
                 builder.groupMembership = groupMembershipBuilder.build()
                 return try builder.build(transaction: transaction)
@@ -154,6 +232,93 @@ public extension DebugUIStress {
             Logger.info("Complete.")
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error)")
+        }
+    }
+
+    class func makeAllMembersAdmin(_ groupThread: TSGroupThread) {
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
+        let uuids = groupModelV2.groupMembership.fullMembers.compactMap { $0.uuid }
+        firstly { () -> Promise<TSGroupThread> in
+            GroupManager.changeMemberRolesV2(groupModel: groupModelV2, uuids: uuids, role: .administrator)
+        }.done(on: .global()) { (_) in
+            Logger.info("Complete.")
+        }.catch(on: .global()) { error in
+            owsFailDebug("Error: \(error)")
+        }
+    }
+}
+
+// MARK: -
+
+class GroupThreadPicker: OWSTableViewController {
+
+    private let groupThreads: [TSGroupThread]
+    private let completion: (TSGroupThread) -> Void
+
+    init(groupThreads: [TSGroupThread], completion: @escaping (TSGroupThread) -> Void) {
+        self.groupThreads = groupThreads
+        self.completion = completion
+
+        super.init()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.title = "Select Destination Group"
+
+        rebuildTableContents()
+        setupNavigationBar()
+        applyTheme()
+    }
+
+    // MARK: - Data providers
+
+    func setupNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.cancelButton,
+            style: .plain,
+            target: self,
+            action: #selector(didTapCancel)
+        )
+    }
+
+    func rebuildTableContents() {
+        let contactsManager = SSKEnvironment.shared.contactsManager
+        let databaseStorage = SSKEnvironment.shared.databaseStorage
+
+        let contents = OWSTableContents()
+        let section = OWSTableSection()
+        section.headerTitle = "Select a group to add the members to"
+
+        databaseStorage.read { transaction in
+            let sortedGroupThreads = self.groupThreads.sorted { (left, right) -> Bool in
+                left.lastInteractionRowId > right.lastInteractionRowId
+            }
+            for groupThread in sortedGroupThreads {
+                let groupName = contactsManager.displayName(for: groupThread, transaction: transaction)
+                section.add(OWSTableItem.actionItem(withText: groupName) { [weak self] in
+                    self?.didSelectGroupThread(groupThread)
+                })
+            }
+        }
+        contents.addSection(section)
+        self.contents = contents
+    }
+
+    // MARK: - Actions
+
+    @objc func didTapCancel() {
+        presentingViewController?.dismiss(animated: true, completion: nil)
+    }
+
+    func didSelectGroupThread(_ groupThread: TSGroupThread) {
+        let completion = self.completion
+        presentingViewController?.dismiss(animated: true) {
+            completion(groupThread)
         }
     }
 }

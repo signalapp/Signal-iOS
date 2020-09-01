@@ -137,13 +137,13 @@ private extension AddGroupMembersViewController {
                     return nil
                 }
                 for address in addresses {
-                    guard !oldGroupMembership.isNonPendingMember(address) else {
+                    guard !oldGroupMembership.isFullMember(address) else {
                         owsFailDebug("Recipient is already in group.")
                         continue
                     }
                     // GroupManager will separate out members as pending if necessary.
                     groupMembershipBuilder.remove(address)
-                    groupMembershipBuilder.addNonPendingMember(address, role: .normal)
+                    groupMembershipBuilder.addFullMember(address, role: .normal)
                 }
                 builder.groupMembership = groupMembershipBuilder.build()
                 return try builder.build(transaction: transaction)
@@ -178,7 +178,7 @@ private extension AddGroupMembersViewController {
                                                         updatePromiseBlock: {
                                                             self.updateGroupThreadPromise(newGroupModel: newGroupModel)
         },
-                                                        completion: {
+                                                        completion: { _ in
                                                             dismissAndUpdateDelegate()
         })
     }
@@ -248,7 +248,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
-        return (oldGroupModel.groupMembership.pendingAndNonPendingMemberCount +
+        return (oldGroupModel.groupMembership.allMembersOfAnyKind.count +
                 newRecipientSet.count)
     }
 
@@ -270,11 +270,13 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
             owsFailDebug("Invalid recipient.")
             return false
         }
-        if oldGroupModel.groupMembership.isNonPendingMember(address) {
+        let groupMembership = oldGroupModel.groupMembership
+        if groupMembership.isFullMember(address) {
             return true
         }
-        if oldGroupModel.groupMembership.isPendingMember(address) {
-            // We can "add" pending members if they support gv2
+        if groupMembership.isInvitedMember(address) ||
+            groupMembership.isRequestingMember(address) {
+            // We can "add" pending or requesting members if they support gv2
             // and we know their profile key credential.
             let canAddMember = databaseStorage.read { transaction -> Bool in
                 guard GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction) else {

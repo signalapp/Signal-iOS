@@ -103,11 +103,11 @@ extension ConversationViewController: MessageRequestDelegate {
             return
         }
         let groupMembership = groupThread.groupModel.groupMembership
-        guard groupMembership.isPendingMember(localAddress) else {
+        guard groupMembership.isInvitedMember(localAddress) else {
             owsFailDebug("Can't reject invite if not pending.")
             return
         }
-        guard let addedByUuid = groupMembership.addedByUuid(forPendingMember: localAddress) else {
+        guard let addedByUuid = groupMembership.addedByUuid(forInvitedMember: localAddress) else {
             owsFailDebug("Missing addedByUuid.")
             return
         }
@@ -193,7 +193,7 @@ extension ConversationViewController: MessageRequestDelegate {
 
         var isMemberOfGroup = false
         if let groupThread = thread as? TSGroupThread {
-            isMemberOfGroup = groupThread.isLocalUserInGroup
+            isMemberOfGroup = groupThread.isLocalUserMemberOfAnyKind
         }
 
         if isMemberOfGroup {
@@ -232,7 +232,7 @@ extension ConversationViewController: MessageRequestDelegate {
         }
 
         guard let groupThread = thread as? TSGroupThread,
-            groupThread.isLocalUserPendingOrNonPendingMember else {
+            groupThread.isLocalUserFullOrInvitedMember else {
                 // If we don't need to leave the group, finish up immediately.
                 return completion()
         }

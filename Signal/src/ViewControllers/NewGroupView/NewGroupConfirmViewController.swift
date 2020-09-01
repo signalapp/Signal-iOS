@@ -305,7 +305,7 @@ public class NewGroupConfirmViewController: OWSViewController {
             self.presentingViewController?.dismiss(animated: true, completion: completion)
         }
 
-        let pendingMembers = groupThread.groupModel.groupMembership.pendingMembers
+        let pendingMembers = groupThread.groupModel.groupMembership.invitedMembers
         guard let firstPendingMember = pendingMembers.first else {
             // No pending members.
             return navigateToNewGroup(nil)

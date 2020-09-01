@@ -486,7 +486,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
 
         // Quit the group if we're a member
-        if (blockMode == BlockMode_LocalShouldLeaveGroups && groupThread.isLocalUserPendingOrNonPendingMember) {
+        BOOL isInGroup = groupThread.isLocalUserMemberOfAnyKind;
+        if (blockMode == BlockMode_LocalShouldLeaveGroups && isInGroup) {
             [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
                                                                      transaction:transaction
                                                                          success:nil];

@@ -61,7 +61,7 @@ class GroupViewHelper: NSObject {
         if threadViewModel.hasPendingMessageRequest {
             return false
         }
-        guard isLocalUserInConversation else {
+        guard isLocalUserFullMember else {
             return false
         }
         guard let groupThread = thread as? TSGroupThread else {
@@ -85,12 +85,15 @@ class GroupViewHelper: NSObject {
         case .unknown:
             owsFailDebug("Unknown access.")
             return false
+        case .unsatisfiable:
+            owsFailDebug("Invalid access.")
+            return false
         case .any:
             return true
         case .member:
-            return groupModelV2.groupMembership.isNonPendingMember(localAddress)
+            return groupModelV2.groupMembership.isFullMember(localAddress)
         case .administrator:
-            return (groupModelV2.groupMembership.isNonPendingMember(localAddress) &&        groupModelV2.groupMembership.isAdministrator(localAddress))
+            return (groupModelV2.groupMembership.isFullMemberAndAdministrator(localAddress))
         }
     }
 
@@ -117,7 +120,7 @@ class GroupViewHelper: NSObject {
         if threadViewModel.hasPendingMessageRequest {
             return false
         }
-        guard isLocalUserInConversation else {
+        guard isLocalUserFullMember else {
             return false
         }
         guard let groupThread = thread as? TSGroupThread else {
@@ -132,7 +135,7 @@ class GroupViewHelper: NSObject {
             owsFailDebug("Missing localAddress.")
             return false
         }
-        return groupModelV2.groupMembership.isAdministrator(localAddress)
+        return groupModelV2.groupMembership.isFullMemberAndAdministrator(localAddress)
     }
 
     var canRevokePendingInvites: Bool {
@@ -145,20 +148,24 @@ class GroupViewHelper: NSObject {
         }
         let groupMembership = groupThread.groupModel.groupMembership
         return (!threadViewModel.hasPendingMessageRequest &&
-            groupMembership.isPendingOrNonPendingMember(localAddress) &&
-            groupMembership.isAdministrator(localAddress))
+            groupMembership.isFullMemberAndAdministrator(localAddress))
     }
 
     var canResendInvites: Bool {
-        return (!threadViewModel.hasPendingMessageRequest &&
-            isLocalUserInConversation)
+        return (!threadViewModel.hasPendingMessageRequest && isLocalUserFullMember)
     }
 
-    var isLocalUserInConversation: Bool {
+    var isLocalUserFullMember: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return true
         }
+        return groupThread.isLocalUserFullMember
+    }
 
-        return groupThread.isLocalUserInGroup
+    var isLocalUserFullOrInvitedMember: Bool {
+        guard let groupThread = thread as? TSGroupThread else {
+            return true
+        }
+        return groupThread.isLocalUserFullOrInvitedMember
     }
 }

@@ -172,7 +172,7 @@ class DebugUIGroupsV2: DebugUIPage {
         var defaultModelBuilder = TSGroupModelBuilder()
         defaultModelBuilder.groupsVersion = groupsVersion
         var defaultMembershipBuilder = GroupMembership.Builder()
-        defaultMembershipBuilder.addNonPendingMember(localAddress, role: .administrator)
+        defaultMembershipBuilder.addFullMember(localAddress, role: .administrator)
         defaultModelBuilder.groupMembership = defaultMembershipBuilder.build()
         let defaultModel = try defaultModelBuilder.build(transaction: transaction)
         let defaultDMToken = DisappearingMessageToken.disabledToken
@@ -240,10 +240,10 @@ class DebugUIGroupsV2: DebugUIPage {
             modelBuilder2.name = "name 2"
             modelBuilder2.avatarData = "avatar 2".data(using: .utf8)
             var groupMembershipBuilder1 = model1.groupMembership.asBuilder
-            groupMembershipBuilder1.addNonPendingMember(otherAddress0, role: .normal)
+            groupMembershipBuilder1.addFullMember(otherAddress0, role: .normal)
             if groupsVersion == .V2,
                 let updaterUuid = updaterAddress?.uuid {
-                groupMembershipBuilder1.addPendingMember(otherAddress1,
+                groupMembershipBuilder1.addInvitedMember(otherAddress1,
                                                          role: .normal,
                                                          addedByUuid: updaterUuid)
             }
@@ -371,7 +371,7 @@ class DebugUIGroupsV2: DebugUIPage {
             var groupMembershipBuilder1 = defaultModel.groupMembership.asBuilder
             for member in members {
                 groupMembershipBuilder1.remove(member)
-                groupMembershipBuilder1.addNonPendingMember(member, role: .normal)
+                groupMembershipBuilder1.addFullMember(member, role: .normal)
             }
             modelBuilder1.groupMembership = groupMembershipBuilder1.build()
             let model1 = try modelBuilder1.build(transaction: transaction)
@@ -380,7 +380,7 @@ class DebugUIGroupsV2: DebugUIPage {
             var groupMembershipBuilder2 = defaultModel.groupMembership.asBuilder
             for member in members {
                 groupMembershipBuilder2.remove(member)
-                groupMembershipBuilder2.addNonPendingMember(member, role: .administrator)
+                groupMembershipBuilder2.addFullMember(member, role: .administrator)
             }
             modelBuilder2.groupMembership = groupMembershipBuilder2.build()
             let model2 = try modelBuilder2.build(transaction: transaction)
@@ -425,7 +425,7 @@ class DebugUIGroupsV2: DebugUIPage {
             var groupMembershipBuilder2 = defaultModel.groupMembership.asBuilder
             for member in members {
                 groupMembershipBuilder2.remove(member)
-                groupMembershipBuilder2.addNonPendingMember(member, role: .administrator)
+                groupMembershipBuilder2.addFullMember(member, role: .administrator)
             }
             modelBuilder2.groupMembership = groupMembershipBuilder2.build()
             let model2 = try modelBuilder2.build(transaction: transaction)
@@ -483,7 +483,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 var groupMembershipBuilder2 = defaultModel.groupMembership.asBuilder
                 for member in members {
                     groupMembershipBuilder2.remove(member)
-                    groupMembershipBuilder2.addPendingMember(member, role: .normal, addedByUuid: inviterUuid)
+                    groupMembershipBuilder2.addInvitedMember(member, role: .normal, addedByUuid: inviterUuid)
                 }
                 modelBuilder2.groupMembership = groupMembershipBuilder2.build()
                 let model2 = try modelBuilder2.build(transaction: transaction)
@@ -493,7 +493,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 var groupMembershipBuilder3 = defaultModel.groupMembership.asBuilder
                 for member in members {
                     groupMembershipBuilder3.remove(member)
-                    groupMembershipBuilder3.addNonPendingMember(member, role: .administrator)
+                    groupMembershipBuilder3.addFullMember(member, role: .administrator)
                 }
                 modelBuilder3.groupMembership = groupMembershipBuilder3.build()
                 let model3 = try modelBuilder3.build(transaction: transaction)
@@ -540,7 +540,7 @@ class DebugUIGroupsV2: DebugUIPage {
 
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
-        for address in oldGroupMembership.allUsers {
+        for address in oldGroupMembership.allMembersOfAnyKind {
             if address != localAddress {
                 groupMembershipBuilder.remove(address)
             }
@@ -609,7 +609,7 @@ class DebugUIGroupsV2: DebugUIPage {
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
-                guard groupModel.groupMembership.isNonPendingMember(otherUserAddress) else {
+                guard groupModel.groupMembership.isFullMember(otherUserAddress) else {
                     throw OWSAssertionError("Other user is not a full member.")
                 }
                 // Last admin (local user) can't leave group, so first

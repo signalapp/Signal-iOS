@@ -1297,6 +1297,32 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return masterKeyData.count == GroupMasterKey.SIZE
     }
 
+    // MARK: - Group Links
+
+    public func inviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
+        guard let inviteLinkPassword = groupModelV2.inviteLinkPassword,
+            !inviteLinkPassword.isEmpty else {
+                throw OWSAssertionError("Missing password.")
+        }
+        let masterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
+
+        let contentsV1Builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.builder()
+        contentsV1Builder.setGroupMasterKey(masterKey)
+        contentsV1Builder.setInviteLinkPassword(inviteLinkPassword)
+
+        let builder = GroupsProtoGroupInviteLink.builder()
+        builder.setContents(GroupsProtoGroupInviteLinkOneOfContents.contentsV1(try contentsV1Builder.build()))
+        let protoData = try builder.buildSerializedData()
+
+        let protoBase64Url = protoData.asBase64Url
+
+        let urlString = "https://signal.group/\(protoBase64Url)"
+        guard let url = URL(string: urlString) else {
+            throw OWSAssertionError("Could not construct url.")
+        }
+        return url
+    }
+
     // MARK: - Utils
 
     private var daysSinceEpoch: UInt32 {

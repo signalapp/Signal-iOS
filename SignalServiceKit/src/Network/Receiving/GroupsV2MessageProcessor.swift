@@ -345,14 +345,14 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                                                             owsFailDebug("Missing thread.")
                                                             return true
             }
-            guard groupThread.groupModel.groupMembership.isNonPendingMember(localAddress) else {
+            guard groupThread.groupModel.groupMembership.isFullMember(localAddress) else {
                 // * Local user might have just left the group.
                 // * Local user may have just learned that we were removed from the group.
                 // * Local user might be a pending member with an invite.
                 Logger.warn("Discarding envelope; local user is not an active group member.")
                 return true
             }
-            guard groupThread.groupModel.groupMembership.isNonPendingMember(sourceAddress) else {
+            guard groupThread.groupModel.groupMembership.isFullMember(sourceAddress) else {
                 // * The sender might have just left the group.
                 Logger.warn("Discarding envelope; sender is not an active group member.")
                 return true

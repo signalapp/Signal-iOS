@@ -271,9 +271,10 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
     @objc
     public class func hasPendingMessageRequest(thread: TSThread, transaction: GRDBReadTransaction) -> Bool {
 
+        // TODO: Should we consult isRequestingMember() here?
         if let groupThread = thread as? TSGroupThread,
             groupThread.isGroupV2Thread,
-            groupThread.isLocalUserPendingMember {
+            groupThread.isLocalUserInvitedMember {
             return true
         }
 
@@ -285,7 +286,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         if OWSBlockingManager.shared().isThreadBlocked(thread) { return true }
 
         let isGroupThread = thread is TSGroupThread
-        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserInGroup == true
+        let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserFullOrInvitedMember == true
 
         // If this is a group thread and we're not a member, never show the message request.
         if isGroupThread, !isLocalUserInGroup { return false }

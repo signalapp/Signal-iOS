@@ -6,24 +6,30 @@ import Foundation
 
 @objc
 public extension TSGroupThread {
-    var isLocalUserInGroup: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return groupModel.groupMembership.isNonPendingMember(localAddress)
+    var groupMembership: GroupMembership {
+        groupModel.groupMembership
+    }
+    var isLocalUserMemberOfAnyKind: Bool {
+        groupMembership.isLocalUserMemberOfAnyKind
     }
 
-    var isLocalUserPendingOrNonPendingMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return groupModel.groupMembership.isPendingOrNonPendingMember(localAddress)
+    var isLocalUserFullMember: Bool {
+        groupMembership.isLocalUserFullMember
     }
 
-    var isLocalUserPendingMember: Bool {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return false
-        }
-        return groupModel.groupMembership.isPendingMember(localAddress)
+    var isLocalUserInvitedMember: Bool {
+        groupMembership.isLocalUserInvitedMember
+    }
+
+    var isLocalUserRequestingMember: Bool {
+        groupMembership.isLocalUserRequestingMember
+    }
+
+    var isLocalUserFullOrInvitedMember: Bool {
+        groupMembership.isLocalUserFullOrInvitedMember
+    }
+
+    var isLocalUserFullMemberAndAdministrator: Bool {
+        groupMembership.isLocalUserFullMemberAndAdministrator
     }
 }

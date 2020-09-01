@@ -5,13 +5,46 @@
 import Foundation
 
 @objc
-public enum GroupV2Access: UInt, Codable {
+public enum GroupV2Access: UInt, Codable, CustomStringConvertible {
     case unknown = 0
     case any
     case member
     case administrator
+    case unsatisfiable
 
-    var description: String {
+    public static func access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
+        switch value {
+        case .any:
+            return .any
+        case .member:
+            return .member
+        case .administrator:
+            return .administrator
+        case .unsatisfiable:
+            return .unsatisfiable
+        default:
+            return .unknown
+        }
+    }
+
+    public var protoAccess: GroupsProtoAccessControlAccessRequired {
+        switch self {
+        case .any:
+            return .any
+        case .member:
+            return .member
+        case .administrator:
+            return .administrator
+        case .unsatisfiable:
+            return .unsatisfiable
+        default:
+            return .unknown
+        }
+    }
+
+    // MARK: - CustomStringConvertible
+
+    public var description: String {
         get {
             switch self {
             case .unknown:
@@ -22,6 +55,8 @@ public enum GroupV2Access: UInt, Codable {
                 return "member"
             case .administrator:
                 return "administrator"
+            case .unsatisfiable:
+                return "unsatisfiable"
             }
         }
     }
@@ -36,13 +71,52 @@ public class GroupAccess: MTLModel {
     public var members: GroupV2Access = .unknown
     @objc
     public var attributes: GroupV2Access = .unknown
+    @objc
+    public var addFromInviteLink: GroupV2Access = .unknown
 
     public init(members: GroupV2Access,
-                attributes: GroupV2Access) {
-        self.members = members
-        self.attributes = attributes
+                attributes: GroupV2Access,
+                addFromInviteLink: GroupV2Access) {
+
+        // Ensure we always have valid values.
+        self.members = Self.filter(forMembers: members)
+        self.attributes = Self.filter(forAttributes: attributes)
+        self.addFromInviteLink = Self.filter(forAddFromInviteLink: addFromInviteLink)
 
         super.init()
+    }
+
+    private static func filter(forMembers value: GroupV2Access) -> GroupV2Access {
+        switch value {
+        case .member, .administrator:
+            return value
+        default:
+            owsFailDebug("Invalid access level: \(value)")
+            return .unknown
+        }
+    }
+
+    private static func filter(forAttributes value: GroupV2Access) -> GroupV2Access {
+        switch value {
+        case .member, .administrator:
+            return value
+        default:
+            owsFailDebug("Invalid access level: \(value)")
+            return .unknown
+        }
+    }
+
+    private static func filter(forAddFromInviteLink value: GroupV2Access) -> GroupV2Access {
+        switch value {
+        case .unknown:
+            // .unknown is valid for groups created before group links were added.
+            return value
+        case .unsatisfiable, .administrator, .any:
+            return value
+        default:
+            owsFailDebug("Invalid access level: \(value)")
+            return .unknown
+        }
     }
 
     @objc
@@ -62,12 +136,12 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var allAccess: GroupAccess {
-        return GroupAccess(members: .any, attributes: .any)
+        return GroupAccess(members: .any, attributes: .any, addFromInviteLink: .any)
     }
 
     @objc
     public static var adminOnly: GroupAccess {
-        return GroupAccess(members: .administrator, attributes: .administrator)
+        return GroupAccess(members: .administrator, attributes: .administrator, addFromInviteLink: .administrator)
     }
 
     @objc
@@ -77,34 +151,19 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var defaultForV2: GroupAccess {
-        return GroupAccess(members: .member, attributes: .member)
-    }
-
-    public class func groupV2Access(forProtoAccess value: GroupsProtoAccessControlAccessRequired) -> GroupV2Access {
-        switch value {
-        case .member:
-            return .member
-        case .administrator:
-            return .administrator
-        default:
-            return .unknown
-        }
-    }
-
-    public class func protoAccess(forGroupV2Access value: GroupV2Access) -> GroupsProtoAccessControlAccessRequired {
-        switch value {
-        case .any:
-            return .unknown
-        case .member:
-            return .member
-        case .administrator:
-            return .administrator
-        default:
-            return .unknown
-        }
+        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .unsatisfiable)
     }
 
     public override var debugDescription: String {
-        return "[members: \(members.description), attributes: \(attributes.description), ]"
+        return "[members: \(members), attributes: \(attributes), addFromInviteLink: \(addFromInviteLink), ]"
+    }
+}
+
+@objc
+public extension GroupAccess {
+    var canJoinFromInviteLink: Bool {
+        // TODO: Should this include .member?
+        (addFromInviteLink == .any ||
+            addFromInviteLink == .administrator)
     }
 }

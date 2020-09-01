@@ -118,7 +118,7 @@ class GroupsV2ProfileKeyUpdater {
         let groupMembership = groupThread.groupModel.groupMembership
         // We only need to update v2 groups of which we are a full member.
         guard groupThread.isGroupV2Thread,
-            groupMembership.isNonPendingMember(localAddress) else {
+            groupMembership.isFullMember(localAddress) else {
                 return
         }
         let groupId = groupThread.groupModel.groupId
@@ -254,7 +254,7 @@ class GroupsV2ProfileKeyUpdater {
                 }
                 return self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: groupModel)
             }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupThread in
-                guard groupV2Snapshot.groupMembership.isNonPendingMember(localAddress) else {
+                guard groupV2Snapshot.groupMembership.isFullMember(localAddress) else {
                     // We're not a full member, no need to update profile key.
                     throw GroupsV2Error.redundantChange
                 }

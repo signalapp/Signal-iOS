@@ -69,7 +69,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
 
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
-            self.contactsManager.sortSignalServiceAddresses(Array(groupMembership.pendingMembers),
+            self.contactsManager.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
                                                             transaction: transaction)
         }
 
@@ -77,7 +77,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
         var membersInvitedByLocalUser = [SignalServiceAddress]()
         var membersInvitedByOtherUsers = [SignalServiceAddress: [SignalServiceAddress]]()
         for invitedAddress in allPendingMembersSorted {
-            guard let inviterUuid = groupMembership.addedByUuid(forPendingMember: invitedAddress) else {
+            guard let inviterUuid = groupMembership.addedByUuid(forInvitedMember: invitedAddress) else {
                 owsFailDebug("Missing inviter.")
                 continue
             }
@@ -389,8 +389,8 @@ private extension PendingGroupMembersViewController {
                                                         updatePromiseBlock: {
                                                             self.revokePendingInvitesPromise(addresses: addresses)
         },
-                                                        completion: {
-                                                            self.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] _ in
+                                                            self?.reloadGroupModelAndTableContents()
         })
     }
 
@@ -416,8 +416,8 @@ private extension PendingGroupMembersViewController {
                                                         updatePromiseBlock: {
                                                             self.revokeInvalidInvitesPromise()
         },
-                                                        completion: {
-                                                            self.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] _ in
+                                                            self?.reloadGroupModelAndTableContents()
         })
     }
 

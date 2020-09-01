@@ -106,8 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     [circleView autoHCenterInSuperview];
     [circleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    [shadowView autoPinWidthToWidthOfView:circleView];
-    [shadowView autoPinHeightToHeightOfView:circleView];
+    [shadowView autoPinEdgesToEdgesOfView:circleView];
 
     [circleView addSubview:iconView];
     [iconView autoCenterInSuperview];

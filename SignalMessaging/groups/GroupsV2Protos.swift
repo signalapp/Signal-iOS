@@ -101,16 +101,20 @@ public class GroupsV2Protos {
             groupBuilder.setAvatar(avatarUrl)
         }
 
-        groupBuilder.setAccessControl(try buildAccessProto(groupAccess: groupModel.access))
+        let groupAccess = groupModel.access
+        groupBuilder.setAccessControl(try buildAccessProto(groupAccess: groupAccess))
+
+        if let inviteLinkPassword = groupModel.inviteLinkPassword,
+            !inviteLinkPassword.isEmpty {
+                groupBuilder.setInviteLinkPassword(inviteLinkPassword)
+        }
 
         // * You will be member 0 and the only admin.
         // * Other members will be non-admin members.
         //
         // Add local user first to ensure that they are user 0.
         let groupMembership = groupModel.groupMembership
-        let localAddress = SignalServiceAddress(uuid: localUuid)
-        assert(groupMembership.isAdministrator(localAddress))
-        assert(!groupMembership.isPendingMember(localAddress))
+        assert(groupMembership.isFullMemberAndAdministrator(localUuid))
         groupBuilder.addMembers(try buildMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                      role: .administrator,
                                                      groupV2Params: groupV2Params))
@@ -118,25 +122,24 @@ public class GroupsV2Protos {
             guard uuid != localUuid else {
                 continue
             }
-            let address = SignalServiceAddress(uuid: uuid)
-            let isAdministrator = groupMembership.isAdministrator(address)
-            let isPending = groupMembership.isPendingMember(address)
-            let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
-            guard !isPending else {
+            let isInvited = groupMembership.isInvitedMember(uuid)
+            guard !isInvited else {
                 continue
             }
+            let isAdministrator = groupMembership.isFullMemberAndAdministrator(uuid)
+            let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
             groupBuilder.addMembers(try buildMemberProto(profileKeyCredential: profileKeyCredential,
                                                          role: role,
                                                          groupV2Params: groupV2Params))
         }
-        for address in groupMembership.pendingMembers {
+        for address in groupMembership.invitedMembers {
             guard let uuid = address.uuid else {
                 throw OWSAssertionError("Missing uuid.")
             }
             guard uuid != localUuid else {
                 continue
             }
-            let isAdministrator = groupMembership.isAdministrator(address)
+            let isAdministrator = groupMembership.isFullOrInvitedAdministrator(uuid)
             let role: GroupsProtoMemberRole = isAdministrator ? .administrator : .`default`
             groupBuilder.addPendingMembers(try buildPendingMemberProto(uuid: uuid,
                                                                        role: role,
@@ -144,13 +147,26 @@ public class GroupsV2Protos {
                                                                        groupV2Params: groupV2Params))
         }
 
+        validateInviteLinkState(inviteLinkPassword: groupModel.inviteLinkPassword, groupAccess: groupAccess)
+
         return try groupBuilder.build()
+    }
+
+    public class func validateInviteLinkState(inviteLinkPassword: Data?, groupAccess: GroupAccess) {
+        let canJoinFromInviteLink = groupAccess.canJoinFromInviteLink
+        let hasInviteLinkPassword = inviteLinkPassword?.count ?? 0 > 0
+        if canJoinFromInviteLink, !hasInviteLinkPassword {
+            owsFailDebug("Invite links enabled without inviteLinkPassword.")
+        } else if !canJoinFromInviteLink, hasInviteLinkPassword {
+            owsFailDebug("inviteLinkPassword set but invite links not enabled.")
+        }
     }
 
     public class func buildAccessProto(groupAccess: GroupAccess) throws -> GroupsProtoAccessControl {
         let builder = GroupsProtoAccessControl.builder()
-        builder.setAttributes(GroupAccess.protoAccess(forGroupV2Access: groupAccess.attributes))
-        builder.setMembers(GroupAccess.protoAccess(forGroupV2Access: groupAccess.members))
+        builder.setAttributes(groupAccess.attributes.protoAccess)
+        builder.setMembers(groupAccess.members.protoAccess)
+        builder.setAddFromInviteLink(groupAccess.addFromInviteLink.protoAccess)
         return try builder.build()
     }
 
@@ -175,6 +191,7 @@ public class GroupsV2Protos {
                 assert(changeActionsProtoData.count > 0)
                 builder.setGroupChange(changeActionsProtoData)
             } else {
+                // This isn't necessarily a bug, but it should be rare.
                 owsFailDebug("Discarding oversize group change proto.")
             }
         }
@@ -316,6 +333,8 @@ public class GroupsV2Protos {
             pendingMembers.append(pendingMember)
         }
 
+        let inviteLinkPassword = groupProto.inviteLinkPassword
+
         guard let accessControl = groupProto.accessControl else {
             throw OWSAssertionError("Missing accessControl.")
         }
@@ -325,10 +344,19 @@ public class GroupsV2Protos {
         guard let accessControlForMembers = accessControl.members else {
             throw OWSAssertionError("Missing accessControl.members.")
         }
+        // If group state does not have "invite link" access specified,
+        // assume invite links are disabled.
+        let accessControlForAddFromInviteLink = accessControl.addFromInviteLink ?? .unsatisfiable
 
         // If the timer blob is not populated or has zero duration,
         // disappearing messages should be disabled.
         let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(groupProto.disappearingMessagesTimer)
+
+        let groupAccess = GroupAccess(members: GroupV2Access.access(forProtoAccess: accessControlForMembers),
+                                      attributes: GroupV2Access.access(forProtoAccess: accessControlForAttributes),
+                                      addFromInviteLink: GroupV2Access.access(forProtoAccess: accessControlForAddFromInviteLink))
+
+        validateInviteLinkState(inviteLinkPassword: inviteLinkPassword, groupAccess: groupAccess)
 
         let revision = groupProto.revision
         let groupSecretParamsData = groupV2Params.groupSecretParamsData
@@ -341,8 +369,8 @@ public class GroupsV2Protos {
                                    members: members,
                                    pendingMembers: pendingMembers,
                                    invalidInvites: invalidInvites,
-                                   accessControlForAttributes: accessControlForAttributes,
-                                   accessControlForMembers: accessControlForMembers,
+                                   groupAccess: groupAccess,
+                                   inviteLinkPassword: inviteLinkPassword,
                                    disappearingMessageToken: disappearingMessageToken,
                                    profileKeys: profileKeys)
     }
