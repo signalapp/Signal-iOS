@@ -236,13 +236,13 @@ NS_ASSUME_NONNULL_BEGIN
                     [self.databaseStorage touchInteraction:outgoingMessage transaction:transaction];
 
                     if (quotedThumbnailStream) {
-                            [outgoingMessage
-                                anyUpdateMessageWithTransaction:transaction
-                                                          block:^(TSMessage *message) {
-                                                              [message setQuotedMessageThumbnailAttachmentStream:
-                                                                           quotedThumbnailStream];
-                                                          }];
-                        });
+                        [outgoingMessage
+                            anyUpdateMessageWithTransaction:transaction
+                                                      block:^(TSMessage *message) {
+                                                          [message setQuotedMessageThumbnailAttachmentStream:
+                                                                       quotedThumbnailStream];
+                                                      }];
+                    }
                 });
                 attachmentHandler(attachmentStreams);
             }
