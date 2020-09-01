@@ -242,6 +242,8 @@ public class OWSLinkPreview: MTLModel {
     }
 }
 
+// MARK: -
+
 @objc
 public class OWSLinkPreviewManager: NSObject {
 
@@ -254,6 +256,10 @@ public class OWSLinkPreviewManager: NSObject {
 
     var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
+    }
+
+    var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
     // MARK: - Public
@@ -287,41 +293,23 @@ public class OWSLinkPreviewManager: NSObject {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
 
-        if StickerPackInfo.isStickerPackShare(url) {
-            return fetchLinkPreview(forStickerPackUrl: url)
-        } else if GroupManager.isGroupInviteLink(url) {
-            return fetchLinkPreview(forGroupInviteLink: url)
-        } else {
-            return fetchLinkPreview(forGenericUrl: url)
+        return firstly(on: Self.workQueue) { () -> Promise<OWSLinkPreviewDraft> in
+            if StickerPackInfo.isStickerPackShare(url) {
+                return self.linkPreviewDraft(forStickerShare: url)
+            } else if GroupManager.isGroupInviteLink(url) {
+                return self.linkPreviewDraft(forGroupInviteLink: url)
+            } else {
+                return self.fetchLinkPreview(forGenericUrl: url)
+            }
+        }.map(on: Self.workQueue) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
+            guard linkPreviewDraft.isValid() else {
+                throw LinkPreviewError.noPreview
+            }
+            return linkPreviewDraft
         }
     }
 
     // MARK: - Private
-
-    private func fetchLinkPreview(forStickerPackUrl url: URL) -> Promise<OWSLinkPreviewDraft> {
-        firstly(on: Self.workQueue) {
-            self.linkPreviewDraft(forStickerShare: url)
-
-        }.map(on: Self.workQueue) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
-            guard linkPreviewDraft.isValid() else {
-                throw LinkPreviewError.noPreview
-            }
-            return linkPreviewDraft
-        }
-    }
-
-    private func fetchLinkPreview(forGroupInviteLink url: URL) -> Promise<OWSLinkPreviewDraft> {
-        // TODO:
-        firstly(on: Self.workQueue) {
-            self.linkPreviewDraft(forStickerShare: url)
-
-        }.map(on: Self.workQueue) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
-            guard linkPreviewDraft.isValid() else {
-                throw LinkPreviewError.noPreview
-            }
-            return linkPreviewDraft
-        }
-    }
 
     private func fetchLinkPreview(forGenericUrl url: URL) -> Promise<OWSLinkPreviewDraft> {
         firstly(on: Self.workQueue) { () -> Promise<String> in
@@ -352,12 +340,6 @@ public class OWSLinkPreviewManager: NSObject {
                 let draft = OWSLinkPreviewDraft(url: url, title: title)
                 return Promise.value(draft)
             }
-
-        }.map(on: Self.workQueue) { (draft) -> OWSLinkPreviewDraft in
-            guard draft.isValid() else {
-                throw LinkPreviewError.noPreview
-            }
-            return draft
         }
     }
 
@@ -552,7 +534,7 @@ public class OWSLinkPreviewManager: NSObject {
 
     // MARK: - Stickers
 
-    func linkPreviewDraft(forStickerShare url: URL) -> Promise<OWSLinkPreviewDraft> {
+    private func linkPreviewDraft(forStickerShare url: URL) -> Promise<OWSLinkPreviewDraft> {
         Logger.verbose("url: \(url)")
 
         guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) else {
@@ -579,6 +561,57 @@ public class OWSLinkPreviewManager: NSObject {
                                            title: stickerPack.title?.filterForDisplay,
                                            imageData: previewThumbnail.imageData,
                                            imageMimeType: previewThumbnail.mimetype)
+            }
+        }
+    }
+
+    // MARK: - Group Invite Links
+
+    private func linkPreviewDraft(forGroupInviteLink url: URL) -> Promise<OWSLinkPreviewDraft> {
+        Logger.verbose("url: \(url)")
+
+        return firstly(on: .global()) { () -> GroupInviteLinkInfo in
+            guard let groupInviteLinkInfo = GroupManager.parseGroupInviteLink(url) else {
+                Logger.error("Could not parse URL.")
+                throw LinkPreviewError.invalidPreview
+            }
+            return groupInviteLinkInfo
+        }.then(on: .global()) { (groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<OWSLinkPreviewDraft> in
+            let groupV2ContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            return firstly {
+                self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
+                                                          groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
+            }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) in
+                return firstly { () -> Promise<Data?> in
+                    guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
+                        return Promise.value(nil)
+                    }
+                    return firstly { () -> Promise<Data> in
+                        self.groupsV2.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
+                                                                 groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
+                    }.map { (avatarData: Data) -> Data? in
+                        return avatarData
+                    }.recover { (error: Error) -> Promise<Data?> in
+                        if IsNetworkConnectivityFailure(error) {
+                            Logger.warn("Error: \(error)")
+
+                        } else {
+                            owsFailDebug("Error: \(error)")
+                        }
+                        return Promise.value(nil)
+                    }
+                }.then(on: .global()) { (imageData: Data?) -> Promise<PreviewThumbnail?> in
+                    Self.previewThumbnail(srcImageData: imageData, srcMimeType: nil)
+                }.map(on: .global()) { (previewThumbnail: PreviewThumbnail?) -> OWSLinkPreviewDraft in
+                    guard let previewThumbnail = previewThumbnail else {
+                        return OWSLinkPreviewDraft(url: url,
+                                                   title: groupInviteLinkPreview.title)
+                    }
+                    return OWSLinkPreviewDraft(url: url,
+                                               title: groupInviteLinkPreview.title,
+                                               imageData: previewThumbnail.imageData,
+                                               imageMimeType: previewThumbnail.mimetype)
+                }
             }
         }
     }

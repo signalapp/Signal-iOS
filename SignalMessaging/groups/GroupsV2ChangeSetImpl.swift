@@ -78,7 +78,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     private var accessForAddFromInviteLink: GroupV2Access?
 
     private enum InviteLinkPasswordMode {
-        case clear
+        case ignore
         case rotate
         case ensureValid
     }
@@ -318,7 +318,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         switch linkMode {
         case .disabled:
             accessForAddFromInviteLink = .unsatisfiable
-            inviteLinkPasswordMode = .clear
+            inviteLinkPasswordMode = .ignore
         case .enabledWithoutApproval, .enabledWithApproval:
             accessForAddFromInviteLink = (linkMode == .enabledWithoutApproval
                 ? .any
@@ -468,8 +468,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         if let inviteLinkPasswordMode = inviteLinkPasswordMode {
             let newInviteLinkPassword: Data?
             switch inviteLinkPasswordMode {
-            case .clear:
-                newInviteLinkPassword = nil
+            case .ignore:
+                newInviteLinkPassword = currentGroupModel.inviteLinkPassword
             case .rotate:
                 newInviteLinkPassword = GroupManager.generateInviteLinkPasswordV2()
             case .ensureValid:
