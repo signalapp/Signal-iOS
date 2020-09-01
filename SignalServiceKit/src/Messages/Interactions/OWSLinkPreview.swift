@@ -472,7 +472,7 @@ public class OWSLinkPreviewManager: NSObject {
             return Promise.value(nil)
         }
         return firstly(on: Self.workQueue) { () -> PreviewThumbnail? in
-            let imageMetadata = (srcImageData as NSData).imageData(withPath: nil, mimeType: srcMimeType)
+            let imageMetadata = (srcImageData as NSData).imageMetadata(withPath: nil, mimeType: srcMimeType)
             guard imageMetadata.isValid else {
                 return nil
             }
