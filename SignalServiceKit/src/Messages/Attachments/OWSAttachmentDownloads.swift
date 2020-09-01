@@ -119,7 +119,7 @@ public extension OWSAttachmentDownloads {
             let tempFileUrl = downloadState.tempFileUrl
 
             let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<URL> in
-                let sessionManager = self.signalService.cdnSessionManager(forCdnNumber: attachmentPointer.cdnNumber)
+                let sessionManager = self.signalService.sessionManagerForCdn(cdnNumber: attachmentPointer.cdnNumber)
                 sessionManager.completionQueue = .global()
 
                 let url = try Self.url(for: downloadState, sessionManager: sessionManager)

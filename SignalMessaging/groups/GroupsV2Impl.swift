@@ -30,7 +30,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     }
 
     private var urlSession: OWSURLSession {
-        return OWSSignalService.sharedInstance().storageServiceURLSession
+        return OWSSignalService.sharedInstance().urlSessionForStorageService()
     }
 
     private var profileManager: OWSProfileManager {

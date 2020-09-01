@@ -64,11 +64,6 @@ public class AppExpiry: NSObject {
 
     @objc
     public static var daysUntilBuildExpiry: Int {
-        shared.daysUntilBuildExpiry
-    }
-
-    @objc
-    public var daysUntilBuildExpiry: Int {
         guard let buildAge = Calendar.current.dateComponents(
             [.day],
             from: CurrentAppContext().buildTime,
@@ -82,11 +77,6 @@ public class AppExpiry: NSObject {
 
     @objc
     public static var isExpiringSoon: Bool {
-        shared.isExpiringSoon
-    }
-
-    @objc
-    public var isExpiringSoon: Bool {
         guard !isEndOfLifeOSVersion else { return false }
         return daysUntilBuildExpiry <= 10
     }
@@ -98,14 +88,9 @@ public class AppExpiry: NSObject {
 
     @objc
     public var isExpired: Bool {
-        guard !isEndOfLifeOSVersion else { return true }
+        guard !Self.isEndOfLifeOSVersion else { return true }
         guard !hasAppExpiredAtCurrentVersion.get() else { return true }
-        return daysUntilBuildExpiry <= 0
-    }
-
-    @objc
-    public static var isEndOfLifeOSVersion: Bool {
-        shared.isEndOfLifeOSVersion
+        return Self.daysUntilBuildExpiry <= 0
     }
 
     /// Indicates if this iOS version is no longer supported. If so,
@@ -115,7 +100,7 @@ public class AppExpiry: NSObject {
     ///
     /// Currently, only iOS 11 and greater are officially supported.
     @objc
-    public var isEndOfLifeOSVersion: Bool {
+    public static var isEndOfLifeOSVersion: Bool {
         if #available(iOS 11, *) {
             return false
         } else {

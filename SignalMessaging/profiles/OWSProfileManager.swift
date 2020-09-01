@@ -124,7 +124,7 @@ extension OWSProfileManager {
     }
 
     private class var avatarHTTPManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: 0)
+        return OWSSignalService.sharedInstance().sessionManagerForCdn(cdnNumber: 0)
     }
 
     // MARK: -

@@ -120,7 +120,7 @@ dispatch_queue_t NetworkManagerQueue()
         return self;
     }
 
-    _sessionManager = [self.signalService buildSignalServiceSessionManager];
+    _sessionManager = [self.signalService sessionManagerForMainSignalService];
     self.sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     // NOTE: We could enable HTTPShouldUsePipelining here.
     // Make a copy of the default headers for this session manager.

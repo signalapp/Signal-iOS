@@ -354,7 +354,7 @@ public struct StorageService {
     // MARK: - Dependencies
 
     private static var sessionManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().storageServiceSessionManager
+        return OWSSignalService.sharedInstance().sessionManagerForStorageService()
     }
 
     private static var signalServiceClient: SignalServiceClient {

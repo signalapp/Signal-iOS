@@ -47,16 +47,16 @@ fileprivate extension OWSUpload {
 
     // MARK: -
 
-    static func cdnSessionManager(forCdnNumber cdnNumber: UInt32) -> AFHTTPSessionManager {
-        signalService.cdnSessionManager(forCdnNumber: cdnNumber)
+    static func sessionManagerForCdn(cdnNumber: UInt32) -> AFHTTPSessionManager {
+        signalService.sessionManagerForCdn(cdnNumber: cdnNumber)
     }
 
     static var cdn0SessionManager: AFHTTPSessionManager {
-        signalService.cdnSessionManager(forCdnNumber: 0)
+        signalService.sessionManagerForCdn(cdnNumber: 0)
     }
 
     static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSession {
-        signalService.cdnURLSession(forCdnNumber: cdnNumber)
+        signalService.urlSessionForCdn(cdnNumber: cdnNumber)
     }
 }
 

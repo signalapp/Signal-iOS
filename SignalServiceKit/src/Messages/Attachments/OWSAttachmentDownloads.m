@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (AFHTTPSessionManager *)cdnSessionManagerForCdnNumber:(UInt32)cdnNumber
 {
-    return [OWSSignalService.sharedInstance cdnSessionManagerForCdnNumber:cdnNumber];
+    return [OWSSignalService.sharedInstance sessionManagerForCdnNumber:cdnNumber];
 }
 
 - (id<ProfileManagerProtocol>)profileManager
