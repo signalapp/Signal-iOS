@@ -215,7 +215,7 @@ dispatch_queue_t NetworkManagerQueue()
     } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
         [self.sessionManager DELETE:requestURLString parameters:request.parameters success:success failure:failure];
     } else {
-        OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
+        OWSLogError(@"Trying to perform HTTP operation with unknown method: %@", request.HTTPMethod);
     }
 }
 

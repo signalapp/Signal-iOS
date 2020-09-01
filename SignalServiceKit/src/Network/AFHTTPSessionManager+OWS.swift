@@ -14,7 +14,7 @@ public extension AFHTTPSessionManager {
                      parameters: [String: AnyObject]? = nil,
                      progress: ProgressBlock? = nil) -> Promise<Response> {
 
-        performRequest(urlString, verb: .get, headers: headers, parameters: parameters, progress: progress)
+        performRequest(urlString, method: .get, headers: headers, parameters: parameters, progress: progress)
     }
 
     func postPromise(_ urlString: String,
@@ -22,18 +22,18 @@ public extension AFHTTPSessionManager {
                      parameters: [String: AnyObject]? = nil,
                      progress: ProgressBlock? = nil) -> Promise<Response> {
 
-        performRequest(urlString, verb: .post, headers: headers, parameters: parameters, progress: progress)
+        performRequest(urlString, method: .post, headers: headers, parameters: parameters, progress: progress)
     }
 
     func putPromise(_ urlString: String,
                      headers: [String: String]? = nil,
                      parameters: [String: AnyObject]? = nil) -> Promise<Response> {
 
-        performRequest(urlString, verb: .put, headers: headers, parameters: parameters)
+        performRequest(urlString, method: .put, headers: headers, parameters: parameters)
     }
 
     private func performRequest(_ urlString: String,
-                                verb: HTTPVerb,
+                                method: HTTPMethod,
                                 headers: [String: String]? = nil,
                                 parameters: [String: AnyObject]? = nil,
                                 progress: ProgressBlock? = nil) -> Promise<Response> {
@@ -62,7 +62,7 @@ public extension AFHTTPSessionManager {
             }
             resolver.reject(error)
         }
-        switch verb {
+        switch method {
         case .get:
             get(urlString, parameters: parameters, progress: progress, success: success, failure: failure)
         case .post:
@@ -82,7 +82,7 @@ public extension AFHTTPSessionManager {
     typealias DownloadTaskProgressBlock = (Progress, URLSessionDownloadTask) -> Void
 
     func downloadTaskPromise(_ urlString: String,
-                             verb: HTTPVerb,
+                             method: HTTPMethod,
                              headers: [String: String]? = nil,
                              parameters: [String: AnyObject]? = nil,
                              dstFileUrl: URL?,
@@ -90,7 +90,7 @@ public extension AFHTTPSessionManager {
 
         return firstly(on: .global()) { () -> URLRequest in
             try self.buildDownloadTaskRequest(urlString: urlString,
-                                              verb: verb,
+                                              method: method,
                                               headers: headers,
                                               parameters: parameters)
         }.then(on: .global()) { (request: URLRequest) in
@@ -145,7 +145,7 @@ public extension AFHTTPSessionManager {
     }
 
     private func buildDownloadTaskRequest(urlString: String,
-                                          verb: HTTPVerb,
+                                          method: HTTPMethod,
                                           headers: [String: String]? = nil,
                                           parameters: [String: AnyObject]? = nil) throws -> URLRequest {
         guard let url = OWSURLSession.buildUrl(urlString: urlString, baseUrl: baseURL) else {
@@ -153,7 +153,7 @@ public extension AFHTTPSessionManager {
         }
 
         var nsError: NSError?
-        let request = requestSerializer.request(withMethod: verb.httpMethod,
+        let request = requestSerializer.request(withMethod: method.methodName,
                                                 urlString: url.absoluteString,
                                                 parameters: parameters,
                                                 error: &nsError)

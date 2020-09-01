@@ -378,7 +378,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
-            return urlSession.dataTaskPromise(urlString, verb: .post, headers: headers, body: body)
+            return urlSession.dataTaskPromise(urlString, method: .post, headers: headers, body: body)
         }.map(on: .global()) { (response: OWSHTTPResponse) in
             guard response.statusCode == 201 else {
                 throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
@@ -456,7 +456,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 var headers = [String: String]()
                 headers["Content-Length"] = formatInt(uploadV3Metadata.dataLength)
                 return urlSession.uploadTaskPromise(urlString,
-                                                    verb: .put,
+                                                    method: .put,
                                                     headers: headers,
                                                     dataUrl: uploadV3Metadata.temporaryFileUrl,
                                                     progressBlock: progressBlock).asVoid()
@@ -484,7 +484,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
                 return firstly(on: .global()) {
                     urlSession.uploadTaskPromise(urlString,
-                                                 verb: .put,
+                                                 method: .put,
                                                  headers: headers,
                                                  dataUrl: dataSliceFileUrl,
                                                  progressBlock: progressBlock).asVoid()
@@ -600,7 +600,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
             let body = "".data(using: .utf8)
 
-            return urlSession.dataTaskPromise(urlString, verb: .put, headers: headers, body: body)
+            return urlSession.dataTaskPromise(urlString, method: .put, headers: headers, body: body)
         }.map(on: .global()) { (response: OWSHTTPResponse) in
 
             if response.statusCode != 308 {

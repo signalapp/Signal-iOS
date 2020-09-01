@@ -139,7 +139,7 @@ public extension OWSAttachmentDownloads {
                                                                     progress: progress)
                 } else {
                     return sessionManager.downloadTaskPromise(url.absoluteString,
-                                                              verb: .get,
+                                                              method: .get,
                                                               headers: headers,
                                                               dstFileUrl: tempFileUrl,
                                                               progress: progress)

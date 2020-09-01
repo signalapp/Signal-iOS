@@ -5,14 +5,14 @@
 import Foundation
 import PromiseKit
 
-public enum HTTPVerb {
+public enum HTTPMethod {
     case get
     case post
     case put
     case head
     case patch
 
-    public var httpMethod: String {
+    public var methodName: String {
         switch self {
         case .get:
             return "GET"
@@ -27,8 +27,8 @@ public enum HTTPVerb {
         }
     }
 
-    public static func verb(for verb: String?) throws -> HTTPVerb {
-        switch verb {
+    public static func method(for method: String?) throws -> HTTPMethod {
+        switch method {
         case "GET":
             return .get
         case "POST":
@@ -40,7 +40,7 @@ public enum HTTPVerb {
         case "PATCH":
             return .patch
         default:
-            throw OWSAssertionError("Unknown verb: \(String(describing: verb))")
+            throw OWSAssertionError("Unknown method: \(String(describing: method))")
         }
     }
 }
@@ -273,14 +273,14 @@ public class OWSURLSession: NSObject {
     // MARK: -
 
     private func buildRequest(_ urlString: String,
-                              verb: HTTPVerb,
+                              method: HTTPMethod,
                               headers: [String: String]? = nil,
                               body: Data? = nil) throws -> URLRequest {
         guard let url = buildUrl(urlString) else {
             throw OWSAssertionError("Invalid url.")
         }
         var request = URLRequest(url: url)
-        request.httpMethod = verb.httpMethod
+        request.httpMethod = method.methodName
 
         let httpHeaders = OWSHttpHeaders()
         httpHeaders.merge(headers, overwriteOnConflict: false)
@@ -471,12 +471,12 @@ public extension OWSURLSession {
     typealias ProgressBlock = (Progress) -> Void
 
     func uploadTaskPromise(_ urlString: String,
-                           verb: HTTPVerb,
+                           method: HTTPMethod,
                            headers: [String: String]? = nil,
                            data requestData: Data,
                            progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
         firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            let request = try self.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, data: requestData, progressBlock: progressBlock)
         }
     }
@@ -506,12 +506,12 @@ public extension OWSURLSession {
     }
 
     func uploadTaskPromise(_ urlString: String,
-                           verb: HTTPVerb,
+                           method: HTTPMethod,
                            headers: [String: String]? = nil,
                            dataUrl: URL,
                            progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
         firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            let request = try self.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, dataUrl: dataUrl, progressBlock: progressBlock)
         }
     }
@@ -544,25 +544,25 @@ public extension OWSURLSession {
         guard let url = request.url else {
             return Promise(error: OWSAssertionError("Missing URL."))
         }
-        let verb: HTTPVerb
+        let method: HTTPMethod
         do {
-            verb = try HTTPVerb.verb(for: request.httpMethod)
+            method = try HTTPMethod.method(for: request.httpMethod)
         } catch {
             owsFailDebug("Error: \(error)")
             return Promise(error: error)
         }
         return dataTaskPromise(url.absoluteString,
-                               verb: verb,
+                               method: method,
                                headers: request.allHTTPHeaderFields,
                                body: request.httpBody)
     }
 
     func dataTaskPromise(_ urlString: String,
-                         verb: HTTPVerb,
+                         method: HTTPMethod,
                          headers: [String: String]? = nil,
                          body: Data?) -> Promise<OWSHTTPResponse> {
         firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers, body: body)
+            let request = try self.buildRequest(urlString, method: method, headers: headers, body: body)
             return self.dataTaskPromise(request: request)
         }
     }
