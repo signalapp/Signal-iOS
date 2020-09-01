@@ -235,7 +235,8 @@ public class OWSURLSession: NSObject {
                                     resolver.reject(OWSAssertionError("Missing downloadUrl."))
                                     return
                                 }
-                                let temporaryUrl = OWSFileSystem.temporaryFileUrl()
+                                let temporaryUrl = OWSFileSystem.temporaryFileUrl(fileExtension: nil,
+                                                                                  isAvailableWhileDeviceLocked: true)
                                 do {
                                     try OWSFileSystem.moveFile(from: downloadUrl, to: temporaryUrl)
                                 } catch {
