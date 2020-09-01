@@ -660,6 +660,7 @@ public extension OWSUpload {
 
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {
+            // TODO: Use OWSUrlSession instead.
             self.cdn0SessionManager.post(uploadUrlPath,
                                          parameters: nil,
                                          constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
@@ -672,6 +673,7 @@ public extension OWSUpload {
                                             uploadForm.append(toForm: formData)
 
                                             AppendMultipartFormPath(formData, "Content-Type", OWSMimeTypeApplicationOctetStream)
+                                            AppendMultipartFormPath(formData, OWSURLSession.kUserAgentHeader, OWSURLSession.signalIosUserAgent)
 
                                             formData.appendPart(withForm: data, name: "file")
             },
@@ -693,6 +695,11 @@ public extension OWSUpload {
                     #endif
                 } else {
                     owsFailDebug("Missing task.")
+                }
+
+                if let statusCode = HTTPStatusCodeForError(error),
+                statusCode.intValue == AppExpiry.appExpiredStatusCode {
+                    AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
                 }
 
                 if IsNetworkConnectivityFailure(error) {

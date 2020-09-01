@@ -48,6 +48,8 @@ public class AppExpiry: NSObject {
 
     @objc
     public func setHasAppExpiredAtCurrentVersion() {
+        Logger.warn("")
+
         hasAppExpiredAtCurrentVersion.set(true)
 
         databaseStorage.asyncWrite { transaction in

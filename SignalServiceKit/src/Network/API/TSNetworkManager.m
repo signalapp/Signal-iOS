@@ -120,6 +120,7 @@ dispatch_queue_t NetworkManagerQueue()
         return self;
     }
 
+    // TODO: Use OWSUrlSession instead.
     _sessionManager = [self.signalService sessionManagerForMainSignalService];
     self.sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     // NOTE: We could enable HTTPShouldUsePipelining here.
