@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
         timestampLabelText
             = NSLocalizedString(@"MESSAGE_STATUS_SEND_FAILED", @"Label indicating that a message failed to send.");
     } else {
-        timestampLabelText = [DateUtil formatMessageTimestamp:viewItem.interaction.timestamp];
+        timestampLabelText = [DateUtil formatMessageTimestamp:viewItem.interaction.timestampForUI];
     }
 
     TSMessage *message = [viewItem.interaction as:TSMessage.class];
