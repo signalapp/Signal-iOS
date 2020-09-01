@@ -148,15 +148,15 @@ dispatch_queue_t NetworkManagerQueue()
     }
 
     OWSHttpHeaders *httpHeaders = [OWSHttpHeaders new];
-    [httpHeaders merge:request.allHTTPHeaderFields overwriteOnConflict:NO];
+    [httpHeaders addHeaders:request.allHTTPHeaderFields overwriteOnConflict:NO];
 
     // Apply the default headers for this session manager.
-    [httpHeaders merge:self.defaultHeaders overwriteOnConflict:NO];
+    [httpHeaders addHeaders:self.defaultHeaders overwriteOnConflict:NO];
 
     // Set User-Agent header.
-    [httpHeaders mergeHeader:OWSURLSession.kUserAgentHeader
-                       value:OWSURLSession.signalIosUserAgent
-         overwriteOnConflict:YES];
+    [httpHeaders addHeader:OWSURLSession.kUserAgentHeader
+                      value:OWSURLSession.signalIosUserAgent
+        overwriteOnConflict:YES];
 
     if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
         OWSAssertDebug(request.authUsername.length > 0);

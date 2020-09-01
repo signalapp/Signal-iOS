@@ -326,8 +326,6 @@ public class OWSURLSession: NSObject {
         AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
     }
 
-    // TODO: Add downloadTaskPromise().
-
     // MARK: -
 
     private func buildRequest(_ urlString: String,
@@ -341,9 +339,9 @@ public class OWSURLSession: NSObject {
         request.httpMethod = method.methodName
 
         let httpHeaders = OWSHttpHeaders()
-        httpHeaders.merge(headers, overwriteOnConflict: false)
-        httpHeaders.merge(extraHeaders, overwriteOnConflict: false)
-        httpHeaders.merge(header: Self.kUserAgentHeader, value: Self.signalIosUserAgent, overwriteOnConflict: true)
+        httpHeaders.addHeaders(headers, overwriteOnConflict: false)
+        httpHeaders.addHeaders(extraHeaders, overwriteOnConflict: false)
+        httpHeaders.addHeader(Self.kUserAgentHeader, value: Self.signalIosUserAgent, overwriteOnConflict: true)
         request.add(httpHeaders: httpHeaders)
 
         request.httpBody = body
@@ -657,24 +655,6 @@ public extension OWSURLSession {
 
     // MARK: - Data Tasks
 
-    // TODO:
-    func dataTaskPromise(request: NSURLRequest) -> Promise<OWSHTTPResponse> {
-        guard let url = request.url else {
-            return Promise(error: OWSAssertionError("Missing URL."))
-        }
-        let method: HTTPMethod
-        do {
-            method = try HTTPMethod.method(for: request.httpMethod)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return Promise(error: error)
-        }
-        return dataTaskPromise(url.absoluteString,
-                               method: method,
-                               headers: request.allHTTPHeaderFields,
-                               body: request.httpBody)
-    }
-
     func dataTaskPromise(_ urlString: String,
                          method: HTTPMethod,
                          headers: [String: String]? = nil,
@@ -795,14 +775,14 @@ public class OWSHttpHeaders: NSObject {
         owsAssertDebug(!hasValueForHeader(header))
     }
 
-    @objc(mergeHeader:value:overwriteOnConflict:)
-    public func merge(header: String, value: String, overwriteOnConflict: Bool) {
-        merge([header: value], overwriteOnConflict: overwriteOnConflict)
+    @objc(addHeader:value:overwriteOnConflict:)
+    public func addHeader(_ header: String, value: String, overwriteOnConflict: Bool) {
+        addHeaders([header: value], overwriteOnConflict: overwriteOnConflict)
     }
 
     @objc
-    public func merge(_ newHttpHeaders: [String: String]?,
-                      overwriteOnConflict: Bool) {
+    public func addHeaders(_ newHttpHeaders: [String: String]?,
+                           overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
             return
         }

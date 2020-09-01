@@ -212,7 +212,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 // Gather the profile key credentials for all members.
                 let allUuids = uuids + [localUuid]
                 return self.loadProfileKeyCredentialData(for: allUuids)
-            }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> NSURLRequest in
+            }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> GroupsV2Request in
                 let groupProto = try GroupsV2Protos.buildNewGroupProto(groupModel: groupModel,
                                                                        groupV2Params: groupV2Params,
                                                                        profileKeyCredentialMap: profileKeyCredentialMap,
@@ -294,7 +294,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
                 return changeSet.buildGroupChangeProto(currentGroupModel: groupModel,
                                                        currentDisappearingMessageToken: disappearingMessageToken)
-            }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> NSURLRequest in
+            }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> GroupsV2Request in
                 try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
                                                            groupV2Params: groupV2Params,
                                                            authCredential: authCredential,
@@ -401,7 +401,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         let requestBuilder: RequestBuilder = { (authCredential) in
-            firstly(on: .global()) { () -> NSURLRequest in
+            firstly(on: .global()) { () -> GroupsV2Request in
                 try StorageService.buildGroupAvatarUploadFormRequest(groupV2Params: groupV2Params,
                                                                      authCredential: authCredential)
             }
@@ -460,7 +460,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                              localUuid: UUID,
                                              justUploadedAvatars: GroupV2DownloadedAvatars?) -> Promise<GroupV2Snapshot> {
         let requestBuilder: RequestBuilder = { (authCredential) in
-            firstly(on: .global()) { () -> NSURLRequest in
+            firstly(on: .global()) { () -> GroupsV2Request in
                 try StorageService.buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: groupV2Params,
                                                                            authCredential: authCredential)
             }
@@ -520,7 +520,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                          firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
 
         let requestBuilder: RequestBuilder = { (authCredential) in
-            return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
+            return DispatchQueue.global().async(.promise) { () -> GroupsV2Request in
                 let (fromRevision, requireSnapshotForFirstChange) =
                     try self.databaseStorage.read { (transaction) throws -> (UInt32, Bool) in
                         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -742,7 +742,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Perform Request
 
     private typealias AuthCredentialMap = [UInt32: AuthCredential]
-    private typealias RequestBuilder = (AuthCredential) throws -> Promise<NSURLRequest>
+    private typealias RequestBuilder = (AuthCredential) throws -> Promise<GroupsV2Request>
 
     // Represents how we should respond to 403 status codes.
     private enum Behavior403 {
@@ -762,9 +762,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return firstly {
             self.ensureTemporalCredentials(localUuid: localUuid)
-        }.then(on: .global()) { (authCredential: AuthCredential) -> Promise<NSURLRequest> in
+        }.then(on: .global()) { (authCredential: AuthCredential) -> Promise<GroupsV2Request> in
             try requestBuilder(authCredential)
-        }.then(on: .global()) { (request: NSURLRequest) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (request: GroupsV2Request) -> Promise<OWSHTTPResponse> in
             let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
             firstly {
                 self.performServiceRequestAttempt(request: request)
@@ -860,22 +860,25 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    private func performServiceRequestAttempt(request: NSURLRequest) -> Promise<OWSHTTPResponse> {
+    private func performServiceRequestAttempt(request: GroupsV2Request) -> Promise<OWSHTTPResponse> {
 
         let urlSession = self.urlSession
         urlSession.failOnError = false
 
-        Logger.info("Making group request: \(String(describing: request.httpMethod)) \(request)")
+        Logger.info("Making group request: \(request.method) \(request.urlString)")
 
         return firstly { () -> Promise<OWSHTTPResponse> in
-            urlSession.dataTaskPromise(request: request)
+            urlSession.dataTaskPromise(request.urlString,
+                                       method: request.method,
+                                       headers: request.headers.headers,
+                                       body: request.bodyData)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> OWSHTTPResponse in
             guard response.statusCode == 200 else {
                 throw OWSAssertionError("Invalid response: \(response.statusCode)")
             }
 
             // NOTE: responseObject may be nil; not all group v2 responses have bodies.
-            Logger.info("Request succeeded: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
+            Logger.info("Request succeeded: \(request.method) \(request.urlString)")
 
             return response
         }.recover(on: .global()) { (error: Error) -> Promise<OWSHTTPResponse> in
@@ -891,7 +894,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
             }
 
-            Logger.warn("Request failed: \(String(describing: request.httpMethod)) \(String(describing: request.url))")
+            Logger.warn("Request failed: \(request.method) \(request.urlString)")
             owsFailDebug("Request error: \(error)")
             throw error
         }
@@ -1336,7 +1339,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         let requestBuilder: RequestBuilder = { (authCredential) in
-            firstly(on: .global()) { () -> NSURLRequest in
+            firstly(on: .global()) { () -> GroupsV2Request in
                 try StorageService.buildFetchGroupInviteLinkPreviewRequest(inviteLinkPassword: inviteLinkPassword,
                                                                            groupV2Params: groupV2Params,
                                                                            authCredential: authCredential)
@@ -1487,7 +1490,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                 inviteLinkPassword: inviteLinkPassword,
                                                                 groupV2Params: groupV2Params,
                                                                 revisionForPlaceholderModel: revisionForPlaceholderModel)
-                }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> NSURLRequest in
+                }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> GroupsV2Request in
                     try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
                                                                groupV2Params: groupV2Params,
                                                                authCredential: authCredential,

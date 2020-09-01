@@ -531,7 +531,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     }
 
     OWSHttpHeaders *httpHeaders = [OWSHttpHeaders new];
-    [httpHeaders merge:request.allHTTPHeaderFields overwriteOnConflict:NO];
+    [httpHeaders addHeaders:request.allHTTPHeaderFields overwriteOnConflict:NO];
 
     WebSocketProtoWebSocketRequestMessageBuilder *requestBuilder =
         [WebSocketProtoWebSocketRequestMessage builderWithVerb:request.HTTPMethod
@@ -540,13 +540,13 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
-        [httpHeaders mergeHeader:@"content-type" value:@"application/json" overwriteOnConflict:YES];
+        [httpHeaders addHeader:@"content-type" value:@"application/json" overwriteOnConflict:YES];
     }
 
     // Set User-Agent header.
-    [httpHeaders mergeHeader:OWSURLSession.kUserAgentHeader
-                       value:OWSURLSession.signalIosUserAgent
-         overwriteOnConflict:YES];
+    [httpHeaders addHeader:OWSURLSession.kUserAgentHeader
+                      value:OWSURLSession.signalIosUserAgent
+        overwriteOnConflict:YES];
 
     for (NSString *headerField in httpHeaders.headers) {
         NSString *_Nullable headerValue = httpHeaders.headers[headerField];
