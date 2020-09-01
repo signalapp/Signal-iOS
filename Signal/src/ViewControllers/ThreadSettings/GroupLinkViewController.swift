@@ -210,22 +210,22 @@ public class GroupLinkViewController: OWSTableViewController {
         let actionSheet = ActionSheetController()
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
                                                                          comment: "Label for the 'share group link via Signal' button in the 'group link' view."),
-                                                style: .destructive) { _ in
+                                                style: .default) { _ in
                                                     self.shareLinkViaSignal()
         })
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_COPY_LINK",
                                                                          comment: "Label for the 'copy link' button in the 'group link' view."),
-                                                style: .destructive) { _ in
+                                                style: .default) { _ in
                                                     self.copyLinkToPasteboard()
         })
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE",
                                                                          comment: "Label for the 'share group link via QR code' button in the 'group link' view."),
-                                                style: .destructive) { _ in
+                                                style: .default) { _ in
                                                     self.shareLinkViaQRCode()
         })
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING",
                                                                          comment: "Label for the 'share group link via iOS sharing UI' button in the 'group link' view."),
-                                                style: .destructive) { _ in
+                                                style: .default) { _ in
                                                     self.shareLinkViaSharingUI()
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)
