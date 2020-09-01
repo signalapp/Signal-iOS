@@ -79,11 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.networkManager;
 }
 
-- (AFHTTPSessionManager *)cdnSessionManagerForCdnNumber:(UInt32)cdnNumber
-{
-    return [OWSSignalService.sharedInstance sessionManagerForCdnNumber:cdnNumber];
-}
-
 - (id<ProfileManagerProtocol>)profileManager
 {
     return SSKEnvironment.shared.profileManager;

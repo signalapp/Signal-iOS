@@ -47,6 +47,7 @@ open class CDNDownloadOperation: OWSOperation {
             throw StickerError.corruptData
         }
 
+        // We use a seperate promise so that we can cancel from the progress block.
         let (promise, resolver) = Promise<Data>.pending()
 
         let hasCheckedContentLength = AtomicBool(false)
@@ -68,7 +69,7 @@ open class CDNDownloadOperation: OWSOperation {
             }
         }.recover(on: .global()) { (error: Error) -> Promise<OWSUrlDownloadResponse> in
             throw error.withDefaultRetry
-        }.map(on: .global()) { [weak self] (response: OWSUrlDownloadResponse) -> Data in
+        }.map(on: .global()) { [weak self] (response: OWSUrlDownloadResponse) -> Void in
             guard let _ = self else {
                 throw OWSAssertionError("Operation has been deallocated.").asUnretryableError
             }
@@ -85,7 +86,8 @@ open class CDNDownloadOperation: OWSOperation {
             }
 
             do {
-                return try Data(contentsOf: downloadUrl)
+                let data = try Data(contentsOf: downloadUrl)
+                resolver.fulfill(data)
             } catch {
                 owsFailDebug("Could not load data failed: \(error)")
                 // Fail immediately; do not retry.

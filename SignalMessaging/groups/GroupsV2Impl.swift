@@ -422,7 +422,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             try OWSUploadFormV2.parse(proto: avatarUploadAttributes)
         }.then(on: .global()) { (uploadForm: OWSUploadFormV2) -> Promise<String> in
             let encryptedData = try groupV2Params.encryptGroupAvatar(avatarData)
-            return OWSUpload.upload(data: encryptedData, uploadForm: uploadForm, uploadUrlPath: "")
+            return OWSUpload.uploadV2(data: encryptedData, uploadForm: uploadForm, uploadUrlPath: "")
         }
     }
 

@@ -16,14 +16,14 @@ public class OWSUpload: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public class func upload(data: Data,
-                             uploadForm: OWSUploadFormV2,
-                             uploadUrlPath: String,
-                             progressBlock: ((Progress) -> Void)?) -> AnyPromise {
-        return AnyPromise(upload(data: data,
-                                 uploadForm: uploadForm,
-                                 uploadUrlPath: uploadUrlPath,
-                                 progressBlock: progressBlock))
+    public class func uploadV2(data: Data,
+                               uploadForm: OWSUploadFormV2,
+                               uploadUrlPath: String,
+                               progressBlock: ((Progress) -> Void)?) -> AnyPromise {
+        AnyPromise(uploadV2(data: data,
+                            uploadForm: uploadForm,
+                            uploadUrlPath: uploadUrlPath,
+                            progressBlock: progressBlock))
     }
 }
 
@@ -47,16 +47,16 @@ fileprivate extension OWSUpload {
 
     // MARK: -
 
-    static func sessionManagerForCdn(cdnNumber: UInt32) -> AFHTTPSessionManager {
-        signalService.sessionManagerForCdn(cdnNumber: cdnNumber)
-    }
-
     static var cdn0SessionManager: AFHTTPSessionManager {
         signalService.sessionManagerForCdn(cdnNumber: 0)
     }
 
     static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSession {
         signalService.urlSessionForCdn(cdnNumber: cdnNumber)
+    }
+
+    static func cdn0UrlSession() -> OWSURLSession {
+        signalService.urlSessionForCdn(cdnNumber: 0)
     }
 }
 
@@ -193,10 +193,10 @@ public class OWSAttachmentUploadV2: NSObject {
             }
         }.then(on: .global()) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
             let uploadUrlPath = "attachments/"
-            return OWSUpload.upload(data: attachmentData,
-                                    uploadForm: form,
-                                    uploadUrlPath: uploadUrlPath,
-                                    progressBlock: progressBlock)
+            return OWSUpload.uploadV2(data: attachmentData,
+                                      uploadForm: form,
+                                      uploadUrlPath: uploadUrlPath,
+                                      progressBlock: progressBlock)
         }.map(on: .global()) { [weak self] (_) throws -> Void in
             self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -653,10 +653,10 @@ public class OWSAttachmentUploadV2: NSObject {
 
 public extension OWSUpload {
 
-    class func upload(data: Data,
-                      uploadForm: OWSUploadFormV2,
-                      uploadUrlPath: String,
-                      progressBlock: ProgressBlock? = nil) -> Promise<String> {
+    class func uploadV2(data: Data,
+                        uploadForm: OWSUploadFormV2,
+                        uploadUrlPath: String,
+                        progressBlock: ProgressBlock? = nil) -> Promise<String> {
 
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {
