@@ -363,7 +363,7 @@ public class OWSAttachmentUploadV2: NSObject {
             Logger.info("attemptCount: \(attemptCount)")
         }
 
-        return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
+        return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
             let urlString = form.signedUploadLocation
             guard urlString.lowercased().hasPrefix("http") else {
                 throw OWSAssertionError("Invalid signedUploadLocation.")
@@ -379,7 +379,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
             return urlSession.dataTaskPromise(urlString, verb: .post, headers: headers, body: body)
-        }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
+        }.map(on: .global()) { (response: OWSHTTPResponse) in
             guard response.statusCode == 201 else {
                 throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
             }
@@ -589,7 +589,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                      uploadV3Metadata: UploadV3Metadata,
                                                      locationUrl: URL) -> Promise<Int> {
 
-        return firstly(on: .global()) { () -> Promise<OWSURLSession.Response> in
+        return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
             let urlString = locationUrl.absoluteString
 
             var headers = [String: String]()
@@ -601,7 +601,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let body = "".data(using: .utf8)
 
             return urlSession.dataTaskPromise(urlString, verb: .put, headers: headers, body: body)
-        }.map(on: .global()) { (response: HTTPURLResponse, _: Data?) in
+        }.map(on: .global()) { (response: OWSHTTPResponse) in
 
             if response.statusCode != 308 {
                 owsFailDebug("Invalid status code: \(response.statusCode).")

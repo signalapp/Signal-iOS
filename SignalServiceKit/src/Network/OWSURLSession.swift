@@ -23,9 +23,38 @@ public enum HTTPVerb {
             return "HEAD"
         }
     }
+
+    public static func verb(for verb: String?) throws -> HTTPVerb {
+        switch verb {
+        case "GET":
+            return .get
+        case "POST":
+            return .post
+        case "PUT":
+            return .put
+        case "HEAD":
+            return .head
+        default:
+            throw OWSAssertionError("Unknown verb: \(String(describing: verb))")
+        }
+    }
 }
 
 private var URLSessionProgressBlockHandle: UInt8 = 0
+
+public struct OWSHTTPResponse {
+    public let task: URLSessionTask
+    public let httpUrlResponse: HTTPURLResponse
+    public let responseData: Data?
+
+    public var statusCode: Int {
+        httpUrlResponse.statusCode
+    }
+
+    public var allHeaderFields: [AnyHashable: Any] {
+        httpUrlResponse.allHeaderFields
+    }
+}
 
 // TODO: If we use OWSURLSession more, we'll need to add support for more features, e.g.:
 //
@@ -50,6 +79,8 @@ public class OWSURLSession: NSObject {
 
     private var extraHeaders = [String: String]()
 
+    private let httpShouldHandleCookies: Bool
+
     @objc
     public let censorshipCircumventionHost: String?
 
@@ -57,6 +88,9 @@ public class OWSURLSession: NSObject {
     public var isUsingCensorshipCircumvention: Bool {
         censorshipCircumventionHost != nil
     }
+
+    @objc
+    public var failOnError: Bool = true
 
     @objc(addExtraHeader:withValue:)
     public func addExtraHeader(_ header: String, value: String) {
@@ -90,118 +124,53 @@ public class OWSURLSession: NSObject {
     public init(baseUrl: URL?,
                 securityPolicy: AFSecurityPolicy,
                 configuration: URLSessionConfiguration,
-                censorshipCircumventionHost: String? = nil) {
+                censorshipCircumventionHost: String? = nil,
+                httpShouldHandleCookies: Bool = false) {
         self.baseUrl = baseUrl
         self.securityPolicy = securityPolicy
         self.configuration = configuration
         self.censorshipCircumventionHost = censorshipCircumventionHost
+        self.httpShouldHandleCookies = httpShouldHandleCookies
 
         super.init()
     }
 
-    typealias Response = (response: HTTPURLResponse, data: Data?)
-    typealias ProgressBlock = (Progress) -> Void
-
-    func uploadTaskPromise(_ urlString: String,
-                           verb: HTTPVerb,
-                           headers: [String: String]? = nil,
-                           data requestData: Data,
-                           progressBlock: ProgressBlock? = nil) -> Promise<Response> {
-        firstly(on: .global()) { () -> Promise<Response> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
-            return self.uploadTaskPromise(request: request, data: requestData, progressBlock: progressBlock)
-        }
-    }
-
-    func uploadTaskPromise(request: URLRequest,
-                           data requestData: Data,
-                           progressBlock: ProgressBlock? = nil) -> Promise<Response> {
-
-        let (promise, resolver) = Promise<Response>.pending()
-        var taskReference: URLSessionDataTask?
-        let task = session.uploadTask(with: request, from: requestData) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            if let task = taskReference {
-                self.setProgressBlock(nil, forTask: task)
-            } else {
-                owsFailDebug("Missing task.")
-            }
-            Self.handleTaskCompletion(resolver: resolver, responseData: responseData, response: response, error: error)
-        }
-        taskReference = task
-        setProgressBlock(progressBlock, forTask: task)
-        task.resume()
-        return promise
-    }
-
-    func uploadTaskPromise(_ urlString: String,
-                           verb: HTTPVerb,
-                           headers: [String: String]? = nil,
-                           dataUrl: URL,
-                           progressBlock: ProgressBlock? = nil) -> Promise<Response> {
-        firstly(on: .global()) { () -> Promise<Response> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
-            return self.uploadTaskPromise(request: request, dataUrl: dataUrl, progressBlock: progressBlock)
-        }
-    }
-
-    func uploadTaskPromise(request: URLRequest,
-                           dataUrl: URL,
-                           progressBlock: ProgressBlock? = nil) -> Promise<Response> {
-
-        let (promise, resolver) = Promise<Response>.pending()
-        var taskReference: URLSessionDataTask?
-        let task = session.uploadTask(with: request, fromFile: dataUrl) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            if let task = taskReference {
-                self.setProgressBlock(nil, forTask: task)
-            } else {
-                owsFailDebug("Missing task.")
-            }
-            Self.handleTaskCompletion(resolver: resolver, responseData: responseData, response: response, error: error)
-        }
-        taskReference = task
-        setProgressBlock(progressBlock, forTask: task)
-        task.resume()
-        return promise
-    }
-
-    func dataTaskPromise(_ urlString: String,
-                         verb: HTTPVerb,
-                         headers: [String: String]? = nil,
-                         body: Data?) -> Promise<Response> {
-        firstly(on: .global()) { () -> Promise<Response> in
-            let request = try self.buildRequest(urlString, verb: verb, headers: headers, body: body)
-            return self.dataTaskPromise(request: request)
-        }
-    }
-
-    func dataTaskPromise(request: URLRequest) -> Promise<Response> {
-
-        let (promise, resolver) = Promise<Response>.pending()
-        let task = session.dataTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
-            Self.handleTaskCompletion(resolver: resolver, responseData: responseData, response: response, error: error)
-        }
-        task.resume()
-        return promise
-    }
-
-    private class func handleTaskCompletion(resolver: Resolver<Response>,
+    private class func handleTaskCompletion(resolver: Resolver<OWSHTTPResponse>,
+                                            task: URLSessionTask,
                                             responseData: Data?,
                                             response: URLResponse?,
-                                            error: Error?) {
+                                            error: Error?,
+                                            failOnError: Bool) {
         if let error = error {
             if IsNetworkConnectivityFailure(error) {
                 Logger.warn("Request failed: \(error)")
             } else {
-                owsFailDebug("Request failed: \(error)")
+                #if TESTABLE_BUILD
+                TSNetworkManager.logCurl(for: task)
+
+                if let responseData = responseData,
+                    let httpUrlResponse = response as? HTTPURLResponse,
+                    let contentType = httpUrlResponse.allHeaderFields["Content-Type"] as? String,
+                    contentType == OWSMimeTypeJson,
+                    let jsonString = String(data: responseData, encoding: .utf8) {
+                    Logger.verbose("Response JSON: \(jsonString)")
+                }
+                #endif
+
+                if failOnError {
+                    owsFailDebug("Request failed: \(error)")
+                } else {
+                    Logger.error("Request failed: \(error)")
+                }
             }
             resolver.reject(error)
             return
         }
-        guard let httpResponse = response as? HTTPURLResponse else {
+        guard let httpUrlResponse = response as? HTTPURLResponse else {
             resolver.reject(OWSAssertionError("Invalid response: \(type(of: response))."))
             return
         }
-        resolver.fulfill((response: httpResponse, data: responseData))
+        resolver.fulfill(OWSHTTPResponse(task: task, httpUrlResponse: httpUrlResponse, responseData: responseData))
     }
 
     // TODO: Add downloadTaskPromise().
@@ -243,6 +212,7 @@ public class OWSURLSession: NSObject {
         }
 
         request.httpBody = body
+        request.httpShouldHandleCookies = httpShouldHandleCookies
         return request
     }
 
@@ -406,5 +376,136 @@ extension OWSURLSession: URLSessionTaskDelegate {
         progress.totalUnitCount = totalBytesExpectedToSend
         progress.completedUnitCount = totalBytesSent
         progressBlock(progress)
+    }
+}
+
+// MARK: -
+
+public extension OWSURLSession {
+
+    typealias ProgressBlock = (Progress) -> Void
+
+    func uploadTaskPromise(_ urlString: String,
+                           verb: HTTPVerb,
+                           headers: [String: String]? = nil,
+                           data requestData: Data,
+                           progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            return self.uploadTaskPromise(request: request, data: requestData, progressBlock: progressBlock)
+        }
+    }
+
+    func uploadTaskPromise(request: URLRequest,
+                           data requestData: Data,
+                           progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+
+        let failOnError = self.failOnError
+        let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
+        var taskReference: URLSessionDataTask?
+        let task = session.uploadTask(with: request, from: requestData) { (responseData: Data?, response: URLResponse?, error: Error?) in
+            guard let task = taskReference else {
+                owsFailDebug("Missing task.")
+                return
+            }
+            self.setProgressBlock(nil, forTask: task)
+            Self.handleTaskCompletion(resolver: resolver,
+                                      task: task,
+                                      responseData: responseData,
+                                      response: response,
+                                      error: error,
+                                      failOnError: failOnError)
+        }
+        taskReference = task
+        setProgressBlock(progressBlock, forTask: task)
+        task.resume()
+        return promise
+    }
+
+    func uploadTaskPromise(_ urlString: String,
+                           verb: HTTPVerb,
+                           headers: [String: String]? = nil,
+                           dataUrl: URL,
+                           progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers)
+            return self.uploadTaskPromise(request: request, dataUrl: dataUrl, progressBlock: progressBlock)
+        }
+    }
+
+    func uploadTaskPromise(request: URLRequest,
+                           dataUrl: URL,
+                           progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+
+        let failOnError = self.failOnError
+        let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
+        var taskReference: URLSessionDataTask?
+        let task = session.uploadTask(with: request, fromFile: dataUrl) { (responseData: Data?, response: URLResponse?, error: Error?) in
+            guard let task = taskReference else {
+                owsFailDebug("Missing task.")
+                return
+            }
+            self.setProgressBlock(nil, forTask: task)
+            Self.handleTaskCompletion(resolver: resolver,
+                                      task: task,
+                                      responseData: responseData,
+                                      response: response,
+                                      error: error,
+                                      failOnError: failOnError)
+        }
+        taskReference = task
+        setProgressBlock(progressBlock, forTask: task)
+        task.resume()
+        return promise
+    }
+
+    func dataTaskPromise(request: NSURLRequest) -> Promise<OWSHTTPResponse> {
+        guard let url = request.url else {
+            return Promise(error: OWSAssertionError("Missing URL."))
+        }
+        let verb: HTTPVerb
+        do {
+            verb = try HTTPVerb.verb(for: request.httpMethod)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return Promise(error: error)
+        }
+        return dataTaskPromise(url.absoluteString,
+                               verb: verb,
+                               headers: request.allHTTPHeaderFields,
+                               body: request.httpBody)
+    }
+
+    func dataTaskPromise(_ urlString: String,
+                         verb: HTTPVerb,
+                         headers: [String: String]? = nil,
+                         body: Data?) -> Promise<OWSHTTPResponse> {
+        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+            let request = try self.buildRequest(urlString, verb: verb, headers: headers, body: body)
+            return self.dataTaskPromise(request: request)
+        }
+    }
+
+    func dataTaskPromise(request: URLRequest) -> Promise<OWSHTTPResponse> {
+
+        let failOnError = self.failOnError
+        let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
+        var taskReference: URLSessionDataTask?
+        let task = session.dataTask(with: request) { (responseData: Data?, response: URLResponse?, error: Error?) in
+            guard let task = taskReference else {
+                owsFailDebug("Missing task.")
+                return
+            }
+            self.setProgressBlock(nil, forTask: task)
+            Self.handleTaskCompletion(resolver: resolver,
+                                      task: task,
+                                      responseData: responseData,
+                                      response: response,
+                                      error: error,
+                                      failOnError: failOnError)
+        }
+        taskReference = task
+        task.resume()
+        return promise
     }
 }

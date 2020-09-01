@@ -17,6 +17,7 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 /// For backing up and restoring signal account information
 @property (nonatomic, readonly) AFHTTPSessionManager *storageServiceSessionManager;
+@property (nonatomic, readonly) OWSURLSession *storageServiceURLSession;
 
 + (instancetype)sharedInstance;
 

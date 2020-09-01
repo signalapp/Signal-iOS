@@ -338,7 +338,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return [[OWSURLSession alloc] initWithBaseUrl:baseUrl
                                    securityPolicy:OWSURLSession.signalServiceSecurityPolicy
                                     configuration:OWSURLSession.defaultURLSessionConfiguration
-                      censorshipCircumventionHost:nil];
+                      censorshipCircumventionHost:nil
+                          httpShouldHandleCookies:NO];
 }
 
 - (AFHTTPSessionManager *)reflectorCDNSessionManagerWithCensorshipConfiguration:
@@ -372,7 +373,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     OWSURLSession *urlSession = [[OWSURLSession alloc] initWithBaseUrl:baseUrl
                                                         securityPolicy:censorshipConfiguration.domainFrontSecurityPolicy
                                                          configuration:OWSURLSession.defaultURLSessionConfiguration
-                                           censorshipCircumventionHost:cdnServerUrl];
+                                           censorshipCircumventionHost:cdnServerUrl
+                                               httpShouldHandleCookies:NO];
     [urlSession addExtraHeader:@"Host" withValue:TSConstants.censorshipReflectorHost];
     return urlSession;
 }
@@ -420,8 +422,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
     NSURL *baseURL = [frontingURL URLByAppendingPathComponent:TSConstants.storageServiceCensorshipPrefix];
-    AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL
+                                                                    sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy;
 
@@ -434,6 +436,42 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
     return sessionManager;
+}
+
+- (OWSURLSession *)storageServiceURLSession
+{
+    if (self.isCensorshipCircumventionActive) {
+        OWSCensorshipConfiguration *censorshipConfiguration = [self buildCensorshipConfiguration];
+        OWSLogInfo(
+            @"using reflector reflectorStorageServiceURLSession via: %@", censorshipConfiguration.domainFrontBaseURL);
+        return [self reflectorStorageServiceURLSessionWithCensorshipConfiguration:censorshipConfiguration];
+    } else {
+        return self.defaultStorageServiceURLSession;
+    }
+}
+
+- (OWSURLSession *)defaultStorageServiceURLSession
+{
+    NSURL *baseURL = [[NSURL alloc] initWithString:TSConstants.storageServiceURL];
+    OWSAssertDebug(baseURL);
+
+    return [[OWSURLSession alloc] initWithBaseUrl:baseURL
+                                   securityPolicy:OWSHTTPSecurityPolicy.sharedPolicy
+                                    configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
+                      censorshipCircumventionHost:nil
+                          httpShouldHandleCookies:NO];
+}
+
+- (OWSURLSession *)reflectorStorageServiceURLSessionWithCensorshipConfiguration:
+    (OWSCensorshipConfiguration *)censorshipConfiguration
+{
+    NSURL *frontingURL = censorshipConfiguration.domainFrontBaseURL;
+    NSURL *baseURL = [frontingURL URLByAppendingPathComponent:TSConstants.storageServiceCensorshipPrefix];
+    return [[OWSURLSession alloc] initWithBaseUrl:baseURL
+                                   securityPolicy:censorshipConfiguration.domainFrontSecurityPolicy
+                                    configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
+                      censorshipCircumventionHost:TSConstants.censorshipReflectorHost
+                          httpShouldHandleCookies:NO];
 }
 
 #pragma mark - Events
