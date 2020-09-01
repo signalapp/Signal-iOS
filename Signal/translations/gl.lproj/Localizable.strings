@@ -800,7 +800,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Todo";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mencións";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -1250,7 +1250,7 @@
 "EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Obxectos";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
@@ -1490,7 +1490,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "Creaches o grupo.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
@@ -1583,7 +1583,7 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Unícheste ao grupo.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
@@ -2828,7 +2828,7 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Disable PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Desactivar PIN";
 
 /* Message of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
@@ -2876,7 +2876,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Turn Off Registration Lock?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Disable PIN";
+"PIN_CREATION_SKIP" = "Desactivar PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Crea o teu PIN";
@@ -3599,7 +3599,7 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Desactivar PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
@@ -4196,7 +4196,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Escribindo PINs";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Disable PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Desactivar PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";

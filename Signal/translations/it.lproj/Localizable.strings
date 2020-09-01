@@ -2114,7 +2114,7 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Te lo ricorderemo più tardi.";
 
 /* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Attira l'attenzione di qualcuno in un “Nuovo Gruppo” scrivendo @";
+"MENTIONS_MEGAPHONE_BODY" = "Attira l'attenzione di qualcuno in un “Nuovo gruppo” scrivendo @";
 
 /* Title for mentions megaphone */
 "MENTIONS_MEGAPHONE_TITLE" = "Ti presentiamo le @menzioni";
@@ -2255,7 +2255,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Sbloccare questo gruppo e condividere il tuo nome e la tua foto con i suoi membri? Non riceverai alcun messaggio finché non li sbloccherai.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Sbloccare questo gruppo? Non sapranno che hai visto i loro messaggi finché non li sblocchi.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Vuoi sbloccare questo gruppo? Non sapranno che hai visto i loro messaggi finché non li sblocchi.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Elimina";
@@ -2276,7 +2276,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Unirsi a questo gruppo e condividere il tuo nome e la tua foto con i suoi membri? Non sapranno che hai visto i loro messaggi finché non accetti.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Unirsi a questo gruppo? Non sapranno che hai visto i loro messaggi finché non accetti.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Vuoi unirti a questo gruppo? Non sapranno che hai visto i loro messaggi finché non accetti.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Condividi profilo";

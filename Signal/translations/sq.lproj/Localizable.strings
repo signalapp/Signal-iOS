@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Lidhja e Pajisjes Dështoi";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Paraparjet e lidhjeve tani do të prodhohen për krejt sajtet.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Çaktivizoje";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Parashihni Çfarëdo Lidhje";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Kërkoni sipas emrash ose adresash";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Fshi Gjithçka";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Dhuroni për Signal-in";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Ndihmë";
@@ -3734,7 +3734,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Kushte & Rregulla Privatësie";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Prodho Paraparje Lidhjesh";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Merrni, për mesazhet që dërgoni, paraparje lidhjesh drejt e nga sajtet.";

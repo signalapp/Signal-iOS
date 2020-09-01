@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Seadme ühendamine ei õnnestunud";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Linkide eelvaated genereeritakse kõikidele saitidele.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Keela";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Iga lingi eelvaade";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Otsi nime või aadressi järgi";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Kustuta kõik";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Anneta Signal-ile";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Abi";
@@ -3734,10 +3734,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Tingimused ja privaatsuspoliitika";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Genereeri linkide eelvaateid";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Hangib lingieelvaated otse saitidelt, mida sõnumina saadad.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Hangib sinu saadetavatele sõnumitele linkide eelvaated otse saitidelt.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Linkide eelvaated";
@@ -3782,7 +3782,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN-koodi meeldetuletused";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, et ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, sii sinu profiil, sätted ja kontaktid taastatakse.";
+"SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, seega ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, siis sinu profiil, sätted ja kontaktid taastatakse.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Muuda enda PIN-koodi";
@@ -3797,7 +3797,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Näita kõnesid iOSi telefonirakenduse hiljutiste kõnede hulgas.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Näita kõnesid hiljutistes";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Näita kõnesid hiljutistes kõnedes";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privaatsus";
@@ -3881,7 +3881,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Luba kõigilt";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Luba kaetud saatja sissetulevate sõnumite juures mitte-kontaktidelt ja isikutelt, kellega sa pole enda profiili jaganud.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Luba mitte-kontaktidelt ja isikutelt, kellega sa pole enda profiili jaganud sissetulevate sõnumite juures kaetud saatja.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versioon";

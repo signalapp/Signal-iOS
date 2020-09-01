@@ -2063,13 +2063,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "சாதனத்தை இணைப்பதில் தோல்வி";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "இணைப்பு முன்னோட்டங்கள் இப்போது எல்லா தளங்களுக்கும் உருவாக்கப்படும்.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "முடக்கு";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "எந்த இணைப்பையும் முன்னோட்டமிடுங்கள்";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "பெயர் அல்லது முகவரி மூலம் தேடுங்கள்";
@@ -3710,7 +3710,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "எல்லாவற்றையும் நீக்கு";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Donate to Signal சிக்னலுக்கு நன்கொடை";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "உதவி";
@@ -3734,7 +3734,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கை";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "இணைப்பு மாதிரிக்காட்சிகளை உருவாக்கவும்";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "நீங்கள் அனுப்பும் செய்திகளுக்கு வலைத்தளங்களிலிருந்து இணைப்பு முன்னோட்டங்களை நேரடியாக மீட்டெடுக்கவும்.";
