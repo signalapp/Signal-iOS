@@ -238,10 +238,21 @@ public class OWSURLSession: NSObject {
         if requestConfig.require2xxOr3xx {
             let statusCode = httpUrlResponse.statusCode
             guard statusCode >= 200, statusCode < 400 else {
+                #if TESTABLE_BUILD
+                TSNetworkManager.logCurl(for: task)
+                Logger.verbose("Status code: \(statusCode)")
+                #endif
+
                 resolver.reject(OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse))
                 return
             }
         }
+
+        #if TESTABLE_BUILD
+        if DebugFlags.logCurlOnSuccess {
+            TSNetworkManager.logCurl(for: task)
+        }
+        #endif
 
         resolver.fulfill(OWSHTTPResponse(task: task, httpUrlResponse: httpUrlResponse, responseData: responseData))
     }
@@ -592,6 +603,41 @@ public extension OWSURLSession {
             return false
         }
         return Set(httpHeaders.keys.map { $0.lowercased() }).contains(header.lowercased())
+    }
+
+    // HTTP headers are case-insensitive.
+    static func httpHeaders(_ httpHeaders: [String: String]?,
+                            removeValueForHeader header: String) -> [String: String] {
+        guard let httpHeaders = httpHeaders else {
+            return [:]
+        }
+        return httpHeaders.filter { $0.key.lowercased() != header.lowercased() }
+    }
+
+    // HTTP headers are case-insensitive.
+    static func mergeHttpHeaders(into existingHttpHeaders: [String: String]?,
+                                 from newHttpHeaders: [String: String]?,
+                                 overwriteOnConflict: Bool) -> [String: String] {
+        var httpHeaders = existingHttpHeaders ?? [:]
+        if let newHttpHeaders = newHttpHeaders {
+            for (headerField, headerValue) in newHttpHeaders {
+                let hasConflict = Self.httpHeaders(httpHeaders, hasValueForHeader: headerField)
+                if hasConflict {
+                    if overwriteOnConflict {
+                        Logger.verbose("Overwriting header: \(headerField)")
+                        // Remove existing value.
+                        httpHeaders = Self.httpHeaders(httpHeaders, removeValueForHeader: headerField)
+                        owsAssertDebug(!Self.httpHeaders(httpHeaders, hasValueForHeader: headerField))
+                    } else {
+                        owsFailDebug("Skipping redundant header: \(headerField)")
+                        continue
+                    }
+                }
+
+                httpHeaders[headerField] = headerValue
+            }
+        }
+        return httpHeaders
     }
 }
 

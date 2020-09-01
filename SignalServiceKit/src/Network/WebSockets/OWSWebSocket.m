@@ -530,6 +530,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         }
     }
 
+    NSDictionary<NSString *, NSString *> *httpHeaders = [OWSURLSession mergeHttpHeadersInto:nil
+                                                                                       from:request.allHTTPHeaderFields
+                                                                        overwriteOnConflict:NO];
+
     WebSocketProtoWebSocketRequestMessageBuilder *requestBuilder =
         [WebSocketProtoWebSocketRequestMessage builderWithVerb:request.HTTPMethod
                                                           path:requestPath
@@ -537,21 +541,20 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
-        [requestBuilder addHeaders:@"content-type:application/json"];
+        httpHeaders = [OWSURLSession mergeHttpHeadersInto:httpHeaders
+                                                     from:@{ @"content-type" : @"application/json" }
+                                      overwriteOnConflict:YES];
     }
 
-    for (NSString *headerField in request.allHTTPHeaderFields) {
-        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+    // Set User-Agent header.
+    httpHeaders =
+        [OWSURLSession mergeHttpHeadersInto:httpHeaders
+                                       from:@{ OWSURLSession.kUserAgentHeader : OWSURLSession.signalIosUserAgent }
+                        overwriteOnConflict:YES];
 
-        OWSAssertDebug([headerField isKindOfClass:[NSString class]]);
-        OWSAssertDebug([headerValue isKindOfClass:[NSString class]]);
+    for (NSString *headerField in httpHeaders) {
+        NSString *headerValue = httpHeaders[headerField];
         [requestBuilder addHeaders:[NSString stringWithFormat:@"%@:%@", headerField, headerValue]];
-    }
-
-    if (![OWSURLSession httpHeaders:request.allHTTPHeaderFields hasValueForHeader:OWSURLSession.kUserAgentHeader]) {
-        [requestBuilder addHeaders:[NSString stringWithFormat:@"%@:%@",
-                                             OWSURLSession.kUserAgentHeader,
-                                             OWSURLSession.signalIosUserAgent]];
     }
 
     NSError *error;
@@ -623,6 +626,12 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     NSData *_Nullable responseData;
     if (message.hasBody) {
         responseData = message.body;
+    }
+
+    // The websocket is only used to connect to the main signal
+    // service, so we need to check for remote deprecation.
+    if (responseStatus == AppExpiry.appExpiredStatusCode) {
+        [AppExpiry.shared setHasAppExpiredAtCurrentVersion];
     }
 
     BOOL hasValidResponse = YES;
