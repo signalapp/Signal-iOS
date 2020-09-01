@@ -422,11 +422,14 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing or invalid revision.")
         }
         let revision = joinInfoProto.revision
+        let isLocalUserRequestingMember = joinInfoProto.hasPendingAdminApproval && joinInfoProto.pendingAdminApproval
+
         return GroupInviteLinkPreview(title: title,
                                       avatarUrlPath: avatarUrlPath,
                                       memberCount: memberCount,
                                       addFromInviteLinkAccess: addFromInviteLinkAccess,
-                                      revision: revision)
+                                      revision: revision,
+                                      isLocalUserRequestingMember: isLocalUserRequestingMember)
     }
 
     // MARK: -

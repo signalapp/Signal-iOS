@@ -98,6 +98,9 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     private let groupTitleLabel = UILabel()
     private let groupSubtitleLabel = UILabel()
 
+    private var groupInviteLinkPreview: GroupInviteLinkPreview?
+    private var avatarData: Data?
+
     init(groupInviteLinkInfo: GroupInviteLinkInfo, groupV2ContextInfo: GroupV2ContextInfo) {
         self.groupInviteLinkInfo = groupInviteLinkInfo
         self.groupV2ContextInfo = groupV2ContextInfo
@@ -107,6 +110,9 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         isCancelable = true
 
         createContents()
+
+        loadDefaultContent()
+        loadLinkPreview()
     }
 
     private static let avatarSize: UInt = 112
@@ -184,9 +190,6 @@ class GroupInviteLinksActionSheet: ActionSheetController {
 
         headerStack.setContentHuggingVerticalHigh()
         stackView.setContentHuggingVerticalHigh()
-
-        loadDefaultContent()
-        loadLinkPreview()
     }
 
     private func loadDefaultContent() {
@@ -234,8 +237,6 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         }
     }
 
-    private var groupInviteLinkPreview: GroupInviteLinkPreview?
-
     private func applyGroupInviteLinkPreview(_ groupInviteLinkPreview: GroupInviteLinkPreview) {
         AssertIsOnMainThread()
 
@@ -268,6 +269,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             return
         }
         avatarView.image = image
+        self.avatarData = groupAvatar
     }
 
     @objc
@@ -277,6 +279,8 @@ class GroupInviteLinksActionSheet: ActionSheetController {
 
     @objc
     func didTapJoin(_ sender: UIButton) {
+        AssertIsOnMainThread()
+
         guard doesLocalUserSupportGroupsV2 else {
             // TODO: Add copy from design.
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
@@ -284,19 +288,60 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             return
         }
 
+        // These values may not be filled in yet.
+        // They may be being downloaded now or their downloads may have failed.
+        let existingGroupInviteLinkPreview = self.groupInviteLinkPreview
+        let existingAvatarData = self.avatarData
+
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalActivityIndicator in
-            firstly(on: .global()) {
+            firstly(on: .global()) { () -> Promise<GroupInviteLinkPreview> in
+                if let existingGroupInviteLinkPreview = existingGroupInviteLinkPreview {
+                    // View has already downloaded the preview.
+                    return Promise.value(existingGroupInviteLinkPreview)
+                }
+                // Kick off a fresh attempt to download the link preview.
+                // We cannot join the group without the preview.
+                return self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
+                                                                 groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
+            }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, Data?)> in
+                guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
+                    // Group has no avatar.
+                    return Promise.value((groupInviteLinkPreview, nil))
+                }
+                if let existingAvatarData = existingAvatarData {
+                    // View has already downloaded the avatar.
+                    return Promise.value((groupInviteLinkPreview, existingAvatarData))
+                }
+                return firstly(on: .global()) {
+                    self.groupsV2.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
+                                                             groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
+                }.map(on: .global()) { (groupAvatar: Data) in
+                    (groupInviteLinkPreview, groupAvatar)
+                }.recover(on: .global()) { error -> Promise<(GroupInviteLinkPreview, Data?)> in
+                    Logger.warn("Error: \(error)")
+                    // We made a best effort to fill in the avatar.
+                    // Don't block joining the group on downloading
+                    // the avatar. It will only be used in a
+                    // placeholder model if at all.
+                    return Promise.value((groupInviteLinkPreview, nil))
+                }
+            }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, avatarData: Data?) in
                 GroupManager.joinGroupViaInviteLink(groupId: self.groupV2ContextInfo.groupId,
                                                     groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
-                                                    inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword)
+                                                    inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
+                                                    groupInviteLinkPreview: groupInviteLinkPreview,
+                                                    avatarData: avatarData)
             }.done { [weak self] (groupThread: TSGroupThread) in
                 modalActivityIndicator.dismiss {
+                    AssertIsOnMainThread()
                     self?.dismiss(animated: true) {
+                        AssertIsOnMainThread()
                         SignalApp.shared().presentConversation(for: groupThread, animated: true)
                     }
                 }
             }.catch { _ in
                 modalActivityIndicator.dismiss {
+                    AssertIsOnMainThread()
                     OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
                                                                               comment: "Error message indicating that the local user does not support groups v2."))
                 }

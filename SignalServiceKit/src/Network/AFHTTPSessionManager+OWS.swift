@@ -71,6 +71,8 @@ public extension AFHTTPSessionManager {
             put(urlString, parameters: parameters, success: success, failure: failure)
         case .head:
             return Promise(error: OWSAssertionError("HEAD not supported."))
+        case .patch:
+            return Promise(error: OWSAssertionError("PATCH not supported."))
         }
         return promise
     }

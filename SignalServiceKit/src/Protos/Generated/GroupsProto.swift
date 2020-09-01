@@ -5129,6 +5129,9 @@ public class GroupsProtoGroupJoinInfo: NSObject, Codable {
         if hasRevision {
             builder.setRevision(revision)
         }
+        if hasPendingAdminApproval {
+            builder.setPendingAdminApproval(pendingAdminApproval)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5181,6 +5184,10 @@ public class GroupsProtoGroupJoinInfo: NSObject, Codable {
 
         public func setRevision(_ valueParam: UInt32) {
             proto.revision = valueParam
+        }
+
+        public func setPendingAdminApproval(_ valueParam: Bool) {
+            proto.pendingAdminApproval = valueParam
         }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -5257,6 +5264,13 @@ public class GroupsProtoGroupJoinInfo: NSObject, Codable {
         return proto.revision
     }
     public var hasRevision: Bool {
+        return true
+    }
+
+    public var pendingAdminApproval: Bool {
+        return proto.pendingAdminApproval
+    }
+    public var hasPendingAdminApproval: Bool {
         return true
     }
 
