@@ -521,6 +521,10 @@ dispatch_queue_t NetworkManagerQueue()
 
     [OutageDetection.sharedManager reportConnectionFailure];
 
+    if (statusCode == AppExpiry.appExpiredStatusCode) {
+        [AppExpiry.shared setHasAppExpiredAtCurrentVersion];
+    }
+
     NSError *error = [self errorWithHTTPCode:statusCode
                                  description:nil
                                failureReason:nil

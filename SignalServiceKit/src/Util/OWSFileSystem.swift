@@ -33,6 +33,34 @@ public extension OWSFileSystem {
         try deleteFile(url: url)
     }
 
+    class func moveFile(from fromUrl: URL, to toUrl: URL) throws {
+        guard FileManager.default.fileExists(atPath: fromUrl.path) else {
+            throw OWSAssertionError("Source file does not exist.")
+        }
+        guard !FileManager.default.fileExists(atPath: toUrl.path) else {
+            throw OWSAssertionError("Destination file already exists.")
+        }
+        try FileManager.default.moveItem(at: fromUrl, to: toUrl)
+
+        // Ensure all files moved have the proper data protection class.
+        // On large directories this can take a while, so we dispatch async
+        // since we're in the launch path.
+        DispatchQueue.global().async {
+            self.protectRecursiveContents(atPath: toUrl.path)
+        }
+
+        #if TESTABLE_BUILD
+        guard !FileManager.default.fileExists(atPath: fromUrl.path) else {
+            throw OWSAssertionError("Source file does not exist.")
+        }
+        guard FileManager.default.fileExists(atPath: toUrl.path) else {
+            throw OWSAssertionError("Destination file already exists.")
+        }
+        #endif
+    }
+
+    // MARK: - Temporary Files
+
     class func temporaryFileUrl(fileExtension: String? = nil,
                                 isAvailableWhileDeviceLocked: Bool = false) -> URL {
         return URL(fileURLWithPath: temporaryFilePath(fileExtension: fileExtension,

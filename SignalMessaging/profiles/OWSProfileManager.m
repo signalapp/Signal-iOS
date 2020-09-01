@@ -152,11 +152,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return TSAccountManager.sharedInstance;
 }
 
-- (AFHTTPSessionManager *)avatarHTTPManager
-{
-    return [[OWSSignalService sharedInstance] sessionManagerForCdnNumber:0];
-}
-
 - (OWSIdentityManager *)identityManager
 {
     return SSKEnvironment.shared.identityManager;

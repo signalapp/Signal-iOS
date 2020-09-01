@@ -406,6 +406,8 @@ public struct StorageService {
             Logger.info("Storage request started: \(method) \(endpoint)")
 
             let urlSession = self.urlSession
+            // Some 4xx responses are expected;
+            // we'll discriminate the status code ourselves.
             urlSession.require2xxOr3xx = false
             return urlSession.dataTaskPromise(endpoint,
                                               method: method,

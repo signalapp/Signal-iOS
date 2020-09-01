@@ -435,7 +435,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
 
             // Wrap the progress block.
-            let progressBlock = { (progress: Progress) in
+            let progressBlock = { (task: URLSessionTask, progress: Progress) in
                 // Total progress is (progress from previous attempts/slices +
                 // progress from this attempt/slice).
                 let totalCompleted: Int = bytesAlreadyUploaded + Int(progress.completedUnitCount)
@@ -459,7 +459,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                     method: .put,
                                                     headers: headers,
                                                     dataUrl: uploadV3Metadata.temporaryFileUrl,
-                                                    progressBlock: progressBlock).asVoid()
+                                                    progress: progressBlock).asVoid()
             } else {
                 // Resuming, slice attachment data in memory.
                 //
@@ -487,7 +487,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                  method: .put,
                                                  headers: headers,
                                                  dataUrl: dataSliceFileUrl,
-                                                 progressBlock: progressBlock).asVoid()
+                                                 progress: progressBlock).asVoid()
                 }.ensure(on: .global()) {
                     do {
                         try OWSFileSystem.deleteFile(url: dataSliceFileUrl)
