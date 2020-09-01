@@ -50,7 +50,7 @@ public class RemoteConfig: BaseFlags {
     public static var modernContactDiscovery: Bool {
         let allEnableConditions = [
             // If the remote config flag is set, we're enabled
-            isEnabled(.modernContactDiscovery),
+            isEnabled(.modernContactDiscoveryV2),
 
             // These flags force modern CDS on, even if the remote config is switched off
             // Groups v2 implies modern CDS, so when it's enabled modern CDS must be enabled.
@@ -232,7 +232,7 @@ private struct Flags {
         case versionedProfiles
         case mentions
         case uuidSafetyNumbers
-        case modernContactDiscovery
+        case modernContactDiscoveryV2
         case attachmentUploadV3v1
     }
 
