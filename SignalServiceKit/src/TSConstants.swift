@@ -168,7 +168,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let keyBackupCensorshipPrefix = "backup"
     public let storageServiceCensorshipPrefix = "storage"
 
-    public let contactDiscoveryEnclaveName = "bd123560b01c8fa92935bc5ae15cd2064e5c45215f23f0bd40364d521329d2ad"
+    public let contactDiscoveryEnclaveName = "a3bfdf9717e35ce4f6fd3888133d65a71a880cd6a26c41d1e47647ed3e7704fa"
     public var contactDiscoveryMrEnclave: String {
         return contactDiscoveryEnclaveName
     }

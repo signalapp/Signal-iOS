@@ -246,7 +246,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self downloadAttachmentsForMessage:message
             bypassPendingMessageRequest:bypassPendingMessageRequest
-                            attachments:[message allAttachmentsWithTransaction:transaction.unwrapGrdbRead]
+                            attachments:[AttachmentFinder attachmentsWithAttachmentIds:message.allAttachmentIds
+                                                                           transaction:transaction.unwrapGrdbRead]
                             transaction:transaction
                                 success:success
                                 failure:failure];

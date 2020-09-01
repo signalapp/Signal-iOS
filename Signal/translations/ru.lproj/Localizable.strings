@@ -869,7 +869,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Всегда уведомлять";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не уведомлять, если выключен звук";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не уведомлять, если отключён звук";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Получать уведомления, когда вас упоминают в чатах с отключённым звуком?";

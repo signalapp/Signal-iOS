@@ -2381,7 +2381,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Pro ztlumené konverzace nebudete dostávat oznámení.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "Ztlumeno";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Přeskočit";
