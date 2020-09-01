@@ -495,17 +495,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.isFailedSticker) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            NSArray<TSAttachment *> *attachments = [message allAttachmentsWithTransaction:transaction.unwrapGrdbRead];
             [self.attachmentDownloads
-                downloadAllAttachmentsForMessage:message
-                     bypassPendingMessageRequest:NO
-                                     transaction:transaction
-                                         success:^(NSArray<TSAttachmentStream *> *_Nonnull attachmentStreams) {
-                                             // Do nothing.
-                                         }
-                                         failure:^(NSError *_Nonnull error) {
-                                             // Do nothing.
-                                         }];
+                downloadAttachmentsForMessage:message
+                  bypassPendingMessageRequest:NO
+                                  attachments:attachments
+                                      success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                                          // Do nothing.
+                                      }
+                                      failure:^(NSError *error) {
+                                          // Do nothing.
+                                      }];
         }];
         return;
     }

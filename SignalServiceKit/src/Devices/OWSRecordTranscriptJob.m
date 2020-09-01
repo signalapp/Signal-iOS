@@ -213,42 +213,51 @@ NS_ASSUME_NONNULL_BEGIN
         [ViewOnceMessages markAsCompleteWithMessage:outgoingMessage sendSyncMessages:NO transaction:transaction];
     } else if (outgoingMessage.allAttachmentIds.count > 0) {
         // Don't download attachments for "view-once" messages.
-        [self.attachmentDownloads downloadAllAttachmentsForMessage:outgoingMessage
-            bypassPendingMessageRequest:YES
-            transaction:transaction
-            success:^(NSArray *attachmentStreams) {
-                NSString *_Nullable quotedThumbnailPointerId = transcript.quotedMessage.thumbnailAttachmentPointerId;
-                TSAttachmentStream *_Nullable quotedThumbnailStream = nil;
-                if (quotedThumbnailPointerId) {
-                    // If we have a thumbnail attachment pointer, find the corresponding stream
-                    for (TSAttachmentStream *candidate in attachmentStreams) {
-                        if ([candidate.uniqueId
-                                isEqualToString:transcript.quotedMessage.thumbnailAttachmentPointerId]) {
-                            quotedThumbnailStream = candidate;
-                            break;
+        NSArray<TSAttachment *> *attachments =
+            [outgoingMessage allAttachmentsWithTransaction:transaction.unwrapGrdbRead];
+
+        // Don't enqueue the attachment downloads until the write
+        // transaction is committed or attachmentDownloads might race
+        // and not be able to find the attachment(s)/message/thread.
+        [transaction addAsyncCompletionOffMain:^{
+            [self.attachmentDownloads downloadAttachmentsForMessage:outgoingMessage
+                bypassPendingMessageRequest:YES
+                attachments:attachments
+                success:^(NSArray *attachmentStreams) {
+                    NSString *_Nullable quotedThumbnailPointerId
+                        = transcript.quotedMessage.thumbnailAttachmentPointerId;
+                    TSAttachmentStream *_Nullable quotedThumbnailStream = nil;
+                    if (quotedThumbnailPointerId) {
+                        // If we have a thumbnail attachment pointer, find the corresponding stream
+                        for (TSAttachmentStream *candidate in attachmentStreams) {
+                            if ([candidate.uniqueId
+                                    isEqualToString:transcript.quotedMessage.thumbnailAttachmentPointerId]) {
+                                quotedThumbnailStream = candidate;
+                                break;
+                            }
                         }
                     }
-                }
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    // OWSAttachmentDownloads should probably be performing this for us.
-                    // Explicitly touching the interaction here since it's a pattern adopted in a
-                    // couple other places. But if it ends up not being necessary this could be removed.
-                    [self.databaseStorage touchInteraction:outgoingMessage transaction:transaction];
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                        // OWSAttachmentDownloads should probably be performing this for us.
+                        // Explicitly touching the interaction here since it's a pattern adopted in a
+                        // couple other places. But if it ends up not being necessary this could be removed.
+                        [self.databaseStorage touchInteraction:outgoingMessage transaction:transaction];
 
-                    if (quotedThumbnailStream) {
-                        [outgoingMessage
-                            anyUpdateMessageWithTransaction:transaction
-                                                      block:^(TSMessage *message) {
-                                                          [message setQuotedMessageThumbnailAttachmentStream:
-                                                                       quotedThumbnailStream];
-                                                      }];
-                    }
-                });
-                attachmentHandler(attachmentStreams);
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"failed to fetch transcripts attachments for message: %@", outgoingMessage);
-            }];
+                        if (quotedThumbnailStream) {
+                            [outgoingMessage
+                                anyUpdateMessageWithTransaction:transaction
+                                                          block:^(TSMessage *message) {
+                                                              [message setQuotedMessageThumbnailAttachmentStream:
+                                                                           quotedThumbnailStream];
+                                                          }];
+                        }
+                    });
+                    attachmentHandler(attachmentStreams);
+                }
+                failure:^(NSError *error) {
+                    OWSLogError(@"failed to fetch transcripts attachments for message: %@", outgoingMessage);
+                }];
+        }];
     }
 }
 

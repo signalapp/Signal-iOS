@@ -184,7 +184,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                               bypassPendingMessageRequest:NO
                                                               attachments:[message allAttachmentsWithTransaction:
                                                                                        transaction.unwrapGrdbRead]
-                                                              transaction:transaction
                                                               success:^(NSArray<TSAttachmentStream *> *streams) {
                                                                   @synchronized(attachmentStreams) {
                                                                       [attachmentStreams addObjectsFromArray:streams];
@@ -224,43 +223,12 @@ NS_ASSUME_NONNULL_BEGIN
         });
 }
 
-- (void)downloadBodyAttachmentsForMessage:(TSMessage *)message
-              bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                              transaction:(SDSAnyReadTransaction *)transaction
-                                  success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                                  failure:(void (^)(NSError *error))failure
-{
-    [self downloadAttachmentsForMessage:message
-            bypassPendingMessageRequest:bypassPendingMessageRequest
-                            attachments:[message bodyAttachmentsWithTransaction:transaction.unwrapGrdbRead]
-                            transaction:transaction
-                                success:success
-                                failure:failure];
-}
-
-- (void)downloadAllAttachmentsForMessage:(TSMessage *)message
-             bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
-                             transaction:(SDSAnyReadTransaction *)transaction
-                                 success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
-                                 failure:(void (^)(NSError *error))failure
-{
-    [self downloadAttachmentsForMessage:message
-            bypassPendingMessageRequest:bypassPendingMessageRequest
-                            attachments:[AttachmentFinder attachmentsWithAttachmentIds:message.allAttachmentIds
-                                                                           transaction:transaction.unwrapGrdbRead]
-                            transaction:transaction
-                                success:success
-                                failure:failure];
-}
-
 - (void)downloadAttachmentsForMessage:(TSMessage *)message
           bypassPendingMessageRequest:(BOOL)bypassPendingMessageRequest
                           attachments:(NSArray<TSAttachment *> *)attachments
-                          transaction:(SDSAnyReadTransaction *)transaction
                               success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                               failure:(void (^)(NSError *error))failure
 {
-    OWSAssertDebug(transaction);
     OWSAssertDebug(message);
     OWSAssertDebug(attachments.count > 0);
 

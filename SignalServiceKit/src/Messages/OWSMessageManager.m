@@ -1410,58 +1410,63 @@ NS_ASSUME_NONNULL_BEGIN
 
     [avatarPointer anyInsertWithTransaction:transaction];
 
-    [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
-        bypassPendingMessageRequest:YES
-        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-            OWSAssertDebug(attachmentStreams.count == 1);
-            TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-            NSData *_Nullable avatarData = attachmentStream.validStillImageData;
-            if (avatarData == nil) {
-                OWSFailDebug(@"Missing avatarData.");
-                return;
+    // Don't enqueue the attachment downloads until the write
+    // transaction is committed or attachmentDownloads might race
+    // and not be able to find the attachment(s)/message/thread.
+    [transaction addAsyncCompletionOffMain:^{
+        [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
+            bypassPendingMessageRequest:YES
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSAssertDebug(attachmentStreams.count == 1);
+                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
+                NSData *_Nullable avatarData = attachmentStream.validStillImageData;
+                if (avatarData == nil) {
+                    OWSFailDebug(@"Missing avatarData.");
+                    return;
+                }
+
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                    TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId
+                                                                                  transaction:transaction];
+                    if (oldGroupThread == nil) {
+                        OWSFailDebug(@"Missing oldGroupThread.");
+                        return;
+                    }
+                    NSError *_Nullable error;
+                    UpsertGroupResult *_Nullable result =
+                        [GroupManager remoteUpdateAvatarToExistingGroupV1WithGroupModel:oldGroupThread.groupModel
+                                                                             avatarData:avatarData
+                                                               groupUpdateSourceAddress:groupUpdateSourceAddress
+                                                                            transaction:transaction
+                                                                                  error:&error];
+                    if (error != nil || result == nil) {
+                        OWSFailDebug(@"Error: %@", error);
+                        return;
+                    }
+
+                    // Eagerly clean up the attachment.
+                    [attachmentStream anyRemoveWithTransaction:transaction];
+                });
             }
+            failure:^(NSError *error) {
+                OWSLogError(@"failed to fetch attachments for group avatar sent at: %llu. with error: %@",
+                    envelope.timestamp,
+                    error);
 
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId
-                                                                              transaction:transaction];
-                if (oldGroupThread == nil) {
-                    OWSFailDebug(@"Missing oldGroupThread.");
-                    return;
-                }
-                NSError *_Nullable error;
-                UpsertGroupResult *_Nullable result =
-                    [GroupManager remoteUpdateAvatarToExistingGroupV1WithGroupModel:oldGroupThread.groupModel
-                                                                         avatarData:avatarData
-                                                           groupUpdateSourceAddress:groupUpdateSourceAddress
-                                                                        transaction:transaction
-                                                                              error:&error];
-                if (error != nil || result == nil) {
-                    OWSFailDebug(@"Error: %@", error);
-                    return;
-                }
-
-                // Eagerly clean up the attachment.
-                [attachmentStream anyRemoveWithTransaction:transaction];
-            });
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"failed to fetch attachments for group avatar sent at: %llu. with error: %@",
-                envelope.timestamp,
-                error);
-
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                // Eagerly clean up the attachment.
-                TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId
-                                                                            transaction:transaction];
-                if (attachment == nil) {
-                    // In the test case, database storage may be reset by the
-                    // time the pointer download fails.
-                    OWSFailDebugUnlessRunningTests(@"Could not load attachment.");
-                    return;
-                }
-                [attachment anyRemoveWithTransaction:transaction];
-            });
-        }];
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                    // Eagerly clean up the attachment.
+                    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId
+                                                                                transaction:transaction];
+                    if (attachment == nil) {
+                        // In the test case, database storage may be reset by the
+                        // time the pointer download fails.
+                        OWSFailDebugUnlessRunningTests(@"Could not load attachment.");
+                        return;
+                    }
+                    [attachment anyRemoveWithTransaction:transaction];
+                });
+            }];
+    }];
 }
 
 - (void)handleReceivedMediaWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1505,17 +1510,24 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
-    [self.attachmentDownloads downloadBodyAttachmentsForMessage:message
-        bypassPendingMessageRequest:NO
-        transaction:transaction
-        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-            OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
-                (unsigned long)attachmentStreams.count,
-                message);
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", message, error);
-        }];
+    NSArray<TSAttachment *> *bodyAttachments = [message bodyAttachmentsWithTransaction:transaction.unwrapGrdbRead];
+
+    // Don't enqueue the attachment downloads until the write
+    // transaction is committed or attachmentDownloads might race
+    // and not be able to find the attachment(s)/message/thread.
+    [transaction addAsyncCompletionOffMain:^{
+        [self.attachmentDownloads downloadAttachmentsForMessage:message
+            bypassPendingMessageRequest:NO
+            attachments:bodyAttachments
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
+                    (unsigned long)attachmentStreams.count,
+                    message);
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", message, error);
+            }];
+    }];
 }
 
 - (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -2205,38 +2217,44 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // * We update the message as each comes in.
         // * Failures don't interfere with successes.
-        [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
-            message:incomingMessage
-            bypassPendingMessageRequest:NO
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                if (attachmentStreams.count == 0) {
-                    // This is expected if there is a pending message request.
-                    return;
-                }
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
-                    OWSAssertDebug(attachmentStream);
-                    if (attachmentStream && incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0 &&
-                        [attachmentStream.uniqueId
-                            isEqualToString:incomingMessage.quotedMessage.thumbnailAttachmentPointerId]) {
-                        [incomingMessage
-                            anyUpdateMessageWithTransaction:transaction
-                                                      block:^(TSMessage *message) {
-                                                          [message setQuotedMessageThumbnailAttachmentStream:
-                                                                       attachmentStream];
-                                                      }];
-                    } else {
-                        // We touch the message to trigger redraw of any views displaying it,
-                        // since the attachment might be a contact avatar, etc.
-                        [self.databaseStorage touchInteraction:incomingMessage transaction:transaction];
+        //
+        // Don't enqueue the attachment downloads until the write
+        // transaction is committed or attachmentDownloads might race
+        // and not be able to find the attachment(s)/message/thread.
+        [transaction addAsyncCompletionOffMain:^{
+            [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+                message:incomingMessage
+                bypassPendingMessageRequest:NO
+                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                    if (attachmentStreams.count == 0) {
+                        // This is expected if there is a pending message request.
+                        return;
                     }
-                });
-            }
-            failure:^(NSError *error) {
-                OWSLogWarn(@"failed to download attachment for message: %llu with error: %@",
-                    incomingMessage.timestamp,
-                    error);
-            }];
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                        TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
+                        OWSAssertDebug(attachmentStream);
+                        if (attachmentStream && incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0 &&
+                            [attachmentStream.uniqueId
+                                isEqualToString:incomingMessage.quotedMessage.thumbnailAttachmentPointerId]) {
+                            [incomingMessage
+                                anyUpdateMessageWithTransaction:transaction
+                                                          block:^(TSMessage *message) {
+                                                              [message setQuotedMessageThumbnailAttachmentStream:
+                                                                           attachmentStream];
+                                                          }];
+                        } else {
+                            // We touch the message to trigger redraw of any views displaying it,
+                            // since the attachment might be a contact avatar, etc.
+                            [self.databaseStorage touchInteraction:incomingMessage transaction:transaction];
+                        }
+                    });
+                }
+                failure:^(NSError *error) {
+                    OWSLogWarn(@"failed to download attachment for message: %llu with error: %@",
+                        incomingMessage.timestamp,
+                        error);
+                }];
+        }];
     }
 
     // TODO: Is this still necessary?
