@@ -131,7 +131,6 @@ dispatch_queue_t NetworkManagerQueue()
     return self;
 }
 
-//  TSNetworkManager.serialQueue
 - (void)performRequest:(TSRequest *)request
             canUseAuth:(BOOL)canUseAuth
                success:(TSNetworkManagerSuccess)success
@@ -141,6 +140,13 @@ dispatch_queue_t NetworkManagerQueue()
     OWSAssertDebug(request);
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
+
+    if (AppExpiry.shared.isExpired) {
+        NSURLSessionDataTask *task = [[NSURLSessionDataTask alloc] init];
+        NSError *error = OWSErrorMakeAssertionError(@"App is expired.");
+        failure(task, error);
+        return;
+    }
 
     // Clear all headers so that we don't retain headers from previous requests.
     for (NSString *headerField in self.sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {

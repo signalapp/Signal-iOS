@@ -56,8 +56,16 @@ public class AppExpiry: NSObject {
             self.keyValueStore.setString(AppVersion.sharedInstance().currentAppVersion,
                                          key: Self.expiredAtVersionKey,
                                          transaction: transaction)
+
+            transaction.addAsyncCompletion {
+                NotificationCenter.default.postNotificationNameAsync(Self.AppExpiryDidChange,
+                                                                     object: nil)
+            }
         }
     }
+
+    @objc
+    public static let AppExpiryDidChange = Notification.Name("AppExpiryDidChange")
 
     @objc
     public class var shared: AppExpiry {

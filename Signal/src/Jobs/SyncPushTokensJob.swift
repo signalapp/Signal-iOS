@@ -8,7 +8,8 @@ import SignalServiceKit
 @objc(OWSSyncPushTokensJob)
 class SyncPushTokensJob: NSObject {
 
-    @objc public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
+    @objc
+    public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
 
     // MARK: Dependencies
     let accountManager: AccountManager

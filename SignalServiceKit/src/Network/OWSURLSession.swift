@@ -602,6 +602,10 @@ public extension OWSURLSession {
                            data requestData: Data,
                            progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
 
+        guard !Self.appExpiry.isExpired else {
+            return Promise(error: OWSAssertionError("App is expired."))
+        }
+
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
         var requestConfig: RequestConfig?
         let task = session.uploadTask(with: request, from: requestData) { (responseData: Data?, _: URLResponse?, _: Error?) in
@@ -635,6 +639,10 @@ public extension OWSURLSession {
                            dataUrl: URL,
                            progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
 
+        guard !Self.appExpiry.isExpired else {
+            return Promise(error: OWSAssertionError("App is expired."))
+        }
+
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
         var requestConfig: RequestConfig?
         let task = session.uploadTask(with: request, fromFile: dataUrl) { (responseData: Data?, _: URLResponse?, _: Error?) in
@@ -666,6 +674,10 @@ public extension OWSURLSession {
     }
 
     func dataTaskPromise(request: URLRequest) -> Promise<OWSHTTPResponse> {
+
+        guard !Self.appExpiry.isExpired else {
+            return Promise(error: OWSAssertionError("App is expired."))
+        }
 
         let (promise, resolver) = Promise<OWSHTTPResponse>.pending()
         var requestConfig: RequestConfig?
@@ -701,6 +713,10 @@ public extension OWSURLSession {
     func urlDownloadTaskPromise(request: URLRequest,
                                 progress progressBlock: ProgressBlock? = nil) -> Promise<OWSUrlDownloadResponse> {
 
+        guard !Self.appExpiry.isExpired else {
+            return Promise(error: OWSAssertionError("App is expired."))
+        }
+
         let (promise, resolver) = Promise<OWSUrlDownloadResponse>.pending()
         var requestConfig: RequestConfig?
         // Don't use the a completion block or the delegate will be ignored for download tasks.
@@ -724,6 +740,10 @@ public extension OWSURLSession {
 
     func urlDownloadTaskPromise(resumeData: Data,
                                 progress progressBlock: ProgressBlock? = nil) -> Promise<OWSUrlDownloadResponse> {
+
+        guard !Self.appExpiry.isExpired else {
+            return Promise(error: OWSAssertionError("App is expired."))
+        }
 
         let (promise, resolver) = Promise<OWSUrlDownloadResponse>.pending()
         var requestConfig: RequestConfig?
@@ -790,7 +810,10 @@ public class OWSHttpHeaders: NSObject {
             let hasConflict = hasValueForHeader(headerField)
             if hasConflict {
                 if overwriteOnConflict {
-                    Logger.verbose("Overwriting header: \(headerField)")
+                    // We expect to overwrite the User-Agent; don't log it.
+                    if headerField.lowercased() != "User-Agent".lowercased() {
+                        Logger.verbose("Overwriting header: \(headerField)")
+                    }
                     // Remove existing value.
                     removeValueForHeader(headerField)
                 } else {

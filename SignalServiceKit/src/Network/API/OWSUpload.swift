@@ -658,6 +658,10 @@ public extension OWSUpload {
                         uploadUrlPath: String,
                         progressBlock: ProgressBlock? = nil) -> Promise<String> {
 
+        guard !AppExpiry.shared.isExpired else {
+            return Promise(error: OWSAssertionError("App is expired."))
+        }
+
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {
             // TODO: Use OWSUrlSession instead.

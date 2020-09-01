@@ -307,6 +307,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                                              selector:@selector(environmentDidChange:)
                                                  name:TSConstants.EnvironmentDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appExpiryDidChange:)
+                                                 name:AppExpiry.AppExpiryDidChange
+                                               object:nil];
 }
 
 #pragma mark - Manage Socket
@@ -969,6 +973,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         return NO;
     }
 
+    if (AppExpiry.shared.isExpired) {
+        return NO;
+    }
+
     if (self.signalService.isCensorshipCircumventionActive) {
         OWSLogWarn(@"Skipping opening of websocket due to censorship circumvention.");
         return NO;
@@ -1191,6 +1199,14 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     OWSAssertIsOnMainThread();
     
     [self cycleSocket];
+}
+
+- (void)appExpiryDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyDesiredSocketState];
+    ;
 }
 
 @end
