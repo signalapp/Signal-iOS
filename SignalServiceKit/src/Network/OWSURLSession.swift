@@ -271,40 +271,22 @@ public class OWSURLSession: NSObject {
         var request = URLRequest(url: url)
         request.httpMethod = verb.httpMethod
 
-        var headerSet = Set<String>()
-
         // Add the headers.
-        if let headers = headers {
-            for (headerField, headerValue) in headers {
-                owsAssertDebug(!headerSet.contains(headerField.lowercased()))
-                headerSet.insert(headerField.lowercased())
-
-                request.addValue(headerValue, forHTTPHeaderField: headerField)
-
-            }
-        }
+        request.addHttpHeadersIfNotSet(headers: headers)
 
         // Add the "extra headers".
-        for (headerField, headerValue) in extraHeaders {
-            guard !headerSet.contains(headerField.lowercased()) else {
-                owsFailDebug("Skipping redundant header: \(headerField)")
-                continue
-            }
-            headerSet.insert(headerField.lowercased())
+        request.addHttpHeadersIfNotSet(headers: extraHeaders)
 
-            request.addValue(headerValue, forHTTPHeaderField: headerField)
-        }
-
-        let userAgentHeader = "User-Agent"
-        if !headerSet.contains(userAgentHeader.lowercased()) {
-            request.addValue(Self.signalIosUserAgent,
-                             forHTTPHeaderField: userAgentHeader)
-        }
+        // Add user-agent header.
+        request.addHttpHeadersIfNotSet(headers: [ Self.kUserAgentHeader: Self.signalIosUserAgent ])
 
         request.httpBody = body
         request.httpShouldHandleCookies = httpShouldHandleCookies.get()
         return request
     }
+
+    @objc
+    public static let kUserAgentHeader = "User-Agent"
 
     @objc
     public static var signalIosUserAgent: String {
@@ -596,5 +578,50 @@ public extension OWSURLSession {
         requestConfig = self.requestConfig(forTask: task)
         task.resume()
         return promise
+    }
+}
+
+// MARK: - HTTP Headers
+
+@objc
+public extension OWSURLSession {
+    // HTTP headers are case-insensitive.
+    static func httpHeaders(_ httpHeaders: [String: String]?,
+                            hasValueForHeader header: String) -> Bool {
+        guard let httpHeaders = httpHeaders else {
+            return false
+        }
+        return Set(httpHeaders.keys.map { $0.lowercased() }).contains(header.lowercased())
+    }
+}
+
+// MARK: - HTTP Headers
+
+public extension URLRequest {
+    func hasHttpHeader(_ header: String) -> Bool {
+        OWSURLSession.httpHeaders(allHTTPHeaderFields, hasValueForHeader: header)
+    }
+
+    mutating func addHttpHeadersIfNotSet(headers: [String: String]?) {
+        guard let headers = headers else {
+            return
+        }
+        for (headerField, headerValue) in headers {
+            guard !hasHttpHeader(headerField) else {
+                owsFailDebug("Skipping redundant header: \(headerField)")
+                continue
+            }
+
+            addValue(headerValue, forHTTPHeaderField: headerField)
+        }
+    }
+}
+
+// MARK: - HTTP Headers
+
+@objc
+public extension NSURLRequest {
+    func hasHttpHeader(_ header: String) -> Bool {
+        OWSURLSession.httpHeaders(allHTTPHeaderFields, hasValueForHeader: header)
     }
 }

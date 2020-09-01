@@ -548,6 +548,12 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         [requestBuilder addHeaders:[NSString stringWithFormat:@"%@:%@", headerField, headerValue]];
     }
 
+    if (![OWSURLSession httpHeaders:request.allHTTPHeaderFields hasValueForHeader:OWSURLSession.kUserAgentHeader]) {
+        [requestBuilder addHeaders:[NSString stringWithFormat:@"%@:%@",
+                                             OWSURLSession.kUserAgentHeader,
+                                             OWSURLSession.signalIosUserAgent]];
+    }
+
     NSError *error;
     WebSocketProtoWebSocketRequestMessage *_Nullable requestProto = [requestBuilder buildAndReturnError:&error];
     if (!requestProto || error) {
