@@ -204,6 +204,7 @@ public final class ClosedGroupsProtocol : NSObject {
     }
 
     public static func requestSenderKey(for groupPublicKey: String, senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        print("[Loki] Requesting sender key for group public key: \(groupPublicKey), sender public key: \(senderPublicKey).")
         // Establish session if needed
         SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction)
         // Send the request
@@ -358,6 +359,7 @@ public final class ClosedGroupsProtocol : NSObject {
             return print("[Loki] Ignoring closed group sender key request from non-member.")
         }
         // Respond to the request
+        print("[Loki] Responding to sender key request from: \(senderPublicKey).")
         SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction) // This internally takes care of multi device
         let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
@@ -393,6 +395,7 @@ public final class ClosedGroupsProtocol : NSObject {
             return print("[Loki] Ignoring invalid closed group sender key.")
         }
         // Store the sender key
+        print("[Loki] Received a sender key from: \(senderPublicKey).")
         let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
         Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, using: transaction)
     }
