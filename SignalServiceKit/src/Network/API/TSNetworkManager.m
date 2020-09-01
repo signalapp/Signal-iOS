@@ -146,18 +146,16 @@ dispatch_queue_t NetworkManagerQueue()
         [self.sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
     }
 
-    NSDictionary<NSString *, NSString *> *httpHeaders = [OWSURLSession mergeHttpHeadersInto:nil
-                                                                                       from:request.allHTTPHeaderFields
-                                                                        overwriteOnConflict:NO];
+    OWSHttpHeaders *httpHeaders = [OWSHttpHeaders new];
+    [httpHeaders merge:request.allHTTPHeaderFields overwriteOnConflict:NO];
 
     // Apply the default headers for this session manager.
-    httpHeaders = [OWSURLSession mergeHttpHeadersInto:httpHeaders from:self.defaultHeaders overwriteOnConflict:NO];
+    [httpHeaders merge:self.defaultHeaders overwriteOnConflict:NO];
 
     // Set User-Agent header.
-    httpHeaders =
-        [OWSURLSession mergeHttpHeadersInto:httpHeaders
-                                       from:@{ OWSURLSession.kUserAgentHeader : OWSURLSession.signalIosUserAgent }
-                        overwriteOnConflict:YES];
+    [httpHeaders mergeHeader:OWSURLSession.kUserAgentHeader
+                       value:OWSURLSession.signalIosUserAgent
+         overwriteOnConflict:YES];
 
     if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
         OWSAssertDebug(request.authUsername.length > 0);
@@ -194,8 +192,9 @@ dispatch_queue_t NetworkManagerQueue()
     OWSAssertDebug(requestURLString.length > 0);
 
     // Honor the request's headers.
-    for (NSString *headerField in httpHeaders) {
-        NSString *headerValue = httpHeaders[headerField];
+    for (NSString *headerField in httpHeaders.headers) {
+        NSString *_Nullable headerValue = httpHeaders.headers[headerField];
+        OWSAssertDebug(headerValue != nil);
         [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
     }
 

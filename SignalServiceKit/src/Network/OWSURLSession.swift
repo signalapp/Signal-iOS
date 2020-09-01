@@ -282,14 +282,11 @@ public class OWSURLSession: NSObject {
         var request = URLRequest(url: url)
         request.httpMethod = verb.httpMethod
 
-        // Add the headers.
-        request.addHttpHeadersIfNotSet(headers: headers)
-
-        // Add the "extra headers".
-        request.addHttpHeadersIfNotSet(headers: extraHeaders)
-
-        // Add user-agent header.
-        request.addHttpHeadersIfNotSet(headers: [ Self.kUserAgentHeader: Self.signalIosUserAgent ])
+        let httpHeaders = OWSHttpHeaders()
+        httpHeaders.merge(headers, overwriteOnConflict: false)
+        httpHeaders.merge(extraHeaders, overwriteOnConflict: false)
+        httpHeaders.merge(header: Self.kUserAgentHeader, value: Self.signalIosUserAgent, overwriteOnConflict: true)
+        request.add(httpHeaders: httpHeaders)
 
         request.httpBody = body
         request.httpShouldHandleCookies = httpShouldHandleCookies.get()
@@ -594,80 +591,67 @@ public extension OWSURLSession {
 
 // MARK: - HTTP Headers
 
+// HTTP headers are case-insensitive.
+// This class handles conflict resolution.
 @objc
-public extension OWSURLSession {
-    // HTTP headers are case-insensitive.
-    static func httpHeaders(_ httpHeaders: [String: String]?,
-                            hasValueForHeader header: String) -> Bool {
-        guard let httpHeaders = httpHeaders else {
-            return false
-        }
-        return Set(httpHeaders.keys.map { $0.lowercased() }).contains(header.lowercased())
+public class OWSHttpHeaders: NSObject {
+    @objc
+    public var headers = [String: String]()
+
+    @objc
+    public override init() {}
+
+    @objc
+    public init(httpHeaders: [String: String]?) {
+
     }
 
-    // HTTP headers are case-insensitive.
-    static func httpHeaders(_ httpHeaders: [String: String]?,
-                            removeValueForHeader header: String) -> [String: String] {
-        guard let httpHeaders = httpHeaders else {
-            return [:]
-        }
-        return httpHeaders.filter { $0.key.lowercased() != header.lowercased() }
+    @objc
+    public func hasValueForHeader(_ header: String) -> Bool {
+        Set(headers.keys.map { $0.lowercased() }).contains(header.lowercased())
     }
 
-    // HTTP headers are case-insensitive.
-    static func mergeHttpHeaders(into existingHttpHeaders: [String: String]?,
-                                 from newHttpHeaders: [String: String]?,
-                                 overwriteOnConflict: Bool) -> [String: String] {
-        var httpHeaders = existingHttpHeaders ?? [:]
-        if let newHttpHeaders = newHttpHeaders {
-            for (headerField, headerValue) in newHttpHeaders {
-                let hasConflict = Self.httpHeaders(httpHeaders, hasValueForHeader: headerField)
-                if hasConflict {
-                    if overwriteOnConflict {
-                        Logger.verbose("Overwriting header: \(headerField)")
-                        // Remove existing value.
-                        httpHeaders = Self.httpHeaders(httpHeaders, removeValueForHeader: headerField)
-                        owsAssertDebug(!Self.httpHeaders(httpHeaders, hasValueForHeader: headerField))
-                    } else {
-                        owsFailDebug("Skipping redundant header: \(headerField)")
-                        continue
-                    }
+    @objc
+    public func removeValueForHeader(_ header: String) {
+        headers = headers.filter { $0.key.lowercased() != header.lowercased() }
+        owsAssertDebug(!hasValueForHeader(header))
+    }
+
+    @objc(mergeHeader:value:overwriteOnConflict:)
+    public func merge(header: String, value: String, overwriteOnConflict: Bool) {
+        merge([header: value], overwriteOnConflict: overwriteOnConflict)
+    }
+
+    @objc
+    public func merge(_ newHttpHeaders: [String: String]?,
+                      overwriteOnConflict: Bool) {
+        guard let newHttpHeaders = newHttpHeaders else {
+            return
+        }
+        for (headerField, headerValue) in newHttpHeaders {
+            let hasConflict = hasValueForHeader(headerField)
+            if hasConflict {
+                if overwriteOnConflict {
+                    Logger.verbose("Overwriting header: \(headerField)")
+                    // Remove existing value.
+                    removeValueForHeader(headerField)
+                } else {
+                    owsFailDebug("Skipping redundant header: \(headerField)")
+                    continue
                 }
-
-                httpHeaders[headerField] = headerValue
             }
+
+            headers[headerField] = headerValue
         }
-        return httpHeaders
     }
 }
 
 // MARK: - HTTP Headers
 
 public extension URLRequest {
-    func hasHttpHeader(_ header: String) -> Bool {
-        OWSURLSession.httpHeaders(allHTTPHeaderFields, hasValueForHeader: header)
-    }
-
-    mutating func addHttpHeadersIfNotSet(headers: [String: String]?) {
-        guard let headers = headers else {
-            return
-        }
-        for (headerField, headerValue) in headers {
-            guard !hasHttpHeader(headerField) else {
-                owsFailDebug("Skipping redundant header: \(headerField)")
-                continue
-            }
-
+    mutating func add(httpHeaders: OWSHttpHeaders) {
+        for (headerField, headerValue) in httpHeaders.headers {
             addValue(headerValue, forHTTPHeaderField: headerField)
         }
-    }
-}
-
-// MARK: - HTTP Headers
-
-@objc
-public extension NSURLRequest {
-    func hasHttpHeader(_ header: String) -> Bool {
-        OWSURLSession.httpHeaders(allHTTPHeaderFields, hasValueForHeader: header)
     }
 }

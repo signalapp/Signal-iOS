@@ -530,9 +530,8 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         }
     }
 
-    NSDictionary<NSString *, NSString *> *httpHeaders = [OWSURLSession mergeHttpHeadersInto:nil
-                                                                                       from:request.allHTTPHeaderFields
-                                                                        overwriteOnConflict:NO];
+    OWSHttpHeaders *httpHeaders = [OWSHttpHeaders new];
+    [httpHeaders merge:request.allHTTPHeaderFields overwriteOnConflict:NO];
 
     WebSocketProtoWebSocketRequestMessageBuilder *requestBuilder =
         [WebSocketProtoWebSocketRequestMessage builderWithVerb:request.HTTPMethod
@@ -541,19 +540,17 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
-        httpHeaders = [OWSURLSession mergeHttpHeadersInto:httpHeaders
-                                                     from:@{ @"content-type" : @"application/json" }
-                                      overwriteOnConflict:YES];
+        [httpHeaders mergeHeader:@"content-type" value:@"application/json" overwriteOnConflict:YES];
     }
 
     // Set User-Agent header.
-    httpHeaders =
-        [OWSURLSession mergeHttpHeadersInto:httpHeaders
-                                       from:@{ OWSURLSession.kUserAgentHeader : OWSURLSession.signalIosUserAgent }
-                        overwriteOnConflict:YES];
+    [httpHeaders mergeHeader:OWSURLSession.kUserAgentHeader
+                       value:OWSURLSession.signalIosUserAgent
+         overwriteOnConflict:YES];
 
-    for (NSString *headerField in httpHeaders) {
-        NSString *headerValue = httpHeaders[headerField];
+    for (NSString *headerField in httpHeaders.headers) {
+        NSString *_Nullable headerValue = httpHeaders.headers[headerField];
+        OWSAssertDebug(headerValue != nil);
         [requestBuilder addHeaders:[NSString stringWithFormat:@"%@:%@", headerField, headerValue]];
     }
 
