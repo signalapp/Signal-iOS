@@ -229,16 +229,21 @@ NS_ASSUME_NONNULL_BEGIN
                         }
                     }
                 }
-                if (quotedThumbnailStream) {
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [outgoingMessage
-                            anyUpdateMessageWithTransaction:transaction
-                                                      block:^(TSMessage *message) {
-                                                          [message setQuotedMessageThumbnailAttachmentStream:
-                                                                       quotedThumbnailStream];
-                                                      }];
-                    });
-                }
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                    // OWSAttachmentDownloads should probably be performing this for us.
+                    // Explicitly touching the interaction here since it's a pattern adopted in a
+                    // couple other places. But if it ends up not being necessary this could be removed.
+                    [self.databaseStorage touchInteraction:outgoingMessage transaction:transaction];
+
+                    if (quotedThumbnailStream) {
+                            [outgoingMessage
+                                anyUpdateMessageWithTransaction:transaction
+                                                          block:^(TSMessage *message) {
+                                                              [message setQuotedMessageThumbnailAttachmentStream:
+                                                                           quotedThumbnailStream];
+                                                          }];
+                        });
+                });
                 attachmentHandler(attachmentStreams);
             }
             failure:^(NSError *error) {
