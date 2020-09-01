@@ -106,7 +106,6 @@ public extension OWSAttachmentDownloads {
             ]
 
             let progress = { (task: URLSessionTask, progress: Progress) in
-                Logger.verbose("----- progress: \(progress.fractionCompleted)")
                 Self.handleDownloadProgress(downloadState: downloadState,
                                             task: task,
                                             progress: progress)

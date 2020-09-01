@@ -448,7 +448,7 @@ public struct StorageService {
             } else {
                 // This should never happen.
                 owsFailDebug("Error: \(error)")
-                throw error
+                throw StorageError.networkError(statusCode: 0, underlyingError: error)
             }
         }
     }

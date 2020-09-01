@@ -87,6 +87,7 @@ open class CDNDownloadOperation: OWSOperation {
 
             do {
                 let data = try Data(contentsOf: downloadUrl)
+                try OWSFileSystem.deleteFile(url: downloadUrl)
                 resolver.fulfill(data)
             } catch {
                 owsFailDebug("Could not load data failed: \(error)")

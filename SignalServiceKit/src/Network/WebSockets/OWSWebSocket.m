@@ -1206,7 +1206,6 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     OWSAssertIsOnMainThread();
 
     [self applyDesiredSocketState];
-    ;
 }
 
 @end
