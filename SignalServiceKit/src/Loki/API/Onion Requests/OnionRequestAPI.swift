@@ -339,7 +339,13 @@ public enum OnionRequestAPI {
             }
         }
         promise.catch2 { error in // Must be invoked on LokiAPI.workQueue
-            guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
+            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
+            // Marking all the snodes in the path as unreliable here is aggressive, but otherwise users
+            // can get stuck with a failing path that just refreshes to the same path.
+            let path = paths.first { $0.contains(guardSnode) }
+            path?.forEach { snode in
+                SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+            }
             dropAllPaths() // A snode in the path is bad; retry with a different path
             dropGuardSnode(guardSnode)
         }
