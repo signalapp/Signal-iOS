@@ -17,7 +17,7 @@ public extension StorageService {
 
         let protoData = try groupProto.serializedData()
         return try buildGroupV2Request(protoData: protoData,
-                                       urlPath: "/v1/groups/",
+                                       urlString: "/v1/groups/",
                                        httpMethod: "PUT",
                                        groupV2Params: groupV2Params,
                                        sessionManager: sessionManager,
@@ -27,11 +27,17 @@ public extension StorageService {
     static func buildUpdateGroupRequest(groupChangeProto: GroupsProtoGroupChangeActions,
                                         groupV2Params: GroupV2Params,
                                         sessionManager: AFHTTPSessionManager,
-                                        authCredential: AuthCredential) throws -> NSURLRequest {
+                                        authCredential: AuthCredential,
+                                        groupInviteLinkPassword: Data?) throws -> NSURLRequest {
+
+        var urlString = "/v1/groups/"
+        if let groupInviteLinkPassword = groupInviteLinkPassword {
+            urlString += "?inviteLinkPassword=\(groupInviteLinkPassword.asBase64Url)"
+        }
 
         let protoData = try groupChangeProto.serializedData()
         return try buildGroupV2Request(protoData: protoData,
-                                       urlPath: "/v1/groups/",
+                                       urlString: urlString,
                                        httpMethod: "PATCH",
                                        groupV2Params: groupV2Params,
                                        sessionManager: sessionManager,
@@ -43,7 +49,7 @@ public extension StorageService {
                                                         authCredential: AuthCredential) throws -> NSURLRequest {
 
         return try buildGroupV2Request(protoData: nil,
-                                       urlPath: "/v1/groups/",
+                                       urlString: "/v1/groups/",
                                        httpMethod: "GET",
                                        groupV2Params: groupV2Params,
                                        sessionManager: sessionManager,
@@ -60,7 +66,7 @@ public extension StorageService {
         // GroupsV2 TODO: Apply requireSnapshotForFirstChange.
         let urlPath = "/v1/groups/logs/\(OWSFormat.formatUInt32(fromRevision))"
         return try buildGroupV2Request(protoData: nil,
-                                       urlPath: urlPath,
+                                       urlString: urlPath,
                                        httpMethod: "GET",
                                        groupV2Params: groupV2Params,
                                        sessionManager: sessionManager,
@@ -73,7 +79,21 @@ public extension StorageService {
 
         let urlPath = "/v1/groups/avatar/form"
         return try buildGroupV2Request(protoData: nil,
-                                       urlPath: urlPath,
+                                       urlString: urlPath,
+                                       httpMethod: "GET",
+                                       groupV2Params: groupV2Params,
+                                       sessionManager: sessionManager,
+                                       authCredential: authCredential)
+    }
+
+    static func buildFetchGroupInviteLinkPreviewRequest(inviteLinkPassword: Data,
+                                                        groupV2Params: GroupV2Params,
+                                                        sessionManager: AFHTTPSessionManager,
+                                                        authCredential: AuthCredential) throws -> NSURLRequest {
+
+        let urlPath = "/v1/groups/join/\(inviteLinkPassword.asBase64Url)"
+        return try buildGroupV2Request(protoData: nil,
+                                       urlString: urlPath,
                                        httpMethod: "GET",
                                        groupV2Params: groupV2Params,
                                        sessionManager: sessionManager,
@@ -81,13 +101,13 @@ public extension StorageService {
     }
 
     private static func buildGroupV2Request(protoData: Data?,
-                                            urlPath: String,
+                                            urlString: String,
                                             httpMethod: String,
                                             groupV2Params: GroupV2Params,
                                             sessionManager: AFHTTPSessionManager,
                                             authCredential: AuthCredential) throws -> NSURLRequest {
 
-        guard let url = OWSURLSession.buildUrl(urlString: urlPath, baseUrl: sessionManager.baseURL) else {
+        guard let url = OWSURLSession.buildUrl(urlString: urlString, baseUrl: sessionManager.baseURL) else {
             throw OWSAssertionError("Invalid URL.")
         }
 

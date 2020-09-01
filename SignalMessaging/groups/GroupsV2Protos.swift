@@ -38,7 +38,6 @@ public class GroupsV2Protos {
         let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
                                                          groupV2Params: groupV2Params)
         builder.setPresentation(presentationData)
-
         return try builder.build()
     }
 
@@ -59,6 +58,15 @@ public class GroupsV2Protos {
         }
         builder.setMember(try memberBuilder.build())
 
+        return try builder.build()
+    }
+
+    public class func buildRequestingMemberProto(profileKeyCredential: ProfileKeyCredential,
+                                                 groupV2Params: GroupV2Params) throws -> GroupsProtoRequestingMember {
+        let builder = GroupsProtoRequestingMember.builder()
+        let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
+                                                         groupV2Params: groupV2Params)
+        builder.setPresentation(presentationData)
         return try builder.build()
     }
 
@@ -373,6 +381,50 @@ public class GroupsV2Protos {
                                    inviteLinkPassword: inviteLinkPassword,
                                    disappearingMessageToken: disappearingMessageToken,
                                    profileKeys: profileKeys)
+    }
+
+    // MARK: -
+
+    public class func parseGroupInviteLinkPreview(_ protoData: Data,
+                                                  groupV2Params: GroupV2Params) throws -> GroupInviteLinkPreview {
+        let joinInfoProto = try GroupsProtoGroupJoinInfo.init(serializedData: protoData)
+        // TODO: What is publicKey for?
+        guard let publicKey = joinInfoProto.publicKey,
+            !publicKey.isEmpty else {
+                throw OWSAssertionError("Missing or invalid publicKey.")
+        }
+        guard let titleData = joinInfoProto.title,
+            !titleData.isEmpty else {
+                throw OWSAssertionError("Missing or invalid titleData.")
+        }
+        guard let title = groupV2Params.decryptGroupName(titleData) else {
+            throw OWSAssertionError("Missing or invalid title.")
+        }
+
+        let avatarUrlPath: String? = joinInfoProto.avatar
+        guard joinInfoProto.hasMemberCount,
+            joinInfoProto.hasAddFromInviteLink else {
+            throw OWSAssertionError("Missing or invalid memberCount.")
+        }
+        let memberCount = joinInfoProto.memberCount
+
+        guard let protoAccess = joinInfoProto.addFromInviteLink else {
+            throw OWSAssertionError("Missing or invalid addFromInviteLinkAccess.")
+        }
+        let rawAccess = GroupV2Access.access(forProtoAccess: protoAccess)
+        let addFromInviteLinkAccess = GroupAccess.filter(forAddFromInviteLink: rawAccess)
+        guard addFromInviteLinkAccess != .unknown else {
+            throw OWSAssertionError("Unknown addFromInviteLinkAccess.")
+        }
+        guard joinInfoProto.hasRevision else {
+            throw OWSAssertionError("Missing or invalid revision.")
+        }
+        let revision = joinInfoProto.revision
+        return GroupInviteLinkPreview(title: title,
+                                      avatarUrlPath: avatarUrlPath,
+                                      memberCount: memberCount,
+                                      addFromInviteLinkAccess: addFromInviteLinkAccess,
+                                      revision: revision)
     }
 
     // MARK: -

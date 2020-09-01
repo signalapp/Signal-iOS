@@ -87,7 +87,8 @@ public class GroupsV2Changes {
         var newAddFromInviteLinkAccess = oldGroupAccess.addFromInviteLink
 
         if !oldGroupMembership.isMemberOfAnyKind(changeAuthorUuid) {
-            owsFailDebug("changeAuthorUuid not a full member of the group.")
+            // Change author may have just added themself via a group invite link.
+            Logger.warn("changeAuthorUuid not a member of the group.")
         }
         let isChangeAuthorMember = oldGroupMembership.isFullMember(changeAuthorUuid)
         let isChangeAuthorAdmin = oldGroupMembership.isFullMemberAndAdministrator(changeAuthorUuid)
@@ -129,7 +130,9 @@ public class GroupsV2Changes {
         var profileKeys = [UUID: Data]()
 
         for action in changeActionsProto.addMembers {
-            if !canAddMembers {
+            let didJoinFromInviteLink = (action.hasJoinFromInviteLink && action.joinFromInviteLink)
+
+            if !canAddMembers && !didJoinFromInviteLink {
                 owsFailDebug("Cannot add members.")
             }
 

@@ -559,6 +559,9 @@ void uncaughtExceptionHandler(NSException *exception)
             return NO;
         }
         return [self tryToShowStickerPackView:stickerPackInfo];
+    } else if ([GroupManager isGroupInviteLink:url]) {
+        // TODO: Show group invite link UI.
+        return NO;
     } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
             if (!AppReadiness.isAppReady) {

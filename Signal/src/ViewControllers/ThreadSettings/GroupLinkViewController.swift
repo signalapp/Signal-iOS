@@ -104,7 +104,7 @@ public class GroupLinkViewController: OWSTableViewController {
 
                 if groupModelV2.isGroupLinkEnabled {
                     do {
-                        let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+                        let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
                         let urlLabel = UILabel()
                         urlLabel.text = inviteLinkUrl.absoluteString
                         urlLabel.font = .ows_dynamicTypeSubheadline
@@ -242,7 +242,7 @@ public class GroupLinkViewController: OWSTableViewController {
             return
         }
         do {
-            let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
             UIPasteboard.general.url = inviteLinkUrl
         } catch {
             owsFailDebug("Error: \(error)")
@@ -260,7 +260,7 @@ public class GroupLinkViewController: OWSTableViewController {
             return
         }
         do {
-            let inviteLinkUrl = try GroupManager.inviteLink(forGroupModelV2: groupModelV2)
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
             AttachmentSharing.showShareUI(for: inviteLinkUrl, sender: self)
         } catch {
             owsFailDebug("Error: \(error)")

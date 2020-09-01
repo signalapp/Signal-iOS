@@ -675,6 +675,10 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
         packView.present(from: self, animated: true)
     }
 
+    func didTapGroupInviteLink(_ url: URL) {
+        GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
+    }
+
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 

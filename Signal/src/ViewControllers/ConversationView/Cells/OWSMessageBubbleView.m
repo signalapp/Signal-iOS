@@ -2009,18 +2009,22 @@ typedef struct {
     if (![self.tsAccountManager isRegistered]) {
         return YES;
     }
-    if (![StickerPackInfo isStickerPackShareUrl:url]) {
-        return YES;
-    }
-    StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
-    if (stickerPackInfo == nil) {
-        OWSFailDebug(@"Invalid URL: %@", url);
-        return YES;
-    }
+    if ([StickerPackInfo isStickerPackShareUrl:url]) {
+        StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
+        if (stickerPackInfo == nil) {
+            OWSFailDebug(@"Invalid URL: %@", url);
+            return YES;
+        }
 
-    [self.delegate didTapStickerPack:stickerPackInfo];
+        [self.delegate didTapStickerPack:stickerPackInfo];
 
-    return NO;
+        return NO;
+    }
+    if ([GroupManager isGroupInviteLink:url]) {
+        [self.delegate didTapGroupInviteLink:url];
+        return NO;
+    }
+    return YES;
 }
 
 @end

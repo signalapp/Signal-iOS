@@ -289,6 +289,8 @@ public class OWSLinkPreviewManager: NSObject {
 
         if StickerPackInfo.isStickerPackShare(url) {
             return fetchLinkPreview(forStickerPackUrl: url)
+        } else if GroupManager.isGroupInviteLink(url) {
+            return fetchLinkPreview(forGroupInviteLink: url)
         } else {
             return fetchLinkPreview(forGenericUrl: url)
         }
@@ -297,6 +299,19 @@ public class OWSLinkPreviewManager: NSObject {
     // MARK: - Private
 
     private func fetchLinkPreview(forStickerPackUrl url: URL) -> Promise<OWSLinkPreviewDraft> {
+        firstly(on: Self.workQueue) {
+            self.linkPreviewDraft(forStickerShare: url)
+
+        }.map(on: Self.workQueue) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
+            guard linkPreviewDraft.isValid() else {
+                throw LinkPreviewError.noPreview
+            }
+            return linkPreviewDraft
+        }
+    }
+
+    private func fetchLinkPreview(forGroupInviteLink url: URL) -> Promise<OWSLinkPreviewDraft> {
+        // TODO:
         firstly(on: Self.workQueue) {
             self.linkPreviewDraft(forStickerShare: url)
 
@@ -483,7 +498,9 @@ public class OWSLinkPreviewManager: NSObject {
         }.then(on: Self.workQueue) { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
             let coverInfo = stickerPack.coverInfo
             // tryToDownloadSticker will use locally saved data if possible.
-            return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
+            return firstly {
+                StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo)
+            }.map(on: .global()) { (coverData) -> OWSLinkPreviewDraft in
                 // Try to build thumbnail from cover webp.
                 var pngImageData: Data?
                 if let stillImage = (coverData as NSData).stillForWebpData() {
@@ -569,6 +586,9 @@ fileprivate extension OWSLinkPreviewManager {
         }
         if StickerPackInfo.isStickerPackShare(url) {
             return stickerPackShareDomain(forUrl: url)
+        }
+        if GroupManager.isGroupInviteLink(url) {
+            return "signal.org"
         }
         return url.host
     }
