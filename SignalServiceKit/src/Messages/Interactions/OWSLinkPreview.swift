@@ -412,7 +412,6 @@ public class OWSLinkPreviewManager: NSObject {
         firstly(on: Self.workQueue) { () -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
             let sessionManager = self.createSessionManager()
             return sessionManager.getPromise(url.absoluteString)
-
         }.map(on: Self.workQueue) { (task: URLSessionDataTask, responseObject: Any?) -> Data in
             try autoreleasepool {
                 guard let response = task.response as? HTTPURLResponse,
@@ -427,10 +426,11 @@ public class OWSLinkPreviewManager: NSObject {
                     throw LinkPreviewError.invalidPreview
                 }
 
-                let imageData = (rawData as NSData).imageData(withPath: nil, mimeType: nil)
-                guard imageData.isValid,
-                      imageData.pixelSize.height > 0,
-                      imageData.pixelSize.width > 0,
+                let imageMetadata = (rawData as NSData).imageMetadata(withPath: nil, mimeType: nil)
+                let pixelSize = imageMetadata.pixelSize
+                guard imageMetadata.isValid,
+                      pixelSize.height > 0,
+                      pixelSize.width > 0,
                       let image = UIImage(data: rawData) else {
                     Logger.warn("Invalid image data")
                     throw LinkPreviewError.invalidPreview
@@ -439,7 +439,7 @@ public class OWSLinkPreviewManager: NSObject {
                 let maxDimension: CGFloat = 1024
 
                 let scaledImage: UIImage?
-                if imageData.pixelSize.height > maxDimension || imageData.pixelSize.width > maxDimension {
+                if pixelSize.height > maxDimension || pixelSize.width > maxDimension {
                     scaledImage = image.resized(withMaxDimensionPixels: 1024)
                 } else {
                     scaledImage = image

@@ -38,7 +38,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 #pragma mark -
 
-@interface ImageData ()
+@interface ImageMetadata ()
 
 @property (nonatomic) BOOL isValid;
 
@@ -48,23 +48,25 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 @end
 
-@implementation ImageData
+#pragma mark -
+
+@implementation ImageMetadata
 
 + (instancetype)validWithImageFormat:(ImageFormat)imageFormat pixelSize:(CGSize)pixelSize hasAlpha:(BOOL)hasAlpha
 {
-    ImageData *imageData = [ImageData new];
-    imageData.isValid = YES;
-    imageData.imageFormat = imageFormat;
-    imageData.pixelSize = pixelSize;
-    imageData.hasAlpha = hasAlpha;
-    return imageData;
+    ImageMetadata *imageMetadata = [ImageMetadata new];
+    imageMetadata.isValid = YES;
+    imageMetadata.imageFormat = imageFormat;
+    imageMetadata.pixelSize = pixelSize;
+    imageMetadata.hasAlpha = hasAlpha;
+    return imageMetadata;
 }
 
 + (instancetype)invalid
 {
-    ImageData *imageData = [ImageData new];
-    OWSAssertDebug(!imageData.isValid);
-    return imageData;
+    ImageMetadata *imageMetadata = [ImageMetadata new];
+    OWSAssertDebug(!imageMetadata.isValid);
+    return imageMetadata;
 }
 
 @end
@@ -75,33 +77,33 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 + (BOOL)ows_isValidImageAtUrl:(NSURL *)fileUrl mimeType:(nullable NSString *)mimeType
 {
-    return [self imageDataWithPath:fileUrl.path mimeType:mimeType].isValid;
+    return [self imageMetadataWithPath:fileUrl.path mimeType:mimeType].isValid;
 }
 
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath
 {
-    return [self imageDataWithPath:filePath mimeType:nil].isValid;
+    return [self imageMetadataWithPath:filePath mimeType:nil].isValid;
 }
 
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
-    return [self imageDataWithPath:filePath mimeType:mimeType].isValid;
+    return [self imageMetadataWithPath:filePath mimeType:mimeType].isValid;
 }
 
 - (BOOL)ows_isValidImage
 {
     // Use all defaults.
-    return [self imageDataWithPath:nil mimeType:nil].isValid;
+    return [self imageMetadataWithPath:nil mimeType:nil].isValid;
 }
 
 - (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType
 {
-    return [self imageDataWithPath:nil mimeType:mimeType].isValid;
+    return [self imageMetadataWithPath:nil mimeType:mimeType].isValid;
 }
 
 - (BOOL)ows_isValidImageWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
-    return [self imageDataWithPath:filePath mimeType:mimeType].isValid;
+    return [self imageMetadataWithPath:filePath mimeType:mimeType].isValid;
 }
 
 + (BOOL)ows_isValidImageDimension:(CGSize)imageSize depthBytes:(CGFloat)depthBytes isAnimated:(BOOL)isAnimated
@@ -341,11 +343,11 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 + (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
-    ImageData *imageData = [self imageDataWithPath:filePath mimeType:mimeType];
-    if (!imageData.isValid) {
+    ImageMetadata *imageMetadata = [self imageMetadataWithPath:filePath mimeType:mimeType];
+    if (!imageMetadata.isValid) {
         return CGSizeZero;
     }
-    return imageData.pixelSize;
+    return imageMetadata.pixelSize;
 }
 
 + (CGSize)applyImageOrientation:(CGImagePropertyOrientation)orientation toImageSize:(CGSize)imageSize
@@ -383,11 +385,11 @@ NSString *NSStringForImageFormat(ImageFormat value)
         return NO;
     }
 
-    ImageData *imageData = [self imageDataWithPath:filePath mimeType:nil];
+    ImageMetadata *imageMetadata = [self imageMetadataWithPath:filePath mimeType:nil];
 
     CFRelease(source);
 
-    return imageData.hasAlpha;
+    return imageMetadata.hasAlpha;
 }
 
 - (BOOL)isMaybeWebpData
@@ -447,50 +449,50 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 + (BOOL)ows_hasStickerLikePropertiesWithPath:(NSString *)filePath
 {
-    return [self ows_hasStickerLikePropertiesWithImageData:[self imageDataWithPath:filePath mimeType:nil]];
+    return [self ows_hasStickerLikePropertiesWithImageMetadata:[self imageMetadataWithPath:filePath mimeType:nil]];
 }
 
 - (BOOL)ows_hasStickerLikeProperties
 {
-    ImageData *imageData = [self imageDataWithIsAnimated:NO imageFormat:[self ows_guessImageFormat]];
-    return [NSData ows_hasStickerLikePropertiesWithImageData:imageData];
+    ImageMetadata *imageMetadata = [self imageMetadataWithIsAnimated:NO imageFormat:[self ows_guessImageFormat]];
+    return [NSData ows_hasStickerLikePropertiesWithImageMetadata:imageMetadata];
 }
 
-+ (BOOL)ows_hasStickerLikePropertiesWithImageData:(ImageData *)imageData
++ (BOOL)ows_hasStickerLikePropertiesWithImageMetadata:(ImageMetadata *)imageMetadata
 {
-    if (!imageData.isValid) {
+    if (!imageMetadata.isValid) {
         return NO;
     }
 
     // Stickers must be small
     const CGFloat maxStickerHeight = 512;
-    if (imageData.pixelSize.height > maxStickerHeight || imageData.pixelSize.width > maxStickerHeight) {
+    if (imageMetadata.pixelSize.height > maxStickerHeight || imageMetadata.pixelSize.width > maxStickerHeight) {
         return NO;
     }
 
     // Stickers must have an alpha channel
-    if (!imageData.hasAlpha) {
+    if (!imageMetadata.hasAlpha) {
         return NO;
     }
 
     return YES;
 }
 
-#pragma mark - Image Data
+#pragma mark - Image Metadata
 
-+ (ImageData *)imageDataWithPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
++ (ImageMetadata *)imageMetadataWithPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
     NSError *error = nil;
     NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     if (!data || error) {
         OWSLogError(@"Could not read image data: %@", error);
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
     // Use memory-mapped NSData instead of a URL-based
     // CGImageSource. We should usually only be reading
     // from (a small portion of) the file header,
     // depending on the file format.
-    return [data imageDataWithPath:filePath mimeType:mimeType];
+    return [data imageMetadataWithPath:filePath mimeType:mimeType];
 }
 
 // If filePath and/or declaredMimeType is supplied, we warn
@@ -502,17 +504,17 @@ NSString *NSStringForImageFormat(ImageFormat value)
 //
 // If maxImageDimension is supplied we enforce the _smaller_ of
 // that value and the per-format max dimension
-- (ImageData *)imageDataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
+- (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
 {
     ImageFormat imageFormat = [self ows_guessImageFormat];
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
     NSString *_Nullable mimeType = [self mimeTypeForImageFormat:imageFormat];
     if (mimeType.length < 1) {
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
     if (declaredMimeType.length > 0 && ![self ows_isValidMimeType:declaredMimeType imageFormat:imageFormat]) {
@@ -537,34 +539,36 @@ NSString *NSStringForImageFormat(ImageFormat value)
     NSUInteger fileSize = self.length;
     if (fileSize > kMaxFileSize) {
         OWSLogWarn(@"Oversize image.");
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
-    return [self imageDataWithIsAnimated:isAnimated imageFormat:imageFormat];
+    return [self imageMetadataWithIsAnimated:isAnimated imageFormat:imageFormat];
 }
 
-- (ImageData *)imageDataWithIsAnimated:(BOOL)isAnimated imageFormat:(ImageFormat)imageFormat
+- (ImageMetadata *)imageMetadataWithIsAnimated:(BOOL)isAnimated imageFormat:(ImageFormat)imageFormat
 {
     if (imageFormat == ImageFormat_Webp) {
         CGSize imageSize = [self sizeForWebpData];
         if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
-            return ImageData.invalid;
+            return ImageMetadata.invalid;
         }
-        return [ImageData validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
+        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
     }
 
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
     if (imageSource == NULL) {
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
-    ImageData *imageData = [NSData imageDataWithImageSource:imageSource imageFormat:imageFormat isAnimated:isAnimated];
+    ImageMetadata *imageMetadata = [NSData imageMetadataWithImageSource:imageSource
+                                                            imageFormat:imageFormat
+                                                             isAnimated:isAnimated];
     CFRelease(imageSource);
-    return imageData;
+    return imageMetadata;
 }
 
-+ (ImageData *)imageDataWithImageSource:(CGImageSourceRef)imageSource
-                            imageFormat:(ImageFormat)imageFormat
-                             isAnimated:(BOOL)isAnimated
++ (ImageMetadata *)imageMetadataWithImageSource:(CGImageSourceRef)imageSource
+                                    imageFormat:(ImageFormat)imageFormat
+                                     isAnimated:(BOOL)isAnimated
 {
     OWSAssertDebug(imageSource);
 
@@ -576,7 +580,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
         imageSource, 0, (CFDictionaryRef)options);
 
     if (!imageProperties) {
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
     NSNumber *_Nullable orientationNumber = imageProperties[(__bridge NSString *)kCGImagePropertyOrientation];
@@ -584,13 +588,13 @@ NSString *NSStringForImageFormat(ImageFormat value)
     NSNumber *widthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelWidth];
     if (!widthNumber) {
         OWSLogError(@"widthNumber was unexpectedly nil");
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
     NSNumber *heightNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelHeight];
     if (!heightNumber) {
         OWSLogError(@"heightNumber was unexpectedly nil");
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
     CGSize pixelSize = CGSizeMake(widthNumber.floatValue, heightNumber.floatValue);
@@ -610,7 +614,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
     NSNumber *depthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyDepth];
     if (!depthNumber) {
         OWSLogError(@"depthNumber was unexpectedly nil");
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
     NSUInteger depthBits = depthNumber.unsignedIntegerValue;
     // This should usually be 1.
@@ -621,19 +625,19 @@ NSString *NSStringForImageFormat(ImageFormat value)
     NSString *colorModel = imageProperties[(__bridge NSString *)kCGImagePropertyColorModel];
     if (!colorModel) {
         OWSLogError(@"colorModel was unexpectedly nil");
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
     if (![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelRGB]
         && ![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelGray]) {
         OWSLogError(@"Invalid colorModel: %@", colorModel);
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
     if (![self ows_isValidImageDimension:pixelSize depthBytes:depthBytes isAnimated:isAnimated]) {
-        return ImageData.invalid;
+        return ImageMetadata.invalid;
     }
 
-    return [ImageData validWithImageFormat:imageFormat pixelSize:pixelSize hasAlpha:hasAlpha.boolValue];
+    return [ImageMetadata validWithImageFormat:imageFormat pixelSize:pixelSize hasAlpha:hasAlpha.boolValue];
 }
 
 @end
