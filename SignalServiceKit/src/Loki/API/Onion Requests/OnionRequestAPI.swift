@@ -6,11 +6,6 @@ public enum OnionRequestAPI {
     public static var guardSnodes: Set<Snode> = []
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
-    private static var snodePool: Set<Snode> {
-        let unreliableSnodes = Set(SnodeAPI.snodeFailureCount.keys)
-        return SnodeAPI.snodePool.subtracting(unreliableSnodes)
-    }
-
     // MARK: Settings
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
@@ -84,7 +79,7 @@ public enum OnionRequestAPI {
         } else {
             print("[Loki] [Onion Request API] Populating guard snode cache.")
             return SnodeAPI.getRandomSnode().then2 { _ -> Promise<Set<Snode>> in // Just used to populate the snode pool
-                var unusedSnodes = snodePool // Sync on LokiAPI.workQueue
+                var unusedSnodes = SnodeAPI.snodePool // Sync on LokiAPI.workQueue
                 guard unusedSnodes.count >= guardSnodeCount else { throw Error.insufficientSnodes }
                 func getGuardSnode() -> Promise<Snode> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -115,7 +110,7 @@ public enum OnionRequestAPI {
         }
         return SnodeAPI.getRandomSnode().then2 { _ -> Promise<[Path]> in // Just used to populate the snode pool
             return getGuardSnodes().map2 { guardSnodes -> [Path] in
-                var unusedSnodes = snodePool.subtracting(guardSnodes)
+                var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes)
                 let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
                 // Don't test path snodes as this would reveal the user's IP to them
