@@ -299,7 +299,15 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 - (NSString *)description {
     NSString *attachmentString;
 
-    if ([MIMETypeUtil isImage:self.contentType]) {
+    if (self.isAnimated) {
+        if ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame) {
+            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_GIF",
+                @"Short text label for a gif attachment, used for thread preview and on the lock screen");
+        } else {
+            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_IMAGE",
+                @"Short text label for an image attachment, used for thread preview and on the lock screen");
+        }
+    } else if ([MIMETypeUtil isImage:self.contentType]) {
         attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",
             @"Short text label for a photo attachment, used for thread preview and on the lock screen");
     } else if ([MIMETypeUtil isVideo:self.contentType]) {
@@ -314,14 +322,6 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
         } else {
             attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_AUDIO",
                 @"Short text label for a audio attachment, used for thread preview and on the lock screen");
-        }
-    } else if ([MIMETypeUtil isAnimated:self.contentType]) {
-        if ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame) {
-            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_GIF",
-                @"Short text label for a gif attachment, used for thread preview and on the lock screen");
-        } else {
-            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_IMAGE",
-                @"Short text label for an image attachment, used for thread preview and on the lock screen");
         }
     } else {
         attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_FILE",
@@ -341,7 +341,22 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
         }
     }
 
-    return [TSAttachment emojiForMimeType:self.contentType];
+    return [self emojiForMimeType];
+}
+
+- (NSString *)emojiForMimeType
+{
+    if ([MIMETypeUtil isImage:self.contentType]) {
+        return @"📷";
+    } else if ([MIMETypeUtil isVideo:self.contentType]) {
+        return @"🎥";
+    } else if ([MIMETypeUtil isAudio:self.contentType]) {
+        return @"🎧";
+    } else if (self.isAnimated) {
+        return @"🎡";
+    } else {
+        return @"📎";
+    }
 }
 
 + (NSString *)emojiForMimeType:(NSString *)contentType
@@ -380,6 +395,12 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 }
 
 - (BOOL)isAnimated
+{
+    // TSAttachmentStream overrides this method and discriminates based on the actual content.
+    return self.hasAnimatedContentType;
+}
+
+- (BOOL)hasAnimatedContentType
 {
     return [MIMETypeUtil isAnimated:self.contentType];
 }

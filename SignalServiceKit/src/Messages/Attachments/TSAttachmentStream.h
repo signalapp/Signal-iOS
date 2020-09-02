@@ -175,7 +175,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly) BOOL isValidVideo;
 @property (nonatomic, readonly) BOOL isValidVisualMedia;
 
-@property (nonatomic, readonly) BOOL hasAnimatedImageContent;
 @property (nonatomic, readonly) BOOL shouldBeRenderedByYY;
 
 #pragma mark - Update With... Methods

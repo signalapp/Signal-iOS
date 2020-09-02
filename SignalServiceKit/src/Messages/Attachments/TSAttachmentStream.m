@@ -46,6 +46,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 @property (atomic, nullable) NSNumber *isValidImageCached;
 @property (atomic, nullable) NSNumber *isValidVideoCached;
+@property (atomic, nullable) NSNumber *isAnimatedCached;
 
 @end
 
@@ -552,16 +553,34 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return result;
 }
 
+- (BOOL)isAnimated
+{
+    BOOL result;
+    BOOL didUpdateCache = NO;
+    @synchronized(self) {
+        if (!self.isAnimatedCached) {
+            OWSLogVerbose(@"Updating isAnimatedCached.");
+            self.isAnimatedCached = @([self hasAnimatedImageContent]);
+            didUpdateCache = YES;
+        }
+        result = self.isAnimatedCached.boolValue;
+    }
+
+    if (didUpdateCache && self.canAsyncUpdate) {
+        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(
+            TSAttachmentStream *latestInstance) { latestInstance.isAnimatedCached = @(result); }];
+    }
+
+    return result;
+}
+
 - (BOOL)shouldBeRenderedByYY
 {
     if ([self.contentType isEqualToString:OWSMimeTypeImageWebp] ||
         [self.contentType isEqualToString:OWSMimeTypeImageGif]) {
         return YES;
     }
-    if ([self.contentType isEqualToString:OWSMimeTypeImagePng]) {
-        return self.hasAnimatedImageContent;
-    }
-    return NO;
+    return self.isAnimated;
 }
 
 - (BOOL)hasAnimatedImageContent

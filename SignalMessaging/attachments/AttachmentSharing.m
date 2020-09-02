@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)activityViewController:(UIActivityViewController *)activityViewController
                   itemForActivityType:(nullable UIActivityType)activityType
 {
-    if (self.hasAnimatedImageContent) {
+    if (self.isAnimated) {
         return self.originalMediaURL;
     }
     return self.isImage ? self.originalImage : self.originalMediaURL;
