@@ -285,8 +285,7 @@ public enum OnionRequestAPI {
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
-                let requestSizeLimit = Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier
-                if case Destination.server = destination, Double(onion.count) > 0.75 * requestSizeLimit {
+                if case Destination.server = destination, Double(onion.count) > 0.75 * Double(FileServerAPI.maxFileSize) {
                     print("[Loki] Approaching request size limit: ~\(onion.count) bytes.")
                 }
                 let parameters: JSON = [

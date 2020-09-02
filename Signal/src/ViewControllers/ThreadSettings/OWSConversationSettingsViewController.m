@@ -683,22 +683,25 @@ const CGFloat kIconViewLength = 24;
                 [weakSelf showGroupMembersView];
             }]
         ];
-        [mainSection addItem:[OWSTableItem
-            itemWithCustomCellBlock:^{
-                UITableViewCell *cell =
-                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
-                                                         @"table cell label in conversation settings")
-                                            iconName:@"table_ic_group_leave"
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                         OWSConversationSettingsViewController, @"leave_group")];
-                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        if ([((TSGroupThread *)self.thread).groupModel.groupMemberIds containsObject:userPublicKey]) {
+            [mainSection addItem:[OWSTableItem
+                itemWithCustomCellBlock:^{
+                    UITableViewCell *cell =
+                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                             @"table cell label in conversation settings")
+                                                iconName:@"table_ic_group_leave"
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                             OWSConversationSettingsViewController, @"leave_group")];
+                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
 
-                return cell;
-            }
-            actionBlock:^{
-                [weakSelf didTapLeaveGroup];
-            }]
-        ];
+                    return cell;
+                }
+                actionBlock:^{
+                    [weakSelf didTapLeaveGroup];
+                }]
+            ];
+        }
     }
     
 
