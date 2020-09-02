@@ -738,6 +738,20 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     }
 }
 
+- (void)unarchiveAndMarkVisibleThreadWithUpdateStorageService:(BOOL)updateStorageService
+                                                  transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.isArchived = NO;
+                                 thread.shouldThreadBeVisible = YES;
+                             }];
+
+    if (updateStorageService) {
+        [self recordPendingStorageServiceUpdates];
+    }
+}
+
 - (void)recordPendingStorageServiceUpdates
 {
     if ([self isKindOfClass:[TSGroupThread class]]) {

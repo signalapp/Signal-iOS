@@ -94,11 +94,11 @@ class ThreadMapping: NSObject {
 
     // MARK: -
 
-    private var pinnedThreads: [TSThread] = []
+    private var pinnedThreads = OrderedDictionary<String, TSThread>()
     private var unpinnedThreads: [TSThread] = []
 
-    private let pinnedSection: Int = ConversationListViewControllerSection.pinnedConversations.rawValue
-    private let unpinnedSection: Int = ConversationListViewControllerSection.conversations.rawValue
+    private let pinnedSection: Int = ConversationListViewControllerSection.pinned.rawValue
+    private let unpinnedSection: Int = ConversationListViewControllerSection.unpinned.rawValue
 
     @objc
     let numberOfSections: Int = 1
@@ -110,16 +110,16 @@ class ThreadMapping: NSObject {
     var inboxCount: UInt = 0
 
     @objc
-    var hasPinnedAndUnpinnedThreads: Bool { !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty }
+    var hasPinnedAndUnpinnedThreads: Bool { !pinnedThreads.orderedKeys.isEmpty && !unpinnedThreads.isEmpty }
 
     @objc
-    var pinnedThreadIds: [String] { pinnedThreads.map { $0.uniqueId } }
+    var pinnedThreadIds: [String] { pinnedThreads.orderedKeys }
 
     @objc(indexPathForUniqueId:)
     func indexPath(uniqueId: String) -> IndexPath? {
         if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
             return IndexPath(item: index, section: unpinnedSection)
-        } else if let index = (pinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
+        } else if let index = (pinnedThreads.orderedKeys.firstIndex { $0 == uniqueId}) {
             return IndexPath(item: index, section: pinnedSection)
         } else {
             return nil
@@ -142,7 +142,7 @@ class ThreadMapping: NSObject {
     func thread(indexPath: IndexPath) -> TSThread? {
         switch indexPath.section {
         case pinnedSection:
-            return pinnedThreads[safe: indexPath.item]
+            return pinnedThreads.orderedValues[safe: indexPath.item]
         case unpinnedSection:
             return unpinnedThreads[safe: indexPath.item]
         default:
@@ -154,14 +154,14 @@ class ThreadMapping: NSObject {
     @objc(indexPathAfterThread:)
     func indexPath(after thread: TSThread?) -> IndexPath? {
         let isPinnedThread: Bool
-        if let thread = thread, pinnedThreads.contains(thread) {
+        if let thread = thread, pinnedThreads.orderedKeys.contains(thread.uniqueId) {
             isPinnedThread = true
         } else {
             isPinnedThread = false
         }
 
         let section = isPinnedThread ? pinnedSection : unpinnedSection
-        let threadsInSection = isPinnedThread ? pinnedThreads : unpinnedThreads
+        let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
 
         guard !threadsInSection.isEmpty else { return nil }
 
@@ -180,14 +180,14 @@ class ThreadMapping: NSObject {
     @objc(indexPathBeforeThread:)
     func indexPath(before thread: TSThread?) -> IndexPath? {
         let isPinnedThread: Bool
-        if let thread = thread, pinnedThreads.contains(thread) {
+        if let thread = thread, pinnedThreads.orderedKeys.contains(thread.uniqueId) {
             isPinnedThread = true
         } else {
             isPinnedThread = false
         }
 
         let section = isPinnedThread ? pinnedSection : unpinnedSection
-        let threadsInSection = isPinnedThread ? pinnedThreads : unpinnedThreads
+        let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
 
         guard !threadsInSection.isEmpty else { return nil }
 
@@ -227,18 +227,18 @@ class ThreadMapping: NSObject {
         var pinnedThreads = [TSThread]()
         var threads = [TSThread]()
 
-        let pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
+        var pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
 
         defer {
-            self.pinnedThreads = pinnedThreads.sorted { lhs, rhs in
-                guard let lhsIndex = pinnedThreadIds.firstIndex(of: lhs.uniqueId),
-                    let rhsIndex = pinnedThreadIds.firstIndex(of: rhs.uniqueId) else {
-                    owsFailDebug("Pinned thread missing from pinned thread ids")
-                    return false
-                }
-
-                // Pinned threads are always ordered in the order they were pinned.
-                return lhsIndex < rhsIndex
+            // Pinned threads are always ordered in the order they were pinned.
+            if isViewingArchive {
+                self.pinnedThreads = OrderedDictionary()
+            } else {
+                let existingPinnedThreadIds = pinnedThreads.map { $0.uniqueId }
+                self.pinnedThreads = OrderedDictionary(
+                    keyValueMap: Dictionary(uniqueKeysWithValues: pinnedThreads.map { ($0.uniqueId, $0) }),
+                    orderedKeys: pinnedThreadIds.filter { existingPinnedThreadIds.contains($0) }
+                )
             }
             self.unpinnedThreads = threads
         }
@@ -343,10 +343,10 @@ class ThreadMapping: NSObject {
             }
         }
 
-        let oldPinnedThreadIds: [String] = pinnedThreads.map { $0.uniqueId }
+        let oldPinnedThreadIds: [String] = pinnedThreads.orderedKeys
         let oldUnpinnedThreadIds: [String] = unpinnedThreads.map { $0.uniqueId }
         try update(isViewingArchive: isViewingArchive, transaction: transaction)
-        let newPinnedThreadIds: [String] = pinnedThreads.map { $0.uniqueId }
+        let newPinnedThreadIds: [String] = pinnedThreads.orderedKeys
         let newUnpinnedThreadIds: [String] = unpinnedThreads.map { $0.uniqueId }
 
         // We want to be economical and issue as few changes as possible.

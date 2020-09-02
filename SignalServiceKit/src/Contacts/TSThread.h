@@ -190,6 +190,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
                                    transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(unarchiveThread(updateStorageService:transaction:));
 
+- (void)unarchiveAndMarkVisibleThreadWithUpdateStorageService:(BOOL)updateStorageService
+                                                  transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(unarchiveThreadAndMarkVisible(updateStorageService:transaction:));
+
 - (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(removeAllThreadInteractions(transaction:));
 

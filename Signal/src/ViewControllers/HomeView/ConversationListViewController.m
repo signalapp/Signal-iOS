@@ -634,16 +634,25 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     // Search
 
+    UIView *searchBarContainer = [UIView new];
+    searchBarContainer.layoutMargins = UIEdgeInsetsMake(0, 8, 0, 8);
+
     _searchBar = [OWSSearchBar new];
     self.searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
     self.searchBar.delegate = self;
     self.searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"conversation_search");
     [self.searchBar sizeToFit];
+    self.searchBar.layoutMargins = UIEdgeInsetsZero;
+
+    searchBarContainer.frame = self.searchBar.frame;
+    [searchBarContainer addSubview:self.searchBar];
+    [self.searchBar autoPinEdgesToSuperviewMargins];
+
 
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
     OWSAssertDebug(self.tableView.tableHeaderView == nil);
-    self.tableView.tableHeaderView = self.searchBar;
+    self.tableView.tableHeaderView = searchBarContainer;
     // Hide search bar by default.  User can pull down to search.
     self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
 
@@ -785,8 +794,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     switch (indexPath.section) {
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations:
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned:
             break;
         default:
             return nil;
@@ -1159,8 +1168,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     switch (section) {
         case ConversationListViewControllerSectionReminders:
             return self.hasVisibleReminders ? 1 : 0;
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations:
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned:
             return [self.threadMapping numberOfItemsInSection:section];
         case ConversationListViewControllerSectionArchiveButton:
             return self.hasArchivedThreadsRow ? 1 : 0;
@@ -1191,21 +1200,21 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned: {
             if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
                 return nil;
             }
 
             UIView *container = [UIView new];
-            container.layoutMargins = UIEdgeInsetsMake(8, 16, 8, 16);
+            container.layoutMargins = UIEdgeInsetsMake(14, 16, 8, 16);
 
             UILabel *label = [UILabel new];
             [container addSubview:label];
             [label autoPinEdgesToSuperviewMargins];
             label.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
             label.textColor = Theme.primaryTextColor;
-            label.text = section == ConversationListViewControllerSectionPinnedConversations
+            label.text = section == ConversationListViewControllerSectionPinned
                 ? NSLocalizedString(
                     @"PINNED_SECTION_TITLE", @"The title for pinned conversation section on the conversation list")
                 : NSLocalizedString(
@@ -1227,8 +1236,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     switch (section) {
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations:
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned:
             if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
                 return 0;
             }
@@ -1251,8 +1260,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             cell = self.reminderViewCell;
             break;
         }
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned: {
             cell = [self tableView:tableView cellForConversationAtIndexPath:indexPath];
             break;
         }
@@ -1453,8 +1462,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             return nil;
         case ConversationListViewControllerSectionArchiveButton:
             return nil;
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned: {
             TSThread *thread = [self threadForIndexPath:indexPath];
 
             UIContextualAction *deleteAction =
@@ -1507,8 +1516,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             return nil;
         case ConversationListViewControllerSectionArchiveButton:
             return nil;
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned: {
 
             ThreadViewModel *model = [self threadViewModelForIndexPath:indexPath];
             TSThread *thread = [self threadForIndexPath:indexPath];
@@ -1615,8 +1624,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionReminders: {
             return NO;
         }
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned: {
             return YES;
         }
         case ConversationListViewControllerSectionArchiveButton: {
@@ -1864,8 +1873,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionReminders: {
             break;
         }
-        case ConversationListViewControllerSectionPinnedConversations:
-        case ConversationListViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionPinned:
+        case ConversationListViewControllerSectionUnpinned: {
             TSThread *thread = [self threadForIndexPath:indexPath];
             [self presentThread:thread action:ConversationViewActionNone animated:YES];
             break;

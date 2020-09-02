@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
         const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
         self.unreadBadge.layer.borderColor = Theme.backgroundColor.CGColor;
-        self.unreadBadge.layer.borderWidth = 1.f;
+        self.unreadBadge.layer.borderWidth = 2.f;
 
         [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
                              forConstraints:^{
@@ -298,6 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             toEdge:ALEdgeTrailing
                                                             ofView:self.avatarView
                                                         withOffset:6.f],
+                                     [self.unreadBadge autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView]
                                  ]];
                              }];
     } else {

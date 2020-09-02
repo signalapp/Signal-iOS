@@ -73,7 +73,12 @@ public class PinnedThreadManager: NSObject {
                     continue
                 }
 
-                SDSDatabaseStorage.shared.touch(thread: thread, transaction: transaction)
+                if pinnedThreadIds.contains(threadId) && (thread.isArchived || !thread.shouldThreadBeVisible) {
+                    // Pinning a thread should unarchive it and make it visible if it was not already so.
+                    thread.unarchiveThreadAndMarkVisible(updateStorageService: true, transaction: transaction)
+                } else {
+                    SDSDatabaseStorage.shared.touch(thread: thread, transaction: transaction)
+                }
             }
         }
     }
@@ -84,7 +89,11 @@ public class PinnedThreadManager: NSObject {
         updateStorageService: Bool,
         transaction: SDSAnyWriteTransaction
     ) throws {
-        var pinnedThreadIds = Self.pinnedThreadIds
+        // When pinning a thread, we want to treat the existing list of pinned
+        // threads as only those that actually have current threads. Otherwise,
+        // there may be a pinned thread that you can't see preventing you from
+        // pinning a new conversation (e.g. a v2 group we haven't created yet)
+        var pinnedThreadIds = Self.pinnedThreads(transaction: transaction).map { $0.uniqueId }
 
         guard !pinnedThreadIds.contains(thread.uniqueId) else {
             throw OWSGenericError("Attempted to pin thread that is already pinned.")
