@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -48,5 +48,58 @@ public extension NSRegularExpression {
         }
         let substring = String(text[textRange])
         return substring
+    }
+
+    @nonobjc
+    func firstMatchSet(in searchString: String) -> MatchSet? {
+        firstMatch(in: searchString, options: [], range: searchString.completeNSRange)?
+            .createMatchSet(originalSearchString: searchString)
+    }
+
+    @nonobjc
+    func allMatchSets(in searchString: String) -> [MatchSet] {
+        matches(in: searchString, options: [], range: searchString.completeNSRange)
+            .compactMap { $0.createMatchSet(originalSearchString: searchString) }
+    }
+}
+
+public struct MatchSet {
+    let fullString: Substring
+    let matchedGroups: [Substring?]
+
+    func group(idx: Int) -> Substring? {
+        guard idx < matchedGroups.count else { return nil }
+        return matchedGroups[idx]
+    }
+}
+
+fileprivate extension String {
+    subscript(_ nsRange: NSRange) -> Substring? {
+        guard let swiftRange = Range(nsRange, in: self) else { return nil }
+        return self[swiftRange]
+    }
+
+    var completeRange: Range<String.Index> {
+        startIndex..<endIndex
+    }
+
+    var completeNSRange: NSRange {
+        NSRange(completeRange, in: self)
+    }
+}
+
+fileprivate extension NSTextCheckingResult {
+    func createMatchSet(originalSearchString string: String) -> MatchSet? {
+        guard numberOfRanges > 0 else { return nil }
+        let substrings = (0..<numberOfRanges)
+            .map { range(at: $0) }
+            .map { string[$0] }
+
+        guard let fullString = substrings[0] else {
+            owsFailDebug("Missing expected full string")
+            return nil
+        }
+
+        return MatchSet(fullString: fullString, matchedGroups: Array(substrings[1...]))
     }
 }
