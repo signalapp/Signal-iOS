@@ -318,6 +318,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.profileManager warmCaches];
     [self.readReceiptManager prepareCachedValues];
     [OWSKeyBackupService warmCaches];
+    [PinnedThreadManager warmCaches];
 }
 
 - (nullable OWSPrimaryStorage *)primaryStorage

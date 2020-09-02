@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-    [self.avatarView autoPinLeadingToSuperviewMargin];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:16];
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
         const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
         self.unreadBadge.layer.borderColor = Theme.backgroundColor.CGColor;
-        self.unreadBadge.layer.borderWidth = 1.f;
+        self.unreadBadge.layer.borderWidth = 2.f;
 
         [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
                              forConstraints:^{
@@ -298,6 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             toEdge:ALEdgeTrailing
                                                             ofView:self.avatarView
                                                         withOffset:6.f],
+                                     [self.unreadBadge autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.avatarView]
                                  ]];
                              }];
     } else {
@@ -474,7 +475,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)avatarSize
 {
     // This value is now larger than kStandardAvatarSize.
-    return 48;
+    return 56;
 }
 
 - (NSUInteger)avatarHSpacing

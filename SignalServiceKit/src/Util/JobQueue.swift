@@ -42,7 +42,7 @@ public enum JobError: Error {
     case obsolete(description: String)
 }
 
-public protocol DurableOperation: class {
+public protocol DurableOperation: class, Equatable {
     associatedtype JobRecordType: SSKJobRecord
     associatedtype DurableOperationDelegateType: DurableOperationDelegate
 

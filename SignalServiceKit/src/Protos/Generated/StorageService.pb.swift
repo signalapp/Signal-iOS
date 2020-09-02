@@ -401,6 +401,8 @@ struct StorageServiceProtos_AccountRecord {
 
   var notDiscoverableByPhoneNumber: Bool = false
 
+  var pinnedConversations: [StorageServiceProtos_AccountRecord.PinnedConversation] = []
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -432,6 +434,73 @@ struct StorageServiceProtos_AccountRecord {
       }
     }
 
+  }
+
+  struct PinnedConversation {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var identifier: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier?
+
+    var contact: StorageServiceProtos_AccountRecord.PinnedConversation.Contact {
+      get {
+        if case .contact(let v)? = identifier {return v}
+        return StorageServiceProtos_AccountRecord.PinnedConversation.Contact()
+      }
+      set {identifier = .contact(newValue)}
+    }
+
+    var legacyGroupID: Data {
+      get {
+        if case .legacyGroupID(let v)? = identifier {return v}
+        return SwiftProtobuf.Internal.emptyData
+      }
+      set {identifier = .legacyGroupID(newValue)}
+    }
+
+    var groupMasterKey: Data {
+      get {
+        if case .groupMasterKey(let v)? = identifier {return v}
+        return SwiftProtobuf.Internal.emptyData
+      }
+      set {identifier = .groupMasterKey(newValue)}
+    }
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum OneOf_Identifier: Equatable {
+      case contact(StorageServiceProtos_AccountRecord.PinnedConversation.Contact)
+      case legacyGroupID(Data)
+      case groupMasterKey(Data)
+
+    #if !swift(>=4.1)
+      static func ==(lhs: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier, rhs: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier) -> Bool {
+        switch (lhs, rhs) {
+        case (.contact(let l), .contact(let r)): return l == r
+        case (.legacyGroupID(let l), .legacyGroupID(let r)): return l == r
+        case (.groupMasterKey(let l), .groupMasterKey(let r)): return l == r
+        default: return false
+        }
+      }
+    #endif
+    }
+
+    struct Contact {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var uuid: String = String()
+
+      var e164: String = String()
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+    }
+
+    init() {}
   }
 
   init() {}
@@ -1004,7 +1073,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     10: .same(proto: "noteToSelfMarkedUnread"),
     11: .same(proto: "linkPreviews"),
     12: .same(proto: "phoneNumberSharingMode"),
-    13: .same(proto: "notDiscoverableByPhoneNumber")
+    13: .same(proto: "notDiscoverableByPhoneNumber"),
+    14: .same(proto: "pinnedConversations")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1023,6 +1093,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       case 11: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
       case 12: try decoder.decodeSingularEnumField(value: &self.phoneNumberSharingMode)
       case 13: try decoder.decodeSingularBoolField(value: &self.notDiscoverableByPhoneNumber)
+      case 14: try decoder.decodeRepeatedMessageField(value: &self.pinnedConversations)
       default: break
       }
     }
@@ -1068,6 +1139,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if self.notDiscoverableByPhoneNumber != false {
       try visitor.visitSingularBoolField(value: self.notDiscoverableByPhoneNumber, fieldNumber: 13)
     }
+    if !self.pinnedConversations.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.pinnedConversations, fieldNumber: 14)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1085,6 +1159,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.linkPreviews != rhs.linkPreviews {return false}
     if lhs.phoneNumberSharingMode != rhs.phoneNumberSharingMode {return false}
     if lhs.notDiscoverableByPhoneNumber != rhs.notDiscoverableByPhoneNumber {return false}
+    if lhs.pinnedConversations != rhs.pinnedConversations {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1096,4 +1171,93 @@ extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: SwiftProtob
     1: .same(proto: "CONTACTS_ONLY"),
     2: .same(proto: "NOBODY")
   ]
+}
+
+extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".PinnedConversation"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "contact"),
+    3: .same(proto: "legacyGroupId"),
+    4: .same(proto: "groupMasterKey")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1:
+        var v: StorageServiceProtos_AccountRecord.PinnedConversation.Contact?
+        if let current = self.identifier {
+          try decoder.handleConflictingOneOf()
+          if case .contact(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {self.identifier = .contact(v)}
+      case 3:
+        if self.identifier != nil {try decoder.handleConflictingOneOf()}
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
+        if let v = v {self.identifier = .legacyGroupID(v)}
+      case 4:
+        if self.identifier != nil {try decoder.handleConflictingOneOf()}
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
+        if let v = v {self.identifier = .groupMasterKey(v)}
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    switch self.identifier {
+    case .contact(let v)?:
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    case .legacyGroupID(let v)?:
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    case .groupMasterKey(let v)?:
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord.PinnedConversation, rhs: StorageServiceProtos_AccountRecord.PinnedConversation) -> Bool {
+    if lhs.identifier != rhs.identifier {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = StorageServiceProtos_AccountRecord.PinnedConversation.protoMessageName + ".Contact"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "uuid"),
+    2: .same(proto: "e164")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self.uuid)
+      case 2: try decoder.decodeSingularStringField(value: &self.e164)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.uuid.isEmpty {
+      try visitor.visitSingularStringField(value: self.uuid, fieldNumber: 1)
+    }
+    if !self.e164.isEmpty {
+      try visitor.visitSingularStringField(value: self.e164, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: StorageServiceProtos_AccountRecord.PinnedConversation.Contact, rhs: StorageServiceProtos_AccountRecord.PinnedConversation.Contact) -> Bool {
+    if lhs.uuid != rhs.uuid {return false}
+    if lhs.e164 != rhs.e164 {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }

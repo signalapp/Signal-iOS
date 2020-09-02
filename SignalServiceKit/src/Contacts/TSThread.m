@@ -230,6 +230,8 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     }
 
     [self.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
+
+    [PinnedThreadManager handleUpdatedThread:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -729,6 +731,20 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  thread.isArchived = NO;
+                             }];
+
+    if (updateStorageService) {
+        [self recordPendingStorageServiceUpdates];
+    }
+}
+
+- (void)unarchiveAndMarkVisibleThreadWithUpdateStorageService:(BOOL)updateStorageService
+                                                  transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.isArchived = NO;
+                                 thread.shouldThreadBeVisible = YES;
                              }];
 
     if (updateStorageService) {
