@@ -719,11 +719,8 @@ public class SignalAttachment: NSObject {
             return attachment
         }
 
-        var isAnimated = animatedImageUTISet.contains(dataUTI)
-        if dataUTI == (kUTTypePNG as String) {
-            isAnimated = dataSource.imageMetadata.isAnimated
-        }
-
+        let imageMetadata = dataSource.imageMetadata
+        let isAnimated = imageMetadata.isAnimated
         if isAnimated {
             guard dataSource.dataLength <= kMaxFileSizeAnimatedImage else {
                 attachment.error = .fileSizeTooLarge

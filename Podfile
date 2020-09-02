@@ -64,6 +64,9 @@ pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 's
 pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
 # pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
 
+pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
+# pod 'YYImage', path: '../YYImage'
+
 ###
 # third party pods
 ####
@@ -72,7 +75,6 @@ pod 'AFNetworking/NSURLSession', inhibit_warnings: true
 pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'lottie-ios', :inhibit_warnings => true
-pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
 
 # For catalyst we need to be on master until 3.6.7 or later is released
 pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true, binary: true
