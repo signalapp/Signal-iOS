@@ -21,8 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *fileExtension;
 @property (atomic) BOOL isConsumed;
 
-// This property is lazily-populated
+// These properties is lazily-populated.
 @property (nonatomic, nullable) NSURL *cachedFileUrl;
+@property (nonatomic, nullable) ImageMetadata *cachedImageMetadata;
 
 @end
 
@@ -238,7 +239,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (ImageMetadata *)imageMetadata
 {
     OWSAssertDebug(!self.isConsumed);
-    return [self.data imageMetadataWithPath:nil mimeType:self.mimeType];
+
+    @synchronized(self) {
+        if (self.cachedImageMetadata != nil) {
+            return self.cachedImageMetadata;
+        }
+        ImageMetadata *imageMetadata = [self.data imageMetadataWithPath:nil mimeType:self.mimeType];
+        self.cachedImageMetadata = imageMetadata;
+        return imageMetadata;
+    }
 }
 
 @end
@@ -251,8 +260,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL shouldDeleteOnDeallocation;
 @property (atomic) BOOL isConsumed;
 
-// This property is lazily-populated
+// These properties is lazily-populated.
 @property (nonatomic) NSData *cachedData;
+@property (nonatomic, nullable) ImageMetadata *cachedImageMetadata;
 
 @end
 
@@ -427,7 +437,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (ImageMetadata *)imageMetadata
 {
     OWSAssertDebug(!self.isConsumed);
-    return [NSData imageMetadataWithPath:self.dataUrl.path mimeType:self.mimeType];
+
+    @synchronized(self) {
+        if (self.cachedImageMetadata != nil) {
+            return self.cachedImageMetadata;
+        }
+        ImageMetadata *imageMetadata = [NSData imageMetadataWithPath:self.dataUrl.path mimeType:self.mimeType];
+        self.cachedImageMetadata = imageMetadata;
+        return imageMetadata;
+    }
 }
 
 - (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error

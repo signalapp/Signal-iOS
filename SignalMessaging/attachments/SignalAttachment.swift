@@ -496,6 +496,11 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var isAnimatedImage: Bool {
+        if dataUTI == (kUTTypePNG as String),
+            dataSource.imageMetadata.isAnimated {
+            return true
+        }
+
         return SignalAttachment.animatedImageUTISet.contains(dataUTI)
     }
 

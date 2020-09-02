@@ -346,14 +346,14 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 - (NSString *)emojiForMimeType
 {
-    if ([MIMETypeUtil isImage:self.contentType]) {
+    if (self.isAnimated) {
+        return @"🎡";
+    } else if ([MIMETypeUtil isImage:self.contentType]) {
         return @"📷";
     } else if ([MIMETypeUtil isVideo:self.contentType]) {
         return @"🎥";
     } else if ([MIMETypeUtil isAudio:self.contentType]) {
         return @"🎧";
-    } else if (self.isAnimated) {
-        return @"🎡";
     } else {
         return @"📎";
     }
