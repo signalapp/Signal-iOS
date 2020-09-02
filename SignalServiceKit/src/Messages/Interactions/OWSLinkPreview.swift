@@ -570,18 +570,18 @@ public class OWSLinkPreviewManager: NSObject {
     private func linkPreviewDraft(forGroupInviteLink url: URL) -> Promise<OWSLinkPreviewDraft> {
         Logger.verbose("url: \(url)")
 
-        return firstly(on: .global()) { () -> GroupInviteLinkInfo in
+        return firstly(on: Self.workQueue) { () -> GroupInviteLinkInfo in
             guard let groupInviteLinkInfo = GroupManager.parseGroupInviteLink(url) else {
                 Logger.error("Could not parse URL.")
                 throw LinkPreviewError.invalidPreview
             }
             return groupInviteLinkInfo
-        }.then(on: .global()) { (groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<OWSLinkPreviewDraft> in
+        }.then(on: Self.workQueue) { (groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<OWSLinkPreviewDraft> in
             let groupV2ContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
             return firstly {
                 self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
                                                           groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
-            }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) in
+            }.then(on: Self.workQueue) { (groupInviteLinkPreview: GroupInviteLinkPreview) in
                 return firstly { () -> Promise<Data?> in
                     guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
                         return Promise.value(nil)
@@ -600,9 +600,9 @@ public class OWSLinkPreviewManager: NSObject {
                         }
                         return Promise.value(nil)
                     }
-                }.then(on: .global()) { (imageData: Data?) -> Promise<PreviewThumbnail?> in
+                }.then(on: Self.workQueue) { (imageData: Data?) -> Promise<PreviewThumbnail?> in
                     Self.previewThumbnail(srcImageData: imageData, srcMimeType: nil)
-                }.map(on: .global()) { (previewThumbnail: PreviewThumbnail?) -> OWSLinkPreviewDraft in
+                }.map(on: Self.workQueue) { (previewThumbnail: PreviewThumbnail?) -> OWSLinkPreviewDraft in
                     guard let previewThumbnail = previewThumbnail else {
                         return OWSLinkPreviewDraft(url: url,
                                                    title: groupInviteLinkPreview.title)
