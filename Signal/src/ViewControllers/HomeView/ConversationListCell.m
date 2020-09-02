@@ -140,10 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
     bottomRowView.alignment = UIStackViewAlignmentLastBaseline;
     bottomRowView.spacing = 6.f;
 
-    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        topRowView,
-        bottomRowView,
-    ]];
+    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ topRowView, bottomRowView ]];
     vStackView.axis = UILayoutConstraintAxisVertical;
 
     [self.contentView addSubview:vStackView];
@@ -171,7 +168,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadBadge setCompressionResistanceHigh];
 
     [self.contentView addSubview:self.unreadBadge];
-    [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.nameLabel];
 
     [self.typingIndicatorView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:self.snippetLabel];
     [self.typingIndicatorView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.snippetLabel];
