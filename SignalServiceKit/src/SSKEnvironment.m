@@ -310,10 +310,12 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.tsAccountManager warmCaches];
     [self.signalServiceAddressCache warmCaches];
     [self.remoteConfigManager warmCaches];
+    [self.udManager warmCaches];
     [self.blockingManager warmCaches];
     [self.profileManager warmCaches];
     [self.readReceiptManager prepareCachedValues];
     [OWSKeyBackupService warmCaches];
+    [self.typingIndicators warmCaches];
 }
 
 - (nullable OWSPrimaryStorage *)primaryStorage
