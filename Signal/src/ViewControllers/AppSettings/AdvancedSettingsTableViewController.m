@@ -199,7 +199,9 @@ NS_ASSUME_NONNULL_BEGIN
     id<SSKReachabilityManager> reachabilityManager = self.reachabilityManager;
     OWSTableSwitchBlock isManualCensorshipCircumventionOnEnabledBlock = ^{
         OWSSignalService *service = OWSSignalService.sharedInstance;
-        if (service.isCensorshipCircumventionActive) {
+        if (SSKDebugFlags.exposeCensorshipCircumvention) {
+            return YES;
+        } else if (service.isCensorshipCircumventionActive) {
             return YES;
         } else if (service.hasCensoredPhoneNumber && service.isCensorshipCircumventionManuallyDisabled) {
             return YES;
