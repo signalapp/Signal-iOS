@@ -16,14 +16,14 @@ public class OWSUpload: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public class func upload(data: Data,
-                             uploadForm: OWSUploadFormV2,
-                             uploadUrlPath: String,
-                             progressBlock: ((Progress) -> Void)?) -> AnyPromise {
-        return AnyPromise(upload(data: data,
-                                 uploadForm: uploadForm,
-                                 uploadUrlPath: uploadUrlPath,
-                                 progressBlock: progressBlock))
+    public class func uploadV2(data: Data,
+                               uploadForm: OWSUploadFormV2,
+                               uploadUrlPath: String,
+                               progressBlock: ((Progress) -> Void)?) -> AnyPromise {
+        AnyPromise(uploadV2(data: data,
+                            uploadForm: uploadForm,
+                            uploadUrlPath: uploadUrlPath,
+                            progressBlock: progressBlock))
     }
 }
 
@@ -47,16 +47,16 @@ fileprivate extension OWSUpload {
 
     // MARK: -
 
-    static func cdnSessionManager(forCdnNumber cdnNumber: UInt32) -> AFHTTPSessionManager {
-        signalService.cdnSessionManager(forCdnNumber: cdnNumber)
-    }
-
     static var cdn0SessionManager: AFHTTPSessionManager {
-        signalService.cdnSessionManager(forCdnNumber: 0)
+        signalService.sessionManagerForCdn(cdnNumber: 0)
     }
 
     static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSession {
-        signalService.cdnURLSession(forCdnNumber: cdnNumber)
+        signalService.urlSessionForCdn(cdnNumber: cdnNumber)
+    }
+
+    static func cdn0UrlSession() -> OWSURLSession {
+        signalService.urlSessionForCdn(cdnNumber: 0)
     }
 }
 
@@ -193,10 +193,10 @@ public class OWSAttachmentUploadV2: NSObject {
             }
         }.then(on: .global()) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
             let uploadUrlPath = "attachments/"
-            return OWSUpload.upload(data: attachmentData,
-                                    uploadForm: form,
-                                    uploadUrlPath: uploadUrlPath,
-                                    progressBlock: progressBlock)
+            return OWSUpload.uploadV2(data: attachmentData,
+                                      uploadForm: form,
+                                      uploadUrlPath: uploadUrlPath,
+                                      progressBlock: progressBlock)
         }.map(on: .global()) { [weak self] (_) throws -> Void in
             self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
         }
@@ -378,7 +378,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
-            return urlSession.dataTaskPromise(urlString, verb: .post, headers: headers, body: body)
+            return urlSession.dataTaskPromise(urlString, method: .post, headers: headers, body: body)
         }.map(on: .global()) { (response: OWSHTTPResponse) in
             guard response.statusCode == 201 else {
                 throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
@@ -435,7 +435,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
 
             // Wrap the progress block.
-            let progressBlock = { (progress: Progress) in
+            let progressBlock = { (task: URLSessionTask, progress: Progress) in
                 // Total progress is (progress from previous attempts/slices +
                 // progress from this attempt/slice).
                 let totalCompleted: Int = bytesAlreadyUploaded + Int(progress.completedUnitCount)
@@ -456,10 +456,10 @@ public class OWSAttachmentUploadV2: NSObject {
                 var headers = [String: String]()
                 headers["Content-Length"] = formatInt(uploadV3Metadata.dataLength)
                 return urlSession.uploadTaskPromise(urlString,
-                                                    verb: .put,
+                                                    method: .put,
                                                     headers: headers,
                                                     dataUrl: uploadV3Metadata.temporaryFileUrl,
-                                                    progressBlock: progressBlock).asVoid()
+                                                    progress: progressBlock).asVoid()
             } else {
                 // Resuming, slice attachment data in memory.
                 //
@@ -484,10 +484,10 @@ public class OWSAttachmentUploadV2: NSObject {
 
                 return firstly(on: .global()) {
                     urlSession.uploadTaskPromise(urlString,
-                                                 verb: .put,
+                                                 method: .put,
                                                  headers: headers,
                                                  dataUrl: dataSliceFileUrl,
-                                                 progressBlock: progressBlock).asVoid()
+                                                 progress: progressBlock).asVoid()
                 }.ensure(on: .global()) {
                     do {
                         try OWSFileSystem.deleteFile(url: dataSliceFileUrl)
@@ -600,7 +600,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
             let body = "".data(using: .utf8)
 
-            return urlSession.dataTaskPromise(urlString, verb: .put, headers: headers, body: body)
+            return urlSession.dataTaskPromise(urlString, method: .put, headers: headers, body: body)
         }.map(on: .global()) { (response: OWSHTTPResponse) in
 
             if response.statusCode != 308 {
@@ -653,13 +653,18 @@ public class OWSAttachmentUploadV2: NSObject {
 
 public extension OWSUpload {
 
-    class func upload(data: Data,
-                      uploadForm: OWSUploadFormV2,
-                      uploadUrlPath: String,
-                      progressBlock: ProgressBlock? = nil) -> Promise<String> {
+    class func uploadV2(data: Data,
+                        uploadForm: OWSUploadFormV2,
+                        uploadUrlPath: String,
+                        progressBlock: ProgressBlock? = nil) -> Promise<String> {
+
+        guard !AppExpiry.shared.isExpired else {
+            return Promise(error: OWSAssertionError("App is expired."))
+        }
 
         let (promise, resolver) = Promise<String>.pending()
         DispatchQueue.global().async {
+            // TODO: Use OWSUrlSession instead.
             self.cdn0SessionManager.post(uploadUrlPath,
                                          parameters: nil,
                                          constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
@@ -672,6 +677,7 @@ public extension OWSUpload {
                                             uploadForm.append(toForm: formData)
 
                                             AppendMultipartFormPath(formData, "Content-Type", OWSMimeTypeApplicationOctetStream)
+                                            AppendMultipartFormPath(formData, OWSURLSession.kUserAgentHeader, OWSURLSession.signalIosUserAgent)
 
                                             formData.appendPart(withForm: data, name: "file")
             },
@@ -693,6 +699,11 @@ public extension OWSUpload {
                     #endif
                 } else {
                     owsFailDebug("Missing task.")
+                }
+
+                if let statusCode = HTTPStatusCodeForError(error),
+                statusCode.intValue == AppExpiry.appExpiredStatusCode {
+                    AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
                 }
 
                 if IsNetworkConnectivityFailure(error) {

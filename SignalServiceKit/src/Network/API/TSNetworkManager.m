@@ -120,7 +120,8 @@ dispatch_queue_t NetworkManagerQueue()
         return self;
     }
 
-    _sessionManager = [self.signalService buildSignalServiceSessionManager];
+    // TODO: Use OWSUrlSession instead.
+    _sessionManager = [self.signalService sessionManagerForMainSignalService];
     self.sessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     // NOTE: We could enable HTTPShouldUsePipelining here.
     // Make a copy of the default headers for this session manager.
@@ -130,7 +131,6 @@ dispatch_queue_t NetworkManagerQueue()
     return self;
 }
 
-//  TSNetworkManager.serialQueue
 - (void)performRequest:(TSRequest *)request
             canUseAuth:(BOOL)canUseAuth
                success:(TSNetworkManagerSuccess)success
@@ -141,16 +141,28 @@ dispatch_queue_t NetworkManagerQueue()
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
 
+    if (AppExpiry.shared.isExpired) {
+        NSURLSessionDataTask *task = [[NSURLSessionDataTask alloc] init];
+        NSError *error = OWSErrorMakeAssertionError(@"App is expired.");
+        failure(task, error);
+        return;
+    }
+
     // Clear all headers so that we don't retain headers from previous requests.
     for (NSString *headerField in self.sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {
         [self.sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
     }
 
+    OWSHttpHeaders *httpHeaders = [OWSHttpHeaders new];
+    [httpHeaders addHeaders:request.allHTTPHeaderFields overwriteOnConflict:NO];
+
     // Apply the default headers for this session manager.
-    for (NSString *headerField in self.defaultHeaders) {
-        NSString *headerValue = self.defaultHeaders[headerField];
-        [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-    }
+    [httpHeaders addHeaders:self.defaultHeaders overwriteOnConflict:NO];
+
+    // Set User-Agent header.
+    [httpHeaders addHeader:OWSURLSession.kUserAgentHeader
+                      value:OWSURLSession.signalIosUserAgent
+        overwriteOnConflict:YES];
 
     if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
         OWSAssertDebug(request.authUsername.length > 0);
@@ -187,8 +199,9 @@ dispatch_queue_t NetworkManagerQueue()
     OWSAssertDebug(requestURLString.length > 0);
 
     // Honor the request's headers.
-    for (NSString *headerField in request.allHTTPHeaderFields) {
-        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+    for (NSString *headerField in httpHeaders.headers) {
+        NSString *_Nullable headerValue = httpHeaders.headers[headerField];
+        OWSAssertDebug(headerValue != nil);
         [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
     }
 
@@ -209,7 +222,7 @@ dispatch_queue_t NetworkManagerQueue()
     } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
         [self.sessionManager DELETE:requestURLString parameters:request.parameters success:success failure:failure];
     } else {
-        OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
+        OWSLogError(@"Trying to perform HTTP operation with unknown method: %@", request.HTTPMethod);
     }
 }
 
@@ -514,6 +527,10 @@ dispatch_queue_t NetworkManagerQueue()
 #endif
 
     [OutageDetection.sharedManager reportConnectionFailure];
+
+    if (statusCode == AppExpiry.appExpiredStatusCode) {
+        [AppExpiry.shared setHasAppExpiredAtCurrentVersion];
+    }
 
     NSError *error = [self errorWithHTTPCode:statusCode
                                  description:nil

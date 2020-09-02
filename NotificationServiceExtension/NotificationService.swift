@@ -238,6 +238,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     private let isProcessingMessages = AtomicBool(false)
+
     func fetchAndProcessMessages() {
         AssertIsOnMainThread()
 
@@ -256,6 +257,8 @@ class NotificationService: UNNotificationServiceExtension {
             Logger.info("Message fetch completed.")
             self.isProcessingMessages.set(false)
             self.completeSilenty()
+        }.catch { error in
+            Logger.warn("Error: \(error)")
         }
     }
 }

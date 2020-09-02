@@ -85,7 +85,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, readonly) UIStackView *reminderStackView;
 @property (nonatomic, readonly) UITableViewCell *reminderViewCell;
 @property (nonatomic, readonly) ExpirationNagView *expiredView;
-@property (nonatomic, readonly) UIView *endOfLifeOSView;
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
@@ -322,14 +321,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _deregisteredView = deregisteredView;
     [reminderStackView addArrangedSubview:deregisteredView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, deregisteredView);
-
-    ReminderView *endOfLifeOSView =
-        [ReminderView nagWithText:NSLocalizedString(@"END_OF_LIFE_OS_WARNING",
-                                      @"Label indicating that this OS version is no longer supported.")
-                        tapAction:nil];
-    _endOfLifeOSView = endOfLifeOSView;
-    [reminderStackView addArrangedSubview:endOfLifeOSView];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, endOfLifeOSView);
 
     ExpirationNagView *expiredView = [ExpirationNagView new];
     _expiredView = expiredView;
@@ -596,13 +587,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.deregisteredView.hidden
         = !TSAccountManager.sharedInstance.isDeregistered || TSAccountManager.sharedInstance.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
-    self.endOfLifeOSView.hidden = !SSKAppExpiry.isEndOfLifeOSVersion;
 
-    self.expiredView.hidden = !SSKAppExpiry.isExpiringSoon;
+    self.expiredView.hidden = !AppExpiry.isExpiringSoon;
     [self.expiredView updateText];
 
-    self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.deregisteredView.isHidden
-        || !self.outageView.isHidden || !self.expiredView.isHidden || !self.endOfLifeOSView.isHidden;
+    self.hasVisibleReminders = (!self.archiveReminderView.isHidden || !self.deregisteredView.isHidden
+        || !self.outageView.isHidden || !self.expiredView.isHidden);
 }
 
 - (void)setHasVisibleReminders:(BOOL)hasVisibleReminders

@@ -198,7 +198,7 @@ public struct StorageService {
             endpoint += "/version/\(greaterThanVersion)"
         }
 
-        return storageRequest(withMethod: "GET", endpoint: endpoint).map(on: .global()) { response in
+        return storageRequest(withMethod: .get, endpoint: endpoint).map(on: .global()) { response in
             switch response.status {
             case .success:
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
@@ -270,7 +270,7 @@ public struct StorageService {
 
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in
-            storageRequest(withMethod: "PUT", endpoint: "v1/storage", body: data)
+            storageRequest(withMethod: .put, endpoint: "v1/storage", body: data)
         }.map(on: .global()) { response in
             switch response.status {
             case .success:
@@ -319,7 +319,7 @@ public struct StorageService {
             builder.setReadKey(keys.map { $0.data })
             return try builder.buildSerializedData()
         }.then(on: .global()) { data in
-            storageRequest(withMethod: "PUT", endpoint: "v1/storage/read", body: data)
+            storageRequest(withMethod: .put, endpoint: "v1/storage/read", body: data)
         }.map(on: .global()) { response in
             guard case .success = response.status else {
                 owsFailDebug("unexpected response \(response.status)")
@@ -353,8 +353,8 @@ public struct StorageService {
 
     // MARK: - Dependencies
 
-    private static var sessionManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().storageServiceSessionManager
+    private static var urlSession: OWSURLSession {
+        return OWSSignalService.sharedInstance().urlSessionForStorageService()
     }
 
     private static var signalServiceClient: SignalServiceClient {
@@ -392,87 +392,63 @@ public struct StorageService {
         }
     }
 
-    private static func storageRequest(withMethod method: String, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
+    private static func storageRequest(withMethod method: HTTPMethod, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
         return signalServiceClient.requestStorageAuth().map { username, password in
             Auth(username: username, password: password)
-        }.then(on: .global()) { auth in
-            Promise { resolver in
-                guard let url = OWSURLSession.buildUrl(urlString: endpoint, baseUrl: sessionManager.baseURL) else {
-                    owsFailDebug("failed to initialize URL")
-                    throw StorageError.assertion
-                }
+        }.then(on: .global()) { (auth: Auth) -> Promise<OWSHTTPResponse> in
+            if method == .get { assert(body == nil) }
 
-                var error: NSError?
-                let request = sessionManager.requestSerializer.request(
-                    withMethod: method,
-                    urlString: url.absoluteString,
-                    parameters: nil,
-                    error: &error
-                )
+            let headers = [
+                "Content-Type": OWSMimeTypeProtobuf,
+                "Authorization": try auth.authHeader()
+            ]
 
-                if let error = error {
-                    owsFailDebug("failed to generate request: \(error)")
-                    throw StorageError.assertion
-                }
+            Logger.info("Storage request started: \(method) \(endpoint)")
 
-                if method == "GET" { assert(body == nil) }
+            let urlSession = self.urlSession
+            // Some 4xx responses are expected;
+            // we'll discriminate the status code ourselves.
+            urlSession.require2xxOr3xx = false
+            return urlSession.dataTaskPromise(endpoint,
+                                              method: method,
+                                              headers: headers,
+                                              body: body)
+        }.map(on: .global()) { (response: OWSHTTPResponse) -> StorageResponse in
+            let status: StorageResponse.Status
 
-                request.httpBody = body
+            switch response.statusCode {
+            case 200:
+                status = .success
+            case 204:
+                status = .noContent
+            case 409:
+                status = .conflict
+            case 404:
+                status = .notFound
+            default:
+                let error = OWSAssertionError("Unexpected statusCode: \(response.statusCode)")
+                throw StorageError.networkError(statusCode: response.statusCode, underlyingError: error)
+            }
 
-                request.setValue(OWSMimeTypeProtobuf, forHTTPHeaderField: "Content-Type")
-                request.setValue(try auth.authHeader(), forHTTPHeaderField: "Authorization")
+            // We should always receive response data, for some responses it will be empty.
+            guard let responseData = response.responseData else {
+                owsFailDebug("missing response data")
+                throw StorageError.retryableAssertion
+            }
 
-                Logger.info("Storage request started: \(method) \(endpoint)")
+            // The layers that use this only want to process 200 and 409 responses,
+            // anything else we should raise as an error.
 
-                let task = sessionManager.dataTask(
-                    with: request as URLRequest,
-                    uploadProgress: nil,
-                    downloadProgress: nil
-                ) { response, responseObject, error in
-                    guard let response = response as? HTTPURLResponse else {
-                        Logger.info("Storage request failed: \(method) \(endpoint)")
+            Logger.info("Storage request succeeded: \(method) \(endpoint)")
 
-                        guard let error = error else {
-                            owsFailDebug("unexpected response type")
-                            return resolver.reject(StorageError.assertion)
-                        }
-
-                        Logger.error("response error \(error)")
-                        return resolver.reject(error)
-                    }
-
-                    let status: StorageResponse.Status
-
-                    switch response.statusCode {
-                    case 200:
-                        status = .success
-                    case 204:
-                        status = .noContent
-                    case 409:
-                        status = .conflict
-                    case 404:
-                        status = .notFound
-                    default:
-                        guard let error = error else {
-                            return resolver.reject(OWSAssertionError("error was nil for statusCode: \(response.statusCode)"))
-                        }
-                        return resolver.reject(StorageError.networkError(statusCode: response.statusCode, underlyingError: error))
-                    }
-
-                    // We should always receive response data, for some responses it will be empty.
-                    guard let responseData = responseObject as? Data else {
-                        owsFailDebug("missing response data")
-                        return resolver.reject(StorageError.retryableAssertion)
-                    }
-
-                    // The layers that use this only want to process 200 and 409 responses,
-                    // anything else we should raise as an error.
-
-                    Logger.info("Storage request succeeded: \(method) \(endpoint)")
-
-                    resolver.fulfill(StorageResponse(status: status, data: responseData))
-                }
-                task.resume()
+            return StorageResponse(status: status, data: responseData)
+        }.recover(on: .global()) { (error: Error) -> Promise<StorageResponse> in
+            if IsNetworkConnectivityFailure(error) {
+                throw StorageError.networkError(statusCode: 0, underlyingError: error)
+            } else {
+                // This should never happen.
+                owsFailDebug("Error: \(error)")
+                throw StorageError.networkError(statusCode: 0, underlyingError: error)
             }
         }
     }

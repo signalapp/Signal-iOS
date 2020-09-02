@@ -307,6 +307,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                                              selector:@selector(environmentDidChange:)
                                                  name:TSConstants.EnvironmentDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appExpiryDidChange:)
+                                                 name:AppExpiry.AppExpiryDidChange
+                                               object:nil];
 }
 
 #pragma mark - Manage Socket
@@ -530,6 +534,9 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         }
     }
 
+    OWSHttpHeaders *httpHeaders = [OWSHttpHeaders new];
+    [httpHeaders addHeaders:request.allHTTPHeaderFields overwriteOnConflict:NO];
+
     WebSocketProtoWebSocketRequestMessageBuilder *requestBuilder =
         [WebSocketProtoWebSocketRequestMessage builderWithVerb:request.HTTPMethod
                                                           path:requestPath
@@ -537,14 +544,17 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
-        [requestBuilder addHeaders:@"content-type:application/json"];
+        [httpHeaders addHeader:@"content-type" value:@"application/json" overwriteOnConflict:YES];
     }
 
-    for (NSString *headerField in request.allHTTPHeaderFields) {
-        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+    // Set User-Agent header.
+    [httpHeaders addHeader:OWSURLSession.kUserAgentHeader
+                      value:OWSURLSession.signalIosUserAgent
+        overwriteOnConflict:YES];
 
-        OWSAssertDebug([headerField isKindOfClass:[NSString class]]);
-        OWSAssertDebug([headerValue isKindOfClass:[NSString class]]);
+    for (NSString *headerField in httpHeaders.headers) {
+        NSString *_Nullable headerValue = httpHeaders.headers[headerField];
+        OWSAssertDebug(headerValue != nil);
         [requestBuilder addHeaders:[NSString stringWithFormat:@"%@:%@", headerField, headerValue]];
     }
 
@@ -617,6 +627,12 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     NSData *_Nullable responseData;
     if (message.hasBody) {
         responseData = message.body;
+    }
+
+    // The websocket is only used to connect to the main signal
+    // service, so we need to check for remote deprecation.
+    if (responseStatus == AppExpiry.appExpiredStatusCode) {
+        [AppExpiry.shared setHasAppExpiredAtCurrentVersion];
     }
 
     BOOL hasValidResponse = YES;
@@ -957,6 +973,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         return NO;
     }
 
+    if (AppExpiry.shared.isExpired) {
+        return NO;
+    }
+
     if (self.signalService.isCensorshipCircumventionActive) {
         OWSLogWarn(@"Skipping opening of websocket due to censorship circumvention.");
         return NO;
@@ -1179,6 +1199,13 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
     OWSAssertIsOnMainThread();
     
     [self cycleSocket];
+}
+
+- (void)appExpiryDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyDesiredSocketState];
 }
 
 @end
