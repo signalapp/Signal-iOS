@@ -53,6 +53,7 @@ public struct AttachmentRecord: SDSRecord {
     public let uploadTimestamp: UInt64
     public let cdnKey: String
     public let cdnNumber: UInt32
+    public let isAnimatedCached: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -83,6 +84,7 @@ public struct AttachmentRecord: SDSRecord {
         case uploadTimestamp
         case cdnKey
         case cdnNumber
+        case isAnimatedCached
     }
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -134,6 +136,7 @@ public extension AttachmentRecord {
         uploadTimestamp = row[25]
         cdnKey = row[26]
         cdnNumber = row[27]
+        isAnimatedCached = row[28]
     }
 }
 
@@ -262,6 +265,7 @@ extension TSAttachment {
             }
             let creationTimestamp: Date = SDSDeserialization.requiredDoubleAsDate(creationTimestampInterval, name: "creationTimestamp")
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
+            let isAnimatedCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isAnimatedCached, name: "isAnimatedCached", conversion: { NSNumber(value: $0) })
             let isUploaded: Bool = try SDSDeserialization.required(record.isUploaded, name: "isUploaded")
             let isValidImageCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidImageCached, name: "isValidImageCached", conversion: { NSNumber(value: $0) })
             let isValidVideoCached: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.isValidVideoCached, name: "isValidVideoCached", conversion: { NSNumber(value: $0) })
@@ -286,6 +290,7 @@ extension TSAttachment {
                                       cachedImageWidth: cachedImageWidth,
                                       creationTimestamp: creationTimestamp,
                                       digest: digest,
+                                      isAnimatedCached: isAnimatedCached,
                                       isUploaded: isUploaded,
                                       isValidImageCached: isValidImageCached,
                                       isValidVideoCached: isValidVideoCached,
@@ -362,6 +367,7 @@ extension TSAttachment: DeepCopyable {
             let cachedImageWidth: NSNumber? = modelToCopy.cachedImageWidth
             let creationTimestamp: Date = modelToCopy.creationTimestamp
             let digest: Data? = modelToCopy.digest
+            let isAnimatedCached: NSNumber? = modelToCopy.isAnimatedCached
             let isUploaded: Bool = modelToCopy.isUploaded
             let isValidImageCached: NSNumber? = modelToCopy.isValidImageCached
             let isValidVideoCached: NSNumber? = modelToCopy.isValidVideoCached
@@ -386,6 +392,7 @@ extension TSAttachment: DeepCopyable {
                                       cachedImageWidth: cachedImageWidth,
                                       creationTimestamp: creationTimestamp,
                                       digest: digest,
+                                      isAnimatedCached: isAnimatedCached,
                                       isUploaded: isUploaded,
                                       isValidImageCached: isValidImageCached,
                                       isValidVideoCached: isValidVideoCached,
@@ -505,6 +512,7 @@ extension TSAttachmentSerializer {
     static let uploadTimestampColumn = SDSColumnMetadata(columnName: "uploadTimestamp", columnType: .int64)
     static let cdnKeyColumn = SDSColumnMetadata(columnName: "cdnKey", columnType: .unicodeString)
     static let cdnNumberColumn = SDSColumnMetadata(columnName: "cdnNumber", columnType: .int64)
+    static let isAnimatedCachedColumn = SDSColumnMetadata(columnName: "isAnimatedCached", columnType: .int, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -538,7 +546,8 @@ extension TSAttachmentSerializer {
         stateColumn,
         uploadTimestampColumn,
         cdnKeyColumn,
-        cdnNumberColumn
+        cdnNumberColumn,
+        isAnimatedCachedColumn
         ])
 }
 
@@ -993,8 +1002,9 @@ class TSAttachmentSerializer: SDSSerializer {
         let uploadTimestamp: UInt64 = model.uploadTimestamp
         let cdnKey: String = model.cdnKey
         let cdnNumber: UInt32 = model.cdnNumber
+        let isAnimatedCached: Bool? = nil
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached)
     }
 }
 

@@ -68,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
+                     contentType:(nullable NSString *)contentType
                      emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
 {
@@ -78,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _contentType = contentType;
     _emojiString = emojiString;
     _info = info;
 

@@ -163,6 +163,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
                creationTimestamp:(NSDate *)creationTimestamp
                           digest:(nullable NSData *)digest
+                isAnimatedCached:(nullable NSNumber *)isAnimatedCached
                       isUploaded:(BOOL)isUploaded
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
@@ -192,6 +193,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     _cachedImageWidth = cachedImageWidth;
     _creationTimestamp = creationTimestamp;
     _digest = digest;
+    _isAnimatedCached = isAnimatedCached;
     _isUploaded = isUploaded;
     _isValidImageCached = isValidImageCached;
     _isValidVideoCached = isValidVideoCached;

@@ -38,9 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
+                     contentType:(nullable NSString *)contentType
                      emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:emojiString:info:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contentType:emojiString:info:));
 
 // clang-format on
 

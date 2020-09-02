@@ -84,6 +84,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addMentionNotificationMode
         case addOfferTypeToCalls
         case addServerDeliveryTimestamp
+        case updateAnimatedStickers
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -830,6 +831,19 @@ public class GRDBSchemaMigrator: NSObject {
 
                 // Backfill all jobs with "0" as their timestamp
                 try db.execute(sql: "UPDATE model_SSKJobRecord SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.messageDecryptJobRecord.rawValue)")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.updateAnimatedStickers.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                    table.add(column: "isAnimatedCached", .integer)
+                }
+                try db.alter(table: "model_InstalledSticker") { (table: TableAlteration) -> Void in
+                    table.add(column: "contentType", .text)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }
