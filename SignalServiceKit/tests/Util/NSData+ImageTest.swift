@@ -31,13 +31,13 @@ class NSDataImageTests: SSKBaseTestSwift {
         do {
             let data = Randomness.generateRandomBytes(64)
             let isApng: NSNumber? = (data as NSData).isAnimatedPngData()
-            Logger.verbose("isApng: \(isApng)")
+            Logger.verbose("isApng: \(String(describing: isApng))")
             XCTAssertNil(isApng)
         }
         do {
             let data = Randomness.generateRandomBytes(1024)
             let isApng: NSNumber? = (data as NSData).isAnimatedPngData()
-            Logger.verbose("isApng: \(isApng)")
+            Logger.verbose("isApng: \(String(describing: isApng))")
             XCTAssertNil(isApng)
         }
     }

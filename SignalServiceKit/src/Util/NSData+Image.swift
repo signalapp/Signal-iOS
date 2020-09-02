@@ -17,7 +17,7 @@ extension NSData {
             let signature = try parser.nextData(length: 8, name: "PNG signature")
             let pngSignature: [UInt8] = [ 137, 80, 78, 71, 13, 10, 26, 10 ]
             guard signature == NSData(bytes: pngSignature, length: pngSignature.count) as Data else {
-                owsFailDebug("Invalid signature.")
+                Logger.warn("Invalid signature.")
                 return nil
             }
 
@@ -48,7 +48,7 @@ extension NSData {
                 try parser.skip(length: 4, name: "PNG chunk CRC")
             }
         } catch {
-            owsFailDebug("Error: \(error)")
+            Logger.warn("Error: \(error)")
             return nil
         }
     }

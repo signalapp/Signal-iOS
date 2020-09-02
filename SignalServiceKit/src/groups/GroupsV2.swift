@@ -562,7 +562,12 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        owsFail("Not implemented.")
+        if CurrentAppContext().isRunningTests {
+            Logger.warn("Not implemented.")
+        } else {
+            owsFail("Not implemented.")
+        }
+        return nil
     }
 
     public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data,

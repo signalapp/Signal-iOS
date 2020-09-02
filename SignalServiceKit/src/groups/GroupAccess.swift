@@ -136,7 +136,7 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var allAccess: GroupAccess {
-        return GroupAccess(members: .any, attributes: .any, addFromInviteLink: .any)
+        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .any)
     }
 
     @objc
@@ -146,7 +146,7 @@ public class GroupAccess: MTLModel {
 
     @objc
     public static var defaultForV1: GroupAccess {
-        return allAccess
+        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .unsatisfiable)
     }
 
     @objc
