@@ -552,6 +552,39 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return result;
 }
 
+- (BOOL)shouldBeRenderedByYY
+{
+    if ([self.contentType isEqualToString:OWSMimeTypeImageWebp] ||
+        [self.contentType isEqualToString:OWSMimeTypeImageGif]) {
+        return YES;
+    }
+    if ([self.contentType isEqualToString:OWSMimeTypeImagePng]) {
+        return self.hasAnimatedImageContent;
+    }
+    return NO;
+}
+
+- (BOOL)hasAnimatedImageContent
+{
+    if ([self.contentType isEqualToString:OWSMimeTypeImageGif]) {
+        return YES;
+    }
+    if (![self.contentType isEqualToString:OWSMimeTypeImageWebp]
+        && ![self.contentType isEqualToString:OWSMimeTypeImagePng]) {
+        return NO;
+    }
+    NSString *_Nullable filePath = self.originalFilePath;
+    if (filePath == nil) {
+        OWSFailDebug(@"Missing filePath.");
+        return NO;
+    }
+    ImageMetadata *imageMetadata = [NSData imageMetadataWithPath:filePath mimeType:self.contentType];
+    if (!imageMetadata.isValid) {
+        return NO;
+    }
+    return imageMetadata.isAnimated;
+}
+
 #pragma mark -
 
 - (nullable UIImage *)originalImage

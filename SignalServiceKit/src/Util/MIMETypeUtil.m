@@ -33,7 +33,6 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 NSString *const OWSMimeTypeProtobuf = @"application/x-protobuf";
 NSString *const OWSMimeTypeJson = @"application/json";
-NSString *const OWSMimeTypeWebp = @"image/webp";
 // TODO: We're still finalizing the MIME type.
 NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker-lottie";
 NSString *const OWSMimeTypeImageApng1 = @"image/apng";

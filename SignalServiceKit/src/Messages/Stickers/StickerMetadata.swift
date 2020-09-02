@@ -14,7 +14,7 @@ public enum StickerType: UInt {
     public static func stickerType(forContentType contentType: String?) -> StickerType {
         if let contentType = contentType {
             switch contentType {
-            case OWSMimeTypeWebp:
+            case OWSMimeTypeImageWebp:
                 return .webp
             case OWSMimeTypeLottieSticker:
                 return .signalLottie
@@ -33,7 +33,7 @@ public enum StickerType: UInt {
     public var contentType: String {
         switch self {
         case .webp:
-            return OWSMimeTypeWebp
+            return OWSMimeTypeImageWebp
         case .signalLottie:
             return OWSMimeTypeLottieSticker
         case .apng:

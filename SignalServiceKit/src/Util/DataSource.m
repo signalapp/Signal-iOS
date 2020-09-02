@@ -211,6 +211,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isValidVideo
 {
     OWSAssertDebug(!self.isConsumed);
+    if (![MIMETypeUtil isSupportedVideoFile:self.dataUrl.path]) {
+        return NO;
+    }
     OWSFailDebug(@"Are we calling this anywhere? It seems quite inefficient.");
     return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
 }
@@ -230,6 +233,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!self.isConsumed);
     return [self.data ows_hasStickerLikeProperties];
+}
+
+- (ImageMetadata *)imageMetadata
+{
+    OWSAssertDebug(!self.isConsumed);
+    return [self.data imageMetadataWithPath:nil mimeType:self.mimeType];
 }
 
 @end
@@ -399,6 +408,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isValidVideo
 {
     OWSAssertDebug(!self.isConsumed);
+    if (self.mimeType != nil) {
+        if (![MIMETypeUtil isSupportedVideoMIMEType:self.mimeType]) {
+            return NO;
+        }
+    } else if (![MIMETypeUtil isSupportedVideoFile:self.dataUrl.path]) {
+        return NO;
+    }
     return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
 }
 
@@ -406,6 +422,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!self.isConsumed);
     return [NSData ows_hasStickerLikePropertiesWithPath:self.dataUrl.path];
+}
+
+- (ImageMetadata *)imageMetadata
+{
+    OWSAssertDebug(!self.isConsumed);
+    return [NSData imageMetadataWithPath:self.dataUrl.path mimeType:self.mimeType];
 }
 
 - (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error

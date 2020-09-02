@@ -259,7 +259,7 @@ DEPENDENCIES:
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (= 1.7.0)
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
-  - YYImage
+  - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZKGroup (from `https://github.com/signalapp/signal-zkgroup-swift`)
   - ZKGroup/Tests (from `https://github.com/signalapp/signal-zkgroup-swift`)
   - ZXingObjC (from `https://github.com/zxingify/zxingify-objc.git`)
@@ -278,7 +278,6 @@ SPEC REPOS:
     - SQLCipher
     - SSZipArchive
     - SwiftProtobuf
-    - YYImage
 
 EXTERNAL SOURCES:
   Argon2:
@@ -318,6 +317,8 @@ EXTERNAL SOURCES:
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/signalapp/YapDatabase.git
+  YYImage:
+    :git: https://github.com/signalapp/YYImage
   ZKGroup:
     :git: https://github.com/signalapp/signal-zkgroup-swift
   ZXingObjC:
@@ -350,7 +351,7 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 257a74ae350fa55701b8f272ea1be98caa7aea0b
+    :commit: 5f10c3d245e18d71544658bf441dd26af2473584
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 7addcc1c4bb837b3ad44a05f72bf18ad8869b30c
@@ -361,6 +362,9 @@ CHECKOUT OPTIONS:
   YapDatabase:
     :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
     :git: https://github.com/signalapp/YapDatabase.git
+  YYImage:
+    :commit: a2e189da5c92196552475d1122a924a3732ad01e
+    :git: https://github.com/signalapp/YYImage
   ZKGroup:
     :commit: 0ea29d4a20f90464023d4e1fd38551c1b478da2a
     :git: https://github.com/signalapp/signal-zkgroup-swift
@@ -395,10 +399,10 @@ SPEC CHECKSUMS:
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
   SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
-  YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
+  YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: dab5026e19ce384ecc5d8b2925d52f9e16cb38b4
+PODFILE CHECKSUM: 1c84cd8ca763eb00c871e640aa47bab2c00aa9fa
 
 COCOAPODS: 1.9.2

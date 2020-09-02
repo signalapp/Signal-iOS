@@ -247,26 +247,45 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.viewItem.stickerAttachment != nil);
 
     TSAttachmentStream *stickerAttachment = self.viewItem.stickerAttachment;
-    YYAnimatedImageView *stickerView = [YYAnimatedImageView new];
-    stickerView.contentMode = UIViewContentModeScaleAspectFit;
+    if (stickerAttachment.shouldBeRenderedByYY) {
+        YYAnimatedImageView *stickerView = [YYAnimatedImageView new];
+        stickerView.contentMode = UIViewContentModeScaleAspectFit;
 
-    stickerView.accessibilityLabel =
-        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_STICKER",
-                                                              @"Accessibility label for stickers.")
-                                               authorName:self.viewItem.accessibilityAuthorName];
+        stickerView.accessibilityLabel =
+            [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_STICKER",
+                                                                  @"Accessibility label for stickers.")
+                                                   authorName:self.viewItem.accessibilityAuthorName];
 
-    self.loadCellContentBlock = ^{
-        NSString *_Nullable filePath = stickerAttachment.originalFilePath;
-        OWSCAssertDebug(filePath);
-        YYImage *_Nullable image = [[YYImage alloc] initWithContentsOfFile:filePath];
-        OWSCAssertDebug(image);
-        stickerView.image = image;
-    };
-    self.unloadCellContentBlock = ^{
-        stickerView.image = nil;
-    };
+        self.loadCellContentBlock = ^{
+            NSString *_Nullable filePath = stickerAttachment.originalFilePath;
+            OWSCAssertDebug(filePath);
+            YYImage *_Nullable image = [[YYImage alloc] initWithContentsOfFile:filePath];
+            OWSCAssertDebug(image);
+            stickerView.image = image;
+        };
+        self.unloadCellContentBlock = ^{ stickerView.image = nil; };
 
-    return stickerView;
+        return stickerView;
+    } else {
+        UIImageView *stickerView = [UIImageView new];
+        stickerView.contentMode = UIViewContentModeScaleAspectFit;
+
+        stickerView.accessibilityLabel =
+            [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_STICKER",
+                                                                  @"Accessibility label for stickers.")
+                                                   authorName:self.viewItem.accessibilityAuthorName];
+
+        self.loadCellContentBlock = ^{
+            NSString *_Nullable filePath = stickerAttachment.originalFilePath;
+            OWSCAssertDebug(filePath);
+            UIImage *_Nullable image = [UIImage imageWithContentsOfFile:filePath];
+            OWSCAssertDebug(image);
+            stickerView.image = image;
+        };
+        self.unloadCellContentBlock = ^{ stickerView.image = nil; };
+
+        return stickerView;
+    }
 }
 
 - (UIView *)loadFailedStickerView

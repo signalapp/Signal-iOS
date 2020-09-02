@@ -130,20 +130,10 @@ public class ConversationMediaView: UIView {
             configure(forError: .failed)
             return
         }
-        if attachmentStream.isImage || attachmentStream.isAnimated {
-            var isAnimated = false
-            if attachmentStream.isAnimated {
-                isAnimated = true
-            } else if let filePath = attachmentStream.originalFilePath {
-                let imageMetadata = NSData.imageMetadata(withPath: filePath,
-                                                         mimeType: attachmentStream.contentType)
-                isAnimated = imageMetadata.isAnimated
-            }
-            if isAnimated {
-                configureForAnimatedImage(attachmentStream: attachmentStream)
-            } else {
-                configureForStillImage(attachmentStream: attachmentStream)
-            }
+        if attachmentStream.shouldBeRenderedByYY {
+            configureForAnimatedImage(attachmentStream: attachmentStream)
+        } else if attachmentStream.isImage {
+            configureForStillImage(attachmentStream: attachmentStream)
         } else if attachmentStream.isVideo {
             configureForVideo(attachmentStream: attachmentStream)
         } else {

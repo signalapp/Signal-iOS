@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -52,7 +52,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "Wait for sticker to be installed.")
         StickerManager.installSticker(stickerInfo: stickerInfo,
                                       stickerData: stickerData,
-                                      contentType: OWSMimeTypeWebp,
+                                      contentType: OWSMimeTypeImageWebp,
                                       emojiString: "🌼🇨🇦") {
                                         expectation.fulfill()
         }
@@ -101,7 +101,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "Wait for sticker to be installed.")
         StickerManager.installSticker(stickerInfo: stickerInfo,
                                       stickerData: stickerData,
-                                      contentType: OWSMimeTypeWebp,
+                                      contentType: OWSMimeTypeImageWebp,
                                       emojiString: "🌼🇨🇦") {
                                         expectation.fulfill()
         }
