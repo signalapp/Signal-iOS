@@ -1989,6 +1989,309 @@ extension StorageServiceProtoGroupV2Record.StorageServiceProtoGroupV2RecordBuild
 
 #endif
 
+// MARK: - StorageServiceProtoAccountRecordPinnedConversationContact
+
+public class StorageServiceProtoAccountRecordPinnedConversationContact: NSObject, Codable {
+
+    // MARK: - StorageServiceProtoAccountRecordPinnedConversationContactBuilder
+
+    public class func builder() -> StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
+        return StorageServiceProtoAccountRecordPinnedConversationContactBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
+        let builder = StorageServiceProtoAccountRecordPinnedConversationContactBuilder()
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public class StorageServiceProtoAccountRecordPinnedConversationContactBuilder: NSObject {
+
+        private var proto = StorageServiceProtos_AccountRecord.PinnedConversation.Contact()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public func setE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.e164 = valueParam
+        }
+
+        public func setE164(_ valueParam: String) {
+            proto.e164 = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> StorageServiceProtoAccountRecordPinnedConversationContact {
+            return try StorageServiceProtoAccountRecordPinnedConversationContact(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoAccountRecordPinnedConversationContact(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.PinnedConversation.Contact
+
+    public var uuid: String? {
+        guard hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    public var hasUuid: Bool {
+        return !proto.uuid.isEmpty
+    }
+
+    public var e164: String? {
+        guard hasE164 else {
+            return nil
+        }
+        return proto.e164
+    }
+    public var hasE164: Bool {
+        return !proto.e164.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.PinnedConversation.Contact) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public convenience init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_AccountRecord.PinnedConversation.Contact(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: StorageServiceProtos_AccountRecord.PinnedConversation.Contact) throws {
+        // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecordPinnedConversationContact -
+
+        // MARK: - End Validation Logic for StorageServiceProtoAccountRecordPinnedConversationContact -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoAccountRecordPinnedConversationContact {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordPinnedConversationContact.StorageServiceProtoAccountRecordPinnedConversationContactBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordPinnedConversationContact? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier
+
+public enum StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier: Equatable {
+    case contact(StorageServiceProtoAccountRecordPinnedConversationContact)
+    case legacyGroupID(Data)
+    case groupMasterKey(Data)
+}
+
+private func StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWrap(_ value: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier) throws -> StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier {
+    switch value {
+    case .contact(let value): return .contact(try StorageServiceProtoAccountRecordPinnedConversationContact(value))
+    case .legacyGroupID(let value): return .legacyGroupID(value)
+    case .groupMasterKey(let value): return .groupMasterKey(value)
+    }
+}
+
+private func StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierUnwrap(_ value: StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier) -> StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier {
+    switch value {
+    case .contact(let value): return .contact(value.proto)
+    case .legacyGroupID(let value): return .legacyGroupID(value)
+    case .groupMasterKey(let value): return .groupMasterKey(value)
+    }
+}
+
+// MARK: - StorageServiceProtoAccountRecordPinnedConversation
+
+public class StorageServiceProtoAccountRecordPinnedConversation: NSObject, Codable {
+
+    // MARK: - StorageServiceProtoAccountRecordPinnedConversationBuilder
+
+    public class func builder() -> StorageServiceProtoAccountRecordPinnedConversationBuilder {
+        return StorageServiceProtoAccountRecordPinnedConversationBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordPinnedConversationBuilder {
+        let builder = StorageServiceProtoAccountRecordPinnedConversationBuilder()
+        if let _value = identifier {
+            builder.setIdentifier(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public class StorageServiceProtoAccountRecordPinnedConversationBuilder: NSObject {
+
+        private var proto = StorageServiceProtos_AccountRecord.PinnedConversation()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setIdentifier(_ valueParam: StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier?) {
+            guard let valueParam = valueParam else { return }
+            proto.identifier = StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierUnwrap(valueParam)
+        }
+
+        public func setIdentifier(_ valueParam: StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier) {
+            proto.identifier = StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierUnwrap(valueParam)
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> StorageServiceProtoAccountRecordPinnedConversation {
+            return try StorageServiceProtoAccountRecordPinnedConversation(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try StorageServiceProtoAccountRecordPinnedConversation(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.PinnedConversation
+
+    public var identifier: StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier? {
+        guard hasIdentifier else {
+            return nil
+        }
+        guard let identifier = proto.identifier else {
+            owsFailDebug("identifier was unexpectedly nil")
+            return nil
+        }
+        guard let unwrappedIdentifier = try? StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWrap(identifier) else {
+            owsFailDebug("failed to unwrap identifier")
+            return nil
+        }
+        return unwrappedIdentifier
+    }
+    public var hasIdentifier: Bool {
+        return true
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.PinnedConversation) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public convenience init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_AccountRecord.PinnedConversation(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: StorageServiceProtos_AccountRecord.PinnedConversation) throws {
+        // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecordPinnedConversation -
+
+        // MARK: - End Validation Logic for StorageServiceProtoAccountRecordPinnedConversation -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension StorageServiceProtoAccountRecordPinnedConversation {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordPinnedConversation.StorageServiceProtoAccountRecordPinnedConversationBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordPinnedConversation? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - StorageServiceProtoAccountRecordPhoneNumberSharingMode
 
 public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -2091,6 +2394,7 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         if hasNotDiscoverableByPhoneNumber {
             builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
         }
+        builder.setPinnedConversations(pinnedConversations)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2179,6 +2483,16 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
             proto.notDiscoverableByPhoneNumber = valueParam
         }
 
+        public func addPinnedConversations(_ valueParam: StorageServiceProtoAccountRecordPinnedConversation) {
+            var items = proto.pinnedConversations
+            items.append(valueParam.proto)
+            proto.pinnedConversations = items
+        }
+
+        public func setPinnedConversations(_ wrappedItems: [StorageServiceProtoAccountRecordPinnedConversation]) {
+            proto.pinnedConversations = wrappedItems.map { $0.proto }
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -2193,6 +2507,8 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
     }
 
     fileprivate let proto: StorageServiceProtos_AccountRecord
+
+    public let pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation]
 
     public var profileKey: Data? {
         guard hasProfileKey else {
@@ -2316,8 +2632,10 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
         return proto.unknownFields
     }
 
-    private init(proto: StorageServiceProtos_AccountRecord) {
+    private init(proto: StorageServiceProtos_AccountRecord,
+                 pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation]) {
         self.proto = proto
+        self.pinnedConversations = pinnedConversations
     }
 
     @objc
@@ -2331,11 +2649,15 @@ public class StorageServiceProtoAccountRecord: NSObject, Codable {
     }
 
     fileprivate convenience init(_ proto: StorageServiceProtos_AccountRecord) throws {
+        var pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation] = []
+        pinnedConversations = try proto.pinnedConversations.map { try StorageServiceProtoAccountRecordPinnedConversation($0) }
+
         // MARK: - Begin Validation Logic for StorageServiceProtoAccountRecord -
 
         // MARK: - End Validation Logic for StorageServiceProtoAccountRecord -
 
-        self.init(proto: proto)
+        self.init(proto: proto,
+                  pinnedConversations: pinnedConversations)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {

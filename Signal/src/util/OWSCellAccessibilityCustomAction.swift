@@ -21,4 +21,6 @@ import UIKit
     case archive
     case markRead
     case markUnread
+    case pin
+    case unpin
 }

@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-    [self.avatarView autoPinLeadingToSuperviewMargin];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:16];
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
@@ -474,7 +474,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)avatarSize
 {
     // This value is now larger than kStandardAvatarSize.
-    return 48;
+    return 56;
 }
 
 - (NSUInteger)avatarHSpacing

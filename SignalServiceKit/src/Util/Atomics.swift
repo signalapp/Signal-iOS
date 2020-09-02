@@ -215,7 +215,7 @@ extension AtomicOptional where T: Equatable {
 
 // MARK: -
 
-public class AtomicArray<T: AnyObject> {
+public class AtomicArray<T> {
 
     private var values: [T]
 
@@ -241,17 +241,19 @@ public class AtomicArray<T: AnyObject> {
         }
     }
 
-    public func remove(_ valueToRemove: T) {
-        Atomics.perform {
-            self.values = self.values.filter { (value: T) -> Bool in
-                valueToRemove !== value
-            }
-        }
-    }
-
     public var first: T? {
         Atomics.perform {
             return self.values.first
+        }
+    }
+}
+
+extension AtomicArray where T: Equatable {
+    public func remove(_ valueToRemove: T) {
+        Atomics.perform {
+            self.values = self.values.filter { (value: T) -> Bool in
+                valueToRemove != value
+            }
         }
     }
 }

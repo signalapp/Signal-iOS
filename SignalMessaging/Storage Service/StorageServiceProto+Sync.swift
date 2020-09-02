@@ -637,6 +637,9 @@ extension StorageServiceProtoAccountRecord {
         let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber()
         builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
 
+        let pinnedConversationProtos = try PinnedThreadManager.pinnedConversationProtos(transaction: transaction)
+        builder.setPinnedConversations(pinnedConversationProtos)
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -756,6 +759,13 @@ extension StorageServiceProtoAccountRecord {
             )
         }
 
+        do {
+            try PinnedThreadManager.processPinnedConversationsProto(pinnedConversations, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to process pinned conversations \(error)")
+            mergeState = .needsUpdate
+        }
+
         return mergeState
     }
 }
@@ -794,5 +804,93 @@ extension Data {
 
     func removeKeyType() throws -> Data {
         return try (self as NSData).removeKeyType() as Data
+    }
+}
+
+// MARK: -
+
+extension PinnedThreadManager {
+    static var groupsV2: GroupsV2 {
+        SSKEnvironment.shared.groupsV2
+    }
+
+    public class func processPinnedConversationsProto(
+        _ pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
+        transaction: SDSAnyWriteTransaction
+    ) throws {
+        if pinnedConversations.count > maxPinnedThreads {
+            Logger.warn("Received unexpected number of pinned threads (\(pinnedConversations.count))")
+        }
+
+        var pinnedThreadIds = [String]()
+        for pinnedConversation in pinnedConversations {
+            switch pinnedConversation.identifier {
+            case .contact(let contact)?:
+                let address = SignalServiceAddress(uuidString: contact.uuid, phoneNumber: contact.e164)
+                guard address.isValid else {
+                    owsFailDebug("Dropping pinned thread with invalid address \(address)")
+                    continue
+                }
+                let thread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
+                pinnedThreadIds.append(thread.uniqueId)
+            case .groupMasterKey(let masterKey)?:
+                let contextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+                let threadUniqueId = TSGroupThread.threadId(fromGroupId: contextInfo.groupId)
+                pinnedThreadIds.append(threadUniqueId)
+            case .legacyGroupID(let groupId)?:
+                let threadUniqueId = TSGroupThread.threadId(fromGroupId: groupId)
+                pinnedThreadIds.append(threadUniqueId)
+            default:
+                break
+            }
+        }
+
+        try updatePinnedThreadIds(pinnedThreadIds, transaction: transaction)
+    }
+
+    public class func pinnedConversationProtos(
+        transaction: SDSAnyReadTransaction
+    ) throws -> [StorageServiceProtoAccountRecordPinnedConversation] {
+        let pinnedThreads = PinnedThreadManager.pinnedThreads(transaction: transaction)
+
+        var pinnedConversationProtos = [StorageServiceProtoAccountRecordPinnedConversation]()
+        for pinnedThread in pinnedThreads {
+            let pinnedConversationBuilder = StorageServiceProtoAccountRecordPinnedConversation.builder()
+
+            if let groupThread = pinnedThread as? TSGroupThread {
+                if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
+                    let masterKeyData: Data
+                    do {
+                        masterKeyData = try groupsV2.masterKeyData(forGroupModel: groupModelV2)
+                    } catch {
+                        owsFailDebug("Missing master key: \(error)")
+                        continue
+                    }
+                    guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
+                        owsFailDebug("Invalid master key.")
+                        continue
+                    }
+
+                    pinnedConversationBuilder.setIdentifier(.groupMasterKey(masterKeyData))
+                } else {
+                    pinnedConversationBuilder.setIdentifier(.legacyGroupID(groupThread.groupModel.groupId))
+                }
+
+            } else if let contactThread = pinnedThread as? TSContactThread {
+                let contactBuilder = StorageServiceProtoAccountRecordPinnedConversationContact.builder()
+                if let uuidString = contactThread.contactAddress.uuidString {
+                    contactBuilder.setUuid(uuidString)
+                } else if let e164 = contactThread.contactAddress.phoneNumber {
+                    contactBuilder.setE164(e164)
+                } else {
+                    owsFailDebug("Missing uuid and phone number for thread")
+                }
+                pinnedConversationBuilder.setIdentifier(.contact(try contactBuilder.build()))
+            }
+
+            pinnedConversationProtos.append(try pinnedConversationBuilder.build())
+        }
+
+        return pinnedConversationProtos
     }
 }

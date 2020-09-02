@@ -192,7 +192,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - Notifications
 
-- (void)signalAccountsDidChange:(id)notification
+- (void)signalAccountsDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
@@ -203,21 +203,21 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-- (void)registrationStateDidChange:(id)notification
+- (void)registrationStateDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
     [self updateReminderViews];
 }
 
-- (void)outageStateDidChange:(id)notification
+- (void)outageStateDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
     [self updateReminderViews];
 }
 
-- (void)localProfileDidChange:(id)notification
+- (void)localProfileDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
@@ -784,8 +784,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return nil;
     }
 
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        return nil;
+    switch (indexPath.section) {
+        case ConversationListViewControllerSectionPinnedConversations:
+        case ConversationListViewControllerSectionConversations:
+            break;
+        default:
+            return nil;
     }
 
     [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
@@ -1146,22 +1150,20 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 3;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)aSection
 {
     ConversationListViewControllerSection section = (ConversationListViewControllerSection)aSection;
     switch (section) {
-        case ConversationListViewControllerSectionReminders: {
+        case ConversationListViewControllerSectionReminders:
             return self.hasVisibleReminders ? 1 : 0;
-        }
-        case ConversationListViewControllerSectionConversations: {
+        case ConversationListViewControllerSectionPinnedConversations:
+        case ConversationListViewControllerSectionConversations:
             return [self.threadMapping numberOfItemsInSection:section];
-        }
-        case ConversationListViewControllerSectionArchiveButton: {
+        case ConversationListViewControllerSectionArchiveButton:
             return self.hasArchivedThreadsRow ? 1 : 0;
-        }
     }
 
     OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
@@ -1186,6 +1188,57 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return newThreadViewModel;
 }
 
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case ConversationListViewControllerSectionPinnedConversations:
+        case ConversationListViewControllerSectionConversations: {
+            if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
+                return nil;
+            }
+
+            UIView *container = [UIView new];
+            container.layoutMargins = UIEdgeInsetsMake(8, 16, 8, 16);
+
+            UILabel *label = [UILabel new];
+            [container addSubview:label];
+            [label autoPinEdgesToSuperviewMargins];
+            label.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
+            label.textColor = Theme.primaryTextColor;
+            label.text = section == ConversationListViewControllerSectionPinnedConversations
+                ? NSLocalizedString(
+                    @"PINNED_SECTION_TITLE", @"The title for pinned conversation section on the conversation list")
+                : NSLocalizedString(
+                    @"UNPINNED_SECTION_TITLE", @"The title for unpinned conversation section on the conversation list");
+
+            if (self.splitViewController.isCollapsed) {
+                container.backgroundColor = [Theme.backgroundColor colorWithAlphaComponent:0.8];
+            } else {
+                container.backgroundColor = [Theme.secondaryBackgroundColor colorWithAlphaComponent:0.8];
+            }
+
+            return container;
+        }
+        default:
+            return nil;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case ConversationListViewControllerSectionPinnedConversations:
+        case ConversationListViewControllerSectionConversations:
+            if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
+                return 0;
+            }
+
+            return UITableViewAutomaticDimension;
+        default:
+            return 0;
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
@@ -1198,6 +1251,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             cell = self.reminderViewCell;
             break;
         }
+        case ConversationListViewControllerSectionPinnedConversations:
         case ConversationListViewControllerSectionConversations: {
             cell = [self tableView:tableView cellForConversationAtIndexPath:indexPath];
             break;
@@ -1264,24 +1318,41 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                         target:self
                                                       selector:@selector(performAccessibilityCustomAction:)];
 
-    OWSCellAccessibilityCustomAction *leadingAction;
+    OWSCellAccessibilityCustomAction *unreadAction;
     if (thread.hasUnreadMessages) {
-        leadingAction =
+        unreadAction =
             [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.readAction
                                                               type:OWSCellAccessibilityCustomActionTypeMarkRead
                                                             thread:thread.threadRecord
                                                             target:self
                                                           selector:@selector(performAccessibilityCustomAction:)];
     } else {
-        leadingAction =
+        unreadAction =
             [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unreadAction
                                                               type:OWSCellAccessibilityCustomActionTypeMarkUnread
                                                             thread:thread.threadRecord
                                                             target:self
                                                           selector:@selector(performAccessibilityCustomAction:)];
     }
-    
-  cell.accessibilityCustomActions = @[ archiveAction, deleteAction, leadingAction ];
+
+    OWSCellAccessibilityCustomAction *pinnedAction;
+    if ([self isThreadPinned:thread.threadRecord]) {
+        pinnedAction =
+            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unpinAction
+                                                              type:OWSCellAccessibilityCustomActionTypePin
+                                                            thread:thread.threadRecord
+                                                            target:self
+                                                          selector:@selector(performAccessibilityCustomAction:)];
+    } else {
+        pinnedAction =
+            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.pinAction
+                                                              type:OWSCellAccessibilityCustomActionTypeUnpin
+                                                            thread:thread.threadRecord
+                                                            target:self
+                                                          selector:@selector(performAccessibilityCustomAction:)];
+    }
+
+    cell.accessibilityCustomActions = @[ archiveAction, deleteAction, unreadAction, pinnedAction ];
 
 
     if ([self isConversationActiveForThread:thread.threadRecord]) {
@@ -1382,6 +1453,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             return nil;
         case ConversationListViewControllerSectionArchiveButton:
             return nil;
+        case ConversationListViewControllerSectionPinnedConversations:
         case ConversationListViewControllerSectionConversations: {
             TSThread *thread = [self threadForIndexPath:indexPath];
 
@@ -1392,10 +1464,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
                                                           [self deleteThreadWithConfirmation:thread];
-                                                          completionHandler(YES);
+                                                          completionHandler(NO);
                                                       }];
             deleteAction.backgroundColor = UIColor.ows_accentRedColor;
-            deleteAction.image = [self actionImageNamed:@"trash-outline-24" withTitle:CommonStrings.deleteButton];
+            deleteAction.image = [self actionImageNamed:@"trash-solid-24" withTitle:CommonStrings.deleteButton];
             deleteAction.accessibilityLabel = CommonStrings.deleteButton;
 
             UIContextualAction *archiveAction =
@@ -1405,7 +1477,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
                                                           [self archiveThread:thread];
-                                                          completionHandler(YES);
+                                                          completionHandler(NO);
                                                       }];
 
             NSString *archiveTitle;
@@ -1415,8 +1487,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 archiveTitle = CommonStrings.unarchiveAction;
             }
 
-            archiveAction.backgroundColor = UIColor.ows_gray60Color;
-            archiveAction.image = [self actionImageNamed:@"archive-outline-24" withTitle:archiveTitle];
+            archiveAction.backgroundColor
+                = Theme.isDarkThemeEnabled ? UIColor.ows_gray45Color : UIColor.ows_gray25Color;
+            archiveAction.image = [self actionImageNamed:@"archive-solid-24" withTitle:archiveTitle];
             archiveAction.accessibilityLabel = archiveTitle;
 
             // The first action will be auto-performed for "very long swipes".
@@ -1434,43 +1507,72 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             return nil;
         case ConversationListViewControllerSectionArchiveButton:
             return nil;
+        case ConversationListViewControllerSectionPinnedConversations:
         case ConversationListViewControllerSectionConversations: {
 
             ThreadViewModel *model = [self threadViewModelForIndexPath:indexPath];
             TSThread *thread = [self threadForIndexPath:indexPath];
 
-            if (model.hasUnreadMessages) {
-                UIContextualAction *readAction =
-                    [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
-                                                            title:nil
-                                                          handler:^(UIContextualAction *action,
-                                                              __kindof UIView *sourceView,
-                                                              void (^completionHandler)(BOOL)) {
-                                                              completionHandler(YES);
-                                                              // We delay here so the animation can play out before we
-                                                              // reload the cell
-                                                              dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                                                                 (int64_t)(0.65 * NSEC_PER_SEC)),
-                                                                  dispatch_get_main_queue(),
-                                                                  ^{
-                                                                      [self markThreadAsRead:thread];
-                                                                  });
-                                                          }];
+            UIContextualAction *pinnedStateAction;
+            if ([self isThreadPinned:thread]) {
+                pinnedStateAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
+                                                                            title:nil
+                                                                          handler:^(UIContextualAction *action,
+                                                                              __kindof UIView *sourceView,
+                                                                              void (^completionHandler)(BOOL)) {
+                                                                              completionHandler(NO);
+                                                                              [self unpinThread:thread];
+                                                                          }];
 
-                readAction.backgroundColor = UIColor.ows_accentBlueColor;
-                readAction.accessibilityLabel = CommonStrings.readAction;
-                readAction.image = [self actionImageNamed:@"message-outline-24"
-                                                withTitle:readAction.accessibilityLabel];
-
-                return [UISwipeActionsConfiguration configurationWithActions:@[ readAction ]];
+                pinnedStateAction.backgroundColor = [UIColor colorWithRGBHex:0xff990a];
+                pinnedStateAction.accessibilityLabel = CommonStrings.unpinAction;
+                pinnedStateAction.image = [self actionImageNamed:@"unpin-solid-24"
+                                                       withTitle:pinnedStateAction.accessibilityLabel];
             } else {
-                UIContextualAction *unreadAction =
+                pinnedStateAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
+                                                                            title:nil
+                                                                          handler:^(UIContextualAction *action,
+                                                                              __kindof UIView *sourceView,
+                                                                              void (^completionHandler)(BOOL)) {
+                                                                              completionHandler(NO);
+                                                                              [self pinThread:thread];
+                                                                          }];
+
+                pinnedStateAction.backgroundColor = [UIColor colorWithRGBHex:0xff990a];
+                pinnedStateAction.accessibilityLabel = CommonStrings.pinAction;
+                pinnedStateAction.image = [self actionImageNamed:@"pin-solid-24"
+                                                       withTitle:pinnedStateAction.accessibilityLabel];
+            }
+
+            UIContextualAction *readStateAction;
+            if (model.hasUnreadMessages) {
+                readStateAction = [UIContextualAction
+                    contextualActionWithStyle:UIContextualActionStyleDestructive
+                                        title:nil
+                                      handler:^(UIContextualAction *action,
+                                          __kindof UIView *sourceView,
+                                          void (^completionHandler)(BOOL)) {
+                                          completionHandler(NO);
+                                          // We delay here so the animation can play out before we
+                                          // reload the cell
+                                          dispatch_after(
+                                              dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.65 * NSEC_PER_SEC)),
+                                              dispatch_get_main_queue(),
+                                              ^{ [self markThreadAsRead:thread]; });
+                                      }];
+
+                readStateAction.backgroundColor = UIColor.ows_accentBlueColor;
+                readStateAction.accessibilityLabel = CommonStrings.readAction;
+                readStateAction.image = [self actionImageNamed:@"read-solid-24"
+                                                     withTitle:readStateAction.accessibilityLabel];
+            } else {
+                readStateAction =
                     [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
                                                             title:nil
                                                           handler:^(UIContextualAction *action,
                                                               __kindof UIView *sourceView,
                                                               void (^completionHandler)(BOOL)) {
-                                                              completionHandler(YES);
+                                                              completionHandler(NO);
                                                               // We delay here so the animation can play out before we
                                                               // reload the cell
                                                               dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
@@ -1481,13 +1583,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                   });
                                                           }];
 
-                unreadAction.backgroundColor = UIColor.ows_accentBlueColor;
-                unreadAction.accessibilityLabel = CommonStrings.unreadAction;
-                unreadAction.image = [self actionImageNamed:@"message-unread-outline-24"
-                                                  withTitle:unreadAction.accessibilityLabel];
-
-                return [UISwipeActionsConfiguration configurationWithActions:@[ unreadAction ]];
+                readStateAction.backgroundColor = UIColor.ows_accentBlueColor;
+                readStateAction.accessibilityLabel = CommonStrings.unreadAction;
+                readStateAction.image = [self actionImageNamed:@"unread-solid-24"
+                                                     withTitle:readStateAction.accessibilityLabel];
             }
+
+            // The first action will be auto-performed for "very long swipes".
+            return [UISwipeActionsConfiguration configurationWithActions:@[ readStateAction, pinnedStateAction ]];
         }
     }
 }
@@ -1498,11 +1601,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // only displays title + image when the cell's height > 91. We want to always
     // show both.
     return [[[UIImage imageNamed:imageName] withTitle:title
-                                                 font:[UIFont ows_semiboldFontWithSize:12]
+                                                 font:[UIFont systemFontOfSize:13]
                                                 color:UIColor.ows_whiteColor
                                         maxTitleWidth:68
-                                   minimumScaleFactor:2 / 3
-                                              spacing:2] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                                   minimumScaleFactor:8 / 13
+                                              spacing:4] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1512,6 +1615,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionReminders: {
             return NO;
         }
+        case ConversationListViewControllerSectionPinnedConversations:
         case ConversationListViewControllerSectionConversations: {
             return YES;
         }
@@ -1649,6 +1753,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case OWSCellAccessibilityCustomActionTypeMarkUnread:
             [self markThreadAsUnread:action.thread];
             break;
+        case OWSCellAccessibilityCustomActionTypePin:
+            [self pinThread:action.thread];
+            break;
+        case OWSCellAccessibilityCustomActionTypeUnpin:
+            [self unpinThread:action.thread];
+            break;
     }
 }
 
@@ -1690,6 +1800,39 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     });
 }
 
+- (void)pinThread:(TSThread *)thread
+{
+    __block NSError *error;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [PinnedThreadManager pinThread:thread updateStorageService:YES transaction:transaction error:&error];
+    });
+
+    if (error == PinnedThreadManager.tooManyPinnedThreadsError) {
+        [OWSActionSheets showActionSheetWithTitle:
+                             NSLocalizedString(@"PINNED_CONVERSATION_LIMIT",
+                                 @"An explanation that you have already pinned the maximum number of conversations.")];
+    } else if (error) {
+        OWSFailDebug(@"Encountered unexpected error while pinning thread %@", error);
+    }
+}
+
+- (void)unpinThread:(TSThread *)thread
+{
+    __block NSError *error;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [PinnedThreadManager unpinThread:thread updateStorageService:YES transaction:transaction error:&error];
+    });
+
+    if (error) {
+        OWSFailDebug(@"Encountered unexpected error while unpinning thread %@", error);
+    }
+}
+
+- (BOOL)isThreadPinned:(TSThread *)thread
+{
+    return [PinnedThreadManager isThreadPinned:thread];
+}
+
 - (void)archiveThread:(TSThread *)thread
 {
     // If this conversation is currently selected, close it.
@@ -1721,6 +1864,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionReminders: {
             break;
         }
+        case ConversationListViewControllerSectionPinnedConversations:
         case ConversationListViewControllerSectionConversations: {
             TSThread *thread = [self threadForIndexPath:indexPath];
             [self presentThread:thread action:ConversationViewActionNone animated:YES];
@@ -1909,14 +2053,22 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 break;
             }
             case ThreadMappingChangeMove: {
-                // NOTE: we perform moves using a "delete" and "insert"
-                //       rather than a "move".  This ensures that moved
-                //       items are also reloaded.  This is how UICollectionView
-                //       performs reloads internally.
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                // NOTE: if we're moving within the same section, we perform
+                //       moves using a "delete" and "insert" rather than a "move".
+                //       This ensures that moved items are also reloaded. This is
+                //       how UICollectionView performs reloads internally. We can't
+                //       do this when changing sections, because it results in a weird
+                //       animation. This should generally be safe, because you'll only
+                //       move between sections when pinning / unpinning which doesn't
+                //       require the moved item to be reloaded.
+                if (rowChange.oldIndexPath.section != rowChange.newIndexPath.section) {
+                    [self.tableView moveRowAtIndexPath:rowChange.oldIndexPath toIndexPath:rowChange.newIndexPath];
+                } else {
+                    [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
+                                          withRowAnimation:UITableViewRowAnimationAutomatic];
+                    [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
+                                          withRowAnimation:UITableViewRowAnimationAutomatic];
+                }
                 break;
             }
             case ThreadMappingChangeUpdate: {
