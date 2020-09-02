@@ -9,24 +9,6 @@ import XCTest
 
 class NSDataImageTests: SSKBaseTestSwift {
 
-    func testIsAnimatedPngData_apng1() {
-        let filePath = "/Users/matthew/Downloads/sample-apng-1.png"
-        let fileUrl = URL(fileURLWithPath: filePath)
-        let data = try! Data(contentsOf: fileUrl)
-        let isApng: NSNumber? = (data as NSData).isAnimatedPngData()
-        XCTAssertNotNil(isApng)
-        XCTAssertTrue(isApng!.boolValue)
-    }
-
-    func testIsAnimatedPngData_apng2() {
-        let filePath = "/Users/matthew/Downloads/sample-apng-2.png"
-        let fileUrl = URL(fileURLWithPath: filePath)
-        let data = try! Data(contentsOf: fileUrl)
-        let isApng: NSNumber? = (data as NSData).isAnimatedPngData()
-        XCTAssertNotNil(isApng)
-        XCTAssertTrue(isApng!.boolValue)
-    }
-
     func testIsAnimatedPngData_png() {
         let image = UIImage(color: .red, size: CGSize(width: 1, height: 1))
         let data = image.pngData()!
