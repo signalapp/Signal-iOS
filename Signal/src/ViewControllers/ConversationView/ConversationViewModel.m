@@ -1350,7 +1350,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 break;
         }
 
-        uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
+        uint64_t viewItemTimestamp = viewItem.interaction.timestampForUI;
         OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
@@ -1417,7 +1417,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         NSAttributedString *_Nullable senderName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
-        NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
+        NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestampForUI];
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;

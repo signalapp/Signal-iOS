@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
                                     serverID:(uint64_t)serverID
+                             serverTimestamp:(uint64_t)serverTimestamp
                            attachmentHandler:(void (^)(
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -103,6 +104,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact
                                                         linkPreview:transcript.linkPreview];
+    
+    
+    if (transcript.thread.isGroupThread) {
+        TSGroupThread *thread = (TSGroupThread *)transcript.thread;
+        if (thread.isPublicChat) {
+            [outgoingMessage setServerTimestampToReceivedTimestamp:serverTimestamp];
+        }
+    }
     
     if (serverID != 0) {
         outgoingMessage.openGroupServerMessageID = serverID;

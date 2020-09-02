@@ -15,10 +15,10 @@ public final class SnodeAPI : NSObject {
     
     // MARK: Settings
     private static let maxRetryCount: UInt = 4
-    private static let minimumSnodePoolCount = 32
+    private static let minimumSnodePoolCount = 64
     private static let minimumSwarmSnodeCount = 2
     private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
-    private static let snodeFailureThreshold = 2
+    private static let snodeFailureThreshold = 1
     private static let targetSwarmSnodeCount = 2
 
     internal static var powDifficulty: UInt = 1
@@ -296,7 +296,7 @@ public final class SnodeAPI : NSObject {
 
     // MARK: Error Handling
     /// - Note: Should only be invoked from `LokiAPI.workQueue` to avoid race conditions.
-    internal static func handleError(withStatusCode statusCode: UInt, json: JSON?, forSnode snode: Snode, associatedWith publicKey: String) -> Error? {
+    internal static func handleError(withStatusCode statusCode: UInt, json: JSON?, forSnode snode: Snode, associatedWith publicKey: String? = nil) -> Error? {
         #if DEBUG
         assertOnQueue(SnodeAPI.workQueue)
         #endif
@@ -307,8 +307,11 @@ public final class SnodeAPI : NSObject {
             print("[Loki] Couldn't reach snode at: \(snode); setting failure count to \(newFailureCount).")
             if newFailureCount >= SnodeAPI.snodeFailureThreshold {
                 print("[Loki] Failure threshold reached for: \(snode); dropping it.")
-                SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+                if let publicKey = publicKey {
+                    SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+                }
                 SnodeAPI.dropSnodeFromSnodePool(snode)
+                print("[Loki] Snode pool count: \(snodePool.count).")
                 SnodeAPI.snodeFailureCount[snode] = 0
             }
         }
@@ -321,8 +324,12 @@ public final class SnodeAPI : NSObject {
             return SnodeAPI.SnodeAPIError.clockOutOfSync
         case 421:
             // The snode isn't associated with the given public key anymore
-            print("[Loki] Invalidating swarm for: \(publicKey).")
-            SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+            if let publicKey = publicKey {
+                print("[Loki] Invalidating swarm for: \(publicKey).")
+                SnodeAPI.dropSnodeFromSwarmIfNeeded(snode, publicKey: publicKey)
+            } else {
+                print("[Loki] Got a 421 without an associated public key.")
+            }
         case 432:
             // The proof of work difficulty is too low
             if let powDifficulty = json?["difficulty"] as? UInt {

@@ -174,6 +174,7 @@ public final class PublicChatPoller : NSObject {
                     envelope.setSource(senderPublicKey)
                     envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
                     envelope.setContent(try! content.build().serializedData())
+                    envelope.setServerTimestamp(message.serverTimestamp)
                     try! Storage.writeSync { transaction in
                         transaction.setObject(senderDisplayName, forKey: senderPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
