@@ -62,6 +62,15 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 #pragma mark -
 
+typedef struct {
+    BOOL isValid;
+    uint32_t canvasWidth;
+    uint32_t canvasHeight;
+    uint32_t frameCount;
+} WebpMetadata;
+
+#pragma mark -
+
 @interface ImageMetadata ()
 
 @property (nonatomic) BOOL isValid;
@@ -468,19 +477,55 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 - (CGSize)sizeForWebpData
 {
+    WebpMetadata webpMetadata = self.metadataForWebpData;
+    if (!webpMetadata.isValid) {
+        return CGSizeZero;
+    }
+    return CGSizeMake(webpMetadata.canvasWidth, webpMetadata.canvasHeight);
+}
+
+- (WebpMetadata)metadataForWebpData
+{
+    WebpMetadata webpMetadata;
+
     WebPData webPData = { 0 };
     webPData.bytes = self.bytes;
     webPData.size = self.length;
     WebPDemuxer *demuxer = WebPDemux(&webPData);
     if (!demuxer) {
-        return CGSizeZero;
+        webpMetadata.isValid = NO;
+        return webpMetadata;
     }
 
-    uint32_t canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
-    uint32_t canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    webpMetadata.canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
+    webpMetadata.canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    webpMetadata.frameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    webpMetadata.isValid
+        = (webpMetadata.canvasWidth > 0 && webpMetadata.canvasHeight > 0 && webpMetadata.frameCount > 0);
+
     WebPDemuxDelete(demuxer);
-    return CGSizeMake(canvasWidth, canvasHeight);
+
+    return webpMetadata;
 }
+
+- (nullable UIImage *)stillForWebpData
+{
+    if ([self ows_guessImageFormat] != ImageFormat_Webp) {
+        OWSFailDebug(@"Invalid webp image.");
+        return nil;
+    }
+
+    CGImageRef _Nullable cgImage = YYCGImageCreateWithWebPData((__bridge CFDataRef)self, NO, NO, NO, NO);
+    if (!cgImage) {
+        OWSFailDebug(@"Could not generate still for webp image.");
+        return nil;
+    }
+
+    UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
+    return uiImage;
+}
+
+// MARK: - Lottie
 
 - (CGSize)sizeForLottieStickerData
 {
@@ -506,23 +551,6 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         return CGSizeZero;
     }
     return CGSizeMake(width, height);
-}
-
-- (nullable UIImage *)stillForWebpData
-{
-    if ([self ows_guessImageFormat] != ImageFormat_Webp) {
-        OWSFailDebug(@"Invalid webp image.");
-        return nil;
-    }
-
-    CGImageRef _Nullable cgImage = YYCGImageCreateWithWebPData((__bridge CFDataRef)self, NO, NO, NO, NO);
-    if (!cgImage) {
-        OWSFailDebug(@"Could not generate still for webp image.");
-        return nil;
-    }
-
-    UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
-    return uiImage;
 }
 
 // MARK: - Stickers
@@ -616,12 +644,22 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
     BOOL isAnimated;
     switch (imageFormat) {
         case ImageFormat_Gif:
+            // TODO: We currently treat all GIFs as animated.
+            // We could reflect the actual image content.
         case ImageFormat_LottieSticker:
             isAnimated = YES;
             break;
-        case ImageFormat_Webp:
-            isAnimated = SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp;
+        case ImageFormat_Webp: {
+            WebpMetadata webpMetadata = self.metadataForWebpData;
+            if (!webpMetadata.isValid) {
+                return ImageMetadata.invalid;
+            }
+            isAnimated = webpMetadata.frameCount > 1;
+            if (isAnimated && !SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp) {
+                return ImageMetadata.invalid;
+            }
             break;
+        }
         case ImageFormat_Png: {
             NSNumber *_Nullable isAnimatedPng = [self isAnimatedPngData];
             if (isAnimatedPng == nil) {

@@ -189,7 +189,7 @@ public class FeatureFlags: BaseFlags {
     public static let supportAnimatedStickers_Apng = build.includes(.qa)
 
     @objc
-    public static let supportAnimatedStickers_AnimatedWebp = build.includes(.dev)
+    public static let supportAnimatedStickers_AnimatedWebp = build.includes(.qa)
 
     private static let _ignoreCDSUndiscoverableUsersInMessageSends = AtomicBool(true)
     @objc
