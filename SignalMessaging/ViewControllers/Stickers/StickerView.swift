@@ -4,49 +4,82 @@
 
 import Foundation
 import YYImage
+import Lottie
 
 @objc
-public class StickerView: YYAnimatedImageView {
+public class StickerView: NSObject {
 
-    private let stickerInfo: StickerInfo
+    // Never instantiate this class.
+    private override init() {}
 
-    // MARK: - Initializers
-
-    @available(*, unavailable, message:"use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+    static func stickerView(forStickerInfo stickerInfo: StickerInfo,
+                            dataSource: StickerPackDataSource,
+                            size: CGFloat? = nil) -> UIView? {
+        guard let stickerMetadata = dataSource.metadata(forSticker: stickerInfo) else {
+            Logger.warn("Missing sticker metadata.")
+            return nil
+        }
+        return stickerView(stickerInfo: stickerInfo, stickerMetadata: stickerMetadata, size: size)
     }
 
-    public required init(stickerInfo: StickerInfo, size: CGFloat? = nil) {
-        self.stickerInfo = stickerInfo
+    static func stickerView(forInstalledStickerInfo stickerInfo: StickerInfo,
+                            size: CGFloat? = nil) -> UIView? {
+        let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
+        guard let stickerMetadata = metadata else {
+            Logger.warn("Missing sticker metadata.")
+            return nil
+        }
+        return stickerView(stickerInfo: stickerInfo, stickerMetadata: stickerMetadata, size: size)
+    }
 
-        super.init(frame: .zero)
+    private static func stickerView(stickerInfo: StickerInfo,
+                                    stickerMetadata: StickerMetadata,
+                                    size: CGFloat? = nil) -> UIView? {
 
+        let stickerDataUrl = stickerMetadata.stickerDataUrl
+
+        guard let stickerView = self.stickerView(stickerInfo: stickerInfo,
+                                                 stickerType: stickerMetadata.stickerType,
+                                                 stickerDataUrl: stickerDataUrl) else {
+                                            owsFailDebug("Could not load sticker for display.")
+                                            return nil
+        }
         if let size = size {
-            autoSetDimensions(to: CGSize(square: size))
+            stickerView.autoSetDimensions(to: CGSize(square: size))
         }
-
-        loadSticker()
-        contentMode = .scaleAspectFit
+        return stickerView
     }
 
-    // MARK: -
+    static func stickerView(stickerInfo: StickerInfo,
+                            stickerType: StickerType,
+                            stickerDataUrl: URL) -> UIView? {
 
-    private func loadSticker() {
-        guard let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) else {
-            Logger.warn("Sticker not yet installed.")
-            return
-        }
-        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
+        guard NSData.ows_isValidImage(at: stickerDataUrl, mimeType: stickerType.contentType) else {
             owsFailDebug("Invalid sticker.")
-            return
-        }
-        // TODO: Asset to show while loading a sticker - if any.
-        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
-            owsFailDebug("Sticker could not be parsed.")
-            return
+            return nil
         }
 
-        image = stickerImage
+        let stickerView: UIView
+        switch stickerType {
+        case .webp, .apng:
+            guard let stickerImage = YYImage(contentsOfFile: stickerDataUrl.path) else {
+                owsFailDebug("Sticker could not be parsed.")
+                return nil
+            }
+            let yyView = YYAnimatedImageView()
+            yyView.alwaysInfiniteLoop = true
+            yyView.contentMode = .scaleAspectFit
+            yyView.image = stickerImage
+            stickerView = yyView
+        case .signalLottie:
+            let lottieView = Lottie.AnimationView(filePath: stickerDataUrl.path)
+            lottieView.contentMode = .scaleAspectFit
+            lottieView.animationSpeed = 1
+            lottieView.loopMode = .loop
+            lottieView.backgroundBehavior = .pause
+            lottieView.play()
+            stickerView = lottieView
+        }
+        return stickerView
     }
 }

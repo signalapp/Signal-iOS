@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [scrollView autoPinEdgesToSuperviewEdges];
 
-    if (self.isAnimated) {
+    if (self.attachmentStream.shouldBeRenderedByYY) {
         if (self.attachmentStream.isValidImage) {
             YYImage *animatedGif = [YYImage imageWithContentsOfFile:self.attachmentStream.originalFilePath];
             YYAnimatedImageView *animatedView = [YYAnimatedImageView new];

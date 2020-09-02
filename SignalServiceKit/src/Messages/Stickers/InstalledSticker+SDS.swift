@@ -30,6 +30,7 @@ public struct InstalledStickerRecord: SDSRecord {
     // Properties
     public let emojiString: String?
     public let info: Data
+    public let contentType: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -37,6 +38,7 @@ public struct InstalledStickerRecord: SDSRecord {
         case uniqueId
         case emojiString
         case info
+        case contentType
     }
 
     public static func columnName(_ column: InstalledStickerRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -65,6 +67,7 @@ public extension InstalledStickerRecord {
         uniqueId = row[2]
         emojiString = row[3]
         info = row[4]
+        contentType = row[5]
     }
 }
 
@@ -96,12 +99,14 @@ extension InstalledSticker {
         case .installedSticker:
 
             let uniqueId: String = record.uniqueId
+            let contentType: String? = record.contentType
             let emojiString: String? = record.emojiString
             let infoSerialized: Data = record.info
             let info: StickerInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
 
             return InstalledSticker(grdbId: recordId,
                                     uniqueId: uniqueId,
+                                    contentType: contentType,
                                     emojiString: emojiString,
                                     info: info)
 
@@ -154,6 +159,7 @@ extension InstalledSticker: DeepCopyable {
             let modelToCopy = self
             assert(type(of: modelToCopy) == InstalledSticker.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let contentType: String? = modelToCopy.contentType
             let emojiString: String? = modelToCopy.emojiString
             // NOTE: If this generates build errors, you made need to
             // implement DeepCopyable for this type in DeepCopy.swift.
@@ -161,6 +167,7 @@ extension InstalledSticker: DeepCopyable {
 
             return InstalledSticker(grdbId: id,
                                     uniqueId: uniqueId,
+                                    contentType: contentType,
                                     emojiString: emojiString,
                                     info: info)
         }
@@ -180,6 +187,7 @@ extension InstalledStickerSerializer {
     // Properties
     static let emojiStringColumn = SDSColumnMetadata(columnName: "emojiString", columnType: .unicodeString, isOptional: true)
     static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob)
+    static let contentTypeColumn = SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -190,7 +198,8 @@ extension InstalledStickerSerializer {
         recordTypeColumn,
         uniqueIdColumn,
         emojiStringColumn,
-        infoColumn
+        infoColumn,
+        contentTypeColumn
         ])
 }
 
@@ -622,8 +631,9 @@ class InstalledStickerSerializer: SDSSerializer {
         // Properties
         let emojiString: String? = model.emojiString
         let info: Data = requiredArchive(model.info)
+        let contentType: String? = model.contentType
 
-        return InstalledStickerRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emojiString: emojiString, info: info)
+        return InstalledStickerRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emojiString: emojiString, info: info, contentType: contentType)
     }
 }
 

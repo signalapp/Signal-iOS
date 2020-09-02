@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-typedef NS_ENUM(NSInteger, ImageFormat) {
+typedef NS_CLOSED_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Unknown,
     ImageFormat_Png,
     ImageFormat_Gif,
@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Webp,
     ImageFormat_Heic,
     ImageFormat_Heif,
+    ImageFormat_LottieSticker,
 };
 
 NSString *NSStringForImageFormat(ImageFormat value);
@@ -31,6 +32,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value);
 @property (nonatomic, readonly) ImageFormat imageFormat;
 @property (nonatomic, readonly) CGSize pixelSize;
 @property (nonatomic, readonly) BOOL hasAlpha;
+@property (nonatomic, readonly) BOOL isAnimated;
 
 @property (nonatomic, readonly, nullable) NSString *mimeType;
 

@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalServiceKit
-import YYImage
 
 @objc
 public class StickerPackViewController: OWSViewController {
@@ -212,7 +211,7 @@ public class StickerPackViewController: OWSViewController {
     }
 
     private let dismissButton = UIButton()
-    private let coverView = YYAnimatedImageView()
+    private let coverView = UIView()
     private let titleLabel = UILabel()
     private let authorLabel = UILabel()
     private let defaultPackIconView = UIImageView()
@@ -280,25 +279,16 @@ public class StickerPackViewController: OWSViewController {
     }
 
     private func updateCover() {
+        for subview in coverView.subviews {
+            subview.removeFromSuperview()
+        }
         guard let stickerPack = dataSource.getStickerPack() else { return }
-
         let coverInfo = stickerPack.coverInfo
-        guard let filePath = dataSource.filePath(forSticker: coverInfo) else {
-            // This can happen if the pack hasn't been saved yet, e.g.
-            // this view was opened from a sticker pack URL or share.
-            Logger.warn("Missing sticker data file path.")
+        guard let stickerView = StickerView.stickerView(forStickerInfo: coverInfo, dataSource: dataSource) else {
             return
         }
-        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
-            owsFailDebug("Invalid sticker.")
-            return
-        }
-        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
-            owsFailDebug("Sticker could not be parsed.")
-            return
-        }
-
-        coverView.image = stickerImage
+        coverView.addSubview(stickerView)
+        stickerView.autoPinEdgesToSuperviewEdges()
     }
 
     private func updateInsets() {

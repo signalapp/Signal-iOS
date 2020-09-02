@@ -172,6 +172,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)activityViewController:(UIActivityViewController *)activityViewController
                   itemForActivityType:(nullable UIActivityType)activityType
 {
+    if ([self.contentType isEqualToString:OWSMimeTypeImageWebp]) {
+        return self.originalImage;
+    }
+    if (self.isAnimated) {
+        return self.originalMediaURL;
+    }
     return self.isImage ? self.originalImage : self.originalMediaURL;
 }
 

@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalAttachment;
 @class SignalServiceAddress;
 @class StickerInfo;
+@class StickerMetadata;
 @class TSContactThread;
 @class TSGroupThread;
 @class TSInteraction;
@@ -50,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo thread:(TSThread *)thread;
 
-+ (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo
++ (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerMetadata *)stickerMetadata
                                                 stickerData:(NSData *)stickerData
                                                      thread:(TSThread *)thread;
 

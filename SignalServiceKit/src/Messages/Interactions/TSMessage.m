@@ -540,8 +540,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (self.contactShare) {
         return [[@"👤" stringByAppendingString:@" "] stringByAppendingString:self.contactShare.name.displayName];
     } else if (self.messageSticker) {
-        return NSLocalizedString(@"STICKER_MESSAGE_PREVIEW",
+        NSString *stickerDescription = NSLocalizedString(@"STICKER_MESSAGE_PREVIEW",
             @"Preview text shown in notifications and conversation list for sticker messages.");
+        NSString *_Nullable stickerEmoji = [StickerManager firstEmojiInEmojiString:self.messageSticker.emoji];
+        if (stickerEmoji.length > 0) {
+            return [[stickerEmoji stringByAppendingString:@" "] stringByAppendingString:stickerDescription];
+        } else {
+            return stickerDescription;
+        }
     } else {
         // This can happen when initially saving outgoing messages
         // with camera first capture over the conversation list.

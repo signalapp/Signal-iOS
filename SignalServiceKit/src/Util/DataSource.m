@@ -21,8 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *fileExtension;
 @property (atomic) BOOL isConsumed;
 
-// This property is lazily-populated
+// These properties is lazily-populated.
 @property (nonatomic, nullable) NSURL *cachedFileUrl;
+@property (nonatomic, nullable) ImageMetadata *cachedImageMetadata;
 
 @end
 
@@ -211,6 +212,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isValidVideo
 {
     OWSAssertDebug(!self.isConsumed);
+    if (![MIMETypeUtil isSupportedVideoFile:self.dataUrl.path]) {
+        return NO;
+    }
     OWSFailDebug(@"Are we calling this anywhere? It seems quite inefficient.");
     return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
 }
@@ -232,6 +236,20 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.data ows_hasStickerLikeProperties];
 }
 
+- (ImageMetadata *)imageMetadata
+{
+    OWSAssertDebug(!self.isConsumed);
+
+    @synchronized(self) {
+        if (self.cachedImageMetadata != nil) {
+            return self.cachedImageMetadata;
+        }
+        ImageMetadata *imageMetadata = [self.data imageMetadataWithPath:nil mimeType:self.mimeType];
+        self.cachedImageMetadata = imageMetadata;
+        return imageMetadata;
+    }
+}
+
 @end
 
 #pragma mark -
@@ -242,8 +260,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL shouldDeleteOnDeallocation;
 @property (atomic) BOOL isConsumed;
 
-// This property is lazily-populated
+// These properties is lazily-populated.
 @property (nonatomic) NSData *cachedData;
+@property (nonatomic, nullable) ImageMetadata *cachedImageMetadata;
 
 @end
 
@@ -399,6 +418,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isValidVideo
 {
     OWSAssertDebug(!self.isConsumed);
+    if (self.mimeType != nil) {
+        if (![MIMETypeUtil isSupportedVideoMIMEType:self.mimeType]) {
+            return NO;
+        }
+    } else if (![MIMETypeUtil isSupportedVideoFile:self.dataUrl.path]) {
+        return NO;
+    }
     return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
 }
 
@@ -406,6 +432,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!self.isConsumed);
     return [NSData ows_hasStickerLikePropertiesWithPath:self.dataUrl.path];
+}
+
+- (ImageMetadata *)imageMetadata
+{
+    OWSAssertDebug(!self.isConsumed);
+
+    @synchronized(self) {
+        if (self.cachedImageMetadata != nil) {
+            return self.cachedImageMetadata;
+        }
+        ImageMetadata *imageMetadata = [NSData imageMetadataWithPath:self.dataUrl.path mimeType:self.mimeType];
+        self.cachedImageMetadata = imageMetadata;
+        return imageMetadata;
+    }
 }
 
 - (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error

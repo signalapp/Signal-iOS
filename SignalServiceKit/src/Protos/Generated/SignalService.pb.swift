@@ -1585,6 +1585,15 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `data`. Subsequent reads from it will return its default value.
     mutating func clearData() {self._data = nil}
 
+    var emoji: String {
+      get {return _emoji ?? String()}
+      set {_emoji = newValue}
+    }
+    /// Returns true if `emoji` has been explicitly set.
+    var hasEmoji: Bool {return self._emoji != nil}
+    /// Clears the value of `emoji`. Subsequent reads from it will return its default value.
+    mutating func clearEmoji() {self._emoji = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1593,6 +1602,7 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _packKey: Data?
     fileprivate var _stickerID: UInt32?
     fileprivate var _data: SignalServiceProtos_AttachmentPointer?
+    fileprivate var _emoji: String?
   }
 
   struct Reaction {
@@ -3441,12 +3451,22 @@ struct SignalServiceProtos_Pack {
     /// Clears the value of `emoji`. Subsequent reads from it will return its default value.
     mutating func clearEmoji() {self._emoji = nil}
 
+    var contentType: String {
+      get {return _contentType ?? String()}
+      set {_contentType = newValue}
+    }
+    /// Returns true if `contentType` has been explicitly set.
+    var hasContentType: Bool {return self._contentType != nil}
+    /// Clears the value of `contentType`. Subsequent reads from it will return its default value.
+    mutating func clearContentType() {self._contentType = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _id: UInt32?
     fileprivate var _emoji: String?
+    fileprivate var _contentType: String?
   }
 
   init() {}
@@ -4672,7 +4692,8 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
     1: .same(proto: "packId"),
     2: .same(proto: "packKey"),
     3: .same(proto: "stickerId"),
-    4: .same(proto: "data")
+    4: .same(proto: "data"),
+    5: .same(proto: "emoji")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4682,6 +4703,7 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
       case 2: try decoder.decodeSingularBytesField(value: &self._packKey)
       case 3: try decoder.decodeSingularUInt32Field(value: &self._stickerID)
       case 4: try decoder.decodeSingularMessageField(value: &self._data)
+      case 5: try decoder.decodeSingularStringField(value: &self._emoji)
       default: break
       }
     }
@@ -4700,6 +4722,9 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
     if let v = self._data {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }
+    if let v = self._emoji {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4708,6 +4733,7 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
     if lhs._packKey != rhs._packKey {return false}
     if lhs._stickerID != rhs._stickerID {return false}
     if lhs._data != rhs._data {return false}
+    if lhs._emoji != rhs._emoji {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6219,7 +6245,8 @@ extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf
   static let protoMessageName: String = SignalServiceProtos_Pack.protoMessageName + ".Sticker"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "emoji")
+    2: .same(proto: "emoji"),
+    3: .same(proto: "contentType")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6227,6 +6254,7 @@ extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt32Field(value: &self._id)
       case 2: try decoder.decodeSingularStringField(value: &self._emoji)
+      case 3: try decoder.decodeSingularStringField(value: &self._contentType)
       default: break
       }
     }
@@ -6239,12 +6267,16 @@ extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf
     if let v = self._emoji {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
+    if let v = self._contentType {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_Pack.Sticker, rhs: SignalServiceProtos_Pack.Sticker) -> Bool {
     if lhs._id != rhs._id {return false}
     if lhs._emoji != rhs._emoji {return false}
+    if lhs._contentType != rhs._contentType {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

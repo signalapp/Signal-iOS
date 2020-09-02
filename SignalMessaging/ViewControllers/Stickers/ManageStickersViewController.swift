@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalServiceKit
-import YYImage
 
 private class StickerPackActionButton: UIView {
 
@@ -407,24 +406,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
     private func imageView(forStickerInfo stickerInfo: StickerInfo,
                            dataSource: StickerPackDataSource) -> UIView? {
-
-        guard let filePath = dataSource.filePath(forSticker: stickerInfo) else {
-            owsFailDebug("Missing sticker data file path.")
-            return nil
-        }
-        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
-            owsFailDebug("Invalid sticker.")
-            return nil
-        }
-        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
-            owsFailDebug("Sticker could not be parsed.")
-            return nil
-        }
-
-        let stickerView = YYAnimatedImageView()
-        stickerView.contentMode = .scaleAspectFit
-        stickerView.image = stickerImage
-        return stickerView
+        StickerView.stickerView(forStickerInfo: stickerInfo, dataSource: dataSource)
     }
 
     private func buildEmptySectionItem(labelText: String) -> OWSTableItem {

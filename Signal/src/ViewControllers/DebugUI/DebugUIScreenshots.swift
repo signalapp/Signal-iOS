@@ -886,13 +886,16 @@ public extension DebugUIScreenshots {
             owsFailDebug("Couldn't find sticker info in pack.")
             return nil
         }
-        guard let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) else {
-            owsFailDebug("Couldn't find sticker file path.")
+        guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo) else {
+            owsFailDebug("Couldn't find sticker metadata.")
             return nil
         }
         do {
-            let stickerData = try Data(contentsOf: URL(fileURLWithPath: filePath))
-            let stickerDraft = MessageStickerDraft(info: stickerInfo, stickerData: stickerData)
+            let stickerData = try Data(contentsOf: stickerMetadata.stickerDataUrl)
+            let stickerDraft = MessageStickerDraft(info: stickerInfo,
+                                                   stickerData: stickerData,
+                                                   stickerType: stickerMetadata.stickerType,
+                                                   emoji: stickerMetadata.firstEmoji)
             let messageSticker = try MessageSticker.buildValidatedMessageSticker(fromDraft: stickerDraft,
                                                                                  transaction: transaction)
             return messageSticker

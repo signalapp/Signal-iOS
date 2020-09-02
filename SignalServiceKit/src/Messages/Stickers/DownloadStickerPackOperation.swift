@@ -116,7 +116,8 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
         }
         let stickerId = proto.id
         let emojiString = parseOptionalString(proto.emoji) ?? ""
-        return StickerPackItem(stickerId: stickerId, emojiString: emojiString)
+        let contentType = parseOptionalString(proto.contentType) ?? ""
+        return StickerPackItem(stickerId: stickerId, emojiString: emojiString, contentType: contentType)
     }
 
     override public func didFail(error: Error) {

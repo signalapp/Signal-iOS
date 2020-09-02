@@ -128,6 +128,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
 @property (nonatomic, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, nullable) TSAttachmentStream *stickerAttachment;
+@property (nonatomic, nullable) StickerMetadata *stickerMetadata;
 @property (nonatomic) BOOL isFailedSticker;
 @property (nonatomic) ViewOnceMessageState viewOnceMessageState;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
@@ -225,6 +226,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     self.quotedReply = nil;
     self.stickerInfo = nil;
     self.stickerAttachment = nil;
+    self.stickerMetadata = nil;
     self.isFailedSticker = NO;
     self.viewOnceMessageState = ViewOnceMessageState_Unknown;
     self.contactShare = nil;
@@ -467,9 +469,20 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 - (void)setStickerAttachment:(nullable TSAttachmentStream *)stickerAttachment
 {
-    BOOL didChange = ((_stickerAttachment != nil) != (stickerAttachment != nil));
+    BOOL didChange = ![NSObject isNullableObject:_stickerAttachment.uniqueId equalTo:stickerAttachment.uniqueId];
 
     _stickerAttachment = stickerAttachment;
+
+    if (didChange) {
+        [self clearCachedLayoutState];
+    }
+}
+
+- (void)setStickerMetadata:(nullable StickerMetadata *)stickerMetadata
+{
+    BOOL didChange = ![NSObject isNullableObject:_stickerMetadata equalTo:stickerMetadata];
+
+    _stickerMetadata = stickerMetadata;
 
     if (didChange) {
         [self clearCachedLayoutState];
@@ -966,6 +979,13 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             TSAttachmentStream *stickerAttachmentStream = (TSAttachmentStream *)stickerAttachment;
             CGSize mediaSize = [stickerAttachmentStream imageSize];
             if (stickerAttachmentStream.isValidImage && mediaSize.width > 0 && mediaSize.height > 0) {
+                StickerType stickerType =
+                    [StickerManager stickerTypeForContentType:stickerAttachmentStream.contentType];
+                NSURL *stickerDataUrl = [NSURL fileURLWithPath:stickerAttachmentStream.originalFilePath];
+                self.stickerMetadata = [[StickerMetadata alloc] initWithStickerInfo:message.messageSticker.info
+                                                                        stickerType:stickerType
+                                                                     stickerDataUrl:stickerDataUrl
+                                                                        emojiString:message.messageSticker.emoji];
                 self.stickerAttachment = stickerAttachmentStream;
             }
         } else if ([stickerAttachment isKindOfClass:[TSAttachmentPointer class]]) {

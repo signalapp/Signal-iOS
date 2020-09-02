@@ -46,6 +46,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 @property (atomic, nullable) NSNumber *isValidImageCached;
 @property (atomic, nullable) NSNumber *isValidVideoCached;
+@property (atomic, nullable) NSNumber *isAnimatedCached;
 
 @end
 
@@ -162,6 +163,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
                creationTimestamp:(NSDate *)creationTimestamp
                           digest:(nullable NSData *)digest
+                isAnimatedCached:(nullable NSNumber *)isAnimatedCached
                       isUploaded:(BOOL)isUploaded
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
@@ -191,6 +193,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     _cachedImageWidth = cachedImageWidth;
     _creationTimestamp = creationTimestamp;
     _digest = digest;
+    _isAnimatedCached = isAnimatedCached;
     _isUploaded = isUploaded;
     _isValidImageCached = isValidImageCached;
     _isValidVideoCached = isValidVideoCached;
@@ -550,6 +553,57 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     return result;
+}
+
+- (BOOL)isAnimated
+{
+    BOOL result;
+    BOOL didUpdateCache = NO;
+    @synchronized(self) {
+        if (!self.isAnimatedCached) {
+            OWSLogVerbose(@"Updating isAnimatedCached.");
+            self.isAnimatedCached = @([self hasAnimatedImageContent]);
+            didUpdateCache = YES;
+        }
+        result = self.isAnimatedCached.boolValue;
+    }
+
+    if (didUpdateCache && self.canAsyncUpdate) {
+        [self applyChangeAsyncToLatestCopyWithChangeBlock:^(
+            TSAttachmentStream *latestInstance) { latestInstance.isAnimatedCached = @(result); }];
+    }
+
+    return result;
+}
+
+- (BOOL)shouldBeRenderedByYY
+{
+    if ([self.contentType isEqualToString:OWSMimeTypeImageWebp] ||
+        [self.contentType isEqualToString:OWSMimeTypeImageGif]) {
+        return YES;
+    }
+    return self.isAnimated;
+}
+
+- (BOOL)hasAnimatedImageContent
+{
+    if ([self.contentType isEqualToString:OWSMimeTypeImageGif]) {
+        return YES;
+    }
+    if (![self.contentType isEqualToString:OWSMimeTypeImageWebp]
+        && ![self.contentType isEqualToString:OWSMimeTypeImagePng]) {
+        return NO;
+    }
+    NSString *_Nullable filePath = self.originalFilePath;
+    if (filePath == nil) {
+        OWSFailDebug(@"Missing filePath.");
+        return NO;
+    }
+    ImageMetadata *imageMetadata = [NSData imageMetadataWithPath:filePath mimeType:self.contentType];
+    if (!imageMetadata.isValid) {
+        return NO;
+    }
+    return imageMetadata.isAnimated;
 }
 
 #pragma mark -

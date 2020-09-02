@@ -145,6 +145,7 @@ CREATE
                 ON CONFLICT FAIL
             ,"emojiString" TEXT
             ,"info" BLOB NOT NULL
+            ,"contentType" TEXT
         )
 ;
 
@@ -205,6 +206,7 @@ CREATE
             ,"uploadTimestamp" INTEGER NOT NULL DEFAULT 0
             ,"cdnKey" TEXT NOT NULL DEFAULT ''
             ,"cdnNumber" INTEGER NOT NULL DEFAULT 0
+            ,"isAnimatedCached" INTEGER
         )
 ;
 

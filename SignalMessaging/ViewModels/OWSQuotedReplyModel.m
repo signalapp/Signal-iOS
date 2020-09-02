@@ -186,19 +186,30 @@ NS_ASSUME_NONNULL_BEGIN
                        thumbnailDownloadFailed:NO];
     }
 
-    if (conversationItem.stickerInfo || conversationItem.stickerAttachment) {
-        if (!conversationItem.stickerInfo || !conversationItem.stickerAttachment) {
+    if (conversationItem.stickerInfo || conversationItem.stickerAttachment || conversationItem.stickerMetadata) {
+        if (!conversationItem.stickerInfo || !conversationItem.stickerAttachment || !conversationItem.stickerMetadata) {
             OWSFailDebug(@"Incomplete sticker message.");
             return nil;
         }
 
         TSAttachmentStream *quotedAttachment = conversationItem.stickerAttachment;
-        NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:quotedAttachment.originalFilePath];
+        StickerMetadata *stickerMetadata = conversationItem.stickerMetadata;
+        NSData *_Nullable stickerData = [NSData dataWithContentsOfURL:stickerMetadata.stickerDataUrl];
         if (!stickerData) {
             OWSFailDebug(@"Couldn't load sticker data.");
             return nil;
         }
-        UIImage *_Nullable thumbnailImage = [stickerData stillForWebpData];
+        UIImage *_Nullable thumbnailImage;
+        switch (stickerMetadata.stickerType) {
+            case StickerTypeWebp:
+                thumbnailImage = [stickerData stillForWebpData];
+                break;
+            case StickerTypeApng:
+                thumbnailImage = [UIImage imageWithData:stickerData];
+                break;
+            case StickerTypeSignalLottie:
+                break;
+        }
         if (!thumbnailImage) {
             OWSFailDebug(@"Couldn't generate thumbnail for sticker.");
             return nil;
@@ -210,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     bodyRanges:nil
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:thumbnailImage
-                                   contentType:quotedAttachment.contentType
+                                   contentType:stickerMetadata.contentType
                                 sourceFilename:quotedAttachment.sourceFilename
                               attachmentStream:quotedAttachment
                     thumbnailAttachmentPointer:nil

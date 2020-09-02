@@ -130,7 +130,7 @@ public class ConversationMediaView: UIView {
             configure(forError: .failed)
             return
         }
-        if attachmentStream.isAnimated {
+        if attachmentStream.shouldBeRenderedByYY {
             configureForAnimatedImage(attachmentStream: attachmentStream)
         } else if attachmentStream.isImage {
             configureForStillImage(attachmentStream: attachmentStream)

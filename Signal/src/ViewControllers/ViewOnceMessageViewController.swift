@@ -129,7 +129,7 @@ class ViewOnceMessageViewController: OWSViewController {
             }
 
             let viewOnceType: Content.ContentType
-            if attachmentStream.isAnimated || contentType == OWSMimeTypeImageWebp {
+            if attachmentStream.shouldBeRenderedByYY {
                 viewOnceType = .animatedImage
             } else if attachmentStream.isImage {
                 viewOnceType = .stillImage

@@ -7,6 +7,12 @@ import PromiseKit
 
 class DownloadStickerOperation: CDNDownloadOperation {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     // MARK: - Cache
 
     private static let cache: NSCache<NSString, NSData> = {
@@ -52,21 +58,15 @@ class DownloadStickerOperation: CDNDownloadOperation {
     }
 
     override public func run() {
-        if let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) {
-            do {
-                let stickerData = try Data(contentsOf: URL(fileURLWithPath: filePath))
-                Logger.verbose("Skipping redundant operation: \(stickerInfo).")
-                success(stickerData)
-                self.reportSuccess()
-                return
-            } catch let error as NSError {
-                owsFailDebug("Could not load installed sticker data: \(error)")
-                // Fall through and proceed with download.
-            }
-        }
-
         if let stickerData = DownloadStickerOperation.cachedData(for: stickerInfo) {
             Logger.verbose("Using cached value: \(stickerInfo).")
+            success(stickerData)
+            self.reportSuccess()
+            return
+        }
+
+        if let stickerData = loadInstalledStickerData() {
+            Logger.verbose("Skipping redundant operation: \(stickerInfo).")
             success(stickerData)
             self.reportSuccess()
             return
@@ -105,6 +105,19 @@ class DownloadStickerOperation: CDNDownloadOperation {
                 return
             }
             return self.reportError(withUndefinedRetry: error)
+        }
+    }
+
+    private func loadInstalledStickerData() -> Data? {
+        guard let stickerDataUrl = StickerManager.stickerDataUrlWithSneakyTransaction(stickerInfo: stickerInfo,
+                                                                                      verifyExists: true) else {
+                                                                                        return nil
+        }
+        do {
+            return try Data(contentsOf: stickerDataUrl)
+        } catch let error as NSError {
+            owsFailDebug("Could not load installed sticker data: \(error)")
+            return nil
         }
     }
 

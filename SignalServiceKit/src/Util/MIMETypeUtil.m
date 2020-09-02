@@ -12,6 +12,7 @@
 #import <CoreServices/CoreServices.h>
 
 #endif
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,11 +33,16 @@ NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 NSString *const OWSMimeTypeProtobuf = @"application/x-protobuf";
 NSString *const OWSMimeTypeJson = @"application/json";
+// TODO: We're still finalizing the MIME type.
+NSString *const OWSMimeTypeLottieSticker = @"text/x-signal-sticker-lottie";
+NSString *const OWSMimeTypeImageApng1 = @"image/apng";
+NSString *const OWSMimeTypeImageApng2 = @"image/vnd.mozilla.apng";
 
 NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
 NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
 NSString *const kSyncMessageFileExtension = @"bin";
+NSString *const kLottieStickerFileExtension = @"lottiesticker";
 
 @implementation MIMETypeUtil
 
@@ -95,9 +101,9 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/x-tiff" : @"tif",
             @"image/bmp" : @"bmp",
             @"image/x-windows-bmp" : @"bmp",
-            OWSMimeTypeImageWebp : @"webp",
             OWSMimeTypeImageHeic : @"heic",
             OWSMimeTypeImageHeif : @"heif",
+            OWSMimeTypeImageWebp : @"webp",
         };
     });
     return result;
@@ -107,9 +113,20 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        NSMutableDictionary<NSString *, NSString *> *value = [@ {
             OWSMimeTypeImageGif : @"gif",
-        };
+        } mutableCopy];
+        if (SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp) {
+            value[OWSMimeTypeImageWebp] = @"webp";
+        }
+        if (SSKFeatureFlags.supportAnimatedStickers_Lottie) {
+            value[OWSMimeTypeLottieSticker] = kLottieStickerFileExtension;
+        }
+        if (SSKFeatureFlags.supportAnimatedStickers_Apng) {
+            value[OWSMimeTypeImageApng1] = @"png";
+            value[OWSMimeTypeImageApng2] = @"png";
+        }
+        result = [value copy];
     });
     return result;
 }
@@ -200,9 +217,13 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        NSMutableDictionary<NSString *, NSString *> *value = [@ {
             @"gif" : OWSMimeTypeImageGif,
-        };
+        } mutableCopy];
+        if (SSKFeatureFlags.supportAnimatedStickers_Lottie) {
+            value[kLottieStickerFileExtension] = OWSMimeTypeLottieSticker;
+        }
+        result = [value copy];
     });
     return result;
 }
@@ -270,7 +291,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
     return [[self supportedBinaryDataMIMETypesToExtensionTypes] objectForKey:supportedMIMEType];
 }
 
-#pragma mark full attachment utilities
+#pragma mark - Full attachment utilities
+
 + (BOOL)isAnimated:(NSString *)contentType {
     return [MIMETypeUtil isSupportedAnimatedMIMEType:contentType];
 }
@@ -557,6 +579,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = @ {
+            OWSMimeTypeImageApng1 : @"png",
+            OWSMimeTypeImageApng2 : @"png",
             @"application/acad" : @"dwg",
             @"application/andrew-inset" : @"ez",
             @"application/applixware" : @"aw",
@@ -1633,6 +1657,9 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = @ {
+            // Custom MIME types.
+            kLottieStickerFileExtension : OWSMimeTypeLottieSticker,
+            // Common MIME types.
             @"123" : @"application/vnd.lotus-1-2-3",
             @"3dml" : @"text/vnd.in3d.3dml",
             @"3ds" : @"image/x-3ds",

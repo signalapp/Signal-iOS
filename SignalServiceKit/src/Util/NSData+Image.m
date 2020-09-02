@@ -30,9 +30,12 @@ NSString *NSStringForImageFormat(ImageFormat value)
             return @"ImageFormat_Bmp";
         case ImageFormat_Webp:
             return @"ImageFormat_Webp";
-        default:
-            OWSCFailDebug(@"Unknown ImageFormat.");
-            return @"Unknown";
+        case ImageFormat_Heic:
+            return @"ImageFormat_Heic";
+        case ImageFormat_Heif:
+            return @"ImageFormat_Heif";
+        case ImageFormat_LottieSticker:
+            return @"ImageFormat_LottieSticker";
     }
 }
 
@@ -59,6 +62,15 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 #pragma mark -
 
+typedef struct {
+    BOOL isValid;
+    uint32_t canvasWidth;
+    uint32_t canvasHeight;
+    uint32_t frameCount;
+} WebpMetadata;
+
+#pragma mark -
+
 @interface ImageMetadata ()
 
 @property (nonatomic) BOOL isValid;
@@ -66,6 +78,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 @property (nonatomic) ImageFormat imageFormat;
 @property (nonatomic) CGSize pixelSize;
 @property (nonatomic) BOOL hasAlpha;
+@property (nonatomic) BOOL isAnimated;
 
 @end
 
@@ -73,13 +86,16 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 @implementation ImageMetadata
 
-+ (instancetype)validWithImageFormat:(ImageFormat)imageFormat pixelSize:(CGSize)pixelSize hasAlpha:(BOOL)hasAlpha
++ (instancetype)validWithImageFormat:(ImageFormat)imageFormat
+                           pixelSize:(CGSize)pixelSize
+                            hasAlpha:(BOOL)hasAlpha
+                          isAnimated:(BOOL)isAnimated
 {
     ImageMetadata *imageMetadata = [ImageMetadata new];
     imageMetadata.isValid = YES;
     imageMetadata.imageFormat = imageFormat;
     imageMetadata.pixelSize = pixelSize;
-    imageMetadata.hasAlpha = hasAlpha;
+    imageMetadata.isAnimated = isAnimated;
     return imageMetadata;
 }
 
@@ -180,13 +196,12 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
             return OWSMimeTypeImageHeic;
         case ImageFormat_Heif:
             return OWSMimeTypeImageHeif;
+        case ImageFormat_LottieSticker:
+            if (!SSKFeatureFlags.supportAnimatedStickers_Lottie) {
+                return false;
+            }
+            return OWSMimeTypeLottieSticker;
     }
-}
-
-+ (BOOL)isAnimatedWithImageFormat:(ImageFormat)imageFormat
-{
-    // TODO: ImageFormat_Webp
-    return imageFormat == ImageFormat_Gif;
 }
 
 - (BOOL)ows_hasValidImageFormat:(ImageFormat)imageFormat
@@ -211,6 +226,8 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         case ImageFormat_Heic:
         case ImageFormat_Heif:
             return YES;
+        case ImageFormat_LottieSticker:
+            return SSKFeatureFlags.supportAnimatedStickers_Lottie;
     }
 }
 
@@ -222,7 +239,9 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         case ImageFormat_Unknown:
             return NO;
         case ImageFormat_Png:
-            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImagePng] == NSOrderedSame);
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImagePng] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageApng1] == NSOrderedSame ||
+                [mimeType caseInsensitiveCompare:OWSMimeTypeImageApng2] == NSOrderedSame);
         case ImageFormat_Gif:
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
         case ImageFormat_Tiff:
@@ -239,6 +258,11 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeic] == NSOrderedSame);
         case ImageFormat_Heif:
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeif] == NSOrderedSame);
+        case ImageFormat_LottieSticker:
+            if (!SSKFeatureFlags.supportAnimatedStickers_Lottie) {
+                return false;
+            }
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeLottieSticker] == NSOrderedSame);
     }
 }
 
@@ -283,6 +307,11 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 - (ImageFormat)ows_guessImageFormat
 {
+    return [self ows_guessImageFormatWithCanBeLottieSticker:NO];
+}
+
+- (ImageFormat)ows_guessImageFormatWithCanBeLottieSticker:(BOOL)canBeLottieSticker
+{
     const NSUInteger kTwoBytesLength = 2;
     if (self.length < kTwoBytesLength) {
         return ImageFormat_Unknown;
@@ -311,6 +340,10 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
     } else if (byte0 == 0x52 && byte1 == 0x49) {
         // First two letters of RIFF tag.
         return ImageFormat_Webp;
+    } else if (canBeLottieSticker && byte0 == 0x7B) {
+        // Lottie is just JSON.
+        // Lottie files always start with '{', so we just check for that.
+        return ImageFormat_LottieSticker;
     }
 
     return [self ows_guessHighEfficiencyImageFormat];
@@ -418,6 +451,8 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
     return imageMetadata.hasAlpha;
 }
 
+// MARK: - Webp
+
 - (BOOL)isMaybeWebpData
 {
     return [self ows_guessImageFormat] == ImageFormat_Webp;
@@ -442,18 +477,35 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 - (CGSize)sizeForWebpData
 {
+    WebpMetadata webpMetadata = self.metadataForWebpData;
+    if (!webpMetadata.isValid) {
+        return CGSizeZero;
+    }
+    return CGSizeMake(webpMetadata.canvasWidth, webpMetadata.canvasHeight);
+}
+
+- (WebpMetadata)metadataForWebpData
+{
+    WebpMetadata webpMetadata;
+
     WebPData webPData = { 0 };
     webPData.bytes = self.bytes;
     webPData.size = self.length;
     WebPDemuxer *demuxer = WebPDemux(&webPData);
     if (!demuxer) {
-        return CGSizeZero;
+        webpMetadata.isValid = NO;
+        return webpMetadata;
     }
 
-    uint32_t canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
-    uint32_t canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    webpMetadata.canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
+    webpMetadata.canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    webpMetadata.frameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    webpMetadata.isValid
+        = (webpMetadata.canvasWidth > 0 && webpMetadata.canvasHeight > 0 && webpMetadata.frameCount > 0);
+
     WebPDemuxDelete(demuxer);
-    return CGSizeMake(canvasWidth, canvasHeight);
+
+    return webpMetadata;
 }
 
 - (nullable UIImage *)stillForWebpData
@@ -472,6 +524,36 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
     UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
     return uiImage;
 }
+
+// MARK: - Lottie
+
+- (CGSize)sizeForLottieStickerData
+{
+    // This method is expensive and we don't currently need it.
+    OWSFailDebug(@"Deprecated mthod.");
+
+    NSError *_Nullable error;
+    NSDictionary<NSString *, id> *_Nullable json = [NSJSONSerialization JSONObjectWithData:self options:0 error:&error];
+    if (error != nil || ![json isKindOfClass:[NSDictionary class]]) {
+        OWSFailDebug(@"Could not parse Lottie JSON.");
+        return CGSizeZero;
+    }
+    NSNumber *_Nullable nsWidth = json[@"w"];
+    NSNumber *_Nullable nsHeight = json[@"h"];
+    if (![nsWidth isKindOfClass:[NSNumber class]] || ![nsHeight isKindOfClass:[NSNumber class]]) {
+        OWSFailDebug(@"Lottie JSON has missing or invalid width or height.");
+        return CGSizeZero;
+    }
+    CGFloat width = nsWidth.floatValue;
+    CGFloat height = nsHeight.floatValue;
+    if (width < 1 || height < 1) {
+        OWSFailDebug(@"Lottie JSON has invalid width or height.");
+        return CGSizeZero;
+    }
+    return CGSizeMake(width, height);
+}
+
+// MARK: - Stickers
 
 + (BOOL)ows_hasStickerLikePropertiesWithPath:(NSString *)filePath
 {
@@ -532,7 +614,8 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 // that value and the per-format max dimension
 - (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
 {
-    ImageFormat imageFormat = [self ows_guessImageFormat];
+    BOOL canBeLottieSticker = (declaredMimeType != nil && [OWSMimeTypeLottieSticker isEqualToString:declaredMimeType]);
+    ImageFormat imageFormat = [self ows_guessImageFormatWithCanBeLottieSticker:canBeLottieSticker];
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
         return ImageMetadata.invalid;
@@ -558,7 +641,48 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         }
     }
 
-    BOOL isAnimated = [NSData isAnimatedWithImageFormat:imageFormat];
+    BOOL isAnimated;
+    switch (imageFormat) {
+        case ImageFormat_Gif:
+            // TODO: We currently treat all GIFs as animated.
+            // We could reflect the actual image content.
+        case ImageFormat_LottieSticker:
+            isAnimated = YES;
+            break;
+        case ImageFormat_Webp: {
+            WebpMetadata webpMetadata = self.metadataForWebpData;
+            if (!webpMetadata.isValid) {
+                return ImageMetadata.invalid;
+            }
+            isAnimated = webpMetadata.frameCount > 1;
+            if (isAnimated && !SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp) {
+                return ImageMetadata.invalid;
+            }
+            break;
+        }
+        case ImageFormat_Png: {
+            NSNumber *_Nullable isAnimatedPng = [self isAnimatedPngData];
+            if (isAnimatedPng == nil) {
+                return ImageMetadata.invalid;
+            } else if (isAnimatedPng.boolValue) {
+                if (SSKFeatureFlags.supportAnimatedStickers_Apng) {
+                    isAnimated = YES;
+                } else {
+                    return ImageMetadata.invalid;
+                }
+            } else {
+                isAnimated = NO;
+            }
+            break;
+        }
+        default:
+            isAnimated = NO;
+            break;
+    }
+
+    if (![self ows_hasValidImageFormat:imageFormat]) {
+        return ImageMetadata.invalid;
+    }
 
     const NSUInteger kMaxFileSize
         = (isAnimated ? OWSMediaUtils.kMaxFileSizeAnimatedImage : OWSMediaUtils.kMaxFileSizeImage);
@@ -578,7 +702,20 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
             return ImageMetadata.invalid;
         }
-        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
+        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES isAnimated:isAnimated];
+    } else if (imageFormat == ImageFormat_LottieSticker) {
+        // sizeForLottieStickerData() is expensive and we don't currently need it.
+        const BOOL ignoreLottieStickerSize = YES;
+        CGSize imageSize;
+        if (ignoreLottieStickerSize) {
+            imageSize = CGSizeZero;
+        } else {
+            imageSize = [self sizeForLottieStickerData];
+            if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
+                return ImageMetadata.invalid;
+            }
+        }
+        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES isAnimated:isAnimated];
     }
 
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
@@ -663,7 +800,10 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         return ImageMetadata.invalid;
     }
 
-    return [ImageMetadata validWithImageFormat:imageFormat pixelSize:pixelSize hasAlpha:hasAlpha.boolValue];
+    return [ImageMetadata validWithImageFormat:imageFormat
+                                     pixelSize:pixelSize
+                                      hasAlpha:hasAlpha.boolValue
+                                    isAnimated:isAnimated];
 }
 
 @end

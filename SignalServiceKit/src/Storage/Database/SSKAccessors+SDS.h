@@ -103,6 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, nullable, readonly) NSNumber *isValidImageCached;
 @property (atomic, nullable, readonly) NSNumber *isValidVideoCached;
+@property (atomic, nullable, readonly) NSNumber *isAnimatedCached;
 
 @end
 

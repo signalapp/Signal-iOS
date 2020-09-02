@@ -38,7 +38,10 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
     }
 
     public var view: UIView {
-        let view = StickerView(stickerInfo: stickerInfo)
+        guard let view = StickerView.stickerView(forInstalledStickerInfo: stickerInfo) else {
+            owsFailDebug("Could not load sticker for display.")
+            return UIView()
+        }
         view.layer.minificationFilter = .trilinear
         return view
     }

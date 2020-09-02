@@ -23,7 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString
+- (instancetype)initWithInfo:(StickerInfo *)info
+                 contentType:(nullable NSString *)contentType
+                 emojiString:(nullable NSString *)emojiString
 {
     OWSAssertDebug(info.packId.length > 0);
     OWSAssertDebug(info.packKey.length > 0);
@@ -35,6 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _info = info;
+    if (contentType.length > 0) {
+        _contentType = contentType;
+    }
     _emojiString = emojiString;
 
     return self;
@@ -63,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
+                     contentType:(nullable NSString *)contentType
                      emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
 {
@@ -73,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _contentType = contentType;
     _emojiString = emojiString;
     _info = info;
 

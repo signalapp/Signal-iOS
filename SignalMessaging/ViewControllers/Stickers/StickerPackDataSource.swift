@@ -26,7 +26,7 @@ protocol StickerPackDataSource: class {
     var installedCoverInfo: StickerInfo? { get }
     var installedStickerInfos: [StickerInfo] { get }
 
-    func filePath(forSticker stickerInfo: StickerInfo) -> String?
+    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata?
 }
 
 // MARK: -
@@ -173,7 +173,9 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
                 }
             }
 
-            self.stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack, transaction: transaction)
+            self.stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack,
+                                                                 verifyExists: false,
+                                                                 transaction: transaction)
         }
     }
 
@@ -235,10 +237,12 @@ extension InstalledStickerPackDataSource: StickerPackDataSource {
         return stickerInfos
     }
 
-    func filePath(forSticker stickerInfo: StickerInfo) -> String? {
+    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
         AssertIsOnMainThread()
 
-        return StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo)
+        // This logic is perf-sensitive and on the main thread;
+        // don't bother checking that the sticker data resides on disk.
+        return StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
     }
 }
 
@@ -274,7 +278,8 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     private let installedDataSource: InstalledStickerPackDataSource
 
     // This should only be accessed on the main thread.
-    private var stickerFilePathMap = [String: String]()
+    private var stickerMetadataMap = [String: StickerMetadata]()
+    private var temporaryFileUrls = [URL]()
 
     @objc
     public required init(stickerPackInfo: StickerPackInfo,
@@ -298,10 +303,14 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
     deinit {
         // Eagerly clean up temp files.
-        let stickerFilePathMap = self.stickerFilePathMap
+        let temporaryFileUrls = self.temporaryFileUrls
         DispatchQueue.global(qos: .background).async {
-            for filePath in stickerFilePathMap.values {
-                OWSFileSystem.deleteFileIfExists(filePath)
+            for fileUrl in temporaryFileUrls {
+                do {
+                    try OWSFileSystem.deleteFileIfExists(url: fileUrl)
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                }
             }
         }
     }
@@ -388,7 +397,12 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                                        stickerInfo: StickerInfo) -> Bool {
         AssertIsOnMainThread()
 
-        guard nil == self.filePath(forSticker: stickerInfo) else {
+        guard let stickerPackItem = stickerPack.stickerPackItem(forStickerInfo: stickerInfo) else {
+            owsFailDebug("Couldn't find item for sticker info.")
+            return false
+        }
+
+        guard nil == self.metadata(forSticker: stickerInfo) else {
             // This sticker is already downloaded.
             return true
         }
@@ -401,37 +415,46 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         downloadKeySet.insert(key)
 
         // This sticker is not downloaded; try to download now.
-        StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-            .map(on: DispatchQueue.global()) { (stickerData: Data) -> String in
-                let filePath = OWSFileSystem.temporaryFilePath(fileExtension: "webp")
-                try stickerData.write(to: URL(fileURLWithPath: filePath))
-                return filePath
-            }.done { [weak self] (filePath) in
-                guard let self = self else {
-                    return
-                }
-                assert(self.downloadKeySet.contains(key))
-                self.downloadKeySet.remove(key)
-                self.set(filePath: filePath, forSticker: stickerInfo)
-            }.catch { [weak self] (error) in
-                owsFailDebug("error: \(error)")
-                guard let self = self else {
-                    return
-                }
-                assert(self.downloadKeySet.contains(key))
-                self.downloadKeySet.remove(key)
+        firstly(on: .global()) {
+            StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
+        }.map(on: .global()) { (stickerData: Data) -> URL in
+            let temporaryFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: stickerPackItem.stickerType.fileExtension)
+            try stickerData.write(to: temporaryFileUrl)
+            return temporaryFileUrl
+        }.done { [weak self] (temporaryFileUrl) in
+            guard let self = self else {
+                return
             }
+            self.temporaryFileUrls.append(temporaryFileUrl)
+            assert(self.downloadKeySet.contains(key))
+            self.downloadKeySet.remove(key)
+            self.set(temporaryFileUrl: temporaryFileUrl, stickerInfo: stickerInfo, stickerPackItem: stickerPackItem)
+        }.catch { [weak self] (error) in
+            owsFailDebug("error: \(error)")
+            guard let self = self else {
+                return
+            }
+            assert(self.downloadKeySet.contains(key))
+            self.downloadKeySet.remove(key)
+        }
         return false
     }
 
-    private func set(filePath: String, forSticker stickerInfo: StickerInfo) {
+    private func set(temporaryFileUrl: URL,
+                     stickerInfo: StickerInfo,
+                     stickerPackItem: StickerPackItem) {
         AssertIsOnMainThread()
 
         let key = stickerInfo.asKey()
-        guard nil == stickerFilePathMap[key] else {
+        guard nil == stickerMetadataMap[key] else {
             return
         }
-        stickerFilePathMap[key] = filePath
+        let stickerType = StickerManager.stickerType(forContentType: stickerPackItem.contentType)
+        let stickerMetadata = StickerMetadata(stickerInfo: stickerInfo,
+                                              stickerType: stickerType,
+                                              stickerDataUrl: temporaryFileUrl,
+                                              emojiString: stickerPackItem.emojiString)
+        stickerMetadataMap[key] = stickerMetadata
         ensureState()
         fireDidChange()
     }
@@ -505,14 +528,19 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerInfos
     }
 
-    func filePath(forSticker stickerInfo: StickerInfo) -> String? {
+    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
         AssertIsOnMainThread()
 
-        if let filePath = installedDataSource.filePath(forSticker: stickerInfo) {
-            return filePath
+        let key = stickerInfo.asKey()
+        if let stickerMetadata = stickerMetadataMap[key] {
+            return stickerMetadata
         }
 
-        return stickerFilePathMap[stickerInfo.asKey()]
+        guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo) else {
+                                                                                                    return nil
+        }
+        stickerMetadataMap[key] = stickerMetadata
+        return stickerMetadata
     }
 }
 
@@ -589,9 +617,35 @@ extension RecentStickerPackDataSource: StickerPackDataSource {
         return stickerInfos
     }
 
-    func filePath(forSticker stickerInfo: StickerInfo) -> String? {
+    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
         AssertIsOnMainThread()
 
-        return StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo)
+        // This logic is perf-sensitive and on the main thread;
+        // don't bother checking that the sticker data resides on disk.
+        return StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
+    }
+}
+
+// MARK: -
+
+extension StickerPack {
+    func stickerPackItem(forStickerInfo stickerInfo: StickerInfo) -> StickerPackItem? {
+        if cover.stickerId == stickerInfo.stickerId {
+            return cover
+        }
+        for item in items {
+            if item.stickerId == stickerInfo.stickerId {
+                return item
+            }
+        }
+        return nil
+    }
+}
+
+// MARK: -
+
+extension StickerPackItem {
+    var stickerType: StickerType {
+        StickerManager.stickerType(forContentType: contentType)
     }
 }

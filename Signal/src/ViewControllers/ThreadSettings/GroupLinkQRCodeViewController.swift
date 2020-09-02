@@ -86,7 +86,13 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         do {
             let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
             let qrCodeImage = try QRCodeView.buildQRImage(url: inviteLinkUrl, forExport: true)
-            AttachmentSharing.showShareUI(for: qrCodeImage)
+            guard let imageData = qrCodeImage.pngData() else {
+                owsFailDebug("Could not encode QR code.")
+                return
+            }
+            let fileUrl = OWSFileSystem.temporaryFileUrl()
+            try imageData.write(to: fileUrl)
+            AttachmentSharing.showShareUI(for: fileUrl, sender: sender)
         } catch {
             owsFailDebug("error \(error)")
         }

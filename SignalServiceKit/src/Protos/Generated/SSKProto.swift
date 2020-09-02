@@ -4466,6 +4466,9 @@ public class SSKProtoDataMessageSticker: NSObject, Codable {
     @objc
     public func asBuilder() -> SSKProtoDataMessageStickerBuilder {
         let builder = SSKProtoDataMessageStickerBuilder(packID: packID, packKey: packKey, stickerID: stickerID, data: data)
+        if let _value = emoji {
+            builder.setEmoji(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4528,6 +4531,17 @@ public class SSKProtoDataMessageSticker: NSObject, Codable {
             proto.data = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setEmoji(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.emoji = valueParam
+        }
+
+        public func setEmoji(_ valueParam: String) {
+            proto.emoji = valueParam
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -4556,6 +4570,18 @@ public class SSKProtoDataMessageSticker: NSObject, Codable {
 
     @objc
     public let data: SSKProtoAttachmentPointer
+
+    @objc
+    public var emoji: String? {
+        guard hasEmoji else {
+            return nil
+        }
+        return proto.emoji
+    }
+    @objc
+    public var hasEmoji: Bool {
+        return proto.hasEmoji
+    }
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -11821,6 +11847,9 @@ public class SSKProtoPackSticker: NSObject, Codable {
         if let _value = emoji {
             builder.setEmoji(_value)
         }
+        if let _value = contentType {
+            builder.setContentType(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -11858,6 +11887,17 @@ public class SSKProtoPackSticker: NSObject, Codable {
             proto.emoji = valueParam
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setContentType(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.contentType = valueParam
+        }
+
+        public func setContentType(_ valueParam: String) {
+            proto.contentType = valueParam
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -11888,6 +11928,18 @@ public class SSKProtoPackSticker: NSObject, Codable {
     @objc
     public var hasEmoji: Bool {
         return proto.hasEmoji
+    }
+
+    @objc
+    public var contentType: String? {
+        guard hasContentType else {
+            return nil
+        }
+        return proto.contentType
+    }
+    @objc
+    public var hasContentType: Bool {
+        return proto.hasContentType
     }
 
     public var hasUnknownFields: Bool {
