@@ -48,7 +48,7 @@ public class BaseStickerPackDataSource: NSObject {
         delegates.append(Weak(value: delegate))
     }
 
-    private var didChangeEvent: DebouncedEvent {
+    private lazy var didChangeEvent: DebouncedEvent = {
         DebouncedEvent(maxFrequencySeconds: 0.25, onQueue: .main) { [weak self] in
             AssertIsOnMainThread()
             guard let self = self else {
@@ -64,7 +64,7 @@ public class BaseStickerPackDataSource: NSObject {
                 }
             }
         }
-    }
+    }()
 
     func fireDidChange() {
         AssertIsOnMainThread()

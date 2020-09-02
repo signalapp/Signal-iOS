@@ -14,7 +14,7 @@ public class DebouncedEvent: NSObject {
     private let maxFrequencySeconds: TimeInterval
     private let notifyBlock: () -> Void
     private let notifyQueue: DispatchQueue
-    private let serialQueue = DispatchQueue(label: "DebouncedEvent")
+    private let unfairLock = UnfairLock()
 
     @objc
     public required init(maxFrequencySeconds: TimeInterval,
@@ -27,7 +27,7 @@ public class DebouncedEvent: NSObject {
 
     @objc
     public func requestNotify() {
-        serialQueue.sync {
+        unfairLock.withLock {
             if hasEnqueuedNotification {
                 // Delayed notification is already enqueued.
                 // We can ignore this request (de-bounce).
@@ -56,7 +56,7 @@ public class DebouncedEvent: NSObject {
     }
 
     private func fireDelayedNotification() {
-        serialQueue.sync {
+        unfairLock.withLock {
             self.hasEnqueuedNotification = false
 
             // Notify after delay.
