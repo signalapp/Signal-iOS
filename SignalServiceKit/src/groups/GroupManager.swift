@@ -1833,6 +1833,10 @@ public class GroupManager: NSObject {
                                                     groupUpdateSourceAddress: SignalServiceAddress?,
                                                     transaction: SDSAnyWriteTransaction) {
 
+        guard let localAddress = tsAccountManager.localAddress else {
+            return owsFailDebug("missing local address")
+        }
+
         var userInfo: [InfoMessageUserInfoKey: Any] = [
             .newGroupModel: newGroupModel,
             .newDisappearingMessageToken: newDisappearingMessageToken
@@ -1851,12 +1855,23 @@ public class GroupManager: NSObject {
                                         infoMessageUserInfo: userInfo)
         infoMessage.anyInsert(transaction: transaction)
 
+        let wasLocalUserInGroup = oldGroupModel?.groupMembership.isPendingOrNonPendingMember(localAddress) ?? false
+        let isLocalUserInGroup = newGroupModel.groupMembership.isPendingOrNonPendingMember(localAddress)
+
         if let groupUpdateSourceAddress = groupUpdateSourceAddress,
             groupUpdateSourceAddress.isLocalAddress {
             infoMessage.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(),
                                    thread: groupThread,
                                    circumstance: .readOnThisDevice,
                                    transaction: transaction)
+        } else if !wasLocalUserInGroup && isLocalUserInGroup {
+            // Notify when the local user is added or invited to a group.
+            SSKEnvironment.shared.notificationsManager.notifyUser(
+                for: infoMessage,
+                thread: groupThread,
+                wantsSound: true,
+                transaction: transaction
+            )
         }
     }
 
