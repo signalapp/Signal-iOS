@@ -49,7 +49,7 @@ public class BaseStickerPackDataSource: NSObject {
     }
 
     private lazy var didChangeEvent: DebouncedEvent = {
-        DebouncedEvent(maxFrequencySeconds: 0.25, onQueue: .main) { [weak self] in
+        DebouncedEvent(maxFrequencySeconds: 0.5, onQueue: .main) { [weak self] in
             AssertIsOnMainThread()
             guard let self = self else {
                 return
