@@ -316,8 +316,13 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                 @"Short text label for a audio attachment, used for thread preview and on the lock screen");
         }
     } else if ([MIMETypeUtil isAnimated:self.contentType]) {
-        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_GIF",
-            @"Short text label for a gif attachment, used for thread preview and on the lock screen");
+        if ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame) {
+            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_GIF",
+                @"Short text label for a gif attachment, used for thread preview and on the lock screen");
+        } else {
+            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_IMAGE",
+                @"Short text label for an image attachment, used for thread preview and on the lock screen");
+        }
     } else {
         attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_FILE",
             @"Short text label for a file attachment, used for thread preview and on the lock screen");

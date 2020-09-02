@@ -508,8 +508,13 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         return NSLocalizedString(
             @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
     } else if ([MIMETypeUtil isAnimated:contentType]) {
-        return NSLocalizedString(
-            @"QUOTED_REPLY_TYPE_GIF", @"Indicates this message is a quoted reply to animated GIF file.");
+        if ([contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame) {
+            return NSLocalizedString(
+                @"QUOTED_REPLY_TYPE_GIF", @"Indicates this message is a quoted reply to animated GIF file.");
+        } else {
+            return NSLocalizedString(
+                @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
+        }
     }
     return nil;
 }

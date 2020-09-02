@@ -69,6 +69,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 @property (nonatomic) ImageFormat imageFormat;
 @property (nonatomic) CGSize pixelSize;
 @property (nonatomic) BOOL hasAlpha;
+@property (nonatomic) BOOL isAnimated;
 
 @end
 
@@ -76,13 +77,16 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
 
 @implementation ImageMetadata
 
-+ (instancetype)validWithImageFormat:(ImageFormat)imageFormat pixelSize:(CGSize)pixelSize hasAlpha:(BOOL)hasAlpha
++ (instancetype)validWithImageFormat:(ImageFormat)imageFormat
+                           pixelSize:(CGSize)pixelSize
+                            hasAlpha:(BOOL)hasAlpha
+                          isAnimated:(BOOL)isAnimated
 {
     ImageMetadata *imageMetadata = [ImageMetadata new];
     imageMetadata.isValid = YES;
     imageMetadata.imageFormat = imageFormat;
     imageMetadata.pixelSize = pixelSize;
-    imageMetadata.hasAlpha = hasAlpha;
+    imageMetadata.isAnimated = isAnimated;
     return imageMetadata;
 }
 
@@ -614,10 +618,15 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         case ImageFormat_Gif:
         case ImageFormat_LottieSticker:
             isAnimated = YES;
+            break;
         case ImageFormat_Webp:
             isAnimated = SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp;
-        case ImageFormat_Png:
-            if ([self isAnimatedPngData]) {
+            break;
+        case ImageFormat_Png: {
+            NSNumber *_Nullable isAnimatedPng = [self isAnimatedPngData];
+            if (isAnimatedPng == nil) {
+                return ImageMetadata.invalid;
+            } else if (isAnimatedPng.boolValue) {
                 if (SSKFeatureFlags.supportAnimatedStickers_Apng) {
                     isAnimated = YES;
                 } else {
@@ -626,8 +635,11 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
             } else {
                 isAnimated = NO;
             }
+            break;
+        }
         default:
             isAnimated = NO;
+            break;
     }
 
     if (![self ows_hasValidImageFormat:imageFormat]) {
@@ -652,7 +664,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
             return ImageMetadata.invalid;
         }
-        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
+        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES isAnimated:isAnimated];
     } else if (imageFormat == ImageFormat_LottieSticker) {
         // sizeForLottieStickerData() is expensive and we don't currently need it.
         const BOOL ignoreLottieStickerSize = YES;
@@ -665,7 +677,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
                 return ImageMetadata.invalid;
             }
         }
-        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
+        return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES isAnimated:isAnimated];
     }
 
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
@@ -750,7 +762,10 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value)
         return ImageMetadata.invalid;
     }
 
-    return [ImageMetadata validWithImageFormat:imageFormat pixelSize:pixelSize hasAlpha:hasAlpha.boolValue];
+    return [ImageMetadata validWithImageFormat:imageFormat
+                                     pixelSize:pixelSize
+                                      hasAlpha:hasAlpha.boolValue
+                                    isAnimated:isAnimated];
 }
 
 @end

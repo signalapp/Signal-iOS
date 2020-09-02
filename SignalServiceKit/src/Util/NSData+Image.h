@@ -32,6 +32,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value);
 @property (nonatomic, readonly) ImageFormat imageFormat;
 @property (nonatomic, readonly) CGSize pixelSize;
 @property (nonatomic, readonly) BOOL hasAlpha;
+@property (nonatomic, readonly) BOOL isAnimated;
 
 @property (nonatomic, readonly, nullable) NSString *mimeType;
 
