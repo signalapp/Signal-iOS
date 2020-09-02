@@ -123,10 +123,6 @@ import Foundation
         // our min SDK to iOS 11.
         if #available(iOS 11.0, *) { return }
 
-        // Don't nag legacy users if this is an end of life build
-        // (the last build their OS version supports)
-        guard !AppExpiry.isEndOfLifeOSVersion else { return }
-
         // Don't show the nag to users who have just launched
         // the app for the first time.
         guard AppVersion.sharedInstance().lastAppVersion != nil else {

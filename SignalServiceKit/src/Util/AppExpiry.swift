@@ -30,6 +30,7 @@ public class AppExpiry: NSObject {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
+            // We don't need to re-warm this cache after a device migration.
             self.warmCaches()
         }
     }
@@ -41,7 +42,7 @@ public class AppExpiry: NSObject {
                                                                         return false
             }
             // "Expired at version"
-            return expiredAtVersion == AppVersion.sharedInstance().currentAppVersion
+            return expiredAtVersion == AppVersion.sharedInstance().currentAppVersionLong
         }
         hasAppExpiredAtCurrentVersion.set(value)
     }
@@ -53,7 +54,7 @@ public class AppExpiry: NSObject {
         hasAppExpiredAtCurrentVersion.set(true)
 
         databaseStorage.asyncWrite { transaction in
-            self.keyValueStore.setString(AppVersion.sharedInstance().currentAppVersion,
+            self.keyValueStore.setString(AppVersion.sharedInstance().currentAppVersionLong,
                                          key: Self.expiredAtVersionKey,
                                          transaction: transaction)
 
@@ -87,7 +88,6 @@ public class AppExpiry: NSObject {
 
     @objc
     public static var isExpiringSoon: Bool {
-        guard !isEndOfLifeOSVersion else { return false }
         return daysUntilBuildExpiry <= 10
     }
 
@@ -98,23 +98,7 @@ public class AppExpiry: NSObject {
 
     @objc
     public var isExpired: Bool {
-        guard !Self.isEndOfLifeOSVersion else { return true }
         guard !hasAppExpiredAtCurrentVersion.get() else { return true }
         return Self.daysUntilBuildExpiry <= 0
-    }
-
-    /// Indicates if this iOS version is no longer supported. If so,
-    /// we don't ever expire the build as newer builds will not be
-    /// installable on their device and show a special banner
-    /// that indicates we will no longer support their device.
-    ///
-    /// Currently, only iOS 11 and greater are officially supported.
-    @objc
-    public static var isEndOfLifeOSVersion: Bool {
-        if #available(iOS 11, *) {
-            return false
-        } else {
-            return true
-        }
     }
 }
