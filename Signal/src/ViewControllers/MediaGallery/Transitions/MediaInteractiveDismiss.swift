@@ -5,8 +5,25 @@
 import Foundation
 
 protocol InteractiveDismissDelegate: AnyObject {
-    func interactiveDismiss(_ interactiveDismiss: MediaInteractiveDismiss, didChangeTouchOffset offset: CGPoint)
-    func interactiveDismissDidFinish(_ interactiveDismiss: MediaInteractiveDismiss)
+    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
+    func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint)
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
+    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
+}
+
+extension InteractiveDismissDelegate {
+    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        
+    }
+    func interactiveDismissUpdate(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didChangeTouchOffset offset: CGPoint) {
+        
+    }
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        
+    }
+    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        
+    }
 }
 
 class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
@@ -79,7 +96,7 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             farEnoughToCompleteTransition = progress >= 0.5
             update(progress)
 
-            interactiveDismissDelegate?.interactiveDismiss(self, didChangeTouchOffset: offset)
+            interactiveDismissDelegate?.interactiveDismissUpdate(self, didChangeTouchOffset: offset)
 
         case .cancelled:
             interactiveDismissDelegate?.interactiveDismissDidFinish(self)

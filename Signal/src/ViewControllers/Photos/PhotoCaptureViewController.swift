@@ -34,9 +34,10 @@ extension PhotoCaptureError: LocalizedError {
     }
 }
 
-class PhotoCaptureViewController: OWSViewController {
+class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
+    var interactiveDismiss : PhotoCaptureInteractiveDismiss!
 
     @objc public lazy var photoCapture = PhotoCapture()
 
@@ -49,7 +50,7 @@ class PhotoCaptureViewController: OWSViewController {
         view.setContentHuggingHigh()
         return view
     }()
-
+    
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         photoCapture.stopCapture().done {
@@ -62,6 +63,7 @@ class PhotoCaptureViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
         self.view.backgroundColor = Theme.darkThemeBackgroundColor
+        definesPresentationContext = true
 
         view.addSubview(previewView)
 
@@ -114,6 +116,12 @@ class PhotoCaptureViewController: OWSViewController {
         view.addGestureRecognizer(pinchZoomGesture)
         view.addGestureRecognizer(tapToFocusGesture)
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
+        
+        if let navController = self.navigationController {
+            interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navController)
+            interactiveDismiss.interactiveDismissDelegate = self
+            interactiveDismiss.addGestureRecognizer(to: view)
+        }
 
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
     }
@@ -158,7 +166,7 @@ class PhotoCaptureViewController: OWSViewController {
     override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
-
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -181,10 +189,21 @@ class PhotoCaptureViewController: OWSViewController {
             // we pin to a constant rather than margin, because on notched devices the
             // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
             // is locked to portrait.
-            topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+            // Only grab this once -- otherwise when we swipe to dismiss this is updated and the top bar jumps to having zero offset
+            if topBarOffset.constant == 0 {
+                topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+            }
         }
     }
-
+    
+    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    }
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        dismiss(animated: true)
+    }
+    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    }
+        
     // MARK: -
     var isRecordingMovie: Bool = false
 
@@ -301,7 +320,7 @@ class PhotoCaptureViewController: OWSViewController {
             self?.didTapFlashMode()
         }
     }()
-
+    
     lazy var pinchZoomGesture: UIPinchGestureRecognizer = {
         return UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:)))
     }()
@@ -362,7 +381,7 @@ class PhotoCaptureViewController: OWSViewController {
             owsFailDebug("Error: \(error)")
         }
     }
-
+    
     @objc
     func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
