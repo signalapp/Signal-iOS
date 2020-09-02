@@ -3842,7 +3842,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Schermvergrendeling";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Schermafdrukken blokkeren";
+"SETTINGS_SCREEN_SECURITY" = "Meekijkpreventie";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Verberg Signal-voorbeeldweergaven in het overzicht van open apps en blokkeer schermafdrukken.";

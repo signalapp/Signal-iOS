@@ -75,6 +75,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         self.read = YES;
     }
 
+    if (_messageType == TSInfoMessageTypeGroupQuit) {
+        self.read = YES;
+    }
+
     return self;
 }
 

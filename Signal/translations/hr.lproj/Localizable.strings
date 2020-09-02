@@ -401,7 +401,7 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokiraj";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@je blokiran/a.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ je blokiran/a.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Korisnik je blokiran";
@@ -416,7 +416,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Pogreška";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ je odblokiran.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ je odblokiran/a.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Postojeći članovi sada vas mogu ponovo dodati u grupu.";
@@ -593,7 +593,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Možete omogućiti pristup kontaktima u postavkama iOS-a kako biste vidjeli koji od vaših kontakata su korisnici Signala.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ovo će resetirati aplikaciju brisanjem vaših poruka i uklanjanjem registracije s poslužiteljem. Aplikacija će se zatvoriti nakon dovršetka ovog postupka.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ovo će resetirati aplikaciju brisanjem vaših poruka i uklanjanjem registracije s poslužitelja. Aplikacija će se zatvoriti nakon dovršetka ovog postupka.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Jeste li sigurni da želite izbrisati svoj račun?";
@@ -1175,7 +1175,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Poruke u ovom razgovoru nestati će nakon %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kad je omogućeno, poruke poslane i primljene u ovom razgovoru nestati će nakon što su ih vidjele.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kad je omogućeno, poslane i primljene poruke u ovom razgovoru će nestati nakon što ih se vidi.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Trenutno poruke nestaju nakon %@";
@@ -3002,7 +3002,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ je promijenio ime na profilu u %@.";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Postavi profilnu sliku";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Postavite profilnu sliku";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "Ukloni sliku";
@@ -3545,7 +3545,7 @@
 "SEND_INVITE_SUCCESS" = "Pozvali ste prijatelja da koristi Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Odbaci medijski zapis";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Odbaci medijske zapise";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Povratak na kameru";
@@ -3860,7 +3860,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Zaključavanje registracije";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Zbog dodatne sigurnosti, omogućite Zaključavanje registracije koja će zahtijevati vaš Signalov PIN za ponovnu registriraciju vašeg broja telefona na Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Zbog dodatne sigurnosti, omogućite Zaključavanje registracije koje će zahtijevati vaš Signal PIN za ponovnu registriraciju vašeg broja telefona na Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Prikaži tipkanje";
@@ -4280,7 +4280,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Pritisnite ovdje da ova poruka nestane nakon što je pogledana.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Jednom vidljivi, odlazni medijski zapisi se automatski uklanjaju nakon što su poslani.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Odlazni medijski zapisi koji su vidljivi samo jednom se automatski uklanjaju nakon što su poslani.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Povucite za otkazivanje";

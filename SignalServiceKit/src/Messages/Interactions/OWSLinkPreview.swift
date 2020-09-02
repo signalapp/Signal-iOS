@@ -121,7 +121,7 @@ public class OWSLinkPreview: MTLModel {
         }
         let urlString = previewProto.url
 
-        guard let url = URL(string: urlString), url.isPermittedLinkPreviewUrl else {
+        guard let url = URL(string: urlString), url.isPermittedLinkPreviewUrl() else {
             Logger.error("Could not parse preview url.")
             throw LinkPreviewError.invalidPreview
         }
@@ -277,9 +277,12 @@ public class OWSLinkPreviewManager: NSObject {
             options: [],
             range: NSRange(searchString.startIndex..<searchString.endIndex, in: searchString))
 
-        return allMatches
-            .first(where: { $0.url?.isPermittedLinkPreviewUrl == true })?
-            .url
+        return allMatches.first(where: {
+            guard let parsedUrl = $0.url else { return false }
+            guard let matchedRange = Range($0.range, in: searchString) else { return false }
+            let matchedString = String(searchString[matchedRange])
+            return parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: matchedString)
+        })?.url
     }
 
     @objc(fetchLinkPreviewForUrl:)
@@ -312,15 +315,16 @@ public class OWSLinkPreviewManager: NSObject {
     // MARK: - Private
 
     private func fetchLinkPreview(forGenericUrl url: URL) -> Promise<OWSLinkPreviewDraft> {
-        firstly(on: Self.workQueue) { () -> Promise<String> in
+        firstly(on: Self.workQueue) { () -> Promise<(URL, String)> in
             self.fetchStringResource(from: url)
 
-        }.then(on: Self.workQueue) { (rawHTML) -> Promise<OWSLinkPreviewDraft> in
-            let opengraph = OpenGraphContent(parsing: rawHTML)
-            let title = opengraph.title
+        }.then(on: Self.workQueue) { (respondingUrl, rawHTML) -> Promise<OWSLinkPreviewDraft> in
+            let content = HTMLMetadata.construct(parsing: rawHTML)
+            let title = content.ogTitle ?? content.titleTag
+            let draft = OWSLinkPreviewDraft(url: url, title: title)
 
-            guard let imageUrlString = opengraph.imageUrl, let imageUrl = URL(string: imageUrlString) else {
-                let draft = OWSLinkPreviewDraft(url: url, title: title)
+            guard let imageUrlString = content.ogImageUrlString ?? content.faviconUrlString,
+                  let imageUrl = URL(string: imageUrlString, relativeTo: respondingUrl) else {
                 return Promise.value(draft)
             }
 
@@ -377,7 +381,7 @@ public class OWSLinkPreviewManager: NSObject {
             }
         }
         sessionManager.setTaskWillPerformHTTPRedirectionBlock { (_, _, _, request) -> URLRequest? in
-            if request.url?.isPermittedLinkPreviewUrl == true {
+            if request.url?.isPermittedLinkPreviewUrl() == true {
                 return request
             } else {
                 return nil
@@ -388,13 +392,14 @@ public class OWSLinkPreviewManager: NSObject {
 
     }
 
-    func fetchStringResource(from url: URL) -> Promise<String> {
+    func fetchStringResource(from url: URL) -> Promise<(URL, String)> {
         firstly(on: Self.workQueue) { () -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
             let sessionManager = self.createSessionManager()
             return sessionManager.getPromise(url.absoluteString)
 
-        }.map(on: Self.workQueue) { (task: URLSessionDataTask, responseObject: Any?) -> String in
+        }.map(on: Self.workQueue) { (task: URLSessionDataTask, responseObject: Any?) -> (URL, String) in
             guard let response = task.response as? HTTPURLResponse,
+                  let respondingUrl = response.url,
                   response.statusCode >= 200 && response.statusCode < 300 else {
                 Logger.warn("Invalid response: \(type(of: task.response)).")
                 throw LinkPreviewError.fetchFailure
@@ -407,7 +412,7 @@ public class OWSLinkPreviewManager: NSObject {
                 throw LinkPreviewError.invalidPreview
             }
 
-            return string
+            return (respondingUrl, string)
         }
     }
 
@@ -620,6 +625,7 @@ public class OWSLinkPreviewManager: NSObject {
 fileprivate extension URL {
     private static let schemeAllowSet: Set = ["https"]
     private static let tldRejectSet: Set = ["onion"]
+    private static let urlDelimeters: Set<Character> = Set(":/?#[]@")
 
     var mimeType: String? {
         guard pathExtension.count > 0 else {
@@ -632,24 +638,52 @@ fileprivate extension URL {
         return mimeType
     }
 
-    var isPermittedLinkPreviewUrl: Bool {
-        guard let scheme = scheme?.lowercased(), scheme.count > 0 else { return false }
-        guard let hostname = host, hostname.count > 0 else { return false }
-
+    /// Helper method that validates:
+    /// - TLD is permitted
+    /// - Comprised of valid character set
+    static private func isValidHostname(_ hostname: String) -> Bool {
+        // Technically, a TLD separator can be something other than a period (e.g. https://一二三。中国)
+        // But it looks like NSURL/NSDataDetector won't even parse that. So we'll require periods for now
         let hostnameComponents = hostname.split(separator: ".")
         guard hostnameComponents.count >= 2, let tld = hostnameComponents.last?.lowercased() else {
             return false
         }
+        let isValidTLD = !Self.tldRejectSet.contains(tld)
+        let isAllASCII = hostname.allSatisfy { $0.isASCII }
+        let isAllNonASCII = hostname.allSatisfy { !$0.isASCII || $0 == "." }
 
-        // A hostname must either be entirely ASCII or entirely non-ASCII
-        let hostnameIsASCIIOnly = (hostname as NSString).isOnlyASCII
-        let hostnameIsNonASCIIOnly = !(hostname as NSString).hasAnyASCII
+        return isValidTLD && (isAllASCII || isAllNonASCII)
+    }
 
-        let validScheme = Self.schemeAllowSet.contains(scheme)
-        let validTLD = !Self.tldRejectSet.contains(String(tld))
-        let validHostname = (hostnameIsASCIIOnly || hostnameIsNonASCIIOnly)
+    /// - Parameter sourceString: The raw string that this URL was parsed from
+    /// The source string will be parsed to ensure that the parsed hostname has only ASCII or non-ASCII characters
+    /// to avoid homograph URLs.
+    ///
+    /// The source string is necessary, since NSURL and NSDataDetector will automatically punycode any returned
+    /// URLs. The source string will be used to verify that the originating string's host only contained ASCII or
+    /// non-ASCII characters to avoid homographs.
+    ///
+    /// If no sourceString is provided, the validated host will be whatever is returned from `host`, which will always
+    /// be ASCII.
+    func isPermittedLinkPreviewUrl(parsedFrom sourceString: String? = nil) -> Bool {
+        guard let scheme = scheme?.lowercased(), scheme.count > 0 else { return false }
+        guard user == nil else { return false }
+        guard password == nil else { return false }
+        let rawHostname: String?
 
-        return validScheme && validHostname && validTLD
+        if let sourceString = sourceString {
+            let schemePrefix = "\(scheme)://"
+            rawHostname = sourceString
+                .dropFirst(schemePrefix.count)
+                .split(maxSplits: 1, whereSeparator: { Self.urlDelimeters.contains($0) }).first
+                .map { String($0) }
+        } else {
+            // The hostname will be punycode and all ASCII
+            rawHostname = host
+        }
+
+        guard let hostnameToValidate = rawHostname else { return false }
+        return Self.schemeAllowSet.contains(scheme) && Self.isValidHostname(hostnameToValidate)
     }
 }
 

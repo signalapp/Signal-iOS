@@ -98,6 +98,8 @@ public class OWSUDSendingAccess: NSObject {
     @objc
     var uuidAccessStore: SDSKeyValueStore { get }
 
+    @objc func warmCaches()
+
     @objc func trustRoot() -> ECPublicKey
 
     @objc func isUDVerboseLoggingEnabled() -> Bool
@@ -186,15 +188,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.warmCaches()
-        }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.setup()
         }
     }
 
-    private func warmCaches() {
+    @objc
+    public func warmCaches() {
         let parseUnidentifiedAccessMode = { (anyValue: Any) -> UnidentifiedAccessMode? in
             guard let nsNumber = anyValue as? NSNumber else {
                 owsFailDebug("Invalid value.")

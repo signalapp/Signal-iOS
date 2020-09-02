@@ -1979,7 +1979,7 @@
 "KEY_COMMAND_ALL_MEDIA" = "Przejdź do wszystkich multimediów";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archiwum konwersacji";
+"KEY_COMMAND_ARCHIVE" = "Wyślij do archimum";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Pokaż załączniki";
