@@ -73,8 +73,13 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc
-    public func dismiss(completion : @escaping () -> Void) {
+    public func dismiss(completion completionParam: @escaping () -> Void) {
         AssertIsOnMainThread()
+
+        let completion = {
+            completionParam()
+            self.wasCancelledResolver.reject(OWSGenericError("ModalActivityIndicatorViewController was not cancelled."))
+        }
 
         if !wasDimissed {
             // Only dismiss once.
@@ -181,8 +186,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         _wasCancelled.set(true)
 
-        dismiss {
-            self.wasCancelledResolver.fulfill(())
-        }
+        self.wasCancelledResolver.fulfill(())
+
+        dismiss {}
     }
 }
