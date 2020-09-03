@@ -559,9 +559,8 @@ void uncaughtExceptionHandler(NSException *exception)
             return NO;
         }
         return [self tryToShowStickerPackView:stickerPackInfo];
-    } else if ([GroupManager isGroupInviteLink:url]) {
-        // TODO: Show group invite link UI.
-        return NO;
+    } else if ([GroupManager isPossibleGroupInviteLink:url]) {
+        return [self tryToShowGroupInviteLinkUI:url];
     } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
             if (!AppReadiness.isAppReady) {
@@ -620,12 +619,40 @@ void uncaughtExceptionHandler(NSException *exception)
             [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
         UIViewController *rootViewController = self.window.rootViewController;
         if (rootViewController.presentedViewController) {
-            [rootViewController dismissViewControllerAnimated:NO
-                                                   completion:^{
-                                                       [packView presentFrom:rootViewController animated:NO];
-                                                   }];
+            [rootViewController
+                dismissViewControllerAnimated:NO
+                                   completion:^{ [packView presentFrom:rootViewController animated:NO]; }];
         } else {
             [packView presentFrom:rootViewController animated:NO];
+        }
+    }];
+    return YES;
+}
+
+- (BOOL)tryToShowGroupInviteLinkUI:(NSURL *)url
+{
+    OWSAssertDebug(!self.didAppLaunchFail);
+
+    if (AppReadiness.isAppReady && !self.tsAccountManager.isRegistered) {
+        OWSFailDebug(@"Ignoring URL; not registered.");
+        return NO;
+    }
+
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (!self.tsAccountManager.isRegistered) {
+            OWSFailDebug(@"Ignoring sticker pack URL; not registered.");
+            return;
+        }
+
+        UIViewController *rootViewController = self.window.rootViewController;
+        if (rootViewController.presentedViewController) {
+            [rootViewController dismissViewControllerAnimated:NO
+                                                   completion:^{
+                                                       [GroupInviteLinksUI openGroupInviteLink:url
+                                                                            fromViewController:rootViewController];
+                                                   }];
+        } else {
+            [GroupInviteLinksUI openGroupInviteLink:url fromViewController:rootViewController];
         }
     }];
     return YES;

@@ -325,7 +325,7 @@ public class OWSLinkPreviewManager: NSObject {
         return firstly(on: Self.workQueue) { () -> Promise<OWSLinkPreviewDraft> in
             if StickerPackInfo.isStickerPackShare(url) {
                 return self.linkPreviewDraft(forStickerShare: url)
-            } else if GroupManager.isGroupInviteLink(url) {
+            } else if GroupManager.isPossibleGroupInviteLink(url) {
                 return self.linkPreviewDraft(forGroupInviteLink: url)
             } else {
                 return self.fetchLinkPreview(forGenericUrl: url)
@@ -744,7 +744,7 @@ fileprivate extension OWSLinkPreviewManager {
         if StickerPackInfo.isStickerPackShare(url) {
             return stickerPackShareDomain(forUrl: url)
         }
-        if GroupManager.isGroupInviteLink(url) {
+        if GroupManager.isPossibleGroupInviteLink(url) {
             return "signal.org"
         }
         return url.host

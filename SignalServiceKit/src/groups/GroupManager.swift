@@ -1282,6 +1282,14 @@ public class GroupManager: NSObject {
         try groupsV2.groupInviteLink(forGroupModelV2: groupModelV2)
     }
 
+    @objc
+    public static func isPossibleGroupInviteLink(_ url: URL) -> Bool {
+        guard RemoteConfig.groupsV2InviteLinks else {
+            return false
+        }
+        return groupsV2.isPossibleGroupInviteLink(url)
+    }
+
     public static func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
         guard RemoteConfig.groupsV2InviteLinks else {
             return nil

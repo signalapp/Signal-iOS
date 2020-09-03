@@ -367,7 +367,13 @@ private extension GroupLinkViewController {
 extension GroupLinkViewController: SendMessageDelegate {
     public func sendMessageFlowDidComplete(threads: [TSThread]) {
         AssertIsOnMainThread()
-        navigationController?.popToViewController(self, animated: true)
+
+        if threads.count == 1,
+            let thread = threads.first {
+            SignalApp.shared().presentConversation(for: thread, animated: true)
+        } else {
+            navigationController?.popToViewController(self, animated: true)
+        }
     }
 
     public func sendMessageFlowDidCancel() {

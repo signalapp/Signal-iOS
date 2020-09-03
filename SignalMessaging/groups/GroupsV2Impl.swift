@@ -1300,10 +1300,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return url
     }
 
+    public func isPossibleGroupInviteLink(_ url: URL) -> Bool {
+        return url.scheme == "https" && url.host == "signal.group"
+    }
+
     public func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        guard url.scheme == "https",
-            url.host == "signal.group" else {
-                return nil
+        guard isPossibleGroupInviteLink(url) else {
+            return nil
         }
         guard let protoBase64Url = url.fragment,
             !protoBase64Url.isEmpty else {

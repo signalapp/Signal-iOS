@@ -2559,7 +2559,7 @@ typedef enum : NSUInteger {
 - (void)didTapGroupInviteLink:(NSURL *)url
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug([GroupManager isGroupInviteLink:url]);
+    OWSAssertDebug([GroupManager isPossibleGroupInviteLink:url]);
 
     [GroupInviteLinksUI openGroupInviteLink:url fromViewController:self];
 }
@@ -2688,7 +2688,7 @@ typedef enum : NSUInteger {
         }
     }
 
-    if ([GroupManager isGroupInviteLink:url]) {
+    if ([GroupManager isPossibleGroupInviteLink:url]) {
         [self didTapGroupInviteLink:url];
         return;
     }
