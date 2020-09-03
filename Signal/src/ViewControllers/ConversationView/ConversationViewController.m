@@ -1240,6 +1240,7 @@ typedef enum : NSUInteger {
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [LKSessionManagementProtocol startSessionResetInThread:self.thread transaction:transaction];
         } error:nil];
+        [self updateSessionRestoreBanner];
     });
 }
 

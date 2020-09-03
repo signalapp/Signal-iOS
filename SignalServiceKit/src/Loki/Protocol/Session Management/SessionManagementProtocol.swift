@@ -141,7 +141,6 @@ public final class SessionManagementProtocol : NSObject {
         guard let thread = thread as? TSContactThread else {
             return print("[Loki] Can't restore session for non contact thread.")
         }
-        guard thread.sessionResetStatus == .none else { return }
         // Send end session messages to the devices requiring session restoration
         let devices = thread.sessionRestoreDevices // TODO: Rename this to something that reads better
         for device in devices {
