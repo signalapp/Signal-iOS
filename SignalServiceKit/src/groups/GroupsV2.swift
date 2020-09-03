@@ -20,6 +20,7 @@ public enum GroupsV2Error: Error {
     case gv2NotEnabled
     case localUserIsAlreadyRequestingMember
     case requestingMemberCantLoadGroupState
+    case cantApplyChangesToPlaceholder
 }
 
 // MARK: -

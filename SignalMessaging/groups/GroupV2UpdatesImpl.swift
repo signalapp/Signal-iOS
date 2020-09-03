@@ -324,6 +324,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         // We can recover from some auth edge cases
                         // using a snapshot.
                         return true
+                    case GroupsV2Error.cantApplyChangesToPlaceholder:
+                        // We can only update placeholder groups using a snapshot.
+                        return true
                     default:
                         owsFailDebug("Error: \(error)")
                         return false
@@ -555,6 +558,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let oldGroupModel = oldGroupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")
             }
+            guard !oldGroupModel.isPendingJoinRequestPlaceholder else {
+                throw GroupsV2Error.cantApplyChangesToPlaceholder
+            }
             let groupV2Params = try oldGroupModel.groupV2Params()
 
             var groupThread = oldGroupThread
@@ -608,6 +614,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 let newGroupModel: TSGroupModel
                 let newDisappearingMessageToken: DisappearingMessageToken?
                 let newProfileKeys: [UUID: Data]
+
                 if let snapshot = groupChange.snapshot {
                     let builder = try TSGroupModelBuilder(groupV2Snapshot: snapshot)
                     newGroupModel = try builder.build(transaction: transaction)
