@@ -225,7 +225,7 @@ public extension ContactDiscoveryTask {
                 }
                 // Consider the user as undiscoverable if CDS indicated they
                 // didn't exist in the last N minutes.
-                let acceptableInterval: TimeInterval = kHourInterval
+                let acceptableInterval: TimeInterval = 6 * kHourInterval
                 return abs(markAsUndiscoverableDate.timeIntervalSinceNow) <= acceptableInterval
             }
         }

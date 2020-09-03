@@ -32,7 +32,7 @@ public class RemoteConfig: BaseFlags {
         guard modernContactDiscovery else { return false }
         guard FeatureFlags.groupsV2Supported else { return false }
         if DebugFlags.groupsV2ForceEnable { return true }
-        return isEnabled(.groupsV2GoodCitizen)
+        return isEnabled(.groupsV2CreateGroupsV2)
     }
 
     @objc
@@ -43,7 +43,7 @@ public class RemoteConfig: BaseFlags {
         guard modernContactDiscovery else { return false }
         guard FeatureFlags.groupsV2Supported else { return false }
         if DebugFlags.groupsV2ForceEnable { return true }
-        return isEnabled(.groupsV2GoodCitizen)
+        return isEnabled(.groupsV2GoodCitizenV2)
     }
 
     @objc
@@ -55,7 +55,7 @@ public class RemoteConfig: BaseFlags {
             // These flags force modern CDS on, even if the remote config is switched off
             // Groups v2 implies modern CDS, so when it's enabled modern CDS must be enabled.
             DebugFlags.forceModernContactDiscovery,
-            isEnabled(.groupsV2GoodCitizen)
+            isEnabled(.groupsV2GoodCitizenV2)
         ]
 
         return allEnableConditions.contains(true)
@@ -214,7 +214,7 @@ private struct Flags {
     // Values defined in this array remain forever true once they are
     // marked true regardless of the remote state.
     enum StickyIsEnabledFlags: String, FlagType {
-        case groupsV2GoodCitizen
+        case groupsV2GoodCitizenV2
         case versionedProfiles
         case uuidSafetyNumbers
     }
@@ -226,8 +226,8 @@ private struct Flags {
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
         case kbs
-        case groupsV2CreateGroups
-        case groupsV2GoodCitizen
+        case groupsV2CreateGroupsV2
+        case groupsV2GoodCitizenV2
         case deleteForEveryone
         case versionedProfiles
         case mentions
