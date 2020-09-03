@@ -32,10 +32,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     private func createContents() {
 
-        let qrCodeView = QRCodeView(useCircularWrapper: true)
-        let qrCodeViewWrapper = UIStackView(arrangedSubviews: [qrCodeView])
-        qrCodeViewWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 40, bottom: 0, trailing: 40)
-        qrCodeViewWrapper.isLayoutMarginsRelativeArrangement = true
+        let qrCodeView = QRCodeView()
 
         do {
             let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
@@ -66,7 +63,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         let vSpacer2 = UIView.vStretchingSpacer()
         let stackView = UIStackView(arrangedSubviews: [
             vSpacer1,
-            qrCodeViewWrapper,
+            qrCodeView,
             UIView.spacer(withHeight: 24),
             descriptionLabel,
             vSpacer2,
