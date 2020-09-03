@@ -12,14 +12,6 @@ public protocol SendMessageDelegate: AnyObject {
 
 // MARK: -
 
-// TODO: Replace with SignalAttachmentProvider?
-protocol AttachmentStreamProvider {
-    func buildAttachmentForSending() throws -> TSAttachmentStream
-    var isBorderless: Bool { get }
-}
-
-// MARK: -
-
 protocol SignalAttachmentProvider {
     func buildAttachmentForSending() throws -> SignalAttachment
     var isBorderless: Bool { get }
@@ -27,7 +19,8 @@ protocol SignalAttachmentProvider {
 
 // MARK: -
 
-private struct TSAttachmentStreamCloner: SignalAttachmentProvider {
+// This can be used to forward an existing attachment stream.
+struct TSAttachmentStreamCloner: SignalAttachmentProvider {
     let attachmentStream: TSAttachmentStream
 
     func buildAttachmentForSending() throws -> SignalAttachment {
@@ -54,14 +47,13 @@ public enum SendMessageFlowError: Error {
 
 // MARK: -
 
-// TODO: Expand this to include media, attachments.
 enum SendMessageUnapprovedContent {
     case text(messageBody: MessageBody)
     case contactShare(contactShare: ContactShareViewModel)
     // stickerAttachment is required if the sticker is not installed.
     case sticker(stickerMetadata: StickerMetadata, stickerAttachment: TSAttachmentStream?)
     case genericAttachment(signalAttachmentProvider: SignalAttachmentProvider)
-    case media(attachmentStreamProviders: [AttachmentStreamProvider], messageBody: MessageBody?)
+    case media(signalAttachmentProviders: [SignalAttachmentProvider], messageBody: MessageBody?)
 
     fileprivate var needsApproval: Bool {
         switch self {
@@ -116,25 +108,22 @@ enum SendMessageUnapprovedContent {
         case .genericAttachment(let signalAttachmentProvider):
             owsAssertDebug(!needsApproval)
             return .genericAttachment(signalAttachmentProvider: signalAttachmentProvider)
-        case .media(let attachmentStreamProviders, let messageBody):
-            guard attachmentStreamProviders.count == 1,
-                let attachmentStreamProvider = attachmentStreamProviders.first,
-                attachmentStreamProvider.isBorderless else {
+        case .media(let signalAttachmentProviders, let messageBody):
+            guard signalAttachmentProviders.count == 1,
+                let signalAttachmentProvider = signalAttachmentProviders.first,
+                signalAttachmentProvider.isBorderless else {
                     owsAssertDebug(needsApproval)
                     return nil
             }
             owsAssertDebug(!needsApproval)
             owsAssertDebug(messageBody == nil)
-            let attachmentStream = try attachmentStreamProvider.buildAttachmentForSending()
-            let cloner = TSAttachmentStreamCloner(attachmentStream: attachmentStream)
-            return .borderlessMedia(signalAttachmentProvider: cloner)
+            return .borderlessMedia(signalAttachmentProvider: signalAttachmentProvider)
         }
     }
 }
 
 // MARK: -
 
-// TODO: Expand this to include media, attachments.
 enum SendMessageApprovedContent {
     case text(messageBody: MessageBody)
     case contactShare(contactShare: ContactShareViewModel)
@@ -246,13 +235,12 @@ extension SendMessageFlow {
             let approvalView = ContactShareApprovalViewController(contactShare: newContactShare)
             approvalView.delegate = self
             pushViewController(approvalView, animated: true)
-        case .media(let attachmentStreamProviders, let messageBody):
+        case .media(let signalAttachmentProviders, let messageBody):
             let options: AttachmentApprovalViewControllerOptions = .hasCancel
             let sendButtonImageName = "send-solid-24"
 
-            let attachmentApprovalItems = try attachmentStreamProviders.map { attachmentStreamProvider -> AttachmentApprovalItem in
-                let attachmentStream = try attachmentStreamProvider.buildAttachmentForSending()
-                let signalAttachment = try attachmentStream.cloneAsSignalAttachment()
+            let attachmentApprovalItems = try signalAttachmentProviders.map { signalAttachmentProvider -> AttachmentApprovalItem in
+                let signalAttachment = try signalAttachmentProvider.buildAttachmentForSending()
                 return AttachmentApprovalItem(attachment: signalAttachment, canSave: false)
             }
             let approvalViewController = AttachmentApprovalViewController(options: options,
