@@ -978,7 +978,7 @@ typedef enum : NSUInteger {
 {
     if ([self.thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return groupThread.isLocalUserFullMemberAndAdministrator
+        return groupThread.isLocalUserFullMemberAndAdministrator;
     } else {
         return NO;
     }
