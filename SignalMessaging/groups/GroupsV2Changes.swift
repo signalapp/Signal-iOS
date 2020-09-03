@@ -370,6 +370,87 @@ public class GroupsV2Changes {
             profileKeys[uuid] = profileKey
         }
 
+        for action in changeActionsProto.addRequestingMembers {
+            if !canAddMembers {
+                owsFailDebug("Cannot add members.")
+            }
+
+            guard let requestingMember = action.added else {
+                throw OWSAssertionError("Missing requestingMember.")
+            }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
+            guard let userId = requestingMember.userID else {
+                throw OWSAssertionError("Missing userID.")
+            }
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            guard let profileKeyCiphertextData = requestingMember.profileKey else {
+                throw OWSAssertionError("Missing profileKeyCiphertext.")
+            }
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
+
+            guard !oldGroupMembership.isMemberOfAnyKind(uuid) else {
+                throw OWSAssertionError("Invalid membership.")
+            }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
+            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.addRequestingMember(uuid)
+
+            profileKeys[uuid] = profileKey
+        }
+
+        for action in changeActionsProto.deleteRequestingMembers {
+
+            // TODO: Modify this parsing to reflect action contents.
+            guard let userId = action.deletedUserID else {
+                throw OWSAssertionError("Missing userID.")
+            }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            if !canRemoveMembers && uuid != changeAuthorUuid {
+                owsFailDebug("Cannot remove members.")
+            }
+
+            guard oldGroupMembership.isMemberOfAnyKind(uuid) else {
+                throw OWSAssertionError("Invalid membership.")
+            }
+
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
+            groupMembershipBuilder.remove(uuid)
+        }
+
+        for action in changeActionsProto.promoteRequestingMembers {
+            guard let userId = action.userID else {
+                throw OWSAssertionError("Missing userID.")
+            }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            if !canAddMembers && uuid != changeAuthorUuid {
+                owsFailDebug("Cannot add members.")
+            }
+
+            guard let protoRole = action.role else {
+                throw OWSAssertionError("Missing role.")
+            }
+            guard let role = TSGroupMemberRole.role(for: protoRole) else {
+                throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
+            }
+
+            guard oldGroupMembership.isRequestingMember(uuid) else {
+                throw OWSAssertionError("Invalid membership.")
+            }
+            groupMembershipBuilder.removeInvalidInvite(userId: userId)
+            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.addFullMember(uuid, role: role)
+        }
+
         if let action = changeActionsProto.modifyTitle {
             if !canEditAttributes {
                 owsFailDebug("Cannot modify title.")
@@ -455,64 +536,6 @@ public class GroupsV2Changes {
             if newAddFromInviteLinkAccess == .unknown {
                 owsFailDebug("Unknown addFromInviteLink access.")
             }
-        }
-
-        for action in changeActionsProto.addRequestingMembers {
-            if !canAddMembers {
-                owsFailDebug("Cannot add members.")
-            }
-
-            guard let requestingMember = action.added else {
-                throw OWSAssertionError("Missing requestingMember.")
-            }
-            // TODO: Modify this parsing to reflect action contents.
-            guard let userId = requestingMember.userID else {
-                throw OWSAssertionError("Missing userID.")
-            }
-            // Some userIds/uuidCiphertexts can be validated by
-            // the service. This is one.
-            //
-            // TODO: Is this one?
-            let uuid = try groupV2Params.uuid(forUserId: userId)
-
-            guard let profileKeyCiphertextData = requestingMember.profileKey else {
-                throw OWSAssertionError("Missing profileKeyCiphertext.")
-            }
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
-
-            guard let presentationData = requestingMember.presentation else {
-                throw OWSAssertionError("Missing presentation.")
-            }
-            let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
-            let uuidCiphertext = try presentation.getUuidCiphertext()
-            let uuidFromPresentation = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
-            // TODO:
-            guard uuid == uuidFromPresentation else {
-                throw OWSAssertionError("uuids do not match.")
-            }
-
-            guard oldGroupMembership.isMemberOfAnyKind(uuid) else {
-                throw OWSAssertionError("Invalid membership.")
-            }
-
-            let profileKeyCiphertextFromPresentation = try presentation.getProfileKeyCiphertext()
-            let profileKeyFromPresentation = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertextFromPresentation,
-                                                                          uuid: uuid)
-            // TODO:
-            guard profileKey == profileKeyFromPresentation else {
-                throw OWSAssertionError("profileKeys do not match.")
-            }
-
-            guard !oldGroupMembership.isMemberOfAnyKind(uuid) else {
-                throw OWSAssertionError("Invalid membership.")
-            }
-            groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addRequestingMember(uuid)
-
-            profileKeys[uuid] = profileKey
         }
 
         if let action = changeActionsProto.modifyInviteLinkPassword {

@@ -149,7 +149,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         return OWSTableItem.newCell()
                     }
 
-                    let cell = ContactTableViewCell()
+                    let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil, allowUserInteraction: true)
 
                     if canApproveMemberRequests {
                         cell.ows_setAccessoryView(self.buildMemberRequestButtons(address: address))
@@ -194,9 +194,11 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     }
 
     private func approveMemberRequest(address: SignalServiceAddress) {
+        showAcceptMemberRequestUI(address: address)
     }
 
     private func denyMemberRequest(address: SignalServiceAddress) {
+        showDenyMemberRequestUI(address: address)
     }
 
     private func addContentsForPendingInvites(contents: OWSTableContents) {
@@ -357,16 +359,22 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
     }
 
-    fileprivate func reloadGroupModelAndTableContents() {
+    fileprivate func reloadContent(groupThread: TSGroupThread?) {
         groupMemberRequestsAndInvitesViewControllerDelegate?.requestsAndInvitesViewDidUpdate()
 
-        guard let newModel = (databaseStorage.uiRead { (transaction) -> TSGroupModel? in
-            guard let groupThread = TSGroupThread.fetch(groupId: self.groupModel.groupId, transaction: transaction) else {
-                owsFailDebug("Missing group thread.")
-                return nil
+        guard let newModel = { () -> TSGroupModel? in
+            if let groupThread = groupThread {
+                return groupThread.groupModel
             }
-            return groupThread.groupModel
-        }) else {
+            return databaseStorage.read { (transaction) -> TSGroupModel? in
+                guard let groupThread = TSGroupThread.fetch(groupId: self.groupModel.groupId,
+                                                            transaction: transaction) else {
+                    owsFailDebug("Missing group thread.")
+                    return nil
+                }
+                return groupThread.groupModel
+            }
+        }() else {
             navigationController?.popViewController(animated: true)
             return
         }
@@ -525,12 +533,12 @@ private extension GroupMemberRequestsAndInvitesViewController {
                                                         updatePromiseBlock: {
                                                             self.revokePendingInvitesPromise(addresses: addresses)
         },
-                                                        completion: { [weak self] _ in
-                                                            self?.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] groupThread in
+                                                            self?.reloadContent(groupThread: groupThread)
         })
     }
 
-    func revokePendingInvitesPromise(addresses: [SignalServiceAddress]) -> Promise<Void> {
+    func revokePendingInvitesPromise(addresses: [SignalServiceAddress]) -> Promise<TSGroupThread> {
         guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Invalid group model."))
         }
@@ -544,7 +552,7 @@ private extension GroupMemberRequestsAndInvitesViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, uuids: uuids)
-        }.asVoid()
+        }
     }
 
     func revokeInvalidInvites() {
@@ -552,12 +560,12 @@ private extension GroupMemberRequestsAndInvitesViewController {
                                                         updatePromiseBlock: {
                                                             self.revokeInvalidInvitesPromise()
         },
-                                                        completion: { [weak self] _ in
-                                                            self?.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] groupThread in
+                                                            self?.reloadContent(groupThread: groupThread)
         })
     }
 
-    func revokeInvalidInvitesPromise() -> Promise<Void> {
+    func revokeInvalidInvitesPromise() -> Promise<TSGroupThread> {
         guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Invalid group model."))
         }
@@ -567,6 +575,77 @@ private extension GroupMemberRequestsAndInvitesViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
-        }.asVoid()
+        }
+    }
+}
+
+// MARK: -
+
+fileprivate extension GroupMemberRequestsAndInvitesViewController {
+
+    func showAcceptMemberRequestUI(address: SignalServiceAddress) {
+
+        let username = contactsManager.displayName(for: address)
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT",
+                                       comment: "Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
+        let alertTitle = String(format: format, username)
+        let actionSheet = ActionSheetController(title: alertTitle)
+
+        let actionTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON",
+                                            comment: "Title of 'accept member request to join group' button.")
+        actionSheet.addAction(ActionSheetAction(title: actionTitle,
+                                                style: .destructive) { _ in
+                                                    self.acceptOrDenyMemberRequests(addresses: [address], shouldAccept: true)
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    func showDenyMemberRequestUI(address: SignalServiceAddress) {
+
+        let username = contactsManager.displayName(for: address)
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT",
+                                       comment: "Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
+        let alertTitle = String(format: format, username)
+        let actionSheet = ActionSheetController(title: alertTitle)
+
+        let actionTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON",
+                                            comment: "Title of 'deny member request to join group' button.")
+        actionSheet.addAction(ActionSheetAction(title: actionTitle,
+                                                style: .destructive) { _ in
+                                                    self.acceptOrDenyMemberRequests(addresses: [address], shouldAccept: false)
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    func acceptOrDenyMemberRequests(addresses: [SignalServiceAddress], shouldAccept: Bool) {
+        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+                                                        updatePromiseBlock: {
+                                                            self.acceptOrDenyMemberRequestsPromise(addresses: addresses,
+                                                                                             shouldAccept: shouldAccept)
+        },
+                                                        completion: { [weak self] groupThread in
+                                                            self?.reloadContent(groupThread: groupThread)
+        })
+    }
+
+    func acceptOrDenyMemberRequestsPromise(addresses: [SignalServiceAddress], shouldAccept: Bool) -> Promise<TSGroupThread> {
+        guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
+            return Promise(error: OWSAssertionError("Invalid group model."))
+        }
+        let uuids = addresses.compactMap { $0.uuid }
+        guard !uuids.isEmpty else {
+            return Promise(error: OWSAssertionError("Invalid addresses."))
+        }
+
+        return firstly { () -> Promise<Void> in
+            return GroupManager.messageProcessingPromise(for: groupModel,
+                                                         description: self.logTag)
+        }.then(on: .global()) { _ in
+            GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, uuids: uuids, shouldAccept: shouldAccept)
+        }
     }
 }

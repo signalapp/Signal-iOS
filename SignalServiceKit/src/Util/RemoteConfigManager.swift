@@ -47,6 +47,15 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
+    public static var groupsV2InviteLinks: Bool {
+        if groupsV2GoodCitizen {
+            return true
+        }
+        if DebugFlags.groupsV2ForceInviteLinks { return true }
+        return isEnabled(.groupsV2InviteLinks)
+    }
+
+    @objc
     public static var modernContactDiscovery: Bool {
         let allEnableConditions = [
             // If the remote config flag is set, we're enabled
@@ -234,6 +243,7 @@ private struct Flags {
         case uuidSafetyNumbers
         case modernContactDiscoveryV2
         case attachmentUploadV3v1
+        case groupsV2InviteLinks
     }
 
     // Values defined in this array remain set once they are

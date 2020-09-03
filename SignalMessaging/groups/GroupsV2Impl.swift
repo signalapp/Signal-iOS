@@ -1555,13 +1555,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                               avatarData: avatarData,
                                                               revisionForPlaceholderModel: revisionForPlaceholderModel)
             }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
-                let isPlaceholder: Bool
+                let isPendingJoinRequestPlaceholder: Bool
                 if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                    isPlaceholder = groupModel.isPlaceholder
+                    isPendingJoinRequestPlaceholder = groupModel.isPendingJoinRequestPlaceholder
                 } else {
-                    isPlaceholder = false
+                    isPendingJoinRequestPlaceholder = false
                 }
-                guard !isPlaceholder else {
+                guard !isPendingJoinRequestPlaceholder else {
                     // There's no point in sending a group update for a placeholder
                     // group, since we don't know who to send it to.
                     return Promise.value(groupThread)
@@ -1604,7 +1604,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     return groupThread
                 }
                 var builder = currentModel.asBuilder
-                builder.isPlaceholder = true
+                builder.isPendingJoinRequestPlaceholder = true
                 builder.groupV2Revision = max(revision, currentModel.revision)
                 var membershipBuilder = groupMembership.asBuilder
                 membershipBuilder.remove(localUuid)
@@ -1625,7 +1625,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 builder.groupV2Revision = revision
                 builder.groupSecretParamsData = groupV2Params.groupSecretParamsData
                 builder.inviteLinkPassword = inviteLinkPassword
-                builder.isPlaceholder = true
+                builder.isPendingJoinRequestPlaceholder = true
 
                 // The "group invite link" UI might not have downloaded
                 // the avatar. That's fine; this is just a placeholder

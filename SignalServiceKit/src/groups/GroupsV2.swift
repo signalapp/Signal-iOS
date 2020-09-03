@@ -147,6 +147,8 @@ public protocol GroupsV2ChangeSet: AnyObject {
     var newAvatarData: Data? { get }
     var newAvatarUrlPath: String? { get }
 
+    func addMember(_ uuid: UUID, role: TSGroupMemberRole)
+
     func removeMember(_ uuid: UUID)
 
     func revokeInvalidInvites()

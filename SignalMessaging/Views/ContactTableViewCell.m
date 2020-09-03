@@ -16,15 +16,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) ContactCellView *cellView;
 
+@property (nonatomic, readonly) BOOL allowUserInteraction;
+
 @end
 
 #pragma mark -
 
 @implementation ContactTableViewCell
 
++ (instancetype)new
+{
+    return [[ContactTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                       reuseIdentifier:nil
+                                  allowUserInteraction:false];
+}
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
 {
+    return [self initWithStyle:style reuseIdentifier:reuseIdentifier allowUserInteraction:false];
+}
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(nullable NSString *)reuseIdentifier
+         allowUserInteraction:(BOOL)allowUserInteraction
+{
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        _allowUserInteraction = allowUserInteraction;
         [self configure];
     }
     return self;
@@ -129,11 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ows_setAccessoryView:(UIView *)accessoryView
 {
     return [self.cellView setAccessoryView:accessoryView];
-}
-
-- (BOOL)allowUserInteraction
-{
-    return NO;
 }
 
 @end

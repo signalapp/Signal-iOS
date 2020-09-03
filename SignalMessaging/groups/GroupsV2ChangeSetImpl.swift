@@ -239,16 +239,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         self.shouldUpdateAvatar = true
     }
 
-    @objc
-    public func addNormalMember(_ uuid: UUID) {
-        addMember(uuid, role: .normal)
-    }
-
-    @objc
-    public func addAdministrator(_ uuid: UUID) {
-        addMember(uuid, role: .administrator)
-    }
-
     public func addMember(_ uuid: UUID, role: TSGroupMemberRole) {
         assert(membersToAdd[uuid] == nil)
         membersToAdd[uuid] = role

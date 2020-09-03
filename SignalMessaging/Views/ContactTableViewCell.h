@@ -12,6 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)reuseIdentifier;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier;
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(nullable NSString *)reuseIdentifier
+         allowUserInteraction:(BOOL)allowUserInteraction NS_DESIGNATED_INITIALIZER;
+
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
 
 - (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
@@ -34,8 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasAccessoryText;
 
 - (void)ows_setAccessoryView:(UIView *)accessoryView;
-
-- (BOOL)allowUserInteraction;
 
 @end
 
