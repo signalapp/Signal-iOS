@@ -263,7 +263,7 @@ class MediaGalleryNavigationController: OWSNavigationController {
     // MARK: View Lifecycle
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        return isLightMode ? .default : .lightContent
     }
 
     override func viewDidLoad() {
@@ -291,7 +291,12 @@ class MediaGalleryNavigationController: OWSNavigationController {
             return
         }
 
-        navigationBar.overrideTheme(type: .alwaysDark)
+        view.backgroundColor = Colors.navigationBarBackground
+
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
     }
 
     override func viewDidAppear(_ animated: Bool) {

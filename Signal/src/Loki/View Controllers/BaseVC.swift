@@ -1,5 +1,6 @@
 
 class BaseVC : UIViewController {
+    private var hasGradient = false
 
     override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
 
@@ -23,10 +24,12 @@ class BaseVC : UIViewController {
 
     override func viewDidLoad() {
         setNeedsStatusBarAppearanceUpdate()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleUnexpectedDeviceLinkRequestReceivedNotification), name: .unexpectedDeviceLinkRequestReceived, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUnexpectedDeviceLinkRequestReceivedNotification(_:)), name: .unexpectedDeviceLinkRequestReceived, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
     }
 
     internal func setUpGradientBackground() {
+        hasGradient = true
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
         view.setGradient(gradient)
@@ -68,12 +71,22 @@ class BaseVC : UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc private func handleUnexpectedDeviceLinkRequestReceivedNotification() {
+    @objc private func handleUnexpectedDeviceLinkRequestReceivedNotification(_ notification: Notification) {
         guard DeviceLinkingUtilities.shouldShowUnexpectedDeviceLinkRequestReceivedAlert else { return }
         DispatchQueue.main.async {
             let alert = UIAlertController(title: "Device Link Request Received", message: "Open the device link screen by going to \"Settings\" > \"Devices\" > \"Link a Device\" to link your devices.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        // TODO: Post an appModeChanged notification?
+    }
+
+    @objc internal func handleAppModeChangedNotification(_ notification: Notification) {
+        if hasGradient {
+            setUpGradientBackground() // Re-do the gradient
         }
     }
 }

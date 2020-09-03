@@ -127,7 +127,7 @@
         fileprivate func startAnimation() {
             stopAnimation()
 
-            let baseColor = UIColor.white
+            let baseColor = Colors.text
             let timeIncrement: CFTimeInterval = 0.15
             var colorValues = [CGColor]()
             var pathValues = [CGPath]()

@@ -28,7 +28,7 @@ public class ConversationMediaView: UIView {
     private let maxMessageWidth: CGFloat
     private var loadBlock: (() -> Void)?
     private var unloadBlock: (() -> Void)?
-    private let isProxied: Bool
+    private let isOnionRouted: Bool
 
     // MARK: - LoadState
 
@@ -92,12 +92,12 @@ public class ConversationMediaView: UIView {
                          attachment: TSAttachment,
                          isOutgoing: Bool,
                          maxMessageWidth: CGFloat,
-                         isProxied: Bool) {
+                         isOnionRouted: Bool) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
         self.maxMessageWidth = maxMessageWidth
-        self.isProxied = isProxied
+        self.isOnionRouted = isOnionRouted
 
         super.init(frame: .zero)
 
@@ -185,7 +185,7 @@ public class ConversationMediaView: UIView {
         }
         guard !attachmentStream.isUploaded else { return false }
         let view: UIView
-        if isProxied { // Loki: Due to the way proxying works we can't get upload progress for those attachments
+        if isOnionRouted { // Loki: Due to the way onion routing works we can't get upload progress for those attachments
             let activityIndicatorView = UIActivityIndicatorView(style: .white)
             activityIndicatorView.isHidden = false
             activityIndicatorView.startAnimating()

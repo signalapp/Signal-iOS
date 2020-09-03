@@ -90,6 +90,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
         UserDefaults.standard[.hasSeenMultiDeviceRemovalSheet] = true
+        UserDefaults.standard[.hasSeenLightModeSheet] = true
         TSAccountManager.sharedInstance().didRegister()
         let homeVC = HomeVC()
         navigationController!.setViewControllers([ homeVC ], animated: true)

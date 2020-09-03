@@ -438,6 +438,7 @@ extension AttachmentPrepViewController: ImageEditorViewDelegate {
             ? .overFullScreen
             : .fullScreen)
         navigationController.ows_prefersStatusBarHidden = true
+        navigationController.view.backgroundColor = Colors.navigationBarBackground
 
         if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
             navigationBar.overrideTheme(type: .clear)

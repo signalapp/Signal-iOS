@@ -183,16 +183,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
-        let hasSeenMultiDeviceRemovalSheet = UserDefaults.standard[.hasSeenMultiDeviceRemovalSheet]
-        if !hasSeenMultiDeviceRemovalSheet {
-            let _ = FileServerAPI.getDeviceLinks(associatedWith: getUserHexEncodedPublicKey()).done(on: DispatchQueue.main) { [weak self] deviceLinks in
-                guard !deviceLinks.isEmpty else { return }
-                let multiDeviceRemovalSheet = MultiDeviceRemovalSheet()
-                multiDeviceRemovalSheet.modalPresentationStyle = .overFullScreen
-                multiDeviceRemovalSheet.modalTransitionStyle = .crossDissolve
-                self?.present(multiDeviceRemovalSheet, animated: true, completion: nil)
-            }
-            UserDefaults.standard[.hasSeenMultiDeviceRemovalSheet] = true
+        let hasSeenLightModeSheet = UserDefaults.standard[.hasSeenLightModeSheet]
+        if !hasSeenLightModeSheet {
+            let lightModeSheet = LightModeSheet()
+            lightModeSheet.modalPresentationStyle = .overFullScreen
+            lightModeSheet.modalTransitionStyle = .crossDissolve
+            present(lightModeSheet, animated: true, completion: nil)
+            UserDefaults.standard[.hasSeenLightModeSheet] = true
         }
         UserDefaults.standard[.hasLaunchedOnce] = true
     }
@@ -347,6 +344,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         pathStatusView.center(.vertical, in: pathStatusViewContainer)
         pathStatusViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPath)))
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
+    }
+
+    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
+        super.handleAppModeChangedNotification(notification)
+        let gradient = Gradients.homeVCFade
+        fadeView.setGradient(gradient) // Re-do the gradient
+        tableView.reloadData()
     }
     
     // MARK: Interaction

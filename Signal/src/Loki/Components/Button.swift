@@ -2,6 +2,7 @@
 final class Button : UIButton {
     private let style: Style
     private let size: Size
+    private var heightConstraint: NSLayoutConstraint!
     
     enum Style {
         case unimportant, regular, prominentOutline, prominentFilled, regularBorderless
@@ -16,6 +17,7 @@ final class Button : UIButton {
         self.size = size
         super.init(frame: .zero)
         setUpStyle()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
     }
     
     override init(frame: CGRect) {
@@ -25,30 +27,34 @@ final class Button : UIButton {
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(style:) instead.")
     }
-    
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     private func setUpStyle() {
         let fillColor: UIColor
         switch style {
-        case .unimportant: fillColor = Colors.unimportantButtonBackground
+        case .unimportant: fillColor = isLightMode ? UIColor.clear : Colors.unimportantButtonBackground
         case .regular: fillColor = UIColor.clear
         case .prominentOutline: fillColor = UIColor.clear
-        case .prominentFilled: fillColor = Colors.accent
+        case .prominentFilled: fillColor = isLightMode ? Colors.text : Colors.accent
         case .regularBorderless: fillColor = UIColor.clear
         }
         let borderColor: UIColor
         switch style {
         case .unimportant: borderColor = isLightMode ? Colors.text : Colors.unimportantButtonBackground
         case .regular: borderColor = Colors.text
-        case .prominentOutline: borderColor = Colors.accent
-        case .prominentFilled: borderColor = Colors.accent
+        case .prominentOutline: borderColor = isLightMode ? Colors.text : Colors.accent
+        case .prominentFilled: borderColor = isLightMode ? Colors.text : Colors.accent
         case .regularBorderless: borderColor = UIColor.clear
         }
         let textColor: UIColor
         switch style {
         case .unimportant: textColor = Colors.text
         case .regular: textColor = Colors.text
-        case .prominentOutline: textColor = Colors.accent
-        case .prominentFilled: textColor = Colors.text
+        case .prominentOutline: textColor = isLightMode ? Colors.text : Colors.accent
+        case .prominentFilled: textColor = isLightMode ? UIColor.white : Colors.text
         case .regularBorderless: textColor = Colors.text
         }
         let height: CGFloat
@@ -57,7 +63,7 @@ final class Button : UIButton {
         case .medium: height = Values.mediumButtonHeight
         case .large: height = Values.largeButtonHeight
         }
-        set(.height, to: height)
+        if heightConstraint == nil { heightConstraint = set(.height, to: height) }
         layer.cornerRadius = height / 2
         backgroundColor = fillColor
         layer.borderColor = borderColor.cgColor
@@ -65,5 +71,9 @@ final class Button : UIButton {
         let fontSize = (size == .small) ? Values.smallFontSize : Values.mediumFontSize
         titleLabel!.font = .boldSystemFont(ofSize: fontSize)
         setTitleColor(textColor, for: UIControl.State.normal)
+    }
+
+    @objc private func handleAppModeChangedNotification(_ notification: Notification) {
+        setUpStyle()
     }
 }

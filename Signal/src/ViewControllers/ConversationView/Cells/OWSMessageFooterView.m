@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIColor *textColor;
     if (isOverlayingMedia) {
-        textColor = LKColors.text;
+        textColor = UIColor.whiteColor;
     } else {
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }

@@ -60,7 +60,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
         // Use a background view that extends below the keyboard to avoid animation glitches.
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        backgroundView.backgroundColor = isLightMode ? UIColor.black.withAlphaComponent(0.2) : UIColor.black.withAlphaComponent(0.6)
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
