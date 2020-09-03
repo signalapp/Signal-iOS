@@ -32,6 +32,8 @@ public protocol LinkPreviewState {
     func title() -> String?
     func imageState() -> LinkPreviewImageState
     func image() -> UIImage?
+    func previewDescription() -> String?
+    func date() -> Date?
 }
 
 // MARK: -
@@ -65,6 +67,15 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
     public func image() -> UIImage? {
         return nil
     }
+
+    public func previewDescription() -> String? {
+        return nil
+    }
+
+    public func date() -> Date? {
+        return nil
+    }
+
 }
 
 // MARK: -
@@ -121,6 +132,14 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
             return nil
         }
         return image
+    }
+
+    public func previewDescription() -> String? {
+        linkPreviewDraft.previewDescription
+    }
+
+    public func date() -> Date? {
+        linkPreviewDraft.date
     }
 }
 
@@ -232,6 +251,14 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         }
 
         return image
+    }
+
+    public func previewDescription() -> String? {
+        linkPreview.previewDescription
+    }
+
+    public func date() -> Date? {
+        linkPreview.date
     }
 }
 
@@ -346,6 +373,13 @@ public class LinkPreviewImageView: UIImageView {
 public class LinkPreviewView: UIStackView {
     private weak var draftDelegate: LinkPreviewViewDraftDelegate?
 
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
+
     @objc
     public var state: LinkPreviewState? {
         didSet {
@@ -442,7 +476,7 @@ public class LinkPreviewView: UIStackView {
             return
         }
 
-        self.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        self.addBackgroundView(withBackgroundColor: Theme.secondaryBackgroundColor)
 
         if let imageView = createImageView(state: state) {
             if sentIsHero(state: state) {
@@ -524,6 +558,9 @@ public class LinkPreviewView: UIStackView {
         if let titleLabel = sentTitleLabel(state: state) {
             textStack.addArrangedSubview(titleLabel)
         }
+        if let descriptionLabel = sentDescriptionLabel(state: state) {
+            textStack.addArrangedSubview(descriptionLabel)
+        }
         let domainLabel = sentDomainLabel(state: state)
         textStack.addArrangedSubview(domainLabel)
 
@@ -567,6 +604,7 @@ public class LinkPreviewView: UIStackView {
     }
 
     private let sentTitleLineCount: Int = 2
+    private let sentDescriptionLineCount: Int = 3
 
     private func sentTitleLabel(state: LinkPreviewState) -> UILabel? {
         guard let text = state.title() else {
@@ -577,18 +615,35 @@ public class LinkPreviewView: UIStackView {
         label.font = UIFont.systemFont(ofSize: sentTitleFontSizePoints).ows_semibold()
         label.textColor = Theme.primaryTextColor
         label.numberOfLines = sentTitleLineCount
-        label.lineBreakMode = .byWordWrapping
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }
+
+    private func sentDescriptionLabel(state: LinkPreviewState) -> UILabel? {
+        guard let text = state.previewDescription() else { return nil }
+        let label = UILabel()
+        label.text = text
+        label.font = UIFont.ows_dynamicTypeSubheadline
+        label.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+        label.numberOfLines = sentDescriptionLineCount
+        label.lineBreakMode = .byTruncatingTail
         return label
     }
 
     private func sentDomainLabel(state: LinkPreviewState) -> UILabel {
         let label = UILabel()
+
+        var labelText: String
         if let displayDomain = state.displayDomain(),
             displayDomain.count > 0 {
-            label.text = displayDomain.uppercased()
+            labelText = displayDomain.lowercased()
         } else {
-            label.text = NSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()
+            labelText = NSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()
         }
+        if let date = state.date() {
+            labelText.append(" ⋅ \(Self.dateFormatter.string(from: date))")
+        }
+        label.text = labelText
         label.font = UIFont.systemFont(ofSize: sentDomainFontSizePoints)
         label.textColor = Theme.secondaryTextAndIconColor
         return label
@@ -656,10 +711,21 @@ public class LinkPreviewView: UIStackView {
             label.font = UIFont.ows_dynamicTypeBody
             textStack.addArrangedSubview(label)
         }
+        if let description = state.previewDescription(), description.count > 0 {
+            let label = UILabel()
+            label.text = description
+            label.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+            label.font = UIFont.ows_dynamicTypeSubheadline
+            textStack.addArrangedSubview(label)
+        }
         if let displayDomain = state.displayDomain(),
             displayDomain.count > 0 {
             let label = UILabel()
-            label.text = displayDomain.uppercased()
+            var labelText = displayDomain.lowercased()
+            if let date = state.date() {
+                labelText.append(" ⋅ \(Self.dateFormatter.string(from: date))")
+            }
+            label.text = labelText
             label.textColor = Theme.secondaryTextAndIconColor
             label.font = UIFont.ows_dynamicTypeCaption1
             textStack.addArrangedSubview(label)
@@ -842,6 +908,12 @@ public class LinkPreviewView: UIStackView {
             let maxTitleLabelHeight: CGFloat = ceil(CGFloat(sentTitleLineCount) * titleLabel.font.lineHeight)
             result.width = max(result.width, titleLabelSize.width)
             result.height += min(maxTitleLabelHeight, titleLabelSize.height) + sentVSpacing
+        }
+        if let descriptionLabel = sentDescriptionLabel(state: state) {
+            let descriptionLabelSize = CGSizeCeil(descriptionLabel.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)))
+            let maxDescriptionLabelHeight: CGFloat = ceil(CGFloat(sentDescriptionLineCount) * descriptionLabel.font.lineHeight)
+            result.width = max(result.width, descriptionLabelSize.width)
+            result.height += min(maxDescriptionLabelHeight, descriptionLabelSize.height) + sentVSpacing
         }
 
         return result
