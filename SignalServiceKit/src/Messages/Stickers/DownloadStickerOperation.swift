@@ -78,7 +78,7 @@ class DownloadStickerOperation: CDNDownloadOperation {
         let urlPath = "stickers/\(stickerInfo.packId.hexadecimalString)/full/\(stickerInfo.stickerId)"
 
         firstly {
-            return try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
+            return try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDataDownloadSize)
         }.done(on: DispatchQueue.global()) { [weak self] data in
             guard let self = self else {
                 return
