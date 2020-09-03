@@ -125,15 +125,19 @@ public class GroupLinkViewController: OWSTableViewController {
                                      customRowHeight: UITableView.automaticDimension))
 
             if groupModelV2.isGroupInviteLinkEnabled {
-                section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
+                section.add(OWSTableItem.actionItem(icon: ThemeIcon.messageActionShare,
+                                                    tintColor: Theme.accentBlueColor,
+                                                    name: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
                                                                                 comment: "Label for the 'share link' button in the 'group link' view."),
                                                     textColor: Theme.accentBlueColor,
                                                     accessibilityIdentifier: "group_link_view_share_link",
                                                     actionBlock: { [weak self] in
                                                         self?.shareLinkPressed()
                 }))
-                section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
-                                                                                comment: "Label for the 'reset link' button in the 'group link' view."),
+                section.add(OWSTableItem.actionItem(icon: ThemeIcon.retry24,
+                                                    tintColor: Theme.accentBlueColor,
+                                                    name: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
+                                                                            comment: "Label for the 'reset link' button in the 'group link' view."),
                                                     textColor: Theme.accentBlueColor,
                                                     accessibilityIdentifier: "group_link_view_reset_link",
                                                     actionBlock: { [weak self] in
@@ -204,7 +208,9 @@ public class GroupLinkViewController: OWSTableViewController {
     }
 
     private func showShareLinkAlert() {
-        let actionSheet = ActionSheetController()
+        let message = NSLocalizedString("GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE",
+                                      comment: "Message for the 'share group link' action sheet in the 'group link' view.")
+        let actionSheet = ActionSheetController(message: message)
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
                                                                          comment: "Label for the 'share group link via Signal' button in the 'group link' view."),
                                                 style: .default) { _ in

@@ -32,7 +32,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     private func createContents() {
 
-        let qrCodeView = QRCodeView(useCircularWrapper: false)
+        let qrCodeView = QRCodeView(useCircularWrapper: true)
         let qrCodeViewWrapper = UIStackView(arrangedSubviews: [qrCodeView])
         qrCodeViewWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 40, bottom: 0, trailing: 40)
         qrCodeViewWrapper.isLayoutMarginsRelativeArrangement = true

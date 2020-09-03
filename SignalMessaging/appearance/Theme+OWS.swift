@@ -80,6 +80,7 @@ public enum ThemeIcon: UInt {
     case phoneX16
     case photo16
     case profile16
+    case retry24
     case safetyNumber16
     case timerDisabled16
     case timer16
@@ -279,6 +280,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "photo-solid-16" : "photo-outline-16"
         case .profile16:
             return isDarkThemeEnabled ? "profile-solid-16" : "profile-outline-16"
+        case .retry24:
+            return "retry-24"
         case .safetyNumber16:
             return isDarkThemeEnabled ? "safety-number-solid-16" : "safety-number-outline-16"
         case .timerDisabled16:
