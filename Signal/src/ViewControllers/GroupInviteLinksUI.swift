@@ -117,6 +117,12 @@ class GroupInviteLinksActionSheet: ActionSheetController {
 
     private static let avatarSize: UInt = 112
 
+    private let messageLabel = UILabel()
+
+    private var cancelButton: UIView?
+    private var joinButton: UIView?
+    private var invalidOkayButton: UIView?
+
     private func createContents() {
 
         let header = UIView()
@@ -141,7 +147,6 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         headerStack.axis = .vertical
         headerStack.alignment = .center
 
-        let messageLabel = UILabel()
         messageLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE",
                                               comment: "Message text for the 'group invite link' action sheet.")
         messageLabel.font = UIFont.ows_dynamicTypeSubheadline
@@ -157,19 +162,32 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                                                 target: self,
                                                 selector: #selector(didTapCancel))
         cancelButton.autoSetHeightUsingFont()
+        self.cancelButton = cancelButton
 
         let joinButton = OWSFlatButton.button(title: NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
                                                                        comment: "Label for the 'join' button in the 'group invite link' action sheet."),
-                                                font: UIFont.ows_dynamicTypeBody.ows_semibold(),
-                                                titleColor: .ows_accentBlue,
-                                                backgroundColor: Theme.washColor,
-                                                target: self,
-                                                selector: #selector(didTapJoin))
+                                              font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                              titleColor: .ows_accentBlue,
+                                              backgroundColor: Theme.washColor,
+                                              target: self,
+                                              selector: #selector(didTapJoin))
         joinButton.autoSetHeightUsingFont()
+        self.joinButton = joinButton
+
+        let invalidOkayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
+                                              font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                              titleColor: Theme.primaryTextColor,
+                                              backgroundColor: Theme.washColor,
+                                              target: self,
+                                              selector: #selector(didTapInvalidOkay))
+        invalidOkayButton.autoSetHeightUsingFont()
+        invalidOkayButton.isHidden = true
+        self.invalidOkayButton = invalidOkayButton
 
         let buttonStack = UIStackView(arrangedSubviews: [
             cancelButton,
-            joinButton
+            joinButton,
+            invalidOkayButton
         ])
         buttonStack.axis = .horizontal
         buttonStack.alignment = .fill
@@ -211,9 +229,11 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             if let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
                 self?.loadGroupAvatar(avatarUrlPath: avatarUrlPath)
             }
-        }.catch { error in
-            // TODO: Retry errors?
-            if IsNetworkConnectivityFailure(error) {
+        }.catch { [weak self] error in
+            if case GroupsV2Error.expiredGroupInviteLink = error {
+                self?.applyExpiredGroupInviteLink()
+            } else if IsNetworkConnectivityFailure(error) {
+                // TODO: Retry errors?
                 Logger.warn("Error: \(error)")
             } else {
                 owsFailDebug("Error: \(error)")
@@ -272,8 +292,28 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         self.avatarData = groupAvatar
     }
 
+    private func applyExpiredGroupInviteLink() {
+        AssertIsOnMainThread()
+
+        self.groupInviteLinkPreview = nil
+
+        groupTitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
+                                                 comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet.")
+        groupSubtitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
+                                                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
+        messageLabel.textColor = Theme.backgroundColor
+        cancelButton?.isHidden = true
+        joinButton?.isHidden = true
+        invalidOkayButton?.isHidden = false
+    }
+
     @objc
     func didTapCancel(_ sender: UIButton) {
+        dismiss(animated: true)
+    }
+
+    @objc
+    func didTapInvalidOkay(_ sender: UIButton) {
         dismiss(animated: true)
     }
 
@@ -339,11 +379,28 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                         SignalApp.shared().presentConversation(for: groupThread, animated: true)
                     }
                 }
-            }.catch { _ in
+            }.catch { error in
+                Logger.warn("Error: \(error)")
+                Logger.flush()
                 modalActivityIndicator.dismiss {
                     AssertIsOnMainThread()
-                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
-                                                                              comment: "Error message indicating that the local user does not support groups v2."))
+
+                    let title = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
+                                                  comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet.")
+                    let message: String
+                    if case GroupsV2Error.expiredGroupInviteLink = error {
+                        message = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
+                                                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
+                    } else if IsNetworkConnectivityFailure(error) {
+                        message = NSLocalizedString("GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
+                                                    comment: "Error message the attempt to request to join the group failed due to network connectivity.")
+                    } else {
+                        message = NSLocalizedString("GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",
+                                                    comment: "Error message the attempt to request to join the group failed.")
+                    }
+                    OWSActionSheets.showActionSheet(title: title,
+                                                    message: message,
+                                                    fromViewController: self)
                 }
             }
         }

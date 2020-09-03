@@ -750,6 +750,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         case removeFromGroup
         case fetchGroupUpdates
         case ignore
+        case expiredGroupInviteLink
     }
 
     private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
@@ -833,10 +834,19 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                 // to latest" to check for and handle that case (see
                                 // previous case).
                                 self.tryToUpdateGroupToLatest(groupId: groupId)
+                            case .expiredGroupInviteLink:
+                                owsFailDebug("Unexpected group id.")
+                                resolver.reject(GroupsV2Error.expiredGroupInviteLink)
+                                break
                             }
                         } else {
                             // We should only receive 403 when groupId is not nil.
-                            owsFailDebug("Missing groupId.")
+                            if behavior403 == .expiredGroupInviteLink {
+                                resolver.reject(GroupsV2Error.expiredGroupInviteLink)
+                                return
+                            } else {
+                                owsFailDebug("Missing groupId.")
+                            }
                         }
 
                         resolver.reject(GroupsV2Error.localUserNotInGroup)
@@ -1349,7 +1359,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
             self.performServiceRequest(requestBuilder: requestBuilder,
                                        groupId: nil,
-                                       behavior403: .fail)
+                                       behavior403: .expiredGroupInviteLink)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupInviteLinkPreview in
             guard let protoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -1500,7 +1510,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              behavior403: .fail)
+                                              behavior403: .expiredGroupInviteLink)
         }.then(on: .global()) { (response: OWSHTTPResponse) -> Promise<TSGroupThread> in
             guard let changeActionsProtoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")

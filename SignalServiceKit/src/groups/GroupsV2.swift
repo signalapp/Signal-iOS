@@ -21,6 +21,7 @@ public enum GroupsV2Error: Error {
     case localUserIsAlreadyRequestingMember
     case requestingMemberCantLoadGroupState
     case cantApplyChangesToPlaceholder
+    case expiredGroupInviteLink
 }
 
 // MARK: -
