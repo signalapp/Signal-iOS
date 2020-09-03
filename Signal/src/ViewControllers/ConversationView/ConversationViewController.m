@@ -186,7 +186,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 @property (nonatomic, nullable) NSString *lastSearchedText;
 
-@property (nonatomic, nullable) MessageRequestView *messageRequestView;
+@property (nonatomic, nullable) UIView *messageRequestView;
 
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 
@@ -5347,8 +5347,10 @@ typedef enum : NSUInteger {
         return;
     }
 
-    self.messageRequestView = [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
-    self.messageRequestView.delegate = self;
+    [self.messageRequestView removeFromSuperview];
+    MessageRequestView *messageRequestView = [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
+    messageRequestView.delegate = self;
+    self.messageRequestView = messageRequestView;
     [self reloadBottomBar];
 }
 
