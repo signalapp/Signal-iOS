@@ -20,6 +20,7 @@ final class LightModeSheet : Sheet {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        explanationLabel.textAlignment = .center
         explanationLabel.text = """
         Whoops, who left the lights on?
 
