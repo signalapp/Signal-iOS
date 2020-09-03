@@ -366,6 +366,9 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2editMemberAccess = build.includes(.qa)
 
     @objc
+    public static let groupsV2ForceInviteLinks = build.includes(.qa)
+
+    @objc
     public static let isMessageProcessingVerbose = false
 
     // Currently this flag is only honored by TSNetworkManager,

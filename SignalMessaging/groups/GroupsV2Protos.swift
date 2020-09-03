@@ -269,23 +269,28 @@ public class GroupsV2Protos {
         // After parsing, we should fill in profileKeys in the profile manager.
         var profileKeys = [UUID: Data]()
 
-        var members = [GroupV2SnapshotImpl.Member]()
+        var groupMembershipBuilder = GroupMembership.Builder()
+
         for memberProto in groupProto.members {
             guard let userID = memberProto.userID else {
                 throw OWSAssertionError("Group member missing userID.")
             }
-            guard memberProto.hasRole, let role = memberProto.role else {
-                throw OWSAssertionError("Group member missing role.")
+            guard memberProto.hasRole,
+                let protoRole = memberProto.role,
+                let role = TSGroupMemberRole.role(for: protoRole) else {
+                    throw OWSAssertionError("Group member missing role.")
             }
 
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userID)
 
-            let member = GroupV2SnapshotImpl.Member(userID: userID,
-                                                    uuid: uuid,
-                                                    role: role)
-            members.append(member)
+            let address = SignalServiceAddress(uuid: uuid)
+            guard !groupMembershipBuilder.hasMemberOfAnyKind(address) else {
+                owsFailDebug("Duplicate user in group: \(address)")
+                continue
+            }
+            groupMembershipBuilder.addFullMember(address, role: role, didJoinFromInviteLink: false)
 
             guard let profileKeyCiphertextData = memberProto.profileKey else {
                 throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
@@ -296,8 +301,6 @@ public class GroupsV2Protos {
             profileKeys[uuid] = profileKey
         }
 
-        var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
-        var invalidInvites = [InvalidInvite]()
         for pendingMemberProto in groupProto.pendingMembers {
             guard let memberProto = pendingMemberProto.member else {
                 throw OWSAssertionError("Group pending member missing memberProto.")
@@ -305,15 +308,13 @@ public class GroupsV2Protos {
             guard let userId = memberProto.userID else {
                 throw OWSAssertionError("Group pending member missing userID.")
             }
-            guard pendingMemberProto.hasTimestamp else {
-                throw OWSAssertionError("Group pending member missing timestamp.")
-            }
             guard let addedByUserId = pendingMemberProto.addedByUserID else {
                 throw OWSAssertionError("Group pending member missing addedByUserID.")
             }
-            let timestamp = pendingMemberProto.timestamp
-            guard memberProto.hasRole, let role = memberProto.role else {
-                throw OWSAssertionError("Group member missing role.")
+            guard memberProto.hasRole,
+                let protoRole = memberProto.role,
+                let role = TSGroupMemberRole.role(for: protoRole) else {
+                    throw OWSAssertionError("Group member missing role.")
             }
 
             // Some userIds/uuidCiphertexts can be validated by
@@ -327,7 +328,11 @@ public class GroupsV2Protos {
             do {
                 uuid = try groupV2Params.uuid(forUserId: userId)
             } catch {
-                invalidInvites.append(InvalidInvite(userId: userId, addedByUserId: addedByUserId))
+                guard !groupMembershipBuilder.hasInvalidInvite(userId: userId) else {
+                    owsFailDebug("Duplicate invalid invite in group: \(userId)")
+                    continue
+                }
+                groupMembershipBuilder.addInvalidInvite(userId: userId, addedByUserId: addedByUserId)
                 if DebugFlags.groupsV2ignoreCorruptInvites {
                     Logger.warn("Error parsing uuid: \(error)")
                 } else {
@@ -335,13 +340,40 @@ public class GroupsV2Protos {
                 }
                 continue
             }
-            let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userId,
-                                                                  uuid: uuid,
-                                                                  timestamp: timestamp,
-                                                                  role: role,
-                                                                  addedByUuid: addedByUuid)
-            pendingMembers.append(pendingMember)
+            let address = SignalServiceAddress(uuid: uuid)
+            guard !groupMembershipBuilder.hasMemberOfAnyKind(address) else {
+                owsFailDebug("Duplicate user in group: \(address)")
+                continue
+            }
+            groupMembershipBuilder.addInvitedMember(address, role: role, addedByUuid: addedByUuid)
         }
+
+        for requestingMemberProto in groupProto.requestingMembers {
+            guard let userId = requestingMemberProto.userID else {
+                throw OWSAssertionError("Group requesting member missing userID.")
+            }
+
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
+            let uuid = try groupV2Params.uuid(forUserId: userId)
+
+            let address = SignalServiceAddress(uuid: uuid)
+            guard !groupMembershipBuilder.hasMemberOfAnyKind(address) else {
+                owsFailDebug("Duplicate user in group: \(address)")
+                continue
+            }
+            groupMembershipBuilder.addRequestingMember(address)
+
+            guard let profileKeyCiphertextData = requestingMemberProto.profileKey else {
+                throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
+            }
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
+            profileKeys[uuid] = profileKey
+        }
+
+        let groupMembership = groupMembershipBuilder.build()
 
         let inviteLinkPassword = groupProto.inviteLinkPassword
 
@@ -376,9 +408,7 @@ public class GroupsV2Protos {
                                    title: title,
                                    avatarUrlPath: avatarUrlPath,
                                    avatarData: avatarData,
-                                   members: members,
-                                   pendingMembers: pendingMembers,
-                                   invalidInvites: invalidInvites,
+                                   groupMembership: groupMembership,
                                    groupAccess: groupAccess,
                                    inviteLinkPassword: inviteLinkPassword,
                                    disappearingMessageToken: disappearingMessageToken,

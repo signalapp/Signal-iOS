@@ -94,7 +94,7 @@ struct GroupUpdateCopy {
     let groupUpdateSourceAddress: SignalServiceAddress?
     let updater: Updater
     let transaction: SDSAnyReadTransaction
-    let isReplacingPlaceholder: Bool
+    let isReplacingJoinRequestPlaceholder: Bool
 
     // The update items, in order.
     public private(set) var itemList = [GroupUpdateCopyItem]()
@@ -119,9 +119,9 @@ struct GroupUpdateCopy {
         self.updater = GroupUpdateCopy.updater(groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                transaction: transaction)
         if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-            self.isReplacingPlaceholder = oldGroupModelV2.isPlaceholder
+            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPendingJoinRequestPlaceholder
         } else {
-            self.isReplacingPlaceholder = false
+            self.isReplacingJoinRequestPlaceholder = false
         }
 
         switch updater {
@@ -154,7 +154,7 @@ struct GroupUpdateCopy {
 
             let oldGroupMembership = oldGroupModel.groupMembership
 
-            if isReplacingPlaceholder {
+            if isReplacingJoinRequestPlaceholder {
                 addMembershipUpdates(oldGroupMembership: oldGroupMembership,
                                      forLocalUserOnly: true)
             } else {

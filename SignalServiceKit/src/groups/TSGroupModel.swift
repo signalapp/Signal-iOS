@@ -29,7 +29,7 @@ public class TSGroupModelV2: TSGroupModel {
     // We sometimes create "placeholder" models to reflect
     // groups that we don't have access to on the service.
     @objc
-    public var isPlaceholder: Bool = false
+    public var isPendingJoinRequestPlaceholder: Bool = false
 
     @objc
     public required init(groupId: Data,
@@ -41,7 +41,7 @@ public class TSGroupModelV2: TSGroupModel {
                          secretParamsData: Data,
                          avatarUrlPath: String?,
                          inviteLinkPassword: Data?,
-                         isPlaceholder: Bool) {
+                         isPendingJoinRequestPlaceholder: Bool) {
         assert(secretParamsData.count > 0)
 
         self.membership = groupMembership
@@ -50,7 +50,7 @@ public class TSGroupModelV2: TSGroupModel {
         self.revision = revision
         self.avatarUrlPath = avatarUrlPath
         self.inviteLinkPassword = inviteLinkPassword
-        self.isPlaceholder = isPlaceholder
+        self.isPendingJoinRequestPlaceholder = isPendingJoinRequestPlaceholder
 
         super.init(groupId: groupId,
                    name: name,
@@ -146,9 +146,9 @@ public extension TSGroupModelV2 {
 
         switch access.addFromInviteLink {
         case .any:
-            return .enabledWithApproval
-        case .administrator:
             return .enabledWithoutApproval
+        case .administrator:
+            return .enabledWithApproval
         default:
             return .disabled
         }

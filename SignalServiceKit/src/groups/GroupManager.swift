@@ -1283,7 +1283,10 @@ public class GroupManager: NSObject {
     }
 
     public static func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        groupsV2.parseGroupInviteLink(url)
+        guard RemoteConfig.groupsV2InviteLinks else {
+            return nil
+        }
+        return groupsV2.parseGroupInviteLink(url)
     }
 
     @objc
@@ -1318,6 +1321,24 @@ public class GroupManager: NSObject {
         }
     }
 
+    public static func acceptOrDenyMemberRequestsV2(groupModel: TSGroupModelV2,
+                                                    uuids: [UUID],
+                                                    shouldAccept: Bool) -> Promise<TSGroupThread> {
+        let description = (shouldAccept
+            ? "Accept group member request"
+            : "Deny group member request")
+        return updateGroupV2(groupModel: groupModel,
+                             description: description) { groupChangeSet in
+                                for uuid in uuids {
+                                    if shouldAccept {
+                                        groupChangeSet.addMember(uuid, role: .`normal`)
+                                    } else {
+                                        groupChangeSet.removeMember(uuid)
+                                    }
+                                }
+        }
+    }
+
     // MARK: - Generic Group Change
 
     public static func updateGroupV2(groupModel: TSGroupModelV2,
@@ -1348,6 +1369,13 @@ public class GroupManager: NSObject {
             Logger.warn("Missing group in database.")
             return
         }
+
+        if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
+            groupModelV2.isPendingJoinRequestPlaceholder {
+            Logger.warn("Ignoring 403 for placeholder group.")
+            return
+        }
+
         // Remove local user from group.
         // We do _not_ bump the revision number since this (unlike all other
         // changes to group state) is inferred from a 403. This is fine; if

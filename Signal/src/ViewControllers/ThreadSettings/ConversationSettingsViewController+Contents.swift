@@ -810,18 +810,20 @@ extension ConversationSettingsViewController {
 
         }))
 
-        let groupLinkStatus = (groupModelV2.isGroupInviteLinkEnabled
-            ? CommonStrings.switchOn
-            : CommonStrings.switchOff)
-        section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
-                                                name: NSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
-                                                                        comment: "Label for 'group link' action in conversation settings view."),
-                                                accessoryText: groupLinkStatus,
-                                                accessibilityIdentifier: "conversation_settings_group_link",
-                                                actionBlock: {  [weak self] in
-                                                    self?.showGroupLinkView()
+        if RemoteConfig.groupsV2InviteLinks {
+            let groupLinkStatus = (groupModelV2.isGroupInviteLinkEnabled
+                ? CommonStrings.switchOn
+                : CommonStrings.switchOff)
+            section.add(OWSTableItem.disclosureItem(icon: .settingsLink,
+                                                    name: NSLocalizedString("CONVERSATION_SETTINGS_GROUP_LINK",
+                                                                            comment: "Label for 'group link' action in conversation settings view."),
+                                                    accessoryText: groupLinkStatus,
+                                                    accessibilityIdentifier: "conversation_settings_group_link",
+                                                    actionBlock: {  [weak self] in
+                                                        self?.showGroupLinkView()
 
-        }))
+            }))
+        }
 
         contents.addSection(section)
     }

@@ -117,42 +117,34 @@ class GroupViewHelper: NSObject {
 
     // Can local user edit group access.
     var canEditConversationAccess: Bool {
-        if threadViewModel.hasPendingMessageRequest {
-            return false
-        }
-        guard isLocalUserFullMember else {
-            return false
-        }
         guard let groupThread = thread as? TSGroupThread else {
-            // Contact threads don't use access.
             return false
         }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            // v1 groups don't use access.
-            return false
-        }
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return false
-        }
-        return groupModelV2.groupMembership.isFullMemberAndAdministrator(localAddress)
+        return (!threadViewModel.hasPendingMessageRequest &&
+            groupThread.isGroupV2Thread &&
+            groupThread.isLocalUserFullMemberAndAdministrator)
     }
 
     var canRevokePendingInvites: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return false
-        }
-        let groupMembership = groupThread.groupModel.groupMembership
         return (!threadViewModel.hasPendingMessageRequest &&
-            groupMembership.isFullMemberAndAdministrator(localAddress))
+            groupThread.isGroupV2Thread &&
+            groupThread.isLocalUserFullMemberAndAdministrator)
     }
 
     var canResendInvites: Bool {
         return (!threadViewModel.hasPendingMessageRequest && isLocalUserFullMember)
+    }
+
+    var canApproveMemberRequests: Bool {
+        guard let groupThread = thread as? TSGroupThread else {
+            return false
+        }
+        return (!threadViewModel.hasPendingMessageRequest &&
+            groupThread.isGroupV2Thread &&
+            groupThread.isLocalUserFullMemberAndAdministrator)
     }
 
     var isLocalUserFullMember: Bool {

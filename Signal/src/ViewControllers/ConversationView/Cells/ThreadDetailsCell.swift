@@ -168,6 +168,12 @@ public class ThreadDetailsCell: ConversationViewCell {
 
         switch viewItem.thread {
         case let groupThread as TSGroupThread:
+            if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
+                groupModelV2.isPendingJoinRequestPlaceholder {
+                // Don't show details for a placeholder.
+                return
+            }
+
             let memberCount = groupThread.groupModel.groupMembers.count
             details = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         case let contactThread as TSContactThread where contactThread.isNoteToSelf:

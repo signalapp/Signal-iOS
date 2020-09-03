@@ -122,10 +122,7 @@ public class GroupLinkViewController: OWSTableViewController {
 
                 return cell
             },
-                                     customRowHeight: UITableView.automaticDimension,
-                                     actionBlock: {
-                UIApplication.shared.open(SupportConstants.supportURL, options: [:])
-            }))
+                                     customRowHeight: UITableView.automaticDimension))
 
             if groupModelV2.isGroupInviteLinkEnabled {
                 section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",

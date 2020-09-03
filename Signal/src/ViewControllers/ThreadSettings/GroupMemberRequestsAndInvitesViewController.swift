@@ -5,14 +5,14 @@
 import Foundation
 import PromiseKit
 
-protocol PendingGroupMembersViewControllerDelegate: class {
-    func pendingGroupMembersViewDidUpdate()
+protocol GroupMemberRequestsAndInvitesViewControllerDelegate: class {
+    func requestsAndInvitesViewDidUpdate()
 }
 
 // MARK: -
 
 @objc
-public class PendingGroupMembersViewController: OWSTableViewController {
+public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController {
 
     // MARK: - Dependencies
 
@@ -30,14 +30,35 @@ public class PendingGroupMembersViewController: OWSTableViewController {
 
     // MARK: -
 
-    weak var pendingGroupMembersViewControllerDelegate: PendingGroupMembersViewControllerDelegate?
+    weak var groupMemberRequestsAndInvitesViewControllerDelegate: GroupMemberRequestsAndInvitesViewControllerDelegate?
+
+    private let oldGroupThread: TSGroupThread
 
     private var groupModel: TSGroupModel
 
     private let groupViewHelper: GroupViewHelper
 
-    required init(groupModel: TSGroupModel, groupViewHelper: GroupViewHelper) {
-        self.groupModel = groupModel
+    private enum Mode: Int, CaseIterable {
+        case memberRequests = 0
+        case pendingInvites = 1
+
+        var title: String {
+            switch self {
+            case .memberRequests:
+                return NSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE",
+                                         comment: "Label for the 'member requests' mode of the 'group requests and invites' view.")
+            case .pendingInvites:
+                return NSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE",
+                                         comment: "Label for the 'pending invites' mode of the 'group requests and invites' view.")
+            }
+        }
+    }
+
+    private let segmentedControl = UISegmentedControl()
+
+    required init(groupThread: TSGroupThread, groupViewHelper: GroupViewHelper) {
+        self.oldGroupThread = groupThread
+        self.groupModel = groupThread.groupModel
         self.groupViewHelper = groupViewHelper
 
         super.init()
@@ -49,23 +70,140 @@ public class PendingGroupMembersViewController: OWSTableViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("PENDING_GROUP_MEMBERS_VIEW_TITLE",
-                                  comment: "The title for the 'pending group members' view.")
+        title = NSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_TITLE",
+                                  comment: "The title for the 'group requests and invites' view.")
 
-        self.useThemeBackgroundColors = true
+        self.useThemeBackgroundColors = false
 
+        configureSegmentedControl()
+
+        updateTableContents()
+    }
+
+    private func configureSegmentedControl() {
+        for mode in Mode.allCases {
+            assert(mode.rawValue == segmentedControl.numberOfSegments)
+            segmentedControl.insertSegment(withTitle: mode.title, at: mode.rawValue, animated: false)
+        }
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.addTarget(self, action: #selector(segmentedControlDidChange), for: .valueChanged)
+    }
+
+    @objc
+    func segmentedControlDidChange(_ sender: UISwitch) {
         updateTableContents()
     }
 
     // MARK: -
 
     private func updateTableContents() {
+        let contents = OWSTableContents()
+
+        let modeSection = OWSTableSection()
+        let modeHeader = UIStackView(arrangedSubviews: [segmentedControl])
+        modeHeader.axis = .vertical
+        modeHeader.alignment = .fill
+        modeHeader.layoutMargins = UIEdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)
+        modeHeader.isLayoutMarginsRelativeArrangement = true
+        modeSection.customHeaderView = modeHeader
+        contents.addSection(modeSection)
+
+        guard let mode = Mode(rawValue: segmentedControl.selectedSegmentIndex) else {
+            owsFailDebug("Invalid mode.")
+            return
+        }
+
+        switch mode {
+        case .memberRequests:
+            addContentsForMemberRequests(contents: contents)
+        case .pendingInvites:
+            addContentsForPendingInvites(contents: contents)
+        }
+
+        self.contents = contents
+    }
+
+    private func addContentsForMemberRequests(contents: OWSTableContents) {
+
+        let canApproveMemberRequests = groupViewHelper.canApproveMemberRequests
+
+        let groupMembership = groupModel.groupMembership
+        let requestingMembersSorted = databaseStorage.uiRead { transaction in
+            self.contactsManager.sortSignalServiceAddresses(Array(groupMembership.requestingMembers),
+                                                            transaction: transaction)
+        }
+
+        let section = OWSTableSection()
+        section.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS",
+                                                comment: "Title for the 'pending member requests' section of the 'member requests and invites' view.")
+        let footerFormat = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT",
+                                                comment: "Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}.")
+        let groupName = self.contactsManager.displayNameWithSneakyTransaction(thread: oldGroupThread)
+        section.footerTitle = String(format: footerFormat, groupName)
+
+        if !requestingMembersSorted.isEmpty {
+            for address in requestingMembersSorted {
+                section.add(OWSTableItem(customCellBlock: { [weak self] in
+                    guard let self = self else {
+                        owsFailDebug("Missing self")
+                        return OWSTableItem.newCell()
+                    }
+
+                    let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil, allowUserInteraction: true)
+
+                    if canApproveMemberRequests {
+                        cell.ows_setAccessoryView(self.buildMemberRequestButtons(address: address))
+                    }
+
+                    cell.configure(withRecipientAddress: address)
+                    return cell
+                    },
+                                              customRowHeight: UITableView.automaticDimension) { [weak self] in
+                                                self?.showMemberActionSheet(for: address)
+                })
+            }
+        } else {
+            section.add(OWSTableItem.softCenterLabel(withText: NSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS",
+                                                                                      comment: "Label indicating that a group has no pending member requests."),
+                                                          customRowHeight: UITableView.automaticDimension))
+        }
+        contents.addSection(section)
+    }
+
+    private func buildMemberRequestButtons(address: SignalServiceAddress) -> UIView {
+        let denyButton = OWSButton()
+        denyButton.setTemplateImageName("deny-28", tintColor: Theme.primaryIconColor)
+        denyButton.accessibilityIdentifier = "member-request-deny"
+        denyButton.block = { [weak self] in
+            self?.denyMemberRequest(address: address)
+        }
+
+        let approveButton = OWSButton()
+        approveButton.setTemplateImageName("approve-28", tintColor: Theme.primaryIconColor)
+        approveButton.accessibilityIdentifier = "member-request-approveButton"
+        approveButton.block = { [weak self] in
+            self?.approveMemberRequest(address: address)
+        }
+
+        let stackView = UIStackView(arrangedSubviews: [denyButton, approveButton])
+        stackView.axis = .horizontal
+        stackView.spacing = 18
+        return stackView
+    }
+
+    private func approveMemberRequest(address: SignalServiceAddress) {
+        showAcceptMemberRequestUI(address: address)
+    }
+
+    private func denyMemberRequest(address: SignalServiceAddress) {
+        showDenyMemberRequestUI(address: address)
+    }
+
+    private func addContentsForPendingInvites(contents: OWSTableContents) {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("missing local address")
             return
         }
-
-        let contents = OWSTableContents()
 
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
@@ -99,7 +237,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
 
         let localSection = OWSTableSection()
         localSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED",
-                                                     comment: "Title for the 'people you invited' section of the 'pending group members' view.")
+                                                     comment: "Title for the 'people you invited' section of the 'member requests and invites' view.")
         if membersInvitedByLocalUser.count > 0 {
             for address in membersInvitedByLocalUser {
                 localSection.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -126,8 +264,8 @@ public class PendingGroupMembersViewController: OWSTableViewController {
             }
         } else {
             localSection.add(OWSTableItem.softCenterLabel(withText: NSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
-                                                                                 comment: "Label indicating that a group has no pending members."),
-                                                     customRowHeight: UITableView.automaticDimension))
+                                                                                      comment: "Label indicating that a group has no pending members."),
+                                                          customRowHeight: UITableView.automaticDimension))
         }
         contents.addSection(localSection)
 
@@ -135,9 +273,9 @@ public class PendingGroupMembersViewController: OWSTableViewController {
 
         let otherUsersSection = OWSTableSection()
         otherUsersSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS",
-                                                          comment: "Title for the 'invites by other group members' section of the 'pending group members' view.")
+                                                          comment: "Title for the 'invites by other group members' section of the 'member requests and invites' view.")
         otherUsersSection.footerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS",
-                                                          comment: "Footer for the 'invites by other group members' section of the 'pending group members' view.")
+                                                          comment: "Footer for the 'invites by other group members' section of the 'member requests and invites' view.")
 
         if membersInvitedByOtherUsers.count > 0 {
             let inviterAddresses = databaseStorage.uiRead { transaction in
@@ -200,7 +338,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
         if canRevokeInvites, invalidInvitesCount > 0 {
             let invalidInvitesSection = OWSTableSection()
             invalidInvitesSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES",
-                                                                  comment: "Title for the 'invalid invites' section of the 'pending group members' view.")
+                                                                  comment: "Title for the 'invalid invites' section of the 'member requests and invites' view.")
 
             let cellTitle: String
             if invalidInvitesCount > 1 {
@@ -213,24 +351,28 @@ public class PendingGroupMembersViewController: OWSTableViewController {
             }
 
             invalidInvitesSection.add(OWSTableItem.disclosureItem(withText: cellTitle) { [weak self] in
-                                                self?.revokeInvalidInvites()
+                self?.revokeInvalidInvites()
             })
             contents.addSection(invalidInvitesSection)
         }
-
-        self.contents = contents
     }
 
-    fileprivate func reloadGroupModelAndTableContents() {
-        pendingGroupMembersViewControllerDelegate?.pendingGroupMembersViewDidUpdate()
+    fileprivate func reloadContent(groupThread: TSGroupThread?) {
+        groupMemberRequestsAndInvitesViewControllerDelegate?.requestsAndInvitesViewDidUpdate()
 
-        guard let newModel = (databaseStorage.uiRead { (transaction) -> TSGroupModel? in
-            guard let groupThread = TSGroupThread.fetch(groupId: self.groupModel.groupId, transaction: transaction) else {
-                owsFailDebug("Missing group thread.")
-                return nil
+        guard let newModel = { () -> TSGroupModel? in
+            if let groupThread = groupThread {
+                return groupThread.groupModel
             }
-            return groupThread.groupModel
-        }) else {
+            return databaseStorage.read { (transaction) -> TSGroupModel? in
+                guard let groupThread = TSGroupThread.fetch(groupId: self.groupModel.groupId,
+                                                            transaction: transaction) else {
+                    owsFailDebug("Missing group thread.")
+                    return nil
+                }
+                return groupThread.groupModel
+            }
+        }() else {
             navigationController?.popViewController(animated: true)
             return
         }
@@ -378,23 +520,50 @@ public class PendingGroupMembersViewController: OWSTableViewController {
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)
     }
+
+    private func showMemberActionSheet(for address: SignalServiceAddress) {
+        let memberActionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+        memberActionSheet.present(fromViewController: self)
+    }
+
+    private func presentRequestApprovedToast(address: SignalServiceAddress) {
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT",
+                                       comment: "Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}.")
+        let userName = contactsManager.displayName(for: address)
+        let text = String(format: format, userName)
+        presentToast(text: text)
+    }
+
+    private func presentRequestDeniedToast(address: SignalServiceAddress) {
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT",
+                                       comment: "Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}.")
+        let userName = contactsManager.displayName(for: address)
+        let text = String(format: format, userName)
+        presentToast(text: text)
+    }
+
+    private func presentToast(text: String) {
+        let toastController = ToastController(text: text)
+        let bottomInset = bottomLayoutGuide.length + 8
+        toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
+    }
 }
 
 // MARK: -
 
-private extension PendingGroupMembersViewController {
+private extension GroupMemberRequestsAndInvitesViewController {
 
     func revokePendingInvites(addresses: [SignalServiceAddress]) {
         GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
                                                         updatePromiseBlock: {
                                                             self.revokePendingInvitesPromise(addresses: addresses)
         },
-                                                        completion: { [weak self] _ in
-                                                            self?.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] groupThread in
+                                                            self?.reloadContent(groupThread: groupThread)
         })
     }
 
-    func revokePendingInvitesPromise(addresses: [SignalServiceAddress]) -> Promise<Void> {
+    func revokePendingInvitesPromise(addresses: [SignalServiceAddress]) -> Promise<TSGroupThread> {
         guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Invalid group model."))
         }
@@ -408,7 +577,7 @@ private extension PendingGroupMembersViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, uuids: uuids)
-        }.asVoid()
+        }
     }
 
     func revokeInvalidInvites() {
@@ -416,12 +585,12 @@ private extension PendingGroupMembersViewController {
                                                         updatePromiseBlock: {
                                                             self.revokeInvalidInvitesPromise()
         },
-                                                        completion: { [weak self] _ in
-                                                            self?.reloadGroupModelAndTableContents()
+                                                        completion: { [weak self] groupThread in
+                                                            self?.reloadContent(groupThread: groupThread)
         })
     }
 
-    func revokeInvalidInvitesPromise() -> Promise<Void> {
+    func revokeInvalidInvitesPromise() -> Promise<TSGroupThread> {
         guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
             return Promise(error: OWSAssertionError("Invalid group model."))
         }
@@ -431,6 +600,83 @@ private extension PendingGroupMembersViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
-        }.asVoid()
+        }
+    }
+}
+
+// MARK: -
+
+fileprivate extension GroupMemberRequestsAndInvitesViewController {
+
+    func showAcceptMemberRequestUI(address: SignalServiceAddress) {
+
+        let username = contactsManager.displayName(for: address)
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT",
+                                       comment: "Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
+        let alertTitle = String(format: format, username)
+        let actionSheet = ActionSheetController(title: alertTitle)
+
+        let actionTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON",
+                                            comment: "Title of 'accept member request to join group' button.")
+        actionSheet.addAction(ActionSheetAction(title: actionTitle,
+                                                style: .destructive) { _ in
+                                                    self.acceptOrDenyMemberRequests(address: address, shouldAccept: true)
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    func showDenyMemberRequestUI(address: SignalServiceAddress) {
+
+        let username = contactsManager.displayName(for: address)
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT",
+                                       comment: "Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
+        let alertTitle = String(format: format, username)
+        let actionSheet = ActionSheetController(title: alertTitle)
+
+        let actionTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON",
+                                            comment: "Title of 'deny member request to join group' button.")
+        actionSheet.addAction(ActionSheetAction(title: actionTitle,
+                                                style: .destructive) { _ in
+                                                    self.acceptOrDenyMemberRequests(address: address, shouldAccept: false)
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    func acceptOrDenyMemberRequests(address: SignalServiceAddress, shouldAccept: Bool) {
+        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
+                                                        updatePromiseBlock: {
+                                                            self.acceptOrDenyMemberRequestsPromise(addresses: [address],
+                                                                                             shouldAccept: shouldAccept)
+        },
+                                                        completion: { [weak self] groupThread in
+                                                            guard let self = self else { return }
+                                                            if shouldAccept {
+                                                                self.presentRequestApprovedToast(address: address)
+                                                            } else {
+                                                                self.presentRequestDeniedToast(address: address)
+                                                            }
+                                                            self.reloadContent(groupThread: groupThread)
+        })
+    }
+
+    func acceptOrDenyMemberRequestsPromise(addresses: [SignalServiceAddress], shouldAccept: Bool) -> Promise<TSGroupThread> {
+        guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
+            return Promise(error: OWSAssertionError("Invalid group model."))
+        }
+        let uuids = addresses.compactMap { $0.uuid }
+        guard !uuids.isEmpty else {
+            return Promise(error: OWSAssertionError("Invalid addresses."))
+        }
+
+        return firstly { () -> Promise<Void> in
+            return GroupManager.messageProcessingPromise(for: groupModel,
+                                                         description: self.logTag)
+        }.then(on: .global()) { _ in
+            GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, uuids: uuids, shouldAccept: shouldAccept)
+        }
     }
 }

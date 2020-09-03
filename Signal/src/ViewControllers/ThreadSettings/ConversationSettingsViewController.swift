@@ -581,10 +581,10 @@ class ConversationSettingsViewController: OWSTableViewController {
             owsFailDebug("Invalid thread.")
             return
         }
-        let pendingGroupMembersViewController = PendingGroupMembersViewController(groupModel: groupThread.groupModel,
-                                                                                  groupViewHelper: groupViewHelper)
-        pendingGroupMembersViewController.pendingGroupMembersViewControllerDelegate = self
-        navigationController?.pushViewController(pendingGroupMembersViewController, animated: true)
+        let groupMemberRequestsAndInvitesViewController = GroupMemberRequestsAndInvitesViewController(groupThread: groupThread,
+                                                                                                      groupViewHelper: groupViewHelper)
+        groupMemberRequestsAndInvitesViewController.groupMemberRequestsAndInvitesViewControllerDelegate = self
+        navigationController?.pushViewController(groupMemberRequestsAndInvitesViewController, animated: true)
     }
 
     func showGroupLinkView() {
@@ -1100,8 +1100,8 @@ extension ConversationSettingsViewController: AddGroupMembersViewControllerDeleg
 
 // MARK: -
 
-extension ConversationSettingsViewController: PendingGroupMembersViewControllerDelegate {
-    func pendingGroupMembersViewDidUpdate() {
+extension ConversationSettingsViewController: GroupMemberRequestsAndInvitesViewControllerDelegate {
+    func requestsAndInvitesViewDidUpdate() {
         reloadGroupModelAndUpdateContent()
     }
 }

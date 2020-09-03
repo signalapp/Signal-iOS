@@ -406,8 +406,8 @@ extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSou
 private class SafetyNumberCell: ContactTableViewCell {
     let button = OWSFlatButton()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier, allowUserInteraction: true)
 
         selectionStyle = .none
 
@@ -420,10 +420,6 @@ private class SafetyNumberCell: ContactTableViewCell {
         )
         button.useDefaultCornerRadius()
         button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     func configure(item: SafetyNumberConfirmationSheet.Item, viewController: UIViewController) {
@@ -456,8 +452,6 @@ private class SafetyNumberCell: ContactTableViewCell {
             FingerprintViewController.present(from: viewController, address: item.address)
         }
     }
-
-    override func allowUserInteraction() -> Bool { true }
 }
 
 // MARK: -

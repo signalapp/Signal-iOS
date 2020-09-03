@@ -20,6 +20,7 @@ public enum GroupsV2Error: Error {
     case gv2NotEnabled
     case localUserIsAlreadyRequestingMember
     case requestingMemberCantLoadGroupState
+    case cantApplyChangesToPlaceholder
 }
 
 // MARK: -
@@ -146,6 +147,8 @@ public protocol GroupsV2ChangeSet: AnyObject {
 
     var newAvatarData: Data? { get }
     var newAvatarUrlPath: String? { get }
+
+    func addMember(_ uuid: UUID, role: TSGroupMemberRole)
 
     func removeMember(_ uuid: UUID)
 
@@ -424,7 +427,7 @@ public struct GroupV2DownloadedAvatars {
 
 // MARK: -
 
-public struct InvalidInvite {
+public struct InvalidInvite: Equatable {
     public let userId: Data
     public let addedByUserId: Data
 

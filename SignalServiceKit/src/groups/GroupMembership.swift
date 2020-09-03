@@ -33,7 +33,7 @@ extension TSGroupMemberRole: Codable {}
 
 // MARK: -
 
-private enum GroupMemberState {
+private enum GroupMemberState: Equatable {
     case fullMember(role: TSGroupMemberRole, didJoinFromInviteLink: Bool)
     case invited(role: TSGroupMemberRole, addedByUuid: UUID)
     // These members don't yet have any attributes.
@@ -288,6 +288,23 @@ public class GroupMembership: MTLModel {
 
         super.init()
     }
+
+    // MARK: -
+
+    @objc
+    public override func isEqual(_ object: Any!) -> Bool {
+        guard let other = object as? GroupMembership else {
+            return false
+        }
+        guard self.memberStates == other.memberStates else {
+            return false
+        }
+        let invalidInvitesSet = Set(invalidInvites.map { $0.userId })
+        let otherInvalidInvitesSet = Set(other.invalidInvites.map { $0.userId })
+        return invalidInvitesSet == otherInvalidInvitesSet
+    }
+
+    // MARK: -
 
     private static func convertLegacyMemberStateMap(_ legacyMemberStateMap: LegacyMemberStateMap) -> MemberStateMap {
         var result = MemberStateMap()
@@ -654,6 +671,14 @@ public extension GroupMembership {
         public mutating func copyInvalidInvites(from other: GroupMembership) {
             assert(invalidInviteMap.isEmpty)
             invalidInviteMap = other.invalidInviteMap
+        }
+
+        public func hasInvalidInvite(userId: Data) -> Bool {
+            nil != invalidInviteMap[userId]
+        }
+
+        public func hasMemberOfAnyKind(_ address: SignalServiceAddress) -> Bool {
+            nil != memberStates[address]
         }
 
         fileprivate func asMemberStateMap() -> MemberStateMap {

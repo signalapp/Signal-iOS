@@ -8,7 +8,7 @@ import UIKit
 public class OWSButton: UIButton {
 
     @objc
-    var block: () -> Void = { }
+    public var block: () -> Void = { }
 
     // MARK: -
 
