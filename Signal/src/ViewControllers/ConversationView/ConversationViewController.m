@@ -931,7 +931,7 @@ typedef enum : NSUInteger {
     }
 
     NSUInteger pendingMemberRequestCount = self.pendingMemberRequestCount;
-    if (pendingMemberRequestCount > 0) {
+    if (pendingMemberRequestCount > 0 && self.canApprovePendingMemberRequests) {
         [banners addObject:[self createPendingJoinReuqestBannerWithCount:pendingMemberRequestCount]];
     }
 
@@ -971,6 +971,16 @@ typedef enum : NSUInteger {
         return groupThread.groupMembership.requestingMembers.count;
     } else {
         return 0;
+    }
+}
+
+- (BOOL)canApprovePendingMemberRequests
+{
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        return groupThread.isLocalUserFullMemberAndAdministrator
+    } else {
+        return NO;
     }
 }
 
@@ -4911,7 +4921,7 @@ typedef enum : NSUInteger {
     [self updateBarButtonItems];
 
     NSUInteger newPendingMemberRequestCount = self.pendingMemberRequestCount;
-    if (oldPendingMemberRequestCount != newPendingMemberRequestCount) {
+    if (oldPendingMemberRequestCount != newPendingMemberRequestCount && self.canApprovePendingMemberRequests) {
         [self ensureBannerState];
     }
 
