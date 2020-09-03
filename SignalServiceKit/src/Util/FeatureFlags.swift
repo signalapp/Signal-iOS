@@ -183,13 +183,13 @@ public class FeatureFlags: BaseFlags {
     public static let attachmentUploadV3ForV1GroupAvatars = false
 
     @objc
-    public static let supportAnimatedStickers_Lottie = build.includes(.dev)
+    public static let supportAnimatedStickers_Lottie = false
 
     @objc
-    public static let supportAnimatedStickers_Apng = build.includes(.qa)
+    public static let supportAnimatedStickers_Apng = true
 
     @objc
-    public static let supportAnimatedStickers_AnimatedWebp = build.includes(.qa)
+    public static let supportAnimatedStickers_AnimatedWebp = true
 
     private static let _ignoreCDSUndiscoverableUsersInMessageSends = AtomicBool(true)
     @objc
