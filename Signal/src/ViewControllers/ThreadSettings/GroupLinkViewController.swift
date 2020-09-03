@@ -125,15 +125,19 @@ public class GroupLinkViewController: OWSTableViewController {
                                      customRowHeight: UITableView.automaticDimension))
 
             if groupModelV2.isGroupInviteLinkEnabled {
-                section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
+                section.add(OWSTableItem.actionItem(icon: ThemeIcon.messageActionShare,
+                                                    tintColor: Theme.accentBlueColor,
+                                                    name: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
                                                                                 comment: "Label for the 'share link' button in the 'group link' view."),
                                                     textColor: Theme.accentBlueColor,
                                                     accessibilityIdentifier: "group_link_view_share_link",
                                                     actionBlock: { [weak self] in
                                                         self?.shareLinkPressed()
                 }))
-                section.add(OWSTableItem.actionItem(withText: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
-                                                                                comment: "Label for the 'reset link' button in the 'group link' view."),
+                section.add(OWSTableItem.actionItem(icon: ThemeIcon.retry24,
+                                                    tintColor: Theme.accentBlueColor,
+                                                    name: NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
+                                                                            comment: "Label for the 'reset link' button in the 'group link' view."),
                                                     textColor: Theme.accentBlueColor,
                                                     accessibilityIdentifier: "group_link_view_reset_link",
                                                     actionBlock: { [weak self] in
@@ -204,7 +208,9 @@ public class GroupLinkViewController: OWSTableViewController {
     }
 
     private func showShareLinkAlert() {
-        let actionSheet = ActionSheetController()
+        let message = NSLocalizedString("GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE",
+                                      comment: "Message for the 'share group link' action sheet in the 'group link' view.")
+        let actionSheet = ActionSheetController(message: message)
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL",
                                                                          comment: "Label for the 'share group link via Signal' button in the 'group link' view."),
                                                 style: .default) { _ in
@@ -229,8 +235,26 @@ public class GroupLinkViewController: OWSTableViewController {
         presentActionSheet(actionSheet)
     }
 
+    var sendMessageFlow: SendMessageFlow?
+
     func shareLinkViaSignal() {
-        // TODO:
+        guard let navigationController = self.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+
+        do {
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
+            let messageBody = MessageBody(text: inviteLinkUrl.absoluteString, ranges: .empty)
+            let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+            let sendMessageFlow = SendMessageFlow(flowType: .`default`,
+                                                  unapprovedContent: unapprovedContent,
+                                                  navigationController: navigationController,
+                                                  delegate: self)
+            self.sendMessageFlow = sendMessageFlow
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     func copyLinkToPasteboard() {
@@ -335,5 +359,19 @@ private extension GroupLinkViewController {
         }.then(on: .global()) { _ in
             GroupManager.resetLinkV2(groupModel: groupModelV2)
         }
+    }
+}
+
+// MARK: -
+
+extension GroupLinkViewController: SendMessageDelegate {
+    public func sendMessageFlowDidComplete(threads: [TSThread]) {
+        AssertIsOnMainThread()
+        navigationController?.popToViewController(self, animated: true)
+    }
+
+    public func sendMessageFlowDidCancel() {
+        AssertIsOnMainThread()
+        navigationController?.popToViewController(self, animated: true)
     }
 }

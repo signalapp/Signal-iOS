@@ -175,6 +175,7 @@
 		346B4A79236A138C00B56007 /* OWS116UpdatePrekeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B4A78236A138C00B56007 /* OWS116UpdatePrekeys.swift */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		346E9D5421B040B700562252 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E9D5321B040B600562252 /* RegistrationController.swift */; };
+		346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */; };
 		3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249B238367E90078D72C /* TextApprovalViewController.swift */; };
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
@@ -1097,6 +1098,7 @@
 		346B4A78236A138C00B56007 /* OWS116UpdatePrekeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS116UpdatePrekeys.swift; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		346E9D5321B040B600562252 /* RegistrationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
+		346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendMessageFlow.swift; sourceTree = "<group>"; };
 		3470249B238367E90078D72C /* TextApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		3470249D2385B6360078D72C /* OWSProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProfileManager.swift; sourceTree = "<group>"; };
 		3470249F238C85850078D72C /* VersionedProfilesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfilesImpl.swift; sourceTree = "<group>"; };
@@ -2566,6 +2568,7 @@
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
 				340FC875204DAC8C007AEB0F /* Registration */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
+				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				88F7EE92230253C5003ADF7D /* UsernameViewController.swift */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
@@ -4983,6 +4986,7 @@
 				34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */,
 				4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
+				346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */,
 				88A4CC1D246D00090082211F /* DeviceTransferProgressViewController.swift in Sources */,
