@@ -267,9 +267,28 @@ extension SendMessageFlow {
             self.fireComplete(threads: threads)
         }.catch { error in
             owsFailDebug("Error: \(error)")
-            // TODO: We could show an error alert.
-            self.fireCancelled()
+            self.showSendFailedAlert()
         }
+    }
+
+    private func showSendFailedAlert() {
+        guard let navigationController = navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+        guard let viewController = navigationController.topViewController else {
+            owsFailDebug("Missing topViewController.")
+            return
+        }
+
+        let message = NSLocalizedString("ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE",
+                                        comment: "Generic notice when message failed to send.")
+        let actionSheet = ActionSheetController(title: CommonStrings.errorAlertTitle,
+                                                message: message)
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton) { [weak self] _ in
+            self?.fireCancelled()
+        })
+        viewController.presentActionSheet(actionSheet)
     }
 
     func tryToSend(approvedContent: SendMessageApprovedContent) throws -> Promise<[TSThread]> {
