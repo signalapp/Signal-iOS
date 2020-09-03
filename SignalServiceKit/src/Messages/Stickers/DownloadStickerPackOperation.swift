@@ -39,7 +39,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
 
         firstly {
-            try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
+            try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerPackDownloadSize)
         }.done(on: DispatchQueue.global()) { [weak self] data in
             guard let self = self else {
                 return
