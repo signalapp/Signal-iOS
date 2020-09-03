@@ -231,7 +231,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         // Only admins can revoke invites.
         let canRevokeInvites = groupViewHelper.canRevokePendingInvites
-        let canResendInvites = groupViewHelper.canResendInvites
 
         // MARK: - People You Invited
 
@@ -249,17 +248,12 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     let cell = ContactTableViewCell()
                     cell.selectionStyle = canRevokeInvites ? .default : .none
 
-                    if canResendInvites {
-                        cell.ows_setAccessoryView(self.buildResendInviteButton(isPlural: false))
-                    }
-
                     cell.configure(withRecipientAddress: address)
                     return cell
                     },
                                               customRowHeight: UITableView.automaticDimension) { [weak self] in
                                                 self?.inviteFromLocalUserWasTapped(address,
-                                                                                   canRevoke: canRevokeInvites,
-                                                                                   canResendInvites: canResendInvites)
+                                                                                   canRevoke: canRevokeInvites)
                 })
             }
         } else {
@@ -310,10 +304,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     }
                     cell.setCustomName(customName)
 
-                    if canResendInvites {
-                        cell.ows_setAccessoryView(self.buildResendInviteButton(isPlural: invitedAddresses.count != 1))
-                    }
-
                     cell.configure(withRecipientAddress: inviterAddress)
 
                     return cell
@@ -321,8 +311,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                                    customRowHeight: UITableView.automaticDimension) { [weak self] in
                                                     self?.invitesFromOtherUserWasTapped(invitedAddresses: invitedAddresses,
                                                                                         inviterAddress: inviterAddress,
-                                                                                        canRevoke: canRevokeInvites,
-                                                                                        canResendInvites: canResendInvites)
+                                                                                        canRevoke: canRevokeInvites)
                 })
             }
         } else {
@@ -426,99 +415,20 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         presentActionSheet(actionSheet)
     }
 
-    private func buildResendInviteButton(isPlural: Bool) -> UIView {
-        let button = UILabel()
-        button.text = (isPlural
-            ? NSLocalizedString("PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON",
-                                comment: "Title of 're-send invites' button.")
-            : NSLocalizedString("PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON",
-                                comment: "Title of 're-send invite' button."))
-        button.textColor = UIColor.ows_accentBlue
-        button.font = UIFont.ows_dynamicTypeCaption1
-        return button
-    }
-
-    private func resendInvites() {
-        guard let groupThread = groupViewHelper.threadViewModel.threadRecord as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-        databaseStorage.write { transaction in
-            GroupManager.resendInvite(groupThread: groupThread,
-                                      transaction: transaction)
-        }
-    }
-
     private func inviteFromLocalUserWasTapped(_ address: SignalServiceAddress,
-                                              canRevoke: Bool,
-                                              canResendInvites: Bool) {
-        if canRevoke && canResendInvites {
-            showRevokeOrResentInviteUI(invitedAddresses: [address],
-                                       inviterAddress: nil)
-        } else if canRevoke {
+                                              canRevoke: Bool) {
+        if canRevoke {
             self.showRevokePendingInviteFromLocalUserConfirmation(invitedAddress: address)
-        } else if canResendInvites {
-            resendInvites()
         }
     }
 
     private func invitesFromOtherUserWasTapped(invitedAddresses: [SignalServiceAddress],
                                                inviterAddress: SignalServiceAddress,
-                                               canRevoke: Bool,
-                                               canResendInvites: Bool) {
-        if canRevoke && canResendInvites {
-            showRevokeOrResentInviteUI(invitedAddresses: invitedAddresses,
-                                       inviterAddress: inviterAddress)
-        } else if canRevoke {
+                                               canRevoke: Bool) {
+        if canRevoke {
             self.showRevokePendingInviteFromOtherUserConfirmation(invitedAddresses: invitedAddresses,
                                                                   inviterAddress: inviterAddress)
-        } else if canResendInvites {
-            resendInvites()
         }
-    }
-
-    // inviterAddress is nil if the inviter is the local user.
-    private func showRevokeOrResentInviteUI(invitedAddresses: [SignalServiceAddress],
-                                            inviterAddress: SignalServiceAddress?) {
-        let isPlural = invitedAddresses.count != 1
-
-        var alertTitle: String?
-        if let inviterAddress = inviterAddress {
-            let inviterName = contactsManager.displayName(for: inviterAddress)
-            if isPlural {
-                let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT",
-                                           comment: "Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}.")
-                alertTitle = String(format: format, OWSFormat.formatInt(invitedAddresses.count), inviterName)
-            } else {
-                let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT",
-                                           comment: "Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}.")
-                alertTitle = String(format: format, inviterName)
-            }
-        }
-        let actionSheet = ActionSheetController(title: alertTitle)
-
-        let revokeTitle = (isPlural
-            ? NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON",
-                                comment: "Title of 'revoke invites' button.")
-            : NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON",
-                                comment: "Title of 'revoke invite' button."))
-        actionSheet.addAction(ActionSheetAction(title: revokeTitle,
-                                                style: .destructive) { _ in
-                                                    self.revokePendingInvites(addresses: invitedAddresses)
-        })
-
-        let resendTitle = (isPlural
-            ? NSLocalizedString("PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON",
-                                comment: "Title of 're-send invites' button.")
-            : NSLocalizedString("PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON",
-                                comment: "Title of 're-send invite' button."))
-        actionSheet.addAction(ActionSheetAction(title: resendTitle,
-                                                style: .destructive) { _ in
-                                                    self.resendInvites()
-        })
-
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-        presentActionSheet(actionSheet)
     }
 
     private func showMemberActionSheet(for address: SignalServiceAddress) {
