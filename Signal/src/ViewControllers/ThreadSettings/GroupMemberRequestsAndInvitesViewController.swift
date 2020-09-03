@@ -159,9 +159,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     return cell
                     },
                                               customRowHeight: UITableView.automaticDimension) { [weak self] in
-//                                                self?.inviteFromLocalUserWasTapped(address,
-//                                                                                   canRevoke: canRevokeInvites,
-//                                                                                   canResendInvites: canResendInvites)
+                                                self?.showMemberActionSheet(for: address)
                 })
             }
         } else {
@@ -522,6 +520,33 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)
     }
+
+    private func showMemberActionSheet(for address: SignalServiceAddress) {
+        let memberActionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+        memberActionSheet.present(fromViewController: self)
+    }
+
+    private func presentRequestApprovedToast(address: SignalServiceAddress) {
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT",
+                                       comment: "Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}.")
+        let userName = contactsManager.displayName(for: address)
+        let text = String(format: format, userName)
+        presentToast(text: text)
+    }
+
+    private func presentRequestDeniedToast(address: SignalServiceAddress) {
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT",
+                                       comment: "Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}.")
+        let userName = contactsManager.displayName(for: address)
+        let text = String(format: format, userName)
+        presentToast(text: text)
+    }
+
+    private func presentToast(text: String) {
+        let toastController = ToastController(text: text)
+        let bottomInset = bottomLayoutGuide.length + 8
+        toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
+    }
 }
 
 // MARK: -
@@ -595,7 +620,7 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
                                             comment: "Title of 'accept member request to join group' button.")
         actionSheet.addAction(ActionSheetAction(title: actionTitle,
                                                 style: .destructive) { _ in
-                                                    self.acceptOrDenyMemberRequests(addresses: [address], shouldAccept: true)
+                                                    self.acceptOrDenyMemberRequests(address: address, shouldAccept: true)
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -614,21 +639,27 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
                                             comment: "Title of 'deny member request to join group' button.")
         actionSheet.addAction(ActionSheetAction(title: actionTitle,
                                                 style: .destructive) { _ in
-                                                    self.acceptOrDenyMemberRequests(addresses: [address], shouldAccept: false)
+                                                    self.acceptOrDenyMemberRequests(address: address, shouldAccept: false)
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)
     }
 
-    func acceptOrDenyMemberRequests(addresses: [SignalServiceAddress], shouldAccept: Bool) {
+    func acceptOrDenyMemberRequests(address: SignalServiceAddress, shouldAccept: Bool) {
         GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
                                                         updatePromiseBlock: {
-                                                            self.acceptOrDenyMemberRequestsPromise(addresses: addresses,
+                                                            self.acceptOrDenyMemberRequestsPromise(addresses: [address],
                                                                                              shouldAccept: shouldAccept)
         },
                                                         completion: { [weak self] groupThread in
-                                                            self?.reloadContent(groupThread: groupThread)
+                                                            guard let self = self else { return }
+                                                            if shouldAccept {
+                                                                self.presentRequestApprovedToast(address: address)
+                                                            } else {
+                                                                self.presentRequestDeniedToast(address: address)
+                                                            }
+                                                            self.reloadContent(groupThread: groupThread)
         })
     }
 
