@@ -235,8 +235,26 @@ public class GroupLinkViewController: OWSTableViewController {
         presentActionSheet(actionSheet)
     }
 
+    var sendMessageFlow: SendMessageFlow?
+
     func shareLinkViaSignal() {
-        // TODO:
+        guard let navigationController = self.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+
+        do {
+            let inviteLinkUrl = try GroupManager.groupInviteLink(forGroupModelV2: groupModelV2)
+            let messageBody = MessageBody(text: inviteLinkUrl.absoluteString, ranges: .empty)
+            let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+            let sendMessageFlow = SendMessageFlow(flowType: .`default`,
+                                                  unapprovedContent: unapprovedContent,
+                                                  navigationController: navigationController,
+                                                  delegate: self)
+            self.sendMessageFlow = sendMessageFlow
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     func copyLinkToPasteboard() {
@@ -341,5 +359,19 @@ private extension GroupLinkViewController {
         }.then(on: .global()) { _ in
             GroupManager.resetLinkV2(groupModel: groupModelV2)
         }
+    }
+}
+
+// MARK: -
+
+extension GroupLinkViewController: SendMessageDelegate {
+    public func sendMessageFlowDidComplete(threads: [TSThread]) {
+        AssertIsOnMainThread()
+        navigationController?.popToViewController(self, animated: true)
+    }
+
+    public func sendMessageFlowDidCancel() {
+        AssertIsOnMainThread()
+        navigationController?.popToViewController(self, animated: true)
     }
 }
