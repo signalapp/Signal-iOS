@@ -273,26 +273,28 @@ extension SendMessageFlow {
 extension SendMessageFlow {
 
     func send(approvedContent: SendMessageApprovedContent) {
-        do {
+        firstly {
             try tryToSend(approvedContent: approvedContent)
-        } catch {
+        }.done { (threads: [TSThread]) in
+            self.fireComplete(threads: threads)
+        }.catch { error in
             owsFailDebug("Error: \(error)")
-
+            // TODO: We could show an error alert.
             self.fireCancelled()
         }
     }
 
-    func tryToSend(approvedContent: SendMessageApprovedContent) throws {
+    func tryToSend(approvedContent: SendMessageApprovedContent) throws -> Promise<[TSThread]> {
         switch approvedContent {
         case .text(let messageBody):
             guard !messageBody.text.isEmpty else {
                 throw OWSAssertionError("Missing messageBody.")
             }
-            sendInEachThread { thread in
+            return sendInEachThread { thread in
                 self.send(messageBody: messageBody, thread: thread)
             }
         case .contactShare(let contactShare):
-            sendInEachThread { thread in
+            return sendInEachThread { thread in
                 let contactShareCopy = contactShare.copyForResending()
                 if let avatarImage = contactShareCopy.avatarImage {
                     self.databaseStorage.write { transaction in
@@ -304,35 +306,28 @@ extension SendMessageFlow {
             }
         case .installedSticker(let stickerMetadata):
             let stickerInfo = stickerMetadata.stickerInfo
-            sendInEachThread { thread in
+            return sendInEachThread { thread in
                 ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
             }
         case .uninstalledSticker(let stickerMetadata, let stickerData):
-            sendInEachThread { thread in
+            return sendInEachThread { thread in
                 ThreadUtil.enqueueMessage(withUninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
             }
         case .genericAttachment(let signalAttachmentProvider):
-            sendInEachThread { thread in
+            return sendInEachThread { thread in
                 let signalAttachment = try signalAttachmentProvider.buildAttachmentForSending()
                 self.send(messageBody: nil, attachment: signalAttachment, thread: thread)
             }
         case .borderlessMedia(let signalAttachmentProvider):
-            sendInEachThread { thread in
+            return sendInEachThread { thread in
                 let signalAttachment = try signalAttachmentProvider.buildAttachmentForSending()
                 self.send(messageBody: nil, attachment: signalAttachment, thread: thread)
             }
         case .media(let signalAttachments, let messageBody):
             let conversations = selectedConversations
-            firstly {
-                AttachmentMultisend.sendApprovedMedia(conversations: conversations,
-                                                      approvalMessageBody: messageBody,
-                                                      approvedAttachments: signalAttachments)
-            }.done { threads in
-                self.fireComplete(threads: threads)
-            }.catch { error in
-                owsFailDebug("Error: \(error)")
-                // TODO: Do we need to call a delegate method?
-            }
+            return AttachmentMultisend.sendApprovedMedia(conversations: conversations,
+                                                         approvalMessageBody: messageBody,
+                                                         approvedAttachments: signalAttachments)
         }
     }
 
@@ -361,11 +356,11 @@ extension SendMessageFlow {
         }
     }
 
-    func sendInEachThread(enqueueBlock: @escaping (TSThread) throws -> Void) {
+    func sendInEachThread(enqueueBlock: @escaping (TSThread) throws -> Void) -> Promise<[TSThread]> {
         AssertIsOnMainThread()
 
         let conversations = self.selectedConversations
-        firstly {
+        return firstly {
             self.threads(for: conversations)
         }.map { (threads: [TSThread]) -> [TSThread] in
             // TODO: Move off main thread?
@@ -376,11 +371,6 @@ extension SendMessageFlow {
                 ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
             }
             return threads
-        }.done { (threads: [TSThread]) in
-            self.fireComplete(threads: threads)
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-            // TODO: Do we need to call a delegate methoad?
         }
     }
 
@@ -533,8 +523,7 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
-        // TODO:
-//        self.approvalMessageBody = newMessageBody
+        // TODO: We could update unapprovedContent to reflect newMessageBody.
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
@@ -552,7 +541,7 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
     }
 
     func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
-        // TODO:
+        // TODO: Extend SendMessageFlow to handle camera first capture flow, share extension.
         owsFailDebug("Cannot add more to message forwards.")
     }
 
