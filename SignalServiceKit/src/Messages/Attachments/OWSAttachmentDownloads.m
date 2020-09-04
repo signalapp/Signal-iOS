@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
         // If the thread was newly whitelisted, try and start any
         // downloads that were pending on a message request.
         if (whitelistedThread) {
-            [self downloadAllBodyAttachmentsForThread:whitelistedThread
+            [self downloadAllAttachmentsForThread:whitelistedThread
                 transaction:transaction
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSLogDebug(
@@ -160,10 +160,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)downloadAllBodyAttachmentsForThread:(TSThread *)thread
-                                transaction:(SDSAnyReadTransaction *)transaction
-                                    success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
-                                    failure:(void (^)(NSError *error))failureHandler
+- (void)downloadAllAttachmentsForThread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
+                                success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
+                                failure:(void (^)(NSError *error))failureHandler
 {
     NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
     NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
