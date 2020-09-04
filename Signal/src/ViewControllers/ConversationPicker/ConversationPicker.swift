@@ -187,18 +187,28 @@ class ConversationPickerViewController: OWSViewController {
 
     func buildConversationCollection() -> ConversationCollection {
         return self.databaseStorage.uiRead { transaction in
+            var pinnedItemsByThreadId: [String: RecentConversationItem] = [:]
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
             var groupItems: [GroupConversationItem] = []
             var seenAddresses: Set<SignalServiceAddress> = Set()
-            let maxRecentCount = 25
+
+            let pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
+
+            // We append any pinned threads at the start of the "recent"
+            // section, so we decrease our maximum recent items based
+            // on how many threads are currently pinned.
+            let maxRecentCount = 25 - pinnedThreadIds.count
 
             let addThread = { (thread: TSThread) -> Void in
                 switch thread {
                 case let contactThread as TSContactThread:
                     let item = self.buildContactItem(contactThread.contactAddress, transaction: transaction)
                     seenAddresses.insert(contactThread.contactAddress)
-                    if recentItems.count < maxRecentCount {
+                    if pinnedThreadIds.contains(thread.uniqueId) {
+                        let recentItem = RecentConversationItem(backingItem: .contact(item))
+                        pinnedItemsByThreadId[thread.uniqueId] = recentItem
+                    } else if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
                     } else {
@@ -209,7 +219,10 @@ class ConversationPickerViewController: OWSViewController {
                         return
                     }
                     let item = self.buildGroupItem(groupThread, transaction: transaction)
-                    if recentItems.count < maxRecentCount {
+                    if pinnedThreadIds.contains(thread.uniqueId) {
+                        let recentItem = RecentConversationItem(backingItem: .group(item))
+                        pinnedItemsByThreadId[thread.uniqueId] = recentItem
+                    } else if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         recentItems.append(recentItem)
                     } else {
@@ -240,8 +253,18 @@ class ConversationPickerViewController: OWSViewController {
             }
             contactItems.sort()
 
+            let pinnedItems = pinnedItemsByThreadId.sorted { lhs, rhs in
+                guard let lhsIndex = pinnedThreadIds.firstIndex(of: lhs.key),
+                    let rhsIndex = pinnedThreadIds.firstIndex(of: rhs.key) else {
+                    owsFailDebug("Unexpectedly have pinned item without pinned thread id")
+                    return false
+                }
+
+                return lhsIndex < rhsIndex
+            }.map { $0.value }
+
             return ConversationCollection(contactConversations: contactItems,
-                                          recentConversations: recentItems,
+                                          recentConversations: pinnedItems + recentItems,
                                           groupConversations: groupItems)
         }
     }

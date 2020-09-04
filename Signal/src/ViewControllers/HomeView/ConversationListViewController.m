@@ -341,7 +341,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [reminderStackView addArrangedSubview:archiveReminderView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, archiveReminderView);
 
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -1202,10 +1202,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     switch (section) {
         case ConversationListViewControllerSectionPinned:
         case ConversationListViewControllerSectionUnpinned: {
-            if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
-                return nil;
-            }
-
             UIView *container = [UIView new];
             container.layoutMargins = UIEdgeInsetsMake(14, 16, 8, 16);
 
@@ -1220,16 +1216,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 : NSLocalizedString(
                     @"UNPINNED_SECTION_TITLE", @"The title for unpinned conversation section on the conversation list");
 
-            if (self.splitViewController.isCollapsed) {
-                container.backgroundColor = [Theme.backgroundColor colorWithAlphaComponent:0.8];
-            } else {
-                container.backgroundColor = [Theme.secondaryBackgroundColor colorWithAlphaComponent:0.8];
-            }
-
             return container;
         }
         default:
-            return nil;
+            return [UIView new];
     }
 }
 
@@ -1239,13 +1229,29 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionPinned:
         case ConversationListViewControllerSectionUnpinned:
             if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
-                return 0;
+                return FLT_EPSILON;
             }
 
             return UITableViewAutomaticDimension;
         default:
-            return 0;
+            // Without returning a header with a non-zero height, Grouped
+            // table view will use a default spacing between sections. We
+            // do not want that spacing so we use the smallest possible height.
+            return FLT_EPSILON;
     }
+}
+
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    return [UIView new];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    // Without returning a footer with a non-zero height, Grouped
+    // table view will use a default spacing between sections. We
+    // do not want that spacing so we use the smallest possible height.
+    return FLT_EPSILON;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

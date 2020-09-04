@@ -210,6 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         filteredThreads = [self filteredThreadsWithTransaction:transaction];
     }];
+
     for (TSThread *thread in filteredThreads) {
         [recentChatsSection
             addItem:[OWSTableItem
@@ -362,9 +363,34 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *searchTerm = [[self.searchBar text] ows_stripped];
 
-    return [self.fullTextSearcher filterThreads:self.threadViewHelper.threads
-                                 withSearchText:searchTerm
-                                    transaction:transaction];
+    NSArray<TSThread *> *threads = [self.fullTextSearcher filterThreads:self.threadViewHelper.threads
+                                                         withSearchText:searchTerm
+                                                            transaction:transaction];
+
+    NSArray<NSString *> *pinnedThreadIds = PinnedThreadManager.pinnedThreadIds;
+
+    return [threads sortedArrayUsingComparator:^NSComparisonResult(TSThread *lhs, TSThread *rhs) {
+        NSUInteger lhsIndex = [pinnedThreadIds indexOfObject:lhs.uniqueId];
+        NSUInteger rhsIndex = [pinnedThreadIds indexOfObject:rhs.uniqueId];
+
+        // Sort pinned threads to the top.
+        if (lhsIndex != NSNotFound && rhsIndex != NSNotFound) {
+            if (lhsIndex > rhsIndex) {
+                return NSOrderedAscending;
+            } else if (lhsIndex < rhsIndex) {
+                return NSOrderedDescending;
+            } else {
+                return NSOrderedSame;
+            }
+        } else if (lhsIndex != NSNotFound) {
+            return NSOrderedAscending;
+        } else if (rhsIndex != NSNotFound) {
+            return NSOrderedDescending;
+        }
+
+        // Don't re-order non-pinned threads.
+        return NSOrderedSame;
+    }];
 }
 
 - (NSArray<SignalAccount *> *)filteredSignalAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
