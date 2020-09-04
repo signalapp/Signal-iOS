@@ -1531,6 +1531,24 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `image`. Subsequent reads from it will return its default value.
     mutating func clearImage() {self._image = nil}
 
+    var previewDescription: String {
+      get {return _previewDescription ?? String()}
+      set {_previewDescription = newValue}
+    }
+    /// Returns true if `previewDescription` has been explicitly set.
+    var hasPreviewDescription: Bool {return self._previewDescription != nil}
+    /// Clears the value of `previewDescription`. Subsequent reads from it will return its default value.
+    mutating func clearPreviewDescription() {self._previewDescription = nil}
+
+    var date: UInt64 {
+      get {return _date ?? 0}
+      set {_date = newValue}
+    }
+    /// Returns true if `date` has been explicitly set.
+    var hasDate: Bool {return self._date != nil}
+    /// Clears the value of `date`. Subsequent reads from it will return its default value.
+    mutating func clearDate() {self._date = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1538,6 +1556,8 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _url: String?
     fileprivate var _title: String?
     fileprivate var _image: SignalServiceProtos_AttachmentPointer?
+    fileprivate var _previewDescription: String?
+    fileprivate var _date: UInt64?
   }
 
   struct Sticker {
@@ -4650,7 +4670,9 @@ extension SignalServiceProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "url"),
     2: .same(proto: "title"),
-    3: .same(proto: "image")
+    3: .same(proto: "image"),
+    4: .same(proto: "previewDescription"),
+    5: .same(proto: "date")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4659,6 +4681,8 @@ extension SignalServiceProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftP
       case 1: try decoder.decodeSingularStringField(value: &self._url)
       case 2: try decoder.decodeSingularStringField(value: &self._title)
       case 3: try decoder.decodeSingularMessageField(value: &self._image)
+      case 4: try decoder.decodeSingularStringField(value: &self._previewDescription)
+      case 5: try decoder.decodeSingularUInt64Field(value: &self._date)
       default: break
       }
     }
@@ -4674,6 +4698,12 @@ extension SignalServiceProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftP
     if let v = self._image {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }
+    if let v = self._previewDescription {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    }
+    if let v = self._date {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4681,6 +4711,8 @@ extension SignalServiceProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftP
     if lhs._url != rhs._url {return false}
     if lhs._title != rhs._title {return false}
     if lhs._image != rhs._image {return false}
+    if lhs._previewDescription != rhs._previewDescription {return false}
+    if lhs._date != rhs._date {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

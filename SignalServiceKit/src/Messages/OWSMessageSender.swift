@@ -702,7 +702,6 @@ extension MessageSending {
 
         return firstly(on: .global()) { () -> Promise<Set<SignalRecipient>> in
             return ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersToFetch)).perform()
-
         }.map(on: .sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [SignalServiceAddress] in
             for signalRecipient in signalRecipients {
                 owsAssertDebug(signalRecipient.address.phoneNumber != nil)

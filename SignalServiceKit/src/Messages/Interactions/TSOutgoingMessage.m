@@ -1210,6 +1210,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                 [previewBuilder setImage:attachmentProto];
             }
         }
+        if (self.linkPreview.date) {
+            uint64_t interval = [self.linkPreview.date ows_millisecondsSince1970];
+            [previewBuilder setDate:interval];
+        }
+        if (self.linkPreview.previewDescription) {
+            [previewBuilder setPreviewDescription:self.linkPreview.previewDescription];
+        }
 
         NSError *error;
         SSKProtoDataMessagePreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];

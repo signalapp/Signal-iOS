@@ -94,9 +94,9 @@ class HTMLMetadataTests: SSKBaseTestSwift {
         <meta property="og:image" content="ImageURL" />
         <meta property="og:image:url" content="FallbackImageURL" />
         <meta property="og:published_time" content="PublishedDate" />
-        <meta property="og:article:published_time" content="FallbackPublishedDate" />
+        <meta property="article:published_time" content="ArticlePublishedDate" />
         <meta property="og:modified_time" content="ModifiedDate" />
-        <meta property="og:article:modified_time" content="FallbackModifiedDate" />
+        <meta property="article:modified_time" content="ArticleModifiedDate" />
         """
 
         let testMetadata = HTMLMetadata.construct(parsing: testHTML)
@@ -108,20 +108,18 @@ class HTMLMetadataTests: SSKBaseTestSwift {
             ogDescription: "OpengraphDescription",
             ogImageUrlString: "ImageURL",
             ogPublishDateString: "PublishedDate",
-            ogModifiedDateString: "ModifiedDate"
+            articlePublishDateString: "ArticlePublishedDate",
+            ogModifiedDateString: "ModifiedDate",
+            articleModifiedDateString: "ArticleModifiedDate"
         ))
     }
 
-    func testParseOneOfEach_Fallback() {
+    func testParseFallbackImage() {
         let testHTML = """
         <title>TitleString</title>
         <link rel="icon" href="FaviconString" />
         <meta name="description" content="DescriptionString" />
-        <meta property="og:title" content="OpengraphTitle" />
-        <meta property="og:description" content="OpengraphDescription" />
         <meta property="og:image:url" content="FallbackImageURL" />
-        <meta property="og:article:published_time" content="FallbackPublishedDate" />
-        <meta property="og:article:modified_time" content="FallbackModifiedDate" />
         """
 
         let testMetadata = HTMLMetadata.construct(parsing: testHTML)
@@ -129,11 +127,7 @@ class HTMLMetadataTests: SSKBaseTestSwift {
             titleTag: "TitleString",
             faviconUrlString: "FaviconString",
             description: "DescriptionString",
-            ogTitle: "OpengraphTitle",
-            ogDescription: "OpengraphDescription",
-            ogImageUrlString: "FallbackImageURL",
-            ogPublishDateString: "FallbackPublishedDate",
-            ogModifiedDateString: "FallbackModifiedDate"
+            ogImageUrlString: "FallbackImageURL"
         ))
     }
 

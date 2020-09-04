@@ -412,7 +412,6 @@ typedef struct {
 
         self.linkPreviewView.state = self.linkPreviewState;
         [self.stackView addArrangedSubview:self.linkPreviewView];
-        [self.linkPreviewView addBorderViewsWithBubbleView:self.bubbleView];
     }
 
     // We render malformed messages as "empty text" messages,
