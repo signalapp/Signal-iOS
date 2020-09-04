@@ -12,7 +12,7 @@ import PromiseKit
 /// See [the documentation](https://github.com/loki-project/session-protocol-docs/wiki/Medium-Size-Groups) for more information.
 @objc(LKClosedGroupsProtocol)
 public final class ClosedGroupsProtocol : NSObject {
-    public static let isSharedSenderKeysEnabled = false
+    public static let isSharedSenderKeysEnabled = true
     public static let groupSizeLimit = 10
 
     // MARK: - Sending
@@ -65,6 +65,8 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         // Add the group to the user's set of public keys to poll for
         Storage.setClosedGroupPrivateKey(groupKeyPair.privateKey.toHexString(), for: groupPublicKey, using: transaction)
+        // Notify PN server
+        promises.append(LokiPushNotificationManager.operateClosedGroup(to: groupPublicKey, hexEncodedPublicKey: userPublicKey, operation: .subscribe))
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
@@ -172,6 +174,8 @@ public final class ClosedGroupsProtocol : NSObject {
                 // Remove the group from the user's set of public keys to poll for
                 if isUserLeaving {
                     Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
+                    // Notify PN server
+                    LokiPushNotificationManager.operateClosedGroup(to: groupPublicKey, hexEncodedPublicKey: userPublicKey, operation: .unsubscribe)
                 }
             }
         }
@@ -265,6 +269,8 @@ public final class ClosedGroupsProtocol : NSObject {
         SSKEnvironment.shared.profileManager.addThread(toProfileWhitelist: thread)
         // Add the group to the user's set of public keys to poll for
         Storage.setClosedGroupPrivateKey(groupPrivateKey.toHexString(), for: groupPublicKey, using: transaction)
+        // Notify PN server
+        LokiPushNotificationManager.operateClosedGroup(to: groupPublicKey, hexEncodedPublicKey: getUserHexEncodedPublicKey(), operation: .subscribe)
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)

@@ -10,6 +10,10 @@ public final class LokiPushNotificationManager : NSObject {
     private static let server = "https://live.apns.getsession.org/"
     #endif
     private static let tokenExpirationInterval: TimeInterval = 12 * 60 * 60
+    public enum ClosedGroupOpertion: String {
+        case subscribe = "subscribe_closed_group"
+        case unsubscribe = "unsubscribe_closed_group"
+    }
 
     // MARK: Initialization
     private override init() { }
@@ -46,6 +50,11 @@ public final class LokiPushNotificationManager : NSObject {
         }
         promise.catch2 { error in
             print("[Loki] Couldn't register device token.")
+        }
+        //Unsubscribe all closed groups
+        let closedGroups = Storage.getUserClosedGroupPublicKeys()
+        for closedGroup in closedGroups {
+            operateClosedGroup(to: closedGroup, hexEncodedPublicKey: getUserHexEncodedPublicKey(), operation: .unsubscribe)
         }
         return promise
     }
@@ -88,6 +97,11 @@ public final class LokiPushNotificationManager : NSObject {
         promise.catch2 { error in
             print("[Loki] Couldn't register device token.")
         }
+        //Subscribe all closed groups
+        let closedGroups = Storage.getUserClosedGroupPublicKeys()
+        for closedGroup in closedGroups {
+            operateClosedGroup(to: closedGroup, hexEncodedPublicKey: hexEncodedPublicKey, operation: .subscribe)
+        }
         return promise
     }
 
@@ -100,6 +114,7 @@ public final class LokiPushNotificationManager : NSObject {
     
     @objc(acknowledgeDeliveryForMessageWithHash:expiration:hexEncodedPublicKey:)
     static func acknowledgeDelivery(forMessageWithHash hash: String, expiration: UInt64, hexEncodedPublicKey: String) {
+        guard UserDefaults.standard[.isUsingFullAPNs] else { return }
         let parameters: JSON = [ "lastHash" : hash, "pubKey" : hexEncodedPublicKey, "expiration" : expiration]
         let url = URL(string: server + "acknowledge_message_delivery")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
@@ -114,5 +129,28 @@ public final class LokiPushNotificationManager : NSObject {
         }, failure: { _, error in
             print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(error).")
         })
+    }
+    
+    static func operateClosedGroup(to closedGroupPublicKey: String, hexEncodedPublicKey: String, operation: ClosedGroupOpertion) -> Promise<Void> {
+        let userDefaults = UserDefaults.standard
+        let isUsingFullAPNs = userDefaults[.isUsingFullAPNs]
+        guard isUsingFullAPNs else { return Promise<Void> { $0.fulfill(()) } }
+        let parameters = [ "closedGroupPublicKey" : closedGroupPublicKey, "pubKey" : hexEncodedPublicKey]
+        let url = URL(string: server + operation.rawValue)!
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
+        let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
+            guard let json = response as? JSON else {
+                return print("[Loki] Couldn't register device token.")
+            }
+            guard json["code"] as? Int != 0 else {
+                return print("[Loki] Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
+            }
+            return
+        }
+        promise.catch2 { error in
+            print("[Loki] Couldn't register device token.")
+        }
+        return promise
     }
 }
