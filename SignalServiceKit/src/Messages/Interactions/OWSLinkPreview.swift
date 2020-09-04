@@ -144,10 +144,17 @@ public class OWSLinkPreview: MTLModel {
         }
 
         var title: String?
+        var previewDescription: String?
         if let rawTitle = previewProto.title {
-            let normalizedTitle = normalizeTitle(title: rawTitle)
+            let normalizedTitle = normalizeString(rawTitle, maxLines: 2)
             if normalizedTitle.count > 0 {
                 title = normalizedTitle
+            }
+        }
+        if let rawDescription = previewProto.previewDescription, previewProto.title != previewProto.previewDescription {
+            let normalizedDescription = normalizeString(rawDescription, maxLines: 3)
+            if normalizedDescription.count > 0 {
+                previewDescription = normalizedDescription
             }
         }
 
@@ -164,7 +171,7 @@ public class OWSLinkPreview: MTLModel {
 
         let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
 
-        linkPreview.previewDescription = previewProto.previewDescription
+        linkPreview.previewDescription = previewDescription
         if previewProto.hasDate {
             linkPreview.date = Date(millisecondsSince1970: previewProto.date)
         }
@@ -336,13 +343,16 @@ public class OWSLinkPreviewManager: NSObject {
 
         }.then(on: Self.workQueue) { (respondingUrl, rawHTML) -> Promise<(OWSLinkPreviewDraft, Data?)> in
             let content = HTMLMetadata.construct(parsing: rawHTML)
-            let title = content.ogTitle ?? content.titleTag
-            let description = content.ogDescription ?? content.description
-            let date = content.dateForLinkPreview
+            let rawTitle = content.ogTitle ?? content.titleTag
+            let normalizedTitle = rawTitle.map { normalizeString($0, maxLines: 2) }
+            let draft = OWSLinkPreviewDraft(url: url, title: normalizedTitle)
 
-            let draft = OWSLinkPreviewDraft(url: url, title: title)
-            draft.previewDescription = description
-            draft.date = date
+            let rawDescription = content.ogDescription ?? content.description
+            if rawDescription != rawTitle, let description = rawDescription {
+                draft.previewDescription = normalizeString(description, maxLines: 3)
+            }
+
+            draft.date = content.dateForLinkPreview
 
             guard let imageUrlString = content.ogImageUrlString ?? content.faviconUrlString,
                   let imageUrl = URL(string: imageUrlString, relativeTo: respondingUrl) else {
@@ -651,13 +661,11 @@ fileprivate extension OWSLinkPreviewManager {
     }
 }
 
-private func normalizeTitle(title: String) -> String {
-    var result = title
-    // Truncate title after 2 lines of text.
-    let maxLineCount = 2
+private func normalizeString(_ string: String, maxLines: Int) -> String {
+    var result = string
     var components = result.components(separatedBy: .newlines)
-    if components.count > maxLineCount {
-        components = Array(components[0..<maxLineCount])
+    if components.count > maxLines {
+        components = Array(components[0..<maxLines])
         result =  components.joined(separator: "\n")
     }
     let maxCharacterCount = 2048
