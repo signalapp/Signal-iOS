@@ -85,22 +85,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        // Loki: Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Loki: Set navigation bar background color
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        // Loki: Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = MediaStrings.allMedia
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
+        ViewControllerUtilities.setUpDefaultSessionStyle(for: self, title: MediaStrings.allMedia, hasCustomBackButton: false)
 
         guard let collectionView = self.collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")

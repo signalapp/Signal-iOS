@@ -198,18 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
         timestampLabelText = [DateUtil formatMessageTimestamp:viewItem.interaction.timestampForUI];
     }
 
-    TSMessage *message = [viewItem.interaction as:TSMessage.class];
-    if (message != nil && message.isP2P) {
-        NSString *string = [timestampLabelText.localizedUppercaseString stringByAppendingString:@" · P2P"];
-        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];
-        NSRange range = [string rangeOfString:@"P2P"];
-        [attributedString beginEditing];
-        [attributedString addAttribute:NSFontAttributeName value:[UIFont.ows_dynamicTypeCaption1Font ows_bold] range:range];
-        [attributedString endEditing];
-        [self.timestampLabel setAttributedText:attributedString];
-    } else {
-        [self.timestampLabel setText:timestampLabelText.localizedUppercaseString];
-    }
+    [self.timestampLabel setText:timestampLabelText.localizedUppercaseString];
 }
 
 - (CGSize)measureWithConversationViewItem:(id<ConversationViewItem>)viewItem

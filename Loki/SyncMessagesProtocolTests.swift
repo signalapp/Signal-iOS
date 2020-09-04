@@ -1,3 +1,4 @@
+/*
 import PromiseKit
 @testable import SignalServiceKit
 import XCTest
@@ -52,3 +53,4 @@ class SyncMessagesProtocolTests : XCTestCase {
         // TODO: Test the case where Bob has multiple devices
     }
 }
+ */

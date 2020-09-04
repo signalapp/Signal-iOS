@@ -9,6 +9,7 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIColor+OWS.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SessionServiceKit/NSString+SSK.h>
 #import <SessionServiceKit/OWS2FAManager.h>
 #import <SessionServiceKit/OWSReadReceiptManager.h>
@@ -28,25 +29,8 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     [self updateTableContents];
     
-    // Loki: Set gradient background
+    [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:NSLocalizedString(@"vc_privacy_settings_title", @"") customBackButton:NO];
     self.tableView.backgroundColor = UIColor.clearColor;
-    LKGradient *gradient = LKGradients.defaultLokiBackground;
-    self.view.backgroundColor = UIColor.clearColor;
-    [self.view setGradient:gradient];
-    
-    // Loki: Set navigation bar background color
-    UINavigationBar *navigationBar = self.navigationController.navigationBar;
-    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    navigationBar.shadowImage = [UIImage new];
-    [navigationBar setTranslucent:NO];
-    navigationBar.barTintColor = LKColors.navigationBarBackground;
-    
-    // Loki: Customize title
-    UILabel *titleLabel = [UILabel new];
-    titleLabel.text = NSLocalizedString(@"vc_privacy_settings_title", @"");
-    titleLabel.textColor = LKColors.text;
-    titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
-    self.navigationItem.titleView = titleLabel;
 }
 
 - (void)viewDidAppear:(BOOL)animated
