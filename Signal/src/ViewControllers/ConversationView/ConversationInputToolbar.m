@@ -1389,6 +1389,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.linkPreviewWrapper.hidden = NO;
     [self.linkPreviewWrapper addSubview:linkPreviewView];
     [linkPreviewView autoPinEdgesToSuperviewMargins];
+    [self.linkPreviewWrapper layoutIfNeeded];
 }
 
 - (void)clearLinkPreviewStateAndView
