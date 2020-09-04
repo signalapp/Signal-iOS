@@ -1883,21 +1883,15 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
             let oldRevision = groupInviteLinkPreview.revision
             let newRevision = oldRevision + 1
-            Logger.verbose("---- Revision: \(oldRevision) -> \(newRevision)")
-            Logger.flush()
             revisionForPlaceholderModel.set(newRevision)
 
             let actionsBuilder = GroupsProtoGroupChangeActions.builder()
+            actionsBuilder.setRevision(newRevision)
 
-            let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
+            let actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
             let userId = try groupV2Params.userId(forUuid: localUuid)
             actionBuilder.setDeletedUserID(userId)
-            actionsBuilder.addDeleteMembers(try actionBuilder.build())
-
-//            let actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
-//            let userId = try groupV2Params.userId(forUuid: localUuid)
-//            actionBuilder.setDeletedUserID(userId)
-//            actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
+            actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
 
             return try actionsBuilder.build()
         }
