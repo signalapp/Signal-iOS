@@ -633,7 +633,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)quotedReplyTopMargin
 {
-    return 22.f;
+    return 16.f;
 }
 
 - (nullable LinkPreviewSent *)linkPreviewState
