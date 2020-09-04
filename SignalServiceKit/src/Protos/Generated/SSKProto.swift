@@ -4280,6 +4280,12 @@ public class SSKProtoDataMessagePreview: NSObject, Codable {
         if let _value = image {
             builder.setImage(_value)
         }
+        if let _value = previewDescription {
+            builder.setPreviewDescription(_value)
+        }
+        if hasDate {
+            builder.setDate(date)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4334,6 +4340,22 @@ public class SSKProtoDataMessagePreview: NSObject, Codable {
             proto.image = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPreviewDescription(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.previewDescription = valueParam
+        }
+
+        public func setPreviewDescription(_ valueParam: String) {
+            proto.previewDescription = valueParam
+        }
+
+        @objc
+        public func setDate(_ valueParam: UInt64) {
+            proto.date = valueParam
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -4367,6 +4389,27 @@ public class SSKProtoDataMessagePreview: NSObject, Codable {
     @objc
     public var hasTitle: Bool {
         return proto.hasTitle
+    }
+
+    @objc
+    public var previewDescription: String? {
+        guard hasPreviewDescription else {
+            return nil
+        }
+        return proto.previewDescription
+    }
+    @objc
+    public var hasPreviewDescription: Bool {
+        return proto.hasPreviewDescription
+    }
+
+    @objc
+    public var date: UInt64 {
+        return proto.date
+    }
+    @objc
+    public var hasDate: Bool {
+        return proto.hasDate
     }
 
     public var hasUnknownFields: Bool {

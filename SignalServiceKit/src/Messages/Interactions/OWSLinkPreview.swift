@@ -38,6 +38,12 @@ public class OWSLinkPreviewDraft: NSObject {
     @objc
     public var imageMimeType: String?
 
+    @objc
+    public var previewDescription: String?
+
+    @objc
+    public var date: Date?
+
     public init(url: URL, title: String?, imageData: Data? = nil, imageMimeType: String? = nil) {
         self.url = url
         self.title = title
@@ -75,6 +81,12 @@ public class OWSLinkPreview: MTLModel {
 
     @objc
     public var imageAttachmentId: String?
+
+    @objc
+    public var previewDescription: String?
+
+    @objc
+    public var date: Date?
 
     @objc
     public init(urlString: String, title: String?, imageAttachmentId: String?) {
@@ -152,6 +164,11 @@ public class OWSLinkPreview: MTLModel {
 
         let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
 
+        linkPreview.previewDescription = previewProto.previewDescription
+        if previewProto.hasDate {
+            linkPreview.date = Date(millisecondsSince1970: previewProto.date)
+        }
+
         guard linkPreview.isValid() else {
             Logger.error("Preview has neither title nor image.")
             throw LinkPreviewError.invalidPreview
@@ -171,6 +188,8 @@ public class OWSLinkPreview: MTLModel {
                                                                         transaction: transaction)
 
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
+        linkPreview.previewDescription = info.previewDescription
+        linkPreview.date = info.date
 
         guard linkPreview.isValid() else {
             owsFailDebug("Preview has neither title nor image.")
@@ -318,7 +337,12 @@ public class OWSLinkPreviewManager: NSObject {
         }.then(on: Self.workQueue) { (respondingUrl, rawHTML) -> Promise<(OWSLinkPreviewDraft, Data?)> in
             let content = HTMLMetadata.construct(parsing: rawHTML)
             let title = content.ogTitle ?? content.titleTag
+            let description = content.ogDescription ?? content.description
+            let date = content.dateForLinkPreview
+
             let draft = OWSLinkPreviewDraft(url: url, title: title)
+            draft.previewDescription = description
+            draft.date = date
 
             guard let imageUrlString = content.ogImageUrlString ?? content.faviconUrlString,
                   let imageUrl = URL(string: imageUrlString, relativeTo: respondingUrl) else {
@@ -584,6 +608,14 @@ fileprivate extension URL {
 
         guard let hostnameToValidate = rawHostname else { return false }
         return Self.schemeAllowSet.contains(scheme) && Self.isValidHostname(hostnameToValidate)
+    }
+}
+
+fileprivate extension HTMLMetadata {
+    var dateForLinkPreview: Date? {
+        [ogPublishDateString, articlePublishDateString, ogModifiedDateString, articleModifiedDateString]
+            .first(where: {$0 != nil})?
+            .flatMap { Date.ows_parseFromISO8601String($0) }
     }
 }
 
