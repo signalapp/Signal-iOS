@@ -1037,7 +1037,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }];
 
     if (userProfile != nil) {
-        return userProfile.profileName;
+        NSString *result = userProfile.profileName;
+        NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
+        NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
+        if ([result hasSuffix:suffix]) {
+            return [result substringToIndex:result.length - suffix.length];
+        } else {
+            return result;
+        }
     }
 
     __block NSString *result;
@@ -1046,7 +1053,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
     } error:nil];
 
-    return result;
+    NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
+    NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
+    if ([result hasSuffix:suffix]) {
+        return [result substringToIndex:result.length - suffix.length];
+    } else {
+        return result;
+    }
 }
 
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction

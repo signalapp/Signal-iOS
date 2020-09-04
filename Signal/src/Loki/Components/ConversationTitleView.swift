@@ -72,7 +72,7 @@ final class ConversationTitleView : UIView {
         let stackView = UIStackView(arrangedSubviews: [ profilePictureView, labelStackView ])
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = Values.smallSpacing
+        stackView.spacing = 12
         addSubview(stackView)
         stackView.pin(to: self)
     }
