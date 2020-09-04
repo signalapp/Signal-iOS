@@ -137,8 +137,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
     OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
-
-    OWSLogInfo(@"Build Expires in: %ld days", (long)AppExpiry.daysUntilBuildExpiry);
 }
 
 - (void)appLaunchDidComplete
