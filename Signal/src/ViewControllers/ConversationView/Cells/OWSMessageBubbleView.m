@@ -2019,10 +2019,11 @@ typedef struct {
 
         return NO;
     }
-    if ([GroupManager isGroupInviteLink:url]) {
+    if ([GroupManager isPossibleGroupInviteLink:url]) {
         [self.delegate didTapGroupInviteLink:url];
         return NO;
     }
+
     return YES;
 }
 

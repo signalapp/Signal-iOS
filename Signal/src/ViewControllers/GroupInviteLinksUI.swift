@@ -34,9 +34,9 @@ public class GroupInviteLinksUI: NSObject {
             return
         }
         let showInvalidInviteLinkAlert = {
-            // TODO: Add copy from design.
-            // TODO: Surface "revoked invite link" error here and elsewhere.
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE",
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE",
+                                                                     comment: "Title for the 'invalid group invite link' alert."),
+                                            message: NSLocalizedString("GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE",
                                                                       comment: "Message for the 'invalid group invite link' alert."))
         }
 
@@ -56,8 +56,6 @@ public class GroupInviteLinksUI: NSObject {
         }
 
         // If the group already exists in the database, open it.
-        //
-        // TODO: Design.
         if let existingGroupThread = (databaseStorage.read { transaction in
             TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
         }), existingGroupThread.isLocalUserFullMember {

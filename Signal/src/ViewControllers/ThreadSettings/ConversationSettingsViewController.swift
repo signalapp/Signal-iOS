@@ -8,6 +8,16 @@ import UIKit
 import ContactsUI
 
 @objc
+public enum ConversationSettingsPresentationMode: UInt {
+    case `default`
+    case showVerification
+    case showMemberRequests
+    case showAllMedia
+}
+
+// MARK: -
+
+@objc
 public protocol ConversationSettingsViewDelegate: class {
 
     func conversationColorWasUpdated()
@@ -78,6 +88,7 @@ class ConversationSettingsViewController: OWSTableViewController {
     // This is updated as we change group membership, etc.
     var currentGroupModel: TSGroupModel?
 
+    @objc
     public var showVerificationOnAppear = false
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration!
@@ -577,14 +588,23 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     func showMemberRequestsAndInvitesView() {
-        guard let groupThread = thread as? TSGroupThread else {
+        guard let viewController = buildMemberRequestsAndInvitesView() else {
             owsFailDebug("Invalid thread.")
             return
+        }
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
+    @objc
+    public func buildMemberRequestsAndInvitesView() -> UIViewController? {
+        guard let groupThread = thread as? TSGroupThread else {
+            owsFailDebug("Invalid thread.")
+            return nil
         }
         let groupMemberRequestsAndInvitesViewController = GroupMemberRequestsAndInvitesViewController(groupThread: groupThread,
                                                                                                       groupViewHelper: groupViewHelper)
         groupMemberRequestsAndInvitesViewController.groupMemberRequestsAndInvitesViewControllerDelegate = self
-        navigationController?.pushViewController(groupMemberRequestsAndInvitesViewController, animated: true)
+        return groupMemberRequestsAndInvitesViewController
     }
 
     func showGroupLinkView() {

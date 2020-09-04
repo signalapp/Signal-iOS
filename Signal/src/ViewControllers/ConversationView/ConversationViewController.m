@@ -882,6 +882,8 @@ typedef enum : NSUInteger {
         return;
     }
 
+    NSMutableArray<UIView *> *banners = [NSMutableArray new];
+
     NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
 
     if (noLongerVerifiedAddresses.count > 0) {
@@ -902,10 +904,9 @@ typedef enum : NSUInteger {
             message = [NSString stringWithFormat:format, displayName];
         }
 
-        [self createBannerWithTitle:message
-                        bannerColor:UIColor.ows_accentRedColor
-                        tapSelector:@selector(noLongerVerifiedBannerViewWasTapped:)];
-        return;
+        [banners addObject:[self createBannerWithTitle:message
+                                           bannerColor:UIColor.ows_accentRedColor
+                                           tapSelector:@selector(noLongerVerifiedBannerViewWasTapped:)]];
     }
 
     NSString *blockStateMessage = nil;
@@ -924,34 +925,74 @@ typedef enum : NSUInteger {
     }
 
     if (blockStateMessage) {
-        [self createBannerWithTitle:blockStateMessage
-                        bannerColor:UIColor.ows_accentRedColor
-                        tapSelector:@selector(blockBannerViewWasTapped:)];
+        [banners addObject:[self createBannerWithTitle:blockStateMessage
+                                           bannerColor:UIColor.ows_accentRedColor
+                                           tapSelector:@selector(blockBannerViewWasTapped:)]];
+    }
+
+    NSUInteger pendingMemberRequestCount = self.pendingMemberRequestCount;
+    if (pendingMemberRequestCount > 0 && self.canApprovePendingMemberRequests) {
+        [banners addObject:[self createPendingJoinReuqestBannerWithCount:pendingMemberRequestCount]];
+    }
+
+    if (banners.count < 1) {
         return;
+    }
+
+    UIStackView *bannerView = [[UIStackView alloc] initWithArrangedSubviews:banners];
+    bannerView.axis = UILayoutConstraintAxisVertical;
+    bannerView.alignment = UIStackViewAlignmentFill;
+    [self.view addSubview:bannerView];
+    [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [bannerView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [bannerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+
+    UIView *bannerShadow = [UIView new];
+    bannerShadow.backgroundColor = Theme.backgroundColor;
+    // Use a shadow to "pop" the indicator above the other views.
+    bannerShadow.layer.shadowColor = [UIColor blackColor].CGColor;
+    bannerShadow.layer.shadowOffset = CGSizeMake(0, 4);
+    bannerShadow.layer.shadowRadius = 4.f;
+    bannerShadow.layer.shadowOpacity = 0.15f;
+    [bannerShadow addRedBorder];
+    [bannerView addSubview:bannerShadow];
+    [bannerShadow autoPinEdgesToSuperviewEdges];
+    [bannerView sendSubviewToBack:bannerShadow];
+
+    [self.view layoutSubviews];
+
+    self.bannerView = bannerView;
+}
+
+- (NSUInteger)pendingMemberRequestCount
+{
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        return groupThread.groupMembership.requestingMembers.count;
+    } else {
+        return 0;
     }
 }
 
-- (void)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
+- (BOOL)canApprovePendingMemberRequests
+{
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        return groupThread.isLocalUserFullMemberAndAdministrator;
+    } else {
+        return NO;
+    }
+}
+
+- (UIView *)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
 {
     OWSAssertDebug(title.length > 0);
     OWSAssertDebug(bannerColor);
 
     UIView *bannerView = [UIView containerView];
     bannerView.backgroundColor = bannerColor;
-    bannerView.layer.cornerRadius = 2.5f;
 
-    // Use a shadow to "pop" the indicator above the other views.
-    bannerView.layer.shadowColor = [UIColor blackColor].CGColor;
-    bannerView.layer.shadowOffset = CGSizeMake(2, 3);
-    bannerView.layer.shadowRadius = 2.f;
-    bannerView.layer.shadowOpacity = 0.35f;
-
-    UILabel *label = [UILabel new];
-    label.font = [UIFont ows_semiboldFontWithSize:14.f];
-    label.text = title;
-    label.textColor = [UIColor whiteColor];
-    label.numberOfLines = 0;
-    label.lineBreakMode = NSLineBreakByWordWrapping;
+    UILabel *label = [self buildBannerLabel:title];
     label.textAlignment = NSTextAlignmentCenter;
 
     UIImage *closeIcon = [UIImage imageNamed:@"banner_close"];
@@ -974,22 +1015,71 @@ typedef enum : NSUInteger {
     [bannerView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:tapSelector]];
     bannerView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"banner_close");
 
-    [self.view addSubview:bannerView];
-    [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:10];
-    [bannerView autoHCenterInSuperview];
+    return bannerView;
+}
 
-    CGFloat labelDesiredWidth = [label sizeThatFits:CGSizeZero].width;
-    CGFloat bannerDesiredWidth
-        = (labelDesiredWidth + kBannerHPadding + kBannerHSpacing + closeIcon.size.width + kBannerCloseButtonPadding);
-    const CGFloat kMinBannerHMargin = 20.f;
-    if (bannerDesiredWidth + kMinBannerHMargin * 2.f >= self.view.width) {
-        [bannerView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:kMinBannerHMargin];
-        [bannerView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:kMinBannerHMargin];
-    }
+- (UILabel *)buildBannerLabel:(NSString *)title
+{
+    UILabel *label = [UILabel new];
+    label.font = [UIFont ows_dynamicTypeSubheadlineClampedFont].ows_semibold;
+    label.text = title;
+    label.textColor = [UIColor whiteColor];
+    label.numberOfLines = 0;
+    label.lineBreakMode = NSLineBreakByWordWrapping;
+    return label;
+}
 
-    [self.view layoutSubviews];
+- (UIView *)createPendingJoinReuqestBannerWithCount:(NSUInteger)pendingMemberRequestCount
+{
+    OWSAssertDebug(pendingMemberRequestCount > 0);
 
-    self.bannerView = bannerView;
+    NSString *format = NSLocalizedString(@"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT",
+        @"Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number "
+        @"of pending member requests }}.");
+    NSString *title = [NSString stringWithFormat:format, [OWSFormat formatUInt:pendingMemberRequestCount]];
+    UILabel *label = [self buildBannerLabel:title];
+    label.font = [UIFont ows_dynamicTypeSubheadlineClampedFont];
+
+    __weak ConversationViewController *weakSelf = self;
+    OWSButton *dismissButton = [[OWSButton alloc] initWithTitle:CommonStrings.dismissButton
+                                                          block:^{ [weakSelf hidePendingMemberRequests]; }];
+    dismissButton.titleLabel.font = [UIFont ows_dynamicTypeSubheadlineClampedFont].ows_semibold;
+    NSString *viewRequestsLabel = NSLocalizedString(@"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS",
+        @"Label for the 'view requests' button in the pending member requests banner.");
+    OWSButton *viewRequestsButton = [[OWSButton alloc] initWithTitle:viewRequestsLabel
+                                                               block:^{ [weakSelf viewMemberRequests]; }];
+    viewRequestsButton.titleLabel.font = [UIFont ows_dynamicTypeSubheadlineClampedFont].ows_semibold;
+
+    UIStackView *buttonRow = [[UIStackView alloc] initWithArrangedSubviews:@[
+        [UIView hStretchingSpacer],
+        dismissButton,
+        viewRequestsButton,
+    ]];
+    buttonRow.axis = UILayoutConstraintAxisHorizontal;
+    buttonRow.spacing = 24;
+
+    UIStackView *bannerView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        label,
+        buttonRow,
+    ]];
+    bannerView.axis = UILayoutConstraintAxisVertical;
+    bannerView.alignment = UIStackViewAlignmentFill;
+    bannerView.spacing = 10;
+    bannerView.layoutMargins = UIEdgeInsetsMake(14, 16, 14, 16);
+    [bannerView setLayoutMarginsRelativeArrangement:YES];
+    [bannerView addBackgroundViewWithBackgroundColor:UIColor.ows_accentBlueColor];
+    bannerView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"pending_group_request_banner");
+
+    return bannerView;
+}
+
+- (void)hidePendingMemberRequests
+{
+}
+
+- (void)viewMemberRequests
+{
+    [self showConversationSettingsAndShowMemberRequests];
 }
 
 - (void)blockBannerViewWasTapped:(UIGestureRecognizer *)sender
@@ -1591,7 +1681,7 @@ typedef enum : NSUInteger {
 {
     NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
     if (noLongerVerifiedAddresses.count > 1) {
-        [self showConversationSettingsAndShowVerification:YES];
+        [self showConversationSettingsAndShowVerification];
     } else if (noLongerVerifiedAddresses.count == 1) {
         // Pick one in an arbitrary but deterministic manner.
         SignalServiceAddress *address = noLongerVerifiedAddresses.lastObject;
@@ -1601,34 +1691,52 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettings
 {
-    [self showConversationSettingsAndShowVerification:NO];
-}
-
-- (UIViewController *)buildConversationSettingsView:(BOOL)showVerificationOnAppear
-{
-    ConversationSettingsViewController *settingsVC =
-        [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
-    settingsVC.conversationSettingsViewDelegate = self;
-    return settingsVC;
-}
-
-- (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
-{
-    UIViewController *settingsVC = [self buildConversationSettingsView:showVerification];
-
-    [self.navigationController setViewControllers:[self.viewControllersUpToSelf arrayByAddingObject:settingsVC]
-                                         animated:YES];
+    [self showConversationSettingsWithMode:ConversationSettingsPresentationModeDefault];
 }
 
 - (void)showConversationSettingsAndShowAllMedia
 {
-    UIViewController *settingsVC = [self buildConversationSettingsView:NO];
+    [self showConversationSettingsWithMode:ConversationSettingsPresentationModeShowAllMedia];
+}
 
-    MediaTileViewController *allMedia = [[MediaTileViewController alloc] initWithThread:self.thread];
+- (void)showConversationSettingsAndShowVerification
+{
+    [self showConversationSettingsWithMode:ConversationSettingsPresentationModeShowVerification];
+}
 
-    [self.navigationController
-        setViewControllers:[self.viewControllersUpToSelf arrayByAddingObjectsFromArray:@[ settingsVC, allMedia ]]
-                  animated:YES];
+- (void)showConversationSettingsAndShowMemberRequests
+{
+    [self showConversationSettingsWithMode:ConversationSettingsPresentationModeShowMemberRequests];
+}
+
+- (void)showConversationSettingsWithMode:(ConversationSettingsPresentationMode)mode
+{
+    NSMutableArray<UIViewController *> *viewControllers = [self.viewControllersUpToSelf mutableCopy];
+
+    ConversationSettingsViewController *settingsView =
+        [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
+    settingsView.conversationSettingsViewDelegate = self;
+    [viewControllers addObject:settingsView];
+
+    switch (mode) {
+        case ConversationSettingsPresentationModeDefault:
+            break;
+        case ConversationSettingsPresentationModeShowVerification:
+            settingsView.showVerificationOnAppear = YES;
+            break;
+        case ConversationSettingsPresentationModeShowMemberRequests: {
+            UIViewController *_Nullable view = [settingsView buildMemberRequestsAndInvitesView];
+            if (view != nil) {
+                [viewControllers addObject:view];
+            }
+            break;
+        }
+        case ConversationSettingsPresentationModeShowAllMedia:
+            [viewControllers addObject:[[MediaTileViewController alloc] initWithThread:self.thread]];
+            break;
+    }
+
+    [self.navigationController setViewControllers:viewControllers animated:YES];
 }
 
 - (NSArray<UIViewController *> *)viewControllersUpToSelf
@@ -2559,7 +2667,7 @@ typedef enum : NSUInteger {
 - (void)didTapGroupInviteLink:(NSURL *)url
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug([GroupManager isGroupInviteLink:url]);
+    OWSAssertDebug([GroupManager isPossibleGroupInviteLink:url]);
 
     [GroupInviteLinksUI openGroupInviteLink:url fromViewController:self];
 }
@@ -2688,7 +2796,7 @@ typedef enum : NSUInteger {
         }
     }
 
-    if ([GroupManager isGroupInviteLink:url]) {
+    if ([GroupManager isPossibleGroupInviteLink:url]) {
         [self didTapGroupInviteLink:url];
         return;
     }
@@ -4803,6 +4911,7 @@ typedef enum : NSUInteger {
         // viewWillAppear will call resetContentAndLayout.
         return;
     }
+    NSUInteger oldPendingMemberRequestCount = self.pendingMemberRequestCount;
     TSThread *_Nullable lastestThread = [TSThread anyFetchWithUniqueId:self.thread.uniqueId transaction:transaction];
     if (lastestThread == nil) {
         lastestThread = self.thread;
@@ -4810,6 +4919,11 @@ typedef enum : NSUInteger {
     _threadViewModel = [[ThreadViewModel alloc] initWithThread:lastestThread transaction:transaction];
     [self updateNavigationBarSubtitleLabel];
     [self updateBarButtonItems];
+
+    NSUInteger newPendingMemberRequestCount = self.pendingMemberRequestCount;
+    if (oldPendingMemberRequestCount != newPendingMemberRequestCount && self.canApprovePendingMemberRequests) {
+        [self ensureBannerState];
+    }
 
     // If the message has been deleted / disappeared, we need to dismiss
     [self dismissMessageActionsIfNecessary];
