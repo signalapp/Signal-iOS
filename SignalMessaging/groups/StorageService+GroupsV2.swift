@@ -90,11 +90,16 @@ public extension StorageService {
                                        authCredential: authCredential)
     }
 
-    static func buildFetchGroupInviteLinkPreviewRequest(inviteLinkPassword: Data,
+    // inviteLinkPassword is not necessary if we're already a member or have a pending request.
+    static func buildFetchGroupInviteLinkPreviewRequest(inviteLinkPassword: Data?,
                                                         groupV2Params: GroupV2Params,
                                                         authCredential: AuthCredential) throws -> GroupsV2Request {
 
-        let urlPath = "/v1/groups/join/\(inviteLinkPassword.asBase64Url)"
+        var urlPath = "/v1/groups/join/"
+        if let inviteLinkPassword = inviteLinkPassword {
+            urlPath += "\(inviteLinkPassword.asBase64Url)"
+        }
+
         return try buildGroupV2Request(protoData: nil,
                                        urlString: urlPath,
                                        method: .get,

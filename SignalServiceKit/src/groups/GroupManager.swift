@@ -1347,6 +1347,17 @@ public class GroupManager: NSObject {
         }
     }
 
+    public static func cancelMemberRequestsV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+
+        let description = "Cancel Member Request"
+
+        return firstly(on: .global()) {
+            self.groupsV2.cancelMemberRequests(groupModel: groupModel)
+        }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
+            GroupsV2Error.timeout
+        }
+    }
+
     // MARK: - Generic Group Change
 
     public static func updateGroupV2(groupModel: TSGroupModelV2,
@@ -1379,7 +1390,7 @@ public class GroupManager: NSObject {
         }
 
         if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
-            groupModelV2.isPendingJoinRequestPlaceholder {
+            groupModelV2.isPlaceholderModel {
             Logger.warn("Ignoring 403 for placeholder group.")
             return
         }

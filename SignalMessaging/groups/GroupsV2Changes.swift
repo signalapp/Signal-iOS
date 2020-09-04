@@ -432,7 +432,7 @@ public class GroupsV2Changes {
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
 
-            if oldGroupModel.isPendingJoinRequestPlaceholder {
+            if oldGroupModel.isPlaceholderModel {
                 // We can't check permissions using a placeholder.
             } else if !canAddMembers && uuid != changeAuthorUuid {
                 owsFailDebug("Cannot add members.")

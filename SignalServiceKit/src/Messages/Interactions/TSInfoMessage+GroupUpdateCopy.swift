@@ -119,7 +119,7 @@ struct GroupUpdateCopy {
         self.updater = GroupUpdateCopy.updater(groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                transaction: transaction)
         if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPendingJoinRequestPlaceholder
+            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPlaceholderModel
         } else {
             self.isReplacingJoinRequestPlaceholder = false
         }
@@ -1358,11 +1358,28 @@ extension GroupUpdateCopy {
     mutating func addUserRequestWasRejected(for address: SignalServiceAddress) {
         let isLocalUser = localAddress == address
         if isLocalUser {
-            // TODO: Should we embed the name of the user who rejected us?
-            addItem(.userMembershipState,
-                    address: address,
-                    copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
-                                            comment: "Message indicating that the local user's request to join the group was rejected."))
+            switch updater {
+            case .localUser:
+                let copy = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_LOCAL_USER",
+                                               comment: "Message indicating that the local user cancelled their request to join the group.")
+                addItem(.userMembershipState, address: address, copy: copy)
+            case .otherUser(let updaterName, let updaterAddress):
+                if address == updaterAddress {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT",
+                                                   comment: "Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}.")
+                    addItem(.userMembershipState, address: address, format: format, updaterName)
+                } else {
+                    addItem(.userMembershipState,
+                            address: address,
+                            copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
+                                                    comment: "Message indicating that the local user's request to join the group was rejected."))
+                }
+            case .unknown:
+                addItem(.userMembershipState,
+                        address: address,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
+                                                comment: "Message indicating that the local user's request to join the group was rejected."))
+            }
         } else {
             let requesterName = contactsManager.displayName(for: address, transaction: transaction)
             switch updater {
@@ -1485,18 +1502,33 @@ extension GroupUpdateCopy {
             switch newGroupInviteLinkMode {
             case .disabled:
                 owsFailDebug("State did not change.")
-            case .enabledWithoutApproval, .enabledWithApproval:
+            case .enabledWithoutApproval:
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_BY_LOCAL_USER",
+                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER",
                                                    comment: "Message indicating that the group invite link was enabled by the local user.")
                     addItem(.groupInviteLink, format: format)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_BY_REMOTE_USER_FORMAT",
+                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}.")
                     addItem(.groupInviteLink, format: format, updaterName)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED",
+                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL",
+                                                   comment: "Message indicating that the group invite link was enabled.")
+                    addItem(.groupInviteLink, format: format)
+                }
+            case .enabledWithApproval:
+                switch updater {
+                case .localUser:
+                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER",
+                                                   comment: "Message indicating that the group invite link was enabled by the local user.")
+                    addItem(.groupInviteLink, format: format)
+                case .otherUser(let updaterName, _):
+                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT",
+                                                   comment: "Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}.")
+                    addItem(.groupInviteLink, format: format, updaterName)
+                case .unknown:
+                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL",
                                                    comment: "Message indicating that the group invite link was enabled.")
                     addItem(.groupInviteLink, format: format)
                 }

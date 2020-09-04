@@ -19,6 +19,7 @@ public enum GroupsV2Error: Error {
     case tooManyMembers
     case gv2NotEnabled
     case localUserIsAlreadyRequestingMember
+    case localUserIsNotARequestingMember
     case requestingMemberCantLoadGroupState
     case cantApplyChangesToPlaceholder
     case expiredGroupInviteLink
@@ -128,7 +129,8 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo?
 
-    func fetchGroupInviteLinkPreview(inviteLinkPassword: Data,
+    // inviteLinkPassword is not necessary if we're already a member or have a pending request.
+    func fetchGroupInviteLinkPreview(inviteLinkPassword: Data?,
                                      groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview>
 
     func fetchGroupInviteLinkAvatar(avatarUrlPath: String,
@@ -139,6 +141,8 @@ public protocol GroupsV2Swift: GroupsV2 {
                                 inviteLinkPassword: Data,
                                 groupInviteLinkPreview: GroupInviteLinkPreview,
                                 avatarData: Data?) -> Promise<TSGroupThread>
+
+    func cancelMemberRequests(groupModel: TSGroupModelV2) -> Promise<TSGroupThread>
 }
 
 // MARK: -
@@ -580,7 +584,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         return nil
     }
 
-    public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data,
+    public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data?,
                                             groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview> {
         owsFail("Not implemented.")
     }
@@ -595,6 +599,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
                                        inviteLinkPassword: Data,
                                        groupInviteLinkPreview: GroupInviteLinkPreview,
                                        avatarData: Data?) -> Promise<TSGroupThread> {
+        owsFail("Not implemented.")
+    }
+
+    public func cancelMemberRequests(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 }

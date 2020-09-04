@@ -558,7 +558,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let oldGroupModel = oldGroupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")
             }
-            guard !oldGroupModel.isPendingJoinRequestPlaceholder else {
+            guard !oldGroupModel.isPlaceholderModel else {
+                // Placeholders can only be replaced by a snapshot.
                 throw GroupsV2Error.cantApplyChangesToPlaceholder
             }
             let groupV2Params = try oldGroupModel.groupV2Params()
