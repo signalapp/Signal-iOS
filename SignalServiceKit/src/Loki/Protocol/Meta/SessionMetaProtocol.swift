@@ -116,19 +116,7 @@ public final class SessionMetaProtocol : NSObject {
 
     @objc(updateDisplayNameIfNeededForPublicKey:using:transaction:)
     public static func updateDisplayNameIfNeeded(for publicKey: String, using dataMessage: SSKProtoDataMessage, in transaction: YapDatabaseReadWriteTransaction) {
-        guard let profile = dataMessage.profile, let rawDisplayName = profile.displayName, !rawDisplayName.isEmpty else { return }
-        let displayName: String
-//        if UserDefaults.standard[.masterHexEncodedPublicKey] == publicKey {
-//            displayName = rawDisplayName
-//        } else {
-            let shortID = publicKey.substring(from: publicKey.index(publicKey.endIndex, offsetBy: -8))
-            let suffix = "(...\(shortID))"
-            if rawDisplayName.hasSuffix(suffix) {
-                displayName = rawDisplayName // FIXME: Workaround for a bug where the raw display name already has the short ID attached to it
-            } else {
-                displayName = "\(rawDisplayName) \(suffix)"
-            }
-//        }
+        guard let profile = dataMessage.profile, let displayName = profile.displayName, !displayName.isEmpty else { return }
         let profileManager = SSKEnvironment.shared.profileManager
         profileManager.updateProfileForContact(withID: publicKey, displayName: displayName, with: transaction)
     }
