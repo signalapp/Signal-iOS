@@ -339,12 +339,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
 {
-    return [self allAttachmentsWithTransaction:transaction];
+    // Note: attachmentIds vs. allAttachmentIds
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds transaction:transaction];
 }
 
 - (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
 {
-    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds transaction:transaction];
+    // Note: attachmentIds vs. allAttachmentIds
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.allAttachmentIds transaction:transaction];
 }
 
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
