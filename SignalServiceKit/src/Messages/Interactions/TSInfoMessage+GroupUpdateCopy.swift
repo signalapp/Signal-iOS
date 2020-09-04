@@ -119,7 +119,7 @@ struct GroupUpdateCopy {
         self.updater = GroupUpdateCopy.updater(groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                transaction: transaction)
         if let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
-            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPendingJoinRequestPlaceholder
+            self.isReplacingJoinRequestPlaceholder = oldGroupModelV2.isPlaceholderModel
         } else {
             self.isReplacingJoinRequestPlaceholder = false
         }

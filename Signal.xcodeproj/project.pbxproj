@@ -176,6 +176,7 @@
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		346E9D5421B040B700562252 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E9D5321B040B600562252 /* RegistrationController.swift */; };
 		346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */; };
+		346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA13250199A300E8AB6F /* MemberRequestView.swift */; };
 		3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249B238367E90078D72C /* TextApprovalViewController.swift */; };
 		3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249D2385B6360078D72C /* OWSProfileManager.swift */; };
 		347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470249F238C85850078D72C /* VersionedProfilesImpl.swift */; };
@@ -1099,6 +1100,7 @@
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		346E9D5321B040B600562252 /* RegistrationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendMessageFlow.swift; sourceTree = "<group>"; };
+		346EAA13250199A300E8AB6F /* MemberRequestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberRequestView.swift; sourceTree = "<group>"; };
 		3470249B238367E90078D72C /* TextApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		3470249D2385B6360078D72C /* OWSProfileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProfileManager.swift; sourceTree = "<group>"; };
 		3470249F238C85850078D72C /* VersionedProfilesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfilesImpl.swift; sourceTree = "<group>"; };
@@ -2282,15 +2284,16 @@
 				34D1F0721F8678AA0066283D /* ConversationViewLayout.m */,
 				341341ED2187467900192D59 /* ConversationViewModel.h */,
 				341341EE2187467900192D59 /* ConversationViewModel.m */,
+				88535063240829950011D318 /* DateHeaderInteraction.swift */,
 				880D902824808830003D2B14 /* Emoji Picker */,
 				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
+				346EAA13250199A300E8AB6F /* MemberRequestView.swift */,
 				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
+				4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */,
 				8855DF85238F1DEE0066D96F /* Reactions Details */,
 				88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */,
 				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
 				4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */,
-				88535063240829950011D318 /* DateHeaderInteraction.swift */,
-				4C81DAD4242051C100F4C4D1 /* MessageSelectionView.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -5070,6 +5073,7 @@
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
 				3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */,
+				346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,
 				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,

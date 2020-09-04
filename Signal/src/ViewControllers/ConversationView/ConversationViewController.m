@@ -186,7 +186,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 @property (nonatomic, nullable) NSString *lastSearchedText;
 
-@property (nonatomic, nullable) UIView *messageRequestView;
+@property (nonatomic, nullable) UIView *requestView;
 
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 
@@ -1263,7 +1263,7 @@ typedef enum : NSUInteger {
         case ConversationViewActionCompose:
             // Don't pop the keyboard if we have a pending message request, since
             // the user can't currently send a message until acting on this
-            if (!self.messageRequestView) {
+            if (!self.requestView) {
                 [self popKeyBoard];
             }
 
@@ -5338,8 +5338,8 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.threadViewModel.hasPendingMessageRequest) {
-        if (self.messageRequestView) {
+    if (!self.threadViewModel.hasPendingMessageRequest && !self.isLocalUserRequestingMember) {
+        if (self.requestView != nil) {
             // We're currently showing the message request view but no longer need to,
             // probably because this request was accepted on another device. Dismiss it.
             [self dismissMessageRequestView];
@@ -5347,10 +5347,18 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.messageRequestView removeFromSuperview];
-    MessageRequestView *messageRequestView = [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
-    messageRequestView.delegate = self;
-    self.messageRequestView = messageRequestView;
+    [self.requestView removeFromSuperview];
+    if (self.isLocalUserRequestingMember) {
+        MemberRequestView *memberRequestView = [[MemberRequestView alloc] initWithThreadViewModel:self.threadViewModel
+                                                                               fromViewController:self];
+        memberRequestView.delegate = self;
+        self.requestView = memberRequestView;
+    } else {
+        MessageRequestView *messageRequestView =
+            [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
+        messageRequestView.delegate = self;
+        self.requestView = messageRequestView;
+    }
     [self reloadBottomBar];
 }
 
@@ -5358,15 +5366,15 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.messageRequestView) {
+    if (!self.requestView) {
         return;
     }
 
     // Slide the request view off the bottom of the screen.
     CGFloat bottomInset = self.view.safeAreaInsets.bottom;
 
-    UIView *dismissingView = self.messageRequestView;
-    self.messageRequestView = nil;
+    UIView *dismissingView = self.requestView;
+    self.requestView = nil;
 
     [self reloadBottomBar];
     [self updateInputVisibility];
@@ -5387,6 +5395,16 @@ typedef enum : NSUInteger {
         completion:^(BOOL finished) {
             [dismissingView removeFromSuperview];
         }];
+}
+
+- (BOOL)isLocalUserRequestingMember
+{
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        return groupThread.isLocalUserRequestingMember;
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark - LocationPickerDelegate
@@ -5473,8 +5491,8 @@ typedef enum : NSUInteger {
 {
     UIView *bottomView;
 
-    if (self.messageRequestView) {
-        bottomView = self.messageRequestView;
+    if (self.requestView != nil) {
+        bottomView = self.requestView;
     } else {
         switch (self.uiMode) {
             case ConversationUIMode_Search:
@@ -5501,7 +5519,7 @@ typedef enum : NSUInteger {
     [self.bottomBar addSubview:bottomView];
 
     // The message requests view expects to extend into the safe area
-    if (self.messageRequestView) {
+    if (self.requestView) {
         [bottomView autoPinEdgesToSuperviewEdges];
     } else {
         [bottomView autoPinEdgesToSuperviewMargins];

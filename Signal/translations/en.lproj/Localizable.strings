@@ -442,6 +442,9 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Next";
 
+/* Label for the 'no' button. */
+"BUTTON_NO" = "No";
+
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "Okay";
 
@@ -450,6 +453,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Submit";
+
+/* Label for the 'yes' button. */
+"BUTTON_YES" = "Yes";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Call Again";
@@ -2466,6 +2472,15 @@
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Unblock";
+
+/* Label for button to cancel your request to join the group. */
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+
+/* Title for the confirmation alert when cancelling your request to join the group. */
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+
+/* Indicator that you have requested to join this group. */
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";

@@ -1342,7 +1342,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // We don't cache these previews, since they contain volatile
     // information like the current revision number.
-    public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data,
+    //
+    // inviteLinkPassword is not necessary if we're already a member or have a pending request.
+    public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data?,
                                             groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview> {
         let groupV2Params: GroupV2Params
         do {
@@ -1568,13 +1570,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                               avatarData: avatarData,
                                                               revisionForPlaceholderModel: revisionForPlaceholderModel)
             }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
-                let isPendingJoinRequestPlaceholder: Bool
+                let isPlaceholderModel: Bool
                 if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                    isPendingJoinRequestPlaceholder = groupModel.isPendingJoinRequestPlaceholder
+                    isPlaceholderModel = groupModel.isPlaceholderModel
                 } else {
-                    isPendingJoinRequestPlaceholder = false
+                    isPlaceholderModel = false
                 }
-                guard !isPendingJoinRequestPlaceholder else {
+                guard !isPlaceholderModel else {
                     // There's no point in sending a group update for a placeholder
                     // group, since we don't know who to send it to.
                     return Promise.value(groupThread)
@@ -1607,24 +1609,36 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
                 // The group already existing in the database; make sure
                 // that we are a requesting member.
-                guard let currentModel = groupThread.groupModel as? TSGroupModelV2 else {
+                guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
-                let groupMembership = currentModel.groupMembership
-                if currentModel.revision >= revision &&
-                    currentModel.groupMembership.isRequestingMember(localUuid) {
+                let oldGroupMembership = oldGroupModel.groupMembership
+                if oldGroupModel.revision >= revision &&
+                    oldGroupMembership.isRequestingMember(localUuid) {
                     // No need to update database, group state is already acceptable.
                     return groupThread
                 }
-                var builder = currentModel.asBuilder
-                builder.isPendingJoinRequestPlaceholder = true
-                builder.groupV2Revision = max(revision, currentModel.revision)
-                var membershipBuilder = groupMembership.asBuilder
+                var builder = oldGroupModel.asBuilder
+                builder.isPlaceholderModel = true
+                builder.groupV2Revision = max(revision, oldGroupModel.revision)
+                var membershipBuilder = oldGroupMembership.asBuilder
                 membershipBuilder.remove(localUuid)
                 membershipBuilder.addRequestingMember(localUuid)
                 builder.groupMembership = membershipBuilder.build()
-                let newModel = try builder.build(transaction: transaction)
-                groupThread.update(with: newModel, transaction: transaction)
+                let newGroupModel = try builder.build(transaction: transaction)
+                groupThread.update(with: newGroupModel, transaction: transaction)
+
+                let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
+                let disappearingMessageToken = dmConfiguration.asToken
+                let localAddress = SignalServiceAddress(uuid: localUuid)
+                GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                                          oldGroupModel: oldGroupModel,
+                                                          newGroupModel: newGroupModel,
+                                                          oldDisappearingMessageToken: disappearingMessageToken,
+                                                          newDisappearingMessageToken: disappearingMessageToken,
+                                                          groupUpdateSourceAddress: localAddress,
+                                                          transaction: transaction)
+
                 return groupThread
             } else {
                 // Create a placeholder group.
@@ -1638,7 +1652,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 builder.groupV2Revision = revision
                 builder.groupSecretParamsData = groupV2Params.groupSecretParamsData
                 builder.inviteLinkPassword = inviteLinkPassword
-                builder.isPendingJoinRequestPlaceholder = true
+                builder.isPlaceholderModel = true
 
                 // The "group invite link" UI might not have downloaded
                 // the avatar. That's fine; this is just a placeholder
@@ -1656,6 +1670,18 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 let groupModel = try builder.build(transaction: transaction)
                 let groupThread = TSGroupThread(groupModelPrivate: groupModel)
                 groupThread.anyInsert(transaction: transaction)
+
+                let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
+                let disappearingMessageToken = dmConfiguration.asToken
+                let localAddress = SignalServiceAddress(uuid: localUuid)
+                GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                                          oldGroupModel: nil,
+                                                          newGroupModel: groupModel,
+                                                          oldDisappearingMessageToken: nil,
+                                                          newDisappearingMessageToken: disappearingMessageToken,
+                                                          groupUpdateSourceAddress: localAddress,
+                                                          transaction: transaction)
+
                 return groupThread
             }
         }
@@ -1675,6 +1701,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             //
             // * revision
             // * addFromInviteLinkAccess
+            // * local user's request status.
             self.fetchGroupInviteLinkPreview(inviteLinkPassword: inviteLinkPassword,
                                              groupSecretParamsData: groupV2Params.groupSecretParamsData)
         }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, ProfileKeyCredential)> in
@@ -1721,6 +1748,156 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             default:
                 throw OWSAssertionError("Invalid addFromInviteLinkAccess.")
             }
+
+            return try actionsBuilder.build()
+        }
+    }
+
+    public func cancelMemberRequests(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+        let groupV2Params: GroupV2Params
+        do {
+            groupV2Params = try groupModel.groupV2Params()
+        } catch {
+            return Promise<TSGroupThread>(error: error)
+        }
+
+        return firstly(on: .global()) { () -> Promise<UInt32> in
+            self.cancelMemberRequestsUsingPatch(groupId: groupModel.groupId, groupV2Params: groupV2Params)
+        }.map(on: .global()) { (newRevision: UInt32) -> TSGroupThread in
+            try self.updateGroupRemovingMemberRequest(groupId: groupModel.groupId, newRevision: newRevision)
+        }.recover(on: .global()) { (error: Error) -> Promise<TSGroupThread> in
+            if case GroupsV2Error.localUserIsNotARequestingMember = error {
+                // We don't need to cancel our pending member request; there is none.
+                // Update the model to reflect that.
+                let groupThread = try self.updateGroupRemovingMemberRequest(groupId: groupModel.groupId,
+                                                                            newRevision: nil)
+                return Promise.value(groupThread)
+            } else {
+                throw error
+            }
+        }
+    }
+
+    private func updateGroupRemovingMemberRequest(groupId: Data,
+                                                  newRevision proposedRevision: UInt32?) throws -> TSGroupThread {
+
+        guard let localUuid = self.tsAccountManager.localUuid else {
+            throw OWSAssertionError("Missing localUuid.")
+        }
+
+        return try databaseStorage.write { transaction -> TSGroupThread in
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("Missing groupThread.")
+            }
+            // The group already existing in the database; make sure
+            // that we are a requesting member.
+            guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid groupModel.")
+            }
+            let oldGroupMembership = oldGroupModel.groupMembership
+            var newRevision = oldGroupModel.revision + 1
+            if let proposedRevision = proposedRevision {
+                if oldGroupModel.revision >= proposedRevision {
+                    // No need to update database, group state is already acceptable.
+                    owsAssertDebug(!oldGroupMembership.isMemberOfAnyKind(localUuid))
+                    return groupThread
+                }
+                newRevision = max(newRevision, proposedRevision)
+            }
+
+            var builder = oldGroupModel.asBuilder
+            builder.isPlaceholderModel = true
+            builder.groupV2Revision = newRevision
+
+            var membershipBuilder = oldGroupMembership.asBuilder
+            membershipBuilder.remove(localUuid)
+            builder.groupMembership = membershipBuilder.build()
+            let newGroupModel = try builder.build(transaction: transaction)
+            groupThread.update(with: newGroupModel, transaction: transaction)
+
+            let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
+            let disappearingMessageToken = dmConfiguration.asToken
+            let localAddress = SignalServiceAddress(uuid: localUuid)
+            GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                                      oldGroupModel: oldGroupModel,
+                                                      newGroupModel: newGroupModel,
+                                                      oldDisappearingMessageToken: disappearingMessageToken,
+                                                      newDisappearingMessageToken: disappearingMessageToken,
+                                                      groupUpdateSourceAddress: localAddress,
+                                                      transaction: transaction)
+
+            return groupThread
+        }
+    }
+
+    private func cancelMemberRequestsUsingPatch(groupId: Data, groupV2Params: GroupV2Params) -> Promise<UInt32> {
+
+        let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil)
+
+        // We re-fetch the GroupInviteLinkPreview with every attempt in order to get the latest:
+        //
+        // * revision
+        // * addFromInviteLinkAccess
+        // * local user's request status.
+        return firstly {
+            self.fetchGroupInviteLinkPreview(inviteLinkPassword: nil,
+                                             groupSecretParamsData: groupV2Params.groupSecretParamsData)
+        }.recover { (error: Error) -> Promise<GroupInviteLinkPreview> in
+            if case GroupsV2Error.expiredGroupInviteLink = error {
+                throw GroupsV2Error.localUserIsNotARequestingMember
+            } else {
+                throw error
+            }
+        }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<OWSHTTPResponse> in
+            let requestBuilder: RequestBuilder = { (authCredential) in
+                return firstly { () -> Promise<GroupsProtoGroupChangeActions> in
+                    self.buildChangeActionsProtoToCancelMemberRequest(groupInviteLinkPreview: groupInviteLinkPreview,
+                                                                      groupV2Params: groupV2Params,
+                                                                      revisionForPlaceholderModel: revisionForPlaceholderModel)
+                }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> GroupsV2Request in
+                    try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
+                                                               groupV2Params: groupV2Params,
+                                                               authCredential: authCredential,
+                                                               groupInviteLinkPassword: nil)
+                }
+            }
+
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: groupId,
+                                              behavior403: .fail)
+        }.map(on: .global()) { _ -> UInt32 in
+            guard let revision = revisionForPlaceholderModel.get() else {
+                throw OWSAssertionError("Missing revisionForPlaceholderModel.")
+            }
+            return revision
+        }
+    }
+
+    private func buildChangeActionsProtoToCancelMemberRequest(groupInviteLinkPreview: GroupInviteLinkPreview,
+                                                              groupV2Params: GroupV2Params,
+                                                              revisionForPlaceholderModel: AtomicOptional<UInt32>) -> Promise<GroupsProtoGroupChangeActions> {
+
+        return firstly(on: .global()) { () -> GroupsProtoGroupChangeActions in
+            guard let localUuid = self.tsAccountManager.localUuid else {
+                throw OWSAssertionError("Missing localUuid.")
+            }
+            let oldRevision = groupInviteLinkPreview.revision
+            let newRevision = oldRevision + 1
+            Logger.verbose("---- Revision: \(oldRevision) -> \(newRevision)")
+            Logger.flush()
+            revisionForPlaceholderModel.set(newRevision)
+
+            let actionsBuilder = GroupsProtoGroupChangeActions.builder()
+
+            let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
+            let userId = try groupV2Params.userId(forUuid: localUuid)
+            actionBuilder.setDeletedUserID(userId)
+            actionsBuilder.addDeleteMembers(try actionBuilder.build())
+
+//            let actionBuilder = GroupsProtoGroupChangeActionsDeleteRequestingMemberAction.builder()
+//            let userId = try groupV2Params.userId(forUuid: localUuid)
+//            actionBuilder.setDeletedUserID(userId)
+//            actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
 
             return try actionsBuilder.build()
         }

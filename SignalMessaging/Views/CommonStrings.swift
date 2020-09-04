@@ -81,6 +81,12 @@ import Foundation
 
     @objc
     static public let sendMessage = NSLocalizedString("ACTION_SEND_MESSAGE", comment: "Label for button that lets you send a message to a contact.")
+
+    @objc
+    static public let yesButton = NSLocalizedString("BUTTON_YES", comment: "Label for the 'yes' button.")
+
+    @objc
+    static public let noButton = NSLocalizedString("BUTTON_NO", comment: "Label for the 'no' button.")
 }
 
 @objc
