@@ -62,7 +62,7 @@ final class SeedModal : Modal {
         // Set up explanation label
         let disclaimerLabel = UILabel()
         disclaimerLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        disclaimerLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
+        disclaimerLabel.font = .systemFont(ofSize: 10)
         disclaimerLabel.text = NSLocalizedString("modal_seed_disclaimer", comment: "")
         disclaimerLabel.numberOfLines = 0
         disclaimerLabel.lineBreakMode = .byWordWrapping
