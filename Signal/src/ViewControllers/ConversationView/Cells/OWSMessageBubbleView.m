@@ -628,7 +628,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)bodyMediaQuotedReplyVSpacing
 {
-    return 6.f;
+    return 4.f;
 }
 
 - (CGFloat)quotedReplyTopMargin
