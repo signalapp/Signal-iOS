@@ -205,6 +205,9 @@ class ConversationPickerViewController: OWSViewController {
                         contactItems.append(item)
                     }
                 case let groupThread as TSGroupThread:
+                    guard groupThread.isLocalUserFullMember else {
+                        return
+                    }
                     let item = self.buildGroupItem(groupThread, transaction: transaction)
                     if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
