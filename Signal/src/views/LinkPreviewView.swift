@@ -521,13 +521,13 @@ public class LinkPreviewView: UIStackView {
     private let sentVSpacing: CGFloat = 4
 
     // The "sent message" mode has two submodes: "hero" and "non-hero".
-    private let sentNonHeroHMargin: CGFloat = Values.mediumSpacing
-    private let sentNonHeroVMargin: CGFloat = Values.mediumSpacing
+    private let sentNonHeroHMargin: CGFloat = 12
+    private let sentNonHeroVMargin: CGFloat = 12
     private let sentNonHeroImageSize: CGFloat = 72
     private let sentNonHeroHSpacing: CGFloat = 8
 
-    private let sentHeroHMargin: CGFloat = Values.mediumSpacing
-    private let sentHeroVMargin: CGFloat = Values.mediumSpacing
+    private let sentHeroHMargin: CGFloat = 12
+    private let sentHeroVMargin: CGFloat = 12
 
     private func sentIsHero(state: LinkPreviewSent) -> Bool {
         let imageSize = state.imageSize

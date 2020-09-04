@@ -25,11 +25,18 @@ final class SeedModal : Modal {
         // Set up mnemonic label
         let mnemonicLabel = UILabel()
         mnemonicLabel.textColor = Colors.text
-        mnemonicLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        mnemonicLabel.font = Fonts.spaceMono(ofSize: Values.smallFontSize)
         mnemonicLabel.text = mnemonic
         mnemonicLabel.numberOfLines = 0
         mnemonicLabel.lineBreakMode = .byWordWrapping
         mnemonicLabel.textAlignment = .center
+        // Set up mnemonic label container
+        let mnemonicLabelContainer = UIView()
+        mnemonicLabelContainer.addSubview(mnemonicLabel)
+        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone6OrSmaller ? 4 : Values.smallSpacing)
+        mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
+        mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
+        mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
@@ -54,14 +61,14 @@ final class SeedModal : Modal {
         buttonStackView.distribution = .fillEqually
         // Set up explanation label
         let disclaimerLabel = UILabel()
-        disclaimerLabel.textColor = Colors.text
-        disclaimerLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        disclaimerLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        disclaimerLabel.font = .systemFont(ofSize: 10)
         disclaimerLabel.text = NSLocalizedString("modal_seed_disclaimer", comment: "")
         disclaimerLabel.numberOfLines = 0
         disclaimerLabel.lineBreakMode = .byWordWrapping
         disclaimerLabel.textAlignment = .center
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabel, explanationLabel, buttonStackView, disclaimerLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel, buttonStackView, disclaimerLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         contentView.addSubview(stackView)

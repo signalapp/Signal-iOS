@@ -628,12 +628,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)bodyMediaQuotedReplyVSpacing
 {
-    return 6.f;
+    return 4.f;
 }
 
 - (CGFloat)quotedReplyTopMargin
 {
-    return 22.f;
+    return 16.f;
 }
 
 - (nullable LinkPreviewSent *)linkPreviewState

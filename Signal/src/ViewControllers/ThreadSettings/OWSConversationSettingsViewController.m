@@ -809,6 +809,15 @@ const CGFloat kIconViewLength = 24;
     // Block Conversation section.
 
     if (!isNoteToSelf && [self.thread isKindOfClass:TSContactThread.class]) {
+        [mainSection addItem:
+            [OWSTableItem itemWithCustomCellBlock:^{
+                NSString *title = @"Reset Secure Session";
+                NSString *accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"reset_secure_session");
+                return [weakSelf disclosureCellWithName:title iconName:@"system_message_security" accessibilityIdentifier:accessibilityIdentifier];
+            }
+            actionBlock:^{ [weakSelf resetSecureSession]; }]
+        ];
+
         mainSection.footerTitle = NSLocalizedString(
             @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
 
@@ -840,15 +849,6 @@ const CGFloat kIconViewLength = 24;
                                  return cell;
                              }
                                          actionBlock:nil]];
-
-        [mainSection addItem:
-            [OWSTableItem itemWithCustomCellBlock:^{
-                NSString *title = @"Reset Secure Session";
-                NSString *accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"reset_secure_session");
-                return [weakSelf disclosureCellWithName:title iconName:@"system_message_security" accessibilityIdentifier:accessibilityIdentifier];
-            }
-            actionBlock:^{ [weakSelf resetSecureSession]; }]
-         ];
     }
 
     self.contents = contents;

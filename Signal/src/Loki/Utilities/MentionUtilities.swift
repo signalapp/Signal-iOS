@@ -48,7 +48,8 @@ public final class MentionUtilities : NSObject {
         }
         let result = NSMutableAttributedString(string: string, attributes: attributes)
         mentions.forEach { mention in
-            result.addAttribute(.foregroundColor, value: Colors.accent, range: mention.range)
+            let color = isLightMode && isOutgoingMessage ? UIColor.black : Colors.accent
+            result.addAttribute(.foregroundColor, value: color, range: mention.range)
             result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: mention.range)
         }
         return result
