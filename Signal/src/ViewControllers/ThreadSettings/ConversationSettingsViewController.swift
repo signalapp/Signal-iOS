@@ -37,6 +37,10 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     // MARK: - Dependencies
 
+    static var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
@@ -78,20 +82,27 @@ class ConversationSettingsViewController: OWSTableViewController {
     @objc
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
-    private let threadViewModel: ThreadViewModel
+    private var threadViewModel: ThreadViewModel
 
     var thread: TSThread {
-        return threadViewModel.threadRecord
+        threadViewModel.threadRecord
     }
 
     // Group model reflecting the last known group state.
     // This is updated as we change group membership, etc.
-    var currentGroupModel: TSGroupModel?
+    var currentGroupModel: TSGroupModel? {
+        guard let groupThread = thread as? TSGroupThread else {
+            return nil
+        }
+        return groupThread.groupModel
+    }
+
+    var groupViewHelper: GroupViewHelper
 
     @objc
     public var showVerificationOnAppear = false
 
-    var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration!
+    var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     var avatarView: UIImageView?
     let disappearingMessagesDurationLabel = UILabel()
 
@@ -100,15 +111,15 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     var isShowingAllGroupMembers = false
 
-    let groupViewHelper: GroupViewHelper
-
     @objc
     public required init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
-        if let groupThread = threadViewModel.threadRecord as? TSGroupThread {
-            self.currentGroupModel = groupThread.groupModel
-        }
         groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+
+        disappearingMessagesConfiguration = Self.databaseStorage.read { transaction in
+            OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: threadViewModel.threadRecord,
+                                                                     transaction: transaction)
+        }
 
         super.init()
 
@@ -201,20 +212,17 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         disappearingMessagesDurationLabel.setAccessibilityIdentifier(in: self, name: "disappearingMessagesDurationLabel")
 
-        databaseStorage.uiRead { transaction in
-            self.disappearingMessagesConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: self.thread, transaction: transaction)
-        }
-
         if shouldShowColorPicker {
             let colorPicker = ColorPicker(thread: self.thread)
             colorPicker.delegate = self
             self.colorPicker = colorPicker
         }
 
-        updateNavigationBar()
-        updateTableContents()
-
         observeNotifications()
+
+        reloadThreadAndUpdateContent()
+
+        updateNavigationBar()
     }
 
     func updateNavigationBar() {
@@ -254,20 +262,22 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     // MARK: -
 
-    func reloadGroupModelAndUpdateContent() {
-        guard let oldGroupThread = self.thread as? TSGroupThread else {
+    func reloadThreadAndUpdateContent() {
+        let didUpdate = self.databaseStorage.read { transaction -> Bool in
+            guard let newThread = TSThread.anyFetch(uniqueId: self.thread.uniqueId,
+                                                    transaction: transaction) else {
+                return false
+            }
+            let newThreadViewModel = ThreadViewModel(thread: newThread, transaction: transaction)
+            self.threadViewModel = newThreadViewModel
+            self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel)
+            return true
+        }
+        if !didUpdate {
             owsFailDebug("Invalid thread.")
             navigationController?.popViewController(animated: true)
             return
         }
-        guard let newGroupThread = (databaseStorage.uiRead { transaction in
-            TSGroupThread.fetch(groupId: oldGroupThread.groupModel.groupId, transaction: transaction)
-        }) else {
-            owsFailDebug("Missing thread.")
-            navigationController?.popViewController(animated: true)
-            return
-        }
-        currentGroupModel = newGroupThread.groupModel
 
         updateTableContents()
     }
@@ -475,7 +485,7 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                                                                  access: access)
         },
                                                         completion: { [weak self] _ in
-                                                            self?.reloadGroupModelAndUpdateContent()
+                                                            self?.reloadThreadAndUpdateContent()
         })
     }
 
@@ -553,7 +563,7 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                                                                  access: access)
         },
                                                         completion: { [weak self] _ in
-                                                            self?.reloadGroupModelAndUpdateContent()
+                                                            self?.reloadThreadAndUpdateContent()
         })
     }
 
@@ -1106,7 +1116,7 @@ extension ConversationSettingsViewController: ColorPickerDelegate {
 
 extension ConversationSettingsViewController: GroupAttributesViewControllerDelegate {
     func groupAttributesDidUpdate() {
-        reloadGroupModelAndUpdateContent()
+        reloadThreadAndUpdateContent()
     }
 }
 
@@ -1114,7 +1124,7 @@ extension ConversationSettingsViewController: GroupAttributesViewControllerDeleg
 
 extension ConversationSettingsViewController: AddGroupMembersViewControllerDelegate {
     func addGroupMembersViewDidUpdate() {
-        reloadGroupModelAndUpdateContent()
+        reloadThreadAndUpdateContent()
     }
 }
 
@@ -1122,7 +1132,7 @@ extension ConversationSettingsViewController: AddGroupMembersViewControllerDeleg
 
 extension ConversationSettingsViewController: GroupMemberRequestsAndInvitesViewControllerDelegate {
     func requestsAndInvitesViewDidUpdate() {
-        reloadGroupModelAndUpdateContent()
+        reloadThreadAndUpdateContent()
     }
 }
 
@@ -1130,7 +1140,7 @@ extension ConversationSettingsViewController: GroupMemberRequestsAndInvitesViewC
 
 extension ConversationSettingsViewController: GroupLinkViewControllerDelegate {
     func groupLinkViewViewDidUpdate() {
-        reloadGroupModelAndUpdateContent()
+        reloadThreadAndUpdateContent()
     }
 }
 
@@ -1210,7 +1220,7 @@ extension ConversationSettingsViewController: OWSNavigationView {
 
 extension ConversationSettingsViewController: GroupViewHelperDelegate {
     func groupViewHelperDidUpdateGroup() {
-        reloadGroupModelAndUpdateContent()
+        reloadThreadAndUpdateContent()
     }
 
     var fromViewController: UIViewController? {
