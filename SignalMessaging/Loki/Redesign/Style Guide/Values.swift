@@ -15,7 +15,7 @@ public final class Values : NSObject {
     @objc public static let smallFontSize = isIPhone5OrSmaller ? CGFloat(13) : CGFloat(15)
     @objc public static let mediumFontSize = isIPhone5OrSmaller ? CGFloat(15) : CGFloat(17)
     @objc public static let largeFontSize = isIPhone5OrSmaller ? CGFloat(20) : CGFloat(22)
-    @objc public static let veryLargeFontSize = isIPhone5OrSmaller ? CGFloat(25) : CGFloat(27)
+    @objc public static let veryLargeFontSize = isIPhone5OrSmaller ? CGFloat(24) : CGFloat(26)
     @objc public static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes
