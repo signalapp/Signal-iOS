@@ -114,8 +114,8 @@ final class ConversationTitleView : UIView {
         guard let timestamp = notification.object as? NSNumber else { return }
         setStatusIfNeeded(to: .messageSent, forMessageWithTimestamp: timestamp)
         handledMessageTimestamps.insert(timestamp)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.clearStatusIfNeededForMessageWithTimestamp(timestamp)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.clearStatusIfNeededForMessageWithTimestamp(timestamp)
         }
     }
     

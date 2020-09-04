@@ -663,22 +663,25 @@ const CGFloat kIconViewLength = 24;
                 [weakSelf showGroupMembersView];
             }]
         ];
-        [mainSection addItem:[OWSTableItem
-            itemWithCustomCellBlock:^{
-                UITableViewCell *cell =
-                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
-                                                         @"table cell label in conversation settings")
-                                            iconName:@"table_ic_group_leave"
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                         OWSConversationSettingsViewController, @"leave_group")];
-                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        if ([((TSGroupThread *)self.thread).groupModel.groupMemberIds containsObject:userPublicKey]) {
+            [mainSection addItem:[OWSTableItem
+                itemWithCustomCellBlock:^{
+                    UITableViewCell *cell =
+                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                             @"table cell label in conversation settings")
+                                                iconName:@"table_ic_group_leave"
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                             OWSConversationSettingsViewController, @"leave_group")];
+                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
 
-                return cell;
-            }
-            actionBlock:^{
-                [weakSelf didTapLeaveGroup];
-            }]
-        ];
+                    return cell;
+                }
+                actionBlock:^{
+                    [weakSelf didTapLeaveGroup];
+                }]
+            ];
+        }
     }
     
 
@@ -837,6 +840,15 @@ const CGFloat kIconViewLength = 24;
                                  return cell;
                              }
                                          actionBlock:nil]];
+
+        [mainSection addItem:
+            [OWSTableItem itemWithCustomCellBlock:^{
+                NSString *title = @"Reset Secure Session";
+                NSString *accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"reset_secure_session");
+                return [weakSelf disclosureCellWithName:title iconName:@"system_message_security" accessibilityIdentifier:accessibilityIdentifier];
+            }
+            actionBlock:^{ [weakSelf resetSecureSession]; }]
+         ];
     }
 
     self.contents = contents;
@@ -1396,6 +1408,26 @@ const CGFloat kIconViewLength = 24;
 - (void)tappedConversationSearch
 {
     [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
+}
+
+- (void)resetSecureSession
+{
+    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
+    TSContactThread *thread = (TSContactThread *)self.thread;
+    __weak OWSConversationSettingsViewController *weakSelf = self;
+    NSString *message = @"This may help if you're having encryption problems in this conversation. Your messages will be kept.";
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Reset Secure Session?" message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_CANCEL_TITLE", @"") style:UIAlertActionStyleDefault handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Reset" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
+                [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
+            } error:nil];
+            [weakSelf.navigationController popViewControllerAnimated:YES];
+        });
+    }]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - Notifications

@@ -20,10 +20,13 @@ final class LightModeSheet : Sheet {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        explanationLabel.textAlignment = .center
         explanationLabel.text = """
-        Who left the lights on? bla bla bla
+        Whoops, who left the lights on?
 
-        Feeling the dark side more? Just pop into the in-app settings and tap the app mode button in the top-right to toggle dark mode again.
+        That’s right, Session has a spiffy new light mode! Take the fresh new color palette for a spin — it’s now the default mode.
+
+        Want to go back to the dark side? Just tap the moon symbol in the in-app settings to switch modes.
         """
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping

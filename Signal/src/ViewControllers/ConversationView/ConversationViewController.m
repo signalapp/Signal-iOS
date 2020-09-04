@@ -1221,10 +1221,15 @@ typedef enum : NSUInteger {
 }
 
 - (void)restoreSession {
+    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
+    TSContactThread *thread = (TSContactThread *)self.thread;
+    __weak ConversationViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKSessionManagementProtocol startSessionResetInThread:self.thread transaction:transaction];
+            [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
+            [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
         } error:nil];
+        [weakSelf updateSessionRestoreBanner];
     });
 }
 
@@ -3592,7 +3597,6 @@ typedef enum : NSUInteger {
 // and won't update the UI state immediately.
 - (void)didScrollToBottom
 {
-
     id<ConversationViewItem> _Nullable lastVisibleViewItem = [self.viewItems lastObject];
     if (lastVisibleViewItem) {
         uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
@@ -4669,7 +4673,7 @@ typedef enum : NSUInteger {
         OWSAssertDebug(left <= mid);
         OWSAssertDebug(mid < right);
         id<ConversationViewItem> viewItem = self.viewItems[mid];
-        if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
+        if (viewItem.interaction.timestampForUI >= viewHorizonTimestamp) {
             right = mid;
         } else {
             // This is an optimization; it also ensures that we converge.
@@ -4678,7 +4682,7 @@ typedef enum : NSUInteger {
     }
     OWSAssertDebug(left == right);
     id<ConversationViewItem> viewItem = self.viewItems[left];
-    if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
+    if (viewItem.interaction.timestampForUI >= viewHorizonTimestamp) {
         OWSLogInfo(@"firstIndexPathAtViewHorizonTimestamp: %zd / %zd", left, self.viewItems.count);
         return [NSIndexPath indexPathForRow:(NSInteger) left inSection:0];
     } else {
@@ -5388,7 +5392,7 @@ typedef enum : NSUInteger {
         __block TSInteraction *targetInteraction;
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [self.thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *t) {
-                if (interaction.timestamp == timestamp.unsignedLongLongValue) {
+                if (interaction.timestampForUI == timestamp.unsignedLongLongValue) {
                     targetInteraction = interaction;
                 }
             }];
@@ -5412,7 +5416,7 @@ typedef enum : NSUInteger {
 {
     __block TSInteraction *targetInteraction;
     [self.thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
-        if (interaction.timestamp == timestamp.unsignedLongLongValue) {
+        if (interaction.timestampForUI == timestamp.unsignedLongLongValue) {
             targetInteraction = interaction;
         }
     }];

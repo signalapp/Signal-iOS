@@ -549,7 +549,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
         }
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        __block NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        __block NSString *quotedAuthor = [SSKEnvironment.shared.profileManager profileNameForRecipientWithID:self.quotedMessage.authorId] ?: [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
         
         if (quotedAuthor == self.quotedMessage.authorId) {
             [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {

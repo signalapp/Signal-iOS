@@ -39,8 +39,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+@property (nonatomic, readonly) BOOL shouldUseServerTime;
 /// Used for public chats where a message sent from a slave device is interpreted as having been sent from the master device.
 @property (nonatomic) NSString *actualSenderHexEncodedPublicKey;
+
+- (void)setServerTimestampToReceivedTimestamp:(uint64_t)receivedAtTimestamp;
+
+- (uint64_t)timestampForUI;
 
 - (NSDate *)receivedAtDate;
 

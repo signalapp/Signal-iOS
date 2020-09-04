@@ -491,7 +491,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                     return;
                                 }
 
-                                OWSAssertDebug(!possiblyRead.read);
+                                // Under normal circumstances !possiblyRead.read should always evaluate to true at this point, but
+                                // there is a bug that can somehow cause it to be false leading to conversations permanently being
+                                // stuck with "unread" messages.
+
                                 OWSAssertDebug(possiblyRead.expireStartedAt == 0);
                                 if (!possiblyRead.read) {
                                     [newlyReadList addObject:possiblyRead];

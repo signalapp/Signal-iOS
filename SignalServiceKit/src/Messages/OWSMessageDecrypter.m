@@ -581,7 +581,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
-            // FIXME: This is a temporary patch for bad mac issues. At least with this people will be able to message again. We have to figure out the root cause of the issue though.
+            // Attempt to recover automatically
             if ([decryptError userInfo][NSUnderlyingErrorKey] != nil) {
                 NSDictionary *underlyingErrorUserInfo = [[decryptError userInfo][NSUnderlyingErrorKey] userInfo];
                 if (underlyingErrorUserInfo[SCKExceptionWrapperUnderlyingExceptionKey] != nil) {
