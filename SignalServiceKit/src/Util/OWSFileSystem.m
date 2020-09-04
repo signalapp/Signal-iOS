@@ -51,10 +51,17 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    NSError *error;
+    NSError *_Nullable error;
     NSDictionary *fileProtection = @{ NSFileProtectionKey : fileProtectionType };
     BOOL success = [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
     if (error || !success) {
+        if (error != nil && [error.domain isEqualToString:NSCocoaErrorDomain]
+            && (error.code == NSFileReadNoSuchFileError || error.code == NSFileNoSuchFileError)) {
+            // We sometimes protect files async, so races around short-lived
+            // temporarily files can cause these errors.
+            OWSLogWarn(@"Could not protect file or folder: %@", error);
+            return NO;
+        }
         OWSFailDebug(@"Could not protect file or folder: %@", error);
         OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
@@ -66,6 +73,13 @@ NS_ASSUME_NONNULL_BEGIN
     success = [ressourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
+        if (error != nil && [error.domain isEqualToString:NSCocoaErrorDomain]
+            && (error.code == NSFileReadNoSuchFileError || error.code == NSFileNoSuchFileError)) {
+            // We sometimes protect files async, so races around short-lived
+            // temporarily files can cause these errors.
+            OWSLogWarn(@"Could not protect file or folder: %@", error);
+            return NO;
+        }
         OWSFailDebug(@"Could not protect file or folder: %@", error);
         OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
