@@ -120,8 +120,18 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         getSettingButtons().forEach { settingButtonOrSeparator in
             settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator)
         }
+        // Set up version label
+        let versionLabel = UILabel()
+        versionLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+        versionLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
+        versionLabel.numberOfLines = 0
+        versionLabel.textAlignment = .center
+        versionLabel.lineBreakMode = .byCharWrapping
+        let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
+        let buildNumber = Bundle.main.infoDictionary!["CFBundleVersion"]!
+        versionLabel.text = "Version \(version) (\(buildNumber))"
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, versionLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill

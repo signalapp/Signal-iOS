@@ -1236,11 +1236,15 @@ typedef enum : NSUInteger {
 }
 
 - (void)restoreSession {
+    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
+    TSContactThread *thread = (TSContactThread *)self.thread;
+    __weak ConversationViewController *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKSessionManagementProtocol startSessionResetInThread:self.thread transaction:transaction];
+            [thread addSessionRestoreDevice:thread.contactIdentifier transaction:transaction];
+            [LKSessionManagementProtocol startSessionResetInThread:thread transaction:transaction];
         } error:nil];
-        [self updateSessionRestoreBanner];
+        [weakSelf updateSessionRestoreBanner];
     });
 }
 
