@@ -36,18 +36,6 @@ public class MessageFetcherJob: NSObject {
 
     @discardableResult
     public func run() -> Promise<Void> {
-        Logger.debug("")
-
-        // Loki: Original code
-        // ========
-//        guard signalService.isCensorshipCircumventionActive else {
-//            Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
-//            TSSocketManager.shared.requestSocketOpen()
-//            return Promise.value(())
-//        }
-        // ========
-
-        Logger.info("Fetching messages via REST.")
         let promise = fetchUndeliveredMessages().then { promises -> Promise<Void> in
             let promises = promises.map { promise -> Promise<Void> in
                 return promise.then { envelopes -> Promise<Void> in
@@ -68,35 +56,6 @@ public class MessageFetcherJob: NSObject {
         }
         promise.retainUntilComplete()
         return promise
-        
-        /* Loki: Original code
-         * ========
-        let promise = self.fetchUndeliveredMessages().then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
-            for envelope in envelopes {
-                Logger.info("received envelope.")
-                do {
-                    let envelopeData = try envelope.serializedData()
-                    self.messageReceiver.handleReceivedEnvelopeData(envelopeData)
-                } catch {
-                    owsFailDebug("failed to serialize envelope")
-                }
-                self.acknowledgeDelivery(envelope: envelope)
-            }
-
-            if more {
-                Logger.info("fetching more messages.")
-                return self.run()
-            } else {
-                // All finished
-                return Promise.value(())
-            }
-        }
-
-        promise.retainUntilComplete()
-
-        return promise
-         * ========
-         */
     }
 
     @objc
@@ -199,14 +158,9 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func fetchUndeliveredMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
-        // In some cases like deleting an account
-        // the backgroud fetch was not stopped
-        // so the identityKeyPair can be nil
-        let userPublickKey = getUserHexEncodedPublicKey()
-        if !userPublickKey.isEmpty {
-            return SnodeAPI.getMessages(for: userPublickKey)
-        }
-        return Promise.value(Set())
+        let userPublickKey = getUserHexEncodedPublicKey() // Can be missing in rare cases
+        guard !userPublickKey.isEmpty else { return Promise.value(Set()) }
+        return SnodeAPI.getMessages(for: userPublickKey)
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {

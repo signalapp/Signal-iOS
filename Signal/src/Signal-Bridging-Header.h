@@ -8,7 +8,6 @@
 // Separate iOS Frameworks from other imports.
 #import "AppDelegate.h"
 #import "AVAudioSession+OWS.h"
-#import "AppSettingsViewController.h"
 #import "AttachmentUploadView.h"
 #import "AvatarViewHelper.h"
 #import "ContactCellView.h"
@@ -40,7 +39,6 @@
 #import "OWSWindowManager.h"
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
-#import "ProfileViewController.h"
 #import "RemoteVideoView.h"
 #import "OWSQRCodeScanningViewController.h"
 #import "SignalApp.h"

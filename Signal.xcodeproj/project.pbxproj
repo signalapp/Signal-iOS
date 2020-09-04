@@ -38,7 +38,6 @@
 		340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC886204DAC8C007AEB0F /* AddToBlockListViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */; };
-		340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */; };
 		340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */; };
 		340FC8B5204DAC8D007AEB0F /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC893204DAC8C007AEB0F /* AboutTableViewController.m */; };
 		340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */; };
@@ -84,7 +83,6 @@
 		34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B651FD0AA9400BC14EF /* UIFont+OWS.m */; };
 		34480B681FD0AA9400BC14EF /* UIFont+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B661FD0AA9400BC14EF /* UIFont+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 344825C5211390C800DB4BD8 /* OWSOrphanDataCleaner.m */; };
-		3448E15C22133274004B052E /* OnboardingPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */; };
 		3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
@@ -250,7 +248,6 @@
 		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
 		34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */; };
 		34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA631A2097806E00E526A0 /* OWSContactShareView.m */; };
-		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
 		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
@@ -574,6 +571,7 @@
 		C31A6C5A247F214E001123EF /* UIView+Glow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C59247F214E001123EF /* UIView+Glow.swift */; };
 		C31A6C5C247F2CF3001123EF /* CGRect+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */; };
 		C329FEEC24F7277900B1C64C /* LightModeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEEB24F7277900B1C64C /* LightModeSheet.swift */; };
+		C329FEEF24F7743F00B1C64C /* UIViewController+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
 		C353F8F9244809150011121A /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
@@ -730,7 +728,6 @@
 		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
 		340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivacySettingsTableViewController.m; sourceTree = "<group>"; };
 		340FC87F204DAC8C007AEB0F /* OWSBackupSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupSettingsViewController.h; sourceTree = "<group>"; };
-		340FC880204DAC8C007AEB0F /* AppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSettingsViewController.h; sourceTree = "<group>"; };
 		340FC881204DAC8C007AEB0F /* AdvancedSettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancedSettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSoundSettingsViewController.m; sourceTree = "<group>"; };
 		340FC884204DAC8C007AEB0F /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
@@ -741,7 +738,6 @@
 		340FC88A204DAC8C007AEB0F /* NotificationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsViewController.h; sourceTree = "<group>"; };
 		340FC88B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettingsOptionsViewController.h; sourceTree = "<group>"; };
 		340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdvancedSettingsTableViewController.m; sourceTree = "<group>"; };
-		340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSettingsViewController.m; sourceTree = "<group>"; };
 		340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupSettingsViewController.m; sourceTree = "<group>"; };
 		340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
@@ -813,7 +809,6 @@
 		34480B661FD0AA9400BC14EF /* UIFont+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+OWS.h"; sourceTree = "<group>"; };
 		344825C4211390C700DB4BD8 /* OWSOrphanDataCleaner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOrphanDataCleaner.h; sourceTree = "<group>"; };
 		344825C5211390C800DB4BD8 /* OWSOrphanDataCleaner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleaner.m; sourceTree = "<group>"; };
-		3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPermissionsViewController.swift; sourceTree = "<group>"; };
 		3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
 		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
@@ -1003,8 +998,6 @@
 		34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
 		34CA63192097806E00E526A0 /* OWSContactShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareView.h; sourceTree = "<group>"; };
 		34CA631A2097806E00E526A0 /* OWSContactShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareView.m; sourceTree = "<group>"; };
-		34CE88E51F2FB9A10098030F /* ProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewController.h; sourceTree = "<group>"; };
-		34CE88E61F2FB9A10098030F /* ProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewController.m; sourceTree = "<group>"; };
 		34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = busy_tone_ansi.caf; path = Signal/AudioFiles/busy_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
 		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
 		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
@@ -1367,6 +1360,7 @@
 		C31A6C59247F214E001123EF /* UIView+Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Glow.swift"; sourceTree = "<group>"; };
 		C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Utilities.swift"; sourceTree = "<group>"; };
 		C329FEEB24F7277900B1C64C /* LightModeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightModeSheet.swift; sourceTree = "<group>"; };
+		C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Utilities.swift"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
 		C353F8F8244809150011121A /* PNOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNOptionView.swift; sourceTree = "<group>"; };
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
@@ -1574,7 +1568,6 @@
 			children = (
 				3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */,
 				3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */,
-				3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -1588,8 +1581,6 @@
 				340FC886204DAC8C007AEB0F /* AddToBlockListViewController.m */,
 				340FC881204DAC8C007AEB0F /* AdvancedSettingsTableViewController.h */,
 				340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */,
-				340FC880204DAC8C007AEB0F /* AppSettingsViewController.h */,
-				340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */,
 				340FC890204DAC8C007AEB0F /* BlockListViewController.h */,
 				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
 				340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */,
@@ -1923,8 +1914,6 @@
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
 				34969558219B605E00DCFE74 /* Photos */,
-				34CE88E51F2FB9A10098030F /* ProfileViewController.h */,
-				34CE88E61F2FB9A10098030F /* ProfileViewController.m */,
 				340FC875204DAC8C007AEB0F /* Registration */,
 				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */,
 				34B3F86D1E8DF1700035BE1A /* SignalsNavigationController.h */,
@@ -2659,6 +2648,7 @@
 			isa = PBXGroup;
 			children = (
 				B8544E3023D16CA500299F14 /* DeviceUtilities.swift */,
+				C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */,
 				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
 			);
 			path = Utilities;
@@ -3670,6 +3660,7 @@
 				4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */,
 				34BBC84D220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
 				340872BF22393CFA00CB25B0 /* UIGestureRecognizer+OWS.swift in Sources */,
+				C329FEEF24F7743F00B1C64C /* UIViewController+Utilities.swift in Sources */,
 				34080F02222853E30087E99F /* ImageEditorBrushViewController.swift in Sources */,
 				34AC0A14211B39EA00997B47 /* ContactCellView.m in Sources */,
 				34AC0A15211B39EA00997B47 /* ContactsViewHelper.m in Sources */,
@@ -3807,7 +3798,6 @@
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
 				B886B4A92398BA1500211ABE /* QRCode.swift in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,
-				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
 				3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
@@ -3853,7 +3843,6 @@
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
-				3448E15C22133274004B052E /* OnboardingPermissionsViewController.swift in Sources */,
 				B8B5BCEC2394D869003823C9 /* Button.swift in Sources */,
 				34D920E720E179C200D51158 /* OWSMessageFooterView.m in Sources */,
 				341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */,
@@ -3960,7 +3949,6 @@
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */,
 				3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */,
-				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				C3DFFAC823E970080058DAF8 /* OpenGroupSuggestionSheet.swift in Sources */,
 				34C4E2572118957600BEA353 /* OWSWebRTCDataProtos.pb.swift in Sources */,
 				B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */,

@@ -530,7 +530,6 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSGroupThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            // TODO: Figure out if this is correct
             TSGroupModel *groupModel =
                 [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
                                           memberIds:groupThread.groupModel.groupMemberIds
@@ -561,7 +560,6 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSGroupThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(
         YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        // TODO: Figure out if this is correct
         TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:NSUUID.UUID.UUIDString
                                                              memberIds:recipientIds
                                                                  image:nil

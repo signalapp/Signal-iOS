@@ -3878,7 +3878,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         TSAccountManager.localNumber,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-    // TODO: Figure out if this is correct
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId groupType:closedGroup adminIds:@[ TSAccountManager.localNumber ]];
 
     __block TSGroupThread *thread;

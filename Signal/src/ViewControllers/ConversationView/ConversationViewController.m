@@ -672,23 +672,8 @@ typedef enum : NSUInteger {
     [self applyTheme];
     [self.conversationViewModel viewDidLoad];
 
-    // Loki: Set gradient background
+    [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:nil customBackButton:YES];
     self.collectionView.backgroundColor = UIColor.clearColor;
-    LKGradient *gradient = LKGradients.defaultLokiBackground;
-    self.view.backgroundColor = UIColor.clearColor;
-    [self.view setGradient:gradient];
-
-    // Loki: Set navigation bar background color
-    UINavigationBar *navigationBar = self.navigationController.navigationBar;
-    [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-    navigationBar.shadowImage = [UIImage new];
-    [navigationBar setTranslucent:NO];
-    navigationBar.barTintColor = LKColors.navigationBarBackground;
-
-    // Loki: Set up navigation bar buttons
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", "") style:UIBarButtonItemStylePlain target:nil action:nil];
-    backButton.tintColor = LKColors.text;
-    self.navigationItem.backBarButtonItem = backButton;
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Gear"] style:UIBarButtonItemStylePlain target:self action:@selector(showConversationSettings)];
     settingsButton.tintColor = LKColors.text;
     self.navigationItem.rightBarButtonItem = settingsButton;

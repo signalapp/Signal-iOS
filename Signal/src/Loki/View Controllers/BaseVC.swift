@@ -36,7 +36,7 @@ class BaseVC : UIViewController {
     }
 
     internal func setUpNavBarStyle() {
-        let navigationBar = navigationController!.navigationBar
+        guard let navigationBar = navigationController?.navigationBar else { return }
         navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationBar.shadowImage = UIImage()
         navigationBar.isTranslucent = false

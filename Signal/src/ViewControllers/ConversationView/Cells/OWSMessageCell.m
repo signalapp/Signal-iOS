@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView update];
     
     // Loki: Show the moderator icon if needed
-    if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) {
+    if (self.viewItem.isGroupThread && !self.viewItem.isRSSFeed) { // FIXME: This logic also shouldn't apply to closed groups
         __block LKPublicChat *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:self.viewItem.interaction.uniqueThreadId transaction: transaction];
