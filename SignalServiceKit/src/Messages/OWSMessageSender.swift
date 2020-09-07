@@ -636,7 +636,7 @@ extension MessageSending {
             // This is used to send group update messages for v2 groups to
             // pending members who are not included in .sendingRecipientAddresses().
             if GroupManager.shouldMessageHaveAdditionalRecipients(message, groupThread: groupThread) {
-                currentValidRecipients.formUnion(groupMembership.invitedOrRequestMembers)
+                currentValidRecipients.formUnion(groupMembership.invitedMembers)
             }
             currentValidRecipients.remove(localAddress)
             recipientAddresses.formIntersection(currentValidRecipients)

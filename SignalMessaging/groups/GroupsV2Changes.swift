@@ -55,6 +55,9 @@ public class GroupsV2Changes {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
         }
+        guard !oldGroupModel.isPlaceholderModel else {
+            throw GroupsV2Error.cantApplyChangesToPlaceholder
+        }
         let groupV2Params = try oldGroupModel.groupV2Params()
         // Many change actions have author info, e.g. addedByUserID. But we can
         // safely assume that all actions in the "change actions" have the same author.
