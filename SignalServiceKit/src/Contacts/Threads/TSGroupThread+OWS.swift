@@ -9,6 +9,7 @@ public extension TSGroupThread {
     var groupMembership: GroupMembership {
         groupModel.groupMembership
     }
+
     var isLocalUserMemberOfAnyKind: Bool {
         groupMembership.isLocalUserMemberOfAnyKind
     }
@@ -31,5 +32,17 @@ public extension TSGroupThread {
 
     var isLocalUserFullMemberAndAdministrator: Bool {
         groupMembership.isLocalUserFullMemberAndAdministrator
+    }
+}
+
+// MARK: -
+
+@objc
+public extension TSThread {
+    var isLocalUserFullMemberOfThread: Bool {
+        guard let groupThread = self as? TSGroupThread else {
+            return true
+        }
+        return groupThread.groupMembership.isLocalUserFullMember
     }
 }
