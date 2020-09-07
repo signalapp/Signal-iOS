@@ -153,6 +153,8 @@ class SendMessageFlow: NSObject {
 
     private let flowType: SendMessageFlowType
 
+    private let useConversationComposeForSingleRecipient: Bool
+
     private weak var delegate: SendMessageDelegate?
 
     private weak var navigationController: UINavigationController?
@@ -163,10 +165,12 @@ class SendMessageFlow: NSObject {
 
     public init(flowType: SendMessageFlowType,
                 unapprovedContent: SendMessageUnapprovedContent,
+                useConversationComposeForSingleRecipient: Bool,
                 navigationController: UINavigationController,
                 delegate: SendMessageDelegate) {
         self.flowType = flowType
         self.unapprovedContent = unapprovedContent
+        self.useConversationComposeForSingleRecipient = useConversationComposeForSingleRecipient
         self.navigationController = navigationController
         self.delegate = delegate
 
@@ -206,6 +210,13 @@ extension SendMessageFlow {
     }
 
     func approve() {
+        if useConversationComposeForSingleRecipient,
+            selectedConversations.count == 1,
+            case .text(let messageBody) = unapprovedContent {
+            showConversationComposeForSingleRecipient(messageBody: messageBody)
+            return
+        }
+
         do {
             if let approvedContent = try unapprovedContent.tryToBuildContentWithoutApproval() {
                 owsAssertDebug(!unapprovedContent.needsApproval)
@@ -218,6 +229,37 @@ extension SendMessageFlow {
             owsFailDebug("Error: \(error)")
 
             self.fireCancelled()
+        }
+    }
+
+    private func showConversationComposeForSingleRecipient(messageBody: MessageBody) {
+        let conversations = self.selectedConversations
+
+        firstly { () -> Promise<[TSThread]> in
+            self.threads(for: conversations)
+        }.then(on: .global()) { (threads: [TSThread]) -> Promise<TSThread> in
+            guard threads.count == 1,
+                let thread = threads.first else {
+                    throw OWSAssertionError("Unexpected thread state.")
+            }
+            return self.databaseStorage.write { transaction -> Promise<TSThread> in
+                thread.update(withDraft: messageBody, transaction: transaction)
+
+                // We need to call uiDatabaseSnapshotFlushPromise() before the
+                // transaction is committed.
+                return firstly {
+                    self.databaseStorage.uiDatabaseSnapshotFlushPromise()
+                }.map {
+                    return thread
+                }
+            }
+        }.map { (thread: TSThread) in
+            SignalApp.shared().presentConversation(for: thread, animated: true)
+        }.done { _ in
+            Logger.info("Transitioning to single thread.")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+            self.showSendFailedAlert()
         }
     }
 

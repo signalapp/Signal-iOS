@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public protocol SDSDatabaseStorageDelegate {
@@ -254,6 +255,33 @@ public class SDSDatabaseStorage: SDSTransactable {
                                    crossProcess: crossProcess)
     }
 
+    // MARK: - UI Database Snapshot Completion
+
+    @objc
+    public func add(uiDatabaseSnapshotFlushBlock: @escaping () -> Void) {
+        guard AppReadiness.isAppReady else {
+            owsFailDebug("App not ready.")
+            return
+        }
+        guard let uiDatabaseObserver = grdbStorage.uiDatabaseObserver else {
+            owsFailDebug("Missing uiDatabaseObserver")
+            return
+        }
+        uiDatabaseObserver.add(snapshotFlushBlock: uiDatabaseSnapshotFlushBlock)
+    }
+
+    public func uiDatabaseSnapshotFlushPromise() -> Promise<Void> {
+        let (promise, resolver) = Promise<Void>.pending()
+
+        add(uiDatabaseSnapshotFlushBlock: {
+            resolver.fulfill(())
+        })
+
+        return firstly {
+            promise
+        }.timeout(seconds: 30)
+    }
+
     // MARK: - Touch
 
     @objc(touchInteraction:transaction:)
@@ -271,7 +299,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                 if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
                     uiDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
                 }
                 GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
             }

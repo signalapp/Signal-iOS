@@ -110,6 +110,14 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
+    // Block which will be called after all pending (committed) db changes
+    // have been flushed.
+    func add(snapshotFlushBlock: @escaping ObservedDatabaseChanges.CompletionBlock) {
+        UIDatabaseObserver.serializedSync {
+            pendingChanges.add(completionBlock: snapshotFlushBlock)
+        }
+    }
+
     #if TESTABLE_BUILD
     private var _databaseWriteDelegates: [Weak<DatabaseWriteDelegate>] = []
     private var databaseWriteDelegates: [DatabaseWriteDelegate] {
@@ -335,6 +343,7 @@ extension UIDatabaseObserver: TransactionObserver {
                 let attachmentUniqueIds = pendingChanges.attachmentUniqueIds
                 let attachmentDeletedUniqueIds = pendingChanges.attachmentDeletedUniqueIds
                 let collections = pendingChanges.collections
+                let completionBlocks = pendingChanges.completionBlocks
                 pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
 
                 DispatchQueue.main.async {
@@ -343,6 +352,7 @@ extension UIDatabaseObserver: TransactionObserver {
                     self.committedChanges.append(attachmentUniqueIds: attachmentUniqueIds)
                     self.committedChanges.append(attachmentDeletedUniqueIds: attachmentDeletedUniqueIds)
                     self.committedChanges.append(collections: collections)
+                    self.committedChanges.append(completionBlocks: completionBlocks)
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -509,10 +519,15 @@ extension UIDatabaseObserver: TransactionObserver {
                 delegate.uiDatabaseSnapshotDidUpdate(databaseChanges: committedChanges)
             }
         }
+
+        for completionBlock in committedChanges.completionBlocks {
+            completionBlock()
+        }
     }
 
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("TODO: test this if we ever use it.")
+        // TODO: Make sure snapshot flush blocks work correctly in this case.
 
         UIDatabaseObserver.serializedSync {
             pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
