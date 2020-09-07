@@ -321,7 +321,6 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         AssertIsOnMainThread()
 
         guard doesLocalUserSupportGroupsV2 else {
-            // TODO: Add copy from design.
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
                                                                       comment: "Error message indicating that the local user does not support groups v2."))
             return

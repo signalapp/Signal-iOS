@@ -407,7 +407,6 @@ public class GroupsV2Changes {
 
         for action in changeActionsProto.deleteRequestingMembers {
 
-            // TODO: Modify this parsing to reflect action contents.
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
