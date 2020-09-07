@@ -271,6 +271,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise(error: error)
         }
 
+        let finalGroupChangeProto = AtomicOptional<GroupsProtoGroupChangeActions>(nil)
         var isFirstAttempt = true
         let requestBuilder: RequestBuilder = { (authCredential) in
             return firstly { () -> Promise<Void> in
@@ -295,10 +296,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return changeSet.buildGroupChangeProto(currentGroupModel: groupModel,
                                                        currentDisappearingMessageToken: disappearingMessageToken)
             }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> GroupsV2Request in
-                try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
-                                                           groupV2Params: groupV2Params,
-                                                           authCredential: authCredential,
-                                                           groupInviteLinkPassword: nil)
+                finalGroupChangeProto.set(groupChangeProto)
+                return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
+                                                                  groupV2Params: groupV2Params,
+                                                                  authCredential: authCredential,
+                                                                  groupInviteLinkPassword: nil)
             }
         }
 
@@ -333,9 +335,82 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return firstly {
                 GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
                                                     changeActionsProtoData: updatedV2Group.changeActionsProtoData)
+            }.map(on: .global()) { (_) -> Void in
+                guard let groupChangeProto = finalGroupChangeProto.get() else {
+                    owsFailDebug("Missing groupChangeProto.")
+                    return
+                }
+                self.sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: updatedV2Group.groupThread,
+                                                                         groupChangeProto: groupChangeProto,
+                                                                         groupV2Params: groupV2Params)
             }.map(on: .global()) { (_) -> TSGroupThread in
                 return updatedV2Group.groupThread
             }
+        }
+    }
+
+    private func sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: TSGroupThread,
+                                                                     groupChangeProto: GroupsProtoGroupChangeActions,
+                                                                     groupV2Params: GroupV2Params) {
+        var uuids = [UUID]()
+        for action in groupChangeProto.deleteRequestingMembers {
+            do {
+                guard let userId = action.deletedUserID else {
+                    throw OWSAssertionError("Missing userId.")
+                }
+                let uuid = try groupV2Params.uuid(forUserId: userId)
+                uuids.append(uuid)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
+
+        guard !uuids.isEmpty else {
+            return
+        }
+
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid groupModel.")
+            return
+        }
+        let revision = groupModel.revision
+        let masterKeyData: Data
+        do {
+            masterKeyData = try GroupsV2Protos.masterKeyData(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return
+        }
+
+        let contactThreads = databaseStorage.write { transaction in
+            uuids.map { uuid in
+                TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid),
+                                                  transaction: transaction)
+            }
+        }
+        for contactThread in contactThreads {
+            let contentProtoData: Data
+            do {
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
+
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try builder.build())
+                dataBuilder.setRequiredProtocolVersion(1)
+
+                let dataProto = try dataBuilder.build()
+                let contentBuilder = SSKProtoContent.builder()
+                contentBuilder.setDataMessage(dataProto)
+                contentProtoData = try contentBuilder.buildSerializedData()
+            } catch {
+                owsFailDebug("Error: \(error)")
+                continue
+            }
+            let message = OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+                contentProtoData
+            }
+            ThreadUtil.sendMessageNonDurably(message: message)
         }
     }
 
@@ -1941,7 +2016,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return self.fetchGroupInviteLinkPreview(inviteLinkPassword: nil,
                                                     groupSecretParamsData: groupV2Params.groupSecretParamsData,
                                                     allowCached: false)
-        }.catch { (error: Error) in
+        }.catch { (error: Error) -> Void in
+            if case GroupsV2Error.localUserIsNotARequestingMember = error {
+                // Expected if our request has been cancelled.
+                Logger.verbose("Error: \(error)")
+                return
+            }
             owsFailDebug("Error: \(error)")
         }
     }
@@ -1984,13 +2064,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
                 let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
                 let disappearingMessageToken = dmConfiguration.asToken
-                let localAddress = SignalServiceAddress(uuid: localUuid)
+                // groupUpdateSourceAddress is nil; we don't know who did the update.
                 GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
                                                           oldGroupModel: oldGroupModel,
                                                           newGroupModel: newGroupModel,
                                                           oldDisappearingMessageToken: disappearingMessageToken,
                                                           newDisappearingMessageToken: disappearingMessageToken,
-                                                          groupUpdateSourceAddress: localAddress,
+                                                          groupUpdateSourceAddress: nil,
                                                           transaction: transaction)
             }
         }.catch { (error: Error) in
