@@ -1643,6 +1643,10 @@ typedef enum : NSUInteger {
 
 - (BOOL)canCall
 {
+    if (!self.thread.isLocalUserFullMemberOfThread) {
+        return NO;
+    }
+
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         return NO;
     }
@@ -2249,6 +2253,9 @@ typedef enum : NSUInteger {
 
 - (BOOL)conversationCell:(ConversationViewCell *)cell shouldAllowReplyForItem:(nonnull id<ConversationViewItem>)viewItem
 {
+    if (!self.thread.isLocalUserFullMemberOfThread) {
+        return NO;
+    }
     if (self.threadViewModel.hasPendingMessageRequest) {
         return NO;
     }

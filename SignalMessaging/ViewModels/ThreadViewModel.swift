@@ -21,6 +21,11 @@ public class ThreadViewModel: NSObject {
         return !isGroupThread
     }
 
+    @objc
+    public var isLocalUserFullMemberOfThread: Bool {
+        threadRecord.isLocalUserFullMemberOfThread
+    }
+
     @objc public let draftText: String?
     @objc public let lastMessageText: String?
     @objc public let lastMessageForInbox: TSInteraction?
