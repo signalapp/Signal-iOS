@@ -8,14 +8,6 @@ import PromiseKit
 @objc
 public class GroupInviteLinkViewModel: NSObject {
     @objc
-    public var isLoaded: Bool {
-        false
-    }
-}
-
-// MARK: -
-
-public class GroupInviteLinkViewModelSwift: GroupInviteLinkViewModel {
     public let url: URL
 
     public let groupInviteLinkPreview: GroupInviteLinkPreview?
@@ -23,7 +15,7 @@ public class GroupInviteLinkViewModelSwift: GroupInviteLinkViewModel {
     public let avatar: GroupInviteLinkCachedAvatar?
 
     @objc
-    public override var isLoaded: Bool {
+    public var isLoaded: Bool {
         groupInviteLinkPreview != nil
     }
 
@@ -37,7 +29,7 @@ public class GroupInviteLinkViewModelSwift: GroupInviteLinkViewModel {
 
     @objc
     public override func isEqual(_ object: Any!) -> Bool {
-        guard let other = object as? GroupInviteLinkViewModelSwift else {
+        guard let other = object as? GroupInviteLinkViewModel else {
             return false
         }
         return (self.url == other.url &&
@@ -48,10 +40,29 @@ public class GroupInviteLinkViewModelSwift: GroupInviteLinkViewModel {
 
 // MARK: -
 
-public struct GroupInviteLinkCachedAvatar: Equatable {
+@objc
+public class GroupInviteLinkCachedAvatar: NSObject {
     let cacheFileUrl: URL
     let imageSizePixels: CGSize
     let isValid: Bool
+
+    fileprivate init(cacheFileUrl: URL,
+                     imageSizePixels: CGSize,
+                     isValid: Bool) {
+        self.cacheFileUrl = cacheFileUrl
+        self.imageSizePixels = imageSizePixels
+        self.isValid = isValid
+    }
+
+    @objc
+    public override func isEqual(_ object: Any!) -> Bool {
+        guard let other = object as? GroupInviteLinkCachedAvatar else {
+            return false
+        }
+        return (self.cacheFileUrl == other.cacheFileUrl &&
+            self.imageSizePixels == other.imageSizePixels &&
+            self.isValid == other.isValid)
+    }
 }
 
 // MARK: -
@@ -156,16 +167,16 @@ public extension ConversationInteractionViewItem {
                 // TODO: Add retry?
                 owsFailDebug("Error: \(error)")
             }
-            return GroupInviteLinkViewModelSwift(url: url,
-                                                 groupInviteLinkPreview: nil,
-                                                 avatar: nil)
+            return GroupInviteLinkViewModel(url: url,
+                                            groupInviteLinkPreview: nil,
+                                            avatar: nil)
         }
 
         guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
             // If this group link has no avatar, there's nothing left to load.
-            return GroupInviteLinkViewModelSwift(url: url,
-                                                 groupInviteLinkPreview: groupInviteLinkPreview,
-                                                 avatar: nil)
+            return GroupInviteLinkViewModel(url: url,
+                                            groupInviteLinkPreview: groupInviteLinkPreview,
+                                            avatar: nil)
         }
 
         guard let avatar = Self.cachedGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath) else {
@@ -188,13 +199,13 @@ public extension ConversationInteractionViewItem {
                 }
             }
 
-            return GroupInviteLinkViewModelSwift(url: url,
-                                                 groupInviteLinkPreview: groupInviteLinkPreview,
-                                                 avatar: nil)
+            return GroupInviteLinkViewModel(url: url,
+                                            groupInviteLinkPreview: groupInviteLinkPreview,
+                                            avatar: nil)
         }
 
-        return GroupInviteLinkViewModelSwift(url: url,
-                                             groupInviteLinkPreview: groupInviteLinkPreview,
-                                             avatar: avatar)
+        return GroupInviteLinkViewModel(url: url,
+                                        groupInviteLinkPreview: groupInviteLinkPreview,
+                                        avatar: avatar)
     }
 }
