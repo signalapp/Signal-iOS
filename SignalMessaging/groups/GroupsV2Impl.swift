@@ -911,11 +911,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                 // previous case).
                                 self.tryToUpdateGroupToLatest(groupId: groupId)
                             case .expiredGroupInviteLink:
-                                owsFailDebug("expiredGroupInviteLink.")
+                                owsFailDebug("groupId should not be set in this code path.")
                                 resolver.reject(GroupsV2Error.expiredGroupInviteLink)
                                 break
                             case .localUserIsNotARequestingMember:
-                                owsFailDebug("localUserIsNotARequestingMember.")
+                                owsFailDebug("groupId should not be set in this code path.")
                                 resolver.reject(GroupsV2Error.localUserIsNotARequestingMember)
                                 break
                             }
@@ -1641,7 +1641,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             //
             // Download and update database with the group state.
             return firstly {
-                // TODO: maybe this should return a TSGroupThread.
                 self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
                                                                                       groupSecretParamsData: groupV2Params.groupSecretParamsData)
             }.recover(on: .global()) { (_: Error) -> Promise<TSGroupThread> in
@@ -1856,7 +1855,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
             case .administrator:
-                // TODO: This isn't working yet.
                 let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                                      groupV2Params: groupV2Params))
