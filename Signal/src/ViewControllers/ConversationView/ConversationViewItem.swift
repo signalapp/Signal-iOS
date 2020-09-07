@@ -15,16 +15,21 @@ public class GroupInviteLinkViewModel: NSObject {
     public let avatar: GroupInviteLinkCachedAvatar?
 
     @objc
+    public let isExpired: Bool
+
+    @objc
     public var isLoaded: Bool {
         groupInviteLinkPreview != nil
     }
 
     fileprivate init(url: URL,
                      groupInviteLinkPreview: GroupInviteLinkPreview?,
-                     avatar: GroupInviteLinkCachedAvatar?) {
+                     avatar: GroupInviteLinkCachedAvatar?,
+                     isExpired: Bool) {
         self.url = url
         self.groupInviteLinkPreview = groupInviteLinkPreview
         self.avatar = avatar
+        self.isExpired = isExpired
     }
 
     @objc
@@ -84,6 +89,23 @@ fileprivate extension ConversationInteractionViewItem {
     private static let unfairLock = UnfairLock()
     private static var groupInviteLinkAvatarCache = [String: GroupInviteLinkCachedAvatar]()
     private static var groupInviteLinkAvatarsInFlight = Set<String>()
+    private static var expiredGroupInviteLinks = Set<URL>()
+
+    static func markGroupInviteLinkAsExpired(url: URL, isExpired: Bool) {
+        unfairLock.withLock {
+            if isExpired {
+                expiredGroupInviteLinks.insert(url)
+            } else {
+                expiredGroupInviteLinks.remove(url)
+            }
+        }
+    }
+
+    static func isGroupInviteLinkExpired(_ url: URL) -> Bool {
+        unfairLock.withLock {
+            expiredGroupInviteLinks.contains(url)
+        }
+    }
 
     private static func cachedGroupInviteLinkAvatar(avatarUrlPath: String) -> GroupInviteLinkCachedAvatar? {
         unfairLock.withLock {
@@ -150,6 +172,12 @@ public extension ConversationInteractionViewItem {
                                   message: TSMessage,
                                   groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkViewModel {
 
+        let touchMessage = {
+            Self.databaseStorage.write { transaction in
+                Self.databaseStorage.touch(interaction: message, transaction: transaction)
+            }
+        }
+
         guard let groupInviteLinkPreview = GroupManager.cachedGroupInviteLinkPreview(groupInviteLinkInfo: groupInviteLinkInfo) else {
             // If there is no cached GroupInviteLinkPreview for this link,
             // try to do load it now. On success, touch the interaction
@@ -160,23 +188,30 @@ public extension ConversationInteractionViewItem {
                                                                  groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                                  allowCached: false)
             }.done(on: .global()) { (_: GroupInviteLinkPreview) in
-                Self.databaseStorage.write { transaction in
-                    Self.databaseStorage.touch(interaction: message, transaction: transaction)
-                }
+                Self.markGroupInviteLinkAsExpired(url: url, isExpired: false)
+                touchMessage()
             }.catch(on: .global()) { (error: Error) in
                 // TODO: Add retry?
-                owsFailDebug("Error: \(error)")
+                if case GroupsV2Error.expiredGroupInviteLink = error {
+                    Logger.warn("Error: \(error)")
+                    Self.markGroupInviteLinkAsExpired(url: url, isExpired: true)
+                    touchMessage()
+                } else {
+                    owsFailDebug("Error: \(error)")
+                }
             }
             return GroupInviteLinkViewModel(url: url,
                                             groupInviteLinkPreview: nil,
-                                            avatar: nil)
+                                            avatar: nil,
+                                            isExpired: Self.isGroupInviteLinkExpired(url))
         }
 
         guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
             // If this group link has no avatar, there's nothing left to load.
             return GroupInviteLinkViewModel(url: url,
                                             groupInviteLinkPreview: groupInviteLinkPreview,
-                                            avatar: nil)
+                                            avatar: nil,
+                                            isExpired: false)
         }
 
         guard let avatar = Self.cachedGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath) else {
@@ -187,9 +222,7 @@ public extension ConversationInteractionViewItem {
                 Self.loadGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
                                                groupInviteLinkInfo: groupInviteLinkInfo)
             }.done(on: .global()) { () in
-                Self.databaseStorage.write { transaction in
-                    Self.databaseStorage.touch(interaction: message, transaction: transaction)
-                }
+                touchMessage()
             }.catch { error in
                 // TODO: Add retry?
                 if IsNetworkConnectivityFailure(error) {
@@ -201,11 +234,13 @@ public extension ConversationInteractionViewItem {
 
             return GroupInviteLinkViewModel(url: url,
                                             groupInviteLinkPreview: groupInviteLinkPreview,
-                                            avatar: nil)
+                                            avatar: nil,
+                                            isExpired: false)
         }
 
         return GroupInviteLinkViewModel(url: url,
                                         groupInviteLinkPreview: groupInviteLinkPreview,
-                                        avatar: avatar)
+                                        avatar: avatar,
+                                        isExpired: false)
     }
 }

@@ -429,7 +429,7 @@ typedef struct {
         tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
     }
 
-    [self insertJoinGroupButtonIfNecessary:textViews];
+    [self insertJoinGroupUIIfNecessary:textViews];
 
     BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && bodyMediaView && !self.hasBodyText);
     if (self.viewItem.shouldHideFooter && !self.hasTapForMore) {
@@ -576,17 +576,49 @@ typedef struct {
     [CATransaction commit];
 }
 
-- (void)insertJoinGroupButtonIfNecessary:(NSMutableArray<UIView *> *)textViews
+- (void)insertJoinGroupUIIfNecessary:(NSMutableArray<UIView *> *)textViews
 {
     if (self.viewItem.groupInviteLinkViewModel == nil || !self.isIncoming) {
         return;
+    } else if (self.viewItem.groupInviteLinkViewModel.isExpired) {
+        [self insertExpiredGroupInviteLinkIndicator:textViews];
+    } else {
+        [self insertJoinGroupButton:textViews];
     }
+}
+
+- (void)insertGroupInviteLinkHairline:(NSMutableArray<UIView *> *)textViews
+{
+    OWSAssertDebug(self.viewItem.groupInviteLinkViewModel != nil);
 
     UIView *hairline = [UIView new];
     hairline.backgroundColor = (self.isIncoming ? ConversationStyle.bubbleSecondaryTextColorIncoming
                                                 : ConversationStyle.bubbleSecondaryTextColorOutgoing);
     [hairline autoSetDimension:ALDimensionHeight toSize:self.joinGroupHairlineHeight];
     [textViews addObject:hairline];
+}
+
+- (void)insertExpiredGroupInviteLinkIndicator:(NSMutableArray<UIView *> *)textViews
+{
+    OWSAssertDebug(self.viewItem.groupInviteLinkViewModel != nil);
+
+    [self insertGroupInviteLinkHairline:textViews];
+
+    UILabel *label = [UILabel new];
+    label.text
+        = NSLocalizedString(@"GROUP_LINK_INVITE_LINK_IS_EXPIRED", @"Indicator that a group invite link has expired.");
+    label.textColor = (self.isIncoming ? UIColor.ows_accentBlueColor : ConversationStyle.bubbleTextColorOutgoing);
+    label.font = self.joinGroupButtonFont;
+    label.textAlignment = NSTextAlignmentCenter;
+    [label autoSetDimension:ALDimensionHeight toSize:self.joinGroupButtonHeight];
+    [textViews addObject:label];
+}
+
+- (void)insertJoinGroupButton:(NSMutableArray<UIView *> *)textViews
+{
+    OWSAssertDebug(self.viewItem.groupInviteLinkViewModel != nil);
+
+    [self insertGroupInviteLinkHairline:textViews];
 
     UIColor *buttonTextColor
         = (self.isIncoming ? UIColor.ows_accentBlueColor : ConversationStyle.bubbleTextColorOutgoing);
@@ -816,7 +848,9 @@ typedef struct {
     if (self.viewItem.groupInviteLinkViewModel != nil) {
         LinkPreviewLinkType linkType = (self.isIncoming ? LinkPreviewLinkTypeIncomingMessageGroupInviteLink
                                                         : LinkPreviewLinkTypeOutgoingMessageGroupInviteLink);
-        if (self.viewItem.groupInviteLinkViewModel.isLoaded) {
+        if (self.viewItem.groupInviteLinkViewModel.isExpired) {
+            return nil;
+        } else if (self.viewItem.groupInviteLinkViewModel.isLoaded) {
             return [[LinkPreviewGroupLink alloc] initWithLinkType:linkType
                                                       linkPreview:self.viewItem.linkPreview
                                          groupInviteLinkViewModel:self.viewItem.groupInviteLinkViewModel
