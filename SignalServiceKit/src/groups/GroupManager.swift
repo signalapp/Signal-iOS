@@ -1290,6 +1290,7 @@ public class GroupManager: NSObject {
         return groupsV2.isPossibleGroupInviteLink(url)
     }
 
+    @objc
     public static func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
         guard RemoteConfig.groupsV2InviteLinks else {
             return nil
@@ -1358,6 +1359,21 @@ public class GroupManager: NSObject {
         }
     }
 
+    private static func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2) {
+        groupsV2.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: groupModel)
+    }
+
+    @objc
+    public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
+        do {
+            let groupContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            return groupsV2.cachedGroupInviteLinkPreview(groupSecretParamsData: groupContextInfo.groupSecretParamsData)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
     // MARK: - Generic Group Change
 
     public static func updateGroupV2(groupModel: TSGroupModelV2,
@@ -1392,6 +1408,7 @@ public class GroupManager: NSObject {
         if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2,
             groupModelV2.isPlaceholderModel {
             Logger.warn("Ignoring 403 for placeholder group.")
+            GroupManager.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: groupModelV2)
             return
         }
 

@@ -366,6 +366,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var needsUpdate: Bool = false
     var linkPreview: OWSLinkPreview?
     var linkPreviewAttachment: TSAttachment?
+    var groupInviteLinkViewModel: GroupInviteLinkViewModel?
     var stickerInfo: StickerInfo?
     var stickerAttachment: TSAttachmentStream?
     var stickerMetadata: StickerMetadata?

@@ -32,8 +32,23 @@ public protocol LinkPreviewState {
     func title() -> String?
     func imageState() -> LinkPreviewImageState
     func image() -> UIImage?
+    var imageSize: CGSize { get }
     func previewDescription() -> String?
     func date() -> Date?
+    var isGroupInviteLink: Bool { get }
+    var activityIndicatorStyle: UIActivityIndicatorView.Style { get }
+    var conversationStyle: ConversationStyle? { get }
+}
+
+// MARK: -
+
+@objc
+public enum LinkPreviewLinkType: UInt {
+    case preview
+    case incomingMessage
+    case outgoingMessage
+    case incomingMessageGroupInviteLink
+    case outgoingMessageGroupInviteLink
 }
 
 // MARK: -
@@ -41,7 +56,11 @@ public protocol LinkPreviewState {
 @objc
 public class LinkPreviewLoading: NSObject, LinkPreviewState {
 
-    override init() {
+    public let linkType: LinkPreviewLinkType
+
+    @objc
+    required init(linkType: LinkPreviewLinkType) {
+        self.linkType = linkType
     }
 
     public func isLoaded() -> Bool {
@@ -68,6 +87,8 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
         return nil
     }
 
+    public let imageSize: CGSize = .zero
+
     public func previewDescription() -> String? {
         return nil
     }
@@ -76,6 +97,151 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
         return nil
     }
 
+    public var isGroupInviteLink: Bool {
+        switch linkType {
+        case .incomingMessageGroupInviteLink,
+             .outgoingMessageGroupInviteLink:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
+        switch linkType {
+        case .incomingMessageGroupInviteLink:
+            return .gray
+        case .outgoingMessageGroupInviteLink:
+            return .white
+        default:
+            return LinkPreviewView.defaultActivityIndicatorStyle
+        }
+    }
+
+    public let conversationStyle: ConversationStyle? = nil
+}
+
+// MARK: -
+
+@objc
+public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
+
+    private let linkPreview: OWSLinkPreview
+    public let linkType: LinkPreviewLinkType
+    private let groupInviteLinkViewModel: GroupInviteLinkViewModelSwift
+
+    private var groupInviteLinkPreview: GroupInviteLinkPreview? {
+        groupInviteLinkViewModel.groupInviteLinkPreview
+    }
+
+    private let _conversationStyle: ConversationStyle
+    public var conversationStyle: ConversationStyle? {
+        _conversationStyle
+    }
+
+    @objc
+    required init(linkType: LinkPreviewLinkType,
+                  linkPreview: OWSLinkPreview,
+                  groupInviteLinkViewModel: GroupInviteLinkViewModel,
+                  conversationStyle: ConversationStyle) {
+        self.linkPreview = linkPreview
+        self.linkType = linkType
+        self.groupInviteLinkViewModel = groupInviteLinkViewModel as! GroupInviteLinkViewModelSwift
+        _conversationStyle = conversationStyle
+    }
+
+    @objc
+    public var imageSize: CGSize {
+        guard let avatar = groupInviteLinkViewModel.avatar else {
+            return CGSize.zero
+        }
+        let pixelSize = avatar.imageSizePixels
+        return CGSize(width: (pixelSize.width / UIScreen.main.scale),
+                      height: (pixelSize.height / UIScreen.main.scale))
+    }
+
+    public func isLoaded() -> Bool {
+        groupInviteLinkPreview != nil
+    }
+
+    public func urlString() -> String? {
+        guard let urlString = linkPreview.urlString else {
+            owsFailDebug("Missing url")
+            return nil
+        }
+        return urlString
+    }
+
+    public func displayDomain() -> String? {
+        guard let displayDomain = linkPreview.displayDomain() else {
+            Logger.error("Missing display domain")
+            return nil
+        }
+        return displayDomain
+    }
+
+    public func title() -> String? {
+        guard let value = groupInviteLinkPreview?.title.filterForDisplay,
+            value.count > 0 else {
+                return nil
+        }
+        return value
+    }
+
+    public func imageState() -> LinkPreviewImageState {
+        if let avatar = groupInviteLinkViewModel.avatar {
+            if avatar.isValid {
+                return .loaded
+            } else {
+                return .invalid
+            }
+        }
+        guard groupInviteLinkPreview?.avatarUrlPath != nil else {
+            return .none
+        }
+        return .loading
+    }
+
+    public func image() -> UIImage? {
+        assert(imageState() == .loaded)
+        guard let avatar = groupInviteLinkViewModel.avatar,
+            avatar.isValid else {
+            return nil
+        }
+        guard let image = UIImage(contentsOfFile: avatar.cacheFileUrl.path) else {
+            owsFailDebug("Couldn't load group avatar.")
+            return nil
+        }
+        return image
+    }
+
+    public func previewDescription() -> String? {
+        guard let groupInviteLinkPreview = groupInviteLinkPreview else {
+            owsFailDebug("Missing groupInviteLinkPreview.")
+            return nil
+        }
+        let groupIndicator = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR",
+                                               comment: "Indicator for group conversations in the 'group invite link' action sheet.")
+        let memberCount = GroupViewUtils.formatGroupMembersLabel(memberCount: Int(groupInviteLinkPreview.memberCount))
+        return groupIndicator + " | " + memberCount
+    }
+
+    public func date() -> Date? {
+        linkPreview.date
+    }
+
+    public let isGroupInviteLink = true
+
+    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
+        switch linkType {
+        case .incomingMessageGroupInviteLink:
+            return .gray
+        case .outgoingMessageGroupInviteLink:
+            return .white
+        default:
+            return LinkPreviewView.defaultActivityIndicatorStyle
+        }
+    }
 }
 
 // MARK: -
@@ -134,6 +300,13 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
         return image
     }
 
+    public var imageSize: CGSize {
+        guard let image = self.image() else {
+            return .zero
+        }
+        return image.size
+    }
+
     public func previewDescription() -> String? {
         linkPreviewDraft.previewDescription
     }
@@ -141,6 +314,14 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     public func date() -> Date? {
         linkPreviewDraft.date
     }
+
+    public let isGroupInviteLink = false
+
+    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
+        LinkPreviewView.defaultActivityIndicatorStyle
+    }
+
+    public let conversationStyle: ConversationStyle? = nil
 }
 
 // MARK: -
@@ -150,16 +331,9 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     private let linkPreview: OWSLinkPreview
     private let imageAttachment: TSAttachment?
 
-    @objc public let conversationStyle: ConversationStyle
-
-    @objc
-    public var imageSize: CGSize {
-        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
-            return CGSize.zero
-        }
-        let pixelSize = attachmentStream.imageSize()
-        return CGSize(width: (pixelSize.width / UIScreen.main.scale),
-                      height: (pixelSize.height / UIScreen.main.scale))
+    private let _conversationStyle: ConversationStyle
+    public var conversationStyle: ConversationStyle? {
+        _conversationStyle
     }
 
     @objc
@@ -168,7 +342,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
                   conversationStyle: ConversationStyle) {
         self.linkPreview = linkPreview
         self.imageAttachment = imageAttachment
-        self.conversationStyle = conversationStyle
+        _conversationStyle = conversationStyle
     }
 
     public func isLoaded() -> Bool {
@@ -192,7 +366,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     }
 
     public func title() -> String? {
-        guard let value = linkPreview.title,
+        guard let value = linkPreview.title?.filterForDisplay,
             value.count > 0 else {
                 return nil
         }
@@ -253,12 +427,28 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         return image
     }
 
+    @objc
+    public var imageSize: CGSize {
+        guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
+            return CGSize.zero
+        }
+        let pixelSize = attachmentStream.imageSize()
+        return CGSize(width: (pixelSize.width / UIScreen.main.scale),
+                      height: (pixelSize.height / UIScreen.main.scale))
+    }
+
     public func previewDescription() -> String? {
         linkPreview.previewDescription
     }
 
     public func date() -> Date? {
         linkPreview.date
+    }
+
+    public let isGroupInviteLink = false
+
+    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
+        LinkPreviewView.defaultActivityIndicatorStyle
     }
 }
 
@@ -460,20 +650,24 @@ public class LinkPreviewView: UIStackView {
             return
         }
 
-        guard isDraft else {
-            createSentContents()
+        guard state.isLoaded() else {
+            createDraftLoadingContents(state: state)
             return
         }
-        guard state.isLoaded() else {
-            createDraftLoadingContents()
+        guard isDraft else {
+            createSentContents()
             return
         }
         createDraftContents(state: state)
     }
 
     private func createSentContents() {
-        guard let state = state as? LinkPreviewSent else {
+        guard let state = state else {
             owsFailDebug("Invalid state")
+            return
+        }
+        guard let conversationStyle = state.conversationStyle else {
+            owsFailDebug("Missing conversationStyle.")
             return
         }
 
@@ -482,22 +676,22 @@ public class LinkPreviewView: UIStackView {
         if let imageView = createImageView(state: state) {
             if sentIsHero(state: state) {
                 createHeroSentContents(state: state,
+                                       conversationStyle: conversationStyle,
                                        imageView: imageView)
             } else if state.previewDescription()?.isEmpty == false,
                       state.title()?.isEmpty == false {
-                createNonHeroWithDescriptionSentContents(state: state,
-                                                         imageView: imageView)
+                createNonHeroWithDescriptionSentContents(state: state, imageView: imageView)
             } else {
                 createNonHeroSentContents(state: state, imageView: imageView)
             }
         } else {
-            createNonHeroSentContents(state: state,
-                                      imageView: nil)
+            createNonHeroSentContents(state: state, imageView: nil)
         }
     }
 
-    private func sentHeroImageSize(state: LinkPreviewSent) -> CGSize {
-        let maxMessageWidth = state.conversationStyle.maxMessageWidth
+    private func sentHeroImageSize(state: LinkPreviewState,
+                                   conversationStyle: ConversationStyle) -> CGSize {
+        let maxMessageWidth = conversationStyle.maxMessageWidth
         let imageSize = state.imageSize
         let minImageHeight: CGFloat = maxMessageWidth * 0.5
         let maxImageHeight: CGFloat = maxMessageWidth
@@ -506,13 +700,15 @@ public class LinkPreviewView: UIStackView {
         return CGSizeCeil(CGSize(width: maxMessageWidth, height: imageHeight))
     }
 
-    private func createHeroSentContents(state: LinkPreviewSent,
+    private func createHeroSentContents(state: LinkPreviewState,
+                                        conversationStyle: ConversationStyle,
                                         imageView: UIImageView) {
         self.layoutMargins = .zero
         self.axis = .vertical
         self.alignment = .fill
 
-        let heroImageSize = sentHeroImageSize(state: state)
+        let heroImageSize = sentHeroImageSize(state: state,
+                                              conversationStyle: conversationStyle)
         imageView.autoSetDimensions(to: heroImageSize)
         imageView.contentMode = .scaleAspectFill
         imageView.setContentHuggingHigh()
@@ -530,11 +726,13 @@ public class LinkPreviewView: UIStackView {
         sentBodyView = textStack
     }
 
-    private func createNonHeroWithDescriptionSentContents(state: LinkPreviewSent,
-                                           imageView: UIImageView?) {
+    private func createNonHeroWithDescriptionSentContents(state: LinkPreviewState, imageView: UIImageView?) {
         self.axis = .vertical
         self.isLayoutMarginsRelativeArrangement = true
-        self.layoutMargins = UIEdgeInsets(top: sentNonHeroVMargin, left: sentNonHeroHMargin, bottom: sentNonHeroVMargin, right: sentNonHeroHMargin)
+        self.layoutMargins = UIEdgeInsets(top: sentNonHeroVMargin,
+                                          left: sentNonHeroHMargin,
+                                          bottom: sentNonHeroVMargin,
+                                          right: sentNonHeroHMargin)
         self.spacing = sentVSpacing
         self.alignment = .fill
 
@@ -579,12 +777,15 @@ public class LinkPreviewView: UIStackView {
         sentBodyView = self
     }
 
-    private func createNonHeroSentContents(state: LinkPreviewSent,
+    private func createNonHeroSentContents(state: LinkPreviewState,
                                            imageView: UIImageView?) {
         self.layoutMargins = .zero
         self.axis = .horizontal
         self.isLayoutMarginsRelativeArrangement = true
-        self.layoutMargins = UIEdgeInsets(top: sentNonHeroVMargin, left: sentNonHeroHMargin, bottom: sentNonHeroVMargin, right: sentNonHeroHMargin)
+        self.layoutMargins = UIEdgeInsets(top: sentNonHeroVMargin,
+                                          left: sentNonHeroHMargin,
+                                          bottom: sentNonHeroVMargin,
+                                          right: sentNonHeroHMargin)
         self.spacing = sentNonHeroHSpacing
 
         if let imageView = imageView {
@@ -603,7 +804,7 @@ public class LinkPreviewView: UIStackView {
         sentBodyView = self
     }
 
-    private func createSentTextStack(state: LinkPreviewSent) -> UIStackView {
+    private func createSentTextStack(state: LinkPreviewState) -> UIStackView {
         let textStack = UIStackView()
         textStack.axis = .vertical
         textStack.spacing = sentVSpacing
@@ -635,7 +836,7 @@ public class LinkPreviewView: UIStackView {
     private let sentHeroHMargin: CGFloat = 12
     private let sentHeroVMargin: CGFloat = 12
 
-    private func sentIsHero(state: LinkPreviewSent) -> Bool {
+    private func sentIsHero(state: LinkPreviewState) -> Bool {
         if isSticker(state: state) {
             return false
         }
@@ -644,7 +845,7 @@ public class LinkPreviewView: UIStackView {
         return imageSize.width >= sentMinimumHeroSize && imageSize.height >= sentMinimumHeroSize
     }
 
-    private func isSticker(state: LinkPreviewSent) -> Bool {
+    private func isSticker(state: LinkPreviewState) -> Bool {
         guard let urlString = state.urlString() else {
             owsFailDebug("Link preview is missing url.")
             return false
@@ -821,13 +1022,13 @@ public class LinkPreviewView: UIStackView {
         strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
     }
 
-    private func createImageView(state: LinkPreviewSent) -> UIImageView? {
+    private func createImageView(state: LinkPreviewState) -> UIImageView? {
         guard state.isLoaded() else {
             owsFailDebug("State not loaded.")
             return nil
         }
 
-        guard state.imageState()  == .loaded else {
+        guard state.imageState() == .loaded else {
             return nil
         }
         guard let image = state.image() else {
@@ -858,15 +1059,13 @@ public class LinkPreviewView: UIStackView {
         return imageView
     }
 
-    private func createDraftLoadingContents() {
+    private func createDraftLoadingContents(state: LinkPreviewState) {
         self.axis = .vertical
         self.alignment = .center
 
         self.layoutConstraints.append(self.autoSetDimension(.height, toSize: draftHeight + draftMarginTop))
 
-        let activityIndicatorStyle: UIActivityIndicatorView.Style = (Theme.isDarkThemeEnabled
-            ? .white
-            : .gray)
+        let activityIndicatorStyle = state.activityIndicatorStyle
         let activityIndicator = UIActivityIndicatorView(style: activityIndicatorStyle)
         activityIndicator.startAnimating()
         addArrangedSubview(activityIndicator)
@@ -880,6 +1079,12 @@ public class LinkPreviewView: UIStackView {
         strokeView.autoPinWidthToSuperview(withMargin: 12)
         strokeView.autoPinEdge(toSuperviewEdge: .bottom)
         strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
+    }
+
+    fileprivate static var defaultActivityIndicatorStyle: UIActivityIndicatorView.Style {
+        Theme.isDarkThemeEnabled
+        ? .white
+        : .gray
     }
 
     // MARK: Events
@@ -903,37 +1108,66 @@ public class LinkPreviewView: UIStackView {
     // MARK: Measurement
 
     @objc
-    public func measure(withSentState state: LinkPreviewSent) -> CGSize {
-        switch state.imageState() {
-        case .loaded:
-            if sentIsHero(state: state) {
-                return measureSentHero(state: state)
-            } else if state.previewDescription()?.isEmpty == false,
-                      state.title()?.isEmpty == false {
-                return measureSentNonHeroWithDescription(state: state)
-            } else {
-                return measureSentNonHero(state: state, hasImage: true)
-            }
-        default:
-            return measureSentNonHero(state: state, hasImage: false)
+    public func measure(withState state: LinkPreviewState) -> CGSize {
+        if let sentState = state as? LinkPreviewSent {
+            return self.measure(withSentState: sentState)
+        } else if let sentState = state as? LinkPreviewGroupLink {
+            return self.measure(withSentState: sentState)
+        } else if let loadingState = state as? LinkPreviewLoading {
+            return self.measure(withLoadingState: loadingState)
+        } else {
+            owsFailDebug("Invalid state.")
+            return .zero
         }
     }
 
-    private func measureSentHero(state: LinkPreviewSent) -> CGSize {
-        let maxMessageWidth = state.conversationStyle.maxMessageWidth
+    @objc
+    public func measure(withLoadingState state: LinkPreviewLoading) -> CGSize {
+        let size = draftHeight + draftMarginTop
+        return CGSize(width: size, height: size)
+    }
+
+    @objc
+    public func measure(withSentState state: LinkPreviewState) -> CGSize {
+
+        guard let conversationStyle = state.conversationStyle else {
+            owsFailDebug("Missing conversationStyle.")
+            return .zero
+        }
+
+        switch state.imageState() {
+        case .loaded:
+            if sentIsHero(state: state) {
+                return measureSentHero(state: state, conversationStyle: conversationStyle)
+            } else if state.previewDescription()?.isEmpty == false,
+                state.title()?.isEmpty == false {
+                return measureSentNonHeroWithDescription(state: state, conversationStyle: conversationStyle)
+            } else {
+                return measureSentNonHero(state: state, conversationStyle: conversationStyle, hasImage: true)
+            }
+        default:
+            return measureSentNonHero(state: state, conversationStyle: conversationStyle, hasImage: false)
+        }
+    }
+
+    private func measureSentHero(state: LinkPreviewState,
+                                 conversationStyle: ConversationStyle) -> CGSize {
+        let maxMessageWidth = conversationStyle.maxMessageWidth
         var messageHeight: CGFloat  = 0
 
-        let heroImageSize = sentHeroImageSize(state: state)
+        let heroImageSize = sentHeroImageSize(state: state, conversationStyle: conversationStyle)
         messageHeight += heroImageSize.height
 
-        let textStackSize = sentTextStackSize(state: state, maxWidth: maxMessageWidth - 2 * sentHeroHMargin)
+        let textStackSize = sentTextStackSize(state: state,
+                                              maxWidth: maxMessageWidth - 2 * sentHeroHMargin)
         messageHeight += textStackSize.height + 2 * sentHeroVMargin
 
         return CGSizeCeil(CGSize(width: maxMessageWidth, height: messageHeight))
     }
 
-    private func measureSentNonHeroWithDescription(state: LinkPreviewSent) -> CGSize {
-        let maxMessageWidth = state.conversationStyle.maxMessageWidth
+    private func measureSentNonHeroWithDescription(state: LinkPreviewState,
+                                                   conversationStyle: ConversationStyle) -> CGSize {
+        let maxMessageWidth = conversationStyle.maxMessageWidth
 
         let bottomMaxTextWidth = maxMessageWidth - 2 * sentNonHeroHMargin
         let titleMaxTextWidth = bottomMaxTextWidth - (sentNonHeroImageSize + sentNonHeroHSpacing)
@@ -963,8 +1197,10 @@ public class LinkPreviewView: UIStackView {
         return CGSizeCeil(resultSize)
     }
 
-    private func measureSentNonHero(state: LinkPreviewSent, hasImage: Bool) -> CGSize {
-        let maxMessageWidth = state.conversationStyle.maxMessageWidth
+    private func measureSentNonHero(state: LinkPreviewState,
+                                    conversationStyle: ConversationStyle,
+                                    hasImage: Bool) -> CGSize {
+        let maxMessageWidth = conversationStyle.maxMessageWidth
 
         var maxTextWidth = maxMessageWidth - 2 * sentNonHeroHMargin
         if hasImage {
@@ -989,7 +1225,7 @@ public class LinkPreviewView: UIStackView {
         CGSizeCeil(label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)))
     }
 
-    private func sentTextStackSize(state: LinkPreviewSent, maxWidth: CGFloat) -> CGSize {
+    private func sentTextStackSize(state: LinkPreviewState, maxWidth: CGFloat) -> CGSize {
         let domainLabel = sentDomainLabel(state: state)
         let domainLabelSize = sentLabelSize(label: domainLabel, maxWidth: maxWidth)
         var result = domainLabelSize

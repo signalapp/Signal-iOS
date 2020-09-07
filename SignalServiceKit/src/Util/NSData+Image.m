@@ -111,6 +111,11 @@ typedef struct {
     return MIMETypeForImageFormat(self.imageFormat);
 }
 
+- (nullable NSString *)fileExtension
+{
+    return [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
+}
+
 @end
 
 #pragma mark -

@@ -756,14 +756,27 @@ typedef struct {
     return 6.f;
 }
 
-- (nullable LinkPreviewSent *)linkPreviewState
+- (nullable id<LinkPreviewState>)linkPreviewState
 {
     if (!self.viewItem.linkPreview) {
         return nil;
     }
-    return [[LinkPreviewSent alloc] initWithLinkPreview:self.viewItem.linkPreview
-                                        imageAttachment:self.viewItem.linkPreviewAttachment
-                                      conversationStyle:self.conversationStyle];
+    if (self.viewItem.groupInviteLinkViewModel != nil) {
+        LinkPreviewLinkType linkType = (self.isIncoming ? LinkPreviewLinkTypeIncomingMessageGroupInviteLink
+                                                        : LinkPreviewLinkTypeOutgoingMessageGroupInviteLink);
+        if (self.viewItem.groupInviteLinkViewModel.isLoaded) {
+            return [[LinkPreviewGroupLink alloc] initWithLinkType:linkType
+                                                      linkPreview:self.viewItem.linkPreview
+                                         groupInviteLinkViewModel:self.viewItem.groupInviteLinkViewModel
+                                                conversationStyle:self.conversationStyle];
+        } else {
+            return [[LinkPreviewLoading alloc] initWithLinkType:linkType];
+        }
+    } else {
+        return [[LinkPreviewSent alloc] initWithLinkPreview:self.viewItem.linkPreview
+                                            imageAttachment:self.viewItem.linkPreviewAttachment
+                                          conversationStyle:self.conversationStyle];
+    }
 }
 
 #pragma mark - Load / Unload
@@ -1462,7 +1475,7 @@ typedef struct {
     }
 
     if (self.viewItem.linkPreview) {
-        CGSize linkPreviewSize = [self.linkPreviewView measureWithSentState:self.linkPreviewState];
+        CGSize linkPreviewSize = [self.linkPreviewView measureWithState:self.linkPreviewState];
         linkPreviewSize.width = MIN(linkPreviewSize.width, self.conversationStyle.maxMessageWidth);
         cellSize.width = MAX(cellSize.width, linkPreviewSize.width);
         cellSize.height += linkPreviewSize.height;
