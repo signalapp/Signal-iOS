@@ -129,9 +129,12 @@ public protocol GroupsV2Swift: GroupsV2 {
 
     func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo?
 
+    func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview?
+
     // inviteLinkPassword is not necessary if we're already a member or have a pending request.
     func fetchGroupInviteLinkPreview(inviteLinkPassword: Data?,
-                                     groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview>
+                                     groupSecretParamsData: Data,
+                                     allowCached: Bool) -> Promise<GroupInviteLinkPreview>
 
     func fetchGroupInviteLinkAvatar(avatarUrlPath: String,
                                     groupSecretParamsData: Data) -> Promise<Data>
@@ -143,6 +146,8 @@ public protocol GroupsV2Swift: GroupsV2 {
                                 avatarData: Data?) -> Promise<TSGroupThread>
 
     func cancelMemberRequests(groupModel: TSGroupModelV2) -> Promise<TSGroupThread>
+
+    func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2)
 }
 
 // MARK: -
@@ -332,8 +337,11 @@ public class GroupV2ContextInfo: NSObject {
 
 // MARK: -
 
-public struct GroupInviteLinkInfo {
+@objc
+public class GroupInviteLinkInfo: NSObject {
+    @objc
     public let masterKey: Data
+    @objc
     public let inviteLinkPassword: Data
 
     public init(masterKey: Data, inviteLinkPassword: Data) {
@@ -344,7 +352,8 @@ public struct GroupInviteLinkInfo {
 
 // MARK: -
 
-public struct GroupInviteLinkPreview {
+@objc
+public class GroupInviteLinkPreview: NSObject {
     public let title: String
     public let avatarUrlPath: String?
     public let memberCount: UInt32
@@ -364,6 +373,17 @@ public struct GroupInviteLinkPreview {
         self.addFromInviteLinkAccess = addFromInviteLinkAccess
         self.revision = revision
         self.isLocalUserRequestingMember = isLocalUserRequestingMember
+    }
+
+    @objc
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let otherRecipient = object as? GroupInviteLinkPreview else { return false }
+        return (title == otherRecipient.title &&
+            avatarUrlPath == otherRecipient.avatarUrlPath &&
+            memberCount == otherRecipient.memberCount &&
+            addFromInviteLinkAccess == otherRecipient.addFromInviteLinkAccess &&
+            revision == otherRecipient.revision &&
+            isLocalUserRequestingMember == otherRecipient.isLocalUserRequestingMember)
     }
 }
 
@@ -584,8 +604,13 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
         return nil
     }
 
+    public func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview? {
+        owsFail("Not implemented.")
+    }
+
     public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data?,
-                                            groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview> {
+                                            groupSecretParamsData: Data,
+                                            allowCached: Bool) -> Promise<GroupInviteLinkPreview> {
         owsFail("Not implemented.")
     }
 
@@ -603,6 +628,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func cancelMemberRequests(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+        owsFail("Not implemented.")
+    }
+
+    public func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2) {
         owsFail("Not implemented.")
     }
 }
