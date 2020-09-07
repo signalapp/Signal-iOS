@@ -277,6 +277,9 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
+/* Short text label for an image attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_IMAGE" = "படம் ";
+
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "புகைப்படம் ";
 
@@ -439,6 +442,9 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "அடுத்தது";
 
+/* Label for the 'no' button. */
+"BUTTON_NO" = "இல்லை";
+
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "சரி";
 
@@ -447,6 +453,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "சமர்ப்பி";
+
+/* Label for the 'yes' button. */
+"BUTTON_YES" = "ஆம்";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "மீண்டும் அழை";
@@ -560,19 +569,19 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "காப்புப்பதிவு பயனர் தரவு உங்கள் iCloud கணக்கில் அணுக Signal மறுக்கப்பட்டது. உங்கள் Signal தரவை காப்புப் பிரதி எடுக்க iOS அமைப்புகள் செயலியில் உங்கள் iCloud கணக்கில்  Signal  அணுகலை வழங்கவும்.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "இந்த உரையாடலில் வெளிச்செல்லும் செய்திகளின் நிறத்தைத் தேர்வுசெய்க.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "நீங்கள் தேர்வு செய்யும் வண்ணத்தை மட்டுமே நீங்கள் காண்பீர்கள்.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "உரையாடல் வண்ணம்";
+"COLOR_PICKER_SHEET_TITLE" = "Chat Color";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "கிளிப்போர்டுடன் ஒப்பிடுக";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "தேர்ந்தெடு அல்லது ஒரு தேட Signal உரையாடலைத் தொடங்க பயனர்.";
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "எழுது";
@@ -674,7 +683,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "அமைப்பு";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "உங்கள் உரையாடல்களில் தொடர்பு பெயர்கள் மற்றும் புகைப்படங்களைக் காண:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "கீழே உள்ள “அமைப்புகளுக்குச் செல்” என்பதைத் தட்டவும்";
@@ -692,7 +701,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "இயக்கவும்";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "உங்கள் உரையாடல்களில் தொடர்பு பெயர்கள் மற்றும் புகைப்படங்களைக் காண்க.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your chats.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "தொடர்புகளை இயக்கவா?";
@@ -752,16 +761,16 @@
 "CONTACT_WITHOUT_NAME" = "பெயரிடப்படாத தொடர்பு";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "இந்த உரையாடல் இதிலிருந்து நீக்கப்படும் சாதனம்.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "உரையாடலை அழி?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
 
 /* Indicates that the user can tap to download this image. */
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "பதிவிறக்க";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "%@ க்கும் மேற்பட்ட உரையாடல்களை நீங்கள் தேர்ந்தெடுக்க முடியாது.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "குழுக்கள்";
@@ -785,7 +794,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d உள்ள %d பொருத்தங்கள் ";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "உரையாடல் அமைப்புகள்";
+"CONVERSATION_SETTINGS" = "Chat Settings";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "உறுப்பினர்களைச் சேர்க்கவும்";
@@ -801,6 +810,9 @@
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "அனைத்து";
+
+/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "முடக்கப்பட்டது";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "குழுவின் பெயர், புகைப்படம் மற்றும் காணாமல் போன செய்திகளின் நேரத்தை யார் திருத்தலாம் என்பதைத் தேர்வுசெய்க.";
@@ -821,10 +833,10 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "தொடர்பு தகவல்";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "உரையாடல் வண்ணம்";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "குழு தகவலைத் திருத்து";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "யாரால் முடியும் தொகு குழு தகவல்";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "நிர்வாகிகள் மட்டுமே";
@@ -839,7 +851,7 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "தொகு";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "உறுப்பினர்களைச் சேர்க்கவும்";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "நிர்வாகிகள் மட்டுமே";
@@ -850,11 +862,17 @@
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "அனைத்து உறுப்பினர்களும்";
 
+/* Label for 'group link' action in conversation settings view. */
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
+
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "நிர்வாகியை உருவாக்குங்கள்";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@  இந்த குழுவையும் அதன் உறுப்பினர்களையும் திருத்த முடியும்.";
+
+/* Label for 'member requests & invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "உறுப்பினர்கள்";
@@ -907,9 +925,6 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "புதிய தொடர்பை உருவாக்கவும்";
 
-/* Indicates that there are no pending member invites in the group. */
-"CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "யாரும்";
-
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "குழுவிலிருந்து அகற்று";
 
@@ -923,7 +938,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "அகற்று %@ குழு நிர்வாகியாக?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "உரையாடலை தேடு ";
+"CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "குழுவைத் தடைநீக்கு";
@@ -935,7 +950,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "தடுப்புநீக்கு";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "விரும்புகிறேன் நீங்கள் அந்த மாற்றங்களைச் சேமிக்க விரும்புகிறேன் நீங்கள் இந்த உரையாடலில் செய்யப்பட்டதா?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this chat?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "சேமிக்கப்படாத மாற்றங்கள்";
@@ -1043,7 +1058,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "பிழைத்திருத்த பதிவுகள் பற்றிய தகவல்";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "உரையாடலில் உள்ள எல்லா செய்திகளையும் நீக்கவா?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "எல்லா செய்திகளையும் நீக்கு";
@@ -1172,10 +1187,10 @@
 "DISAPPEARING_MESSAGES" = "காணாமல் போகும் செய்திகள்";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "இந்த உரையாடலில் உள்ள செய்திகள் %@  க்குப் பிறகு மறைந்துவிடும்.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "இயக்கப்பட்டால், இந்த உரையாடலில் அனுப்பப்பட்ட மற்றும் பெறப்பட்ட செய்திகள் காணப்பட்ட பிறகு அவை மறைந்துவிடும்.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "தற்போது %@  க்குப் பிறகு செய்திகள் மறைந்துவிடும்";
@@ -1226,7 +1241,7 @@
 "EDIT_ITEM_COPY_ACTION" = "நகல்";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "ஏய்,\n\nஎனது ஐபோனில் உரையாடல்களை தனிப்பட்டதாக வைத்திருக்க சமீபத்தில் நான் Signal லைப் பயன்படுத்துகிறேன். நீங்களும் இதை நிறுவ விரும்புகிறேன், எனவே நீங்களும் நானும் மட்டுமே நம்முடைய  செய்திகளைப் படிக்க முடியும் அல்லது நம்முடைய  அழைப்புகளைக் கேட்க முடியும் என்று நாங்கள் நம்பலாம்.\n\nஐபோன்கள் மற்றும் அண்ட்ராய்டு கு Signal கிடைக்கும். இங்கே பெறுங்கள்: %@\n\nஉங்களிடம்  இருக்கும் செய்தியிடல் செயலி போலவே Signal செயல்படுகிறது. நாம்  படங்களையும் வீடியோவையும் அனுப்பலாம், அழைப்புகள் செய்யலாம் மற்றும் குழு அரட்டைகளைத் தொடங்கலாம். சிறந்த அம்சம் என்னவென்றால், வேறு யாராலும் இதைப் பார்க்க முடியாது, Signal லை உருவாக்கும் நபர்கள் கூட இல்லை!\n\nSignal உருவாக்கும் நபர்களான ஓபன் விஸ்பர் சிஸ்டம்ஸ் பற்றி நீங்கள் இங்கு மேலும் படிக்கலாம்: %@";
+"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal லுக்கு மாறலாம்";
@@ -1278,9 +1293,6 @@
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "அழைப்பு தோல்வியுற்றது.";
-
-/* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "IOS இன் இந்த பதிப்பில் சமீபத்திய  Signal ல் அம்சங்கள் இயங்காது. எதிர்கால Signal புதுப்பிப்புகளைப் பெற இந்த சாதனத்தை மேம்படுத்தவும்.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "தொடர்புகளை அணுக முடியவில்லை.";
@@ -1415,7 +1427,7 @@
 "FORWARD_MESSAGE" = "செய்தியை முன்னோக்கு ";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "இந்த உரையாடலில் உங்களிடம் எந்த ஊடகமும் இல்லை.";
+"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "புதிய மீடியாவை ஏற்றுகிறது…";
@@ -1480,6 +1492,9 @@
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "தெரியாத";
 
+/* Description of the 'unsatisfiable' access level. */
+"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "முடக்கப்பட்டது";
+
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
 
@@ -1537,6 +1552,60 @@
 /* Message indicating that multiple invalid invites were revoked. */
 "GROUP_INVALID_INVITES_REMOVED_N" = "தவறான அழைப்புகள் ரத்து செய்யப்பட்டன.";
 
+/* Message indicating that the group invite link was disabled. */
+"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+
+/* Message indicating that the group invite link was disabled by the local user. */
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+
+/* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+
+/* Message indicating that the group invite link was enabled. */
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+
+/* Message indicating that the group invite link was enabled by the local user. */
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+
+/* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+
+/* Message indicating that the group invite link was enabled. */
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+
+/* Message indicating that the group invite link was enabled by the local user. */
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+
+/* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+
+/* Message indicating that the group invite link was reset. */
+"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+
+/* Message indicating that the group invite link was reset by the local user. */
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+
+/* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+
+/* Message indicating that the group invite link was set to not require approval. */
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+
+/* Message indicating that the group invite link was set to not require approval by the local user. */
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+
+/* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+
+/* Message indicating that the group invite link was set to require approval. */
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+
+/* Message indicating that the group invite link was set to require approval by the local user. */
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+
+/* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ இந்த குழுவில் தானாக சேர்க்க முடியாது நீங்கள். அவர்கள் அழைக்கப்பட்டுள்ளனர்சேர, மற்றும் எந்த குழு செய்திகளையும் அவர்கள் பார்க்கும் வரை பார்க்க மாட்டார்கள் ஏற்றுக்கொள்.";
 
@@ -1548,6 +1617,96 @@
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+
+/* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+
+/* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+
+/* Indicator for group conversations in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
+
+/* Label for the 'join' button in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+
+/* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "ஏற்றப்படுகிறது ...";
+
+/* Message text for the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+
+/* Error message the attempt to request to join the group failed due to network connectivity. */
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "நீங்கள் ஆன்லைனில் இருக்கிறீர்களா என்பதை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
+
+/* Error message the attempt to request to join the group failed. */
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+
+/* Message for the 'invalid group invite link' alert. */
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+
+/* Title for the 'invalid group invite link' alert. */
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+
+/* Indicator that a group invite link has expired. */
+"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link is no longer valid";
+
+/* Button to join a group from a group link. */
+"GROUP_LINK_JOIN_GROUP_BUTTON" = "Join Group";
+
+/* Error message indicating that the local user does not support groups v2. */
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+
+/* Description text in the 'group link QR code' view. */
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+
+/* Label for the 'share code' button in the 'group link QR code' view. */
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+
+/* The title for the 'group link QR code' view. */
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Code";
+
+/* Label for the 'approve new members' switch in the 'group link' view. */
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+
+/* Label for the 'copy link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_COPY_LINK" = "இணைப்பை நகலெடுக்கவும்";
+
+/* Label for the 'enable group link' switch in the 'group link' view. */
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+
+/* Title for the 'manage and share' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+
+/* Footer for the 'member requests' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+
+/* Title for the 'member requests' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+
+/* Label for the 'reset link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+
+/* Title for the 'confirm reset link' alert in the 'group link' view. */
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+
+/* Label for the 'share link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK" = "பகிர்";
+
+/* Label for the 'share group link via iOS sharing UI' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "பகிர்";
+
+/* Label for the 'share group link via QR code' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
+
+/* Label for the 'share group link via Signal' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+
+/* Message for the 'share group link' action sheet in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+
+/* The title for the 'group link' view. */
+"GROUP_LINK_VIEW_TITLE" = "Group Link";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ ";
@@ -1585,11 +1744,26 @@
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "நீங்கள் குழுவில் சேர்ந்தார்.";
 
+/* Message indicating that the local user has joined the group. */
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@  அகற்றப்பட்டது நீங்கள்.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "நீங்கள் குழுவிலிருந்து அகற்றப்பட்டது.";
+
+/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+
+/* Message indicating that the local user cancelled their request to join the group. */
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+
+/* Message indicating that the local user's request to join the group was rejected. */
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+
+/* Message indicating that the local user requested to join the group. */
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "உங்கள் நிர்வாக சலுகைகள் ரத்து செய்யப்பட்டன.";
@@ -1705,6 +1879,9 @@
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ குழுவில் சேர்ந்தார்.";
 
+/* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ குழுவிலிருந்து வெளியேறினார்.";
 
@@ -1714,6 +1891,30 @@
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ அகற்றப்பட்டது  %2$@.";
 
+/* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+
+/* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+
+/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+
+/* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+
+/* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+
+/* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+
+/* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+
+/* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ அவர்களின் நிர்வாக சலுகைகள் ரத்து செய்யப்பட்டன.";
 
@@ -1722,6 +1923,15 @@
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@  நிர்வாகி சலுகைகளை ரத்து செய்தது %2$@.";
+
+/* Label for the 'member requests' mode of the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+
+/* Label for the 'pending invites' mode of the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+
+/* The title for the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "குழு புதுப்பிக்கப்பட்டது.";
@@ -1844,7 +2054,7 @@
 "HELP_SUPPORT_CENTER" = "ஆதரவு மையம்";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "காப்பகப்படுத்தப்பட்ட உரையாடல்கள்";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "தடுக்கப்பட்ட";
@@ -1865,7 +2075,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "உங்கள் தொடர்புகள் சில ஏற்கனவே Signal லில் உள்ளன, இதில் %@, %@ மற்றும் %@ உட்பட";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "உங்கள் முதல் உரையாடலை இங்கே தொடங்கவும்.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ சேர்க்கப்பட்டது நீங்கள் குழுவிற்கு";
@@ -1928,7 +2138,7 @@
 "IN_CALL_TERMINATED" = "அழைப்பு முடிந்தது.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "இந்த உரையாடல்கள் காப்பகப்படுத்தப்பட்டுள்ளன, மேலும் புதிய செய்திகள் வந்தால் மட்டுமே இன்பாக்ஸில் தோன்றும்.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "உங்கள் இன்பாக்ஸைப் பற்றி வீட்டிற்கு எழுத ஏதாவது கொடுங்கள். நண்பருக்கு செய்தி அனுப்புவதன் மூலம் தொடங்கவும்.";
@@ -1937,7 +2147,7 @@
 "INCOMING_CALL_FORMAT" = "%@அவர்கள் உங்களை அழைத்தார்கள்";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "நீங்கள் முடியும் அனுப்பு அல்லது ஒத்திசைக்கப்பட்ட செய்திகளைப் பெறுக உங்கள் தொலைபேசி அல்லது ஐபாட். ↵க்கு உங்கள் பாதுகாப்பு, உரையாடல் வரலாறு புதியதாக மாற்றப்படவில்லை இணைக்கப்பட்டுள்ளது சாதனங்கள்";
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal லில் உள்ளது!";
@@ -1979,13 +2189,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "எல்லா மெடியாவிற்கு செல் ";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "காப்பக உரையாடல்";
+"KEY_COMMAND_ARCHIVE" = "Archive Chat";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "இணைப்புகள்  காட்டு";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "உரையாடல் தகவலுக்குச் செல்லவும்";
+"KEY_COMMAND_CONVERSATION_INFO" = "Go to Chat Info";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "உள்ளீட்டு பட்டியில் கவனம் செலுத்துங்கள்";
@@ -2000,10 +2210,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "புதிய தகவல்";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "அடுத்த உரையாடலுக்குச் செல்லவும்";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "முந்தைய உரையாடலுக்குச் செல்லவும்";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "தேடு ";
@@ -2015,7 +2225,7 @@
 "KEY_COMMAND_STICKERS" = "ஓட்டிகளை காட்டு ";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "காப்பகப்படுத்தாத உரையாடல் ";
+"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "மேலும் அறிக";
@@ -2036,7 +2246,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "சாதனத்தை இணைப்பதில் தோல்வி";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "இந்தச் சாதனம் உங்கள் குழுக்கள் மற்றும் தொடர்புகளைக் காணவும், உங்கள் உரையாடல்களை அணுகவும், உங்கள் பெயரில் செய்திகளை அனுப்பவும் முடியும்.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "இந்த சாதனத்தை இணைக்கவா?";
@@ -2126,7 +2336,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "அனைவருக்கும் நீக்கு";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "உரையாடலில் உள்ள அனைவருக்கும் இந்த செய்தி நிரந்தரமாக நீக்கப்படும். நீங்கள் ஒரு செய்தியை நீக்கியதை உறுப்பினர்களால் பார்க்க முடியும்.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the chat. Members will be able to see that you deleted a message.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "இந்த செய்தியை யாருக்காக நீக்க விரும்புகிறீர்கள்?";
@@ -2228,10 +2438,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "அழி";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "இந்த உரையாடல் எல்லாவற்றிலிருந்தும் நீக்கப்படும் உங்கள் சாதனங்கள்.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "உரையாடலை அழி?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Chat?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "அழி மற்றும் விடுங்கள்";
@@ -2261,10 +2471,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "அழி";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@  உடன் உங்கள் உரையாடலைத் தொடர உங்கள் சுயவிவரத்தைப் பகிர வேண்டும்.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your chat with %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "இந்த குழுவுடன் உங்கள் உரையாடலைத் தொடர உங்கள் சுயவிவரத்தைப் பகிர வேண்டும்.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your chat with this group.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "நீங்கள் இந்த குழுவிற்கு அழைக்கப்பட்டனர் %@. செய்நீங்கள் இந்த குழு செய்தியை உறுப்பினர்களை அனுமதிக்க விரும்புகிறேன் நீங்கள்?";
@@ -2284,6 +2494,15 @@
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "தடைநீக்கு ";
 
+/* Label for button to cancel your request to join the group. */
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+
+/* Title for the confirmation alert when cancelling your request to join the group. */
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+
+/* Indicator that you have requested to join this group. */
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "அறிமுகப்படுத்துகிறது செய்தி கோரிக்கைகள்";
 
@@ -2291,7 +2510,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "சுயவிவரப் பெயரைச் சேர்க்கவும்";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "நீங்கள் இப்போது தேர்வு செய்யலாம் ”ஏற்றுக்கொள்புதிய உரையாடலை ”அல்லது” நீக்கு ”. யார் அவர்களுக்கு செய்தி அனுப்புகிறார்கள் என்பதை பெயர்கள் மக்களுக்குத் தெரிவிக்கின்றன.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "உங்கள் சுயவிவரப் பெயர் சேமிக்கப்பட்டது.";
@@ -2378,7 +2597,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "உங்கள் கணக்கு   தற்போது இணைக்கக்கூடிய அதிகபட்ச சாதனங்களை நீங்கள் அடைந்துவிட்டீர்கள். ஒரு சாதனத்தை அகற்றிவிட்டு மீண்டும் முயற்சிக்கவும்.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "முடக்கிய உரையாடல்களுக்கான அறிவிப்புகளைப் பெற மாட்டீர்கள்.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "முடக்கியது";
@@ -2579,10 +2798,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "அனுமதிகளை இயக்கு";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "செய்திகள் வரும்போது புதிய உரையாடல் செயல்பாடு குறித்த புதுப்பிப்புகளைப் பெற அறிவிப்புகள் உங்களை அனுமதிக்கும்.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new chat activity.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "செய்தியை பெறு ";
+
+/* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+
+/* Title of the 'onboarding phone number discoverability' view. */
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "தொடங்க உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்";
@@ -2677,20 +2902,41 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "பிடிஎப்";
 
+/* Title of 'accept member request to join group' button. */
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "குழுவில் சேர்";
+
+/* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+
+/* Title of 'deny member request to join group' button. */
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+
+/* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
+
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ 1 நபரை அழைத்தார்";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ அழைக்கப்பட்டார் %2$@ மக்கள்";
 
+/* Label indicating that a group has no pending member requests. */
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "இல்லை காட்ட அழைக்கிறது.";
 
-/* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "மறு-அனுப்பு அழைக்கவும்";
+/* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
 
-/* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "அழைப்புகளை மீண்டும் அனுப்புங்கள்";
+/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pending member requests.";
+
+/* Label for the 'view requests' button in the pending member requests banner. */
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "View Requests";
+
+/* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%@“.";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "தவறான அழைப்பைத் திரும்பப்பெறுங்கள்";
@@ -2713,26 +2959,23 @@
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "குழு அழைப்பை ரத்துசெய் “%@“?";
 
-/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "திரும்பப் பெறு அல்லது மறு-அனுப்பு குழு அழைப்பு “%@“?";
-
-/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "திரும்பப் பெறு அல்லது மறு-அனுப்பு %1$@ அனுப்பிய அழைப்புகள் “%2$@“?";
-
-/* Footer for the 'invites by other group members' section of the 'pending group members' view. */
+/* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "விவரங்கள் அழைக்கப்பட்ட நபர்களின் மற்றவை குழு உறுப்பினர்கள் காட்டப்படவில்லை. என்றால் அழைப்பாளர்கள் தேர்வு சேர, அவர்களது தகவல்அந்த நேரத்தில் குழுவுடன் பகிரப்படும். அவர்கள் குழுவில் எந்த செய்திகளையும் அவர்கள் பார்க்க மாட்டார்கள்சேர.";
 
-/* Title for the 'invalid invites' section of the 'pending group members' view. */
+/* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+
+/* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "தவறான அழைப்புகள்";
 
-/* Title for the 'invites by other group members' section of the 'pending group members' view. */
+/* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "மூலம் அழைக்கிறது மற்றவை குழு உறுப்பினர்கள்";
 
-/* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "மக்கள் நீங்கள் அழைக்கப்பட்டார்";
+/* Title for the 'pending member requests' section of the 'member requests and invites' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
 
-/* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "குழு அழைப்புகள் நிலுவையில் உள்ளன";
+/* Title for the 'people you invited' section of the 'member requests and invites' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "மக்கள் நீங்கள் அழைக்கப்பட்டார்";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "உள்வரும் செய்தியைக் கையாளுவதில் பிழை";
@@ -2758,8 +3001,38 @@
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "பார்க்கப்பட்டவை";
 
+/* A user friendly name for the 'everybody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+
+/* A user friendly description of the 'everybody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+
+/* A user friendly name for the 'nobody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "ஒருவருமில்லை";
+
+/* A user friendly description of the 'nobody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "உதாரணம் : %@";
+
+/* A user friendly name for the 'contacts only' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+
+/* A user friendly description of the 'contacts only' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+
+/* A user friendly name for the 'everybody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+
+/* A user friendly description of the 'everybody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+
+/* A user friendly name for the 'nobody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_NOBODY" = "ஒருவருமில்லை";
+
+/* A user friendly description of the 'nobody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -2808,6 +3081,9 @@
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "பெயரிடப்படாத ஆல்பம்";
+
+/* Pressing this button pins a thread */
+"PIN_ACTION" = "Pin";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "பின் குறைந்தது 4 எழுத்துகள் இருக்க வேண்டும்";
@@ -2926,6 +3202,12 @@
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "பின் குறைந்தபட்சம் 4 இலக்கங்களாக இருக்க வேண்டும்.";
 
+/* An explanation that you have already pinned the maximum number of conversations. */
+"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+
+/* The title for pinned conversation section on the conversation list */
+"PINNED_SECTION_TITLE" = "மேலே பொருத்தப்பட்ட செய்திகள்";
+
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "பின் உருவாக்கவும்";
 
@@ -2966,7 +3248,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "இது %@  உடன் உங்கள் பாதுகாப்பு எண்ணாகத் தெரியவில்லை. சரியான தொடர்பை சரிபார்க்கிறீர்களா?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "உங்கள் கிளிப்போர்டில் உள்ள எண் இந்த உரையாடலுக்கான சரியான பாதுகாப்பு எண்ணாகத் தெரியவில்லை.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "உங்கள் கிளிப்போர்டில் Signal க்கு எந்த பாதுகாப்பு எண்ணையும் கண்டுபிடிக்க முடியவில்லை. நீங்கள் அதை சரியாக நகலெடுத்துள்ளீர்களா?";
@@ -3035,7 +3317,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "உடன் இணைக்கப்படும்போது மட்டுமே சுயவிவரத்தை புதுப்பிக்க முடியும் இணையதளம்.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "உங்கள் சுயவிவரம் முடிவுக்கு இறுதி குறியாக்கம் end-to-end encrypted செய்யப்பட்டுள்ளது. நீங்கள் புதிய உரையாடல்களைத் தொடங்கும்போது அல்லது ஏற்றுக்கொள்ளும்போது, புதிய குழுக்களில் சேரும்போது உங்கள் சுயவிவரமும் அதற்கான மாற்றங்களும் உங்கள் தொடர்புகளுக்குத் தெரியும்.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new chats, and when you join new groups.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "சேமி";
@@ -3461,7 +3743,7 @@
 "SEARCH_SECTION_CONTACTS" = "பிற தொடர்புகள்";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "உரையாடல்கள்";
+"SEARCH_SECTION_CONVERSATIONS" = "அரட்டைகள்";
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "செய்திகள்";
@@ -3676,6 +3958,9 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "தடுக்கப்பட்ட பயனரைச் சேர்க்கவும்";
 
+/* An explanation of the 'blocked' setting */
+"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
+
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal லில் உங்களுக்கு எந்த தொடர்புகளும் இல்லை.";
 
@@ -3692,7 +3977,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "உங்கள் தொடர்புக்கு உங்கள் ஐபி முகவரியை வெளிப்படுத்துவதைத் தவிர்க்க Signal சேவையகம் மூலம் அனைத்து அழைப்புகளையும்  சுற்றசெய்யவும். இயக்குவது அழைப்பு தரத்தை குறைக்கும்.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "உரையாடல் வரலாற்றை அழிக்கவும்";
+"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "பதிப்புரிமை Signal மெசஞ்சர்\n GPLv3 இன் கீழ் உரிமம் பெற்றது";
@@ -3716,7 +4001,7 @@
 "SETTINGS_HELP" = "உதவி";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "உரையாடல் வரலாற்றை அழிக்கவும்";
+"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "தகவல்";
@@ -3739,14 +4024,14 @@
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "நீங்கள் அனுப்பும் செய்திகளுக்கு வலைத்தளங்களிலிருந்து இணைப்பு முன்னோட்டங்களை நேரடியாக மீட்டெடுக்கவும்.";
 
-/* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "இணைப்பு மாதிரிக்காட்சிகள்";
+/* Label for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING" = "Messaging";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "அமைப்புகள்";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "முடக்கிய உரையாடல்களை எண்ணுங்கள்";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "பேட்ஜ் அறிவிப்பு எண்ணிக்கை";
@@ -3765,6 +4050,18 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "அறிவிப்புகள்";
+
+/* Label for the 'phone number discoverability' setting. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+
+/* The title for the phone number discoverability settings. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+
+/* Label for the 'phone number sharing' setting. */
+"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+
+/* The title for the phone number sharing settings. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "நினைவூட்டல்களை முடக்கு";
@@ -3806,7 +4103,7 @@
 "SETTINGS_READ_RECEIPT" = "ரசீதுகளைப் படியுங்கள்";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "செய்திகளைப் படிக்கும்போது பார்க்கவும் பகிரவும். இந்த அமைப்பு விருப்பமானது மற்றும் எல்லா உரையாடல்களுக்கும் பொருந்தும்.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "அணைக்கவும்";
@@ -3866,7 +4163,7 @@
 "SETTINGS_TYPING_INDICATORS" = "தட்டச்சு குறிகாட்டிகள்";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "செய்திகள் தட்டச்சு செய்யும்போது பார்க்கவும் பகிரவும். இந்த அமைப்பு விருப்பமானது மற்றும் எல்லா உரையாடல்களுக்கும் பொருந்தும்.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "சீல் செய்யப்பட்ட அனுப்புனர் ";
@@ -3885,6 +4182,9 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "பதிப்பு";
+
+/* Label for the 'who can' privacy settings. */
+"SETTINGS_WHO_CAN" = "Who can...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "அஞ்சல்";
@@ -3929,7 +4229,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "பாதுகாப்பு எண்ணைக் காட்டு";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "உரையாடலைக் காட்டு";
+"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Signal லை நிறுவ நான் உங்களை அழைக்கிறேன்! இங்கே இணைப்பு:";
@@ -4018,6 +4318,12 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ஏற்றுதல்";
 
+/* Label for 'off' state of a switch control. */
+"SWITCH_OFF" = "அணை";
+
+/* Label for 'on' state of a switch control. */
+"SWITCH_ON" = "இயக்கு";
+
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "சரிபார்க்கவும்";
 
@@ -4028,7 +4334,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ மற்றும் %lu கூடுதல் குழுக்களின் உறுப்பினர்";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "நீங்கள் இந்த உரையாடலில் உங்களுக்காக குறிப்புகளைச் சேர்க்கலாம். என்றால் உங்கள் கணக்கு ஏதேனும் உள்ளது இணைக்கப்பட்டுள்ளது சாதனங்கள், புதிய குறிப்புகள் ஒத்திசைக்கப்படும்.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ உறுப்பினர்";
@@ -4161,6 +4467,12 @@
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "பெயரிடப்படாத சாதனம்";
+
+/* Pressing this button upins a thread */
+"UNPIN_ACTION" = "Unpin";
+
+/* The title for unpinned conversation section on the conversation list */
+"UNPINNED_SECTION_TITLE" = "அரட்டைகள்";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "படிக்காதது";

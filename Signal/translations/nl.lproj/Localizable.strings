@@ -277,6 +277,9 @@
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
 
+/* Short text label for an image attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_IMAGE" = "Afbeelding";
+
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_PHOTO" = "Afbeelding";
 
@@ -439,6 +442,9 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Volgende";
 
+/* Label for the 'no' button. */
+"BUTTON_NO" = "Nee";
+
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "Oké";
 
@@ -447,6 +453,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Indienen";
+
+/* Label for the 'yes' button. */
+"BUTTON_YES" = "Ja";
 
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Opnieuw bellen";
@@ -560,19 +569,19 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal heeft geen toegang gekregen tot je iCloud-account om een back-up-bestand te maken. Geef Signal toegang tot je iCloud-account  in de iOS-instellingenapp om een back-up-bestand te maken van je Signal-gegevens.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Kies de kleur voor uitgaande berichten in dit gesprek.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Alleen jij ziet de kleur die je kiest.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Gesprekskleur";
+"COLOR_PICKER_SHEET_TITLE" = "Chat Color";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Vergelijken met klembord";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Selecteer of zoek naar een Signal-gebruiker om een gesprek mee te beginnen.";
+"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Opstellen";
@@ -674,7 +683,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organisatie";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Om de namen en profielfoto's van je contactpersonen weer te geven:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tik op ‘Naar instellingen’ hieronder";
@@ -692,7 +701,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Inschakelen";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "De namen en profielfoto's van je contactpersonen in je gesprekken weergeven.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your chats.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Contactpersonen weergeven inschakelen?";
@@ -752,16 +761,16 @@
 "CONTACT_WITHOUT_NAME" = "Naamloos contactpersoon";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Dit gesprek zal van dit apparaat worden gewist.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Gesprek wissen?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
 
 /* Indicates that the user can tap to download this image. */
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Downloaden";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Je kunt niet meer dan %@ gesprekken selecteren.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Groepen";
@@ -785,7 +794,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "overeenkomst %d uit %d";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Gespreksinstellingen";
+"CONVERSATION_SETTINGS" = "Chat Settings";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Leden toevoegen";
@@ -801,6 +810,9 @@
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Alles";
+
+/* Label indicating that no member can update the group's attributes: name, avatar, etc. */
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Uitgeschakeld";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, groepsafbeelding en de timer voor zelfwissende berichten mag aanpassen.";
@@ -821,10 +833,10 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contactinformatie";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Gesprekskleur";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Groepsinformatie bewerken";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Wie de groepsinformatie kan aanpassen";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Uitsluitend beheerders";
@@ -839,7 +851,7 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Aanpassen";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Personen toevoegen";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Uitsluitend beheerders";
@@ -850,11 +862,17 @@
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle groepsleden";
 
+/* Label for 'group link' action in conversation settings view. */
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
+
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Beheerder maken";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ zal dit groepsgesprek en de deelnemers kunnen aanpassen";
+
+/* Label for 'member requests & invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Leden";
@@ -907,9 +925,6 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Nieuw contactpersoon aanmaken";
 
-/* Indicates that there are no pending member invites in the group. */
-"CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "Niets";
-
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Verwijderen van de groep";
 
@@ -923,7 +938,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Beheerdersbevoegdheden van %@ intrekken?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Zoek gesprek";
+"CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Groep deblokkeren";
@@ -935,7 +950,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet meer dempen";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Wil je de veranderingen aan dit gesprek opslaan?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this chat?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Niet-opgeslagen wijzigingen";
@@ -1043,7 +1058,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informatie over foutopsporingslogs";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Wil je alle berichten in dit gesprek wissen? Ze worden alleen voor jou gewist.";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Alle berichten wissen";
@@ -1172,10 +1187,10 @@
 "DISAPPEARING_MESSAGES" = "Zelfwissende berichten";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in dit gesprek zullen na %@ zichzelf wissen.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld zal elk nieuwe bericht zichzelf wissen nadat de ingestelde tijd is verlopen. Voor iedere deelnemer aan het gesprek begint de tijd pas te lopen als hij het bericht heeft gezien. – Gebruik zelfwissende berichten niet ter beveiliging, want Signal kan niet garanderen dat een bericht op het apparaat van een ander daadwerkelijk wordt gewist.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Momenteel wissen nieuwe berichten zichzelf na %@";
@@ -1226,7 +1241,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiëren";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hallo,\n\nIk gebruik al een tijdje Signal om de gesprekken op mijn iPhone privé te houden. Ik wil je vragen om ook Signal te installeren, zodat we zeker kunnen zijn dat enkel jij en ik onze berichten kunnen lezen en gesprekken kunnen horen.\n\nSignal is beschikbaar voor iPhone en Android. Je kunt het hier downloaden: %@\n\nSignal werkt net als andere berichtenapps. We kunnen foto’s en filmpjes verzenden, elkaar bellen en je kunt groepsgesprekken beginnen. Het beste is dat niemand anders kan meelezen of luisteren, zelfs niet de mensen die Signal ontwikkelen!\n\nJe kunt meer lezen over Open Whisper Systems, de mensen die Signal ontwikkelen, op deze pagina: %@";
+"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Laten we Signal gebruiken";
@@ -1278,9 +1293,6 @@
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Oproep mislukt.";
-
-/* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "De nieuwste functionaliteiten werken zullen niet werken in deze versie van iOS. Waardeer dit apparaat op om toekomstige Signal-versies te ontvangen.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Kon geen toegang tot contacten krijgen.";
@@ -1415,7 +1427,7 @@
 "FORWARD_MESSAGE" = "Bericht doorsturen";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Je hebt geen media in dit gesprek.";
+"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Nieuwere media laden …";
@@ -1480,6 +1492,9 @@
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Onbekend";
 
+/* Description of the 'unsatisfiable' access level. */
+"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Uitgeschakeld";
+
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de instelling voor wie de groepslidmaatschap kan aanpassen op ‘%@’ ingesteld.";
 
@@ -1537,6 +1552,60 @@
 /* Message indicating that multiple invalid invites were revoked. */
 "GROUP_INVALID_INVITES_REMOVED_N" = "Ongeldige uitnodigingen zijn ingetrokken.";
 
+/* Message indicating that the group invite link was disabled. */
+"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+
+/* Message indicating that the group invite link was disabled by the local user. */
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+
+/* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+
+/* Message indicating that the group invite link was enabled. */
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+
+/* Message indicating that the group invite link was enabled by the local user. */
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+
+/* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+
+/* Message indicating that the group invite link was enabled. */
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+
+/* Message indicating that the group invite link was enabled by the local user. */
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+
+/* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+
+/* Message indicating that the group invite link was reset. */
+"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+
+/* Message indicating that the group invite link was reset by the local user. */
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+
+/* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+
+/* Message indicating that the group invite link was set to not require approval. */
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+
+/* Message indicating that the group invite link was set to not require approval by the local user. */
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+
+/* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+
+/* Message indicating that the group invite link was set to require approval. */
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+
+/* Message indicating that the group invite link was set to require approval by the local user. */
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+
+/* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ personen kunnen door jou niet direct worden toegevoegd aan de groep, vanwege de voorkeuren welke zij voor zichzelf hebben ingesteld. Ze hebben een uitnodiging ontvangen om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen voordat ze de uitnodiging hebben aanvaard.";
 
@@ -1548,6 +1617,96 @@
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging aanvaard hebben.";
+
+/* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+
+/* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+
+/* Indicator for group conversations in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Groep";
+
+/* Label for the 'join' button in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Lid worden";
+
+/* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Aan het laden …";
+
+/* Message text for the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Wil je lid worden van deze groep en je naam en foto met de andere leden delen?";
+
+/* Error message the attempt to request to join the group failed due to network connectivity. */
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Controleer of je met internet verbonden bent en probeer het opnieuw.";
+
+/* Error message the attempt to request to join the group failed. */
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+
+/* Message for the 'invalid group invite link' alert. */
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+
+/* Title for the 'invalid group invite link' alert. */
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+
+/* Indicator that a group invite link has expired. */
+"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link is no longer valid";
+
+/* Button to join a group from a group link. */
+"GROUP_LINK_JOIN_GROUP_BUTTON" = "Join Group";
+
+/* Error message indicating that the local user does not support groups v2. */
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+
+/* Description text in the 'group link QR code' view. */
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen zullen in staat zijn lid te worden van je groep. Beheerders moeten deze personen nog steeds goedkeuren als deze instelling aan staat.";
+
+/* Label for the 'share code' button in the 'group link QR code' view. */
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+
+/* The title for the 'group link QR code' view. */
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Code";
+
+/* Label for the 'approve new members' switch in the 'group link' view. */
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+
+/* Label for the 'copy link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_COPY_LINK" = "Verwijzing kopiëren";
+
+/* Label for the 'enable group link' switch in the 'group link' view. */
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+
+/* Title for the 'manage and share' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+
+/* Footer for the 'member requests' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Vereis dat een beheerder nodig is om nieuwe leden goed te keuren.";
+
+/* Title for the 'member requests' section of the 'group link' view. */
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+
+/* Label for the 'reset link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+
+/* Title for the 'confirm reset link' alert in the 'group link' view. */
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Weet je zeker dat je de groepslink wilt vernieuwen? Dan zullen mensen geen lid meer kunnen worden via de huidige link.";
+
+/* Label for the 'share link' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK" = "Doorsturen via andere app";
+
+/* Label for the 'share group link via iOS sharing UI' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Doorsturen via andere app";
+
+/* Label for the 'share group link via QR code' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
+
+/* Label for the 'share group link via Signal' button in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Delen via Signal";
+
+/* Message for the 'share group link' action sheet in the 'group link' view. */
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+
+/* The title for the 'group link' view. */
+"GROUP_LINK_VIEW_TITLE" = "Group Link";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ heeft jou toegevoegd aan de groep.";
@@ -1585,11 +1744,26 @@
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Je bent lid geworden van de groep.";
 
+/* Message indicating that the local user has joined the group. */
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ heeft je verwijderd van de groep.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Je bent verwijderd van de groep.";
+
+/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+
+/* Message indicating that the local user cancelled their request to join the group. */
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Je hebt je verzoek om lid te worden van de groep ingetrokken.";
+
+/* Message indicating that the local user's request to join the group was rejected. */
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+
+/* Message indicating that the local user requested to join the group. */
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Je hebt een verzoek verstuurd om lid te worden van de groep.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Je beheerdersbevoegdheden zijn ingetrokken.";
@@ -1705,6 +1879,9 @@
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ is toegevoegd aan de groep.";
 
+/* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ heeft de groep verlaten.";
 
@@ -1714,6 +1891,30 @@
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ heeft %2$@ verwijderd van de groep.";
 
+/* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+
+/* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+
+/* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+
+/* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+
+/* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+
+/* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+
+/* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+
+/* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "De beheerdersbevoegdheden van %@ zijn ingetrokken.";
 
@@ -1722,6 +1923,15 @@
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de beheerdersbevoegdheden van %2$@ ingetrokken.";
+
+/* Label for the 'member requests' mode of the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+
+/* Label for the 'pending invites' mode of the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+
+/* The title for the 'group requests and invites' view. */
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Groep aangepast.";
@@ -1844,7 +2054,7 @@
 "HELP_SUPPORT_CENTER" = "Ondersteuningscentrum";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Gearchiveerde gesprekken";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Geblokkeerd";
@@ -1865,7 +2075,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Sommige van je contactpersonen maken al gebruik van Signal, waaronder %@, %@ en %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begin je eerste gesprek hier.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ heeft je aan de groep toegevoegd";
@@ -1928,7 +2138,7 @@
 "IN_CALL_TERMINATED" = "Oproep beëindigd.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Deze gesprekken worden gearchiveerd en zullen alleen in Postvak IN verschijnen als je nieuwe berichten ontvangt.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Geef je postvak iets om over naar huis te schrijven. Begin door een vriend of kennis een bericht te zenden.";
@@ -1937,7 +2147,7 @@
 "INCOMING_CALL_FORMAT" = "%@ heeft je gebeld";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Je kunt gesynchroniseerde berichten verzenden van zowel je telefoon als je iPad.\nVoor je eigen veiligheid wordt je gespreksgeschiedenis niet overgedragen naar nieuw gekoppelde apparaten.";
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is bereikbaar via Signal.";
@@ -1979,13 +2189,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "Ga naar ‘Alle media’";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Gesprek archiveren";
+"KEY_COMMAND_ARCHIVE" = "Archive Chat";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Bijlagen weergeven";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Ga naar ‘Gespreksinformatie’";
+"KEY_COMMAND_CONVERSATION_INFO" = "Go to Chat Info";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Focus op invoerveld";
@@ -2000,10 +2210,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "nieuw bericht";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Ga naar ‘Volgend gesprek’";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ga naar ‘Vorig gesprek’";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Zoeken";
@@ -2015,7 +2225,7 @@
 "KEY_COMMAND_STICKERS" = "Stickers weergeven";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Gesprek dearchiveren";
+"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Meer lezen hierover";
@@ -2036,7 +2246,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Koppelen van apparaat mislukt";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Dit apparaat zal je groepen en contacten kunnen inzien, toegang krijgen tot je gesprekken, en berichten in jouw naam kunnen versturen.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Dit apparaat koppelen?";
@@ -2126,7 +2336,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Voor iedereen wissen";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Dit bericht zal worden verwijderd voor alle deelnemers aan het gesprek. Gespreksdeelnemers zullen wel kunnen zien dat jij een bericht hebt verwijderd.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the chat. Members will be able to see that you deleted a message.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Voor wie wil je dit bericht verwijderen?";
@@ -2228,10 +2438,10 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Verwijderen";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Dit gesprek zal worden gewist van al je apparaten.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Gesprek verwijderen?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Chat?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Verwijderen en verlaten";
@@ -2261,10 +2471,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wissen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Je moet je profiel zichtbaar maken voor je je gesprek met %@ kunt voortzetten.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your chat with %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Je moet je profiel zichtbaar maken voor alle leden van deze groep voor je je gesprek met deze groep kunt voortzetten.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your chat with this group.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Je bent door %@ uitgenodigd om lid te worden van deze groep. Wil je leden van deze groep toestaan om berichten naar je te zenden?";
@@ -2284,6 +2494,15 @@
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Deblokkeren";
 
+/* Label for button to cancel your request to join the group. */
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Verzoek annuleren";
+
+/* Title for the confirmation alert when cancelling your request to join the group. */
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+
+/* Indicator that you have requested to join this group. */
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "We introduceren gespreksverzoeken";
 
@@ -2291,7 +2510,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Een profielnaam toevoegen";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "Je kunt vanaf nu kiezen of je een nieuw gesprek wilt aanvaarden. Door profielnamen weet men van wie men een bericht krijgt.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Je profielnaam is opgeslagen.";
@@ -2378,7 +2597,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Je hebt het maximum aantal apparaten gekoppeld. Verwijder een apparaat en probeer het opnieuw.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Je zult geen meldingen krijgen voor gedempte gesprekken.";
+"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Gedempt";
@@ -2579,10 +2798,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Geef toestemmingen";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notificaties laten je zien wanneer berichten binnenkomen en houden je op de hoogte van nieuwe gebeurtenissen in je gesprekken.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new chat activity.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Krijg het bericht door";
+
+/* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+
+/* Title of the 'onboarding phone number discoverability' view. */
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Voer je telefoonnummer in om te beginnen";
@@ -2677,20 +2902,41 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
+/* Title of 'accept member request to join group' button. */
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Aan groep toevoegen?";
+
+/* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+
+/* Title of 'deny member request to join group' button. */
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+
+/* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
+
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ heeft 1 persoon voor de groep uitgenodigd";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ heeft %2$@ personen voor de groep uitgenodigd";
 
+/* Label indicating that a group has no pending member requests. */
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Er zijn geen uitnodigingen om weer te geven.";
 
-/* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Uitnodiging opnieuw verzenden";
+/* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
 
-/* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Uitnodigingen opnieuw verzenden";
+/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pending member requests.";
+
+/* Label for the 'view requests' button in the pending member requests banner. */
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "View Requests";
+
+/* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%@“.";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Ongeldige uitnodiging intrekken";
@@ -2713,26 +2959,23 @@
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Uitnodiging voor de groep “%@” intrekken?";
 
-/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Uitnodiging aan %@ intrekken of opnieuw verzenden?";
-
-/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "%1$@ door %2$@ verzonden uitnodigingen intrekken of opnieuw verzenden?";
-
-/* Footer for the 'invites by other group members' section of the 'pending group members' view. */
+/* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen wie zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te aanvaarden, dan zullen op dat moment zijn of haar profielnaam en -afbeelding zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben aanvaard.";
 
-/* Title for the 'invalid invites' section of the 'pending group members' view. */
+/* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+
+/* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Ongeldige uitnodigingen";
 
-/* Title for the 'invites by other group members' section of the 'pending group members' view. */
+/* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Uitnodigingen door andere leden verzonden";
 
-/* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Personen wie jij hebt uitgenodigd";
+/* Title for the 'pending member requests' section of the 'member requests and invites' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
 
-/* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Groepsuitnodigingen in afwachting";
+/* Title for the 'people you invited' section of the 'member requests and invites' view. */
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Personen wie jij hebt uitgenodigd";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fout bij het verwerken van een inkomend bericht";
@@ -2758,8 +3001,38 @@
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Gezien";
 
+/* A user friendly name for the 'everybody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+
+/* A user friendly description of the 'everybody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+
+/* A user friendly name for the 'nobody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niemand";
+
+/* A user friendly description of the 'nobody' phone number discoverability mode. */
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Voorbeeld: %@";
+
+/* A user friendly name for the 'contacts only' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+
+/* A user friendly description of the 'contacts only' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+
+/* A user friendly name for the 'everybody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+
+/* A user friendly description of the 'everybody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+
+/* A user friendly name for the 'nobody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_NOBODY" = "Niemand";
+
+/* A user friendly description of the 'nobody' phone number sharing mode. */
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -2808,6 +3081,9 @@
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
+
+/* Pressing this button pins a thread */
+"PIN_ACTION" = "Pin";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "Je pincode moet uit ten minste 4 karakters bestaan";
@@ -2926,6 +3202,12 @@
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 4 cijfers bestaan.";
 
+/* An explanation that you have already pinned the maximum number of conversations. */
+"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+
+/* The title for pinned conversation section on the conversation list */
+"PINNED_SECTION_TITLE" = "Vastgeprikt";
+
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Pincode aanmaken";
 
@@ -2966,7 +3248,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dit lijkt niet op je veiligheidsnummer met %@. Verifieer je wel de juiste contactpersoon?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Het nummer in je klembord lijkt niet op het juiste veiligheidsnummer voor dit gesprek.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kon geen veiligheidsnummer vinden in je klembord. Heb je het wel juist gekopieerd?";
@@ -3035,7 +3317,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Je profiel kan alleen worden bijgewerkt als je bent verbonden met het internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profielen zijn alleen zichtbaar voor je contactpersonen, voor personen naar wie je zelf een nieuwe gesprek initieert, en voor personen en groepen voor wie je expliciet toestemming hebt gegeven.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new chats, and when you join new groups.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Opslaan";
@@ -3676,6 +3958,9 @@
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Geblokkeerde gebruiker toevoegen";
 
+/* An explanation of the 'blocked' setting */
+"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
+
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Je hebt geen contactpersonen op Signal.";
 
@@ -3692,7 +3977,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Om te voorkomen dat je gesprekspartner je IP-adres kan achterhalen worden Signal-oproepen met niet-contactpersonen altijd omgeleid via de Signal-server. Door deze optie in te schakelen wordt dat ook gedaan voor Signal-oproepen met contacten wie wel in je contactenlijst staan. Dit leidt echter tot een verminderde geluids- en videokwaliteit.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Gespreksgeschiedenis wissen";
+"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Auteursrecht Signal-berichtenapp\n Gelicentieerd onder de GPLv3";
@@ -3716,7 +4001,7 @@
 "SETTINGS_HELP" = "Hulp";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Gespreksgeschiedenis wissen";
+"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informatie";
@@ -3739,14 +4024,14 @@
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Sta Signal toe om voor elke koppeling naar een website die je verzendt een voorbeeldafbeelding genereren en bij te voegen. Echter, als je dit inschakelt zouden websites kunnen detecteren dat je ze in je bericht vermeld.";
 
-/* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Voorbeeldweergaven";
+/* Label for the 'messaging' privacy settings. */
+"SETTINGS_MESSAGING" = "Messaging";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Instellingen";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Tel gedempte gesprekken mee";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Reacties-teller";
@@ -3765,6 +4050,18 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Meldingen";
+
+/* Label for the 'phone number discoverability' setting. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+
+/* The title for the phone number discoverability settings. */
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+
+/* Label for the 'phone number sharing' setting. */
+"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+
+/* The title for the phone number sharing settings. */
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Herinneringen uitschakelen";
@@ -3806,7 +4103,7 @@
 "SETTINGS_READ_RECEIPT" = "Leesbevestigingen";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Als leesbevestigingen zijn uitgeschakeld kunnen anderen niet zien of je hun berichten hebt gelezen, maar je zult ook niet kunnen zien of anderen jouw berichten hebben gelezen.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Uitschakelen";
@@ -3866,7 +4163,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Typindicatoren";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Als typindicatoren zijn uitgeschakeld kunnen anderen niet zien of je aan het typen bent, maar je zult ook niet kunnen zien wanneer anderen aan het typen zijn.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Verzegelde afzender";
@@ -3885,6 +4182,9 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versie";
+
+/* Label for the 'who can' privacy settings. */
+"SETTINGS_WHO_CAN" = "Who can...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "E-mail";
@@ -3929,7 +4229,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Veiligheidsnummer tonen";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Gesprek laten zien";
+"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Ik nodig je uit om Signal te installeren! Hier is de link:";
@@ -4018,6 +4318,12 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Aan het laden";
 
+/* Label for 'off' state of a switch control. */
+"SWITCH_OFF" = "Uit";
+
+/* Label for 'on' state of a switch control. */
+"SWITCH_ON" = "Aan";
+
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifiëren";
 
@@ -4028,7 +4334,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %@, %@ en nog %lu andere groepen";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Je kunt in dit gesprek notities voor jezelf achterlaten. Als je gebruik maakt van gekoppelde apparaten dan zullen notities worden gesynchroniseerd.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Lid van %@";
@@ -4161,6 +4467,12 @@
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Naamloos apparaat";
+
+/* Pressing this button upins a thread */
+"UNPIN_ACTION" = "Unpin";
+
+/* The title for unpinned conversation section on the conversation list */
+"UNPINNED_SECTION_TITLE" = "Gesprekken";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Voor mij als ongelezen markeren";
