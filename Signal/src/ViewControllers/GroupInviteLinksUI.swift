@@ -220,7 +220,8 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     private func loadLinkPreview() {
         firstly(on: .global()) {
             self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                                                      groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
+                                                      groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                                                      allowCached: false)
         }.done { [weak self] (groupInviteLinkPreview: GroupInviteLinkPreview) in
             self?.applyGroupInviteLinkPreview(groupInviteLinkPreview)
 
@@ -320,7 +321,6 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         AssertIsOnMainThread()
 
         guard doesLocalUserSupportGroupsV2 else {
-            // TODO: Add copy from design.
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
                                                                       comment: "Error message indicating that the local user does not support groups v2."))
             return
@@ -340,7 +340,8 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                 // Kick off a fresh attempt to download the link preview.
                 // We cannot join the group without the preview.
                 return self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                                                                 groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
+                                                                 groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                                                                 allowCached: false)
             }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, Data?)> in
                 guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
                     // Group has no avatar.

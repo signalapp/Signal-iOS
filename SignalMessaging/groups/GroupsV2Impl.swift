@@ -271,6 +271,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise(error: error)
         }
 
+        let finalGroupChangeProto = AtomicOptional<GroupsProtoGroupChangeActions>(nil)
         var isFirstAttempt = true
         let requestBuilder: RequestBuilder = { (authCredential) in
             return firstly { () -> Promise<Void> in
@@ -295,10 +296,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 return changeSet.buildGroupChangeProto(currentGroupModel: groupModel,
                                                        currentDisappearingMessageToken: disappearingMessageToken)
             }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> GroupsV2Request in
-                try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
-                                                           groupV2Params: groupV2Params,
-                                                           authCredential: authCredential,
-                                                           groupInviteLinkPassword: nil)
+                finalGroupChangeProto.set(groupChangeProto)
+                return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
+                                                                  groupV2Params: groupV2Params,
+                                                                  authCredential: authCredential,
+                                                                  groupInviteLinkPassword: nil)
             }
         }
 
@@ -333,9 +335,82 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return firstly {
                 GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
                                                     changeActionsProtoData: updatedV2Group.changeActionsProtoData)
+            }.map(on: .global()) { (_) -> Void in
+                guard let groupChangeProto = finalGroupChangeProto.get() else {
+                    owsFailDebug("Missing groupChangeProto.")
+                    return
+                }
+                self.sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: updatedV2Group.groupThread,
+                                                                         groupChangeProto: groupChangeProto,
+                                                                         groupV2Params: groupV2Params)
             }.map(on: .global()) { (_) -> TSGroupThread in
                 return updatedV2Group.groupThread
             }
+        }
+    }
+
+    private func sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: TSGroupThread,
+                                                                     groupChangeProto: GroupsProtoGroupChangeActions,
+                                                                     groupV2Params: GroupV2Params) {
+        var uuids = [UUID]()
+        for action in groupChangeProto.deleteRequestingMembers {
+            do {
+                guard let userId = action.deletedUserID else {
+                    throw OWSAssertionError("Missing userId.")
+                }
+                let uuid = try groupV2Params.uuid(forUserId: userId)
+                uuids.append(uuid)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
+
+        guard !uuids.isEmpty else {
+            return
+        }
+
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid groupModel.")
+            return
+        }
+        let revision = groupModel.revision
+        let masterKeyData: Data
+        do {
+            masterKeyData = try GroupsV2Protos.masterKeyData(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return
+        }
+
+        let contactThreads = databaseStorage.write { transaction in
+            uuids.map { uuid in
+                TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(uuid: uuid),
+                                                  transaction: transaction)
+            }
+        }
+        for contactThread in contactThreads {
+            let contentProtoData: Data
+            do {
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(masterKeyData)
+                builder.setRevision(revision)
+
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setGroupV2(try builder.build())
+                dataBuilder.setRequiredProtocolVersion(1)
+
+                let dataProto = try dataBuilder.build()
+                let contentBuilder = SSKProtoContent.builder()
+                contentBuilder.setDataMessage(dataProto)
+                contentProtoData = try contentBuilder.buildSerializedData()
+            } catch {
+                owsFailDebug("Error: \(error)")
+                continue
+            }
+            let message = OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+                contentProtoData
+            }
+            ThreadUtil.sendMessageNonDurably(message: message)
         }
     }
 
@@ -751,6 +826,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         case fetchGroupUpdates
         case ignore
         case expiredGroupInviteLink
+        case localUserIsNotARequestingMember
     }
 
     private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
@@ -835,14 +911,21 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                 // previous case).
                                 self.tryToUpdateGroupToLatest(groupId: groupId)
                             case .expiredGroupInviteLink:
-                                owsFailDebug("Unexpected group id.")
+                                owsFailDebug("groupId should not be set in this code path.")
                                 resolver.reject(GroupsV2Error.expiredGroupInviteLink)
+                                break
+                            case .localUserIsNotARequestingMember:
+                                owsFailDebug("groupId should not be set in this code path.")
+                                resolver.reject(GroupsV2Error.localUserIsNotARequestingMember)
                                 break
                             }
                         } else {
                             // We should only receive 403 when groupId is not nil.
                             if behavior403 == .expiredGroupInviteLink {
                                 resolver.reject(GroupsV2Error.expiredGroupInviteLink)
+                                return
+                            } else if behavior403 == .localUserIsNotARequestingMember {
+                                resolver.reject(GroupsV2Error.localUserIsNotARequestingMember)
                                 return
                             } else {
                                 owsFailDebug("Missing groupId.")
@@ -1340,12 +1423,28 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    // We don't cache these previews, since they contain volatile
-    // information like the current revision number.
-    //
+    private let groupInviteLinkPreviewCache = NSCache<NSData, GroupInviteLinkPreview>()
+
+    private func groupInviteLinkPreviewCacheKey(groupSecretParamsData: Data) -> NSData {
+        groupSecretParamsData as NSData
+    }
+
+    public func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview? {
+        let cacheKey = groupInviteLinkPreviewCacheKey(groupSecretParamsData: groupSecretParamsData)
+        return groupInviteLinkPreviewCache.object(forKey: cacheKey)
+    }
+
     // inviteLinkPassword is not necessary if we're already a member or have a pending request.
     public func fetchGroupInviteLinkPreview(inviteLinkPassword: Data?,
-                                            groupSecretParamsData: Data) -> Promise<GroupInviteLinkPreview> {
+                                            groupSecretParamsData: Data,
+                                            allowCached: Bool) -> Promise<GroupInviteLinkPreview> {
+        let cacheKey = groupInviteLinkPreviewCacheKey(groupSecretParamsData: groupSecretParamsData)
+
+        if allowCached,
+            let groupInviteLinkPreview = groupInviteLinkPreviewCache.object(forKey: cacheKey) {
+            return Promise.value(groupInviteLinkPreview)
+        }
+
         let groupV2Params: GroupV2Params
         do {
             groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
@@ -1362,14 +1461,30 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
-            self.performServiceRequest(requestBuilder: requestBuilder,
-                                       groupId: nil,
-                                       behavior403: .expiredGroupInviteLink)
+            let behavior403: Behavior403 = (inviteLinkPassword != nil
+                ? .expiredGroupInviteLink
+                : .localUserIsNotARequestingMember)
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: nil,
+                                              behavior403: behavior403)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupInviteLinkPreview in
             guard let protoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            return try GroupsV2Protos.parseGroupInviteLinkPreview(protoData, groupV2Params: groupV2Params)
+            let groupInviteLinkPreview = try GroupsV2Protos.parseGroupInviteLinkPreview(protoData, groupV2Params: groupV2Params)
+
+            self.groupInviteLinkPreviewCache.setObject(groupInviteLinkPreview, forKey: cacheKey)
+
+            self.updatePlaceholderGroupModelUsingInviteLinkPreview(groupSecretParamsData: groupSecretParamsData,
+                                                                   isLocalUserRequestingMember: groupInviteLinkPreview.isLocalUserRequestingMember)
+
+            return groupInviteLinkPreview
+        }.recover { (error: Error) -> Promise<GroupInviteLinkPreview> in
+            if case GroupsV2Error.localUserIsNotARequestingMember = error {
+                self.updatePlaceholderGroupModelUsingInviteLinkPreview(groupSecretParamsData: groupSecretParamsData,
+                                                                       isLocalUserRequestingMember: false)
+            }
+            throw error
         }
     }
 
@@ -1526,7 +1641,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             //
             // Download and update database with the group state.
             return firstly {
-                // TODO: maybe this should return a TSGroupThread.
                 self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
                                                                                       groupSecretParamsData: groupV2Params.groupSecretParamsData)
             }.recover(on: .global()) { (_: Error) -> Promise<TSGroupThread> in
@@ -1703,7 +1817,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // * addFromInviteLinkAccess
             // * local user's request status.
             self.fetchGroupInviteLinkPreview(inviteLinkPassword: inviteLinkPassword,
-                                             groupSecretParamsData: groupV2Params.groupSecretParamsData)
+                                             groupSecretParamsData: groupV2Params.groupSecretParamsData,
+                                             allowCached: false)
         }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, ProfileKeyCredential)> in
 
             guard !groupInviteLinkPreview.isLocalUserRequestingMember else {
@@ -1740,7 +1855,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            groupV2Params: groupV2Params))
                 actionsBuilder.addAddMembers(try actionBuilder.build())
             case .administrator:
-                // TODO: This isn't working yet.
                 let actionBuilder = GroupsProtoGroupChangeActionsAddRequestingMemberAction.builder()
                 actionBuilder.setAdded(try GroupsV2Protos.buildRequestingMemberProto(profileKeyCredential: localProfileKeyCredential,
                                                                                      groupV2Params: groupV2Params))
@@ -1841,13 +1955,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         // * local user's request status.
         return firstly {
             self.fetchGroupInviteLinkPreview(inviteLinkPassword: nil,
-                                             groupSecretParamsData: groupV2Params.groupSecretParamsData)
-        }.recover { (error: Error) -> Promise<GroupInviteLinkPreview> in
-            if case GroupsV2Error.expiredGroupInviteLink = error {
-                throw GroupsV2Error.localUserIsNotARequestingMember
-            } else {
-                throw error
-            }
+                                             groupSecretParamsData: groupV2Params.groupSecretParamsData,
+                                             allowCached: false)
         }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<OWSHTTPResponse> in
             let requestBuilder: RequestBuilder = { (authCredential) in
                 return firstly { () -> Promise<GroupsProtoGroupChangeActions> in
@@ -1894,6 +2003,79 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             actionsBuilder.addDeleteRequestingMembers(try actionBuilder.build())
 
             return try actionsBuilder.build()
+        }
+    }
+
+    public func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2) {
+        guard groupModel.isPlaceholderModel else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
+
+        firstly { () -> Promise<GroupInviteLinkPreview> in
+            let groupV2Params = try groupModel.groupV2Params()
+            return self.fetchGroupInviteLinkPreview(inviteLinkPassword: nil,
+                                                    groupSecretParamsData: groupV2Params.groupSecretParamsData,
+                                                    allowCached: false)
+        }.catch { (error: Error) -> Void in
+            if case GroupsV2Error.localUserIsNotARequestingMember = error {
+                // Expected if our request has been cancelled.
+                Logger.verbose("Error: \(error)")
+                return
+            }
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    private func updatePlaceholderGroupModelUsingInviteLinkPreview(groupSecretParamsData: Data,
+                                                                   isLocalUserRequestingMember: Bool) {
+
+        firstly(on: .global()) {
+            let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
+            try self.databaseStorage.write { transaction in
+                guard let localUuid = self.tsAccountManager.localUuid else {
+                    throw OWSAssertionError("Missing localUuid.")
+                }
+                guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                    // Thread not yet in database.
+                    return
+                }
+                guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid groupModel.")
+                }
+                guard oldGroupModel.isPlaceholderModel else {
+                    // Not a placeholder model; no need to update.
+                    return
+                }
+                guard isLocalUserRequestingMember != groupThread.isLocalUserRequestingMember else {
+                    // Nothing to change.
+                    return
+                }
+                let oldGroupMembership = oldGroupModel.groupMembership
+                var builder = oldGroupModel.asBuilder
+
+                var membershipBuilder = oldGroupMembership.asBuilder
+                membershipBuilder.remove(localUuid)
+                if isLocalUserRequestingMember {
+                    membershipBuilder.addRequestingMember(localUuid)
+                }
+                builder.groupMembership = membershipBuilder.build()
+                let newGroupModel = try builder.build(transaction: transaction)
+                groupThread.update(with: newGroupModel, transaction: transaction)
+
+                let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
+                let disappearingMessageToken = dmConfiguration.asToken
+                // groupUpdateSourceAddress is nil; we don't know who did the update.
+                GroupManager.insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                                          oldGroupModel: oldGroupModel,
+                                                          newGroupModel: newGroupModel,
+                                                          oldDisappearingMessageToken: disappearingMessageToken,
+                                                          newDisappearingMessageToken: disappearingMessageToken,
+                                                          groupUpdateSourceAddress: nil,
+                                                          transaction: transaction)
+            }
+        }.catch { (error: Error) in
+            owsFailDebug("Error: \(error)")
         }
     }
 

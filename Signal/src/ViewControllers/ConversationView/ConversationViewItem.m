@@ -136,6 +136,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, nullable) TSAttachment *linkPreviewAttachment;
+@property (nonatomic, nullable) GroupInviteLinkViewModel *groupInviteLinkViewModel;
 @property (nonatomic, nullable) NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems;
 @property (nonatomic, nullable) NSString *systemMessageText;
 @property (nonatomic, nullable) NSArray<GroupUpdateCopyItem *> *systemMessageGroupUpdates;
@@ -203,9 +204,19 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     return SDSDatabaseStorage.shared;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 - (OWSContactsManager *)contactsManager
 {
     return Environment.shared.contactsManager;
+}
+
+- (id<GroupsV2>)groupsV2
+{
+    return SSKEnvironment.shared.groupsV2;
 }
 
 #pragma mark -
@@ -235,6 +246,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     self.authorConversationColorName = nil;
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
+    self.groupInviteLinkViewModel = nil;
     self.senderName = nil;
     self.senderUsername = nil;
     self.senderProfileName = nil;
@@ -529,6 +541,17 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     _isTruncatedTextVisible = isTruncatedTextVisible;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setGroupInviteLinkViewModel:(nullable GroupInviteLinkViewModel *)groupInviteLinkViewModel
+{
+    if ([NSObject isNullableObject:_groupInviteLinkViewModel equalTo:groupInviteLinkViewModel]) {
+        return;
+    }
+
+    _groupInviteLinkViewModel = groupInviteLinkViewModel;
 
     [self clearCachedLayoutState];
 }
@@ -1092,23 +1115,35 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     if (self.hasBodyText && message.linkPreview) {
-        self.linkPreview = message.linkPreview;
-        if (message.linkPreview.imageAttachmentId.length > 0) {
-            TSAttachment *_Nullable linkPreviewAttachment =
-                [TSAttachment anyFetchWithUniqueId:message.linkPreview.imageAttachmentId transaction:transaction];
-            if (!linkPreviewAttachment) {
-                OWSFailDebug(@"Could not load link preview image attachment.");
-            } else if (!linkPreviewAttachment.isImage) {
-                OWSFailDebug(@"Link preview attachment isn't an image.");
-            } else if ([linkPreviewAttachment isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)linkPreviewAttachment;
-                if (!attachmentStream.isValidImage) {
-                    OWSFailDebug(@"Link preview image attachment isn't valid.");
+        NSURL *_Nullable url = [NSURL URLWithString:message.linkPreview.urlString];
+        GroupInviteLinkInfo *_Nullable groupInviteLinkInfo = [GroupManager parseGroupInviteLink:url];
+        if (groupInviteLinkInfo != nil) {
+            self.groupInviteLinkViewModel = [self configureGroupInviteLink:url
+                                                                   message:message
+                                                       groupInviteLinkInfo:groupInviteLinkInfo];
+            if (!self.groupInviteLinkViewModel.isExpired) {
+                self.linkPreview = message.linkPreview;
+            }
+        } else {
+            self.linkPreview = message.linkPreview;
+
+            if (message.linkPreview.imageAttachmentId.length > 0) {
+                TSAttachment *_Nullable linkPreviewAttachment =
+                    [TSAttachment anyFetchWithUniqueId:message.linkPreview.imageAttachmentId transaction:transaction];
+                if (!linkPreviewAttachment) {
+                    OWSFailDebug(@"Could not load link preview image attachment.");
+                } else if (!linkPreviewAttachment.isImage) {
+                    OWSFailDebug(@"Link preview attachment isn't an image.");
+                } else if ([linkPreviewAttachment isKindOfClass:[TSAttachmentStream class]]) {
+                    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)linkPreviewAttachment;
+                    if (!attachmentStream.isValidImage) {
+                        OWSFailDebug(@"Link preview image attachment isn't valid.");
+                    } else {
+                        self.linkPreviewAttachment = linkPreviewAttachment;
+                    }
                 } else {
                     self.linkPreviewAttachment = linkPreviewAttachment;
                 }
-            } else {
-                self.linkPreviewAttachment = linkPreviewAttachment;
             }
         }
     }

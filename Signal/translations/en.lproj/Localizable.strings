@@ -1648,6 +1648,12 @@
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
 
+/* Indicator that a group invite link has expired. */
+"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link is no longer valid";
+
+/* Button to join a group from a group link. */
+"GROUP_LINK_JOIN_GROUP_BUTTON" = "Join Group";
+
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
 
@@ -1749,6 +1755,9 @@
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+
+/* Message indicating that the local user cancelled their request to join the group. */
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
@@ -1890,9 +1899,6 @@
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
-
-/* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";

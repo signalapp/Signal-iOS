@@ -35,6 +35,7 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value);
 @property (nonatomic, readonly) BOOL isAnimated;
 
 @property (nonatomic, readonly, nullable) NSString *mimeType;
+@property (nonatomic, readonly, nullable) NSString *fileExtension;
 
 @end
 

@@ -617,7 +617,8 @@ public class OWSLinkPreviewManager: NSObject {
             let groupV2ContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
             return firstly {
                 self.groupsV2.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                                                          groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
+                                                          groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData,
+                                                          allowCached: false)
             }.then(on: Self.workQueue) { (groupInviteLinkPreview: GroupInviteLinkPreview) in
                 return firstly { () -> Promise<Data?> in
                     guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {

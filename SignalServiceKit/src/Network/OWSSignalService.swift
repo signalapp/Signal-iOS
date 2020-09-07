@@ -156,12 +156,6 @@ public extension OWSSignalService {
         buildSessionManager(for: .mainSignalService)
     }
 
-    // TODO: Remove.
-    @available(*, unavailable, message: "use urlSessionForStorageService() instead.")
-    func sessionManagerForStorageService() -> AFHTTPSessionManager {
-        buildSessionManager(for: .storageService)
-    }
-
     // TODO: Remove in favor of OWSURLSession.
     @objc(sessionManagerForCdnNumber:)
     func sessionManagerForCdn(cdnNumber: UInt32) -> AFHTTPSessionManager {
