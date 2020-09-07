@@ -1360,21 +1360,10 @@ extension GroupUpdateCopy {
         if isLocalUser {
             switch updater {
             case .localUser:
-                let copy = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_LOCAL_USER",
+                let copy = NSLocalizedString("GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER",
                                                comment: "Message indicating that the local user cancelled their request to join the group.")
                 addItem(.userMembershipState, address: address, copy: copy)
-            case .otherUser(let updaterName, let updaterAddress):
-                if address == updaterAddress {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT",
-                                                   comment: "Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}.")
-                    addItem(.userMembershipState, address: address, format: format, updaterName)
-                } else {
-                    addItem(.userMembershipState,
-                            address: address,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
-                                                    comment: "Message indicating that the local user's request to join the group was rejected."))
-                }
-            case .unknown:
+            case .otherUser, .unknown:
                 addItem(.userMembershipState,
                         address: address,
                         copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
@@ -1387,10 +1376,16 @@ extension GroupUpdateCopy {
                 let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}.")
                 addItem(.userMembershipState, address: address, format: format, requesterName)
-            case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT",
-                                               comment: "Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
-                addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
+            case .otherUser(let updaterName, let updaterAddress):
+                if address == updaterAddress {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT",
+                                                   comment: "Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}.")
+                    addItem(.userMembershipState, address: address, format: format, updaterName)
+                } else {
+                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT",
+                                                   comment: "Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
+                    addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
+                }
             case .unknown:
                 let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT",
                                                comment: "Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}.")
