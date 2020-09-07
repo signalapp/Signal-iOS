@@ -249,6 +249,7 @@ public class GroupLinkViewController: OWSTableViewController {
             let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
             let sendMessageFlow = SendMessageFlow(flowType: .`default`,
                                                   unapprovedContent: unapprovedContent,
+                                                  useConversationComposeForSingleRecipient: true,
                                                   navigationController: navigationController,
                                                   delegate: self)
             self.sendMessageFlow = sendMessageFlow
