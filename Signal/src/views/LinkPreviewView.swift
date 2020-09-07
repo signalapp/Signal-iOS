@@ -128,7 +128,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
     public let linkType: LinkPreviewLinkType
-    private let groupInviteLinkViewModel: GroupInviteLinkViewModelSwift
+    private let groupInviteLinkViewModel: GroupInviteLinkViewModel
 
     private var groupInviteLinkPreview: GroupInviteLinkPreview? {
         groupInviteLinkViewModel.groupInviteLinkPreview
@@ -146,7 +146,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
                   conversationStyle: ConversationStyle) {
         self.linkPreview = linkPreview
         self.linkType = linkType
-        self.groupInviteLinkViewModel = groupInviteLinkViewModel as! GroupInviteLinkViewModelSwift
+        self.groupInviteLinkViewModel = groupInviteLinkViewModel
         _conversationStyle = conversationStyle
     }
 
@@ -466,12 +466,19 @@ public protocol LinkPreviewViewDraftDelegate {
 public class LinkPreviewImageView: UIImageView {
     private let maskLayer = CAShapeLayer()
 
-    private let hasAsymmetricalRounding: Bool
+    @objc
+    public enum Rounding: UInt {
+        case none
+        case asymmetrical
+        case circular
+    }
+
+    private let rounding: Rounding
     fileprivate var isHero = false
 
     @objc
-    public init(hasAsymmetricalRounding: Bool) {
-        self.hasAsymmetricalRounding = hasAsymmetricalRounding
+    public init(rounding: Rounding) {
+        self.rounding = rounding
 
         super.init(frame: .zero)
 
@@ -479,7 +486,7 @@ public class LinkPreviewImageView: UIImageView {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        self.hasAsymmetricalRounding = false
+        self.rounding = .none
 
         super.init(coder: aDecoder)
     }
@@ -505,6 +512,11 @@ public class LinkPreviewImageView: UIImageView {
     private func updateMaskLayer() {
         let layerBounds = self.bounds
 
+        guard rounding != .circular else {
+            maskLayer.path = UIBezierPath(ovalIn: layerBounds).cgPath
+            return
+        }
+
         // One of the corners has assymetrical rounding to match the input toolbar border.
         // This is somewhat inconvenient.
         let upperLeft = CGPoint(x: 0, y: 0)
@@ -517,7 +529,7 @@ public class LinkPreviewImageView: UIImageView {
 
         let upperLeftRounding: CGFloat
         let upperRightRounding: CGFloat
-        if hasAsymmetricalRounding {
+        if rounding == .asymmetrical {
             upperLeftRounding = CurrentAppContext().isRTL ? smallRounding : bigRounding
             upperRightRounding = CurrentAppContext().isRTL ? bigRounding : smallRounding
         } else {
@@ -654,11 +666,13 @@ public class LinkPreviewView: UIStackView {
             createDraftLoadingContents(state: state)
             return
         }
-        guard isDraft else {
+        if isDraft {
+            createDraftContents(state: state)
+        } else if state.isGroupInviteLink {
+            createGroupLinkContents()
+        } else {
             createSentContents()
-            return
         }
-        createDraftContents(state: state)
     }
 
     private func createSentContents() {
@@ -679,7 +693,7 @@ public class LinkPreviewView: UIStackView {
                                        conversationStyle: conversationStyle,
                                        imageView: imageView)
             } else if state.previewDescription()?.isEmpty == false,
-                      state.title()?.isEmpty == false {
+                state.title()?.isEmpty == false {
                 createNonHeroWithDescriptionSentContents(state: state, imageView: imageView)
             } else {
                 createNonHeroSentContents(state: state, imageView: imageView)
@@ -687,6 +701,53 @@ public class LinkPreviewView: UIStackView {
         } else {
             createNonHeroSentContents(state: state, imageView: nil)
         }
+    }
+
+    private func createGroupLinkContents() {
+        guard let state = state else {
+            owsFailDebug("Invalid state")
+            return
+        }
+
+        self.addBackgroundView(withBackgroundColor: Theme.secondaryBackgroundColor)
+
+        self.layoutMargins = .zero
+        self.axis = .horizontal
+        self.isLayoutMarginsRelativeArrangement = true
+        self.layoutMargins = UIEdgeInsets(top: sentNonHeroVMargin,
+                                          left: sentNonHeroHMargin,
+                                          bottom: sentNonHeroVMargin,
+                                          right: sentNonHeroHMargin)
+        self.spacing = sentNonHeroHSpacing
+
+        if let imageView = createImageView(state: state, rounding: .circular) {
+            imageView.autoSetDimensions(to: CGSize(square: sentNonHeroImageSize))
+            imageView.contentMode = .scaleAspectFill
+            imageView.setContentHuggingHigh()
+            imageView.setCompressionResistanceHigh()
+            imageView.clipsToBounds = true
+            addArrangedSubview(imageView)
+        }
+
+        let textStack = createGroupLinkTextStack(state: state)
+        addArrangedSubview(textStack)
+
+        sentBodyView = self
+    }
+
+    private func createGroupLinkTextStack(state: LinkPreviewState) -> UIStackView {
+        let textStack = UIStackView()
+        textStack.axis = .vertical
+        textStack.spacing = sentVSpacing
+
+        if let titleLabel = sentTitleLabel(state: state) {
+            textStack.addArrangedSubview(titleLabel)
+        }
+        if let descriptionLabel = sentDescriptionLabel(state: state) {
+            textStack.addArrangedSubview(descriptionLabel)
+        }
+
+        return textStack
     }
 
     private func sentHeroImageSize(state: LinkPreviewState,
@@ -837,7 +898,7 @@ public class LinkPreviewView: UIStackView {
     private let sentHeroVMargin: CGFloat = 12
 
     private func sentIsHero(state: LinkPreviewState) -> Bool {
-        if isSticker(state: state) {
+        if isSticker(state: state) || state.isGroupInviteLink {
             return false
         }
 
@@ -1022,7 +1083,8 @@ public class LinkPreviewView: UIStackView {
         strokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
     }
 
-    private func createImageView(state: LinkPreviewState) -> UIImageView? {
+    private func createImageView(state: LinkPreviewState,
+                                 rounding roundingParam: LinkPreviewImageView.Rounding? = nil) -> UIImageView? {
         guard state.isLoaded() else {
             owsFailDebug("State not loaded.")
             return nil
@@ -1035,7 +1097,13 @@ public class LinkPreviewView: UIStackView {
             owsFailDebug("Could not load image.")
             return nil
         }
-        let imageView = LinkPreviewImageView(hasAsymmetricalRounding: self.hasAsymmetricalRounding)
+        let rounding: LinkPreviewImageView.Rounding = {
+            if let roundingParam = roundingParam {
+                return roundingParam
+            }
+            return self.hasAsymmetricalRounding ? .asymmetrical : .none
+        }()
+        let imageView = LinkPreviewImageView(rounding: rounding)
         imageView.image = image
         imageView.isHero = sentIsHero(state: state)
         return imageView
@@ -1054,7 +1122,8 @@ public class LinkPreviewView: UIStackView {
             owsFailDebug("Could not load image.")
             return nil
         }
-        let imageView = LinkPreviewImageView(hasAsymmetricalRounding: self.hasAsymmetricalRounding)
+        let rounding: LinkPreviewImageView.Rounding = hasAsymmetricalRounding ? .asymmetrical : .none
+        let imageView = LinkPreviewImageView(rounding: rounding)
         imageView.image = image
         return imageView
     }
@@ -1111,8 +1180,8 @@ public class LinkPreviewView: UIStackView {
     public func measure(withState state: LinkPreviewState) -> CGSize {
         if let sentState = state as? LinkPreviewSent {
             return self.measure(withSentState: sentState)
-        } else if let sentState = state as? LinkPreviewGroupLink {
-            return self.measure(withSentState: sentState)
+        } else if let groupLinkState = state as? LinkPreviewGroupLink {
+            return self.measure(withGroupLinkState: groupLinkState)
         } else if let loadingState = state as? LinkPreviewLoading {
             return self.measure(withLoadingState: loadingState)
         } else {
@@ -1125,6 +1194,35 @@ public class LinkPreviewView: UIStackView {
     public func measure(withLoadingState state: LinkPreviewLoading) -> CGSize {
         let size = draftHeight + draftMarginTop
         return CGSize(width: size, height: size)
+    }
+
+    @objc
+    public func measure(withGroupLinkState state: LinkPreviewGroupLink) -> CGSize {
+
+        guard let conversationStyle = state.conversationStyle else {
+            owsFailDebug("Missing conversationStyle.")
+            return .zero
+        }
+
+        let hasImage = state.imageState() != .none
+
+        let maxMessageWidth = conversationStyle.maxMessageWidth
+
+        var maxTextWidth = maxMessageWidth - 2 * sentNonHeroHMargin
+        if hasImage {
+            maxTextWidth -= (sentNonHeroImageSize + sentNonHeroHSpacing)
+        }
+        let textStackSize = sentTextStackSize(state: state, maxWidth: maxTextWidth, ignoreDomain: true)
+
+        var result = textStackSize
+
+        result.width += sentNonHeroImageSize + sentNonHeroHSpacing
+        result.height = max(result.height, sentNonHeroImageSize)
+
+        result.width += 2 * sentNonHeroHMargin
+        result.height += 2 * sentNonHeroVMargin
+
+        return CGSizeCeil(result)
     }
 
     @objc
@@ -1225,23 +1323,31 @@ public class LinkPreviewView: UIStackView {
         CGSizeCeil(label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)))
     }
 
-    private func sentTextStackSize(state: LinkPreviewState, maxWidth: CGFloat) -> CGSize {
-        let domainLabel = sentDomainLabel(state: state)
-        let domainLabelSize = sentLabelSize(label: domainLabel, maxWidth: maxWidth)
-        var result = domainLabelSize
+    private func sentTextStackSize(state: LinkPreviewState, maxWidth: CGFloat, ignoreDomain: Bool = false) -> CGSize {
 
+        var labelSizes = [CGSize]()
+
+        if !ignoreDomain {
+            let domainLabel = sentDomainLabel(state: state)
+            let domainLabelSize = sentLabelSize(label: domainLabel, maxWidth: maxWidth)
+            labelSizes.append(domainLabelSize)
+        }
         if let titleLabel = sentTitleLabel(state: state) {
             let titleLabelSize = sentLabelSize(label: titleLabel, maxWidth: maxWidth)
-            result.width = max(result.width, titleLabelSize.width)
-            result.height += titleLabelSize.height + sentVSpacing
+            labelSizes.append(titleLabelSize)
         }
         if let descriptionLabel = sentDescriptionLabel(state: state) {
             let descriptionLabelSize = sentLabelSize(label: descriptionLabel, maxWidth: maxWidth)
-            result.width = max(result.width, descriptionLabelSize.width)
-            result.height += descriptionLabelSize.height + sentVSpacing
+            labelSizes.append(descriptionLabelSize)
         }
 
-        return result
+        return measureTextStack(labelSizes: labelSizes)
+    }
+
+    private func measureTextStack(labelSizes: [CGSize]) -> CGSize {
+        let width = labelSizes.map { $0.width }.reduce(0, +) + CGFloat(labelSizes.count - 1) * sentVSpacing
+        let height = labelSizes.map { $0.height }.reduce(0, max)
+        return CGSize(width: width, height: height)
     }
 
     @objc

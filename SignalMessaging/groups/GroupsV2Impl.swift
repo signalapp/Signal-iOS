@@ -1956,7 +1956,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     throw OWSAssertionError("Missing localUuid.")
                 }
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                    throw OWSAssertionError("Missing groupThread.")
+                    // Thread not yet in database.
+                    return
                 }
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
