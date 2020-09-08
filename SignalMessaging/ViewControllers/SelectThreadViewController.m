@@ -376,9 +376,9 @@ NS_ASSUME_NONNULL_BEGIN
         // Sort pinned threads to the top.
         if (lhsIndex != NSNotFound && rhsIndex != NSNotFound) {
             if (lhsIndex > rhsIndex) {
-                return NSOrderedAscending;
-            } else if (lhsIndex < rhsIndex) {
                 return NSOrderedDescending;
+            } else if (lhsIndex < rhsIndex) {
+                return NSOrderedAscending;
             } else {
                 return NSOrderedSame;
             }
