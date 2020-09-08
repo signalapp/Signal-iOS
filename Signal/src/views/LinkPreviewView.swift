@@ -1345,8 +1345,8 @@ public class LinkPreviewView: UIStackView {
     }
 
     private func measureTextStack(labelSizes: [CGSize]) -> CGSize {
-        let width = labelSizes.map { $0.width }.reduce(0, +) + CGFloat(labelSizes.count - 1) * sentVSpacing
-        let height = labelSizes.map { $0.height }.reduce(0, max)
+        let width = labelSizes.map { $0.width }.reduce(0, max)
+        let height = labelSizes.map { $0.height }.reduce(0, +) + CGFloat(labelSizes.count - 1) * sentVSpacing
         return CGSize(width: width, height: height)
     }
 

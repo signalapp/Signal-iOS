@@ -90,6 +90,7 @@ public extension OWSFileSystem {
 // MARK: -
 
 public extension OWSFileSystem {
+    @objc
     class func deleteFile(_ filePath: String, ignoreIfMissing: Bool = false) -> Bool {
         do {
             try FileManager.default.removeItem(atPath: filePath)
