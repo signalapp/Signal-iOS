@@ -169,3 +169,16 @@ public class Promises {
         return promise
     }
 }
+
+public extension CatchMixin {
+    /// Catches a cancellation error and throws the replacement in its place
+    /// - Parameter replacementError: The error to be thrown if a cancellation is caught
+    ///
+    /// By default, PromiseKit will suppress any cancellations. They're not a success and not a failure
+    /// This function is a convenience wrapper around adding a recovery block that will rethrow any cancellations as the provided error
+    func catchCancellation(andThrow replacementError: Error) -> PromiseKit.Promise<Self.T> {
+        recover(on: conf.Q.map, policy: .allErrors) { (originalError) -> Promise<Self.T> in
+            throw originalError.isCancelled ? replacementError : originalError
+        }
+    }
+}

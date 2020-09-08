@@ -427,8 +427,9 @@ public class OWSLinkPreviewManager: NSObject {
 
     func fetchStringResource(from url: URL) -> Promise<(URL, String)> {
         firstly(on: Self.workQueue) { () -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
-            let sessionManager = self.createSessionManager()
-            return sessionManager.getPromise(url.absoluteString)
+            self.createSessionManager()
+                .getPromise(url.absoluteString)
+                .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
 
         }.map(on: Self.workQueue) { (task: URLSessionDataTask, responseObject: Any?) -> (URL, String) in
             guard let response = task.response as? HTTPURLResponse,
@@ -451,8 +452,10 @@ public class OWSLinkPreviewManager: NSObject {
 
     private func fetchImageResource(from url: URL) -> Promise<Data> {
         firstly(on: Self.workQueue) { () -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
-            let sessionManager = self.createSessionManager()
-            return sessionManager.getPromise(url.absoluteString)
+            self.createSessionManager()
+                .getPromise(url.absoluteString)
+                .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
+
         }.map(on: Self.workQueue) { (task: URLSessionDataTask, responseObject: Any?) -> Data in
             try autoreleasepool {
                 guard let response = task.response as? HTTPURLResponse,
