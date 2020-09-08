@@ -420,11 +420,6 @@ public class GroupsV2Protos {
     public class func parseGroupInviteLinkPreview(_ protoData: Data,
                                                   groupV2Params: GroupV2Params) throws -> GroupInviteLinkPreview {
         let joinInfoProto = try GroupsProtoGroupJoinInfo.init(serializedData: protoData)
-        // TODO: What is publicKey for?
-        guard let publicKey = joinInfoProto.publicKey,
-            !publicKey.isEmpty else {
-                throw OWSAssertionError("Missing or invalid publicKey.")
-        }
         guard let titleData = joinInfoProto.title,
             !titleData.isEmpty else {
                 throw OWSAssertionError("Missing or invalid titleData.")
