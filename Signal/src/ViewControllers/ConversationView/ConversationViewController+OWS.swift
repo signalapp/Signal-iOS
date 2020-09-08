@@ -568,7 +568,8 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
 
     func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
                                       shouldShowReactionPickerForInteraction: TSInteraction) -> Bool {
-        guard !self.threadViewModel.hasPendingMessageRequest else { return false }
+        guard !threadViewModel.hasPendingMessageRequest else { return false }
+        guard threadViewModel.isLocalUserFullMemberOfThread else { return false }
 
         switch messageActionsViewController.focusedInteraction {
         case let outgoingMessage as TSOutgoingMessage:

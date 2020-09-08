@@ -37,6 +37,10 @@ class DebugUIGroupsV2: DebugUIPage {
         return SSKEnvironment.shared.messageSender
     }
 
+    private var groupV2Updates: GroupV2UpdatesSwift {
+        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+    }
+
     // MARK: Overrides 
 
     override func name() -> String {
@@ -78,6 +82,9 @@ class DebugUIGroupsV2: DebugUIPage {
             groupThread.isGroupV2Thread {
             sectionItems.append(OWSTableItem(title: "Send partially-invalid group messages.") { [weak self] in
                 self?.sendPartiallyInvalidGroupMessages(groupThread: groupThread)
+            })
+            sectionItems.append(OWSTableItem(title: "Update v2 group immediately.") { [weak self] in
+                self?.updateV2GroupImmediately(groupThread: groupThread)
             })
         }
 
@@ -939,6 +946,21 @@ class DebugUIGroupsV2: DebugUIPage {
     private func sendGroupUpdate(groupThread: TSGroupThread) {
         firstly {
             GroupManager.sendGroupUpdateMessage(thread: groupThread)
+        }.done { _ in
+            Logger.info("Success.")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    private func updateV2GroupImmediately(groupThread: TSGroupThread) {
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid groupModel.")
+            return
+        }
+        firstly {
+            self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupModelV2.groupId,
+                                                                                  groupSecretParamsData: groupModelV2.secretParamsData)
         }.done { _ in
             Logger.info("Success.")
         }.catch { error in

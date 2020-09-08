@@ -541,6 +541,10 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                     // _Do_ wait before retrying.
                     completion([], true, transaction)
                 } else {
+                    // This should only occur in one case:
+                    // when receiving a group updating indicating that
+                    // our request to join a group via invite link
+                    // was rejected.
                     owsFailDebug("Discarding unprocess-able message: \(error)")
 
                     // Do not retry
@@ -671,7 +675,11 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                     Logger.warn("Error: \(error)")
                     return resolver.fulfill(.failureShouldRetry)
                 } else {
-                    owsFailDebug("Error: \(error)")
+                    if case GroupsV2Error.cantApplyChangesToPlaceholder = error {
+                        Logger.warn("Error: \(error)")
+                    } else {
+                        owsFailDebug("Error: \(error)")
+                    }
                     return resolver.fulfill(.failureShouldFailoverToService)
                 }
             }
@@ -702,7 +710,11 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                 return Guarantee.value(UpdateOutcome.failureShouldRetry)
             }
 
-            owsFailDebug("error: \(type(of: error)) \(error)")
+            // This should only occur in one case:
+            // when receiving a group updating indicating that
+            // our request to join a group via invite link
+            // was rejected.
+            owsFailDebug("Error: \(type(of: error)) \(error)")
             return Guarantee.value(UpdateOutcome.failureShouldDiscard)
         }
     }

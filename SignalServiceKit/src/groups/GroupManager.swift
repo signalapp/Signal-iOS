@@ -1669,7 +1669,7 @@ public class GroupManager: NSObject {
         // as well.  Normal group sends only include "full members".
         assert(messageBuilder.additionalRecipients == nil)
         let groupMembership = groupThread.groupModel.groupMembership
-        let additionalRecipients = groupMembership.invitedOrRequestMembers.filter { address in
+        let additionalRecipients = groupMembership.invitedMembers.filter { address in
             return doesUserSupportGroupsV2(address: address,
                                            transaction: transaction)
         }
