@@ -944,8 +944,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             // Already removed.
             continue;
         }
-        [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-        if (error) {
+        if (![OWSFileSystem deleteFile:filePath ignoreIfMissing:YES]) {
             OWSLogDebug(@"Could not remove orphan file at: %@", filePath);
             OWSFailDebug(@"Could not remove orphan file");
         }
