@@ -495,7 +495,7 @@ private extension ServiceRemoteConfigManager {
         let enforcementDate: Date?
 
         enum CodingKeys: String, CodingKey {
-            case string = "min-version"
+            case string = "minVersion"
             case enforcementDate = "iso8601"
         }
     }
@@ -521,6 +521,9 @@ private extension ServiceRemoteConfigManager {
                 if let remoteExpirationDate = remoteExpirationDate(minimumVersions: minimumVersions) {
                     Logger.info("Setting client expiration date: \(remoteExpirationDate)")
                     AppExpiry.shared.setExpirationDateForCurrentVersion(remoteExpirationDate)
+                } else {
+                    Logger.info("Clearing client expiration date")
+                    AppExpiry.shared.setExpirationDateForCurrentVersion(nil)
                 }
             }
         }

@@ -120,13 +120,21 @@ public class AppExpiry: NSObject {
     }
 
     @objc
-    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date) {
+    public func setExpirationDateForCurrentVersion(_ newExpirationDate: Date?) {
+        guard !isExpired else {
+            return owsFailDebug("Ignoring expiration date change for expired build.")
+        }
+
         Logger.warn("\(newExpirationDate)")
 
-        // Ignore any expiration date that is later than the current date.
-        guard newExpirationDate < expirationDate else { return }
+        if let newExpirationDate = newExpirationDate {
+            // Ignore any expiration date that is later than when the app expires by default.
+            guard newExpirationDate < defaultExpirationDate else { return }
 
-        updateExpirationState(ExpirationState(mode: .atDate, expirationDate: newExpirationDate))
+            updateExpirationState(ExpirationState(mode: .atDate, expirationDate: newExpirationDate))
+        } else {
+            updateExpirationState(ExpirationState(mode: .default))
+        }
     }
 
     @objc
@@ -137,12 +145,14 @@ public class AppExpiry: NSObject {
         SSKEnvironment.shared.appExpiry
     }
 
+    // By default, we expire 90 days after the app was compiled.
+    private let defaultExpirationDate = CurrentAppContext().buildTime.addingTimeInterval(90 * kDayInterval)
+
     public var expirationDate: Date {
         let state = expirationState.get()
         switch state.mode {
         case .default:
-            // By default, we expire 90 days after the app was compiled.
-            return CurrentAppContext().buildTime.addingTimeInterval(90 * kDayInterval)
+            return defaultExpirationDate
         case .atDate:
             guard let expirationDate = state.expirationDate else {
                 owsFailDebug("Missing expiration date, expiring immediately")
@@ -174,6 +184,6 @@ public class AppExpiry: NSObject {
 
     @objc
     public var isExpired: Bool {
-        return daysUntilBuildExpiry <= 0
+        return expirationDate < Date()
     }
 }
