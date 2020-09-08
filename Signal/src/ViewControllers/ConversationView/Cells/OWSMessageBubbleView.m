@@ -429,6 +429,8 @@ typedef struct {
         tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
     }
 
+    [self insertJoinGroupButtonIfNecessary:textViews];
+
     BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && bodyMediaView && !self.hasBodyText);
     if (self.viewItem.shouldHideFooter && !self.hasTapForMore) {
         // Do nothing.
@@ -572,6 +574,56 @@ typedef struct {
     shadowView.layer.shadowRadius = 1.f;
 
     [CATransaction commit];
+}
+
+- (void)insertJoinGroupButtonIfNecessary:(NSMutableArray<UIView *> *)textViews
+{
+    if (self.viewItem.groupInviteLinkViewModel == nil) {
+        return;
+    }
+
+    UIView *hairline = [UIView new];
+    hairline.backgroundColor = (self.isIncoming ? ConversationStyle.bubbleSecondaryTextColorIncoming
+                                                : ConversationStyle.bubbleSecondaryTextColorOutgoing);
+    [hairline autoSetDimension:ALDimensionHeight toSize:self.joinGroupHairlineHeight];
+    [textViews addObject:hairline];
+
+    UIColor *buttonTextColor
+        = (self.isIncoming ? UIColor.ows_accentBlueColor : ConversationStyle.bubbleTextColorOutgoing);
+    OWSFlatButton *joinGroupButton = [OWSFlatButton
+        buttonWithTitle:NSLocalizedString(@"GROUP_LINK_JOIN_GROUP_BUTTON", @"Button to join a group from a group link.")
+                   font:self.joinGroupButtonFont
+             titleColor:buttonTextColor
+        backgroundColor:UIColor.clearColor
+                 target:self
+               selector:@selector(joinGroupButtonPressed)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, joinGroupButton);
+    [joinGroupButton autoSetDimension:ALDimensionHeight toSize:self.joinGroupButtonHeight];
+    [textViews addObject:joinGroupButton];
+}
+
+- (UIFont *)joinGroupButtonFont
+{
+    return [UIFont ows_dynamicTypeBodyClampedFont];
+}
+
+- (CGFloat)joinGroupButtonHeight
+{
+    return [OWSFlatButton heightForFont:self.joinGroupButtonFont];
+}
+
+- (CGFloat)joinGroupHairlineHeight
+{
+    return 1.f;
+}
+
+- (void)joinGroupButtonPressed
+{
+    if (self.viewItem.groupInviteLinkViewModel == nil) {
+        OWSFailDebug(@"Missing groupInviteLinkViewModel.");
+    } else {
+        [self.delegate didTapGroupInviteLink:self.viewItem.groupInviteLinkViewModel.url];
+    }
 }
 
 - (BOOL)contactShareHasSpacerTop
@@ -756,14 +808,27 @@ typedef struct {
     return 6.f;
 }
 
-- (nullable LinkPreviewSent *)linkPreviewState
+- (nullable id<LinkPreviewState>)linkPreviewState
 {
     if (!self.viewItem.linkPreview) {
         return nil;
     }
-    return [[LinkPreviewSent alloc] initWithLinkPreview:self.viewItem.linkPreview
-                                        imageAttachment:self.viewItem.linkPreviewAttachment
-                                      conversationStyle:self.conversationStyle];
+    if (self.viewItem.groupInviteLinkViewModel != nil) {
+        LinkPreviewLinkType linkType = (self.isIncoming ? LinkPreviewLinkTypeIncomingMessageGroupInviteLink
+                                                        : LinkPreviewLinkTypeOutgoingMessageGroupInviteLink);
+        if (self.viewItem.groupInviteLinkViewModel.isLoaded) {
+            return [[LinkPreviewGroupLink alloc] initWithLinkType:linkType
+                                                      linkPreview:self.viewItem.linkPreview
+                                         groupInviteLinkViewModel:self.viewItem.groupInviteLinkViewModel
+                                                conversationStyle:self.conversationStyle];
+        } else {
+            return [[LinkPreviewLoading alloc] initWithLinkType:linkType];
+        }
+    } else {
+        return [[LinkPreviewSent alloc] initWithLinkPreview:self.viewItem.linkPreview
+                                            imageAttachment:self.viewItem.linkPreviewAttachment
+                                          conversationStyle:self.conversationStyle];
+    }
 }
 
 #pragma mark - Load / Unload
@@ -1354,6 +1419,11 @@ typedef struct {
             return [NSValue valueWithCGSize:buttonsSize];
         }
     }
+    if (self.viewItem.groupInviteLinkViewModel != nil) {
+        CGSize buttonsSize = CGSizeCeil(CGSizeMake(
+            self.conversationStyle.maxMessageWidth, self.joinGroupButtonHeight + self.joinGroupHairlineHeight));
+        return [NSValue valueWithCGSize:buttonsSize];
+    }
     return nil;
 }
 
@@ -1462,7 +1532,7 @@ typedef struct {
     }
 
     if (self.viewItem.linkPreview) {
-        CGSize linkPreviewSize = [self.linkPreviewView measureWithSentState:self.linkPreviewState];
+        CGSize linkPreviewSize = [self.linkPreviewView measureWithState:self.linkPreviewState];
         linkPreviewSize.width = MIN(linkPreviewSize.width, self.conversationStyle.maxMessageWidth);
         cellSize.width = MAX(cellSize.width, linkPreviewSize.width);
         cellSize.height += linkPreviewSize.height;

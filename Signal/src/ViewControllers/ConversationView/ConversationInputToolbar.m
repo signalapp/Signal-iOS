@@ -1352,7 +1352,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.inputLinkPreview = inputLinkPreview;
     self.inputLinkPreview.previewUrl = previewUrl;
 
-    [self ensureLinkPreviewViewWithState:[LinkPreviewLoading new]];
+    [self ensureLinkPreviewViewWithState:[[LinkPreviewLoading alloc] initWithLinkType:LinkPreviewLinkTypePreview]];
 
     __weak ConversationInputToolbar *weakSelf = self;
     [self.linkPreviewManager fetchLinkPreviewForUrl:previewUrl]

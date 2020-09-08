@@ -41,6 +41,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
+@class GroupInviteLinkPreview;
+@class GroupInviteLinkViewModel;
 @class GroupUpdateCopyItem;
 @class InteractionReactionState;
 @class OWSLinkPreview;
@@ -150,6 +152,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) TSAttachment *linkPreviewAttachment;
+@property (nonatomic, readonly, nullable) GroupInviteLinkViewModel *groupInviteLinkViewModel;
 
 @property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
