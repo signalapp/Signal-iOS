@@ -183,6 +183,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationNameProfileWhitelistDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appExpiryDidChange:)
+                                                 name:AppExpiry.AppExpiryDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -222,6 +226,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
 
     [self updateBarButtonItems];
+}
+
+- (void)appExpiryDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateReminderViews];
 }
 
 #pragma mark - Theme
@@ -588,7 +599,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         = !TSAccountManager.sharedInstance.isDeregistered || TSAccountManager.sharedInstance.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
 
-    self.expiredView.hidden = !AppExpiry.isExpiringSoon;
+    self.expiredView.hidden = !AppExpiry.shared.isExpiringSoon;
     [self.expiredView updateText];
 
     self.hasVisibleReminders = (!self.archiveReminderView.isHidden || !self.deregisteredView.isHidden

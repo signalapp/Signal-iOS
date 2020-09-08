@@ -242,7 +242,7 @@ class NotificationService: UNNotificationServiceExtension {
     func fetchAndProcessMessages() {
         AssertIsOnMainThread()
 
-        guard !AppExpiry.isExpired else {
+        guard !AppExpiry.shared.isExpired else {
             owsFailDebug("Not processing notifications for expired application.")
             return completeSilenty()
         }
