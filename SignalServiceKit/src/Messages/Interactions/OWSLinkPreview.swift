@@ -170,9 +170,10 @@ public class OWSLinkPreview: MTLModel {
         }
 
         let linkPreview = OWSLinkPreview(urlString: urlString, title: title, imageAttachmentId: imageAttachmentId)
-
         linkPreview.previewDescription = previewDescription
-        if previewProto.hasDate {
+
+        // Zero check required. Some devices in the wild will explicitly set zero to mean "no date"
+        if previewProto.hasDate, previewProto.date > 0 {
             linkPreview.date = Date(millisecondsSince1970: previewProto.date)
         }
 
