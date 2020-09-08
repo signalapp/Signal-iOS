@@ -578,7 +578,7 @@ typedef struct {
 
 - (void)insertJoinGroupButtonIfNecessary:(NSMutableArray<UIView *> *)textViews
 {
-    if (self.viewItem.groupInviteLinkViewModel == nil) {
+    if (self.viewItem.groupInviteLinkViewModel == nil || !self.isIncoming) {
         return;
     }
 
@@ -1419,7 +1419,7 @@ typedef struct {
             return [NSValue valueWithCGSize:buttonsSize];
         }
     }
-    if (self.viewItem.groupInviteLinkViewModel != nil) {
+    if (self.viewItem.groupInviteLinkViewModel != nil && self.isIncoming) {
         CGSize buttonsSize = CGSizeCeil(CGSizeMake(
             self.conversationStyle.maxMessageWidth, self.joinGroupButtonHeight + self.joinGroupHairlineHeight));
         return [NSValue valueWithCGSize:buttonsSize];
