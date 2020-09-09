@@ -264,7 +264,7 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
 
         // We always want to apply the new bottom bar position immediately,
         // as this only happens during animations (interactive or otherwise)
-        footerView.superview?.layoutIfNeeded()
+        view.layoutIfNeeded()
     }
 }
 
