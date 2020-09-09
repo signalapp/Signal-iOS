@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal reikia prieigos prie jūsų buvimo
 NSMicrophoneUsageDescription = "Signal reikia prieigos prie jūsų mikrofono, kad galėtų inicijuoti ir gauti telefoninius skambučius bei įrašinėti balso žinutes.";
 NSPhotoLibraryAddUsageDescription = "Signal įrašys nuotraukas į jūsų biblioteką.";
 NSPhotoLibraryUsageDescription = "Signal leis jums pasirinkti, kurias nuotraukas iš jūsų bibliotekos siųsti.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Signal naudoja vietinį tinklą, kad leistų jums tiesiogiai perkelti savo paskyrą į naują telefoną. Tai nebus atlikta, nebent aiškiai pasirinksite inicijuoti perkėlimą į naują įrenginį.";

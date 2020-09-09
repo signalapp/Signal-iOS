@@ -3881,10 +3881,10 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Disable PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Analluogi'r PIN?";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Enable PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Galluogi'r PIN";
 
 /* Table header for the 'pins' section. */
 "SETTINGS_ADVANCED_PINS_HEADER" = "PIN Signal";
@@ -4610,7 +4610,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Cwblhau'r gosodiad ar Signal Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Chi wnaeth ddileu'r neges hon.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Rydych chi'n wedi analluogi negeseuon byrhoedlog .";

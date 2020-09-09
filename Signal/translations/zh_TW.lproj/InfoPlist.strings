@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal需要連結你的位置才能分�
 NSMicrophoneUsageDescription = "Signal需要使用你的麥克風才能撥打和接聽電話並記錄語音訊息。";
 NSPhotoLibraryAddUsageDescription = "Signal會將照片儲存到你的照片庫。";
 NSPhotoLibraryUsageDescription = "Signal可以讓你從圖庫中選擇要傳送的照片。";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Signal使用本地網路允許你直接將帳戶轉移到新手機。 除非你明確選擇啟動轉移到新裝置，否則它將無法使用。";

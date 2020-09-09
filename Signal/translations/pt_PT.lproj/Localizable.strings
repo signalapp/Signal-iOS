@@ -890,7 +890,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Não notificar se silenciado";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receber notificações quando for mencionado em chats silenciados?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receber notificações quando for mencionado em conversas silenciadas?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Menções";
@@ -902,7 +902,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Silenciado";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Não silenciado";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Não silenciado(a)";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Silenciar por um dia";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Utilizador não registado: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "A sua versão do Signal expirou! Toque para atualizar para a versão mais recente.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "A sua versão do Signal irá expirar dentro de %d dias. Toque para atualizar para a versão mais recente.";
@@ -2213,7 +2213,7 @@
 "KEY_COMMAND_NEXT_CONVERSATION" = "Ir para a próxima conversa";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ir para a conversa anterior";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Pesquisar";
@@ -2225,7 +2225,7 @@
 "KEY_COMMAND_STICKERS" = "Exibir autocolantes";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "Desarquivar conversa";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Saber mais";
@@ -2246,7 +2246,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Falha na associação do dispositivo";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Este dispositivo conseguirá ver os seu grupos e contactos, aceder às suas conversas e enviar mensagens no seu nome.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Associar este dispositivo?";
@@ -2336,7 +2336,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminada para todos";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the chat. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Esta mensagem será eliminada permanentemente para todos os intervenientes na conversa. Os membros serão capazes de ver que eliminou a conversa.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Para quem deseja eliminar esta mensagem?";
@@ -2438,7 +2438,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Eliminar";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Esta conversa será eliminada de todos os seus dispositivos.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Eliminar conversa?";
@@ -2471,10 +2471,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Eliminar";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your chat with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Deverá partilhar o seu perfil para poder continuar a sua conversa com %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your chat with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Deverá partilhar o seu perfil para poder continuar a sua conversa com este grupo.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Foi convidado para este grupo por %@. Deseja permitir que os membros deste grupo lhe possam enviar mensagens?";
@@ -2498,10 +2498,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancelar pedido";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancelar o seu pedido para entrar para este grupo?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "O seu pedido para entrar foi enviado para o administrador do grupo. Será notificado quando ele tomar uma decisão.";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introdução aos 'Pedidos de mensagens'";
@@ -2510,7 +2510,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Adicione o nome do perfil";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Pode agora escolher \"Aceitar\" ou \"Eliminar\" uma nova conversa. Os nomes permitem que as pessoas saibam quem lhes está a enviar mensagens.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "O seu nome de perfil foi guardado.";
@@ -2597,7 +2597,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Atingiu o número máximo de dispositivos permitidos por conta. Por favor, remova um dispositivo e tente emparelhar mais tarde. ";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Agora não irá receber notificações para conversas silenciadas.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Silenciado";
@@ -2906,10 +2906,10 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Adicionar ao grupo";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Adicionar \"%@\" ao grupo?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Negar pedido";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
@@ -4031,7 +4031,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Definições";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Contar conversas silenciadas";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Contagem de crachás";

@@ -770,7 +770,7 @@
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Herunterladen";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kannst maximal %@ Unterhaltungen auswählen.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kannst maximal %@ Unterhaltungen auswählen.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Gruppen";
@@ -851,7 +851,7 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Bearbeiten";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Mitglieder hinzufügen";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Wer kann Mitglieder hinzufügen";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Nur Admins";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistrierter Benutzer: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Deine Signal-Version ist abgelaufen! Bitte antippen, um auf die neueste Version zu aktualisieren.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Deine Signal-Version wird in %d Tagen ablaufen. Bitte antippen, um auf die neueste Version zu aktualisieren.";
@@ -1562,22 +1562,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link deaktiviert.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Der Gruppen-Link mit Admin-Bestätigung wurde aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Der Gruppen-Link wurde mit eingeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Du hast den Gruppen-Link mit Admin-Bestätigung aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Du hast den Gruppen-Link mit eingeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link mit Admin-Bestätigung aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link mit eingeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Der Gruppen-Link ohne Admin-Bestätigung wurde aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Der Gruppen-Link wurde mit ausgeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Du hast den Gruppen-Link ohne Admin-Bestätigung aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Du hast den Gruppen-Link mit ausgeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link ohne Admin-Bestätigung aktiviert.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link mit ausgeschalteter Admin-Bestätigung aktiviert.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "Der Gruppen-Link wurde zurückgesetzt.";
@@ -1589,22 +1589,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link zurückgesetzt.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin-Bestätigung für den Gruppen-Link wurde deaktiviert.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Für den Gruppen-Link wurde die Admin-Bestätigung ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link deaktiviert.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die für den Gruppen-Link die Admin-Bestätigung ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat die Admin-Bestätigung für den Gruppen-Link deaktiviert.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat für den Gruppen-Link die Admin-Bestätigung ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin-Bestätigung für den Gruppen-Link wurde aktiviert.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Für den Gruppen-Link wurde die Admin-Bestätigung eingeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link aktiviert.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast für den Gruppen-Link die Admin-Bestätigung eingeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat die Admin-Bestätigung für den Gruppen-Link aktiviert.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat für den Gruppen-Link die Admin-Bestätigung eingeschaltet.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Benutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
@@ -1643,7 +1643,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Bitte versuche es erneut.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Dies ist kein gültiger Gruppen-Link. Stelle sicher, dass der gesamte Link intakt und korrekt ist, bevor du versuchst dich anzumelden.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Dies ist kein gültiger Gruppen-Link. Stelle sicher, dass der gesamte Link intakt und korrekt ist, bevor du versuchst, beizutreten.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Ungültiger Link";
@@ -1703,7 +1703,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Über Signal teilen";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Mit diesem Link kann jeder der Gruppe beitreten oder eine Beitrittsanfrage senden. Teile ihn mit Leuten, denen du vertraust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Jeder mit diesem Link kann der Gruppe beitreten oder eine Beitrittsanfrage senden. Teile ihn mit Personen, denen du vertraust.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Gruppen-Link";
@@ -2195,7 +2195,7 @@
 "KEY_COMMAND_ATTACHMENTS" = "Anhänge anzeigen";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Gehe zu Unterhaltungsdetails";
+"KEY_COMMAND_CONVERSATION_INFO" = "Zu Unterhaltungsdetails gehen";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Eingabeleiste fokussieren";
@@ -2804,10 +2804,10 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Erhalte die Nachricht";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Wähle wer dich bei Signal mit deiner Telefonnummer »%@« finden kann";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Wähle, wer dich bei Signal mit deiner Rufnummer »%@« finden kann";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wer kann dich mit deiner Telefonnummer finden?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wer kann dich mit deiner Rufnummer finden?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Gib deine Rufnummer ein, um zu beginnen";
@@ -2930,7 +2930,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "»%@« hinzugefügt.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ ausstehende Beitrittsanfragen.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ ausstehende Beitrittsanfragen.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Anfragen anzeigen";
@@ -3005,13 +3005,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Jeder";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Jeder, der deine Telefonnummer in seinen Kontakten hat, sieht dich als Kontakt in Signal. Andere können dich per Suche finden.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Jeder, der deine Rufnummer in seinen Kontakten gespeichert hat, sieht dich als Kontakt in Signal. Alle anderen können dich per Suche finden.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Niemand kann dich mit deiner Telefonnummer bei Signal finden. Du wirst nicht als Signal-Kontakt bei Personen angezeigt, die dich als Kontakt gespeichert haben und andere Personen können dich nicht durch die Suche finden.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Niemand kann dich anhand deiner Rufnummer bei Signal finden. Du wirst nicht als Signal-Kontakt bei Personen angezeigt, die deine Rufnummer in ihren Kontakten gespeichert haben, und alle anderen können dich in der Suche nicht anhand deiner Rufnummer finden.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Beispiel: %@";
@@ -3020,19 +3020,19 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Meine Kontakte";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Nur deine Kontakte sehen deine Telefonnummer in Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Nur deine Kontakte sehen deine Rufnummer in Signal.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Jeder";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Deine Telefonnummer ist sichtbar für alle Personen und Gruppen, mit denen du dich unterhälst. Personen, die deine Telefonnummer in den Kontakten gespeichert haben, sehen diese auch in Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Deine Rufnummer ist sichtbar für alle Personen und Gruppen, mit denen du dich unterhälst. Personen, die deine Rufnummer in ihren Telefonkontakten gespeichert haben, sehen diese auch in Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Niemand";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Niemand wird deine Telefonnummer in Signal sehen.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Niemand wird deine Rufnummer in Signal sehen.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3203,7 +3203,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN muss aus mindestens 4 Ziffern bestehen.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Du kannst nur bis zu 4 Unterhaltungen anheften.";
+"PINNED_CONVERSATION_LIMIT" = "Du kannst maximal 4 Unterhaltungen anheften.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Angeheftet";
@@ -3248,7 +3248,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dies scheint nicht deine Sicherheitsnummer mit %@ zu sein. Verifizierst du den richtigen Kontakt?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Die Nummer in deiner Zwischenablage scheint nicht die korrekten Sicherheitsnummer für diese Unterhaltung zu sein.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Die Nummer in deiner Zwischenablage scheint nicht die korrekte Sicherheitsnummer für diese Unterhaltung zu sein.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal konnte in deiner Zwischenablage keine Sicherheitsnummer finden. Hast du sie korrekt kopiert?";
@@ -3959,7 +3959,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Blockierten Benutzer hinzufügen";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "Liste von geblockten Kontakten und Gruppen.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "Liste von blockierten Kontakten und Gruppen.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Du hast bei Signal keine Kontakte.";
@@ -4052,16 +4052,16 @@
 "SETTINGS_NOTIFICATIONS" = "Mitteilungen";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "mich über die Telefonnummer finden";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "mich über die Rufnummer finden";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "mich über die Telefonnummer finden";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "mich über die Rufnummer finden";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "meine Telefonnummer sehen";
+"SETTINGS_PHONE_NUMBER_SHARING" = "meine Rufnummer sehen";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "meine Telefonnummer sehen";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "meine Rufnummer sehen";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Erinnerungen ausschalten";
@@ -4184,7 +4184,7 @@
 "SETTINGS_VERSION" = "Version";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Wer kann...";
+"SETTINGS_WHO_CAN" = "Wer kann …";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "E-Mail";

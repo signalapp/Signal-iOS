@@ -1187,10 +1187,10 @@
 "DISAPPEARING_MESSAGES" = "Messages éphémères";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Les messages de cette conversation disparaîtront dans %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Si cette option est activée, les messages envoyés et reçus dans cette conversation disparaîtront après avoir été lus.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Actuellement, les messages disparaissent après %@";
@@ -1241,7 +1241,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Copier";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "Bonjour,\n\nDernièrement, j’utilise Signal pour assurer la confidentialité des conversations sur mon iPhone. J’aimerais que vous l’installiez aussi afin que nous puissions être sûrs que seuls vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est proposée pour iPhone et Android. Obtenez-la ici : %@\n\nSignal fonctionne comme votre appli de messagerie existante. Nous pouvons envoyer des photos et des vidéos, effectuer des appels et lancer des conversations de groupe. Le grand intérêt est que personne d’autre ne peut rien voir de tout cela, pas même les créateurs de Signal.\n\nVous pouvez en savoir davantage sur « Open Whisper Systems », les personnes derrière Signal, ici : %@.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Passons à Signal";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Utilisateur non inscrit : %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Votre version de Signal est expirée. Touchez pour mettre Signal à jour vers la version la plus récente.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Votre version de Signal expirera dans %d jours. Touchez pour mettre Signal à jour vers la version la plus récente.";
@@ -1427,7 +1427,7 @@
 "FORWARD_MESSAGE" = "Transférer un message";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Vous n’avez aucun média dans cette conversation.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Chargement des médias plus récents…";
@@ -1562,49 +1562,49 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ a désactivé le lien de groupe.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Le lien de groupe a été activé avec approbation d’un administrateur.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Le lien de groupe a été activé et l’approbation d’un administrateur est activée.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Vous avez activé le lien de groupe avec approbation d’un administrateur.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Vous avez activé le lien de groupe et l’approbation d’un administrateur est activée.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a activé le lien de groupe avec approbation d’un administrateur.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a activé le lien de groupe et l’approbation d’un administrateur est activée.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Le lien de groupe a été activé et l’approbation d’un administrateur est désactivée.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Vous avez activé le lien de groupe et l’approbation d’un administrateur est désactivée.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a activé le lien de groupe et l’approbation d’un administrateur est désactivée.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+"GROUP_INVITE_LINK_RESET" = "Le lien de groupe a été réinitialisé.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Vous avez réinitialisé le lien de groupe.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ a réinitialisé le lien de groupe.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "L’approbation d’un administrateur a été désactivée pour le lien de groupe.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Vous avez désactivé l’approbation d’un administrateur pour le lien de groupe.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a désactivé l’approbation d’un administrateur pour le lien de groupe.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "L’approbation d’un administrateur a été activée pour le lien de groupe.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Vous avez activé l’approbation d’un administrateur pour le lien de groupe.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a activé l’approbation d’un administrateur pour le lien de groupe.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ ne peut pas être ajouté automatiquement par vous à ce groupe. Une invitation a été envoyée et l’utilisateur ne verra aucun message du groupe tant que l’invitation n’aura pas été acceptée.";
@@ -1619,10 +1619,10 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ces utilisateurs ne peuvent pas être ajoutés automatiquement par vous à ce groupe. Des invitations ont été envoyées et ces utilisateurs ne verront aucun message du groupe tant que les invitations n’auront pas été acceptées.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ce lien de groupe n’est plus valide.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Impossible de se joindre au groupe";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Groupe";
@@ -1640,10 +1640,10 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Veuillez vous assurer d’être en ligne et réessayer.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Veuillez réessayer.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ce lien de groupe n’est pas valide. Assurez-vous que l’intégralité du lien soit intacte et correcte avant de tenter de vous joindre.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Lien invalide";
@@ -1754,13 +1754,13 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Vous ne faites plus partie du groupe.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ a approuvé votre demande de vous joindre au groupe.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Vous avez annulé votre demande de vous joindre au groupe.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Votre demande de vous joindre au groupe a été refusée.";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Vous avez demandé à vous joindre au groupe.";
@@ -1880,7 +1880,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ s’est joint au groupe.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ s’est joint au groupe grâce au lien de groupe.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ a quitté le groupe.";
@@ -1892,10 +1892,10 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ a supprimé %2$@ du groupe.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Vous avez approuvé une demande de %@ de se joindre au groupe.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ a approuvé une demande de %1$@ de se joindre au groupe.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
@@ -2912,7 +2912,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Refuser la demande";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Refuser la demande de « %@ »  ?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Refuser la demande de « %@ » ?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ a invité une personne";
@@ -2921,16 +2921,16 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ a invité %2$@ personnes";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Il n’y pas de demande de membres en attente.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Aucune demande de membre n’est en attente.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Aucune invitation à afficher.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "« %@ » a été ajouté.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ demandes de membres en attente";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ demandes de membre en attente.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Visualiser les demandes";
@@ -2963,7 +2963,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Les détails des personnes invitées par d’autres membres du groupe ne sont pas affichés. Si les invités choisissent de se joindre au groupe, leurs renseignements seront alors communiqués au groupe. Ils ne verront aucun message dans le groupe avant de s’y être joints.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Les personnes de cette liste tentent de se joindre à « %@ » grâce au lien de groupe.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invitations invalides";
@@ -2972,7 +2972,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invitations par d’autres membres du groupe";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Demandes de membre en attente";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Personnes que vous avez invitées";
@@ -3203,10 +3203,10 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Le NIP doit comporter au moins quatre chiffres.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+"PINNED_CONVERSATION_LIMIT" = "Vous ne pouvez pas épingler plus de quatre conversations.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Épinglée";
+"PINNED_SECTION_TITLE" = "Épinglées";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Créer un NIP";
@@ -3977,7 +3977,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relayez tous les appels par un serveur Signal pour éviter de divulguer votre adresse IP à votre contact. L’activation de cette option réduira la qualité des appels.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "Effacer l’historique des conversations";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Tous droits réservés Messagerie Signal\nSous licence GPLv3";
@@ -4001,7 +4001,7 @@
 "SETTINGS_HELP" = "Aide ";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "Effacer l’historique des conversations";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Renseignements";

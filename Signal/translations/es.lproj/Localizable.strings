@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Persona no registrada: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "¡Esta versión de Signal ha caducado! Toca para actualizarla a la versión más reciente.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Esta versión de Signal caducará en %d días. Toca para actualizar a la versión más reciente.";
@@ -3206,7 +3206,7 @@
 "PINNED_CONVERSATION_LIMIT" = "Sólo puedes fijar un máximo de cuatro chats.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Fijado";
+"PINNED_SECTION_TITLE" = "Chat(s) fijado(s)";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Crear PIN";

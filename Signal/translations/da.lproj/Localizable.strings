@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Ikke registreret som bruger: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Din version af Signal udløber i dag. Tryk for at opdatere til den nyeste version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Din version af Signal vil udløbe om %d dage. Tap for at opdatere til den nyeste version";
@@ -1892,22 +1892,22 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ fjernede %2$@";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Du godkendte en anmodning fra %@ om at deltage i gruppen.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ godkendte en anmodning fra %1$@ om at deltage i gruppen.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "En anmodning fra %@ om at deltage i gruppen blev godkendt";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ annullerede sin anmodning om at deltage i gruppen";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Du afviste en anmodning fra %@ om at deltage i gruppen.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ afviste en anmodning fra %1$@ om at deltage i gruppen.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";

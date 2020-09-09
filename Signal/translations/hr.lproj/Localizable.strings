@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistrirani korisnik: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Vaša verzija Signala je istekla. Pritisnite za ažuriranje na najnoviju verziju.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Vaša verzija Signala istječe za %d dana. Pritisnite za ažuriranje na najnoviju verziju.";
@@ -3419,7 +3419,7 @@
 "REACTIONS_DETAIL_YOU" = "Vi";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "Pročitano";
+"READ_ACTION" = "Označi kao pročitano";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Korisnika nije moguće odabrati.";

@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal potrzebuje dostępu do Twojej loka
 NSMicrophoneUsageDescription = "Signal potrzebuje dostępu do Twojego mikrofonu, aby wykonywać oraz odbierać połączenia telefoniczne i nagrywać wiadomości głosowe.";
 NSPhotoLibraryAddUsageDescription = "Signal zapisze zdjęcia w Twojej galerii. ";
 NSPhotoLibraryUsageDescription = "Signal pozwoli Ci wybrać, które ze zdjęć z Twojej galerii wysłać. ";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Signal korzysta z sieci lokalnej, aby pozwolić na bezpośredni transfer Twojego konta na nowy telefon. Nie zostanie ona użyta, jeśli nie rozpoczniesz transferu na nowe urządzenie.";

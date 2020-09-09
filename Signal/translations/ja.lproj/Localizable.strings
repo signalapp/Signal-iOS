@@ -3020,7 +3020,7 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "あなたの連絡先だけが、Signal上であなたの電話番号を見ることができます。";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";

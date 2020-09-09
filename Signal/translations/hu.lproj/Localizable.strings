@@ -575,7 +575,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Csak te láthatod a választott színt.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Chat Color";
+"COLOR_PICKER_SHEET_TITLE" = "Beszélgetés színe";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Összehasonlítás vágólappal";
@@ -764,7 +764,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Törlöd a beszélgetést?";
 
 /* Indicates that the user can tap to download this image. */
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Letöltés";
@@ -794,7 +794,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "találat: %d/%d";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Chat Settings";
+"CONVERSATION_SETTINGS" = "Beszélgetés beállításai";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Tagok hozzáadása";
@@ -833,7 +833,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontakt részletek";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Beszélgetés színe";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Csoport állítási jogok";
@@ -851,7 +851,7 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Szerkesztés";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Ki adhat hozzá új tagot";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Csak adminok";
@@ -863,7 +863,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Minden felhasználó";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Csoporthivatkozás";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Admin jog adás";
@@ -1187,7 +1187,7 @@
 "DISAPPEARING_MESSAGES" = "Eltűnő üzenetek";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Ennek a beszélgetésnek az üzenetei %@ után eltűnnek.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
@@ -1673,7 +1673,7 @@
 "GROUP_LINK_VIEW_COPY_LINK" = "Link másolása";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Csoporthivatkozás";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
@@ -1706,7 +1706,7 @@
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Group Link";
+"GROUP_LINK_VIEW_TITLE" = "Csoporthivatkozás";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ hozzáadott a csoporthoz.";
@@ -2441,7 +2441,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Chat?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Törlöd a beszélgetést?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Törlés és kilépés.";

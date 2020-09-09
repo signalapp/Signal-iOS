@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Rekisteröimätön käyttäjä: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Käyttämäsi Signalin versio on vanhentunut! Napauta päivittääksesi viimeisimpään versioon.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Käyttämäsi Signalin versio vanhenee %d päivässä. Napauta päivittääksesi viimeisimpään versioon.";
@@ -1898,19 +1898,19 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ hyväksyi henkilön %1$@ pyynnön liittyä ryhmään.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "Henkilön %@ pyyntö liittyä ryhmään on hyväksytty.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ peruutti pyyntönsä liittyä ryhmään.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Hylkäsit pyynnön liittyä ryhmään käyttäjältä %@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ hylkäsi henkilön %1$@ pyynnön liittyä ryhmään.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Henkilön %@ pyyntö liittyä ryhmään on hylätty.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ pyytää liittyä ryhmälinkin kautta.";
@@ -3011,7 +3011,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ei kukaan";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Kukaan Signalissa ei tule löytämään sinua puhelinnumerosi perusteella. Et tule näkymään yhteyshenkilönä ihmisille, joilla on puhelinnumerosi heidän yhteystiedoissa, eivätkä muut voi löytää sinua puhelinnumerosi avulla.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Esimerkki: %@";
@@ -3026,7 +3026,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Kaikki";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Puhelinnumerosi näkyy ihmisille ja ryhmille, joille lähetät viestejä. Ihmiset, joilla on puhelinnumerosi heidän puhelimen yhteystiedoissa, näkevät sen myös Signalissa.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Ei kukaan";

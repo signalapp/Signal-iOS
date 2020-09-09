@@ -569,7 +569,7 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal non ha avuto il permesso per accedere al tuo account iCloud per effettuare il backup. Fornisci a Signal l'accesso al tuo account iCloud dalle impostazioni di iOS per permettere di fare il backup dei tuoi dati di Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Scegli il colore dei messaggi da te inviati in questa chat.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Scegli il colore dei messaggi in uscita in questa chat.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Solo tu potrai vedere il colore scelto.";
@@ -812,7 +812,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Tutti";
 
 /* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Non attiva";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Disabilitato";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Scegli chi può modificare il nome del gruppo, la foto e il timer dei messaggi a scomparsa.";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Utente non registrato: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "La tua versione di Signal è scaduta! Tocca per aggiornare alla versione più recente.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "La tua versione di Signal scadrà in %d giorni. Tocca per aggiornare alla versione più recente.";
@@ -1493,7 +1493,7 @@
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Sconosciuto";
 
 /* Description of the 'unsatisfiable' access level. */
-"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Non attiva";
+"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Disabilitato";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Hai cambiato chi può modificare l'appartenenza al gruppo in “%@”.";
@@ -1643,7 +1643,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Riprova.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Questo non è un valido link di un gruppo. Assicurati che il link sia intero e corretto prima di provare a unirsi.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Questo non è un link del gruppo valido. Assicurati che l'intero link sia intatto e corretto prima di tentare di unirti.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Link non valido";
@@ -1760,10 +1760,10 @@
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Hai annullato la tua richiesta di unirti al gruppo.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "La tua richiesta di unirti al gruppo è stata negata.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "La tua richiesta di unirti al gruppo è stata rifiutata.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Hai inviato una richiesta a unirsi al gruppo.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Hai inviato una richiesta di unirti al gruppo.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "I tuoi privilegi di amministrazione sono stati revocati.";
@@ -1904,13 +1904,13 @@
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ha annullato la sua richiesta di unirsi al gruppo.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Hai negato una richiesta di unirsi al gruppo da %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Hai rifiutato una richiesta di unirsi al gruppo da %@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ ha negato una richiesta di unirsi al gruppo da %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ ha rifiutato una richiesta di unirsi al gruppo da %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Una richiesta di unirsi al gruppo da %@ è stata negata.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Una richiesta di unirsi al gruppo da %@ è stata rifiutata.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ ha richiesto di unirsi tramite il link del gruppo.";
@@ -2909,10 +2909,10 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Aggiungere “%@” al gruppo?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Nega richiesta";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Rifiuta richiesta";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Negare la richiesta da “%@”?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Rifiutare la richiesta da “%@”?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ ha invitato 1 persona";
@@ -2936,7 +2936,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Vedi le richieste";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Negato “%@”.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Rifiutato “%@”.";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoca un invito non valido";
@@ -3005,13 +3005,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Tutti";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Chiunque abbia il tuo numero di telefono nei suoi contatti ti vedrà come un contatto su Signal. Altri saranno in grado di trovarti tramite la ricerca.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Chiunque abbia il tuo numero nei suoi contatti telefonici lo vedrà anche su Signal. Gli altri potranno trovarti nella ricerca.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nessuno";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nessuno su Signal sarà in grado di trovarti con il tuo numero di telefono. Non sarai visibile come contatto per le persone che hanno il tuo numero di telefono nei loro contatti e altri non saranno in grado di trovarti tramite il tuo numero di telefono nella ricerca.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nessuno su Signal sarà in grado di trovarti con il tuo numero di telefono. Non sarai visibile come contatto per le persone che hanno il tuo numero di telefono nei loro contatti e gli altri non saranno in grado di trovarti tramite il tuo numero di telefono nella ricerca.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Esempio: %@";
@@ -3026,7 +3026,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Tutti";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Il tuo numero di telefono sarà visibile alle persone e ai gruppi con cui messaggi. Anche chi ha il tuo numero di telefono nei suoi contatti potrà vederlo su Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Il tuo numero di telefono sarà visibile a tutte le persone e ai gruppi a cui invii messaggi. Le persone che hanno il tuo numero nei loro contatti telefonici lo vedranno anche su Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Nessuno";
@@ -3248,7 +3248,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Questo non sembra il codice di sicurezza di %@. Stai controllando il contatto corretto?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Il numero nei tuoi appunti non sembra essere quello corretto per questa chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Il numero nei tuoi appunti non sembra essere il codice di sicurezza corretto per questa chat.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal non ha trovato un codice di sicurezza negli appunti. Lo hai copiato correttamente?";
@@ -3743,7 +3743,7 @@
 "SEARCH_SECTION_CONTACTS" = "Altri contatti";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversazioni";
+"SEARCH_SECTION_CONVERSATIONS" = "Chat";
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "Messaggi";
@@ -4052,16 +4052,16 @@
 "SETTINGS_NOTIFICATIONS" = "Notifiche";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Trovami per numero di telefono";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Trovarmi tramite numero di telefono";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Trovami per numero di telefono";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Trovarmi tramite numero di telefono";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Vedi il mio numero di telefono";
+"SETTINGS_PHONE_NUMBER_SHARING" = "Vedere il mio numero di telefono";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Vedi il mio numero di telefono";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Vedere il mio numero di telefono";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Disattiva promemoria";
@@ -4103,7 +4103,7 @@
 "SETTINGS_READ_RECEIPT" = "Ricevute di lettura";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Vedi e condividi quando i messaggi vengono letti. Questa impostazione è opzionale e viene applicata a tutte le chat.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Vedere e condividere quando i messaggi vengono letti. Questa impostazione è opzionale e viene applicata a tutte le chat.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Disattiva";
@@ -4163,7 +4163,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Indicatori di scrittura";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Vedi e condividi quando i messaggi vengono letti. Questa impostazione è opzionale e viene applicata a tutte le chat.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Vedere e condividere quando i messaggi vengono digitati. Questa impostazione è opzionale e viene applicata a tutte le chat.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Mittente sigillato";
@@ -4472,7 +4472,7 @@
 "UNPIN_ACTION" = "Non fissare";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "Conversazioni";
+"UNPINNED_SECTION_TITLE" = "Chat";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "Non letta";

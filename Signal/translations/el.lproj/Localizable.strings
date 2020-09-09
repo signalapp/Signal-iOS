@@ -3995,7 +3995,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Διαγραφή όλων";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "Κάνε μια δωρεά στο Signal";
 
 /* Title for support page in app settings. */
 "SETTINGS_HELP" = "Βοήθεια";

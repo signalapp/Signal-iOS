@@ -863,7 +863,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Visi nariai";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Grupės nuoroda";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Paskirti administratoriumi";
@@ -872,7 +872,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ galės taisyti šią grupę ir jos narių sąrašą.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Narių prašymai ir pakvietimai";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Nariai";
@@ -938,7 +938,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Pašalinti %@ iš grupės administratorių?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
+"CONVERSATION_SETTINGS_SEARCH" = "Ieškoti pokalbyje";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Atblokuoti grupę";
@@ -1187,10 +1187,10 @@
 "DISAPPEARING_MESSAGES" = "Išnykstančios žinutės";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Žinutės šiame pokalbyje išnyks po %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kai įjungta, šiame pokalbyje išsiųstos ir gautos žinutės išnyks po to, kai bus perskaitytos.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Šiuo metu žinutės išnyksta po %@";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistruotas naudotojas: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Jūsų Signal versija nebegalioja! Bakstelėkite, kad atnaujintumėte į naujausią versiją.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Jūsų Signal versija nustos galioti po %d dienų. Bakstelėkite, norėdami atnaujinti į naujausią versiją.";
@@ -1562,7 +1562,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ išjungė grupės nuorodą.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Buvo įjungta grupės nuoroda su įjungtais administratoriaus patvirtinimais.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Jūs įjungėte grupės nuorodą su įjungtais administratoriaus patvirtinimais.";
@@ -1571,7 +1571,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Buvo įjungta grupės nuoroda su išjungtais administratoriaus patvirtinimais.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Jūs įjungėte grupės nuorodą su išjungtais administratoriaus patvirtinimais.";
@@ -1622,7 +1622,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ši grupės nuoroda daugiau nebegalioja.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Nepavyksta prisijungti prie grupės";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Grupė";
@@ -1646,7 +1646,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Neteisinga nuoroda";
 
 /* Indicator that a group invite link has expired. */
 "GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Nuoroda daugiau nebegalioja";
@@ -1655,7 +1655,7 @@
 "GROUP_LINK_JOIN_GROUP_BUTTON" = "Prisijungti prie grupės";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Norėdami prisijungti prie šios grupės, atnaujinkite Signal šiame įrenginyje.";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Žmonės, kurie nuskenuos šį kodą, galės prisijungti prie jūsų grupės. Administratoriams vis tiek reikės patvirtinti naujus narius, jei tą nustatymą turite įjungtą.";
@@ -1667,25 +1667,25 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR kodas";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Patvirtinti naujus narius";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "Kopijuoti nuorodą";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Grupės nuoroda";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Tvarkyti ir bendrinti";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Reikalauti, kad administratorius patvirtintų naujus, per grupės nuorodą prisijungiančius, narius.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Prašymai tapti nariais";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+"GROUP_LINK_VIEW_RESET_LINK" = "Atstatyti nuorodą";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Ar tikrai norite atstatyti grupės nuorodą? Žmonės daugiau nebegalės prisijungti prie grupės naudodami dabartinę nuorodą.";
@@ -1706,7 +1706,7 @@
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Group Link";
+"GROUP_LINK_VIEW_TITLE" = "Grupės nuoroda";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ pridėjo jus.";
@@ -1925,13 +1925,13 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ panaikino %2$@ turėtas administratoriaus teises.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Prašymai tapti nariais";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Narių prašymai ir pakvietimai";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupė atnaujinta.";
@@ -2597,7 +2597,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Jūs pasiekėte didžiausią, įrenginių su kuriais galima susieti savo paskyrą, skaičių. Pašalinkite įrenginį ir bandykite dar kartą.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Pokalbiams, kuriuose pranešimai yra išjungti, nebus rodomi jokie pranešimai.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Nutildyta(-s)";
@@ -2798,16 +2798,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Įjungti leidimus";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new chat activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Pranešimai leidžia jums matyti kada yra gaunamos naujos žinutės ir gauti atnaujinimus apie naujų pokalbių veiklą.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Gaukite žinutę";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Pasirinkite kas, naudodamas jūsų telefono numerį %@, gali rasti jus Signal programėlėje.";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Kas, naudodamas jūsų numerį, gali jus rasti?";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Norėdami pradėti, įveskite savo telefono numerį";
