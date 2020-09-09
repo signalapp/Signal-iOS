@@ -223,6 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                    linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                          transaction:(SDSAnyReadTransaction *)transaction
                                           completion:(void (^)(NSError *_Nullable error))completion
 {
@@ -232,6 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
                               mediaAttachments:@[]
                                         thread:thread
                               quotedReplyModel:quotedReplyModel
+                              linkPreviewDraft:linkPreviewDraft
                                    transaction:transaction
                                     completion:completion];
 }
@@ -240,6 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                               thread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                    linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                          transaction:(SDSAnyReadTransaction *)transaction
                                           completion:(void (^)(NSError *_Nullable error))completion
 {
@@ -255,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  transaction:transaction];
 
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-        [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
+        [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:writeTransaction];
 
         [writeTransaction addAsyncCompletionOffMain:^{
             [self.messageSender sendMessage:outgoingMessagePreparer

@@ -278,6 +278,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                            mediaAttachments:attachments
                                                                      thread:self.thread
                                                            quotedReplyModel:nil
+                                                           linkPreviewDraft:nil
                                                                 transaction:transaction
                                                                  completion:^(NSError *_Nullable error) {
                                                                      sendCompletion(error, outgoingMessage);
@@ -331,6 +332,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)textApproval:(TextApprovalViewController *)approvalViewController
     didApproveMessage:(nullable MessageBody *)messageBody
+     linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
 {
     OWSAssertDebug(messageBody.text.length > 0);
 
@@ -346,6 +348,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             outgoingMessage = [ThreadUtil sendMessageNonDurablyWithBody:messageBody
                                                                  thread:self.thread
                                                        quotedReplyModel:nil
+                                                       linkPreviewDraft:linkPreviewDraft
                                                             transaction:transaction
                                                              completion:^(NSError *_Nullable error) {
                                                                  if (error) {

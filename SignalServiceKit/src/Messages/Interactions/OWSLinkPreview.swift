@@ -313,6 +313,7 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     @objc(fetchLinkPreviewForUrl:)
+    @available(swift, obsoleted: 1.0)
     public func fetchLinkPreview(for url: URL) -> AnyPromise {
         let promise: Promise<OWSLinkPreviewDraft> = fetchLinkPreview(for: url)
         return AnyPromise(promise)

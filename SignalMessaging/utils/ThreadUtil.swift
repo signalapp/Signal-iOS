@@ -153,6 +153,7 @@ public extension ThreadUtil {
                                          mediaAttachments: mediaAttachments,
                                          thread: thread,
                                          quotedReplyModel: quotedReplyModel,
+                                         linkPreviewDraft: nil,
                                          transaction: transaction) { (error: Error?) in
             guard let error = error else {
                 resolver.fulfill(())
