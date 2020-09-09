@@ -47,7 +47,7 @@ public final class ProfilePictureView : UIView {
         AssertIsOnMainThread()
         func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
             guard !hexEncodedPublicKey.isEmpty else { return nil }
-            return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
+            return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generatePlaceholderIcon(seed: hexEncodedPublicKey, text: OWSProfileManager.shared().profileNameForRecipient(withID: hexEncodedPublicKey) ?? hexEncodedPublicKey, size: size)
         }
         let size: CGFloat
         if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed, openGroupProfilePicture == nil {
@@ -78,7 +78,7 @@ public final class ProfilePictureView : UIView {
         let result = UIImageView()
         result.layer.masksToBounds = true
         result.backgroundColor = Colors.unimportant
-        result.layer.borderColor = Colors.border.cgColor
+        result.layer.borderColor = Colors.text.withAlphaComponent(0.35).cgColor
         result.layer.borderWidth = Values.borderThickness
         result.contentMode = .scaleAspectFit
         return result
