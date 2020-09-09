@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Defnyddiwr Anghofrestredig: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Mae eich fersiwn chi o Signal wedi dod i ben! Ni fydd negeseuon yn anfon yn llwyddiannus mwyach. Tapiwch i ddiweddaru i'r fersiwn ddiweddaraf.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Bydd eich fersiwn o Signal yn dod i ben ymhen %d diwrnod. Tapiwch i ddiweddaru i'r fersiwn ddiweddaraf.";

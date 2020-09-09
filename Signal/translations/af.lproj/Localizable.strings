@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Ongeregistreerde gebruiker: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Jou weergawe van Signal het verstryk! Boodskappe sal nie meer suksesvol kan stuur nie. Druk om na die jongste weergawe op te dateer.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Jou weergawe van Signal verstryk oor %d dae. Druk om na die jongste weergawe op te dateer.";

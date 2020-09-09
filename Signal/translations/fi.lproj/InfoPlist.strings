@@ -6,3 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal tarvitsee käyttöoikeuden sijaint
 NSMicrophoneUsageDescription = "Signal tarvitsee käyttöoikeuden mikrofoniin soittaaksesi ja vastaanottaaksesi puheluita ja lähettääksesi ääniviestejä.";
 NSPhotoLibraryAddUsageDescription = "Signal tallentaa kuvat kirjastoosi.";
 NSPhotoLibraryUsageDescription = "Signal antaa sinun valita, mitkä valokuvat lähetät kirjastostasi.";
+NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";

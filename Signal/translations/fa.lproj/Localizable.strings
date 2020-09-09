@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "کاربر ثبت نشده: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "نسخه سیگنال شما منقضی شده است! پیام های دیگر با موفقیت ارسال نمی شوند. برای به روزرسانی به آخرین نسخه، روی ضربه بزنید";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "نسخه Signal شما در %d انقضا خواهد یافت. برای به روز رسانی به آخرین نسخه کلیک کنید.";

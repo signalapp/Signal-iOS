@@ -6,3 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal에서 현재 위치를 공유하�
 NSMicrophoneUsageDescription = "Signal은 마이크를 이용하여 전화 및 음성 메시지를 녹음합니다.";
 NSPhotoLibraryAddUsageDescription = "Signal이 라이브러리에 사진을 저장하게 됩니다.";
 NSPhotoLibraryUsageDescription = "Signal이 보낼 사진을 라이브러리에서 선택하도록 합니다.";
+NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";

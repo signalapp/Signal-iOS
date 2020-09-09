@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Нерегистриран корисник: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Вашата верзија на Signal истече! Праќањето на пораките повеќе нема да биде успешно. Допрете за да ажурирате во најнова верзија.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Вашата верзија на Signal ќе истече за %d денови. Допрете за да ажурирате во најновата верзија.";

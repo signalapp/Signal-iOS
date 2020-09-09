@@ -6,3 +6,4 @@ NSLocationWhenInUseUsageDescription = "Caithfidh tú an áit ina bhfuil tú a no
 NSMicrophoneUsageDescription = "Caithfidh tú cead a thabhairt do Signal an micreafón a úsáid chun glaonna a chur nó a ghlacadh leo, agus chun teachtaireachtaí a thaifeadadh.";
 NSPhotoLibraryAddUsageDescription = "Sábhálfaidh Signal pictiúir i do leabharlann.";
 NSPhotoLibraryUsageDescription = "Ligfidh Signal duit na pictiúir le seoladh a roghnú ó do leabharlann.";
+NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";

@@ -575,7 +575,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_2" = "நீங்கள் தேர்வு செய்யும் வண்ணத்தை மட்டுமே நீங்கள் காண்பீர்கள்.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Chat Color";
+"COLOR_PICKER_SHEET_TITLE" = "உரையாடல் நிறம்";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "கிளிப்போர்டுடன் ஒப்பிடுக";
@@ -794,7 +794,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d உள்ள %d பொருத்தங்கள் ";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Chat Settings";
+"CONVERSATION_SETTINGS" = "உரையாடல் அமைப்புகள்";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "உறுப்பினர்களைச் சேர்க்கவும்";
@@ -833,7 +833,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "தொடர்பு தகவல்";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Chat Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "உரையாடல் நிறம்";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "யாரால் முடியும் தொகு குழு தகவல்";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "பதிவு செய்யப்படாத பயனர்: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Signal லின் உங்கள் பதிப்பு காலாவதியானது! செய்திகள் இனி வெற்றிகரமாக அனுப்பப்படாது. மிக சமீபத்திய பதிப்பிற்கு புதுப்பிக்க தட்டவும்.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Signal லின் உங்கள் பதிப்பு 1%d நாட்களில் காலாவதியாகும். மிக சமீபத்திய பதிப்பிற்கு புதுப்பிக்க தட்டவும்.";
@@ -2054,7 +2054,7 @@
 "HELP_SUPPORT_CENTER" = "ஆதரவு மையம்";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "காப்பக  உரையாடல்கள்";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "தடுக்கப்பட்ட";
@@ -2075,7 +2075,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "உங்கள் தொடர்புகள் சில ஏற்கனவே Signal லில் உள்ளன, இதில் %@, %@ மற்றும் %@ உட்பட";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "உங்கள் முதல் உரையாடலை இங்கே தொடங்கவும்.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ சேர்க்கப்பட்டது நீங்கள் குழுவிற்கு";
@@ -2189,7 +2189,7 @@
 "KEY_COMMAND_ALL_MEDIA" = "எல்லா மெடியாவிற்கு செல் ";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Chat";
+"KEY_COMMAND_ARCHIVE" = "உரையாடலை காப்பகப்படுத்தவும்";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "இணைப்புகள்  காட்டு";
@@ -3083,7 +3083,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "பெயரிடப்படாத ஆல்பம்";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Pin";
+"PIN_ACTION" = "மேலே பொருத்தப்பட்ட செய்திகள்";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "பின் குறைந்தது 4 எழுத்துகள் இருக்க வேண்டும்";
@@ -3743,7 +3743,7 @@
 "SEARCH_SECTION_CONTACTS" = "பிற தொடர்புகள்";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "அரட்டைகள்";
+"SEARCH_SECTION_CONVERSATIONS" = "உரையாடல்கள்";
 
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "செய்திகள்";
@@ -3977,7 +3977,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "உங்கள் தொடர்புக்கு உங்கள் ஐபி முகவரியை வெளிப்படுத்துவதைத் தவிர்க்க Signal சேவையகம் மூலம் அனைத்து அழைப்புகளையும்  சுற்றசெய்யவும். இயக்குவது அழைப்பு தரத்தை குறைக்கும்.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "உரையாடல் வரலாற்றை அழிக்கவும்";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "பதிப்புரிமை Signal மெசஞ்சர்\n GPLv3 இன் கீழ் உரிமம் பெற்றது";
@@ -4001,7 +4001,7 @@
 "SETTINGS_HELP" = "உதவி";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "உரையாடல் வரலாற்றை அழிக்கவும்";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "தகவல்";
@@ -4472,7 +4472,7 @@
 "UNPIN_ACTION" = "Unpin";
 
 /* The title for unpinned conversation section on the conversation list */
-"UNPINNED_SECTION_TITLE" = "அரட்டைகள்";
+"UNPINNED_SECTION_TITLE" = "உரையாடல்கள்";
 
 /* Pressing this button marks a thread as unread */
 "UNREAD_ACTION" = "படிக்காதது";

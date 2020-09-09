@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Izena eman ez duen erabiltzailea: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Zure Signal bertsioa iraungi da! Mezuak ez dira ondo bidaliko. Ukitu azkenengo bertsiora eguneratzeko.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Zure Signal-en bertsioa %d egun barru iraungiko da. Sakatu azkenengo bertsiora eguneratzeko.";

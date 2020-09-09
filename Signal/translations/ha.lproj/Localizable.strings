@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Mai amfani bashi da rijista: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Sigar Signal dinka/ki yayi wa'adi! Bazaka/ki na samun nasarar tura sakonni ba. Taba domin sabunta zuwa mafi sabon siga. ";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Saura kwana %d wannan sigar Signal din zata daina aiki a naurarka/ki. Taba do saukar da sabuwar ingantacciyar manhajar Signal..";

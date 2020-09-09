@@ -6,3 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal-ek zure kokapenean sartzeko baimen
 NSMicrophoneUsageDescription = "Signal-ek zure mikrofonoa erabiltzeko baimena behar du deiak jaso ahal izateko eta ahots mezuak grabatu ahal izateko.";
 NSPhotoLibraryAddUsageDescription = "Signal-ek argazkiak gordeko ditu zure liburutegian.";
 NSPhotoLibraryUsageDescription = "Signal-ek zure liburutegian dauden argazkien artean zeintzuk bidali nahi dituzun aukeratzen utziko dizu.";
+NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";

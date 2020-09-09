@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "నమోదుకాని వినియోగదారు: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "మీ Signal వెర్షన్ గడువు ముగిసింది! సందేశాలు ఇకపై విజయవంతంగా పంపబడవు. ఇటీవలి సంస్కరణకు నవీకరించడానికి నొక్కండి.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "మీ Signal వెర్షన్ %d రోజుల్లో ముగుస్తుంది. ఇటీవలి సంస్కరణకు నవీకరించడానికి నొక్కండి.";

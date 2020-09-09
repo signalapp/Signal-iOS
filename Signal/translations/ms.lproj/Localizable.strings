@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Pengguna Tidak Berdaftar: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Versi Signal anda telah tamat tempoh! Mesej tidak akan berjaya dihantar lagi. Ketik untuk mengemas kini kepada versi yang terkini.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Versi Signal anda akan tamat tempoh dalam %d hari. Ketik untuk mengemas kini kepada versi yang terkini.";

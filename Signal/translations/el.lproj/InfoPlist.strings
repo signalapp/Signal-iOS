@@ -6,3 +6,4 @@ NSLocationWhenInUseUsageDescription = "Το Signal χρειάζεται πρόσ
 NSMicrophoneUsageDescription = "Το Signal χρειάζεται πρόσβαση στο μικρόφωνό σου για να κάνει και λάβει τηλεφωνικές κλήσεις και να ηχογραφήσει ηχητικά μηνύματα.";
 NSPhotoLibraryAddUsageDescription = "Το Signal θα αποθηκεύσει φωτογραφίες στη βιβλιοθήκη σου.";
 NSPhotoLibraryUsageDescription = "Το Signal θα σε αφήσει να επιλέξεις ποιες φωτογραφίες θα στείλεις από τη βιβλιοθήκη σου.";
+NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";

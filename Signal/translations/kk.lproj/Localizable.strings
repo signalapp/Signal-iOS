@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Тіркелмеген пайдаланушы: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Сіздегі Signal нұсқасының мерзімі өтіп кеткен. Бұдан былай хабарламалар сәтті жіберілмейді. Ең соңғы нұсқаға жаңарту үшін түртіңіз.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Сіздегі Signal нұсқасының мерзімі %d күннен кейін бітеді. Ең соңғы нұсқаға жаңарту үшін түртіңіз.";

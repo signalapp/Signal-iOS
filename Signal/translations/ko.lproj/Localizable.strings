@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "등록되지 않은 사용자: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "설치된 Signal 버전이 만료되어 메시지가 전송되지 않았습니다. 탭하여 최신 버전으로 업데이트하세요.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "%d일 후 설치된 Signal 버전이 만료됩니다. 탭하여 최신 버전으로 업데이트하세요.";

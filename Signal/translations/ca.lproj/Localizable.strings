@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Usuari no registrat: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "La versió del Signal ha vençut! Els missatges ja no s'enviaran correctament. Toqueu per a actualitzar-lo a la versió més recent.";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "La versió del Signal vencerà d'aquí a %d dies. Toqueu per actualitzar-la a la versió més recent.";

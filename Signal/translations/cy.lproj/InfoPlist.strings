@@ -6,3 +6,4 @@ NSLocationWhenInUseUsageDescription = "Mae Signal angen gwybod eich lleoliad er 
 NSMicrophoneUsageDescription = "Mae Signal angen clywed eich meicroffon er mwyn gwneud a derbyn galwadau ffôn ac i recordio negeseuon llais.";
 NSPhotoLibraryAddUsageDescription = "Bydd Signal yn cadw lluniau i'ch llyfrgell.";
 NSPhotoLibraryUsageDescription = "Bydd Signal yn gadael i chi ddewis pa luniau o'ch llyfrgell i'w anfon.";
+NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";

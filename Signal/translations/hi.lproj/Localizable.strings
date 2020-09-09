@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "बिना पंजीकरण वाला उपभोगकर्ता: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "आपका Signal का वर्ज़न एक्स्पायर हो गया है। मेसेज अब सफलतापूर्वक नहीं भेजे जाएंगे। नवीनतम वर्ज़न में अपडेट करने के लिए टैप करें।";
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Signal का आपका संस्करण %d दिनों में समाप्त हो जाएगा। नवीनतम संस्करण में अपडेट करने के लिए टैप करें।";
