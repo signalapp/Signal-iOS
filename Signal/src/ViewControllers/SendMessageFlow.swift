@@ -125,7 +125,7 @@ enum SendMessageUnapprovedContent {
 // MARK: -
 
 enum SendMessageApprovedContent {
-    case text(messageBody: MessageBody)
+    case text(messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?)
     case contactShare(contactShare: ContactShareViewModel)
     case installedSticker(stickerMetadata: StickerMetadata)
     case uninstalledSticker(stickerMetadata: StickerMetadata, stickerData: Data)
@@ -334,12 +334,12 @@ extension SendMessageFlow {
 
     func tryToSend(approvedContent: SendMessageApprovedContent) throws -> Promise<[TSThread]> {
         switch approvedContent {
-        case .text(let messageBody):
+        case .text(let messageBody, let linkPreviewDraft):
             guard !messageBody.text.isEmpty else {
                 throw OWSAssertionError("Missing messageBody.")
             }
             return sendInEachThread { thread in
-                self.send(messageBody: messageBody, thread: thread)
+                self.send(messageBody: messageBody, linkPreviewDraft: linkPreviewDraft, thread: thread)
             }
         case .contactShare(let contactShare):
             return sendInEachThread { thread in
@@ -379,12 +379,12 @@ extension SendMessageFlow {
         }
     }
 
-    func send(messageBody: MessageBody, thread: TSThread) {
+    func send(messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) {
         databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(with: messageBody,
                                       thread: thread,
                                       quotedReplyModel: nil,
-                                      linkPreviewDraft: nil,
+                                      linkPreviewDraft: linkPreviewDraft,
                                       transaction: transaction)
         }
     }
@@ -488,7 +488,7 @@ extension SendMessageFlow: ConversationPickerDelegate {
 // MARK: -
 
 extension SendMessageFlow: TextApprovalViewControllerDelegate {
-    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?) {
+    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
         assert(messageBody?.text.count ?? 0 > 0)
 
         guard let messageBody = messageBody else {
@@ -497,7 +497,7 @@ extension SendMessageFlow: TextApprovalViewControllerDelegate {
             return
         }
 
-        send(approvedContent: .text(messageBody: messageBody))
+        send(approvedContent: .text(messageBody: messageBody, linkPreviewDraft: linkPreviewDraft))
     }
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController) {

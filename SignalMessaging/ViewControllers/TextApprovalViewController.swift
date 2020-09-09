@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 public protocol TextApprovalViewControllerDelegate: class {
-    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?)
+    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?)
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController)
 
@@ -28,9 +28,9 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     private let initialMessageBody: MessageBody
 
-    private(set) var textView: MentionTextView!
+    private let textView = MentionTextView()
     private let footerView = ApprovalFooterView()
-    private var footerViewBottomConstraint: NSLayoutConstraint?
+    private var bottomConstraint: NSLayoutConstraint?
 
     private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
         let placeholder = InputAccessoryViewPlaceholder()
@@ -82,6 +82,9 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelPressed))
 
         footerView.delegate = self
+
+        // Don't allow interactive dismissal.
+        if #available(iOS 13, *) { isModalInPresentation = true }
     }
 
     private func updateSendButton() {
@@ -101,8 +104,52 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         super.viewDidAppear(animated)
 
         updateSendButton()
+        updateLinkPreviewIfNecessary()
 
         textView.becomeFirstResponder()
+    }
+
+    // MARK: - Link Previews
+
+    private var linkPreviewManager: OWSLinkPreviewManager { SSKEnvironment.shared.linkPreviewManager }
+    private var wasLinkPreviewCancelled = false
+    private lazy var linkPreviewView = LinkPreviewView(draftDelegate: self)
+
+    private var currentPreviewUrl: URL? {
+        didSet {
+            guard currentPreviewUrl != oldValue else { return }
+            guard let previewUrl = currentPreviewUrl else { return }
+
+            linkPreviewView.state = LinkPreviewLoading(linkType: .preview)
+            linkPreviewView.isHidden = false
+
+            linkPreviewManager.fetchLinkPreview(for: previewUrl).done { [weak self] draft in
+                guard let self = self else { return }
+                guard self.currentPreviewUrl == previewUrl else { return }
+                self.linkPreviewView.state = LinkPreviewDraft(linkPreviewDraft: draft)
+            }.catch { [weak self] _ in
+                self?.clearLinkPreview()
+            }
+        }
+    }
+
+    private func updateLinkPreviewIfNecessary() {
+        let trimmedText = textView.text.ows_stripped()
+        guard !trimmedText.isEmpty else { return clearLinkPreview() }
+        guard !wasLinkPreviewCancelled else { return clearLinkPreview() }
+
+        let isOversizedText = trimmedText.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold
+        guard !isOversizedText else { return clearLinkPreview() }
+
+        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText) else { return clearLinkPreview() }
+
+        currentPreviewUrl = previewUrl
+    }
+
+    private func clearLinkPreview() {
+        currentPreviewUrl = nil
+        linkPreviewView.isHidden = true
+        linkPreviewView.state = nil
     }
 
     // MARK: - Create Views
@@ -112,8 +159,15 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         self.view = UIView.container()
         self.view.backgroundColor = Theme.backgroundColor
 
+        let stackView = UIStackView(arrangedSubviews: [linkPreviewView, textView, footerView])
+        stackView.axis = .vertical
+        view.addSubview(stackView)
+        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        stackView.autoPinEdge(toSuperviewSafeArea: .leading)
+        stackView.autoPinEdge(toSuperviewSafeArea: .trailing)
+        bottomConstraint = stackView.autoPinEdge(toSuperviewEdge: .bottom)
+
         // Text View
-        textView = MentionTextView()
         textView.mentionDelegate = self
         textView.backgroundColor = Theme.backgroundColor
         textView.textColor = Theme.primaryTextColor
@@ -121,15 +175,6 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         textView.messageBody = self.initialMessageBody
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
-        view.addSubview(textView)
-        textView.autoPinEdge(toSuperviewSafeArea: .leading)
-        textView.autoPinEdge(toSuperviewSafeArea: .trailing)
-        textView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-
-        view.addSubview(footerView)
-        footerView.autoPinWidthToSuperview()
-        footerView.autoPinEdge(.top, to: .bottom, of: textView)
-        footerViewBottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
     // MARK: - Event Handlers
@@ -142,6 +187,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     public func textViewDidChange(_ textView: UITextView) {
         updateSendButton()
+        updateLinkPreviewIfNecessary()
     }
 
     public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}
@@ -175,7 +221,13 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        delegate?.textApproval(self, didApproveMessage: self.textView.messageBody)
+        let linkPreviewDraft: OWSLinkPreviewDraft?
+        if let draftState = linkPreviewView.state as? LinkPreviewDraft {
+            linkPreviewDraft = draftState.linkPreviewDraft
+        } else {
+            linkPreviewDraft = nil
+        }
+        delegate?.textApproval(self, didApproveMessage: self.textView.messageBody, linkPreviewDraft: linkPreviewDraft)
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
@@ -208,10 +260,21 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
     }
 
     func updateFooterViewPosition() {
-        footerViewBottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
+        bottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
 
         // We always want to apply the new bottom bar position immediately,
         // as this only happens during animations (interactive or otherwise)
         footerView.superview?.layoutIfNeeded()
+    }
+}
+
+extension TextApprovalViewController: LinkPreviewViewDraftDelegate {
+    public func linkPreviewDidCancel() {
+        clearLinkPreview()
+        wasLinkPreviewCancelled = true
+    }
+
+    public func linkPreviewCanCancel() -> Bool {
+        return true
     }
 }

@@ -34,6 +34,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
     var approvedAttachments: [SignalAttachment]?
     var approvedContactShare: ContactShareViewModel?
     var approvalMessageBody: MessageBody?
+    var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
     var selectedConversations: [ConversationItem] = []
 
@@ -179,8 +180,10 @@ extension ForwardMessageNavigationController {
                     throw OWSAssertionError("Missing body.")
             }
 
+            let linkPreviewDraft = approvalLinkPreviewDraft
+
             send { thread in
-                self.send(body: body, thread: thread)
+                self.send(body: body, linkPreviewDraft: linkPreviewDraft, thread: thread)
             }
         case .contactShare:
             guard let contactShare = approvedContactShare else {
@@ -264,9 +267,9 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    func send(body: MessageBody, thread: TSThread) {
+    func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(with: body, thread: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
+            ThreadUtil.enqueueMessage(with: body, thread: thread, quotedReplyModel: nil, linkPreviewDraft: linkPreviewDraft, transaction: transaction)
         }
     }
 
@@ -381,10 +384,11 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
 // MARK: -
 
 extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate {
-    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?) {
+    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
         assert(messageBody?.text.count ?? 0 > 0)
 
         approvalMessageBody = messageBody
+        approvalLinkPreviewDraft = linkPreviewDraft
 
         send()
     }

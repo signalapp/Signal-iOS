@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 import UIKit
 
-class GroupViewUtils {
+public class GroupViewUtils {
 
     public static func formatGroupMembersLabel(memberCount: Int) -> String {
         guard memberCount > 0 else {
