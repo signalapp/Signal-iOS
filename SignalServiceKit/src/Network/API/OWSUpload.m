@@ -175,7 +175,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
     __weak OWSAvatarUploadV2 *weakSelf = self;
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(OWSUpload.serialQueue, ^{
             TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
             [self.networkManager makeRequest:formRequest
                 success:^(NSURLSessionDataTask *task, id _Nullable formResponseObject) {

@@ -205,16 +205,12 @@ NS_ASSUME_NONNULL_BEGIN
             }
             OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
 
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                successHandler(attachmentStreamsCopy);
-            });
+            dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ successHandler(attachmentStreamsCopy); });
         })
         .catch(^(NSError *error) {
             OWSLogError(@"Attachment downloads failed.");
 
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                failureHandler(error);
-            });
+            dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ failureHandler(error); });
         });
 }
 
@@ -228,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachments.count > 0);
 
     if (CurrentAppContext().isRunningTests) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(OWSAttachmentDownloads.serialQueue, ^{
             NSError *error = [OWSAttachmentDownloads buildError];
             failure(error);
         });
@@ -298,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachmentPointer);
 
     if (CurrentAppContext().isRunningTests) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(OWSAttachmentDownloads.serialQueue, ^{
             NSError *error = [OWSAttachmentDownloads buildError];
             failure(error);
         });
@@ -325,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachmentStreamsParam);
 
     // To avoid deadlocks, synchronize on self outside of the transaction.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(OWSAttachmentDownloads.serialQueue, ^{
         if (attachmentPointers.count < 1) {
             OWSAssertDebug(attachmentStreamsParam.count > 0);
             successHandler(attachmentStreamsParam);
@@ -402,16 +398,12 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
 
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    successHandler(attachmentStreamsCopy);
-                });
+                dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ successHandler(attachmentStreamsCopy); });
             })
             .catch(^(NSError *error) {
                 OWSLogError(@"Attachment downloads failed.");
 
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    failureHandler(error);
-                });
+                dispatch_async(OWSAttachmentDownloads.serialQueue, ^{ failureHandler(error); });
             });
     });
 }
@@ -437,7 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tryToStartNextDownload
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(OWSAttachmentDownloads.serialQueue, ^{
         OWSAttachmentDownloadJob *_Nullable job;
 
         @synchronized(self) {

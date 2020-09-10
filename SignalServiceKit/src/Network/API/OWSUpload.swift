@@ -25,6 +25,13 @@ public class OWSUpload: NSObject {
                             uploadUrlPath: uploadUrlPath,
                             progressBlock: progressBlock))
     }
+
+    @objc
+    public static let serialQueue: DispatchQueue = {
+        return DispatchQueue(label: "org.whispersystems.signal.upload",
+                             qos: .utility,
+                             autoreleaseFrequency: .workItem)
+    }()
 }
 
 // MARK: -
@@ -104,6 +111,11 @@ public class OWSAttachmentUploadV2: NSObject {
     private let canUseV3: Bool
 
     @objc
+    public static var serialQueue: DispatchQueue {
+        OWSUpload.serialQueue
+    }
+
+    @objc
     public required init(attachmentStream: TSAttachmentStream,
                          canUseV3: Bool) {
         self.attachmentStream = attachmentStream
@@ -111,7 +123,7 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     private func attachmentData() -> Promise<Data> {
-        return firstly(on: .global()) { () -> Data in
+        return firstly(on: Self.serialQueue) { () -> Data in
             let attachmentData = try self.attachmentStream.readDataFromFile()
 
             var nsEncryptionKey = NSData()
@@ -152,20 +164,20 @@ public class OWSAttachmentUploadV2: NSObject {
     // and failing over to REST.
     private func performRequest(skipWebsocket: Bool = false,
                                 requestBlock: @escaping () -> TSRequest) -> Promise<Any?> {
-        return firstly(on: .global()) { () -> Promise<Any?> in
+        return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
             let formRequest = requestBlock()
             let shouldUseWebsocket = OWSUpload.socketManager.canMakeRequests() && !skipWebsocket
             if shouldUseWebsocket {
-                return firstly(on: .global()) { () -> Promise<Any?> in
+                return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
                     OWSUpload.socketManager.makeRequestPromise(request: formRequest)
-                }.recover(on: .global()) { (_) -> Promise<Any?> in
+                }.recover(on: Self.serialQueue) { (_) -> Promise<Any?> in
                     // Failover to REST request.
                     self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
                 }
             } else {
-                return firstly(on: .global()) {
+                return firstly(on: Self.serialQueue) {
                     return OWSUpload.networkManager.makePromise(request: formRequest)
-                }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> Any? in
+                }.map(on: Self.serialQueue) { (_: URLSessionDataTask, responseObject: Any?) -> Any? in
                     return responseObject
                 }
             }
@@ -175,36 +187,36 @@ public class OWSAttachmentUploadV2: NSObject {
     // MARK: - V2
 
     public func uploadV2(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        return firstly(on: .global()) {
+        return firstly(on: Self.serialQueue) {
             // Fetch attachment upload form.
             return self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV2()
             }
-        }.then(on: .global()) { [weak self] (formResponseObject: Any?) -> Promise<OWSUploadFormV2> in
+        }.then(on: Self.serialQueue) { [weak self] (formResponseObject: Any?) -> Promise<OWSUploadFormV2> in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
             return self.parseUploadFormV2(formResponseObject: formResponseObject)
-        }.then(on: .global()) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
+        }.then(on: Self.serialQueue) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
             return firstly {
                 return self.attachmentData()
-            }.map(on: .global()) { (attachmentData: Data) in
+            }.map(on: Self.serialQueue) { (attachmentData: Data) in
                 return (form, attachmentData)
             }
-        }.then(on: .global()) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
+        }.then(on: Self.serialQueue) { (form: OWSUploadFormV2, attachmentData: Data) -> Promise<String> in
             let uploadUrlPath = "attachments/"
             return OWSUpload.uploadV2(data: attachmentData,
                                       uploadForm: form,
                                       uploadUrlPath: uploadUrlPath,
                                       progressBlock: progressBlock)
-        }.map(on: .global()) { [weak self] (_) throws -> Void in
+        }.map(on: Self.serialQueue) { [weak self] (_) throws -> Void in
             self?.uploadTimestamp = NSDate.ows_millisecondTimeStamp()
         }
     }
 
     private func parseUploadFormV2(formResponseObject: Any?) -> Promise<OWSUploadFormV2> {
 
-        return firstly(on: .global()) { () -> OWSUploadFormV2 in
+        return firstly(on: Self.serialQueue) { () -> OWSUploadFormV2 in
             guard let formDictionary = formResponseObject as? [AnyHashable: Any] else {
                 Logger.warn("formResponseObject: \(String(describing: formResponseObject))")
                 throw OWSAssertionError("Invalid form.")
@@ -232,12 +244,12 @@ public class OWSAttachmentUploadV2: NSObject {
         var uploadV3Metadata: UploadV3Metadata?
         var locationUrl: URL?
 
-        return firstly(on: .global()) {
+        return firstly(on: Self.serialQueue) {
             // Fetch attachment upload form.
             return self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV3()
             }
-        }.map(on: .global()) { [weak self] (formResponseObject: Any?) -> Void in
+        }.map(on: Self.serialQueue) { [weak self] (formResponseObject: Any?) -> Void in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
@@ -246,23 +258,23 @@ public class OWSAttachmentUploadV2: NSObject {
             self.cdnKey = uploadForm.cdnKey
             self.cdnNumber = uploadForm.cdnNumber
             form = uploadForm
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: Self.serialQueue) { () -> Promise<Void> in
             return firstly {
                 return self.prepareUploadV3()
-            }.map(on: .global()) { (metadata: UploadV3Metadata) in
+            }.map(on: Self.serialQueue) { (metadata: UploadV3Metadata) in
                 uploadV3Metadata = metadata
             }
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: Self.serialQueue) { () -> Promise<Void> in
             return firstly { () -> Promise<URL> in
                 guard let form = form,
                     let uploadV3Metadata = uploadV3Metadata else {
                         throw OWSAssertionError("Missing form or metadata.")
                 }
                 return self.fetchResumableUploadLocationV3(form: form, uploadV3Metadata: uploadV3Metadata)
-            }.map(on: .global()) { (url: URL) in
+            }.map(on: Self.serialQueue) { (url: URL) in
                 locationUrl = url
             }
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: Self.serialQueue) { () -> Promise<Void> in
             guard let form = form,
                 let uploadV3Metadata = uploadV3Metadata,
                 let locationUrl = locationUrl else {
@@ -272,7 +284,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                  uploadV3Metadata: uploadV3Metadata,
                                                  locationUrl: locationUrl,
                                                  progressBlock: progressBlock)
-        }.map(on: .global()) { () throws -> Void in
+        }.map(on: Self.serialQueue) { () throws -> Void in
             guard let uploadV3Metadata = uploadV3Metadata else {
                 throw OWSAssertionError("Missing form or metadata.")
             }
@@ -341,9 +353,9 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     private func prepareUploadV3() -> Promise<UploadV3Metadata> {
-        return firstly(on: .global()) { () -> Promise<Data> in
+        return firstly(on: Self.serialQueue) { () -> Promise<Data> in
             self.attachmentData()
-        }.map(on: .global()) { (encryptedData: Data) -> UploadV3Metadata in
+        }.map(on: Self.serialQueue) { (encryptedData: Data) -> UploadV3Metadata in
             // Write the encrypted data to a temporary file.
             let temporaryFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
             let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
@@ -363,7 +375,7 @@ public class OWSAttachmentUploadV2: NSObject {
             Logger.info("attemptCount: \(attemptCount)")
         }
 
-        return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+        return firstly(on: Self.serialQueue) { () -> Promise<OWSHTTPResponse> in
             let urlString = form.signedUploadLocation
             guard urlString.lowercased().hasPrefix("http") else {
                 throw OWSAssertionError("Invalid signedUploadLocation.")
@@ -379,7 +391,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
             return urlSession.dataTaskPromise(urlString, method: .post, headers: headers, body: body)
-        }.map(on: .global()) { (response: OWSHTTPResponse) in
+        }.map(on: Self.serialQueue) { (response: OWSHTTPResponse) in
             guard response.statusCode == 201 else {
                 throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
             }
@@ -393,7 +405,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 throw OWSAssertionError("Invalid location header.")
             }
             return locationUrl
-        }.recover(on: .global()) { (error: Error) -> Promise<URL> in
+        }.recover(on: Self.serialQueue) { (error: Error) -> Promise<URL> in
             guard IsNetworkConnectivityFailure(error) else {
                 throw error
             }
@@ -419,7 +431,7 @@ public class OWSAttachmentUploadV2: NSObject {
             Logger.info("attemptCount: \(attemptCount)")
         }
 
-        return firstly(on: .global()) { () -> Promise<Void> in
+        return firstly(on: Self.serialQueue) { () -> Promise<Void> in
             let totalDataLength = uploadV3Metadata.dataLength
 
             if bytesAlreadyUploaded > totalDataLength {
@@ -462,33 +474,37 @@ public class OWSAttachmentUploadV2: NSObject {
                                                     progress: progressBlock).asVoid()
             } else {
                 // Resuming, slice attachment data in memory.
-                //
-                // TODO: It'd be better if we could slice on disk.
-                let entireFileData = try Data(contentsOf: uploadV3Metadata.temporaryFileUrl)
-                let dataSlice = entireFileData.suffix(from: Int(bytesAlreadyUploaded))
-                guard dataSlice.count + bytesAlreadyUploaded == entireFileData.count else {
-                    throw OWSAssertionError("Could not slice the data.")
-                }
-
-                // Write the slice to a temporary file.
                 let dataSliceFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-                try dataSlice.write(to: dataSliceFileUrl)
+
+                var dataSliceLength: Int = 0
+                try autoreleasepool {
+                    // TODO: It'd be better if we could slice on disk.
+                    let entireFileData = try Data(contentsOf: uploadV3Metadata.temporaryFileUrl)
+                    let dataSlice = entireFileData.suffix(from: Int(bytesAlreadyUploaded))
+                    dataSliceLength = dataSlice.count
+                    guard dataSliceLength + bytesAlreadyUploaded == entireFileData.count else {
+                        throw OWSAssertionError("Could not slice the data.")
+                    }
+
+                    // Write the slice to a temporary file.
+                    try dataSlice.write(to: dataSliceFileUrl)
+                }
 
                 // Example: Resuming after uploading 2359296 of 7351375 bytes.
                 //
                 // Content-Range: bytes 2359296-7351374/7351375
                 // Content-Length: 4992079
                 var headers = [String: String]()
-                headers["Content-Length"] = formatInt(dataSlice.count)
+                headers["Content-Length"] = formatInt(dataSliceLength)
                 headers["Content-Range"] = "bytes \(formatInt(bytesAlreadyUploaded))-\(formatInt(totalDataLength - 1))/\(formatInt(totalDataLength))"
 
-                return firstly(on: .global()) {
+                return firstly(on: Self.serialQueue) {
                     urlSession.uploadTaskPromise(urlString,
                                                  method: .put,
                                                  headers: headers,
                                                  dataUrl: dataSliceFileUrl,
                                                  progress: progressBlock).asVoid()
-                }.ensure(on: .global()) {
+                }.ensure(on: Self.serialQueue) {
                     do {
                         try OWSFileSystem.deleteFile(url: dataSliceFileUrl)
                     } catch {
@@ -496,7 +512,7 @@ public class OWSAttachmentUploadV2: NSObject {
                     }
                 }
             }
-        }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+        }.recover(on: Self.serialQueue) { (error: Error) -> Promise<Void> in
 
             guard IsNetworkConnectivityFailure(error) else {
                 throw error
@@ -509,7 +525,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 self.getResumableUploadProgressV3(form: form,
                                                   uploadV3Metadata: uploadV3Metadata,
                                                   locationUrl: locationUrl)
-            }.then(on: .global()) { (bytesAlreadyUploaded: Int) -> Promise<Void> in
+            }.then(on: Self.serialQueue) { (bytesAlreadyUploaded: Int) -> Promise<Void> in
 
                 let didAttemptMakeAnyProgress = uploadV3Metadata.progress < bytesAlreadyUploaded
 
@@ -537,7 +553,7 @@ public class OWSAttachmentUploadV2: NSObject {
                         // We wait briefly before retrying.
                         return after(seconds: delay)
                     }
-                }.then(on: .global()) {
+                }.then(on: Self.serialQueue) {
                     // Retry
                     self.performResumableUploadV3(form: form,
                                                   uploadV3Metadata: uploadV3Metadata,
@@ -559,11 +575,11 @@ public class OWSAttachmentUploadV2: NSObject {
             // Google Cloud Storage seems to need time to store the uploaded data,
             // so we wait before querying for the current upload progress.
             after(seconds: 5)
-        }.then(on: .global()) { () -> Promise<Int> in
+        }.then(on: Self.serialQueue) { () -> Promise<Int> in
             self.getResumableUploadProgressV3Attempt(form: form,
                                                      uploadV3Metadata: uploadV3Metadata,
                                                      locationUrl: locationUrl)
-        }.recover(on: .global()) { (error: Error) -> Promise<Int> in
+        }.recover(on: Self.serialQueue) { (error: Error) -> Promise<Int> in
             guard attemptCount < 2 else {
                 // Default to using last known progress.
                 return Promise.value(uploadV3Metadata.progress)
@@ -589,7 +605,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                      uploadV3Metadata: UploadV3Metadata,
                                                      locationUrl: URL) -> Promise<Int> {
 
-        return firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+        return firstly(on: Self.serialQueue) { () -> Promise<OWSHTTPResponse> in
             let urlString = locationUrl.absoluteString
 
             var headers = [String: String]()
@@ -601,7 +617,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let body = "".data(using: .utf8)
 
             return urlSession.dataTaskPromise(urlString, method: .put, headers: headers, body: body)
-        }.map(on: .global()) { (response: OWSHTTPResponse) in
+        }.map(on: Self.serialQueue) { (response: OWSHTTPResponse) in
 
             if response.statusCode != 308 {
                 owsFailDebug("Invalid status code: \(response.statusCode).")
@@ -663,7 +679,7 @@ public extension OWSUpload {
         }
 
         let (promise, resolver) = Promise<String>.pending()
-        DispatchQueue.global().async {
+        Self.serialQueue.async {
             // TODO: Use OWSUrlSession instead.
             self.cdn0SessionManager.requestSerializer.setValue(OWSURLSession.signalIosUserAgent,
                                                                forHTTPHeaderField: OWSURLSession.kUserAgentHeader)

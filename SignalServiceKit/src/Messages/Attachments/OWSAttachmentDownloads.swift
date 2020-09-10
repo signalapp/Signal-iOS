@@ -19,6 +19,13 @@ public extension OWSAttachmentDownloads {
 
     // MARK: -
 
+    @objc
+    static let serialQueue: DispatchQueue = {
+        return DispatchQueue(label: "org.whispersystems.signal.download",
+                             qos: .utility,
+                             autoreleaseFrequency: .workItem)
+    }()
+
     func downloadAttachmentPointer(_ attachmentPointer: TSAttachmentPointer,
                                    bypassPendingMessageRequest: Bool) -> Promise<TSAttachmentStream> {
         return Promise { resolver in
@@ -45,9 +52,9 @@ public extension OWSAttachmentDownloads {
                             failure: @escaping (Error) -> Void) {
         firstly {
             Self.retrieveAttachment(job: job, attachmentPointer: attachmentPointer)
-        }.done(on: .global()) { (attachmentStream: TSAttachmentStream) in
+        }.done(on: Self.serialQueue) { (attachmentStream: TSAttachmentStream) in
             success(attachmentStream)
-        }.catch(on: .global()) { (error: Error) in
+        }.catch(on: Self.serialQueue) { (error: Error) in
             failure(error)
         }
     }
@@ -57,12 +64,12 @@ public extension OWSAttachmentDownloads {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "retrieveAttachment")
 
-        return firstly(on: .global()) { () -> Promise<URL> in
+        return firstly(on: Self.serialQueue) { () -> Promise<URL> in
             Self.download(job: job, attachmentPointer: attachmentPointer)
-        }.then(on: .global()) { (encryptedFileUrl: URL) -> Promise<TSAttachmentStream> in
+        }.then(on: Self.serialQueue) { (encryptedFileUrl: URL) -> Promise<TSAttachmentStream> in
             Self.decrypt(encryptedFileUrl: encryptedFileUrl,
                          attachmentPointer: attachmentPointer)
-        }.ensure(on: .global()) {
+        }.ensure(on: Self.serialQueue) {
             guard backgroundTask != nil else {
                 owsFailDebug("Missing backgroundTask.")
                 return
@@ -88,7 +95,7 @@ public extension OWSAttachmentDownloads {
 
         let downloadState = DownloadState(job: job, attachmentPointer: attachmentPointer)
 
-        return firstly(on: .global()) { () -> Promise<URL> in
+        return firstly(on: Self.serialQueue) { () -> Promise<URL> in
             Self.downloadAttempt(downloadState: downloadState)
         }
     }
@@ -97,7 +104,7 @@ public extension OWSAttachmentDownloads {
                                        resumeData: Data? = nil,
                                        attemptIndex: UInt = 0) -> Promise<URL> {
 
-        return firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
+        return firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
             let attachmentPointer = downloadState.attachmentPointer
             let urlSession = self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
             let urlPath = try Self.urlPath(for: downloadState)
@@ -120,7 +127,7 @@ public extension OWSAttachmentDownloads {
                                                          headers: headers,
                                                          progress: progress)
             }
-        }.map(on: .global()) { (response: OWSUrlDownloadResponse) in
+        }.map(on: Self.serialQueue) { (response: OWSUrlDownloadResponse) in
             let downloadUrl = response.downloadUrl
             guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {
                 throw OWSAssertionError("Could not determine attachment file size.")
@@ -129,7 +136,7 @@ public extension OWSAttachmentDownloads {
                 throw OWSAssertionError("Attachment download length exceeds max size.")
             }
             return downloadUrl
-        }.recover(on: .global()) { (error: Error) -> Promise<URL> in
+        }.recover(on: Self.serialQueue) { (error: Error) -> Promise<URL> in
             Logger.warn("Error: \(error)")
 
             let maxAttemptCount = 16
@@ -199,20 +206,16 @@ public extension OWSAttachmentDownloads {
 
     // MARK: -
 
-    private static let decryptQueue = DispatchQueue(label: "OWSAttachmentDownloads.decryptQueue")
-
     private class func decrypt(encryptedFileUrl: URL,
                                attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
-        // Use decryptQueue to ensure that we only load into memory
+        // Use serialQueue to ensure that we only load into memory
         // & decrypt a single attachment at a time.
-        return firstly(on: decryptQueue) { () -> TSAttachmentStream in
-            return try autoreleasepool { () -> TSAttachmentStream in
-                let cipherText = try Data(contentsOf: encryptedFileUrl)
-                return try Self.decrypt(cipherText: cipherText,
-                                        attachmentPointer: attachmentPointer)
-            }
-        }.ensure(on: .global()) {
+        return firstly(on: Self.serialQueue) { () -> TSAttachmentStream in
+            let cipherText = try Data(contentsOf: encryptedFileUrl)
+            return try Self.decrypt(cipherText: cipherText,
+                                    attachmentPointer: attachmentPointer)
+        }.ensure(on: Self.serialQueue) {
             do {
                 try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
             } catch {
@@ -227,16 +230,18 @@ public extension OWSAttachmentDownloads {
         guard let encryptionKey = attachmentPointer.encryptionKey else {
             throw OWSAssertionError("Missing encryptionKey.")
         }
-        let plaintext: Data = try Cryptography.decryptAttachment(cipherText,
-                                                                 withKey: encryptionKey,
-                                                                 digest: attachmentPointer.digest,
-                                                                 unpaddedSize: attachmentPointer.byteCount)
+        return try autoreleasepool {
+            let plaintext: Data = try Cryptography.decryptAttachment(cipherText,
+                                                                     withKey: encryptionKey,
+                                                                     digest: attachmentPointer.digest,
+                                                                     unpaddedSize: attachmentPointer.byteCount)
 
-        let attachmentStream = databaseStorage.read { transaction in
-            TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
+            let attachmentStream = databaseStorage.read { transaction in
+                TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
+            }
+            try attachmentStream.write(plaintext)
+            return attachmentStream
         }
-        try attachmentStream.write(plaintext)
-        return attachmentStream
     }
 
     // MARK: -
