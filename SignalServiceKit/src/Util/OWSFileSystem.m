@@ -295,47 +295,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteContentsOfDirectory:(NSString *)dirPath
 {
-    NSError *error;
-    NSArray<NSString *> *_Nullable filePaths = [self allFilesInDirectoryRecursive:dirPath error:&error];
-    if (error != nil || filePaths == nil) {
+    NSArray<NSString *> *_Nullable filePaths = [self recursiveFilesInDirectory:dirPath error:NULL];
+    if (filePaths == nil) {
         OWSFailDebug(@"Could not retrieve files in directory.");
         return;
     }
     for (NSString *filePath in filePaths) {
         [self deleteFileIfExists:filePath];
     }
-}
-
-+ (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error
-{
-    OWSAssertDebug(dirPath.length > 0);
-
-    *error = nil;
-
-    NSArray<NSString *> *filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:error];
-    if (*error) {
-        OWSFailDebug(@"could not find files in directory: %@", *error);
-        return nil;
-    }
-
-    NSMutableArray<NSString *> *filePaths = [NSMutableArray new];
-
-    for (NSString *filename in filenames) {
-        NSString *filePath = [dirPath stringByAppendingPathComponent:filename];
-
-        BOOL isDirectory;
-        [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
-        if (isDirectory) {
-            [filePaths addObjectsFromArray:[self allFilesInDirectoryRecursive:filePath error:error]];
-            if (*error) {
-                return nil;
-            }
-        } else {
-            [filePaths addObject:filePath];
-        }
-    }
-
-    return filePaths;
 }
 
 + (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath
