@@ -143,10 +143,12 @@ public enum OnionRequestAPI {
     /// - Note: Exposed for testing purposes.
     private static func getPath(excluding snode: Snode?) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
+        var paths = OnionRequestAPI.paths
         if paths.count < pathCount {
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadConnection.read { transaction in
                 paths = storage.getOnionRequestPaths(in: transaction)
+                OnionRequestAPI.paths = paths
                 if paths.count >= pathCount {
                     guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
                 }
