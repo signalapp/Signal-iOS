@@ -2033,7 +2033,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. To access features like group admins, create a New Group. %@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "ក្រុមមុន";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "ស្វែងយល់បន្ថែម";
@@ -2322,12 +2322,6 @@
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "យើងនឹងរំលឹកអ្នកពេលក្រោយ។";
-
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introducing @Mentions";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "ថតចម្លងសារអក្សរ";

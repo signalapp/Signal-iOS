@@ -2323,12 +2323,6 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Připomeneme se vám později.";
 
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Ve skupině nového typu můžete upozornit člena znakem @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Představujeme @Zmínky";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Zkopírovat text zprávy";
 

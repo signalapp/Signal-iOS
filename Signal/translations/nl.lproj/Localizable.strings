@@ -1664,7 +1664,7 @@
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
 
 /* The title for the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Code";
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR-code";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
@@ -1697,7 +1697,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Doorsturen via andere app";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "Qr-code";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Delen via Signal";
@@ -2322,12 +2322,6 @@
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Je wordt er later aan herinneren dat je nog een pincode moet aanmaken.";
-
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Get someone’s attention in a “New Group” by typing @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "We introduceren @Vermeldingen";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Berichttekst kopiëren";
@@ -4229,7 +4223,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Veiligheidsnummer tonen";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "Gesprek weergeven";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Ik nodig je uit om Signal te installeren! Hier is de link:";

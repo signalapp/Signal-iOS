@@ -2323,12 +2323,6 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "سوف نذكِّرك لاحقا";
 
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "احصل على انتباه أحدهم في المجموعات من الطراز الجديد بكتابة @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "نقدم لكم ميزة معرفة عندما يذكر اسمك";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "نسخ نص الرسالة";
 

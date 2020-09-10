@@ -1580,7 +1580,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+"GROUP_INVITE_LINK_RESET" = "Grupės nuoroda buvo atstatyta.";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Jūs atstatėte grupės nuorodą.";
@@ -1760,7 +1760,7 @@
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Jūs panaikinote savo prašymą prisijungti prie grupės.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Jūsų prašymas prisijungti prie grupės buvo atmestas.";
 
 /* Message indicating that the local user requested to join the group. */
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Jūs išsiuntėte prašymą prisijungti prie grupės.";
@@ -1880,7 +1880,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ prisijungė prie grupės.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ prisijungė prie grupės per grupės nuorodą.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ išėjo iš grupės.";
@@ -1928,7 +1928,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Prašymai tapti nariais";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Laukiantys pakvietimai";
 
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Narių prašymai ir pakvietimai";
@@ -2246,7 +2246,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Įrenginio susiejimas nepavyko";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Šis įrenginys galės matyti jūsų grupes ir adresatus, gauti prieigą prie jūsų pokalbių bei siųsti žinutes jūsų vardu.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Susieti šį įrenginį?";
@@ -2322,12 +2322,6 @@
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Priminsime vėliau.";
-
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Atkreipkite kažkieno dėmesį „Naujoje grupėję“, parašydami @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Pristatome @paminėjimus";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopijuoti žinutės tekstą";
@@ -3002,10 +2996,10 @@
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Peržiūrėta";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Visi";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Bet kuris žmogus, turintis jūsų telefono numerį savo adresatuose, matys jus kaip Signal adresatą. Kiti žmonės galės rasti jus paieškoje.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Niekas";
@@ -3023,7 +3017,7 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Jūsų telefono numerį Signal programėlėje matys tik jūsų adresatai.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "Visi";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
@@ -4469,7 +4463,7 @@
 "UNNAMED_DEVICE" = "Įrenginys be pavadinimo";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "Atsegti";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Pokalbiai";

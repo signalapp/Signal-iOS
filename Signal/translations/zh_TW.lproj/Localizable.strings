@@ -2323,12 +2323,6 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "我們將稍後提醒你。";
 
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "輸入@，在“新群組”中吸引某人的注意";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "介紹 @Mentions";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "複製訊息文字";
 

@@ -1829,7 +1829,7 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 человек отклонил приглашение в группу.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 человек, приглашенный %@, отклонил приглашение в группу.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 человек, который был приглашён %@, отклонил приглашение в группу.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ отклонил(-а) ваше приглашение в группу.";
@@ -2322,12 +2322,6 @@
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Мы напомним вам позже.";
-
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Привлеките чьё-нибудь внимание в «Новой группе», набрав @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Представляем @упоминания";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Копировать текст сообщения";
@@ -2960,7 +2954,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Отозвать приглашение в группу для «%@»?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Подробности людей, приглашённых другими участниками группы, не показываются. Если приглашённые решат присоединиться, их информация станет доступна группе с того времени. Они не увидят никаких сообщений в группе до того, как присоединятся.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Подробности людей, приглашённых другими участниками группы, не показываются. Если приглашённые решат присоединиться, их информация станет доступна группе. Они не увидят никаких сообщений в группе до того, как присоединятся.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Люди в этом списке пытаются присоединиться к «%@» по ссылке на группу.";

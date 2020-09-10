@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Që të mund t’u tregojë të tjerëve 
 NSMicrophoneUsageDescription = "Për të bërë dhe marrë thirrje telefonike dhe për të incizuar mesazhe zanore, Signal-it i duhet hyrje te mikrofoni juaj.";
 NSPhotoLibraryAddUsageDescription = "Signal-i do t’i ruajë fotot te fototeka juaj.";
 NSPhotoLibraryUsageDescription = "Signal-i do t’ju lejojë të zgjidhni cilat foto prej fototekës të dërgohen.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Signal-i përdor rrjetin vendor për t’ju lejuar të shpërngulni drejtpërsëdrejti llogarinë tuaj te një telefon i ri. S’do të përdoret, para se të zgjidhni shprehimisht të nisni një shpërngulje drejt një pajisjeje të re.";

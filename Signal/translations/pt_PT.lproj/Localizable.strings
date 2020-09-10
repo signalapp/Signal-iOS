@@ -2323,12 +2323,6 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "iremos lembrar-lhe mais tarde.";
 
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Obtenha a atenção de alguém num \"Grupo novo\" escrevendo @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Introdução às @Menções";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensagem";
 
@@ -2921,7 +2915,7 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ convidou %2$@ pessoas";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Não existem pedidos pendentes para membro.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Sem convites para exibir.";

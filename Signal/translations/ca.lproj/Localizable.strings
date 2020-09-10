@@ -2323,12 +2323,6 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Us ho recordarem més tard.";
 
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Capteu l'atenció d'algú en un grup nou escrivint @.";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "S'introdueixen les @Mencions";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copia el text del missatge";
 

@@ -1844,19 +1844,19 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "Ο/Η %1$@ έκανε τον/την %2$@ διαχειριστή/τρια.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Η πρόσκληση στην ομάδα για 1 άτομο ανακλήθηκε.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Η πρόσκληση 1 ατόμου στην ομάδα ανακλήθηκε.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Η πρόσκληση στην ομάδα του/της %@ ανακλήθηκε.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "Ο/Η %@ ανακάλεσε την πρόσκληση στην ομάδα για 1 άτομο.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "Ο/Η %@ ανακάλεσε την πρόσκληση 1 ατόμου στην ομάδα.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "Ο/Η %1$@ ανακάλεσε την πρόσκληση στην ομάδα για %2$@ άτομα.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "Ο/Η %1$@ ανακάλεσε την πρόσκληση %2$@ ατόμων στην ομάδα.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Οι προσκλήσεις στην ομάδα %@ ατόμων ανακλήθηκαν.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Ανακλήθηκαν οι προσκλήσεις %@ ατόμων στην ομάδα.";
 
 /* Message indicating that a single remote user was invited to the group. */
 "GROUP_REMOTE_USER_INVITED_1" = "1 άτομο προσκλήθηκε στην ομάδα.";
@@ -2322,12 +2322,6 @@
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Θα στο θυμίσουμε αργότερα.";
-
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Τράβα τη προσοχή κάποιου ατόμου σε μια ομάδα νέου τύπου, γράφοντας @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Υποδέξου τις @Αναφορές";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Αντιγραφή κειμένου μηνύματος";

@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Persona no registrada: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "¡Esta versión de Signal ha caducado! Toca para actualizarla a la versión más reciente.";
+"EXPIRATION_ERROR" = "¡Esta versión de Signal ha caducado! Toca para actualizar a la versión más reciente.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Esta versión de Signal caducará en %d días. Toca para actualizar a la versión más reciente.";
@@ -2322,12 +2322,6 @@
 
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Te lo recordaremos más tarde.";
-
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Llama la atención de alguien en un chat de grupo del nuevo sistema escribiendo @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "¡Las @Menciones en chats de grupo han llegado!";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensaje";

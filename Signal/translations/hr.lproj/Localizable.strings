@@ -2323,12 +2323,6 @@
 /* toast indicating that we will remind the user later */
 "MEGAPHONE_WILL_REMIND_LATER" = "Podsjetiti ćemo vas kasnije.";
 
-/* Body for mentions megaphone */
-"MENTIONS_MEGAPHONE_BODY" = "Privucite nečiju pažnju u \"Novoj grupi\" pisanjem @";
-
-/* Title for mentions megaphone */
-"MENTIONS_MEGAPHONE_TITLE" = "Predstavljamo @Spominjanja";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Kopiraj tekst poruke";
 
