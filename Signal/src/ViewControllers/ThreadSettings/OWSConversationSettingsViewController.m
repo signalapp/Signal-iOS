@@ -583,7 +583,7 @@ const CGFloat kIconViewLength = 24;
                                 slider.maximumValue = (float)(strongSelf.disappearingMessagesDurations.count - 1);
                                 slider.minimumValue = 0;
                                 slider.tintColor = LKColors.accent;
-                                slider.continuous = YES; // NO fires change event only once you let go
+                                slider.continuous = NO;
                                 slider.value = strongSelf.disappearingMessagesConfiguration.durationIndex;
                                 [slider addTarget:strongSelf
                                               action:@selector(durationSliderDidChange:)
@@ -812,8 +812,18 @@ const CGFloat kIconViewLength = 24;
         [mainSection addItem:
             [OWSTableItem itemWithCustomCellBlock:^{
                 NSString *title = @"Reset Secure Session";
-                NSString *accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"reset_secure_session");
-                return [weakSelf disclosureCellWithName:title iconName:@"system_message_security" accessibilityIdentifier:accessibilityIdentifier];
+                UIView *iconViewContainer = [UIView new];
+                UIImageView *iconView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"system_message_security"] asTintedImageWithColor:LKColors.text]];
+                [iconViewContainer addSubview:iconView];
+                [iconViewContainer autoSetDimension:ALDimensionWidth toSize:kIconViewLength];
+                [iconViewContainer autoSetDimension:ALDimensionHeight toSize:kIconViewLength];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:1];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:2];
+                [iconView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:1];
+                [iconView autoSetDimension:ALDimensionWidth toSize:kIconViewLength - 2];
+                [iconView autoSetDimension:ALDimensionHeight toSize:kIconViewLength - 2];
+                return [weakSelf cellWithName:title iconView:iconViewContainer];
             }
             actionBlock:^{ [weakSelf resetSecureSession]; }]
         ];
