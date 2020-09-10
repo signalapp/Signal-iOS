@@ -55,6 +55,12 @@ class MemberActionSheet: NSObject {
         actionSheet.contentAlignment = .leading
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
+        // If the local user, show no options.
+        guard !address.isLocalAddress else {
+            fromViewController.presentActionSheet(actionSheet)
+            return
+        }
+
         // If blocked, only show unblock as an option
         guard !contactsViewHelper.isSignalServiceAddressBlocked(address) else {
             let unblockAction = ActionSheetAction(
@@ -230,16 +236,25 @@ private class MemberHeader: UIStackView {
         addArrangedSubview(avatarContainer)
 
         let avatarDiameter: CGFloat = 80
-        let avatarView = ConversationAvatarImageView(
-            thread: thread,
-            diameter: UInt(avatarDiameter),
-            contactsManager: contactsManager
-        )
+        let avatarView = AvatarImageView()
+
         avatarContainer.addSubview(avatarView)
         avatarView.autoHCenterInSuperview()
         avatarView.autoPinEdge(toSuperviewEdge: .top)
         avatarView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 8)
         avatarView.autoSetDimension(.height, toSize: avatarDiameter)
+
+        let avatarBuilder = OWSContactAvatarBuilder(
+            address: address,
+            colorName: thread.conversationColorName,
+            diameter: UInt(avatarDiameter)
+        )
+
+        if address.isLocalAddress {
+            avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+        } else {
+            avatarView.image = avatarBuilder.build()
+        }
 
         let titleLabel = UILabel()
         titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
@@ -303,6 +318,7 @@ private class MemberHeader: UIStackView {
                                                   comment: "Accessibility label for the 'call group member' button"),
             accessibilityIdentifier: "MemberActionSheet.video_call"
         ) { SignalApp.shared().presentConversation(for: address, action: .videoCall, animated: true) }
+        videoCallButton.isEnabled = !address.isLocalAddress
         actionsStackView.addArrangedSubview(videoCallButton)
 
         let audioCallButton = createActionButton(
@@ -311,6 +327,7 @@ private class MemberHeader: UIStackView {
                                                   comment: "Accessibility label for the 'call group member' button"),
             accessibilityIdentifier: "MemberActionSheet.audio_call"
         ) { SignalApp.shared().presentConversation(for: address, action: .audioCall, animated: true) }
+        audioCallButton.isEnabled = !address.isLocalAddress
         actionsStackView.addArrangedSubview(audioCallButton)
 
         let leftSpacer = UIView.hStretchingSpacer()

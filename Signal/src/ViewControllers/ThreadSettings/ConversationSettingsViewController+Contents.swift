@@ -749,9 +749,6 @@ extension ConversationSettingsViewController {
                 return cell
                 },
                                      customRowHeight: UITableView.automaticDimension) { [weak self] in
-                                        guard !isLocalUser else {
-                                            return
-                                        }
                                         self?.didSelectGroupMember(memberAddress)
             })
         }
