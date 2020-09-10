@@ -158,7 +158,6 @@ class ExperienceUpgradeManager: NSObject {
              .pinReminder,
              .notificationPermissionReminder,
              .contactPermissionReminder,
-             .mentions,
              .linkPreviews:
             return true
         case .messageRequests:
@@ -179,8 +178,6 @@ class ExperienceUpgradeManager: NSObject {
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .mentions:
-            return MentionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .linkPreviews:
             return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
