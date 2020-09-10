@@ -105,29 +105,27 @@ public extension OWSAttachmentDownloads {
                                        attemptIndex: UInt = 0) -> Promise<URL> {
 
         return firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
-            try autoreleasepool {
-                let attachmentPointer = downloadState.attachmentPointer
-                let urlSession = self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
-                let urlPath = try Self.urlPath(for: downloadState)
-                let headers: [String: String] = [
-                    "Content-Type": OWSMimeTypeApplicationOctetStream
-                ]
+            let attachmentPointer = downloadState.attachmentPointer
+            let urlSession = self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
+            let urlPath = try Self.urlPath(for: downloadState)
+            let headers: [String: String] = [
+                "Content-Type": OWSMimeTypeApplicationOctetStream
+            ]
 
-                let progress = { (task: URLSessionTask, progress: Progress) in
-                    Self.handleDownloadProgress(downloadState: downloadState,
-                                                task: task,
-                                                progress: progress)
-                }
+            let progress = { (task: URLSessionTask, progress: Progress) in
+                Self.handleDownloadProgress(downloadState: downloadState,
+                                            task: task,
+                                            progress: progress)
+            }
 
-                if let resumeData = resumeData {
-                    return urlSession.urlDownloadTaskPromise(resumeData: resumeData,
-                                                             progress: progress)
-                } else {
-                    return urlSession.urlDownloadTaskPromise(urlPath,
-                                                             method: .get,
-                                                             headers: headers,
-                                                             progress: progress)
-                }
+            if let resumeData = resumeData {
+                return urlSession.urlDownloadTaskPromise(resumeData: resumeData,
+                                                         progress: progress)
+            } else {
+                return urlSession.urlDownloadTaskPromise(urlPath,
+                                                         method: .get,
+                                                         headers: headers,
+                                                         progress: progress)
             }
         }.map(on: Self.serialQueue) { (response: OWSUrlDownloadResponse) in
             let downloadUrl = response.downloadUrl
@@ -139,27 +137,25 @@ public extension OWSAttachmentDownloads {
             }
             return downloadUrl
         }.recover(on: Self.serialQueue) { (error: Error) -> Promise<URL> in
-            try autoreleasepool {
-                Logger.warn("Error: \(error)")
+            Logger.warn("Error: \(error)")
 
-                let maxAttemptCount = 16
-                if IsNetworkConnectivityFailure(error),
-                    attemptIndex < maxAttemptCount {
+            let maxAttemptCount = 16
+            if IsNetworkConnectivityFailure(error),
+                attemptIndex < maxAttemptCount {
 
-                    return firstly {
-                        // Wait briefly before retrying.
-                        after(seconds: 0.25)
-                    }.then { () -> Promise<URL> in
-                        if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
-                            !resumeData.isEmpty {
-                            return self.downloadAttempt(downloadState: downloadState, resumeData: resumeData, attemptIndex: attemptIndex + 1)
-                        } else {
-                            return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
-                        }
+                return firstly {
+                    // Wait briefly before retrying.
+                    after(seconds: 0.25)
+                }.then { () -> Promise<URL> in
+                    if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
+                        !resumeData.isEmpty {
+                        return self.downloadAttempt(downloadState: downloadState, resumeData: resumeData, attemptIndex: attemptIndex + 1)
+                    } else {
+                        return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
                     }
-                } else {
-                    throw error
                 }
+            } else {
+                throw error
             }
         }
     }
@@ -210,19 +206,15 @@ public extension OWSAttachmentDownloads {
 
     // MARK: -
 
-    private static let decryptQueue = DispatchQueue(label: "OWSAttachmentDownloads.decryptQueue")
-
     private class func decrypt(encryptedFileUrl: URL,
                                attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
 
-        // Use decryptQueue to ensure that we only load into memory
+        // Use serialQueue to ensure that we only load into memory
         // & decrypt a single attachment at a time.
-        return firstly(on: decryptQueue) { () -> TSAttachmentStream in
-            return try autoreleasepool { () -> TSAttachmentStream in
-                let cipherText = try Data(contentsOf: encryptedFileUrl)
-                return try Self.decrypt(cipherText: cipherText,
-                                        attachmentPointer: attachmentPointer)
-            }
+        return firstly(on: Self.serialQueue) { () -> TSAttachmentStream in
+            let cipherText = try Data(contentsOf: encryptedFileUrl)
+            return try Self.decrypt(cipherText: cipherText,
+                                    attachmentPointer: attachmentPointer)
         }.ensure(on: Self.serialQueue) {
             do {
                 try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)

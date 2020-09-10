@@ -354,17 +354,13 @@ public class OWSAttachmentUploadV2: NSObject {
 
     private func prepareUploadV3() -> Promise<UploadV3Metadata> {
         return firstly(on: Self.serialQueue) { () -> Promise<Data> in
-            autoreleasepool {
-                self.attachmentData()
-            }
+            self.attachmentData()
         }.map(on: Self.serialQueue) { (encryptedData: Data) -> UploadV3Metadata in
-            try autoreleasepool {
-                // Write the encrypted data to a temporary file.
-                let temporaryFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
-                let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
-                try encryptedData.write(to: temporaryFileUrl)
-                return UploadV3Metadata(temporaryFileUrl: temporaryFileUrl, dataLength: encryptedData.count)
-            }
+            // Write the encrypted data to a temporary file.
+            let temporaryFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
+            let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
+            try encryptedData.write(to: temporaryFileUrl)
+            return UploadV3Metadata(temporaryFileUrl: temporaryFileUrl, dataLength: encryptedData.count)
         }
     }
 
