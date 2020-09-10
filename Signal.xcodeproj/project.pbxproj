@@ -1368,6 +1368,10 @@
 		C35E8AAD2485E51D00ACB629 /* IP2Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IP2Country.swift; sourceTree = "<group>"; };
 		C3638C0424C7F0B500AF29BC /* LK002RemoveFriendRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK002RemoveFriendRequests.swift; sourceTree = "<group>"; };
 		C369549C24D27A3500CEB4E3 /* MultiDeviceRemovalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceRemovalSheet.swift; sourceTree = "<group>"; };
+		C396469C2509D3ED00B0B9F5 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = translations/pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C396469D2509D3F400B0B9F5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = translations/ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C396469E2509D40400B0B9F5 /* vi-VN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "vi-VN"; path = "translations/vi-VN.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		C396469F2509D41100B0B9F5 /* id-ID */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "id-ID"; path = "translations/id-ID.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		C39DD28724F3318C008590FC /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Migrating Translations from Android.md"; sourceTree = "<group>"; };
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -3132,6 +3136,10 @@
 				Base,
 				it,
 				fa,
+				pl,
+				ja,
+				"vi-VN",
+				"id-ID",
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -4044,6 +4052,10 @@
 				B68CB7E61AA548870065AC3F /* zh_CN */,
 				4C1D2337218B6BA000A0598F /* it */,
 				C3AECBEA24EF5244005743DE /* fa */,
+				C396469C2509D3ED00B0B9F5 /* pl */,
+				C396469D2509D3F400B0B9F5 /* ja */,
+				C396469E2509D40400B0B9F5 /* vi-VN */,
+				C396469F2509D41100B0B9F5 /* id-ID */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
