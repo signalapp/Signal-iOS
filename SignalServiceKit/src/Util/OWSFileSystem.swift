@@ -18,6 +18,7 @@ public extension OWSFileSystem {
         deleteFile(filePath, ignoreIfMissing: false)
     }
 
+    @discardableResult
     class func deleteFileIfExists(_ filePath: String) -> Bool {
         return deleteFile(filePath, ignoreIfMissing: true)
     }
@@ -57,6 +58,30 @@ public extension OWSFileSystem {
             throw OWSAssertionError("Destination file already exists.")
         }
         #endif
+    }
+
+    class func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
+        owsAssertDebug(dirPath.count > 0)
+
+        do {
+            return try FileManager.default.subpathsOfDirectory(atPath: dirPath)
+                .map { (dirPath as NSString).appendingPathComponent($0) }
+                .filter {
+                    var isDirectory: ObjCBool = false
+                    FileManager.default.fileExists(atPath: $0, isDirectory: &isDirectory)
+                    return !isDirectory.boolValue
+                }
+
+        } catch {
+            let nsError = error as NSError
+            let isCocoaNoSuchFileError = (nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError)
+
+            if isCocoaNoSuchFileError {
+                return []
+            } else {
+                throw error
+            }
+        }
     }
 
     // MARK: - Temporary Files
