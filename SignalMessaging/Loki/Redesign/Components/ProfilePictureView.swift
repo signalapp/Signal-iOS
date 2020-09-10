@@ -43,6 +43,37 @@ public final class ProfilePictureView : UIView {
     }
     
     // MARK: Updating
+    @objc(updateForThread:)
+    public func update(for thread: TSThread) {
+        openGroupProfilePicture = nil
+        if thread.isGroupThread() {
+            if thread.name() == "Loki Public Chat"
+                || thread.name() == "Session Public Chat" { // Override the profile picture for the Loki Public Chat and the Session Public Chat
+                hexEncodedPublicKey = ""
+                isRSSFeed = true
+            } else if let openGroupProfilePicture = (thread as! TSGroupThread).groupModel.groupImage { // An open group with a profile picture
+                self.openGroupProfilePicture = openGroupProfilePicture
+                isRSSFeed = false
+            } else if (thread as! TSGroupThread).groupModel.groupType == .openGroup
+                || (thread as! TSGroupThread).groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
+                hexEncodedPublicKey = ""
+                isRSSFeed = true
+            } else { // A closed group
+                var users = MentionsManager.userPublicKeyCache[thread.uniqueId!] ?? []
+                users.remove(getUserHexEncodedPublicKey())
+                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
+                hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
+                additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                isRSSFeed = false
+            }
+        } else { // A one-on-one chat
+            hexEncodedPublicKey = thread.contactIdentifier()!
+            additionalHexEncodedPublicKey = nil
+            isRSSFeed = false
+        }
+        update()
+    }
+
     @objc public func update() {
         AssertIsOnMainThread()
         func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
