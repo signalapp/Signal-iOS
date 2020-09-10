@@ -271,6 +271,7 @@ class ConversationSettingsViewController: OWSTableViewController {
             let newThreadViewModel = ThreadViewModel(thread: newThread, transaction: transaction)
             self.threadViewModel = newThreadViewModel
             self.groupViewHelper = GroupViewHelper(threadViewModel: newThreadViewModel)
+            self.groupViewHelper.delegate = self
             return true
         }
         if !didUpdate {
