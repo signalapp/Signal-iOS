@@ -98,27 +98,29 @@ public extension OWSAttachmentDownloads {
                                        attemptIndex: UInt = 0) -> Promise<URL> {
 
         return firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
-            let attachmentPointer = downloadState.attachmentPointer
-            let urlSession = self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
-            let urlPath = try Self.urlPath(for: downloadState)
-            let headers: [String: String] = [
-                "Content-Type": OWSMimeTypeApplicationOctetStream
-            ]
+            try autoreleasepool {
+                let attachmentPointer = downloadState.attachmentPointer
+                let urlSession = self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
+                let urlPath = try Self.urlPath(for: downloadState)
+                let headers: [String: String] = [
+                    "Content-Type": OWSMimeTypeApplicationOctetStream
+                ]
 
-            let progress = { (task: URLSessionTask, progress: Progress) in
-                Self.handleDownloadProgress(downloadState: downloadState,
-                                            task: task,
-                                            progress: progress)
-            }
+                let progress = { (task: URLSessionTask, progress: Progress) in
+                    Self.handleDownloadProgress(downloadState: downloadState,
+                                                task: task,
+                                                progress: progress)
+                }
 
-            if let resumeData = resumeData {
-                return urlSession.urlDownloadTaskPromise(resumeData: resumeData,
-                                                         progress: progress)
-            } else {
-                return urlSession.urlDownloadTaskPromise(urlPath,
-                                                         method: .get,
-                                                         headers: headers,
-                                                         progress: progress)
+                if let resumeData = resumeData {
+                    return urlSession.urlDownloadTaskPromise(resumeData: resumeData,
+                                                             progress: progress)
+                } else {
+                    return urlSession.urlDownloadTaskPromise(urlPath,
+                                                             method: .get,
+                                                             headers: headers,
+                                                             progress: progress)
+                }
             }
         }.map(on: .global()) { (response: OWSUrlDownloadResponse) in
             let downloadUrl = response.downloadUrl
@@ -130,25 +132,27 @@ public extension OWSAttachmentDownloads {
             }
             return downloadUrl
         }.recover(on: .global()) { (error: Error) -> Promise<URL> in
-            Logger.warn("Error: \(error)")
+            try autoreleasepool {
+                Logger.warn("Error: \(error)")
 
-            let maxAttemptCount = 16
-            if IsNetworkConnectivityFailure(error),
-                attemptIndex < maxAttemptCount {
+                let maxAttemptCount = 16
+                if IsNetworkConnectivityFailure(error),
+                    attemptIndex < maxAttemptCount {
 
-                return firstly {
-                    // Wait briefly before retrying.
-                    after(seconds: 0.25)
-                }.then { () -> Promise<URL> in
-                    if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
-                        !resumeData.isEmpty {
-                        return self.downloadAttempt(downloadState: downloadState, resumeData: resumeData, attemptIndex: attemptIndex + 1)
-                    } else {
-                        return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
+                    return firstly {
+                        // Wait briefly before retrying.
+                        after(seconds: 0.25)
+                    }.then { () -> Promise<URL> in
+                        if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
+                            !resumeData.isEmpty {
+                            return self.downloadAttempt(downloadState: downloadState, resumeData: resumeData, attemptIndex: attemptIndex + 1)
+                        } else {
+                            return self.downloadAttempt(downloadState: downloadState, attemptIndex: attemptIndex + 1)
+                        }
                     }
+                } else {
+                    throw error
                 }
-            } else {
-                throw error
             }
         }
     }
@@ -227,16 +231,18 @@ public extension OWSAttachmentDownloads {
         guard let encryptionKey = attachmentPointer.encryptionKey else {
             throw OWSAssertionError("Missing encryptionKey.")
         }
-        let plaintext: Data = try Cryptography.decryptAttachment(cipherText,
-                                                                 withKey: encryptionKey,
-                                                                 digest: attachmentPointer.digest,
-                                                                 unpaddedSize: attachmentPointer.byteCount)
+        return try autoreleasepool {
+            let plaintext: Data = try Cryptography.decryptAttachment(cipherText,
+                                                                     withKey: encryptionKey,
+                                                                     digest: attachmentPointer.digest,
+                                                                     unpaddedSize: attachmentPointer.byteCount)
 
-        let attachmentStream = databaseStorage.read { transaction in
-            TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
+            let attachmentStream = databaseStorage.read { transaction in
+                TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
+            }
+            try attachmentStream.write(plaintext)
+            return attachmentStream
         }
-        try attachmentStream.write(plaintext)
-        return attachmentStream
     }
 
     // MARK: -

@@ -342,13 +342,17 @@ public class OWSAttachmentUploadV2: NSObject {
 
     private func prepareUploadV3() -> Promise<UploadV3Metadata> {
         return firstly(on: .global()) { () -> Promise<Data> in
-            self.attachmentData()
+            autoreleasepool {
+                self.attachmentData()
+            }
         }.map(on: .global()) { (encryptedData: Data) -> UploadV3Metadata in
-            // Write the encrypted data to a temporary file.
-            let temporaryFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
-            let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
-            try encryptedData.write(to: temporaryFileUrl)
-            return UploadV3Metadata(temporaryFileUrl: temporaryFileUrl, dataLength: encryptedData.count)
+            try autoreleasepool {
+                // Write the encrypted data to a temporary file.
+                let temporaryFilePath = OWSFileSystem.temporaryFilePath(isAvailableWhileDeviceLocked: true)
+                let temporaryFileUrl = URL(fileURLWithPath: temporaryFilePath)
+                try encryptedData.write(to: temporaryFileUrl)
+                return UploadV3Metadata(temporaryFileUrl: temporaryFileUrl, dataLength: encryptedData.count)
+            }
         }
     }
 
@@ -462,24 +466,28 @@ public class OWSAttachmentUploadV2: NSObject {
                                                     progress: progressBlock).asVoid()
             } else {
                 // Resuming, slice attachment data in memory.
-                //
-                // TODO: It'd be better if we could slice on disk.
-                let entireFileData = try Data(contentsOf: uploadV3Metadata.temporaryFileUrl)
-                let dataSlice = entireFileData.suffix(from: Int(bytesAlreadyUploaded))
-                guard dataSlice.count + bytesAlreadyUploaded == entireFileData.count else {
-                    throw OWSAssertionError("Could not slice the data.")
-                }
-
-                // Write the slice to a temporary file.
                 let dataSliceFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
-                try dataSlice.write(to: dataSliceFileUrl)
+
+                var dataSliceLength: Int = 0
+                try autoreleasepool {
+                    // TODO: It'd be better if we could slice on disk.
+                    let entireFileData = try Data(contentsOf: uploadV3Metadata.temporaryFileUrl)
+                    let dataSlice = entireFileData.suffix(from: Int(bytesAlreadyUploaded))
+                    dataSliceLength = dataSlice.count
+                    guard dataSliceLength + bytesAlreadyUploaded == entireFileData.count else {
+                        throw OWSAssertionError("Could not slice the data.")
+                    }
+
+                    // Write the slice to a temporary file.
+                    try dataSlice.write(to: dataSliceFileUrl)
+                }
 
                 // Example: Resuming after uploading 2359296 of 7351375 bytes.
                 //
                 // Content-Range: bytes 2359296-7351374/7351375
                 // Content-Length: 4992079
                 var headers = [String: String]()
-                headers["Content-Length"] = formatInt(dataSlice.count)
+                headers["Content-Length"] = formatInt(dataSliceLength)
                 headers["Content-Range"] = "bytes \(formatInt(bytesAlreadyUploaded))-\(formatInt(totalDataLength - 1))/\(formatInt(totalDataLength))"
 
                 return firstly(on: .global()) {
