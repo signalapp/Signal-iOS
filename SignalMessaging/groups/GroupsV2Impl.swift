@@ -966,8 +966,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                        headers: request.headers.headers,
                                        body: request.bodyData)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> OWSHTTPResponse in
-            guard response.statusCode == 200 else {
-                throw OWSAssertionError("Invalid response: \(response.statusCode)")
+            let hasValidStatusCode = [200, 206].contains(response.statusCode)
+            guard hasValidStatusCode else {
+                throw OWSAssertionError("Invalid status code: \(response.statusCode)")
             }
 
             // NOTE: responseObject may be nil; not all group v2 responses have bodies.
