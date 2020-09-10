@@ -104,7 +104,7 @@ final class NewConversationButtonSet : UIView {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, mainButton.contains(touch), !isUserDragging else { return }
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         expand(isUserDragging: true)
     }
     
