@@ -389,6 +389,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private func sendGroupUpdateMessageToRemovedUsers(groupThread: TSGroupThread,
                                                       groupChangeProto: GroupsProtoGroupChangeActions,
                                                       groupV2Params: GroupV2Params) {
+        guard !DebugFlags.groupsV2dontSendUpdates else {
+            return
+        }
         let uuids = membersRemovedByChangeActions(groupChangeProto: groupChangeProto,
                                                   groupV2Params: groupV2Params)
 
