@@ -1002,21 +1002,29 @@ extension SignalCall: CallManagerCallReference { }
         case .reconnected:
             self.handleReconnected(call: call)
 
-        case .endedReceivedOfferExpired:
+        case .receivedOfferExpired:
             // TODO - This is the case where an incoming offer's timestamp is
             // not within the range +/- 120 seconds of the current system time.
             // At the moment, this is not an issue since we are currently setting
             // the timestamp separately when we receive the offer (above).
+            // This should not be a failure, it is just an 'old' call.
             handleMissedCall(call)
             call.state = .localFailure
             terminate(call: call)
 
-        case .endedReceivedOfferWhileActive:
+        case .receivedOfferWhileActive:
             handleMissedCall(call)
+            // TODO - This should not be a failure.
             call.state = .localFailure
             terminate(call: call)
 
-        case .endedIgnoreCallsFromNonMultiringCallers:
+        case .receivedOfferWithGlare:
+            handleMissedCall(call)
+            // TODO - This should not be a failure.
+            call.state = .localFailure
+            terminate(call: call)
+            
+        case .ignoreCallsFromNonMultiringCallers:
             handleMissedCall(call)
             call.state = .localFailure
             terminate(call: call)
