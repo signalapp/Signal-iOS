@@ -5345,6 +5345,16 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    if (self.userLeftGroup) {
+        if (self.requestView != nil) {
+            [self dismissMessageRequestView];
+        } else {
+            [self reloadBottomBar];
+            [self updateInputVisibility];
+        }
+        return;
+    }
+
     if (!self.threadViewModel.hasPendingMessageRequest && !self.isLocalUserRequestingMember) {
         if (self.requestView != nil) {
             // We're currently showing the message request view but no longer need to,
