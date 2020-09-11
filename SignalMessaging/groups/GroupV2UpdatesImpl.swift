@@ -112,7 +112,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
             // Don't auto-refresh more often than once every N minutes.
             let refreshFrequency: TimeInterval = kMinuteInterval * 5
-            return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) > refreshFrequency
+            return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
         }
 
         if let groupThread = (databaseStorage.read { transaction in
