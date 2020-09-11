@@ -340,30 +340,57 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     owsFailDebug("Missing groupChangeProto.")
                     return
                 }
-                self.sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: updatedV2Group.groupThread,
-                                                                         groupChangeProto: groupChangeProto,
-                                                                         groupV2Params: groupV2Params)
+                self.sendGroupUpdateMessageToRemovedUsers(groupThread: updatedV2Group.groupThread,
+                                                          groupChangeProto: groupChangeProto,
+                                                          groupV2Params: groupV2Params)
             }.map(on: .global()) { (_) -> TSGroupThread in
                 return updatedV2Group.groupThread
             }
         }
     }
 
-    private func sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: TSGroupThread,
-                                                                     groupChangeProto: GroupsProtoGroupChangeActions,
-                                                                     groupV2Params: GroupV2Params) {
-        var uuids = [UUID]()
+    private func membersRemovedByChangeActions(groupChangeProto: GroupsProtoGroupChangeActions,
+                                               groupV2Params: GroupV2Params) -> [UUID] {
+        var userIds = [Data]()
+        for action in groupChangeProto.deleteMembers {
+            guard let userId = action.deletedUserID else {
+                owsFailDebug("Missing userID.")
+                continue
+            }
+            userIds.append(userId)
+        }
+        for action in groupChangeProto.deletePendingMembers {
+            guard let userId = action.deletedUserID else {
+                owsFailDebug("Missing userID.")
+                continue
+            }
+            userIds.append(userId)
+        }
         for action in groupChangeProto.deleteRequestingMembers {
+            guard let userId = action.deletedUserID else {
+                owsFailDebug("Missing userID.")
+                continue
+            }
+            userIds.append(userId)
+        }
+
+        var uuids = [UUID]()
+        for userId in userIds {
             do {
-                guard let userId = action.deletedUserID else {
-                    throw OWSAssertionError("Missing userId.")
-                }
                 let uuid = try groupV2Params.uuid(forUserId: userId)
                 uuids.append(uuid)
             } catch {
                 owsFailDebug("Error: \(error)")
             }
         }
+        return uuids
+    }
+
+    private func sendGroupUpdateMessageToRemovedUsers(groupThread: TSGroupThread,
+                                                      groupChangeProto: GroupsProtoGroupChangeActions,
+                                                      groupV2Params: GroupV2Params) {
+        let uuids = membersRemovedByChangeActions(groupChangeProto: groupChangeProto,
+                                                  groupV2Params: groupV2Params)
 
         guard !uuids.isEmpty else {
             return
