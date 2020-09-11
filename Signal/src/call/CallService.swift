@@ -618,12 +618,9 @@ extension SignalCall: CallManagerCallReference { }
 
         newCall.backgroundTask = backgroundTask
 
-        let messageAgeSec: UInt64
+        var messageAgeSec: UInt64 = 0
         if serverReceivedTimestamp > 0 && serverDeliveryTimestamp >= serverReceivedTimestamp {
             messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
-        } else {
-            owsFailDebug("Unable to calculate age for call offer: \(serverDeliveryTimestamp) \(serverReceivedTimestamp)")
-            messageAgeSec = 0
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
