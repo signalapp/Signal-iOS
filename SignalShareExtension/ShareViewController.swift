@@ -627,6 +627,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return UnloadedItem(itemProvider: itemProvider, itemType: .text)
                 }
 
+                if itemProvider.hasItemConformingToTypeIdentifier(kUTTypePDF as String) {
+                    return UnloadedItem(itemProvider: itemProvider, itemType: .pdf)
+                }
+
                 owsFailDebug("unexpected share item: \(itemProvider)")
                 return UnloadedItem(itemProvider: itemProvider, itemType: .other)
             }
@@ -661,6 +665,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case webUrl(_ webUrl: URL)
             case contact(_ contactData: Data)
             case text(_ text: String)
+            case pdf(_ data: Data)
         }
 
         let itemProvider: NSItemProvider
@@ -688,6 +693,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case fileUrl
             case contact
             case text
+            case pdf
             case other
         }
 
@@ -750,6 +756,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return itemProvider.loadText(forTypeIdentifier: kUTTypeText as String, options: nil).map { text in
                 LoadedItem(itemProvider: unloadedItem.itemProvider,
                            payload: .text(text))
+            }
+        case .pdf:
+            return itemProvider.loadData(forTypeIdentifier: kUTTypePDF as String, options: nil).map { data in
+                LoadedItem(itemProvider: unloadedItem.itemProvider,
+                           payload: .pdf(data))
             }
         case .other:
             return itemProvider.loadUrl(forTypeIdentifier: kUTTypeFileURL as String, options: nil).map { fileUrl in
@@ -835,6 +846,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
             let dataSource = DataSourceValue.dataSource(with: pngData, fileExtension: "png")
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypePNG as String, imageQuality: .medium)
+            return Promise.value(attachment)
+        case .pdf(let pdf):
+            let dataSource = DataSourceValue.dataSource(with: pdf, fileExtension: "pdf")
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypePDF as String)
             return Promise.value(attachment)
         }
     }
