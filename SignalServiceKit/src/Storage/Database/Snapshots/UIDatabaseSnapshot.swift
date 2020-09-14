@@ -333,18 +333,20 @@ extension UIDatabaseObserver: TransactionObserver {
     // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
         UIDatabaseObserver.serializedSync {
+            let pendingChangesToCommit = self.pendingChanges
+            self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+
             do {
                 // finalizePublishedState() finalizes the state we're about to
                 // copy.
-                try pendingChanges.finalizePublishedState(db: db)
+                try pendingChangesToCommit.finalizePublishedState(db: db)
 
-                let interactionUniqueIds = pendingChanges.interactionUniqueIds
-                let threadUniqueIds = pendingChanges.threadUniqueIds
-                let attachmentUniqueIds = pendingChanges.attachmentUniqueIds
-                let attachmentDeletedUniqueIds = pendingChanges.attachmentDeletedUniqueIds
-                let collections = pendingChanges.collections
-                let completionBlocks = pendingChanges.completionBlocks
-                pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+                let interactionUniqueIds = pendingChangesToCommit.interactionUniqueIds
+                let threadUniqueIds = pendingChangesToCommit.threadUniqueIds
+                let attachmentUniqueIds = pendingChangesToCommit.attachmentUniqueIds
+                let attachmentDeletedUniqueIds = pendingChangesToCommit.attachmentDeletedUniqueIds
+                let collections = pendingChangesToCommit.collections
+                let completionBlocks = pendingChangesToCommit.completionBlocks
 
                 DispatchQueue.main.async {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
