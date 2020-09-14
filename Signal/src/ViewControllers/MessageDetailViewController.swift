@@ -222,7 +222,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
             let senderId = incomingMessage.authorId
-            let senderName = contactsManager.contactOrProfileName(forPhoneIdentifier: senderId)
+            let threadID = thread.uniqueId!
+            var senderName: String!
+            try! Storage.writeSync { transaction in
+                senderName = DisplayNameUtilities2.getDisplayName(for: senderId, inThreadWithID: threadID, using: transaction)
+            }
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENDER",
                                                          comment: "Label for the 'sender' field of the 'message metadata' view."),
                                  value: senderName))
