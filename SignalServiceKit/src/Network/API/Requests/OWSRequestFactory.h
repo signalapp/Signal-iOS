@@ -102,7 +102,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)updateSecondaryDeviceCapabilitiesRequest;
 
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilities;
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDevice;
 
 #pragma mark - Prekeys
 
