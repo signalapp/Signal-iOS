@@ -124,11 +124,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var uuidCapabilities: Bool {
-        modernContactDiscovery
-    }
-
-    @objc
     public static var allowUUIDOnlyContacts: Bool {
         modernContactDiscovery
     }

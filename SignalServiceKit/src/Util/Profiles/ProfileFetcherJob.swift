@@ -162,7 +162,7 @@ public class ProfileFetcherJob: NSObject {
                 case ProfileFetchError.missing:
                     Logger.warn("Error: \(error)")
                 case ProfileFetchError.unauthorized:
-                    if self.tsAccountManager.isRegistered {
+                    if self.tsAccountManager.isRegistered && !self.tsAccountManager.isRegisteredAndReady {
                         owsFailDebug("Error: \(error)")
                     } else {
                         Logger.warn("Error: \(error)")
@@ -581,7 +581,7 @@ public class ProfileFetcherJob: NSObject {
                                      givenName: givenName,
                                      familyName: familyName,
                                      username: profile.username,
-                                     isUuidCapable: profile.supportsUUID,
+                                     isUuidCapable: true,
                                      avatarUrlPath: profile.avatarUrlPath,
                                      optionalDecryptedAvatarData: optionalAvatarData,
                                      lastFetch: Date())
