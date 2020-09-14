@@ -1710,6 +1710,118 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
 
 #endif
 
+// MARK: - SSKProtoClosedGroupCiphertextMessageWrapper
+
+@objc public class SSKProtoClosedGroupCiphertextMessageWrapper: NSObject {
+
+    // MARK: - SSKProtoClosedGroupCiphertextMessageWrapperBuilder
+
+    @objc public class func builder(ciphertext: Data, ephemeralPublicKey: Data) -> SSKProtoClosedGroupCiphertextMessageWrapperBuilder {
+        return SSKProtoClosedGroupCiphertextMessageWrapperBuilder(ciphertext: ciphertext, ephemeralPublicKey: ephemeralPublicKey)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoClosedGroupCiphertextMessageWrapperBuilder {
+        let builder = SSKProtoClosedGroupCiphertextMessageWrapperBuilder(ciphertext: ciphertext, ephemeralPublicKey: ephemeralPublicKey)
+        return builder
+    }
+
+    @objc public class SSKProtoClosedGroupCiphertextMessageWrapperBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_ClosedGroupCiphertextMessageWrapper()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(ciphertext: Data, ephemeralPublicKey: Data) {
+            super.init()
+
+            setCiphertext(ciphertext)
+            setEphemeralPublicKey(ephemeralPublicKey)
+        }
+
+        @objc public func setCiphertext(_ valueParam: Data) {
+            proto.ciphertext = valueParam
+        }
+
+        @objc public func setEphemeralPublicKey(_ valueParam: Data) {
+            proto.ephemeralPublicKey = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoClosedGroupCiphertextMessageWrapper {
+            return try SSKProtoClosedGroupCiphertextMessageWrapper.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoClosedGroupCiphertextMessageWrapper.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_ClosedGroupCiphertextMessageWrapper
+
+    @objc public let ciphertext: Data
+
+    @objc public let ephemeralPublicKey: Data
+
+    private init(proto: SignalServiceProtos_ClosedGroupCiphertextMessageWrapper,
+                 ciphertext: Data,
+                 ephemeralPublicKey: Data) {
+        self.proto = proto
+        self.ciphertext = ciphertext
+        self.ephemeralPublicKey = ephemeralPublicKey
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoClosedGroupCiphertextMessageWrapper {
+        let proto = try SignalServiceProtos_ClosedGroupCiphertextMessageWrapper(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_ClosedGroupCiphertextMessageWrapper) throws -> SSKProtoClosedGroupCiphertextMessageWrapper {
+        guard proto.hasCiphertext else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: ciphertext")
+        }
+        let ciphertext = proto.ciphertext
+
+        guard proto.hasEphemeralPublicKey else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: ephemeralPublicKey")
+        }
+        let ephemeralPublicKey = proto.ephemeralPublicKey
+
+        // MARK: - Begin Validation Logic for SSKProtoClosedGroupCiphertextMessageWrapper -
+
+        // MARK: - End Validation Logic for SSKProtoClosedGroupCiphertextMessageWrapper -
+
+        let result = SSKProtoClosedGroupCiphertextMessageWrapper(proto: proto,
+                                                                 ciphertext: ciphertext,
+                                                                 ephemeralPublicKey: ephemeralPublicKey)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoClosedGroupCiphertextMessageWrapper {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoClosedGroupCiphertextMessageWrapper.SSKProtoClosedGroupCiphertextMessageWrapperBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoClosedGroupCiphertextMessageWrapper? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageQuoteQuotedAttachment
 
 @objc public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject {

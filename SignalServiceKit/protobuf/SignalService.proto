@@ -132,6 +132,13 @@ message CallMessage {
   optional bytes     profileKey = 6;
 }
 
+message ClosedGroupCiphertextMessageWrapper {
+  // @required
+  optional bytes ciphertext = 1;
+  // @required
+  optional bytes ephemeralPublicKey = 2;
+}
+
 message DataMessage {
   enum Flags {
     END_SESSION             = 1;

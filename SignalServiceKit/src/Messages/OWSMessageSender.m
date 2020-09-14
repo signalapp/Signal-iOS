@@ -976,7 +976,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (messageSend.isUDSend) {
             hasValidMessageType = [messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)];
         } else {
-            NSArray *validMessageTypes = @[ @(TSEncryptedWhisperMessageType), @(TSPreKeyWhisperMessageType), @(TSFallbackMessageType) ];
+            NSArray *validMessageTypes = @[ @(TSEncryptedWhisperMessageType), @(TSPreKeyWhisperMessageType), @(TSFallbackMessageType), @(TSClosedGroupCiphertextMessageType) ];
             hasValidMessageType = [validMessageTypes containsObject:messageType];
         }
 
@@ -1089,24 +1089,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         NSDictionary *signalMessageInfo = deviceMessages.firstObject;
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
-        if (isSSKBasedClosedGroup) {
-            type = SSKProtoEnvelopeTypeClosedGroupCiphertext;
-        }
+        uint32_t senderDeviceID = (type == SSKProtoEnvelopeTypeUnidentifiedSender) ? 0 : OWSDevicePrimaryDeviceId;
+        NSString *content = signalMessageInfo[@"content"];
+        NSString *recipientID = signalMessageInfo[@"destination"];
+        uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
+        BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
         uint64_t timestamp = message.timestamp;
         NSString *senderID;
-        if (isSSKBasedClosedGroup) {
-            senderID = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)messageSend.thread).groupModel.groupId];
+        if (type == SSKProtoEnvelopeTypeClosedGroupCiphertext) {
+            senderID = recipientID;
         } else if (type == SSKProtoEnvelopeTypeUnidentifiedSender) {
             senderID = @"";
         } else {
             senderID = userPublicKey;
             [LKLogger print:@"[Loki] Non-UD send"];
         }
-        uint32_t senderDeviceID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? 0 : OWSDevicePrimaryDeviceId;
-        NSString *content = signalMessageInfo[@"content"];
-        NSString *recipientID = signalMessageInfo[@"destination"];
-        uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
-        BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
         LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             if (!message.skipSave) {
@@ -1396,7 +1393,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (isSessionRequired) {
             BOOL hasSession = [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
 
-            // Loki: Remove this when we have shared sender keys
+            // Loki: Remove this when shared sender keys has been widely rolled out
             // ========
             if (!hasSession && [LKSessionManagementProtocol shouldIgnoreMissingPreKeyBundleExceptionForMessage:messageSend.message to:recipientID]) {
                 return [NSDictionary new];
@@ -1523,7 +1520,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSData *_Nullable serializedMessage;
     TSWhisperMessageType messageType;
-    if (messageSend.isUDSend) {
+    if ([LKSharedSenderKeysImplementation.shared isClosedGroup:recipientID]) {
+        NSError *error;
+        serializedMessage = [LKClosedGroupUtilities encryptData:plainText.paddedMessageBody usingGroupPublicKey:recipientID transaction:transaction error:&error];
+
+        if (error != nil) {
+            OWSFailDebug(@"Couldn't encrypt message for SSK based closed group due to error: %@.", error);
+            return nil;
+        }
+
+        messageType = TSClosedGroupCiphertextMessageType;
+
+        messageSend.udAccess = nil;
+    } else if (messageSend.isUDSend) {
         NSError *error;
         LKSessionResetImplementation *sessionResetImplementation = [LKSessionResetImplementation new];
 
