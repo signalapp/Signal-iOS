@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
     TSPreKeyWhisperMessageType = 3,
     TSUnencryptedWhisperMessageType = 4,
     TSUnidentifiedSenderMessageType = 6,
+    TSClosedGroupCiphertextMessageType = 7,
     TSFallbackMessageType = 101 // Loki: Encrypted using the fallback session cipher. Contains a pre key bundle if it's a session request.
 };
 
