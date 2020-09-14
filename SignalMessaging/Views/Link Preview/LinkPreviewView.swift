@@ -34,7 +34,7 @@ public protocol LinkPreviewState {
     func title() -> String?
     func imageState() -> LinkPreviewImageState
     func image() -> UIImage?
-    var imageSize: CGSize { get }
+    var imagePixelSize: CGSize { get }
     func previewDescription() -> String?
     func date() -> Date?
     var isGroupInviteLink: Bool { get }
@@ -89,7 +89,7 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
         return nil
     }
 
-    public let imageSize: CGSize = .zero
+    public let imagePixelSize: CGSize = .zero
 
     public func previewDescription() -> String? {
         return nil
@@ -179,11 +179,11 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
         return image
     }
 
-    public var imageSize: CGSize {
+    public var imagePixelSize: CGSize {
         guard let image = self.image() else {
             return .zero
         }
-        return image.size
+        return image.pixelSize()
     }
 
     public func previewDescription() -> String? {
@@ -307,13 +307,11 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     }
 
     @objc
-    public var imageSize: CGSize {
+    public var imagePixelSize: CGSize {
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return CGSize.zero
         }
-        let pixelSize = attachmentStream.imageSize()
-        return CGSize(width: (pixelSize.width / UIScreen.main.scale),
-                      height: (pixelSize.height / UIScreen.main.scale))
+        return attachmentStream.imageSize()
     }
 
     public func previewDescription() -> String? {
@@ -629,13 +627,16 @@ public class LinkPreviewView: UIStackView {
 
     private func sentHeroImageSize(state: LinkPreviewState,
                                    conversationStyle: ConversationStyle) -> CGSize {
+
+        let imageHeightWidthRatio = (state.imagePixelSize.height / state.imagePixelSize.width)
         let maxMessageWidth = conversationStyle.maxMessageWidth
-        let imageSize = state.imageSize
+
         let minImageHeight: CGFloat = maxMessageWidth * 0.5
         let maxImageHeight: CGFloat = maxMessageWidth
-        let rawImageHeight = maxMessageWidth * imageSize.height / imageSize.width
-        let imageHeight: CGFloat = min(maxImageHeight, max(minImageHeight, rawImageHeight))
-        return CGSizeCeil(CGSize(width: maxMessageWidth, height: imageHeight))
+        let rawImageHeight = maxMessageWidth * imageHeightWidthRatio
+
+        let normalizedHeight: CGFloat = min(maxImageHeight, max(minImageHeight, rawImageHeight))
+        return CGSizeCeil(CGSize(width: maxMessageWidth, height: normalizedHeight))
     }
 
     private func createHeroSentContents(state: LinkPreviewState,
@@ -759,8 +760,6 @@ public class LinkPreviewView: UIStackView {
         return textStack
     }
 
-    private let sentMinimumHeroSize: CGFloat = 200
-
     private let sentTitleFontSizePoints: CGFloat = 17
     private let sentDomainFontSizePoints: CGFloat = 12
     private let sentVSpacing: CGFloat = 4
@@ -778,9 +777,31 @@ public class LinkPreviewView: UIStackView {
         if isSticker(state: state) || state.isGroupInviteLink {
             return false
         }
+        guard let heroWidthPoints = state.conversationStyle?.maxMessageWidth else {
+            return false
+        }
 
-        let imageSize = state.imageSize
-        return imageSize.width >= sentMinimumHeroSize && imageSize.height >= sentMinimumHeroSize
+        // On a 1x device, even tiny images like avatars can satisfy the max message width
+        // On a 3x device, achieving a 3x pixel match on an og:image is rare
+        // By fudging the required scaling a bit towards 2.0, we get more consistency at the
+        // cost of slightly blurrier images on 3x devices.
+        // These are totally made up numbers so feel free to adjust as necessary.
+        let heroScalingFactors: [CGFloat: CGFloat] = [
+            1.0: 2.0,
+            2.0: 2.0,
+            3.0: 2.3333
+        ]
+        let scalingFactor = heroScalingFactors[UIScreen.main.scale] ?? {
+            // Oh neat a new device! Might want to add it.
+            owsFailDebug("Unrecognized device scale")
+            return 2.0
+        }()
+        let minimumHeroWidth = heroWidthPoints * scalingFactor
+        let minimumHeroHeight = minimumHeroWidth * 0.33
+
+        let widthSatisfied = state.imagePixelSize.width >= minimumHeroWidth
+        let heightSatisfied = state.imagePixelSize.height >= minimumHeroHeight
+        return widthSatisfied && heightSatisfied
     }
 
     private func isSticker(state: LinkPreviewState) -> Bool {

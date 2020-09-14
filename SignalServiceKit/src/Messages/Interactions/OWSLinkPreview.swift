@@ -505,7 +505,7 @@ public class OWSLinkPreviewManager: NSObject {
                 return nil
             }
 
-            let maxImageSize: CGFloat = 1024
+            let maxImageSize: CGFloat = 2400
 
             switch imageMetadata.imageFormat {
             case .unknown:
@@ -518,10 +518,10 @@ public class OWSLinkPreviewManager: NSObject {
                 }
 
                 var stillThumbnail = stillImage
-                let imageSize = stillImage.size
+                let imageSize = stillImage.pixelSize()
                 let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
                 if shouldResize {
-                    guard let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) else {
+                    guard let resizedImage = stillImage.resized(withMaxDimensionPixels: maxImageSize) else {
                         owsFailDebug("Couldn't resize image.")
                         return nil
                     }
@@ -553,7 +553,7 @@ public class OWSLinkPreviewManager: NSObject {
                     return nil
                 }
 
-                guard let dstImage = srcImage.resized(withMaxDimensionPoints: maxImageSize) else {
+                guard let dstImage = srcImage.resized(withMaxDimensionPixels: maxImageSize) else {
                     owsFailDebug("Could not resize image.")
                     return nil
                 }
