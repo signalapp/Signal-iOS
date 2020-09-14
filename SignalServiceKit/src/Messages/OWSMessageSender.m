@@ -1542,7 +1542,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                    preKeyStore:self.primaryStorage
                                                              signedPreKeyStore:self.primaryStorage
                                                                  identityStore:self.identityManager
-                                                sharedSenderKeysImplementation:LKSharedSenderKeysImplementation.shared
                                                                          error:&error];
         if (error || !secretCipher) {
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");

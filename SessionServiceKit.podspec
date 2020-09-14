@@ -52,7 +52,7 @@ A Swift/Objective-C library for communicating with the Session messaging service
   s.dependency 'Reachability'
   s.dependency 'SwiftProtobuf', '~> 1.5.0'
   s.dependency 'SessionCoreKit', '~> 1.0.0'
-  s.dependency 'SessionMetadataKit', '~> 1.0.8'
+  s.dependency 'SessionMetadataKit', '~> 1.0.9'
   s.dependency 'PromiseKit', '~> 6.0'
 
   s.test_spec 'Tests' do |test_spec|

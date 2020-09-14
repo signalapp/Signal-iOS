@@ -514,7 +514,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                                    preKeyStore:self.primaryStorage
                                                              signedPreKeyStore:self.primaryStorage
                                                                  identityStore:self.identityManager
-                                                sharedSenderKeysImplementation:LKSharedSenderKeysImplementation.shared
                                                            error:&cipherError];
 
         if (cipherError || !cipher) {
@@ -526,7 +525,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         NSError *decryptError;
         SMKDecryptResult *_Nullable decryptResult =
             [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
-                                                         senderPublicKey:envelope.source
                                                           cipherTextData:encryptedData
                                                                timestamp:serverTimestamp
                                                         localRecipientId:localRecipientId
