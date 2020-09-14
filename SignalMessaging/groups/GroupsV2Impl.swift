@@ -342,6 +342,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
                 self.sendGroupUpdateMessageToRemovedUsers(groupThread: updatedV2Group.groupThread,
                                                           groupChangeProto: groupChangeProto,
+                                                          changeActionsProtoData: updatedV2Group.changeActionsProtoData,
                                                           groupV2Params: groupV2Params)
             }.map(on: .global()) { (_) -> TSGroupThread in
                 return updatedV2Group.groupThread
@@ -388,6 +389,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     private func sendGroupUpdateMessageToRemovedUsers(groupThread: TSGroupThread,
                                                       groupChangeProto: GroupsProtoGroupChangeActions,
+                                                      changeActionsProtoData: Data,
                                                       groupV2Params: GroupV2Params) {
         guard !DebugFlags.groupsV2dontSendUpdates else {
             return
@@ -403,14 +405,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             owsFailDebug("Invalid groupModel.")
             return
         }
-        let revision = groupModel.revision
-        let masterKeyData: Data
-        do {
-            masterKeyData = try GroupsV2Protos.masterKeyData(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return
-        }
 
         let contactThreads = databaseStorage.write { transaction in
             uuids.map { uuid in
@@ -421,12 +415,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         for contactThread in contactThreads {
             let contentProtoData: Data
             do {
-                let builder = SSKProtoGroupContextV2.builder()
-                builder.setMasterKey(masterKeyData)
-                builder.setRevision(revision)
+                let groupV2Context = try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel,
+                                                                                 changeActionsProtoData: changeActionsProtoData)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try builder.build())
+                dataBuilder.setGroupV2(groupV2Context)
                 dataBuilder.setRequiredProtocolVersion(1)
 
                 let dataProto = try dataBuilder.build()
