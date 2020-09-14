@@ -391,7 +391,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                       groupChangeProto: GroupsProtoGroupChangeActions,
                                                       changeActionsProtoData: Data,
                                                       groupV2Params: GroupV2Params) {
-        guard !DebugFlags.groupsV2dontSendUpdates else {
+        let shouldSendUpdate = !DebugFlags.groupsV2dontSendUpdates
+        guard shouldSendUpdate else {
             return
         }
         let uuids = membersRemovedByChangeActions(groupChangeProto: groupChangeProto,
