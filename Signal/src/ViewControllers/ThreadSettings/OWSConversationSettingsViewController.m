@@ -954,20 +954,8 @@ const CGFloat kIconViewLength = 24;
     CGFloat horizontalSpacing = isSmallScreen ? LKValues.largeSpacing : LKValues.veryLargeSpacing;
     stackView.layoutMargins = UIEdgeInsetsMake(LKValues.mediumSpacing, horizontalSpacing, LKValues.mediumSpacing, horizontalSpacing);
     [stackView setLayoutMarginsRelativeArrangement:YES];
-    
-    if (self.isGroupThread) {
-        TSGroupThread* groupThread = (TSGroupThread *)self.thread;
-        if (groupThread.isPublicChat && groupThread.groupModel.groupImage != nil
-            && ![groupThread.groupModel.groupName isEqual:@"Loki Public Chat"] && ![groupThread.groupModel.groupName isEqual:@"Session Public Chat"]) {
-            profilePictureView.openGroupProfilePicture = groupThread.groupModel.groupImage;
-            profilePictureView.isRSSFeed = false;
-        } else {
-            profilePictureView.hexEncodedPublicKey = @"";
-            profilePictureView.isRSSFeed = true; // For now just always show the Session logo
-        }
-    } else {
-        profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
-        
+
+    if (!self.isGroupThread) {
         SRCopyableLabel *subtitleView = [SRCopyableLabel new];
         subtitleView.textColor = LKColors.text;
         subtitleView.font = [LKFonts spaceMonoOfSize:LKValues.smallFontSize];
@@ -978,7 +966,7 @@ const CGFloat kIconViewLength = 24;
         [stackView addArrangedSubview:subtitleView];
     }
     
-    [profilePictureView update];
+    [profilePictureView updateForThread:self.thread];
     
     return stackView;
 }

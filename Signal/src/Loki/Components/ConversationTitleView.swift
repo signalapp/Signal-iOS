@@ -17,7 +17,7 @@ final class ConversationTitleView : UIView {
     // MARK: Components
     private lazy var profilePictureView: ProfilePictureView = {
         let result = ProfilePictureView()
-        let size = Values.smallProfilePictureSize
+        let size: CGFloat = 40
         result.set(.width, to: size)
         result.set(.height, to: size)
         result.size = size
