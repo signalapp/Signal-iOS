@@ -395,7 +395,7 @@ void ClearOldTemporaryDirectoriesSync(void)
         }
 
         OWSLogVerbose(@"Removing temp file or directory: %@", filePath);
-        if (![OWSFileSystem deleteFile:filePath]) {
+        if (![OWSFileSystem deleteFileIfExists:filePath]) {
             // This can happen if the app launches before the phone is unlocked.
             // Clean up will occur when app becomes active.
             OWSLogWarn(@"Could not delete old temp directory: %@", filePath);
