@@ -128,7 +128,11 @@ struct GroupUpdateCopy {
         case .unknown:
             if oldGroupModel != nil,
                 newGroupModel.groupsVersion == .V2 {
-                if !DebugFlags.permissiveGroupUpdateInfoMessages {
+                if !newGroupModel.groupMembership.isLocalUserFullOrInvitedMember {
+                    // There's a number of valid scenarios where we will not
+                    // have the updater info if we are not a full or invited member.
+                    Logger.warn("Missing updater info.")
+                } else if !DebugFlags.permissiveGroupUpdateInfoMessages {
                     // This can happen due to a number of valid scenarios.
                     Logger.warn("Missing updater info.")
                 } else {

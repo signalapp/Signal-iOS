@@ -279,7 +279,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSDictionary<NSString *, id> *accountAttributes = [self accountAttributesWithAuthKey:authKey
                                                                                      pin:pin
                                                                      encryptedDeviceName:nil
-                                                             isManualMessageFetchEnabled:isManualMessageFetchEnabled];
+                                                             isManualMessageFetchEnabled:isManualMessageFetchEnabled
+                                                                       isSecondaryDevice:NO];
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureAttributesAPI]
                               method:@"PUT"
@@ -401,7 +402,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         [[self accountAttributesWithAuthKey:authKey
                                         pin:pin
                         encryptedDeviceName:nil
-                isManualMessageFetchEnabled:isManualMessageFetchEnabled] mutableCopy];
+                isManualMessageFetchEnabled:isManualMessageFetchEnabled
+                          isSecondaryDevice:NO] mutableCopy];
     [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
 
     TSRequest *request =
@@ -427,7 +429,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSMutableDictionary<NSString *, id> *accountAttributes = [[self accountAttributesWithAuthKey:authKey
                                                                                              pin:nil
                                                                              encryptedDeviceName:encryptedDeviceName
-                                                                     isManualMessageFetchEnabled:YES] mutableCopy];
+                                                                     isManualMessageFetchEnabled:YES
+                                                                               isSecondaryDevice:YES] mutableCopy];
 
     [accountAttributes removeObjectForKey:OWSRequestKey_AuthKey];
 
@@ -444,6 +447,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                                            pin:(nullable NSString *)pin
                                            encryptedDeviceName:(nullable NSData *)encryptedDeviceName
                                    isManualMessageFetchEnabled:(BOOL)isManualMessageFetchEnabled
+                                             isSecondaryDevice:(BOOL)isSecondaryDevice
 {
     OWSAssertDebug(authKey.length > 0);
     uint32_t registrationId = [self.tsAccountManager getOrGenerateRegistrationId];
@@ -484,7 +488,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         accountAttributes[@"discoverableByPhoneNumber"] = @(self.tsAccountManager.isDiscoverableByPhoneNumber);
     }
 
-    accountAttributes[@"capabilities"] = self.deviceCapabilities;
+    accountAttributes[@"capabilities"] = [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice];
 
     return [accountAttributes copy];
 }
@@ -496,16 +500,24 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/devices/capabilities"]
                               method:@"PUT"
-                          parameters:self.deviceCapabilities];
+                          parameters:[self deviceCapabilitiesWithIsSecondaryDevice:YES]];
 }
 
-+ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilities
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesForLocalDevice
+{
+    // tsAccountManager.isPrimaryDevice only has a valid value for registered
+    // devices.
+    OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
+
+    BOOL isSecondaryDevice = !self.tsAccountManager.isPrimaryDevice;
+    return [self deviceCapabilitiesWithIsSecondaryDevice:isSecondaryDevice];
+}
+
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilitiesWithIsSecondaryDevice:(BOOL)isSecondaryDevice
 {
     NSMutableDictionary<NSString *, NSNumber *> *capabilities = [NSMutableDictionary new];
-    if (RemoteConfig.uuidCapabilities) {
-        capabilities[@"uuid"] = @(YES);
-    }
-    if (RemoteConfig.groupsV2GoodCitizen) {
+    // Secondary devices should always declare support for gv2.
+    if (RemoteConfig.groupsV2GoodCitizen || isSecondaryDevice) {
         capabilities[@"gv2"] = @(YES);
     }
     if (OWSKeyBackupService.hasBackedUpMasterKey) {

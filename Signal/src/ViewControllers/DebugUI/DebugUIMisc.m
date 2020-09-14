@@ -227,6 +227,9 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Save plaintext database key"
                                      actionBlock:^() { [DebugUIMisc enableExternalDatabaseAccess]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Update account attributes"
+                                     actionBlock:^() { [TSAccountManager.sharedInstance updateAccountAttributes]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

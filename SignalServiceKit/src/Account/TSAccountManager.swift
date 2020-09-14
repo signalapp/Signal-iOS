@@ -141,7 +141,7 @@ public extension TSAccountManager {
         let deviceCapabilitiesKey = "deviceCapabilities"
         let appVersionKey = "appVersion"
 
-        let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilities()
+        let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilitiesForLocalDevice()
         let currentAppVersion = AppVersion.sharedInstance().currentAppVersionLong
 
         var lastAttributeRequest: Date?

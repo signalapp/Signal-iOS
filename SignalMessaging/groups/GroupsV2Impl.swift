@@ -340,30 +340,63 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     owsFailDebug("Missing groupChangeProto.")
                     return
                 }
-                self.sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: updatedV2Group.groupThread,
-                                                                         groupChangeProto: groupChangeProto,
-                                                                         groupV2Params: groupV2Params)
+                self.sendGroupUpdateMessageToRemovedUsers(groupThread: updatedV2Group.groupThread,
+                                                          groupChangeProto: groupChangeProto,
+                                                          changeActionsProtoData: updatedV2Group.changeActionsProtoData,
+                                                          groupV2Params: groupV2Params)
             }.map(on: .global()) { (_) -> TSGroupThread in
                 return updatedV2Group.groupThread
             }
         }
     }
 
-    private func sendGroupUpdateMessageToRejectedRequestsIfNecessary(groupThread: TSGroupThread,
-                                                                     groupChangeProto: GroupsProtoGroupChangeActions,
-                                                                     groupV2Params: GroupV2Params) {
-        var uuids = [UUID]()
+    private func membersRemovedByChangeActions(groupChangeProto: GroupsProtoGroupChangeActions,
+                                               groupV2Params: GroupV2Params) -> [UUID] {
+        var userIds = [Data]()
+        for action in groupChangeProto.deleteMembers {
+            guard let userId = action.deletedUserID else {
+                owsFailDebug("Missing userID.")
+                continue
+            }
+            userIds.append(userId)
+        }
+        for action in groupChangeProto.deletePendingMembers {
+            guard let userId = action.deletedUserID else {
+                owsFailDebug("Missing userID.")
+                continue
+            }
+            userIds.append(userId)
+        }
         for action in groupChangeProto.deleteRequestingMembers {
+            guard let userId = action.deletedUserID else {
+                owsFailDebug("Missing userID.")
+                continue
+            }
+            userIds.append(userId)
+        }
+
+        var uuids = [UUID]()
+        for userId in userIds {
             do {
-                guard let userId = action.deletedUserID else {
-                    throw OWSAssertionError("Missing userId.")
-                }
                 let uuid = try groupV2Params.uuid(forUserId: userId)
                 uuids.append(uuid)
             } catch {
                 owsFailDebug("Error: \(error)")
             }
         }
+        return uuids
+    }
+
+    private func sendGroupUpdateMessageToRemovedUsers(groupThread: TSGroupThread,
+                                                      groupChangeProto: GroupsProtoGroupChangeActions,
+                                                      changeActionsProtoData: Data,
+                                                      groupV2Params: GroupV2Params) {
+        let shouldSendUpdate = !DebugFlags.groupsV2dontSendUpdates
+        guard shouldSendUpdate else {
+            return
+        }
+        let uuids = membersRemovedByChangeActions(groupChangeProto: groupChangeProto,
+                                                  groupV2Params: groupV2Params)
 
         guard !uuids.isEmpty else {
             return
@@ -371,14 +404,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
             owsFailDebug("Invalid groupModel.")
-            return
-        }
-        let revision = groupModel.revision
-        let masterKeyData: Data
-        do {
-            masterKeyData = try GroupsV2Protos.masterKeyData(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
-        } catch {
-            owsFailDebug("Error: \(error)")
             return
         }
 
@@ -391,12 +416,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         for contactThread in contactThreads {
             let contentProtoData: Data
             do {
-                let builder = SSKProtoGroupContextV2.builder()
-                builder.setMasterKey(masterKeyData)
-                builder.setRevision(revision)
+                let groupV2Context = try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel,
+                                                                                 changeActionsProtoData: changeActionsProtoData)
 
                 let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setGroupV2(try builder.build())
+                dataBuilder.setGroupV2(groupV2Context)
                 dataBuilder.setRequiredProtocolVersion(1)
 
                 let dataProto = try dataBuilder.build()

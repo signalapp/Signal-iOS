@@ -541,11 +541,10 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                     // _Do_ wait before retrying.
                     completion([], true, transaction)
                 } else {
-                    // This should only occur in one case:
-                    // when receiving a group updating indicating that
-                    // our request to join a group via invite link
-                    // was rejected.
-                    owsFailDebug("Discarding unprocess-able message: \(error)")
+                    // This should only occur if we no longer have access to group state,
+                    // e.g. a) we were kicked out of the group. b) our invite was revoked.
+                    // c) our request to join via group invite link was denied.
+                    Logger.warn("Discarding unprocess-able message: \(error)")
 
                     // Do not retry
                     // _Do_ include the job in the processed jobs.
@@ -710,11 +709,15 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                 return Guarantee.value(UpdateOutcome.failureShouldRetry)
             }
 
-            // This should only occur in one case:
-            // when receiving a group updating indicating that
-            // our request to join a group via invite link
-            // was rejected.
-            owsFailDebug("Error: \(type(of: error)) \(error)")
+            if case GroupsV2Error.localUserNotInGroup = error {
+                // This should only occur if we no longer have access to group state,
+                // e.g. a) we were kicked out of the group. b) our invite was revoked.
+                // c) our request to join via group invite link was denied.
+                Logger.warn("Error: \(type(of: error)) \(error)")
+            } else {
+                owsFailDebug("Error: \(type(of: error)) \(error)")
+            }
+
             return Guarantee.value(UpdateOutcome.failureShouldDiscard)
         }
     }

@@ -20,7 +20,6 @@ public class SignalServiceProfile: NSObject {
     public let avatarUrlPath: String?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
-    public let supportsUUID: Bool
     public let supportsGroupsV2: Bool
     public let credential: Data?
 
@@ -63,15 +62,6 @@ public class SignalServiceProfile: NSObject {
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
 
         if let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) {
-            if let value: Bool = try capabilities.optional(key: "uuid") {
-                self.supportsUUID = value
-            } else {
-                if RemoteConfig.uuidCapabilities {
-                    owsFailDebug("Missing uuid capability.")
-                }
-                // The capability has been retired from the service.
-                self.supportsUUID = true
-            }
             if let value: Bool = try capabilities.optional(key: "gv2") {
                 self.supportsGroupsV2 = value
             } else {
@@ -83,7 +73,6 @@ public class SignalServiceProfile: NSObject {
             }
         } else {
             owsFailDebug("Missing capabilities.")
-            self.supportsUUID = false
             self.supportsGroupsV2 = false
         }
 
