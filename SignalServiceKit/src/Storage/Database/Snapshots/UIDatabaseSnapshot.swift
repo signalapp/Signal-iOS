@@ -148,8 +148,6 @@ public class UIDatabaseObserver: NSObject {
     private let displayLinkPreferredFramesPerSecond: Int = 60
     private var recentDisplayLinkDates = [Date]()
 
-    private var didDatabaseModifyInteractions = false
-
     fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
     fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
 
@@ -318,10 +316,6 @@ extension UIDatabaseObserver: TransactionObserver {
                 pendingChanges.append(deletedAttachmentRowId: event.rowID)
             }
 
-            if event.tableName == InteractionRecord.databaseTableName {
-                didDatabaseModifyInteractions = true
-            }
-
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
                 delegate.databaseDidChange(with: event)
@@ -362,10 +356,10 @@ extension UIDatabaseObserver: TransactionObserver {
                 }
             }
 
-            if didDatabaseModifyInteractions {
+            let didModifyInteractions = pendingChangesToCommit.tableNames.contains(InteractionRecord.databaseTableName)
+            if didModifyInteractions {
                 NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
             }
-            didDatabaseModifyInteractions = false
 
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
