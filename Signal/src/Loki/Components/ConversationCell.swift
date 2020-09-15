@@ -145,33 +145,7 @@ final class ConversationCell : UITableViewCell {
             accentView.backgroundColor = Colors.accent
             accentView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
         }
-        profilePictureView.openGroupProfilePicture = nil
-        if threadViewModel.isGroupThread {
-            if threadViewModel.name == "Loki Public Chat"
-                || threadViewModel.name == "Session Public Chat" { // Override the profile picture for the Loki Public Chat and the Session Public Chat
-                profilePictureView.hexEncodedPublicKey = ""
-                profilePictureView.isRSSFeed = true
-            } else if let openGroupProfilePicture = (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupImage { // An open group with a profile picture
-                profilePictureView.openGroupProfilePicture = openGroupProfilePicture
-                profilePictureView.isRSSFeed = false
-            } else if (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupType == .openGroup
-                || (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
-                profilePictureView.hexEncodedPublicKey = ""
-                profilePictureView.isRSSFeed = true
-            } else { // A closed group
-                var users = MentionsManager.userPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
-                users.remove(getUserHexEncodedPublicKey())
-                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
-                profilePictureView.hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
-                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
-                profilePictureView.isRSSFeed = false
-            }
-        } else { // A one-on-one chat
-            profilePictureView.hexEncodedPublicKey = threadViewModel.contactIdentifier!
-            profilePictureView.additionalHexEncodedPublicKey = nil
-            profilePictureView.isRSSFeed = false
-        }
-        profilePictureView.update()
+        profilePictureView.update(for: threadViewModel.threadRecord)
         displayNameLabel.text = getDisplayName()
         timestampLabel.text = DateUtil.formatDateShort(threadViewModel.lastMessageDate)
         if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: self.threadViewModel.threadRecord) != nil {

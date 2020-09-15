@@ -63,7 +63,10 @@ public final class ProfilePictureView : UIView {
             } else { // A closed group
                 var users = MentionsManager.userPublicKeyCache[thread.uniqueId!] ?? []
                 users.remove(getUserHexEncodedPublicKey())
-                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
+                var randomUsers = users.sorted() // Sort to provide a level of stability
+                if users.count == 1 {
+                    randomUsers.insert(getUserHexEncodedPublicKey(), at: 0) // Ensure the current user is at the back visually
+                }
                 hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
                 additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
                 isRSSFeed = false

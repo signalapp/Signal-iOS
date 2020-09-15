@@ -102,30 +102,7 @@ final class ConversationTitleView : UIView {
     }
 
     private func updateProfilePicture() {
-        if let thread = thread as? TSGroupThread {
-            if thread.name() == "Loki Public Chat" || thread.name() == "Session Public Chat" { // Override the profile picture for the Loki Public Chat and the Session Public Chat
-                profilePictureView.hexEncodedPublicKey = ""
-                profilePictureView.isRSSFeed = true
-            } else if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
-                profilePictureView.openGroupProfilePicture = openGroupProfilePicture
-                profilePictureView.isRSSFeed = false
-            } else if thread.groupModel.groupType == .openGroup || thread.groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
-                profilePictureView.hexEncodedPublicKey = ""
-                profilePictureView.isRSSFeed = true
-            } else { // A closed group
-                var users = MentionsManager.userPublicKeyCache[thread.uniqueId!] ?? []
-                users.remove(getUserHexEncodedPublicKey())
-                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
-                profilePictureView.hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
-                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
-                profilePictureView.isRSSFeed = false
-            }
-        } else { // A one-on-one chat
-            profilePictureView.hexEncodedPublicKey = thread.contactIdentifier()!
-            profilePictureView.additionalHexEncodedPublicKey = nil
-            profilePictureView.isRSSFeed = false
-        }
-        profilePictureView.update()
+        profilePictureView.update(for: thread)
     }
     
     @objc private func handleProfileChangedNotification(_ notification: Notification) {
