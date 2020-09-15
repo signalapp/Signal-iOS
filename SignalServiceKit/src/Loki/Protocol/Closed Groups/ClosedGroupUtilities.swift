@@ -3,8 +3,6 @@ import SessionMetadataKit
 
 @objc(LKClosedGroupUtilities)
 public final class ClosedGroupUtilities : NSObject {
-    private static let gcmTagSize: UInt = 16
-    private static let ivSize: UInt = 12
 
     @objc(LKSSKDecryptionError)
     public class SSKDecryptionError : NSError { // Not called `Error` for Obj-C interoperablity
