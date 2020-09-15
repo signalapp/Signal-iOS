@@ -148,8 +148,6 @@ public class UIDatabaseObserver: NSObject {
     private let displayLinkPreferredFramesPerSecond: Int = 60
     private var recentDisplayLinkDates = [Date]()
 
-    private var didDatabaseModifyInteractions = false
-
     fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
     fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
 
@@ -318,10 +316,6 @@ extension UIDatabaseObserver: TransactionObserver {
                 pendingChanges.append(deletedAttachmentRowId: event.rowID)
             }
 
-            if event.tableName == InteractionRecord.databaseTableName {
-                didDatabaseModifyInteractions = true
-            }
-
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
                 delegate.databaseDidChange(with: event)
@@ -333,18 +327,20 @@ extension UIDatabaseObserver: TransactionObserver {
     // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
         UIDatabaseObserver.serializedSync {
+            let pendingChangesToCommit = self.pendingChanges
+            self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+
             do {
                 // finalizePublishedState() finalizes the state we're about to
                 // copy.
-                try pendingChanges.finalizePublishedState(db: db)
+                try pendingChangesToCommit.finalizePublishedState(db: db)
 
-                let interactionUniqueIds = pendingChanges.interactionUniqueIds
-                let threadUniqueIds = pendingChanges.threadUniqueIds
-                let attachmentUniqueIds = pendingChanges.attachmentUniqueIds
-                let attachmentDeletedUniqueIds = pendingChanges.attachmentDeletedUniqueIds
-                let collections = pendingChanges.collections
-                let completionBlocks = pendingChanges.completionBlocks
-                pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+                let interactionUniqueIds = pendingChangesToCommit.interactionUniqueIds
+                let threadUniqueIds = pendingChangesToCommit.threadUniqueIds
+                let attachmentUniqueIds = pendingChangesToCommit.attachmentUniqueIds
+                let attachmentDeletedUniqueIds = pendingChangesToCommit.attachmentDeletedUniqueIds
+                let collections = pendingChangesToCommit.collections
+                let completionBlocks = pendingChangesToCommit.completionBlocks
 
                 DispatchQueue.main.async {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
@@ -360,10 +356,10 @@ extension UIDatabaseObserver: TransactionObserver {
                 }
             }
 
-            if didDatabaseModifyInteractions {
+            let didModifyInteractions = pendingChangesToCommit.tableNames.contains(InteractionRecord.databaseTableName)
+            if didModifyInteractions {
                 NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
             }
-            didDatabaseModifyInteractions = false
 
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
