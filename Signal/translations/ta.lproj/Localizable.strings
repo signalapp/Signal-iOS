@@ -1634,7 +1634,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "ஏற்றப்படுகிறது ...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "இந்த குழுவில் சேர்ந்து உங்கள் பெயரையும் புகைப்படத்தையும் அதன் உறுப்பினர்களுடன் பகிர்ந்து கொள்ள விரும்புகிறீர்களா?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "நீங்கள் ஆன்லைனில் இருக்கிறீர்களா என்பதை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
@@ -1664,7 +1664,7 @@
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
 
 /* The title for the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Code";
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR குறியீடு";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
@@ -1697,10 +1697,10 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "பகிர்";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR Code";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR குறியீடு";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "சிக்னல் Signal வழியாக பகிரவும்";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
@@ -2420,7 +2420,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "தடுக்கப்பட்டவர்களை அழைக்க முடியாது நீங்கள் அல்லது அனுப்பு நீங்கள் செய்திகள்.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "1%@ஐ தடுக்கவா?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ஐ தடுக்கவா?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "நீங்கள் இந்த குழுவை விட்டு வெளியேறும் மற்றும் இல்லை இனி செய்திகள் அல்லது புதுப்பிப்புகளைப் பெறுங்கள்.";
@@ -2489,7 +2489,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "தடைநீக்கு ";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "கோரிக்கையை ரத்துசெய்";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -3014,7 +3014,7 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "உங்கள் தொடர்புகள் மட்டுமே உங்கள் தொலைபேசி எண்ணை சிக்னலில் Signal பார்க்கும்.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
