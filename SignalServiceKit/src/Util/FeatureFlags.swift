@@ -409,7 +409,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
 
-    static let forceMentions = build.includes(.dev)
+    static let forceMentions = build.includes(.beta)
 
     static let forceAttachmentUploadV3 = build.includes(.beta)
 
