@@ -310,7 +310,7 @@ public class DebugFlags: BaseFlags {
         }
     }
 
-    static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.qa)
+    static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.beta)
 
     // If set, client will invite instead of adding other users.
     private static let _groupsV2forceInvites = AtomicBool(false)
