@@ -202,7 +202,7 @@ protocol CallAudioServiceDelegate: class {
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-            self.play(sound: OWSSound.callConnecting)
+            self.play(sound: OWSStandardSound.callConnecting.rawValue)
         }
     }
 
@@ -215,7 +215,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        self.play(sound: OWSSound.callOutboundRinging)
+        self.play(sound: OWSStandardSound.callOutboundRinging.rawValue)
     }
 
     private func handleLocalRinging(call: SignalCall) {
@@ -239,7 +239,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: .callEnded)
+        play(sound: OWSStandardSound.callEnded.rawValue)
         handleCallEnded(call: call)
     }
 
@@ -247,7 +247,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: .callEnded)
+        play(sound: OWSStandardSound.callEnded.rawValue)
         handleCallEnded(call: call)
     }
 
@@ -257,7 +257,7 @@ protocol CallAudioServiceDelegate: class {
 
         vibrate()
 
-        play(sound: .callEnded)
+        play(sound: OWSStandardSound.callEnded.rawValue)
         handleCallEnded(call: call)
     }
 
@@ -265,7 +265,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: OWSSound.callBusy)
+        play(sound: OWSStandardSound.callBusy.rawValue)
 
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
@@ -277,7 +277,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: .callEnded)
+        play(sound: OWSStandardSound.callEnded.rawValue)
         handleCallEnded(call: call)
     }
 
@@ -310,11 +310,11 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private func prepareToPlay(sound: OWSSound) -> OWSAudioPlayer? {
-        guard let newPlayer = OWSSounds.audioPlayer(for: sound, audioBehavior: .call) else {
-            owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(for: sound))")
+        guard let newPlayer = OWSSounds.audioPlayer(forSound: sound, audioBehavior: .call) else {
+            owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(forSound: sound))")
             return nil
         }
-        Logger.info("playing sound: \(OWSSounds.displayName(for: sound))")
+        Logger.info("playing sound: \(OWSSounds.displayName(forSound: sound))")
 
         // It's important to stop the current player **before** starting the new player. In the case that
         // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise
@@ -343,7 +343,7 @@ protocol CallAudioServiceDelegate: class {
             self?.ringVibration()
         }
 
-        guard let player = prepareToPlay(sound: .defaultiOSIncomingRingtone) else {
+        guard let player = prepareToPlay(sound: OWSStandardSound.defaultiOSIncomingRingtone.rawValue) else {
             return owsFailDebug("Failed to prepare player for ringing")
         }
 

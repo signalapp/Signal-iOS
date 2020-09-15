@@ -3186,7 +3186,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.quotedReply = nil;
 
     if ([Environment.shared.preferences soundInForeground]) {
-        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
+        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSStandardSound_MessageSent quiet:YES];
         AudioServicesPlaySystemSound(soundId);
     }
     [self.typingIndicators didSendOutgoingMessageInThread:self.thread];

@@ -125,7 +125,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
         let isAppActive = CurrentAppContext().isMainAppAndActive
-        if let sound = sound, sound != OWSSound.none {
+        if let sound = sound, sound != OWSStandardSound.none.rawValue {
             content.sound = sound.notificationSound(isQuiet: isAppActive)
         }
 
@@ -316,7 +316,7 @@ public protocol ConversationSplit {
 
 extension OWSSound {
     func notificationSound(isQuiet: Bool) -> UNNotificationSound {
-        guard let filename = OWSSounds.filename(for: self, quiet: isQuiet) else {
+        guard let filename = OWSSounds.filename(forSound: self, quiet: isQuiet) else {
             owsFailDebug("filename was unexpectedly nil")
             return UNNotificationSound.default
         }
