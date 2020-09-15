@@ -7,38 +7,43 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, OWSSound) {
-    OWSSound_Default = 0,
+typedef NSUInteger OWSSound;
+
+typedef NS_ENUM(NSUInteger, OWSStandardSound) {
+    OWSStandardSound_Default = 0,
 
     // Notification Sounds
-    OWSSound_Aurora,
-    OWSSound_Bamboo,
-    OWSSound_Chord,
-    OWSSound_Circles,
-    OWSSound_Complete,
-    OWSSound_Hello,
-    OWSSound_Input,
-    OWSSound_Keys,
-    OWSSound_Note,
-    OWSSound_Popcorn,
-    OWSSound_Pulse,
-    OWSSound_Synth,
-    OWSSound_SignalClassic,
+    OWSStandardSound_Aurora,
+    OWSStandardSound_Bamboo,
+    OWSStandardSound_Chord,
+    OWSStandardSound_Circles,
+    OWSStandardSound_Complete,
+    OWSStandardSound_Hello,
+    OWSStandardSound_Input,
+    OWSStandardSound_Keys,
+    OWSStandardSound_Note,
+    OWSStandardSound_Popcorn,
+    OWSStandardSound_Pulse,
+    OWSStandardSound_Synth,
+    OWSStandardSound_SignalClassic,
 
     // Ringtone Sounds
-    OWSSound_Reflection,
+    OWSStandardSound_Reflection,
 
     // Calls
-    OWSSound_CallConnecting,
-    OWSSound_CallOutboundRinging,
-    OWSSound_CallBusy,
-    OWSSound_CallEnded,
+    OWSStandardSound_CallConnecting,
+    OWSStandardSound_CallOutboundRinging,
+    OWSStandardSound_CallBusy,
+    OWSStandardSound_CallEnded,
 
     // Other
-    OWSSound_MessageSent,
-    OWSSound_None,
-    OWSSound_Silence,
-    OWSSound_DefaultiOSIncomingRingtone = OWSSound_Reflection,
+    OWSStandardSound_MessageSent,
+    OWSStandardSound_None,
+    OWSStandardSound_Silence,
+    OWSStandardSound_DefaultiOSIncomingRingtone = OWSStandardSound_Reflection,
+
+    // Custom sound IDs begin at this threshold
+    OWSStandardSound_CustomThreshold = 1 << 16, // 16 == OWSCustomSoundShift
 };
 
 @class OWSAudioPlayer;
@@ -54,6 +59,9 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 + (nullable NSString *)filenameForSound:(OWSSound)sound;
 + (nullable NSString *)filenameForSound:(OWSSound)sound quiet:(BOOL)quiet;
+
++ (void)importSoundsAtURLs:(NSArray<NSURL *> *)urls;
++ (NSString *)soundsDirectory;
 
 #pragma mark - Notifications
 
