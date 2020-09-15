@@ -172,6 +172,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
+@property (nonatomic) BOOL hasViewWillAppearOccurred;
 @property (nonatomic) NSUInteger unreadMessageCount;
 @property (nonatomic, nullable) NSArray<TSMessage *> *unreadMentionMessages;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
@@ -707,6 +708,7 @@ typedef enum : NSUInteger {
     [self updateInputVisibility];
 
     self.isViewVisible = YES;
+    self.hasViewWillAppearOccurred = YES;
 
     // We should have already requested contact access at this point, so this should be a no-op
     // unless it ever becomes possible to load this VC without going via the ConversationListViewController.
@@ -4202,8 +4204,18 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewLayoutDelegate
 
+- (BOOL)shouldHideCollectionViewContent
+{
+    // Avoid layout and measurement during view configuration.
+    return !self.hasViewWillAppearOccurred;
+}
+
 - (NSArray<id<ConversationViewLayoutItem>> *)layoutItems
 {
+    if (self.shouldHideCollectionViewContent) {
+        return 0;
+    }
+
     return self.viewItems;
 }
 
@@ -4448,6 +4460,10 @@ typedef enum : NSUInteger {
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    if (self.shouldHideCollectionViewContent) {
+        return 0;
+    }
+
     return (NSInteger)self.viewItems.count;
 }
 
