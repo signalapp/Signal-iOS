@@ -116,7 +116,7 @@ public class ConversationStyle: NSObject {
 
         let messageTextFont = UIFont.systemFont(ofSize: Values.smallFontSize)
 
-        let baseFontOffset: CGFloat = 16
+        let baseFontOffset: CGFloat = 12
 
         // Don't include the distance from the "cap height" to the top of the UILabel
         // in the top margin.
@@ -126,7 +126,7 @@ public class ConversationStyle: NSObject {
         // negative value.
         textInsetBottom = max(0, round(baseFontOffset - abs(messageTextFont.descender)))
 
-        textInsetHorizontal = 16
+        textInsetHorizontal = 12
 
         lastTextLineAxis = CGFloat(round(baseFontOffset + messageTextFont.capHeight * 0.5))
 

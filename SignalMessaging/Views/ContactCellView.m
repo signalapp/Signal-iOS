@@ -211,52 +211,18 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
-    if (self.thread.isGroupThread) {
-        NSMutableArray<NSString *> *sortedUsers = @[].mutableCopy;
-        NSSet<NSString *> *users = LKMentionsManager.userPublicKeyCache[self.thread.uniqueId];
-        if (users != nil) {
-            for (NSString *user in users) {
-                [sortedUsers addObject:user];
-            }
-        }
-        sortedUsers = [sortedUsers sortedArrayUsingSelector:@selector(compare:)].mutableCopy;
-        self.profilePictureView.hexEncodedPublicKey = (sortedUsers.count > 0) ? sortedUsers[0] : @"";
-        self.profilePictureView.isRSSFeed = ((TSGroupThread *)self.thread).isRSSFeed;
-    } else {
-        self.profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
-    }
-    [self.profilePictureView update];
+    [self.profilePictureView updateForThread:self.thread];
 }
 
 - (void)updateProfileName
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
-    if (contactsManager == nil) {
-        OWSFailDebug(@"contactsManager should not be nil");
-        self.nameLabel.text = self.recipientId;
-        return;
-    }
-
-    NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
-        OWSFailDebug(@"recipientId should not be nil");
-        self.nameLabel.text = nil;
-        return;
-    }
-
-    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
-        // Don't display profile name when we have a veritas name in system Contacts
-        self.nameLabel.text = nil;
-    } else {
-        
-        BOOL isNoteToSelf = (!self.thread.isGroupThread && [self.thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
-        if (isNoteToSelf) {
-            self.nameLabel.text = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
-        } else {
-            self.nameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
-        }
-    }
-
+    NSString *publicKey = self.recipientId;
+    NSString *threadID = self.thread.uniqueId;
+    __block NSString *displayName = nil;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        displayName = [LKDisplayNameUtilities2 getDisplayNameForPublicKey:publicKey threadID:threadID transaction:transaction];
+    } error:nil];
+    self.nameLabel.text = displayName;
     [self.nameLabel setNeedsLayout];
 }
 

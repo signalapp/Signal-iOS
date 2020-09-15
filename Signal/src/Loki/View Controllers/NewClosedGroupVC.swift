@@ -70,7 +70,8 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
             mainStackView.addArrangedSubview(nameTextFieldContainer)
             let separator = UIView()
-            separator.backgroundColor = Colors.separator
+            let alpha: CGFloat = isLightMode ? 0.2 : 1
+            separator.backgroundColor = Colors.separator.withAlphaComponent(alpha)
             separator.set(.height, to: Values.separatorThickness)
             mainStackView.addArrangedSubview(separator)
             tableView.set(.height, to: CGFloat(contacts.count * 67)) // A cell is exactly 67 points high
@@ -286,7 +287,8 @@ private extension NewClosedGroupVC {
         
         private lazy var separator: UIView = {
             let result = UIView()
-            result.backgroundColor = Colors.separator
+            let alpha: CGFloat = isLightMode ? 0.2 : 1
+            result.backgroundColor = Colors.separator.withAlphaComponent(alpha)
             result.set(.height, to: Values.separatorThickness)
             return result
         }()

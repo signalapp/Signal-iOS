@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     */
     
-    UIImage *image = [LKIdenticon generateIconWithString:self.signalId size:((CGFloat)self.diameter)];
+    UIImage *image = [LKIdenticon generatePlaceholderIconWithSeed:self.signalId text:@"0" size:((CGFloat)self.diameter)];
     [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
     return image;
 }

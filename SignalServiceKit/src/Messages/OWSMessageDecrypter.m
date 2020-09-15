@@ -283,7 +283,28 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 // Return to avoid double-acknowledging.
                 return;
             }
-            case SSKProtoEnvelopeTypeClosedGroupCiphertext: // Loki: Fall through
+            case SSKProtoEnvelopeTypeClosedGroupCiphertext: {
+                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    NSError *error = nil;
+                    NSArray *plaintextAndSenderPublicKey = [LKClosedGroupUtilities decryptEnvelope:envelope transaction:transaction error:&error];
+                    if (error != nil) { return failureBlock(); }
+                    NSData *plaintext = plaintextAndSenderPublicKey[0];
+                    NSString *senderPublicKey = plaintextAndSenderPublicKey[1];
+                    SSKProtoEnvelopeBuilder *newEnvelope = [envelope asBuilder];
+                    [newEnvelope setSource:senderPublicKey];
+                    NSData *newEnvelopeAsData = [newEnvelope buildSerializedDataAndReturnError:&error];
+                    if (error != nil) { return failureBlock(); }
+                    NSString *userPublicKey = [OWSIdentityManager.sharedManager.identityKeyPair hexEncodedPublicKey];
+                    if ([senderPublicKey isEqual:userPublicKey]) { return failureBlock(); }
+                    OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeAsData
+                                                                                        plaintextData:[plaintext removePadding]
+                                                                                               source:senderPublicKey
+                                                                                         sourceDevice:OWSDevicePrimaryDeviceId
+                                                                                          isUDMessage:NO];
+                    successBlock(result, transaction);
+                } error:nil];
+                return;
+            }
             case SSKProtoEnvelopeTypeUnidentifiedSender: {
                 [self decryptUnidentifiedSender:envelope
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
@@ -493,7 +514,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                                    preKeyStore:self.primaryStorage
                                                              signedPreKeyStore:self.primaryStorage
                                                                  identityStore:self.identityManager
-                                                sharedSenderKeysImplementation:LKSharedSenderKeysImplementation.shared
                                                            error:&cipherError];
 
         if (cipherError || !cipher) {
@@ -505,7 +525,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         NSError *decryptError;
         SMKDecryptResult *_Nullable decryptResult =
             [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
-                                                         senderPublicKey:envelope.source
                                                           cipherTextData:encryptedData
                                                                timestamp:serverTimestamp
                                                         localRecipientId:localRecipientId

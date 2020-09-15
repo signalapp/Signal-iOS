@@ -131,7 +131,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
 
 - (CGFloat)bubbleHMargin
 {
-    return (self.isForPreview ? 0.f : LKValues.largeSpacing);
+    return (self.isForPreview ? 0.f : 20.f);
 }
 
 - (CGFloat)hSpacing
@@ -648,7 +648,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
 
 - (UIFont *)quotedTextFont
 {
-    return [UIFont systemFontOfSize:LKValues.mediumFontSize];
+    return [UIFont systemFontOfSize:LKValues.smallFontSize];
 }
 
 - (UIColor *)fileTypeTextColor

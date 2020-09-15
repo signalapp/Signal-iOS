@@ -729,6 +729,39 @@ struct SignalServiceProtos_CallMessage {
   fileprivate var _profileKey: Data? = nil
 }
 
+struct SignalServiceProtos_ClosedGroupCiphertextMessageWrapper {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// @required
+  var ciphertext: Data {
+    get {return _ciphertext ?? SwiftProtobuf.Internal.emptyData}
+    set {_ciphertext = newValue}
+  }
+  /// Returns true if `ciphertext` has been explicitly set.
+  var hasCiphertext: Bool {return self._ciphertext != nil}
+  /// Clears the value of `ciphertext`. Subsequent reads from it will return its default value.
+  mutating func clearCiphertext() {self._ciphertext = nil}
+
+  /// @required
+  var ephemeralPublicKey: Data {
+    get {return _ephemeralPublicKey ?? SwiftProtobuf.Internal.emptyData}
+    set {_ephemeralPublicKey = newValue}
+  }
+  /// Returns true if `ephemeralPublicKey` has been explicitly set.
+  var hasEphemeralPublicKey: Bool {return self._ephemeralPublicKey != nil}
+  /// Clears the value of `ephemeralPublicKey`. Subsequent reads from it will return its default value.
+  mutating func clearEphemeralPublicKey() {self._ephemeralPublicKey = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _ciphertext: Data? = nil
+  fileprivate var _ephemeralPublicKey: Data? = nil
+}
+
 struct SignalServiceProtos_DataMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3393,6 +3426,41 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Hangup, rhs: SignalServiceProtos_CallMessage.Hangup) -> Bool {
     if lhs._id != rhs._id {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_ClosedGroupCiphertextMessageWrapper: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ClosedGroupCiphertextMessageWrapper"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "ciphertext"),
+    2: .same(proto: "ephemeralPublicKey"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self._ciphertext)
+      case 2: try decoder.decodeSingularBytesField(value: &self._ephemeralPublicKey)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._ciphertext {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    if let v = self._ephemeralPublicKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_ClosedGroupCiphertextMessageWrapper, rhs: SignalServiceProtos_ClosedGroupCiphertextMessageWrapper) -> Bool {
+    if lhs._ciphertext != rhs._ciphertext {return false}
+    if lhs._ephemeralPublicKey != rhs._ephemeralPublicKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

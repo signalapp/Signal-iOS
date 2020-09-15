@@ -72,7 +72,7 @@ PODS:
   - SessionHKDFKit/Tests (0.0.5):
     - CocoaLumberjack
     - SessionCoreKit
-  - SessionMetadataKit (1.0.8):
+  - SessionMetadataKit (1.0.9):
     - CocoaLumberjack
     - CryptoSwift (~> 1.3)
     - SessionAxolotlKit (~> 1.0.7)
@@ -80,7 +80,7 @@ PODS:
     - SessionCurve25519Kit (~> 2.1.2)
     - SessionHKDFKit (~> 0.0.5)
     - SwiftProtobuf (~> 1.5.0)
-  - SessionMetadataKit/Tests (1.0.8):
+  - SessionMetadataKit/Tests (1.0.9):
     - CocoaLumberjack
     - CryptoSwift (~> 1.3)
     - SessionAxolotlKit (~> 1.0.7)
@@ -101,7 +101,7 @@ PODS:
     - SessionAxolotlKit (~> 1.0.7)
     - SessionCoreKit (~> 1.0.0)
     - SessionCurve25519Kit (~> 2.1.3)
-    - SessionMetadataKit (~> 1.0.8)
+    - SessionMetadataKit (~> 1.0.9)
     - Starscream
     - SwiftProtobuf (~> 1.5.0)
     - YapDatabase/SQLCipher
@@ -118,7 +118,7 @@ PODS:
     - SessionAxolotlKit (~> 1.0.7)
     - SessionCoreKit (~> 1.0.0)
     - SessionCurve25519Kit (~> 2.1.3)
-    - SessionMetadataKit (~> 1.0.8)
+    - SessionMetadataKit (~> 1.0.9)
     - Starscream
     - SwiftProtobuf (~> 1.5.0)
     - YapDatabase/SQLCipher
@@ -289,7 +289,7 @@ CHECKOUT OPTIONS:
     :commit: 0dcf8cf8a7995ef8663146f7063e6c1d7f5a3274
     :git: https://github.com/nielsandriesse/session-ios-hkdf-kit.git
   SessionMetadataKit:
-    :commit: b199165ece8b32bcbfc07cf76979cc925996db79
+    :commit: df787d84bb8adb23c10df669296dee8d7988e410
     :git: https://github.com/loki-project/session-ios-metadata-kit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -316,8 +316,8 @@ SPEC CHECKSUMS:
   SessionCoreKit: 778a3f6e3da788b43497734166646025b6392e88
   SessionCurve25519Kit: 9bb9afe199e4bc23578a4b15932ad2c57bd047b1
   SessionHKDFKit: b0f4e669411703ab925aba07491c5611564d1419
-  SessionMetadataKit: 714497ffb50136b7965426d81bbf9f8cc0e69f98
-  SessionServiceKit: c86ddc530604d0e6f165a2b28f54929475f1cbfe
+  SessionMetadataKit: d37afdc47d20c7046faa139a92e68fa99f76c95b
+  SessionServiceKit: b12afb3975b33a9579802111f948838861d914bb
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9

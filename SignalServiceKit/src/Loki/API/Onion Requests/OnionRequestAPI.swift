@@ -21,12 +21,11 @@ public enum OnionRequestAPI {
     }
 
     // MARK: Error
-     public enum Error : LocalizedError {
+    public enum Error : LocalizedError {
         case httpRequestFailedAtDestination(statusCode: UInt, json: JSON)
         case insufficientSnodes
         case invalidURL
         case missingSnodeVersion
-        case randomDataGenerationFailed
         case snodePublicKeySetMissing
         case unsupportedSnodeVersion(String)
 
@@ -36,7 +35,6 @@ public enum OnionRequestAPI {
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."
             case .invalidURL: return "Invalid URL"
             case .missingSnodeVersion: return "Missing snode version."
-            case .randomDataGenerationFailed: return "Couldn't generate random data."
             case .snodePublicKeySetMissing: return "Missing snode public key set."
             case .unsupportedSnodeVersion(let version): return "Unsupported snode version: \(version)."
             }
@@ -143,10 +141,12 @@ public enum OnionRequestAPI {
     /// - Note: Exposed for testing purposes.
     private static func getPath(excluding snode: Snode?) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
+        var paths = OnionRequestAPI.paths
         if paths.count < pathCount {
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadConnection.read { transaction in
                 paths = storage.getOnionRequestPaths(in: transaction)
+                OnionRequestAPI.paths = paths
                 if paths.count >= pathCount {
                     guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
                 }
@@ -295,13 +295,9 @@ public enum OnionRequestAPI {
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
                 HTTP.execute(.post, url, parameters: parameters).done2 { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
-                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
-                    let iv = ivAndCiphertext[0..<Int(ivSize)]
-                    let ciphertext = ivAndCiphertext[Int(ivSize)...]
+                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= EncryptionUtilities.ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
                     do {
-                        let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
-                        let aes = try AES(key: destinationSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
-                        let data = Data(try aes.decrypt(ciphertext.bytes))
+                        let data = try DecryptionUtilities.decrypt(ivAndCiphertext, usingAESGCMWithSymmetricKey: destinationSymmetricKey)
                         guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
                             let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
                         if statusCode == 406 { // Clock out of sync

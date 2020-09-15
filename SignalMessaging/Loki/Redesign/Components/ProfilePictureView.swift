@@ -3,6 +3,8 @@
 public final class ProfilePictureView : UIView {
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var imageViewHeightConstraint: NSLayoutConstraint!
+    private var additionalImageViewWidthConstraint: NSLayoutConstraint!
+    private var additionalImageViewHeightConstraint: NSLayoutConstraint!
     @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
     @objc public var isRSSFeed = false
     @objc public var hexEncodedPublicKey: String!
@@ -37,23 +39,67 @@ public final class ProfilePictureView : UIView {
         additionalImageView.pin(.trailing, to: .trailing, of: self)
         additionalImageView.pin(.bottom, to: .bottom, of: self)
         let additionalImageViewSize = CGFloat(Values.smallProfilePictureSize)
-        additionalImageView.set(.width, to: additionalImageViewSize)
-        additionalImageView.set(.height, to: additionalImageViewSize)
+        additionalImageViewWidthConstraint = additionalImageView.set(.width, to: additionalImageViewSize)
+        additionalImageViewHeightConstraint = additionalImageView.set(.height, to: additionalImageViewSize)
         additionalImageView.layer.cornerRadius = additionalImageViewSize / 2
     }
     
     // MARK: Updating
+    @objc(updateForThread:)
+    public func update(for thread: TSThread) {
+        openGroupProfilePicture = nil
+        if let thread = thread as? TSGroupThread {
+            if thread.name() == "Loki Public Chat"
+                || thread.name() == "Session Public Chat" { // Override the profile picture for the Loki Public Chat and the Session Public Chat
+                hexEncodedPublicKey = ""
+                isRSSFeed = true
+            } else if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
+                self.openGroupProfilePicture = openGroupProfilePicture
+                isRSSFeed = false
+            } else if thread.groupModel.groupType == .openGroup
+                || thread.groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
+                hexEncodedPublicKey = ""
+                isRSSFeed = true
+            } else { // A closed group
+                var users = MentionsManager.userPublicKeyCache[thread.uniqueId!] ?? []
+                users.remove(getUserHexEncodedPublicKey())
+                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
+                hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
+                additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                isRSSFeed = false
+            }
+        } else { // A one-to-one chat
+            hexEncodedPublicKey = thread.contactIdentifier()!
+            additionalHexEncodedPublicKey = nil
+            isRSSFeed = false
+        }
+        update()
+    }
+
     @objc public func update() {
         AssertIsOnMainThread()
         func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
             guard !hexEncodedPublicKey.isEmpty else { return nil }
-            return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
+            if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) {
+                return profilePicture
+            } else {
+                let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: hexEncodedPublicKey) ?? hexEncodedPublicKey
+                return Identicon.generatePlaceholderIcon(seed: hexEncodedPublicKey, text: displayName, size: size)
+            }
         }
         let size: CGFloat
         if let additionalHexEncodedPublicKey = additionalHexEncodedPublicKey, !isRSSFeed, openGroupProfilePicture == nil {
-            size = Values.smallProfilePictureSize
+            if self.size == 40 {
+                size = 32
+            } else if self.size == Values.largeProfilePictureSize {
+                size = 56
+            } else {
+                size = Values.smallProfilePictureSize
+            }
             imageViewWidthConstraint.constant = size
             imageViewHeightConstraint.constant = size
+            additionalImageViewWidthConstraint.constant = size
+            additionalImageViewHeightConstraint.constant = size
             additionalImageView.isHidden = false
             additionalImageView.image = getProfilePicture(of: size, for: additionalHexEncodedPublicKey)
         } else {
@@ -67,9 +113,14 @@ public final class ProfilePictureView : UIView {
         imageView.image = isRSSFeed ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: hexEncodedPublicKey))
         imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : Colors.unimportant
         imageView.layer.cornerRadius = size / 2
+        additionalImageView.layer.cornerRadius = size / 2
         imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit
         if isRSSFeed {
-            imageView.image = (size == 45) ? #imageLiteral(resourceName: "SessionWhite24") : #imageLiteral(resourceName: "SessionWhite40")
+            switch size {
+            case Values.smallProfilePictureSize..<Values.mediumProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite16")
+            case Values.mediumProfilePictureSize..<Values.largeProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite24")
+            default: imageView.image = #imageLiteral(resourceName: "SessionWhite40")
+            }
         }
     }
     
@@ -78,7 +129,7 @@ public final class ProfilePictureView : UIView {
         let result = UIImageView()
         result.layer.masksToBounds = true
         result.backgroundColor = Colors.unimportant
-        result.layer.borderColor = Colors.border.cgColor
+        result.layer.borderColor = Colors.text.withAlphaComponent(0.35).cgColor
         result.layer.borderWidth = Values.borderThickness
         result.contentMode = .scaleAspectFit
         return result
