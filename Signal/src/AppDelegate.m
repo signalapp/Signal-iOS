@@ -357,36 +357,8 @@ static NSTimeInterval launchStartedAt;
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
-    NSLog(@"[Loki] Performing background fetch.");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        NSMutableArray *promises = [NSMutableArray new];
-        
-        __block AnyPromise *fetchMessagesPromise = [AppEnvironment.shared.messageFetcherJob run].then(^{
-            fetchMessagesPromise = nil;
-        }).catch(^{
-            fetchMessagesPromise = nil;
-        });
-        [promises addObject:fetchMessagesPromise];
-        [fetchMessagesPromise retainUntilComplete];
-        
-        __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
-        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
-        }];
-        for (LKPublicChat *publicChat in publicChats) {
-            if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; }
-            LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
-            [poller stop];
-            AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
-            [promises addObject:fetchGroupMessagesPromise];
-            [fetchGroupMessagesPromise retainUntilComplete];
-        }
-        
-        PMKJoin(promises).then(^(id results) {
-            completionHandler(UIBackgroundFetchResultNewData);
-        }).catch(^(id error) {
-            completionHandler(UIBackgroundFetchResultFailed);
-        });
+        [LKBackgroundPoller pollWithCompletionHandler:completionHandler];
     }];
 }
 
