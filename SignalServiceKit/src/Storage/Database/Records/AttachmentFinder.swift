@@ -54,6 +54,9 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         withAttachmentIds attachmentIds: [String],
         transaction: GRDBReadTransaction
     ) -> [TSAttachment] {
+        guard !attachmentIds.isEmpty else {
+            return []
+        }
         return GRDBAttachmentFinderAdapter.attachments(
             withAttachmentIds: attachmentIds,
             transaction: transaction
@@ -66,6 +69,9 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         matchingContentType: String,
         transaction: GRDBReadTransaction
     ) -> [TSAttachment] {
+        guard !attachmentIds.isEmpty else {
+            return []
+        }
         return GRDBAttachmentFinderAdapter.attachments(
             withAttachmentIds: attachmentIds,
             matchingContentType: matchingContentType,
@@ -79,6 +85,9 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         ignoringContentType: String,
         transaction: GRDBReadTransaction
     ) -> [TSAttachment] {
+        guard !attachmentIds.isEmpty else {
+            return []
+        }
         return GRDBAttachmentFinderAdapter.attachments(
             withAttachmentIds: attachmentIds,
             ignoringContentType: ignoringContentType,
@@ -92,6 +101,9 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
         ignoringContentType: String,
         transaction: GRDBReadTransaction
     ) -> Bool {
+        guard !attachmentIds.isEmpty else {
+            return false
+        }
         return GRDBAttachmentFinderAdapter.existsAttachments(
             withAttachmentIds: attachmentIds,
             ignoringContentType: ignoringContentType,
