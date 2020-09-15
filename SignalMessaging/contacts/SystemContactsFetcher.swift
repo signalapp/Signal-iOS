@@ -232,32 +232,6 @@ public class SystemContactsFetcher: NSObject {
         switch authorizationStatus {
         case .notDetermined:
             return completion(nil)
-            // Loki: Original code
-            // ========
-//            if CurrentAppContext().isInBackground() {
-//                Logger.error("do not request contacts permission when app is in background")
-//                completion(nil)
-//                return
-//            }
-//            self.contactStoreAdapter.requestAccess { (granted, error) in
-//                if let error = error {
-//                    Logger.error("error fetching contacts: \(error)")
-//                    completion(error)
-//                    return
-//                }
-//
-//                guard granted else {
-//                    // This case should have been caught by the error guard a few lines up.
-//                    owsFailDebug("declined contact access.")
-//                    completion(nil)
-//                    return
-//                }
-//
-//                DispatchQueue.main.async {
-//                    self.updateContacts(completion: completion)
-//                }
-//            }
-            // ========
         case .authorized:
             self.updateContacts(completion: completion)
         case .denied, .restricted:

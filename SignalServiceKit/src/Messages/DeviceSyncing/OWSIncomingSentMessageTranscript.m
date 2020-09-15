@@ -49,7 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
         // Skip the other processing for recipient updates.
     } else {
         if (self.dataMessage.group) {
-            // TODO: Figure out if this is correct
             _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id groupType:closedGroup transaction:transaction];
         } else {
             _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
