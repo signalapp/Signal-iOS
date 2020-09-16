@@ -32,6 +32,8 @@ class LinkedDevicesTableViewController: OWSTableViewController {
 
         refreshControl.addTarget(self, action: #selector(refreshDevices), for: .valueChanged)
 
+        tableView.refreshControl = refreshControl
+
         updateTableContents()
 
         addObservers()
