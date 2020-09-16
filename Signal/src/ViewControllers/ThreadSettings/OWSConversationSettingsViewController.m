@@ -392,6 +392,20 @@ const CGFloat kIconViewLength = 24;
      * ========
      */
 
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        [mainSection addItem:[OWSTableItem
+                                 itemWithCustomCellBlock:^{
+                                     return [weakSelf
+                                          disclosureCellWithName:@"Copy Session ID"
+                                                        iconName:@"ic_copy"
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                     OWSConversationSettingsViewController, @"copy_session_id")];
+                                 }
+                                 actionBlock:^{
+                                     [weakSelf copySessionID];
+                                 }]];
+    }
+
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  return [weakSelf
@@ -1389,6 +1403,11 @@ const CGFloat kIconViewLength = 24;
     } error:nil];
     
     [self updateTableContents];
+}
+
+- (void)copySessionID
+{
+    UIPasteboard.generalPasteboard.string = self.thread.contactIdentifier;
 }
 
 - (void)showMediaGallery
