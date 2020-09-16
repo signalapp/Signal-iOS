@@ -1530,10 +1530,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 - (NSString *)statusDescription
 {
     NSMutableString *result = [NSMutableString new];
-    [result appendFormat:@"[status: %@", NSStringForOutgoingMessageState(self.messageState)];
+    [result appendFormat:@"[status: %@\n", NSStringForOutgoingMessageState(self.messageState)];
     for (SignalServiceAddress *address in self.recipientAddressStates) {
         TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[address];
-        [result appendFormat:@", %@: %@", address, NSStringForOutgoingMessageRecipientState(recipientState.state)];
+        [result appendFormat:@", %@: %@\n", address, NSStringForOutgoingMessageRecipientState(recipientState.state)];
     }
     [result appendString:@"]"];
     return [result copy];

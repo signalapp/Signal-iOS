@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSBlockingManager;
+@class OWSMessageSend;
 @class OutgoingMessagePreparer;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
@@ -94,6 +95,9 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
                         failure:(void (^)(NSError *error))failureHandler;
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
+
+// TODO: Make this private.
+- (void)sendMessageToRecipient:(OWSMessageSend *)messageSend;
 
 @end
 
