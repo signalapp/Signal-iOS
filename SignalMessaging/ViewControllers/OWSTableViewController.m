@@ -91,6 +91,20 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 #pragma mark -
 
+@implementation OWSTableItemEditAction
+
++ (OWSTableItemEditAction *)actionWithTitle:(nullable NSString *)title block:(OWSTableActionBlock)block
+{
+    OWSTableItemEditAction *action = [OWSTableItemEditAction new];
+    action.title = title;
+    action.block = block;
+    return action;
+}
+
+@end
+
+#pragma mark -
+
 @interface OWSTableItem ()
 
 @property (nonatomic, nullable) NSString *title;
@@ -915,6 +929,52 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     self.view.backgroundColor = backgroundColor;
     self.tableView.backgroundColor = backgroundColor;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
+}
+
+#pragma mark - Editing
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    OWSTableItem *item = [self itemForIndexPath:indexPath];
+    if (item.deleteAction != nil) {
+        return UITableViewCellEditingStyleDelete;
+    }
+    return UITableViewCellEditingStyleNone;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    OWSTableItem *item = [self itemForIndexPath:indexPath];
+    return item.deleteAction != nil;
+}
+
+- (nullable NSString *)tableView:(UITableView *)tableView
+    titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    OWSTableItem *item = [self itemForIndexPath:indexPath];
+    return item.deleteAction.title;
+}
+
+- (void)tableView:(UITableView *)tableView
+    commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+     forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    OWSTableItem *item = [self itemForIndexPath:indexPath];
+    if (editingStyle == UITableViewCellEditingStyleDelete && item.deleteAction != nil) {
+        item.deleteAction.block();
+    }
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
+{
+    [super setEditing:editing animated:animated];
+    [self.tableView setEditing:editing];
+}
+
+- (void)setEditing:(BOOL)editing
+{
+    [super setEditing:editing];
+    [self.tableView setEditing:editing];
 }
 
 @end

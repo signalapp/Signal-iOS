@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const NSNotificationName_DeviceListUpdateSucceeded;
-extern NSString *const NSNotificationName_DeviceListUpdateFailed;
-extern NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList;
+extern NSNotificationName const NSNotificationNameDeviceListUpdateSucceeded;
+extern NSNotificationName const NSNotificationNameDeviceListUpdateFailed;
+extern NSNotificationName const NSNotificationNameDeviceListUpdateModifiedDeviceList;
 
 @class OWSDevice;
 

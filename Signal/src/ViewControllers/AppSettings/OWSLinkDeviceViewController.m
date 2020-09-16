@@ -4,7 +4,6 @@
 
 #import "OWSLinkDeviceViewController.h"
 #import "OWSDeviceProvisioningURLParser.h"
-#import "OWSLinkedDevicesTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
@@ -187,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
         provisionWithSuccess:^{
             OWSLogInfo(@"Successfully provisioned device.");
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.linkedDevicesTableViewController expectMoreDevices];
+                [self.delegate expectMoreDevices];
                 [self popToLinkedDeviceList];
 
                 // The service implementation of the socket connection caches the linked device state,

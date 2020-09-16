@@ -9,7 +9,6 @@
 #import "NotificationSettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSBackupSettingsViewController.h"
-#import "OWSLinkedDevicesTableViewController.h"
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
@@ -337,7 +336,7 @@
 
 - (void)showLinkedDevices
 {
-    OWSLinkedDevicesTableViewController *vc = [OWSLinkedDevicesTableViewController new];
+    LinkedDevicesTableViewController *vc = [LinkedDevicesTableViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
