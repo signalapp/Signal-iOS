@@ -3928,6 +3928,13 @@ typedef enum : NSUInteger {
     self.inputToolbar.mentionDelegate = self;
     [self.inputToolbar setMessageBody:existingDraft animated:NO];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
+    // reloadBottomBar is expensive and we need to avoid it while
+    // initially configuring the view. viewWillAppear() will call
+    // reloadBottomBar(). After viewWillAppear(), we need to call
+    // reloadBottomBar() to reflect changes in the theme.
+    if (self.hasViewWillAppearOccurred) {
+        [self reloadBottomBar];
+    }
 }
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
