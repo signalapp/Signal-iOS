@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class GroupsV2MessageProcessor;
 @class MessageFetcherJob;
 @class MessageProcessing;
+@class MessageSender;
 @class MessageSenderJobQueue;
 @class ModelReadCaches;
 @class OWS2FAManager;
@@ -25,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageManager;
 @class OWSMessagePipelineSupervisor;
 @class OWSMessageReceiver;
-@class OWSMessageSender;
 @class OWSOutgoingReceiptManager;
 @class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
-                          messageSender:(OWSMessageSender *)messageSender
+                          messageSender:(MessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
              pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) MessageSender *messageSender;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueue;
 @property (nonatomic, readonly) id<PendingReadReceiptRecorder> pendingReadReceiptRecorder;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;

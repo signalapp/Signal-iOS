@@ -6,7 +6,7 @@
 #import "ConversationViewItem.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSMessageSender.h>
+#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachmentPointer.h>
 #import <SignalServiceKit/TSAttachmentStream.h>

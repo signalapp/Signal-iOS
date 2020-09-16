@@ -9,8 +9,8 @@
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSCall.h>
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-+ (OWSMessageSender *)messageSender
++ (MessageSender *)messageSender
 {
     return SSKEnvironment.shared.messageSender;
 }

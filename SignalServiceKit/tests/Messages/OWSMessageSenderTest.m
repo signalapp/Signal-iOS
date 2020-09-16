@@ -2,10 +2,10 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+#import "MessageSender.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeNetworkManager.h"
-#import "OWSMessageSender.h"
 #import "OWSUploadOperation.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSMessageSender (Testing)
+@interface MessageSender (Testing)
 
 @property (nonatomic) OWSUploadOperation *uploadingService;
 
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSMessageSender (Testing)
+@implementation MessageSender (Testing)
 
 - (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message
                                forRecipient:(SignalRecipient *)recipient
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSMessageSenderFakeNetworkManager : OWSFakeNetworkManager
+@interface MessageSenderFakeNetworkManager : OWSFakeNetworkManager
 
 - (instancetype)init;
 - (instancetype)initWithSuccess:(BOOL)shouldSucceed NS_DESIGNATED_INITIALIZER;
@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSMessageSenderFakeNetworkManager
+@implementation MessageSenderFakeNetworkManager
 
 - (instancetype)initWithSuccess:(BOOL)shouldSucceed
 {
@@ -176,20 +176,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSMessageSenderTest : SSKBaseTestObjC
+@interface MessageSenderTest : SSKBaseTestObjC
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSOutgoingMessage *expiringMessage;
 @property (nonatomic) TSOutgoingMessage *unexpiringMessage;
-@property (nonatomic) OWSMessageSenderFakeNetworkManager *networkManager;
-@property (nonatomic) OWSMessageSender *successfulMessageSender;
-@property (nonatomic) OWSMessageSender *unsuccessfulMessageSender;
+@property (nonatomic) MessageSenderFakeNetworkManager *networkManager;
+@property (nonatomic) MessageSender *successfulMessageSender;
+@property (nonatomic) MessageSender *unsuccessfulMessageSender;
 
 @end
 
 #pragma mark -
 
-@implementation OWSMessageSenderTest
+@implementation MessageSenderTest
 
 - (void)setUp
 {
@@ -230,14 +230,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFakeContactsManager *contactsManager = [OWSFakeContactsManager new];
 
     // Successful Sending
-    TSNetworkManager *successfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:YES];
-    self.successfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:successfulNetworkManager
-                                                                    contactsManager:contactsManager];
+    TSNetworkManager *successfulNetworkManager = [[MessageSenderFakeNetworkManager alloc] initWithSuccess:YES];
+    self.successfulMessageSender = [[MessageSender alloc] initWithNetworkManager:successfulNetworkManager
+                                                                 contactsManager:contactsManager];
 
     // Unsuccessful Sending
-    TSNetworkManager *unsuccessfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:NO];
-    self.unsuccessfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:unsuccessfulNetworkManager
-                                                                      contactsManager:contactsManager];
+    TSNetworkManager *unsuccessfulNetworkManager = [[MessageSenderFakeNetworkManager alloc] initWithSuccess:NO];
+    self.unsuccessfulMessageSender = [[MessageSender alloc] initWithNetworkManager:unsuccessfulNetworkManager
+                                                                   contactsManager:contactsManager];
 }
 
 - (void)testExpiringMessageTimerStartsOnSuccessWhenDisappearingMessagesEnabled
@@ -250,7 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
         [configuration anyUpsertWithTransaction:transaction];
     }];
 
-    OWSMessageSender *messageSender = self.successfulMessageSender;
+    MessageSender *messageSender = self.successfulMessageSender;
 
     // Sanity Check
     XCTAssertEqual(0, self.expiringMessage.expiresAt);
@@ -292,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
         [configuration anyUpsertWithTransaction:transaction];
     }];
 
-    OWSMessageSender *messageSender = self.successfulMessageSender;
+    MessageSender *messageSender = self.successfulMessageSender;
 
     XCTestExpectation *messageDidNotStartExpiration = [self expectationWithDescription:@"messageDidNotStartExpiration"];
     [messageSender sendMessageToService:self.unexpiringMessage
@@ -315,7 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testExpiringMessageTimerDoesNotStartsOnFailure
 {
-    OWSMessageSender *messageSender = self.unsuccessfulMessageSender;
+    MessageSender *messageSender = self.unsuccessfulMessageSender;
 
     // Sanity Check
     XCTAssertEqual(0, self.expiringMessage.expiresAt);
@@ -338,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testTextMessageIsMarkedAsSentOnSuccess
 {
-    OWSMessageSender *messageSender = self.successfulMessageSender;
+    MessageSender *messageSender = self.successfulMessageSender;
 
     TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:self.thread
                                                                 messageBody:@"We want punks in the palace."
@@ -362,7 +362,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testMediaMessageIsMarkedAsSentOnSuccess
 {
-    OWSMessageSender *messageSender = self.successfulMessageSender;
+    MessageSender *messageSender = self.successfulMessageSender;
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
     TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] init];
@@ -391,7 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testTextMessageIsMarkedAsUnsentOnFailure
 {
-    OWSMessageSender *messageSender = self.unsuccessfulMessageSender;
+    MessageSender *messageSender = self.unsuccessfulMessageSender;
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
@@ -416,7 +416,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testMediaMessageIsMarkedAsUnsentOnFailureToSend
 {
-    OWSMessageSender *messageSender = self.unsuccessfulMessageSender;
+    MessageSender *messageSender = self.unsuccessfulMessageSender;
     // Assume that upload will go well, but that failure happens elsewhere in message sender.
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
@@ -445,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testMediaMessageIsMarkedAsUnsentOnFailureToUpload
 {
-    OWSMessageSender *messageSender = self.successfulMessageSender;
+    MessageSender *messageSender = self.successfulMessageSender;
     // Assume that upload fails, but other sending stuff would succeed.
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:NO];
 
@@ -474,7 +474,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testGroupSend
 {
-    OWSMessageSender *messageSender = self.successfulMessageSender;
+    MessageSender *messageSender = self.successfulMessageSender;
 
     SignalRecipient *successfulRecipient =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id" relay:nil];
@@ -517,7 +517,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id" relay:nil];
     [recipient save];
 
-    OWSMessageSender *messageSender = self.successfulMessageSender;
+    MessageSender *messageSender = self.successfulMessageSender;
 
     NSError *error;
     NSArray<SignalRecipient *> *recipients = [messageSender getRecipients:@[ recipient.address ] error:&error];

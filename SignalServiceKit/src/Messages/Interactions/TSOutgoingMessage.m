@@ -3,8 +3,8 @@
 //
 
 #import "TSOutgoingMessage.h"
+#import "MessageSender.h"
 #import "OWSContact.h"
-#import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
 #import "SSKEnvironment.h"

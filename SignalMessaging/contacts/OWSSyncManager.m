@@ -15,9 +15,9 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>
@@ -124,7 +124,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return SSKEnvironment.shared.identityManager;
 }
 
-- (OWSMessageSender *)messageSender {
+- (MessageSender *)messageSender
+{
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 
     return SSKEnvironment.shared.messageSender;

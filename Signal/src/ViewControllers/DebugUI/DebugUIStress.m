@@ -3,7 +3,7 @@
 //
 
 #import "DebugUIStress.h"
-#import "OWSMessageSender.h"
+#import "MessageSender.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.class.messageSenderJobQueue;
 }
 
-+ (OWSMessageSender *)messageSender
++ (MessageSender *)messageSender
 {
     return SSKEnvironment.shared.messageSender;
 }

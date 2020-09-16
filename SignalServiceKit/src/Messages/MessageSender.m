@@ -2,7 +2,7 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageSender.h"
+#import "MessageSender.h"
 #import "AppContext.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
@@ -127,7 +127,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
  * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
  * getting proper keys, and retrying upon failure.
  *
- * Used by `OWSMessageSender` to serialize message sending, ensuring that messages are emitted in the order they
+ * Used by `MessageSender` to serialize message sending, ensuring that messages are emitted in the order they
  * were sent.
  */
 @interface OWSSendMessageOperation : OWSOperation
@@ -135,7 +135,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
-                  messageSender:(OWSMessageSender *)messageSender
+                  messageSender:(MessageSender *)messageSender
                         success:(void (^)(void))aSuccessHandler
                         failure:(void (^)(NSError *error))aFailureHandler NS_DESIGNATED_INITIALIZER;
 
@@ -143,7 +143,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 #pragma mark -
 
-@interface OWSMessageSender (OWSSendMessageOperation)
+@interface MessageSender (OWSSendMessageOperation)
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                      success:(void (^)(void))successHandler
@@ -156,7 +156,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 @interface OWSSendMessageOperation ()
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) MessageSender *messageSender;
 @property (nonatomic, readonly) void (^successHandler)(void);
 @property (nonatomic, readonly) void (^failureHandler)(NSError *error);
 
@@ -176,7 +176,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 #pragma mark -
 
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
-                  messageSender:(OWSMessageSender *)messageSender
+                  messageSender:(MessageSender *)messageSender
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler
 {
@@ -190,7 +190,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     _successHandler = successHandler;
     _failureHandler = failureHandler;
 
-    self.queuePriority = [OWSMessageSender queuePriorityForMessage:message];
+    self.queuePriority = [MessageSender queuePriorityForMessage:message];
 
     return self;
 }
@@ -265,12 +265,8 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     }
 
     [self.messageSender sendMessageToService:self.message
-        success:^{
-            [self reportSuccess];
-        }
-        failure:^(NSError *error) {
-            [self reportError:error];
-        }];
+        success:^{ [self reportSuccess]; }
+        failure:^(NSError *error) { [self reportError:error]; }];
 }
 
 - (void)didSucceed
@@ -292,10 +288,10 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 #pragma mark -
 
-NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceException";
-NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
+NSString *const MessageSenderInvalidDeviceException = @"InvalidDeviceException";
+NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
-@interface OWSMessageSender ()
+@interface MessageSender ()
 
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSOperationQueue *> *sendingQueueMap;
 
@@ -303,7 +299,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 #pragma mark -
 
-@implementation OWSMessageSender
+@implementation MessageSender
 
 - (instancetype)init
 {
@@ -453,9 +449,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
             });
             if (error != nil) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    failureHandler(error);
-                });
+                dispatch_async(
+                    dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ failureHandler(error); });
                 return;
             }
         }
@@ -485,7 +480,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
-        NSOperationQueue *globalSendingQueue = OWSMessageSender.globalSendingQueue;
+        NSOperationQueue *globalSendingQueue = MessageSender.globalSendingQueue;
 
         // We use two "global" operations and the globalSendingQueue
         // to limit how many message sends are in flight at once globally.
@@ -672,14 +667,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
     for (SignalRecipient *recipient in recipients) {
         OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[recipient.address];
-        OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
-                                                                       thread:thread
-                                                                    recipient:recipient
-                                                              udSendingAccess:udSendingAccess
-                                                                 localAddress:self.tsAccountManager.localAddress
-                                                               sendErrorBlock:^(NSError *error) {
-                                                                   sendErrorBlock(recipient, error);
-                                                               }];
+        OWSMessageSend *messageSend =
+            [[OWSMessageSend alloc] initWithMessage:message
+                                             thread:thread
+                                          recipient:recipient
+                                    udSendingAccess:udSendingAccess
+                                       localAddress:self.tsAccountManager.localAddress
+                                     sendErrorBlock:^(NSError *error) { sendErrorBlock(recipient, error); }];
         [messageSends addObject:messageSend];
     }
 
@@ -711,9 +705,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     void (^successHandler)(void) = ^() {
         [self handleMessageSentLocally:message
-            success:^{
-                successHandlerParam();
-            }
+            success:^{ successHandlerParam(); }
             failure:^(NSError *error) {
                 OWSLogError(
                     @"Error sending sync message for message: %@ timestamp: %llu", message.class, message.timestamp);
@@ -724,9 +716,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     void (^failureHandler)(NSError *) = ^(NSError *error) {
         if (message.wasSentToAnyRecipient) {
             [self handleMessageSentLocally:message
-                success:^{
-                    failureHandlerParam(error);
-                }
+                success:^{ failureHandlerParam(error); }
                 failure:^(NSError *syncError) {
                     OWSLogError(@"Error sending sync message for message: %@ timestamp: %llu, %@",
                         message.class,
@@ -785,9 +775,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                        }
                                    }];
         })
-        .thenInBackground(^(id value) {
-            successHandler();
-        })
+        .thenInBackground(^(id value) { successHandler(); })
         .catchInBackground(^(id failure) {
             NSError *firstRetryableError = nil;
             NSError *firstNonRetryableError = nil;
@@ -806,7 +794,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
                     // Some errors should be ignored when sending messages
                     // to groups.  See discussion on
-                    // NSError (OWSMessageSender) category.
+                    // NSError (MessageSender) category.
                     if (isGroupSend && [error shouldBeIgnoredForGroups]) {
                         continue;
                     }
@@ -824,7 +812,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             for (NSError *error in sendErrorsCopy) {
                 // Some errors should be ignored when sending messages
                 // to groups.  See discussion on
-                // NSError (OWSMessageSender) category.
+                // NSError (MessageSender) category.
                 if (isGroupSend && [error shouldBeIgnoredForGroups]) {
                     continue;
                 }
@@ -875,16 +863,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // Try to avoid opening a write transaction.
     __block TSThread *_Nullable thread = nil;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        thread = [message threadWithTransaction:transaction];
-    }];
+    [self.databaseStorage
+        readWithBlock:^(SDSAnyReadTransaction *transaction) { thread = [message threadWithTransaction:transaction]; }];
     if (thread != nil) {
         return thread;
     }
 
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        thread = [self threadForMessage:message transaction:transaction];
-    });
+    DatabaseStorageWrite(self.databaseStorage,
+        ^(SDSAnyWriteTransaction *transaction) { thread = [self threadForMessage:message transaction:transaction]; });
     return thread;
 }
 
@@ -1007,7 +993,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return nil;
         }
 
-        if ([exception.name isEqualToString:OWSMessageSenderRateLimitedException]) {
+        if ([exception.name isEqualToString:MessageSenderRateLimitedException]) {
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceRateLimited,
                 NSLocalizedString(@"FAILED_SENDING_BECAUSE_RATE_LIMIT",
                     @"action sheet header when re-sending message which failed because of too many attempts"));
@@ -1046,9 +1032,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         operationQueue.name = @"MessageSender.sendMessageToRecipient";
         operationQueue.maxConcurrentOperationCount = 6;
     });
-    [operationQueue addOperationWithBlock:^{
-        [self _sendMessageToRecipient:messageSend];
-    }];
+    [operationQueue addOperationWithBlock:^{ [self _sendMessageToRecipient:messageSend]; }];
 }
 
 - (void)_sendMessageToRecipient:(OWSMessageSend *)messageSend
@@ -1467,9 +1451,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         }
     });
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        completionHandler();
-    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ completionHandler(); });
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
@@ -1636,7 +1618,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // This may involve blocking network requests.
             [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
         } @catch (NSException *exception) {
-            if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
+            if ([exception.name isEqualToString:MessageSenderInvalidDeviceException]) {
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     [recipient updateRegisteredRecipientWithDevicesToAdd:nil
                                                          devicesToRemove:@[ deviceId ]
@@ -1717,12 +1699,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSLogVerbose(@"statusCode: %@", statusCode);
             if ([MessageSending isMissingDeviceError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
-                exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
+                exception = [NSException exceptionWithName:MessageSenderInvalidDeviceException
                                                     reason:@"Device not registered"
                                                   userInfo:nil];
             } else if ([MessageSending isPrekeyRateLimitError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
-                exception = [NSException exceptionWithName:OWSMessageSenderRateLimitedException
+                exception = [NSException exceptionWithName:MessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
                                                   userInfo:nil];
             } else if ([MessageSending isUntrustedIdentityError:error]) {

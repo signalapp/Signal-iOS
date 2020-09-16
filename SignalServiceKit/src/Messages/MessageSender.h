@@ -35,7 +35,7 @@ typedef void (^RetryableFailureHandler)(NSError *_Nonnull error);
 NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @interface OWSOutgoingAttachmentInfo : NSObject
 
-@property (nonatomic, readonly) id<DataSource>dataSource;
+@property (nonatomic, readonly) id<DataSource> dataSource;
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) NSString *caption;
@@ -59,8 +59,7 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 
 #pragma mark -
 
-NS_SWIFT_NAME(MessageSender)
-@interface OWSMessageSender : NSObject
+@interface MessageSender : NSObject
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

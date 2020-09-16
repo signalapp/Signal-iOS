@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Redeclare these properties as mutable so that tests can replace singletons.
 @property (nonatomic) id<ContactsManagerProtocol> contactsManager;
-@property (nonatomic) OWSMessageSender *messageSender;
+@property (nonatomic) MessageSender *messageSender;
 @property (nonatomic) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic, nullable) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic) TSNetworkManager *networkManager;

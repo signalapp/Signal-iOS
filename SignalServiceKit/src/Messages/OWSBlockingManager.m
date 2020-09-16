@@ -5,9 +5,9 @@
 #import "OWSBlockingManager.h"
 #import "AppContext.h"
 #import "AppReadiness.h"
+#import "MessageSender.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBlockedPhoneNumbersMessage.h"
-#import "OWSMessageSender.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -107,7 +107,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                                                object:nil];
 }
 
-- (OWSMessageSender *)messageSender
+- (MessageSender *)messageSender
 {
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 

@@ -2,13 +2,13 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSMessageManager.h"
 #import "ContactsManagerProtocol.h"
+#import "MessageSender.h"
 #import "MockSSKEnvironment.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSIdentityManager.h"
-#import "OWSMessageManager.h"
-#import "OWSMessageSender.h"
 #import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
