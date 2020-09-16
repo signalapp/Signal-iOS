@@ -240,7 +240,11 @@ public class BulkProfileFetch: NSObject {
                         self.lastOutcomeMap[address] = UpdateOutcome(.noProfile)
                     } else {
                         // TODO: We may need to handle more status codes.
-                        owsFailDebug("Error: \(error)")
+                        if self.tsAccountManager.isRegisteredAndReady {
+                            owsFailDebug("Error: \(error)")
+                        } else {
+                            Logger.warn("Error: \(error)")
+                        }
                         self.lastOutcomeMap[address] = UpdateOutcome(.serviceError)
                     }
                 }

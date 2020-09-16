@@ -162,7 +162,7 @@ public class ProfileFetcherJob: NSObject {
                 case ProfileFetchError.missing:
                     Logger.warn("Error: \(error)")
                 case ProfileFetchError.unauthorized:
-                    if self.tsAccountManager.isRegistered && !self.tsAccountManager.isRegisteredAndReady {
+                    if self.tsAccountManager.isRegisteredAndReady {
                         owsFailDebug("Error: \(error)")
                     } else {
                         Logger.warn("Error: \(error)")

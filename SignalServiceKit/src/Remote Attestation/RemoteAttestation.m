@@ -241,6 +241,15 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
 
 @implementation RemoteAttestation
 
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
+
 - (instancetype)initWithCookies:(NSArray<NSHTTPCookie *> *)cookies
                            keys:(RemoteAttestationKeys *)keys
                       requestId:(NSData *)requestId
@@ -262,6 +271,8 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
                                    success:(void (^)(RemoteAttestationAuth *))successHandler
                                    failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
+
     TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequestForService:service];
     [[TSNetworkManager shared] makeRequest:request
       success:^(NSURLSessionDataTask *task, id responseDict) {
