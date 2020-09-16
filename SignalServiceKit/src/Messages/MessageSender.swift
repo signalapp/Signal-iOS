@@ -18,7 +18,7 @@ public enum MessageSenderError: Int, Error {
 // MARK: -
 
 @objc
-public class MessageSending: NSObject {
+public extension MessageSender {
 
     // MARK: - Dependencies
 
@@ -56,14 +56,7 @@ public class MessageSending: NSObject {
 
     // MARK: -
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
-    private override init() {
-    }
-
-    // MARK: -
-
-    @objc
-    public class func isPrekeyRateLimitError(_ error: Error) -> Bool {
+    class func isPrekeyRateLimitError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.prekeyRateLimit:
             return true
@@ -72,8 +65,7 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func isUntrustedIdentityError(_ error: Error) -> Bool {
+    class func isUntrustedIdentityError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.untrustedIdentity:
             return true
@@ -82,8 +74,7 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func isMissingDeviceError(_ error: Error) -> Bool {
+    class func isMissingDeviceError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.missingDevice:
             return true
@@ -92,12 +83,16 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func ensureSessionsforMessageSendsObjc(_ messageSends: [OWSMessageSend],
-                                                        ignoreErrors: Bool) -> AnyPromise {
+    class func ensureSessionsforMessageSendsObjc(_ messageSends: [OWSMessageSend],
+                                                 ignoreErrors: Bool) -> AnyPromise {
         AnyPromise(ensureSessions(forMessageSends: messageSends,
                                   ignoreErrors: ignoreErrors))
     }
+}
+
+// MARK: -
+
+fileprivate extension MessageSender {
 
     private struct SessionStates {
         let deviceAlreadyHasSession = AtomicUInt(0)
@@ -201,12 +196,17 @@ public class MessageSending: NSObject {
         }
         return promises
     }
+}
 
-    @objc
-    public class func makePrekeyRequest(messageSend: OWSMessageSend,
-                                        deviceId: NSNumber,
-                                        success: @escaping (PreKeyBundle?) -> Void,
-                                        failure: @escaping (Error) -> Void) {
+// MARK: -
+
+@objc
+public extension MessageSender {
+
+    class func makePrekeyRequest(messageSend: OWSMessageSend,
+                                 deviceId: NSNumber,
+                                 success: @escaping (PreKeyBundle?) -> Void,
+                                 failure: @escaping (Error) -> Void) {
         assert(!Thread.isMainThread)
 
         let recipientAddress = messageSend.recipient.address
@@ -318,11 +318,10 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func handleUntrustedIdentityKeyError(accountId: String,
-                                                      recipientAddress: SignalServiceAddress,
-                                                      preKeyBundle: PreKeyBundle,
-                                                      transaction: SDSAnyWriteTransaction) {
+    class func handleUntrustedIdentityKeyError(accountId: String,
+                                               recipientAddress: SignalServiceAddress,
+                                               preKeyBundle: PreKeyBundle,
+                                               transaction: SDSAnyWriteTransaction) {
         saveRemoteIdentity(recipientAddress: recipientAddress,
                            preKeyBundle: preKeyBundle,
                            transaction: transaction)
@@ -350,7 +349,7 @@ public class MessageSending: NSObject {
 
 // MARK: - Prekey Rate Limits & Untrusted Identities
 
-fileprivate extension MessageSending {
+fileprivate extension MessageSender {
 
     static let cacheQueue = DispatchQueue(label: "MessageSender.cacheQueue")
 
@@ -435,7 +434,7 @@ fileprivate extension MessageSending {
 
 // MARK: - Missing Devices
 
-fileprivate extension MessageSending {
+fileprivate extension MessageSender {
 
     private struct CacheKey: Hashable {
         let recipientAddress: SignalServiceAddress
@@ -510,7 +509,7 @@ public class MessageSendInfo: NSObject {
 
 // MARK: -
 
-extension MessageSending {
+extension MessageSender {
 
     @objc
     @available(swift, obsoleted: 1.0)

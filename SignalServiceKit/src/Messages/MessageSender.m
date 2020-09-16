@@ -585,11 +585,11 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssertDebug(!NSThread.isMainThread);
 
-    [MessageSending prepareForSendOf:message
-                             success:^(MessageSendInfo *sendInfo) {
-                                 [self sendMessageToService:message sendInfo:sendInfo success:success failure:failure];
-                             }
-                             failure:failure];
+    [MessageSender prepareForSendOf:message
+                            success:^(MessageSendInfo *sendInfo) {
+                                [self sendMessageToService:message sendInfo:sendInfo success:success failure:failure];
+                            }
+                            failure:failure];
 }
 
 - (NSArray<SignalRecipient *> *)recipientsForAddresses:(NSArray<SignalServiceAddress *> *)addresses
@@ -680,7 +680,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     // 3. Before kicking of the per-recipient message sends, try
     // to ensure sessions for all recipient devices in parallel.
     return
-        [MessageSending ensureSessionsforMessageSendsObjc:messageSends ignoreErrors:YES].thenInBackground(^(id value) {
+        [MessageSender ensureSessionsforMessageSendsObjc:messageSends ignoreErrors:YES].thenInBackground(^(id value) {
             // 4. Perform the per-recipient message sends.
             NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
             for (OWSMessageSend *messageSend in messageSends) {
@@ -1688,7 +1688,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     __block PreKeyBundle *_Nullable bundle;
     __block NSException *_Nullable exception;
-    [MessageSending makePrekeyRequestWithMessageSend:messageSend
+    [MessageSender makePrekeyRequestWithMessageSend:messageSend
         deviceId:deviceId
         success:^(PreKeyBundle *_Nullable responseBundle) {
             bundle = responseBundle;
@@ -1697,17 +1697,17 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         failure:^(NSError *error) {
             NSNumber *_Nullable statusCode = HTTPStatusCodeForError(error);
             OWSLogVerbose(@"statusCode: %@", statusCode);
-            if ([MessageSending isMissingDeviceError:error]) {
+            if ([MessageSender isMissingDeviceError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderInvalidDeviceException
                                                     reason:@"Device not registered"
                                                   userInfo:nil];
-            } else if ([MessageSending isPrekeyRateLimitError:error]) {
+            } else if ([MessageSender isPrekeyRateLimitError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
                                                   userInfo:nil];
-            } else if ([MessageSending isUntrustedIdentityError:error]) {
+            } else if ([MessageSender isUntrustedIdentityError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:UntrustedIdentityKeyException
                                                     reason:@"Identity key is not valid"
@@ -1771,10 +1771,10 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
             exception = caughtException;
 
             if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-                [MessageSending handleUntrustedIdentityKeyErrorWithAccountId:accountId
-                                                            recipientAddress:recipientAddress
-                                                                preKeyBundle:bundle
-                                                                 transaction:transaction];
+                [MessageSender handleUntrustedIdentityKeyErrorWithAccountId:accountId
+                                                           recipientAddress:recipientAddress
+                                                               preKeyBundle:bundle
+                                                                transaction:transaction];
             }
         }
     });
