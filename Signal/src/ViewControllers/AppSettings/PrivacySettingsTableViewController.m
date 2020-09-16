@@ -97,25 +97,25 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 //                                         }]];
 //    [contents addSection:blocklistSection];
 //
-//    OWSTableSection *readReceiptsSection = [OWSTableSection new];
-//    readReceiptsSection.headerTitle
-//        = NSLocalizedString(@"SETTINGS_READ_RECEIPT", @"Label for the 'read receipts' setting.");
-//    readReceiptsSection.footerTitle = NSLocalizedString(
-//        @"SETTINGS_READ_RECEIPTS_SECTION_FOOTER", @"An explanation of the 'read receipts' setting.");
-//    [readReceiptsSection
-//        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_READ_RECEIPT",
-//                                                     @"Label for the 'read receipts' setting.")
-//                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"read_receipts"]
-//                    isOnBlock:^{
-//                        return [OWSReadReceiptManager.sharedManager areReadReceiptsEnabled];
-//                    }
-//                    isEnabledBlock:^{
-//                        return YES;
-//                    }
-//                    target:weakSelf
-//                    selector:@selector(didToggleReadReceiptsSwitch:)]];
-//    [contents addSection:readReceiptsSection];
-// ========
+    // ========
+    OWSTableSection *readReceiptsSection = [OWSTableSection new];
+    readReceiptsSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_READ_RECEIPT", @"Label for the 'read receipts' setting.");
+    readReceiptsSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_READ_RECEIPTS_SECTION_FOOTER", @"An explanation of the 'read receipts' setting.");
+    [readReceiptsSection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_READ_RECEIPT",
+                                                     @"Label for the 'read receipts' setting.")
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"read_receipts"]
+                    isOnBlock:^{
+                        return [OWSReadReceiptManager.sharedManager areReadReceiptsEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleReadReceiptsSwitch:)]];
+    [contents addSection:readReceiptsSection];
 
     OWSTableSection *typingIndicatorsSection = [OWSTableSection new];
     typingIndicatorsSection.headerTitle
