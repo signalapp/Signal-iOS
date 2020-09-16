@@ -75,7 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
             [unreadMessages enumerateKeysAndObjectsInGroup:groupID
                                                 usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                 if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                    OWSFailDebug(@"Unexpected object in unread messages: %@", [object class]);
                     return;
                 }
                 id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
