@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "El Signal necessita accés a la ubicació
 NSMicrophoneUsageDescription = "El Signal necessita accés al micròfon per fer i rebre trucades de telèfon i gravar missatges de veu.";
 NSPhotoLibraryAddUsageDescription = "El Signal desarà les fotografies a la biblioteca.";
 NSPhotoLibraryUsageDescription = "El Signal us permetrà triar quines fotografies de la biblioteca voleu enviar.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "El Signal usa la xarxa local per permetre-us transferir directament el vostre compte a un telèfon nou. No s’usarà tret que decidiu explícitament iniciar una transferència a un dispositiu nou.";

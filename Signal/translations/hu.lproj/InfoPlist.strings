@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "A Signalnak helyzetadataidra van szüksé
 NSMicrophoneUsageDescription = "A Signalnak mikrofon hozzáférésre van szüksége hívások indításához, fogadásához és hangjegyzetek küldéséhez.";
 NSPhotoLibraryAddUsageDescription = "A Signal a fotógalériádba menti képeidet.";
 NSPhotoLibraryUsageDescription = "Signalban válogathatsz melyik képet szeretnéd elküldeni.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Amennyiben tudatosan ezt a funkciót választod, a Signal a helyi hálózatot a fiókod új telefonra költöztetéséhez használja - semmilyen más célra nem.";

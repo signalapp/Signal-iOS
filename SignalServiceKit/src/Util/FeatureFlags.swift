@@ -310,7 +310,7 @@ public class DebugFlags: BaseFlags {
         }
     }
 
-    static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.qa)
+    static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.beta)
 
     // If set, client will invite instead of adding other users.
     private static let _groupsV2forceInvites = AtomicBool(false)
@@ -409,7 +409,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
 
-    static let forceMentions = build.includes(.dev)
+    static let forceMentions = build.includes(.beta)
 
     static let forceAttachmentUploadV3 = build.includes(.beta)
 
