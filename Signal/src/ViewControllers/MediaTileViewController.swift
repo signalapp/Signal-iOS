@@ -874,7 +874,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
         label.textColor = Theme.darkThemePrimaryColor
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.autoPinEdgesToSuperviewMargins()
+        label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 0, leading: Values.largeSpacing, bottom: 0, trailing: Values.largeSpacing))
     }
 
     @available(*, unavailable, message: "Unimplemented")
