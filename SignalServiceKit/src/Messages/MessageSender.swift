@@ -947,6 +947,7 @@ public extension MessageSender {
 
             if 404 == response.code {
                 // Some 404s are returned as 409.
+                owsFailDebug("404 returned as 409.")
                 handle404()
                 return
             }
