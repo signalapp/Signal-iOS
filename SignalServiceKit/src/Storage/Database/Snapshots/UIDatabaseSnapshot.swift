@@ -145,7 +145,7 @@ public class UIDatabaseObserver: NSObject {
     private var lastCheckpointDate: Date?
 
     private var displayLink: CADisplayLink?
-    private let displayLinkPreferredFramesPerSecond: Int = 60
+    private let displayLinkPreferredFramesPerSecond: Int = 20
     private var recentDisplayLinkDates = [Date]()
 
     fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
