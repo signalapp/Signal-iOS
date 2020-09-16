@@ -34,13 +34,11 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
     }
 
     @objc
-    public var imageSize: CGSize {
+    public var imagePixelSize: CGSize {
         guard let avatar = groupInviteLinkViewModel.avatar else {
             return CGSize.zero
         }
-        let pixelSize = avatar.imageSizePixels
-        return CGSize(width: (pixelSize.width / UIScreen.main.scale),
-                      height: (pixelSize.height / UIScreen.main.scale))
+        return avatar.imageSizePixels
     }
 
     public func isLoaded() -> Bool {
