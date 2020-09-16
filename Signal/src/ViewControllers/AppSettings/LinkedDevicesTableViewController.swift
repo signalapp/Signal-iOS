@@ -30,12 +30,6 @@ class LinkedDevicesTableViewController: OWSTableViewController {
 
         self.useThemeBackgroundColors = true
 
-        tableView.register(OWSDeviceTableViewCell.self, forCellReuseIdentifier: "OWSDeviceTableViewCell")
-
-//        self.view.backgroundColor = Theme.tableViewBackgroundColor;
-//        self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-//        self.tableView.separatorColor = Theme.cellSeparatorColor;
-
         refreshControl.addTarget(self, action: #selector(refreshDevices), for: .valueChanged)
 
         updateTableContents()
@@ -90,7 +84,6 @@ class LinkedDevicesTableViewController: OWSTableViewController {
         self.devices = devices
         if devices.isEmpty {
             self.isEditing = false
-            Logger.verbose("----")
         }
 
         // Don't show edit button for an empty table
@@ -183,24 +176,12 @@ class LinkedDevicesTableViewController: OWSTableViewController {
         presentActionSheet(alert)
     }
 
-//    @objc
-//    public override var isEditing: Bool {
-//        didSet {
-//            tableView.isEditing = isEditing
-//            Logger.verbose("---- isEditing: \(isEditing)")
-//            Logger.verbose("---- isEditing: \(tableView.isEditing)")
-//        }
-//    }
-
     private func showLinkNewDeviceView() {
         AssertIsOnMainThread()
 
-        Logger.verbose("---- isEditing: \(isEditing)")
-        Logger.verbose("---- isEditing: \(tableView.isEditing)")
-
-//        let linkView = OWSLinkDeviceViewController()
-//        linkView.delegate = self
-//        navigationController?.pushViewController(linkView, animated: true)
+        let linkView = OWSLinkDeviceViewController()
+        linkView.delegate = self
+        navigationController?.pushViewController(linkView, animated: true)
     }
 
     private func getCameraPermissionsThenShowLinkNewDeviceView() {
@@ -223,24 +204,8 @@ class LinkedDevicesTableViewController: OWSTableViewController {
             let devicesSection = OWSTableSection()
             for device in devices {
                 let item = OWSTableItem(customCellBlock: {
-                    [weak self] in
-//                    if true {
-//                        let cell = UITableViewCell()
-//                        return cell
-//                    }
-
-                    guard let self = self else {
-                        return UITableViewCell()
-                    }
-                    guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "OWSDeviceTableViewCell",
-                                                                        for: IndexPath(row: 0,
-                                                                                       section: 0)) as? OWSDeviceTableViewCell else {
-                        owsFailDebug("cell had unexpected type")
-                        return UITableViewCell()
-                    }
-
-//                    let cell = OWSDeviceTableViewCell()
-//                    OWSTableItem.configureCell(cell)
+                    let cell = OWSDeviceTableViewCell()
+                    OWSTableItem.configureCell(cell)
                     cell.configure(with: device)
                     return cell
                 }, customRowHeight: UITableView.automaticDimension)
@@ -255,12 +220,20 @@ class LinkedDevicesTableViewController: OWSTableViewController {
         }
 
         let addDeviceSection = OWSTableSection()
-        addDeviceSection.add(OWSTableItem.disclosureItem(withText: NSLocalizedString("LINK_NEW_DEVICE_TITLE",
-                                                                                      comment: "Navigation title when scanning QR code to add new device."),
-                                                         detailText: NSLocalizedString("LINK_NEW_DEVICE_SUBTITLE",
-                                                                                        comment: "Subheading for 'Link New Device' navigation"),
-                                                         accessibilityIdentifier: "add_new_linked_device") { [weak self] in
-                                                            self?.getCameraPermissionsThenShowLinkNewDeviceView()
+        addDeviceSection.add(OWSTableItem(customCellBlock: { () -> UITableViewCell in
+            let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "AddNewDevice")
+            OWSTableItem.configureCell(cell)
+            cell.textLabel?.text = NSLocalizedString("LINK_NEW_DEVICE_TITLE",
+                                                    comment: "Navigation title when scanning QR code to add new device.")
+            cell.detailTextLabel?.text = NSLocalizedString("LINK_NEW_DEVICE_SUBTITLE",
+                                                          comment: "Subheading for 'Link New Device' navigation")
+            cell.accessoryType = .disclosureIndicator
+            cell.accessibilityIdentifier = "add_new_linked_device"
+            return cell
+        },
+                                          customRowHeight: UITableView.automaticDimension) { [weak self] in
+                self?.getCameraPermissionsThenShowLinkNewDeviceView()
+
             })
         contents.addSection(addDeviceSection)
 
@@ -368,7 +341,6 @@ extension LinkedDevicesTableViewController: OWSLinkDeviceViewControllerDelegate 
         // When you delete and re-add a device, you will be returned to this view in editing mode, making your newly
         // added device appear with a delete icon. Probably not what you want.
         self.isEditing = false
-        Logger.verbose("----")
 
         pollingRefreshTimer?.invalidate()
         pollingRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10.0,
