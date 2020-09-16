@@ -741,16 +741,107 @@ public extension TSMessage {
 
 // MARK: -
 
-// TODO: Make this private
 @objc
 public extension MessageSender {
 
+    private static let completionQueue: DispatchQueue = {
+        return DispatchQueue(label: "org.whispersystems.signal.messageSendCompletion",
+                             qos: .utility,
+                             autoreleaseFrequency: .workItem)
+    }()
+
     typealias DeviceMessageType = [String: AnyObject]
 
-    func messageSendDidSucceed(_ messageSend: OWSMessageSend,
-                               deviceMessages: [DeviceMessageType],
-                               wasSentByUD: Bool,
-                               wasSentByWebsocket: Bool) {
+    func performMessageSendRequest(_ messageSend: OWSMessageSend,
+                                   deviceMessages: [DeviceMessageType]) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let recipient: SignalRecipient = messageSend.recipient
+        let message: TSOutgoingMessage = messageSend.message
+
+        if deviceMessages.isEmpty {
+            // This might happen:
+            //
+            // * The first (after upgrading?) time we send a sync message to our linked devices.
+            // * After unlinking all linked devices.
+            // * After trying and failing to link a device.
+            // * The first time we send a message to a user, if they don't have their
+            //   default device.  For example, if they have unregistered
+            //   their primary but still have a linked device. Or later, when they re-register.
+            //
+            // When we're not sure if we have linked devices, we need to try
+            // to send self-sync messages even if they have no device messages
+            // so that we can learn from the service whether or not there are
+            // linked devices that we don't know about.
+            Logger.warn("Sending a message with no device messages.")
+        }
+
+        let requestMaker = RequestMaker(label: "Message Send",
+                                        requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
+                                            OWSRequestFactory.submitMessageRequest(with: recipient.address,
+                                                                                   messages: deviceMessages,
+                                                                                   timeStamp: message.timestamp,
+                                                                                   udAccessKey: udAccessKey)
+        },
+                                        udAuthFailureBlock: {
+                                            // Note the UD auth failure so subsequent retries
+                                            // to this recipient also use basic auth.
+                                            messageSend.setHasUDAuthFailed()
+        },
+                                        websocketFailureBlock: {
+                                            // Note the websocket failure so subsequent retries
+                                            // to this recipient also use REST.
+                                            messageSend.hasWebsocketSendFailed = true
+        },
+                                        address: recipient.address,
+                                        udAccess: messageSend.udSendingAccess?.udAccess,
+                                        canFailoverUDAuth: false)
+
+        // Client-side fanout can yield many
+        firstly {
+            requestMaker.makeRequest()
+        }.done(on: Self.completionQueue) { (result: RequestMakerResult) in
+            self.messageSendDidSucceed(messageSend,
+                                       deviceMessages: deviceMessages,
+                                       wasSentByUD: result.wasSentByUD,
+                                       wasSentByWebsocket: result.wasSentByWebsocket)
+        }.catch(on: Self.completionQueue) { (error: Error) in
+            var unpackedError = error
+            if case NetworkManagerError.taskError(_, let underlyingError) = unpackedError {
+                unpackedError = underlyingError
+            }
+            let nsError = unpackedError as NSError
+
+            var statusCode: Int = 0
+            var responseData: Data?
+            if case RequestMakerUDAuthError.udAuthFailure = error {
+                // Try again.
+                Logger.info("UD request auth failed; failing over to non-UD request.")
+                nsError.isRetryable = true
+            } else if nsError.domain == TSNetworkManagerErrorDomain {
+                statusCode = nsError.code
+
+                if let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
+                    responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data
+                } else {
+                    owsFailDebug("Missing underlying error: \(error)")
+                }
+            } else {
+                owsFailDebug("Unexpected error: \(error)")
+            }
+
+            self.messageSendDidFail(messageSend,
+                                    deviceMessages: deviceMessages,
+                                    statusCode: statusCode,
+                                    responseError: nsError,
+                                    responseData: responseData)
+        }
+    }
+
+    private func messageSendDidSucceed(_ messageSend: OWSMessageSend,
+                                       deviceMessages: [DeviceMessageType],
+                                       wasSentByUD: Bool,
+                                       wasSentByWebsocket: Bool) {
         owsAssertDebug(!Thread.isMainThread)
 
         let recipient: SignalRecipient = messageSend.recipient
@@ -804,11 +895,11 @@ public extension MessageSender {
         }
     }
 
-    func messageSendDidFail(_ messageSend: OWSMessageSend,
-                            deviceMessages: [DeviceMessageType],
-                            statusCode: Int,
-                            responseError: Error,
-                            responseData: Data?) {
+    private func messageSendDidFail(_ messageSend: OWSMessageSend,
+                                    deviceMessages: [DeviceMessageType],
+                                    statusCode: Int,
+                                    responseError: Error,
+                                    responseData: Data?) {
         owsAssertDebug(!Thread.isMainThread)
 
         let recipient: SignalRecipient = messageSend.recipient
@@ -853,7 +944,6 @@ public extension MessageSender {
                 messageSend.failure(nsError)
                 return
             }
-            Logger.verbose("response: \(response)")
 
             if 404 == response.code {
                 // Some 404s are returned as 409.
@@ -880,9 +970,8 @@ public extension MessageSender {
                 messageSend.failure(nsError)
                 return
             }
-            Logger.verbose("response: \(response)")
 
-            handleStaleDevices(response, recipientAddress: recipient.address)
+            handleStaleDevices(response, recipient: recipient)
 
             if messageSend.isLocalAddress {
                 // Don't use websocket; it may have obsolete cached state.
@@ -951,6 +1040,9 @@ extension MessageSender {
         let extraDevices = response.extraDevices ?? []
         let missingDevices = response.missingDevices ?? []
 
+        Logger.info("extraDevices: \(extraDevices) for \(recipient.address)")
+        Logger.info("missingDevices: \(missingDevices) for \(recipient.address)")
+
         if !missingDevices.isEmpty {
             if recipient.address.isLocalAddress {
                 self.deviceManager.setMayHaveLinkedDevices()
@@ -980,10 +1072,12 @@ extension MessageSender {
 
     // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
     private func handleStaleDevices(_ response: MessageSendFailureResponse,
-                                    recipientAddress: SignalServiceAddress) {
+                                    recipient: SignalRecipient) {
         owsAssertDebug(!Thread.isMainThread)
 
         let staleDevices = response.staleDevices ?? []
+
+        Logger.info("staleDevices: \(staleDevices) for \(recipient.address)")
 
         guard !staleDevices.isEmpty else {
             // TODO: Is this assert necessary?
@@ -993,7 +1087,7 @@ extension MessageSender {
 
         Self.databaseStorage.write { transaction in
             for staleDeviceId in staleDevices {
-                Self.sessionStore.deleteSession(for: recipientAddress, deviceId: Int32(staleDeviceId), transaction: transaction)
+                Self.sessionStore.deleteSession(for: recipient.address, deviceId: Int32(staleDeviceId), transaction: transaction)
             }
         }
     }
