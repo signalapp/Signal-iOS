@@ -387,6 +387,10 @@ const CGFloat kIconViewLength = 24;
                                      [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
                                  }]];
     }
+     
+     if (SSKFeatureFlags.conversationSearch) {
+     * ========
+     */
 
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
@@ -399,24 +403,21 @@ const CGFloat kIconViewLength = 24;
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
                              }]];
-     
-     if (SSKFeatureFlags.conversationSearch) {
-     * ========
-     */
-        [mainSection addItem:[OWSTableItem
-                                 itemWithCustomCellBlock:^{
-                                     NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_SEARCH",
-                                         @"Table cell label in conversation settings which returns the user to the "
-                                         @"conversation with 'search mode' activated");
-                                     return [weakSelf
-                                          disclosureCellWithName:title
-                                                        iconName:@"conversation_settings_search"
-                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                                     OWSConversationSettingsViewController, @"search")];
-                                 }
-                                 actionBlock:^{
-                                     [weakSelf tappedConversationSearch];
-                                 }]];
+
+    [mainSection addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_SEARCH",
+                                     @"Table cell label in conversation settings which returns the user to the "
+                                     @"conversation with 'search mode' activated");
+                                 return [weakSelf
+                                      disclosureCellWithName:title
+                                                    iconName:@"conversation_settings_search"
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                 OWSConversationSettingsViewController, @"search")];
+                             }
+                             actionBlock:^{
+                                 [weakSelf tappedConversationSearch];
+                             }]];
     /*
     }
 
