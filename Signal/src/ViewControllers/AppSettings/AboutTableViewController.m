@@ -13,27 +13,6 @@
 
 @implementation AboutTableViewController
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager shared];
-}
-
-#pragma mark -
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

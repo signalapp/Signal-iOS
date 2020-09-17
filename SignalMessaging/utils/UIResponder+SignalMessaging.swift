@@ -158,6 +158,14 @@ public extension UIResponder {
         return OWSProfileManager.shared()
     }
 
+    var reachabilityManager: SSKReachabilityManager {
+        return SSKEnvironment.shared.reachabilityManager
+    }
+
+    static var reachabilityManager: SSKReachabilityManager {
+        return SSKEnvironment.shared.reachabilityManager
+    }
+
     var socketManager: TSSocketManager {
         return SSKEnvironment.shared.socketManager
     }
