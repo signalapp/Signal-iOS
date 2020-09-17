@@ -15,14 +15,6 @@ public protocol StickerKeyboardDelegate {
 @objc
 public class StickerKeyboard: CustomKeyboard {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     @objc
     public weak var delegate: StickerKeyboardDelegate?
 

@@ -8,12 +8,6 @@ import SignalServiceKit
 @objc
 public class StickerPackViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: Properties
 
     private let stickerPackInfo: StickerPackInfo

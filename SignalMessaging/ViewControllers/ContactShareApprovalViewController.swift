@@ -229,14 +229,6 @@ class ContactShareFieldView: UIStackView {
 @objc
 public class ContactShareApprovalViewController: OWSViewController, EditContactShareNameViewControllerDelegate, ContactShareFieldViewDelegate {
 
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: -
-
     @objc
     public weak var delegate: ContactShareApprovalViewControllerDelegate?
 
