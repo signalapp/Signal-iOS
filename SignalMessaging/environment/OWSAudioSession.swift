@@ -66,7 +66,7 @@ public class OWSAudioSession: NSObject {
         return Environment.shared.proximityMonitoringManager
     }
 
-    private let avAudioSession = AVAudioSession.shared()
+    private let avAudioSession = AVAudioSession.sharedInstance()
 
     private let device = UIDevice.current
 
@@ -232,7 +232,7 @@ public class OWSAudioSession: NSObject {
     /**
      * The private class that manages AVAudioSession for WebRTC
      */
-    private let rtcAudioSession = RTCAudioSession.shared()
+    private let rtcAudioSession = RTCAudioSession.sharedInstance()
 
     /**
      * This must be called before any audio tracks are added to the peerConnection, else we'll start recording before all

@@ -188,7 +188,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     // We start out muted if the record permission isn't granted. This should generally
     // only happen for incoming calls, because we proactively ask about it before you
     // can make an outgoing call.
-    public var isMuted = AVAudioSession.shared().recordPermission != .granted {
+    public var isMuted = AVAudioSession.sharedInstance().recordPermission != .granted {
         didSet {
             AssertIsOnMainThread()
 

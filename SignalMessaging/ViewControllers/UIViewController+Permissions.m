@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[AVAudioSession shared] requestRecordPermission:callback];
+    [[AVAudioSession sharedInstance] requestRecordPermission:callback];
 }
 
 - (void)ows_showNoMicrophonePermissionActionSheet
