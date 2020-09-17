@@ -5,10 +5,11 @@ public final class LokiPushNotificationManager : NSObject {
 
     // MARK: Settings
     #if DEBUG
-    private static let server = "https://dev.apns.getsession.org/"
+    private static let server = "https://staging.apns.getsession.org"
     #else
-    private static let server = "https://live.apns.getsession.org/"
+    private static let server = "https://live.apns.getsession.org"
     #endif
+    internal static let PNServerPublicKey = "642a6585919742e5a2d4dc51244964fbcd8bcab2b75612407de58b810740d049"
     private static let tokenExpirationInterval: TimeInterval = 12 * 60 * 60
 
     public enum ClosedGroupOperation: String {
@@ -34,7 +35,7 @@ public final class LokiPushNotificationManager : NSObject {
             return Promise<Void> { $0.fulfill(()) }
         }
         let parameters = [ "token" : hexEncodedToken ]
-        let url = URL(string: server + "register")!
+        let url = URL(string: "\(server)/register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
@@ -79,7 +80,7 @@ public final class LokiPushNotificationManager : NSObject {
             return Promise<Void> { $0.fulfill(()) }
         }
         let parameters = [ "token" : hexEncodedToken, "pubKey" : publicKey]
-        let url = URL(string: server + "register")!
+        let url = URL(string: "\(server)/register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
@@ -111,30 +112,11 @@ public final class LokiPushNotificationManager : NSObject {
         return AnyPromise.from(register(with: token, publicKey: publicKey, isForcedUpdate: isForcedUpdate))
     }
     
-    @objc(acknowledgeDeliveryForMessageWithHash:expiration:hexEncodedPublicKey:)
-    static func acknowledgeDelivery(forMessageWithHash hash: String, expiration: UInt64, publicKey: String) {
-        guard UserDefaults.standard[.isUsingFullAPNs] else { return }
-        let parameters: JSON = [ "lastHash" : hash, "pubKey" : publicKey, "expiration" : expiration]
-        let url = URL(string: server + "acknowledge_message_delivery")!
-        let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        TSNetworkManager.shared().makeRequest(request, success: { _, response in
-            guard let json = response as? JSON else {
-                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash).")
-            }
-            guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(json["message"] as? String ?? "nil").")
-            }
-        }, failure: { _, error in
-            print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(error).")
-        })
-    }
-    
     static func performOperation(_ operation: ClosedGroupOperation, for closedGroupPublicKey: String, publicKey: String) -> Promise<Void> {
         let isUsingFullAPNs = UserDefaults.standard[.isUsingFullAPNs]
         guard isUsingFullAPNs else { return Promise<Void> { $0.fulfill(()) } }
         let parameters = [ "closedGroupPublicKey" : closedGroupPublicKey, "pubKey" : publicKey]
-        let url = URL(string: server + operation.rawValue)!
+        let url = URL(string: "\(server)/\(operation.rawValue)")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
@@ -148,6 +130,33 @@ public final class LokiPushNotificationManager : NSObject {
         }
         promise.catch2 { error in
             print("[Loki] Couldn't subscribe to PNs for closed group with ID: \(closedGroupPublicKey).")
+        }
+        return promise
+    }
+    
+    @objc(notifyMessage:)
+    static func objc_notify(_ signalMessage: SignalMessage) -> AnyPromise {
+        return AnyPromise.from(notify(signalMessage))
+    }
+    
+    static func notify(_ signalMessage: SignalMessage) -> Promise<Void> {
+        let message = LokiMessage.from(signalMessage: signalMessage)!
+        guard message.ttl == TTLUtilities.getTTL(for: .regular)  else { return Promise<Void> { $0.fulfill(()) } }
+        let parameters = [ "data" : message.data.description, "send_to" : message.recipientPublicKey]
+        let url = URL(string: "\(server)/notify")!
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
+            guard let json = response as? JSON else {
+                return print("[Loki] Couldn't notify message.")
+            }
+            guard json["code"] as? Int != 0 else {
+                return print("[Loki] Couldn't notify message due to error: \(json["message"] as? String ?? "nil").")
+            }
+            return
+        }
+        promise.catch2 { error in
+            print("[Loki] Couldn't notify message.")
         }
         return promise
     }

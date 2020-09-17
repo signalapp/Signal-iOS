@@ -1135,6 +1135,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
+                    [LKPushNotificationManager notifyMessage:signalMessage];
                     [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:messageSend.isUDSend wasSentByWebsocket:false];
                 })
                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
