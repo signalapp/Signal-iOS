@@ -204,6 +204,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
 
+@property (nonatomic) DebouncedEvent *otherUsersProfileDidChangeEvent;
+
 @end
 
 #pragma mark -
@@ -267,6 +269,16 @@ typedef enum : NSUInteger {
 
     _longPressGestureRecognizer = [UILongPressGestureRecognizer new];
     _panGestureRecognizer = [UIPanGestureRecognizer new];
+
+    __weak ConversationViewController *weakSelf = self;
+    _otherUsersProfileDidChangeEvent =
+        [[DebouncedEvent alloc] initWithMaxFrequencySeconds:1.0
+                                                    onQueue:dispatch_get_main_queue()
+                                                notifyBlock:^{
+                                                    // Reload all cells if this is a group conversation,
+                                                    // since we may need to update the sender names on the messages.
+                                                    [weakSelf resetContentAndLayoutWithSneakyTransaction];
+                                                }];
 
     return self;
 }
@@ -443,10 +455,11 @@ typedef enum : NSUInteger {
             [self updateNavigationTitle];
         }
 
+        // Reload all cells if this is a group conversation,
+        // since we may need to update the sender names on the messages.
+        // Use a DebounceEvent to de-bounce.
         if (self.isGroupConversation) {
-            // Reload all cells if this is a group conversation,
-            // since we may need to update the sender names on the messages.
-            [self resetContentAndLayoutWithSneakyTransaction];
+            [self.otherUsersProfileDidChangeEvent requestNotify];
         }
     }
 }
