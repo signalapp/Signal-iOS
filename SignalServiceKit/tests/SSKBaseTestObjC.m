@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super setUp];
 
-    [DDLog addLogger:DDTTYLogger.sharedInstance];
+    [DDLog addLogger:DDTTYLogger.shared];
 
     ClearCurrentAppContextForTests();
     SetCurrentAppContext([TestAppContext new]);
