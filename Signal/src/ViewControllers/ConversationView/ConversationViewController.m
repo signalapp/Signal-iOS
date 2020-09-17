@@ -322,7 +322,7 @@ typedef enum : NSUInteger {
 
 - (OWSBlockingManager *)blockingManager
 {
-    return [OWSBlockingManager sharedManager];
+    return [OWSBlockingManager shared];
 }
 
 - (TSNetworkManager *)networkManager
@@ -876,8 +876,7 @@ typedef enum : NSUInteger {
 {
     NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address]
-            == OWSVerificationStateNoLongerVerified) {
+        if ([[OWSIdentityManager shared] verificationStateForAddress:address] == OWSVerificationStateNoLongerVerified) {
             [result addObject:address];
         }
     }
@@ -1163,7 +1162,7 @@ typedef enum : NSUInteger {
         OWSAssertDebug(address.isValid);
 
         OWSRecipientIdentity *_Nullable recipientIdentity =
-            [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
+            [[OWSIdentityManager shared] recipientIdentityForAddress:address];
         OWSAssertDebug(recipientIdentity);
 
         NSData *identityKey = recipientIdentity.identityKey;
@@ -1172,10 +1171,10 @@ typedef enum : NSUInteger {
             continue;
         }
 
-        [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
-                                                   identityKey:identityKey
-                                                       address:address
-                                         isUserInitiatedChange:YES];
+        [OWSIdentityManager.shared setVerificationState:OWSVerificationStateDefault
+                                            identityKey:identityKey
+                                                address:address
+                                  isUserInitiatedChange:YES];
     }
 }
 
@@ -1489,7 +1488,7 @@ typedef enum : NSUInteger {
                                                      style:UIBarButtonItemStylePlain
                                                     target:self
                                                     action:@selector(startAudioCall)];
-                audioCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
+                audioCallButton.enabled = !OWSWindowManager.shared.hasCall;
                 audioCallButton.accessibilityLabel
                     = NSLocalizedString(@"AUDIO_CALL_LABEL", "Accessibility label for placing an audio call");
                 [barButtons addObject:audioCallButton];
@@ -1499,7 +1498,7 @@ typedef enum : NSUInteger {
                                                      style:UIBarButtonItemStylePlain
                                                     target:self
                                                     action:@selector(startVideoCall)];
-                videoCallButton.enabled = !OWSWindowManager.sharedManager.hasCall;
+                videoCallButton.enabled = !OWSWindowManager.shared.hasCall;
                 videoCallButton.accessibilityLabel
                     = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
                 [barButtons addObject:videoCallButton];
@@ -1534,7 +1533,7 @@ typedef enum : NSUInteger {
     BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
     BOOL isVerified = YES;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address] != OWSVerificationStateVerified) {
+        if ([[OWSIdentityManager shared] verificationStateForAddress:address] != OWSVerificationStateVerified) {
             isVerified = NO;
             break;
         }
@@ -2507,9 +2506,9 @@ typedef enum : NSUInteger {
 
 - (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler
 {
-    [[OWSProfileManager sharedManager] presentAddThreadToProfileWhitelist:self.thread
-                                                       fromViewController:self
-                                                                  success:successHandler];
+    [[OWSProfileManager shared] presentAddThreadToProfileWhitelist:self.thread
+                                                fromViewController:self
+                                                           success:successHandler];
 }
 
 #pragma mark - Audio Setup
@@ -3756,7 +3755,7 @@ typedef enum : NSUInteger {
     if (self.presentedViewController) {
         return;
     }
-    if (OWSWindowManager.sharedManager.shouldShowCallView) {
+    if (OWSWindowManager.shared.shouldShowCallView) {
         return;
     }
     if (self.navigationController.topViewController != self) {
@@ -3772,23 +3771,27 @@ typedef enum : NSUInteger {
         self.isMarkingAsRead = YES;
         [self clearUnreadMessageFlagIfNecessary];
 
-        [BenchManager benchAsyncWithTitle:@"marking as read" block:^(void (^ _Nonnull benchCompletion)(void)) {
-            [[OWSReadReceiptManager sharedManager] markAsReadLocallyBeforeSortId:lastVisibleSortId
-                                                                          thread:self.thread
-                                                        hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
-                                                                      completion:^{
-                OWSAssertIsOnMainThread();
-                [self setLastSortIdMarkedRead:lastVisibleSortId];
-                self.isMarkingAsRead = NO;
+        [BenchManager benchAsyncWithTitle:@"marking as read"
+                                    block:^(void (^_Nonnull benchCompletion)(void)) {
+                                        [[OWSReadReceiptManager shared]
+                                            markAsReadLocallyBeforeSortId:lastVisibleSortId
+                                                                   thread:self.thread
+                                                 hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
+                                                               completion:^{
+                                                                   OWSAssertIsOnMainThread();
+                                                                   [self setLastSortIdMarkedRead:lastVisibleSortId];
+                                                                   self.isMarkingAsRead = NO;
 
-                // If -markVisibleMessagesAsRead wasn't invoked on a timer, we'd want to double check that the current -lastVisibleSortId
-                // hasn't incremented since we started the read receipt request.
-                // But we have a timer, so if it has changed, this method will just be reinvoked in <100ms.
+                                                                   // If -markVisibleMessagesAsRead wasn't invoked on a
+                                                                   // timer, we'd want to double check that the current
+                                                                   // -lastVisibleSortId hasn't incremented since we
+                                                                   // started the read receipt request. But we have a
+                                                                   // timer, so if it has changed, this method will just
+                                                                   // be reinvoked in <100ms.
 
-                benchCompletion();
-            }];
-        }];
-
+                                                                   benchCompletion();
+                                                               }];
+                                    }];
     }
 }
 

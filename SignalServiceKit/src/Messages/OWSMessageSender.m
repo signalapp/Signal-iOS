@@ -1124,7 +1124,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         __block BOOL mayHaveLinkedDevices;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            mayHaveLinkedDevices = [OWSDeviceManager.sharedManager mayHaveLinkedDevicesWithTransaction:transaction];
+            mayHaveLinkedDevices = [OWSDeviceManager.shared mayHaveLinkedDevicesWithTransaction:transaction];
         }];
 
         BOOL hasDeviceMessages = NO;
@@ -1300,7 +1300,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // to avoid unnecessary message sends for sync messages until we learn
         // of a linked device (e.g. through the device linking UI or by receiving
         // a sync message, etc.).
-        [OWSDeviceManager.sharedManager clearMayHaveLinkedDevices];
+        [OWSDeviceManager.shared clearMayHaveLinkedDevices];
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -1446,7 +1446,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (missingDevices.count > 0) {
         if (recipient.address.isLocalAddress) {
-            [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
+            [OWSDeviceManager.shared setMayHaveLinkedDevices];
         }
     }
 

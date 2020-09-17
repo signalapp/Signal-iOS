@@ -39,7 +39,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 - (TSAccountManager *)tsAccountManager
@@ -177,7 +177,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
             // Make sure backup is enabled once we complete
             // a backup restore.
-            [OWSBackup.sharedManager setIsBackupEnabled:YES];
+            [OWSBackup.shared setIsBackupEnabled:YES];
         })
         .thenInBackground(^{
             return [self.tsAccountManager updateAccountAttributes];

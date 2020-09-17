@@ -104,7 +104,7 @@ typedef void (^CustomLayoutBlock)(void);
     OWSAssertDebug(address.isValid);
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
+        [[OWSIdentityManager shared] recipientIdentityForAddress:address];
     if (!recipientIdentity) {
         [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
                                                       @"Title for alert explaining that a user cannot be verified.")
@@ -158,7 +158,7 @@ typedef void (^CustomLayoutBlock)(void);
     self.contactName = [contactsManager displayNameForAddress:address];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
+        [[OWSIdentityManager shared] recipientIdentityForAddress:address];
     OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
@@ -360,7 +360,7 @@ typedef void (^CustomLayoutBlock)(void);
     OWSAssertDebug(self.address.isValid);
 
     BOOL isVerified =
-        [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address] == OWSVerificationStateVerified;
+        [[OWSIdentityManager shared] verificationStateForAddress:self.address] == OWSVerificationStateVerified;
 
     if (isVerified) {
         NSMutableAttributedString *labelText = [NSMutableAttributedString new];
@@ -536,17 +536,17 @@ typedef void (^CustomLayoutBlock)(void);
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            BOOL isVerified =
-                [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address transaction:transaction]
+            BOOL isVerified = [[OWSIdentityManager shared] verificationStateForAddress:self.address
+                                                                           transaction:transaction]
                 == OWSVerificationStateVerified;
 
             OWSVerificationState newVerificationState
                 = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-            [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
-                                                         identityKey:self.identityKey
-                                                             address:self.address
-                                               isUserInitiatedChange:YES
-                                                         transaction:transaction];
+            [[OWSIdentityManager shared] setVerificationState:newVerificationState
+                                                  identityKey:self.identityKey
+                                                      address:self.address
+                                        isUserInitiatedChange:YES
+                                                  transaction:transaction];
         });
 
         [self dismissViewControllerAnimated:YES completion:nil];

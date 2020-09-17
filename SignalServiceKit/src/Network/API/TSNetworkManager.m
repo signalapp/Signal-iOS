@@ -336,7 +336,7 @@ dispatch_queue_t NetworkManagerQueue()
 
 #pragma mark - Singleton
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     OWSAssertDebug(SSKEnvironment.shared.networkManager);
 
@@ -422,7 +422,7 @@ dispatch_queue_t NetworkManagerQueue()
 
             successParam(task, responseObject);
 
-            [OutageDetection.sharedManager reportConnectionSuccess];
+            [OutageDetection.shared reportConnectionSuccess];
         });
     };
     TSNetworkManagerSuccess failure = ^(NSURLSessionDataTask *task, NSError *error) {
@@ -526,7 +526,7 @@ dispatch_queue_t NetworkManagerQueue()
     [TSNetworkManager logCurlForTask:task];
 #endif
 
-    [OutageDetection.sharedManager reportConnectionFailure];
+    [OutageDetection.shared reportConnectionFailure];
 
     if (statusCode == AppExpiry.appExpiredStatusCode) {
         [AppExpiry.shared setHasAppExpiredAtCurrentVersion];

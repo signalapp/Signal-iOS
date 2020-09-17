@@ -80,12 +80,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 - (OWSReadReceiptManager *)readReceiptManager
 {
-    return [OWSReadReceiptManager sharedManager];
+    return [OWSReadReceiptManager shared];
 }
 
 - (id<OWSUDManager>)udManager
@@ -192,9 +192,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)provisionWithParser:(OWSDeviceProvisioningURLParser *)parser
 {
     // Optimistically set this flag.
-    [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
+    [OWSDeviceManager.shared setMayHaveLinkedDevices];
 
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPair];
     OWSAssertDebug(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.privateKey;

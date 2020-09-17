@@ -52,7 +52,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
 #pragma mark -
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     OWSAssert(SSKEnvironment.shared.outgoingReceiptManager);
 

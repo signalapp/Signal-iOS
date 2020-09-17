@@ -43,7 +43,7 @@ public class OWSScreenLock: NSObject {
 
     // MARK: - Singleton class
 
-    @objc(sharedManager)
+    @objc(shared)
     public static let shared = OWSScreenLock()
 
     private override init() {

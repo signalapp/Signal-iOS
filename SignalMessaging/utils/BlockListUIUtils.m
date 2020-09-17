@@ -28,7 +28,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
 + (OWSBlockingManager *)blockingManager
 {
-    return OWSBlockingManager.sharedManager;
+    return OWSBlockingManager.shared;
 }
 
 + (OWSMessageSender *)messageSender

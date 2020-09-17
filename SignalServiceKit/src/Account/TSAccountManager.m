@@ -826,7 +826,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 + (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock
 {
     TSRequest *request = [OWSRequestFactory unregisterAccountRequest];
-    [[TSNetworkManager sharedManager] makeRequest:request
+    [[TSNetworkManager shared] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             OWSLogInfo(@"Successfully unregistered");
             success();
@@ -909,7 +909,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             [self loadAccountStateWithTransaction:transaction];
 
             [OWSKeyBackupService clearKeysWithTransaction:transaction];
-            [OWS2FAManager.sharedManager setPinCode:nil transaction:transaction];
+            [OWS2FAManager.shared setPinCode:nil transaction:transaction];
         }
     });
 

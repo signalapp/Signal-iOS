@@ -180,7 +180,7 @@
         [SSKPreferences setIncludeMutedThreadsInBadgeCount:sender.isOn transaction:transaction];
     });
 
-    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
 - (void)didToggleshouldNotifyOfNewAccountsSwitch:(UISwitch *)sender

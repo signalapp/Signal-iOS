@@ -97,7 +97,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 - (ContactsViewHelper *)contactsViewHelper

@@ -32,7 +32,7 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
 
 - (instancetype)initDefault;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 - (void)makeRequest:(TSRequest *)request
             success:(TSNetworkManagerSuccess)success

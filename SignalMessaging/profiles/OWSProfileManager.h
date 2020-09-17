@@ -41,7 +41,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 #pragma mark - Local Profile
 

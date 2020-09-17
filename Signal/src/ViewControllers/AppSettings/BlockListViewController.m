@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSBlockingManager *)blockingManager
 {
-    return OWSBlockingManager.sharedManager;
+    return OWSBlockingManager.shared;
 }
 
 - (ContactsViewHelper *)contactsViewHelper

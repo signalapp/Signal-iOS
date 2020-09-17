@@ -116,7 +116,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 #pragma mark -
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     OWSAssertDebug(AppEnvironment.shared.backup);
 

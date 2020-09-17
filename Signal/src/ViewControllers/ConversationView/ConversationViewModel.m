@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSBlockingManager *)blockingManager
 {
-    return OWSBlockingManager.sharedManager;
+    return OWSBlockingManager.shared;
 }
 
 - (id<OWSTypingIndicators>)typingIndicators
@@ -238,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 #pragma mark -

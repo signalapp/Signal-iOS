@@ -126,11 +126,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"checkForBackup.");
 
-    [OWSBackup.sharedManager
-        checkCanImportBackup:^(BOOL value) {
-            OWSLogInfo(@"has backup available for import? %d", value);
-        }
-                     failure:^(NSError *error){
+    [OWSBackup.shared
+        checkCanImportBackup:^(BOOL value) { OWSLogInfo(@"has backup available for import? %d", value); }
+                     failure:^(NSError *error) {
                          // Do nothing.
                      }];
 }
@@ -139,20 +137,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"logBackupRecords.");
 
-    [OWSBackup.sharedManager logBackupRecords];
+    [OWSBackup.shared logBackupRecords];
 }
 
 + (void)logBackupManifests
 {
     OWSLogInfo(@"logBackupManifests.");
 
-    [OWSBackup.sharedManager
-        allRecipientIdsWithManifestsInCloud:^(NSArray<NSString *> *recipientIds) {
-            OWSLogInfo(@"recipientIds: %@", recipientIds);
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"error: %@", error);
-        }];
+    [OWSBackup.shared
+        allRecipientIdsWithManifestsInCloud:^(
+            NSArray<NSString *> *recipientIds) { OWSLogInfo(@"recipientIds: %@", recipientIds); }
+        failure:^(NSError *error) { OWSLogError(@"error: %@", error); }];
 }
 
 + (void)tryToImportBackup
@@ -166,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
     [alert addAction:[[ActionSheetAction alloc] initWithTitle:@"Restore"
                                                         style:ActionSheetActionStyleDefault
                                                       handler:^(ActionSheetAction *_Nonnull action) {
-                                                          [OWSBackup.sharedManager tryToImportBackup];
+                                                          [OWSBackup.shared tryToImportBackup];
                                                       }]];
     [alert addAction:[OWSActionSheets cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
@@ -218,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"");
 
-    [OWSBackup.sharedManager clearAllCloudKitRecords];
+    [OWSBackup.shared clearAllCloudKitRecords];
 }
 
 + (void)clearBackupMetadataCache

@@ -30,7 +30,7 @@
 
 - (OWSIdentityManager *)identityManager
 {
-    return [OWSIdentityManager sharedManager];
+    return [OWSIdentityManager shared];
 }
 
 - (void)testNewEmptyKey

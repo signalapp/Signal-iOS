@@ -20,7 +20,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 - (BOOL)mayHaveLinkedDevicesWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setMayHaveLinkedDevices;

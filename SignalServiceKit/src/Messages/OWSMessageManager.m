@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
     // When app is not active, we should update badge count whenever
     // changes to interactions are committed.
     if (CurrentAppContext().isMainApp && !CurrentAppContext().isMainAppAndActive) {
-        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+        [OWSMessageUtils.shared updateApplicationBadgeCount];
     }
 }
 
@@ -226,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
 - (void)uiDatabaseSnapshotDidUpdateExternally
@@ -234,7 +234,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
 - (void)uiDatabaseSnapshotDidReset
@@ -242,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
 #pragma mark - Blocking
@@ -525,7 +525,7 @@ NS_ASSUME_NONNULL_BEGIN
                         serverDeliveryTimestamp:serverDeliveryTimestamp
                                     transaction:transaction];
 
-            [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
+            [[OWSDeviceManager shared] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
             [self handleIncomingEnvelope:envelope
                          withDataMessage:contentProto.dataMessage
@@ -987,11 +987,10 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         case SSKProtoReceiptMessageTypeRead:
             OWSLogVerbose(@"Processing receipt message with read receipts.");
-            earlyTimestamps =
-                [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipient:envelope.sourceAddress
-                                                                       sentTimestamps:sentTimestamps
-                                                                        readTimestamp:envelope.timestamp
-                                                                          transaction:transaction];
+            earlyTimestamps = [OWSReadReceiptManager.shared processReadReceiptsFromRecipient:envelope.sourceAddress
+                                                                              sentTimestamps:sentTimestamps
+                                                                               readTimestamp:envelope.timestamp
+                                                                                 transaction:transaction];
             break;
         default:
             OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.unwrappedType);
@@ -1714,9 +1713,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
         NSArray<SSKProtoSyncMessageRead *> *earlyReceipts =
-            [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
-                                                                       readTimestamp:envelope.timestamp
-                                                                         transaction:transaction];
+            [OWSReadReceiptManager.shared processReadReceiptsFromLinkedDevice:syncMessage.read
+                                                                readTimestamp:envelope.timestamp
+                                                                  transaction:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
             [self.earlyMessageManager
                 recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp

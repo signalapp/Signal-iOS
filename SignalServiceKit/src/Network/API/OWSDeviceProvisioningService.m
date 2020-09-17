@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    return [self initWithNetworkManager:[TSNetworkManager sharedManager]];
+    return [self initWithNetworkManager:[TSNetworkManager shared]];
 }
 
 - (void)provisionWithMessageBody:(NSData *)messageBody

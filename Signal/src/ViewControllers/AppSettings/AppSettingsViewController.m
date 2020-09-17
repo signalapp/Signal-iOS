@@ -173,7 +173,7 @@
                                               actionBlock:^{
                                                   [weakSelf showAdvanced];
                                               }]];
-    BOOL isBackupEnabled = [OWSBackup.sharedManager isBackupEnabled];
+    BOOL isBackupEnabled = [OWSBackup.shared isBackupEnabled];
     BOOL showBackup = (OWSBackup.isFeatureEnabled && isBackupEnabled);
     if (showBackup) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
@@ -223,7 +223,7 @@
     cell.contentView.preservesSuperviewLayoutMargins = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.shared localProfileAvatarImage];
     UIImage *avatarImage = (localProfileAvatarImage
             ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kMediumAvatarSize] buildDefaultImage]);
     OWSAssertDebug(avatarImage);
@@ -260,7 +260,7 @@
     [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
-    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localFullName];
+    NSString *_Nullable localProfileName = [OWSProfileManager.shared localFullName];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
         titleLabel.textColor = Theme.primaryTextColor;
@@ -293,7 +293,7 @@
     addSubtitle(
         [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]]);
 
-    NSString *_Nullable username = [OWSProfileManager.sharedManager localUsername];
+    NSString *_Nullable username = [OWSProfileManager.shared localUsername];
     if (username.length > 0) {
         addSubtitle([CommonFormats formatUsername:username]);
     }

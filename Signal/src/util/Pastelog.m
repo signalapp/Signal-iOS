@@ -262,7 +262,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 @implementation Pastelog
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     static Pastelog *sharedMyManager = nil;
     static dispatch_once_t onceToken;
@@ -316,7 +316,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         }
     };
 
-    [[self sharedManager] uploadLogsWithUIWithSuccess:^(NSURL *url) {
+    [[self shared] uploadLogsWithUIWithSuccess:^(NSURL *url) {
         ActionSheetController *alert = [[ActionSheetController alloc]
             initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
                   message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")];
@@ -344,14 +344,13 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                                  completion();
                                              }]];
 #ifdef DEBUG
-        [alert addAction:[[ActionSheetAction alloc]
-                                       initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
-                                                         @"Label for the 'send to self' option of the debug log alert.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_to_self")
-                                               style:ActionSheetActionStyleDefault
-                                             handler:^(ActionSheetAction *action) {
-                                                 [Pastelog.sharedManager sendToSelf:url];
-                                             }]];
+        [alert
+            addAction:[[ActionSheetAction alloc]
+                                    initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
+                                                      @"Label for the 'send to self' option of the debug log alert.")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_to_self")
+                                            style:ActionSheetActionStyleDefault
+                                          handler:^(ActionSheetAction *action) { [Pastelog.shared sendToSelf:url]; }]];
 #endif
         [alert
             addAction:[[ActionSheetAction
@@ -360,7 +359,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"submit_bug_report")
                                             style:ActionSheetActionStyleDefault
                                           handler:^(ActionSheetAction *action) {
-                                              [Pastelog.sharedManager prepareRedirection:url completion:completion];
+                                              [Pastelog.shared prepareRedirection:url completion:completion];
                                           }]];
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
@@ -418,7 +417,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 + (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
 {
-    [[self sharedManager] uploadLogsWithSuccess:successParam failure:failureParam];
+    [[self shared] uploadLogsWithSuccess:successParam failure:failureParam];
 }
 
 - (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam {

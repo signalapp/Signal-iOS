@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -38,7 +38,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)sharedManager NS_SWIFT_NAME(shared());
++ (instancetype)shared NS_SWIFT_NAME(shared());
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 

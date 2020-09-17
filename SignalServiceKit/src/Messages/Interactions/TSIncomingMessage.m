@@ -210,10 +210,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                                                      expirationStartedAt:readTimestamp
                                                              transaction:transaction];
 
-    [OWSReadReceiptManager.sharedManager messageWasRead:self
-                                                 thread:thread
-                                           circumstance:circumstance
-                                            transaction:transaction];
+    [OWSReadReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
 
     [transaction addAsyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification

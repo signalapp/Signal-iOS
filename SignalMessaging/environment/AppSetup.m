@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // All of these "singletons" should have any dependencies used in their
         // initializers injected.
-        [[OWSBackgroundTaskManager sharedManager] observeNotifications];
+        [[OWSBackgroundTaskManager shared] observeNotifications];
 
         StorageCoordinator *storageCoordinator = [StorageCoordinator new];
         SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;

@@ -33,9 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testHasSafetyNumbersWithRemoteIdentity
 {
-    [[OWSIdentityManager sharedManager]
-        saveRemoteIdentity:[[NSMutableData alloc] initWithLength:kStoredIdentityKeyLength]
-                   address:self.contactThread.contactAddress];
+    [[OWSIdentityManager shared] saveRemoteIdentity:[[NSMutableData alloc] initWithLength:kStoredIdentityKeyLength]
+                                            address:self.contactThread.contactAddress];
     XCTAssert(self.contactThread.hasSafetyNumbers);
 }
 

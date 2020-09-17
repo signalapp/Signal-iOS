@@ -68,7 +68,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 #pragma mark -

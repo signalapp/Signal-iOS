@@ -85,7 +85,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
 @synthesize localUserProfile = _localUserProfile;
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     return SSKEnvironment.shared.profileManager;
 }
@@ -2012,12 +2012,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     BOOL isFeatureEnabled = NO;
     if (!isFeatureEnabled) {
         OWSLogWarn(@"skipping sending profile-key message because the feature is not yet fully available.");
-        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        [OWSProfileManager.shared addThreadToProfileWhitelist:thread];
         return;
     }
 
     OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithThread:thread];
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    [OWSProfileManager.shared addThreadToProfileWhitelist:thread];
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];

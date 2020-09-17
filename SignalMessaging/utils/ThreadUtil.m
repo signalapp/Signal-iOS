@@ -300,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
     // If we're creating this thread or we have a pending message request,
     // any action we trigger should share our profile.
     if (!thread.shouldThreadBeVisible || hasPendingMessageRequest) {
-        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        [OWSProfileManager.shared addThreadToProfileWhitelist:thread];
         return YES;
     }
 
@@ -316,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
     // If we're creating this thread or we have a pending message request,
     // any action we trigger should share our profile.
     if (!thread.shouldThreadBeVisible || hasPendingMessageRequest) {
-        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread transaction:transaction];
+        [OWSProfileManager.shared addThreadToProfileWhitelist:thread transaction:transaction];
         return YES;
     }
 

@@ -34,7 +34,7 @@ NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
                 if (devices.count > 1) {
                     // Setting this flag here shouldn't be necessary, but we do so
                     // because the "cost" is low and it will improve robustness.
-                    [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
+                    [OWSDeviceManager.shared setMayHaveLinkedDevices];
                 }
 
                 __block BOOL didAddOrRemove;
@@ -65,7 +65,7 @@ NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
                       failure:(void (^)(NSError *))failureCallback
 {
     TSRequest *request = [OWSRequestFactory getDevicesRequest];
-    [[TSNetworkManager sharedManager] makeRequest:request
+    [[TSNetworkManager shared] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             OWSLogVerbose(@"Get devices request succeeded");
             NSArray<OWSDevice *> *devices = [self parseResponse:responseObject];
@@ -93,7 +93,7 @@ NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
 {
     TSRequest *request = [OWSRequestFactory deleteDeviceRequestWithDevice:device];
 
-    [[TSNetworkManager sharedManager] makeRequest:request
+    [[TSNetworkManager shared] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             OWSLogVerbose(@"Delete device request succeeded");
             successCallback();

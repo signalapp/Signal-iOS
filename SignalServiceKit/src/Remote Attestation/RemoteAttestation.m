@@ -263,7 +263,7 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
                                    failure:(void (^)(NSError *error))failureHandler
 {
     TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequestForService:service];
-    [[TSNetworkManager sharedManager] makeRequest:request
+    [[TSNetworkManager shared] makeRequest:request
       success:^(NSURLSessionDataTask *task, id responseDict) {
           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
               RemoteAttestationAuth *_Nullable auth = [self parseAuthParams:responseDict];

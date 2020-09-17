@@ -26,7 +26,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
 
-@property (class, nonatomic, readonly, nonnull) OWSWindowManager *sharedManager;
+@property (class, nonatomic, readonly, nonnull) OWSWindowManager *shared;
 
 - (void)setupWithRootWindow:(UIWindow *)rootWindow screenBlockingWindow:(UIWindow *)screenBlockingWindow;
 

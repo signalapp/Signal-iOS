@@ -80,7 +80,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 #pragma mark -
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     OWSAssertDebug(Environment.shared.sounds);
 
@@ -269,7 +269,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet
 {
-    return [self.sharedManager systemSoundIDForSound:(OWSSound)sound quiet:quiet];
+    return [self.shared systemSoundIDForSound:(OWSSound)sound quiet:quiet];
 }
 
 - (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet
@@ -308,7 +308,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (void)setGlobalNotificationSound:(OWSSound)sound
 {
-    [self.sharedManager setGlobalNotificationSound:sound];
+    [self.shared setGlobalNotificationSound:sound];
 }
 
 - (void)setGlobalNotificationSound:(OWSSound)sound
@@ -320,7 +320,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (void)setGlobalNotificationSound:(OWSSound)sound transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self.sharedManager setGlobalNotificationSound:sound transaction:transaction];
+    [self.shared setGlobalNotificationSound:sound transaction:transaction];
 }
 
 - (void)setGlobalNotificationSound:(OWSSound)sound transaction:(SDSAnyWriteTransaction *)transaction

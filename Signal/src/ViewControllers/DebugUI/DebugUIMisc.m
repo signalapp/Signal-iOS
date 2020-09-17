@@ -144,14 +144,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                         completion:nil];
                                      }]];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Reset 2FA Repetition Interval"
-                                     actionBlock:^() {
-                                         DatabaseStorageWrite(
-                                             SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-                                                 [OWS2FAManager.sharedManager
-                                                     setDefaultRepetitionIntervalWithTransaction:transaction];
-                                             });
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Reset 2FA Repetition Interval"
+                           actionBlock:^() {
+                               DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
+                                   [OWS2FAManager.shared setDefaultRepetitionIntervalWithTransaction:transaction];
+                               });
+                           }]];
 
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
                                            actionBlock:^(UIViewController *viewController) {

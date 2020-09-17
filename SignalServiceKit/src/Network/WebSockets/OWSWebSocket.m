@@ -253,7 +253,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
 - (OutageDetection *)outageDetection
 {
-    return OutageDetection.sharedManager;
+    return OutageDetection.shared;
 }
 
 - (SDSDatabaseStorage *)databaseStorage

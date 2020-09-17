@@ -90,15 +90,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.isShowingAuthUI = YES;
 
-    [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
-        OWSAssertIsOnMainThread();
+    [OWSScreenLock.shared
+        tryToUnlockScreenLockWithSuccess:^{
+            OWSAssertIsOnMainThread();
 
-        OWSLogInfo(@"unlock screen lock succeeded.");
+            OWSLogInfo(@"unlock screen lock succeeded.");
 
-        self.isShowingAuthUI = NO;
+            self.isShowingAuthUI = NO;
 
-        [self.shareViewDelegate shareViewWasUnlocked];
-    }
+            [self.shareViewDelegate shareViewWasUnlocked];
+        }
         failure:^(NSError *error) {
             OWSAssertIsOnMainThread();
 

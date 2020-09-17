@@ -29,12 +29,10 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 
 + (instancetype)sharedLogger
 {
-    static DebugLogger *sharedManager = nil;
+    static DebugLogger *shared = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedManager = [self new];
-    });
-    return sharedManager;
+    dispatch_once(&onceToken, ^{ shared = [self new]; });
+    return shared;
 }
 
 + (NSString *)mainAppLogsDirPath

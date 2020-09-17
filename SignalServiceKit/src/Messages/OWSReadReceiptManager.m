@@ -48,7 +48,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return instance;
 }
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     OWSAssert(SSKEnvironment.shared.readReceiptManager);
 

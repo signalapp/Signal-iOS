@@ -45,7 +45,7 @@ typedef NSNumber *OWSTaskId;
 
 @implementation OWSBackgroundTaskManager
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     static OWSBackgroundTaskManager *sharedMyManager = nil;
     static dispatch_once_t onceToken;
@@ -378,7 +378,7 @@ typedef NSNumber *OWSTaskId;
 - (void)startBackgroundTask
 {
     __weak typeof(self) weakSelf = self;
-    self.taskId = [OWSBackgroundTaskManager.sharedManager addTaskWithExpirationBlock:^{
+    self.taskId = [OWSBackgroundTaskManager.shared addTaskWithExpirationBlock:^{
         DispatchMainThreadSafe(^{
             OWSBackgroundTask *strongSelf = weakSelf;
             if (!strongSelf) {
@@ -438,7 +438,7 @@ typedef NSNumber *OWSTaskId;
         if (!self.taskId) {
             return;
         }
-        [OWSBackgroundTaskManager.sharedManager removeTask:self.taskId];
+        [OWSBackgroundTaskManager.shared removeTask:self.taskId];
         self.taskId = nil;
 
         completionBlock = self.completionBlock;
