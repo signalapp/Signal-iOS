@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>OSXVersion</key>
-		<string>10.15.5</string>
+		<string>10.15.6</string>
 		<key>WebRTCCommit</key>
 		<string>f1a55985436352354d87b8dfb80823825c116a02 Production build of v2.7.0</string>
 	</dict>
