@@ -38,20 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSMessageStickerView
 
-#pragma mark - Dependencies
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 - (instancetype)init
 {
     self = [super initWithFrame:CGRectZero];

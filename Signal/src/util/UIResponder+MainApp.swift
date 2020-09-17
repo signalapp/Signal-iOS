@@ -26,6 +26,14 @@ public extension UIResponder {
         return AppEnvironment.shared.accountManager
     }
 
+    var callUIAdapter: CallUIAdapter {
+        return AppEnvironment.shared.callService.callUIAdapter
+    }
+
+    static var callUIAdapter: CallUIAdapter {
+        return AppEnvironment.shared.callService.callUIAdapter
+    }
+
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }

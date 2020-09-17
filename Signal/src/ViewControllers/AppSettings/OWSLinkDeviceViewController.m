@@ -76,33 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
         = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", "Navigation title when scanning QR code to add new device.");
 }
 
-#pragma mark - Dependencies
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager shared];
-}
-
-- (OWSReadReceiptManager *)readReceiptManager
-{
-    return [OWSReadReceiptManager shared];
-}
-
-- (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-- (TSSocketManager *)socketManager
-{
-    return SSKEnvironment.shared.socketManager;
-}
-
 #pragma mark -
 
 - (void)viewDidAppear:(BOOL)animated

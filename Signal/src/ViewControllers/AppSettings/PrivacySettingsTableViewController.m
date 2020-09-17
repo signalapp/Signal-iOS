@@ -55,38 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Dependencies
-
-- (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
-- (OWSPreferences *)preferences
-{
-    return Environment.shared.preferences;
-}
-
-- (OWSReadReceiptManager *)readReceiptManager
-{
-    return OWSReadReceiptManager.shared;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (TSAccountManager *)accountManager
-{
-    return TSAccountManager.shared;
-}
-
 #pragma mark - Table Contents
 
 - (void)updateTableContents

@@ -26,17 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBackupSettingsViewController
 
-#pragma mark - Dependencies
-
-- (OWSBackup *)backup
-{
-    OWSAssertDebug(AppEnvironment.shared.backup);
-
-    return AppEnvironment.shared.backup;
-}
-
-#pragma mark -
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];

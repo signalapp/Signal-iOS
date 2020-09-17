@@ -10,6 +10,14 @@ public extension UIResponder {
 
     // MARK: - Dependencies
 
+    var attachmentDownloads: OWSAttachmentDownloads {
+        return SSKEnvironment.shared.attachmentDownloads
+    }
+
+    static var attachmentDownloads: OWSAttachmentDownloads {
+        return SSKEnvironment.shared.attachmentDownloads
+    }
+
     var blockingManager: OWSBlockingManager {
         return .shared()
     }
@@ -204,6 +212,14 @@ public extension UIResponder {
 
     static var tsAccountManager: TSAccountManager {
         return .shared()
+    }
+
+    var typingIndicators: TypingIndicators {
+        return SSKEnvironment.shared.typingIndicators
+    }
+
+    static var typingIndicators: TypingIndicators {
+        return SSKEnvironment.shared.typingIndicators
     }
 
     var udManager: OWSUDManager {

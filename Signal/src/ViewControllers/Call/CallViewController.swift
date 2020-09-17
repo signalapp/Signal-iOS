@@ -12,12 +12,6 @@ import SignalMessaging
 // TODO: Ensure buttons enabled & disabled as necessary.
 class CallViewController: OWSViewController, CallObserver, CallServiceObserver, CallAudioServiceDelegate {
 
-    // Dependencies
-
-    var callUIAdapter: CallUIAdapter {
-        return AppEnvironment.shared.callService.callUIAdapter
-    }
-
     // Feature Flag
     @objc public static let kShowCallViewOnSeparateWindow = true
 
