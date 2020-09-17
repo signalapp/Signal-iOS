@@ -8,22 +8,6 @@ import PromiseKit
 @objc
 class MemberRequestView: UIStackView {
 
-    // MARK: - Dependencies
-
-    private var contactManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    // MARK: -
-
     private let thread: TSThread
 
     private weak var fromViewController: UIViewController?

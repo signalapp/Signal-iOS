@@ -30,8 +30,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         }
     }
 
-    private let contactsManager: OWSContactsManager
-
     private let contactShare: ContactShareViewModel
 
     private var contactShareViewHelper: ContactShareViewHelper
@@ -42,9 +40,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     @objc
     required init(contactShare: ContactShareViewModel) {
-        contactsManager = Environment.shared.contactsManager
         self.contactShare = contactShare
-        self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
+        self.contactShareViewHelper = ContactShareViewHelper(contactsManager: Self.contactsManager)
 
         super.init()
 

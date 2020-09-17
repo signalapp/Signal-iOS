@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -8,12 +8,6 @@ import UIKit
 public class BackupRestoreViewController: OWSTableViewController {
 
     private var hasBegunImport = false
-
-    // MARK: - Dependencies
-
-    private var backup: OWSBackup {
-        return AppEnvironment.shared.backup
-    }
 
     // MARK: -
 

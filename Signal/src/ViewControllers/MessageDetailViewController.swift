@@ -20,14 +20,6 @@ protocol MessageDetailViewDelegate: AnyObject {
 @objc
 class MessageDetailViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     @objc
     weak var delegate: MessageDetailViewDelegate?
 
@@ -62,16 +54,6 @@ class MessageDetailViewController: OWSViewController {
     private var contactShareViewHelper: ContactShareViewHelper!
 
     private var databaseUpdateTimer: Timer?
-
-    // MARK: Dependencies
-
-    var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
 
     var audioAttachmentPlayer: OWSAudioPlayer?
 

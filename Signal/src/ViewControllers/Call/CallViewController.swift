@@ -21,8 +21,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // Feature Flag
     @objc public static let kShowCallViewOnSeparateWindow = true
 
-    let contactsManager: OWSContactsManager
-
     // MARK: - Properties
 
     let thread: TSContactThread
@@ -214,7 +212,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - Initializers
 
     required init(call: SignalCall) {
-        contactsManager = Environment.shared.contactsManager
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.remoteAddress)
         super.init()

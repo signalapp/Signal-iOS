@@ -8,14 +8,6 @@ import PromiseKit
 @objc
 public class AddToGroupViewController: OWSTableViewController {
 
-    // MARK: Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     private let address: SignalServiceAddress
     private let collation = UILocalizedIndexedCollation.current()
     private let maxRecentGroups = 5

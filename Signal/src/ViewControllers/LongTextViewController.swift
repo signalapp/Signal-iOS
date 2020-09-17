@@ -15,12 +15,6 @@ public protocol LongTextViewDelegate {
 @objc
 public class LongTextViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: - Properties
 
     @objc

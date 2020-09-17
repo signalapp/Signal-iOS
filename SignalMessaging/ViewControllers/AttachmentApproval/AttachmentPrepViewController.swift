@@ -237,10 +237,6 @@ public class AttachmentPrepViewController: OWSViewController {
 
     // MARK: - Tooltip
 
-    var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
     private var shouldShowBlurTooltip: Bool {
         guard imageEditorView != nil else { return false }
 

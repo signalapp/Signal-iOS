@@ -14,22 +14,6 @@ protocol GroupMemberRequestsAndInvitesViewControllerDelegate: class {
 @objc
 public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController {
 
-    // MARK: - Dependencies
-
-    fileprivate var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    fileprivate var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: -
-
     weak var groupMemberRequestsAndInvitesViewControllerDelegate: GroupMemberRequestsAndInvitesViewControllerDelegate?
 
     private let oldGroupThread: TSGroupThread

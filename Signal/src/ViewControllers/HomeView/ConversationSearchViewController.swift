@@ -12,16 +12,6 @@ protocol ConversationSearchViewDelegate: class {
 @objc
 class ConversationSearchViewController: UITableViewController, BlockListCacheDelegate {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     // MARK: -
 
     @objc

@@ -13,18 +13,6 @@ protocol ReplaceAdminViewControllerDelegate: class {
 
 class ReplaceAdminViewController: OWSTableViewController {
 
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     weak var replaceAdminViewControllerDelegate: ReplaceAdminViewControllerDelegate?
 
     private let candidates: Set<SignalServiceAddress>

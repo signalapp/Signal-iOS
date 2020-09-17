@@ -9,18 +9,6 @@ import PromiseKit
 @objc
 public class GroupInviteLinksUI: NSObject {
 
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    // MARK: -
-
     @available(*, unavailable, message:"Do not instantiate this class.")
     private override init() {
     }

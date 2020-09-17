@@ -112,12 +112,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("deinit")
     }
 
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: - Subview
 
     // MARK: Top Bar

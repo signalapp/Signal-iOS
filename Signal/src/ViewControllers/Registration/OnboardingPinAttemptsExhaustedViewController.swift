@@ -7,7 +7,7 @@ import SafariServices
 
 @objc
 public class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewController {
-    var databaseStorage: SDSDatabaseStorage { .shared }
+
     var hasPendingRestoration: Bool {
         databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
     }

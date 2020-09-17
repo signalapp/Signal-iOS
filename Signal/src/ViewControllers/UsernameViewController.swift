@@ -7,14 +7,6 @@ import Foundation
 @objc
 class UsernameViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    // MARK: -
-
     @objc
     public var modalPresentation = false {
         didSet {

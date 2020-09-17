@@ -135,14 +135,6 @@ protocol ColorPickerViewDelegate: class {
 
 class ColorPickerView: UIView, ColorViewDelegate {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     private let colorViews: [ColorView]
     let conversationStyle: ConversationStyle
     var outgoingMessageView = OWSMessageBubbleView(forAutoLayout: ())

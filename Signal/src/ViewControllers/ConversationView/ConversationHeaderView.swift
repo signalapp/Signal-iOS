@@ -70,9 +70,9 @@ public class ConversationHeaderView: UIStackView {
     private let avatarView: ConversationAvatarImageView
 
     @objc
-    public required init(thread: TSThread, contactsManager: OWSContactsManager) {
+    public required init(thread: TSThread) {
 
-        let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36, contactsManager: contactsManager)
+        let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36)
         self.avatarView = avatarView
         // remove default border on avatarView
         avatarView.layer.borderWidth = 0

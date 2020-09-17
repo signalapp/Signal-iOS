@@ -16,18 +16,6 @@ public protocol ForwardMessageDelegate: AnyObject {
 @objc
 class ForwardMessageNavigationController: OWSNavigationController {
 
-    // MARK: Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    // MARK: -
-
     @objc
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 

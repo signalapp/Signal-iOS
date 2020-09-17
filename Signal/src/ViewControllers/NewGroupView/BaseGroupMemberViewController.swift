@@ -41,26 +41,6 @@ protocol GroupMemberViewDelegate: class {
 @objc
 public class BaseGroupMemberViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
-    }
-
-    // MARK: -
-
     // This delegate is the subclass.
     weak var groupMemberViewDelegate: GroupMemberViewDelegate?
 

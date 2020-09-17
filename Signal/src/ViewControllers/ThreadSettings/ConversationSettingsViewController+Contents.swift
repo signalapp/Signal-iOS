@@ -201,7 +201,7 @@ extension ConversationSettingsViewController {
         let (isPreMessageRequestsThread, isThreadInProfileWhitelist) = databaseStorage.uiRead { transaction -> (Bool, Bool) in
             return (
                 GRDBThreadFinder.isPreMessageRequestsThread(self.thread, transaction: transaction.unwrapGrdbRead),
-                self.profileManager.isThread(inProfileWhitelist: self.thread, transaction: transaction)
+                Self.profileManager.isThread(inProfileWhitelist: self.thread, transaction: transaction)
             )
         }
 

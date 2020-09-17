@@ -27,22 +27,6 @@ public enum MessageRequestMode: UInt {
 @objc
 class MessageRequestView: UIStackView {
 
-    // MARK: - Dependencies
-
-    private var contactManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    // MARK: -
-
     private let thread: TSThread
     private let mode: MessageRequestMode
 
@@ -183,7 +167,7 @@ class MessageRequestView: UIStackView {
             }
 
             let shortName = databaseStorage.uiRead { transaction in
-                return self.contactManager.shortDisplayName(for: thread.contactAddress, transaction: transaction)
+                return self.contactsManager.shortDisplayName(for: thread.contactAddress, transaction: transaction)
             }
 
             return preparePromptLabel(formatString: formatString, embeddedString: shortName)
@@ -266,7 +250,7 @@ class MessageRequestView: UIStackView {
             owsFailDebug("missing addedByUuid")
             return UILabel()
         }
-        let addedByName = contactManager.displayName(for: SignalServiceAddress(uuid: addedByUuid))
+        let addedByName = contactsManager.displayName(for: SignalServiceAddress(uuid: addedByUuid))
 
         let formatString = NSLocalizedString(
             "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT",

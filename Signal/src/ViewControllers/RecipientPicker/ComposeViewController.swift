@@ -57,14 +57,6 @@ class ComposeViewController: OWSViewController {
 
 extension ComposeViewController: RecipientPickerDelegate {
 
-    // MARK: - Dependencies
-
-    private var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
-    }
-
-    // MARK: -
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         canSelectRecipient recipient: PickedRecipient

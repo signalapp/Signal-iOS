@@ -14,18 +14,6 @@ protocol GroupAttributesViewControllerDelegate: class {
 
 class GroupAttributesViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    fileprivate var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    fileprivate var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     public enum EditAction {
         case none
         case name

@@ -28,17 +28,6 @@ struct PhoneNumberDiscoverability {
 
 @objc
 class PhoneNumberDiscoverabilitySettingsTableViewController: OWSTableViewController {
-    static var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
 
     @objc
     class var nameForCurrentDiscoverability: String {

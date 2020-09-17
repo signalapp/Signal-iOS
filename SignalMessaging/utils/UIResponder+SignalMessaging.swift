@@ -94,6 +94,14 @@ public extension UIResponder {
         return .shared()
     }
 
+    var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
+    static var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
     var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()
     }
@@ -116,6 +124,14 @@ public extension UIResponder {
 
     static var storageCoordinator: StorageCoordinator {
         return SSKEnvironment.shared.storageCoordinator
+    }
+
+    var syncManager: SyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
+    }
+
+    static var syncManager: SyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
     }
 
     var tsAccountManager: TSAccountManager {

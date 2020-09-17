@@ -33,16 +33,6 @@ class ViewOnceMessageViewController: OWSViewController {
         }
     }
 
-    // MARK: - Dependencies
-
-    static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: - Properties
 
     private let content: Content

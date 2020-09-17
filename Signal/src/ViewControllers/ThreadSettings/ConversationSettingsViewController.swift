@@ -35,50 +35,6 @@ public protocol ConversationSettingsViewDelegate: class {
 @objc
 class ConversationSettingsViewController: OWSTableViewController {
 
-    // MARK: - Dependencies
-
-    static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
-    }
-
-    var identityManager: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManager
-    }
-
-    var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
-    }
-
-    // MARK: -
-
     @objc
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 

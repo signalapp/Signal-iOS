@@ -143,8 +143,8 @@ extension ConversationSettingsViewController {
             let viewController = self.viewController
             let isThreadInProfileWhitelist =
                 viewController.databaseStorage.uiRead { transaction in
-                    return viewController.profileManager.isThread(inProfileWhitelist: viewController.thread,
-                                                                  transaction: transaction)
+                    return Self.profileManager.isThread(inProfileWhitelist: viewController.thread,
+                                                        transaction: transaction)
             }
             let hasSharedProfile = String(format: "Whitelisted: %@", isThreadInProfileWhitelist ? "Yes" : "No")
             addSubtitleLabel(text: hasSharedProfile)

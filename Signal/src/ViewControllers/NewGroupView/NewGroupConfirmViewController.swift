@@ -9,26 +9,6 @@ import SafariServices
 @objc
 public class NewGroupConfirmViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
-
     private var newGroupState = NewGroupState()
 
     private var groupSeed: NewGroupSeed {

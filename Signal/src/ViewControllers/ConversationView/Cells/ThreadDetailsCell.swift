@@ -18,12 +18,6 @@ public class ThreadDetailsCell: ConversationViewCell {
         notImplemented()
     }
 
-    // MARK: Dependencies
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     // MARK: 
 
     private let avatarContainer = UIView()

@@ -14,26 +14,6 @@ protocol AddGroupMembersViewControllerDelegate: class {
 @objc
 public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
-    // MARK: - Dependencies
-
-    fileprivate var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    fileprivate var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    // MARK: -
-
     weak var addGroupMembersViewControllerDelegate: AddGroupMembersViewControllerDelegate?
 
     private let groupThread: TSGroupThread

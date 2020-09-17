@@ -26,6 +26,10 @@ public extension UIResponder {
         return AppEnvironment.shared.accountManager
     }
 
+    var deviceTransferService: DeviceTransferService { .shared }
+
+    static var deviceTransferService: DeviceTransferService { .shared }
+
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }
