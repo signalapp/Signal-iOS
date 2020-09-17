@@ -220,8 +220,8 @@
 		3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */; };
 		3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498A0A524DC81E100CA492C /* OWSContactsManager.swift */; };
 		3498A0A824DC936300CA492C /* ContactsViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498A0A724DC936200CA492C /* ContactsViewHelper.swift */; };
-		3498AC87251387E500B1F315 /* UIResponder+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC86251387E500B1F315 /* UIResponder+SignalMessaging.swift */; };
-		3498AC892513896400B1F315 /* UIResponder+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC882513896400B1F315 /* UIResponder+MainApp.swift */; };
+		3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */; };
+		3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498AC882513896400B1F315 /* Dependencies+MainApp.swift */; };
 		34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupMembersViewController.swift */; };
 		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
 		3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */; };
@@ -1160,8 +1160,8 @@
 		3496956D21A301A100DCFE74 /* OWSBackupIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupIO.h; sourceTree = "<group>"; };
 		3498A0A524DC81E100CA492C /* OWSContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSContactsManager.swift; sourceTree = "<group>"; };
 		3498A0A724DC936200CA492C /* ContactsViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsViewHelper.swift; sourceTree = "<group>"; };
-		3498AC86251387E500B1F315 /* UIResponder+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+SignalMessaging.swift"; sourceTree = "<group>"; };
-		3498AC882513896400B1F315 /* UIResponder+MainApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+MainApp.swift"; sourceTree = "<group>"; };
+		3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SignalMessaging.swift"; sourceTree = "<group>"; };
+		3498AC882513896400B1F315 /* Dependencies+MainApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+MainApp.swift"; sourceTree = "<group>"; };
 		34995F172411838C00C70546 /* NewGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupMembersViewController.swift; sourceTree = "<group>"; };
 		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFullTextSearcherTest.swift; sourceTree = "<group>"; };
@@ -2209,6 +2209,7 @@
 				3464450F22B7F97000A957B1 /* DateUtil.m */,
 				34480B4D1FD0A7A300BC14EF /* DebugLogger.h */,
 				34480B4E1FD0A7A300BC14EF /* DebugLogger.m */,
+				3498AC86251387E500B1F315 /* Dependencies+SignalMessaging.swift */,
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				344F248C2007CCD600CFB4F4 /* DisplayableText.swift */,
 				451777C71FD61554001225FF /* FullTextSearcher.swift */,
@@ -2243,7 +2244,6 @@
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
 				340872BE22393CF900CB25B0 /* UIGestureRecognizer+OWS.swift */,
 				4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */,
-				3498AC86251387E500B1F315 /* UIResponder+SignalMessaging.swift */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
 			);
@@ -3128,6 +3128,7 @@
 				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
 				3496956121A301A100DCFE74 /* Backup */,
 				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
+				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				88C4E38124671F9D009C9B97 /* Device Transfer */,
 				887889AE247F2E72001B5FCF /* Emoji */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
@@ -3142,7 +3143,6 @@
 				34E5DC8120D8050D00C08145 /* RegistrationUtils.m */,
 				4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */,
 				FCFA64B11A24F29E0007FB87 /* UI Categories */,
-				3498AC882513896400B1F315 /* UIResponder+MainApp.swift */,
 				8811CF832295D8DA00FF6549 /* VolumeButtons.swift */,
 				340CCB6923032762005243B3 /* YDBLegacyMigration.h */,
 				340CCB6823032762005243B3 /* YDBLegacyMigration.m */,
@@ -4686,7 +4686,7 @@
 				8851DB3F24CCE9C8001EACD2 /* MentionTextView.swift in Sources */,
 				34BB3C5F23C6644B001651FC /* GroupV2SnapshotImpl.swift in Sources */,
 				346941A3215D2EE400B5BFAD /* Theme.m in Sources */,
-				3498AC87251387E500B1F315 /* UIResponder+SignalMessaging.swift in Sources */,
+				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
 				4C295880233AE23000AAB2AA /* Theme+OWS.swift in Sources */,
 				4C23A5F2215C4ADE00534937 /* SheetViewController.swift in Sources */,
 				34BBC84D220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
@@ -4891,7 +4891,7 @@
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
-				3498AC892513896400B1F315 /* UIResponder+MainApp.swift in Sources */,
+				3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */,
 				340CCB6A23032762005243B3 /* YDBLegacyMigration.m in Sources */,
 				3453171625065A7E004D874E /* ConversationViewItem.swift in Sources */,
 				88A4CC09246CB0960082211F /* OnboardingTransferChoiceViewController.swift in Sources */,
