@@ -86,18 +86,6 @@ public extension UIResponder {
         SSKEnvironment.shared.identityManager
     }
 
-//    @objc
-//    @available(swift, obsoleted: 1.0)
-//    var groupsV2: GroupsV2 {
-//        SSKEnvironment.shared.groupsV2
-//    }
-//    
-//    @objc
-//    @available(swift, obsoleted: 1.0)
-//    static var groupsV2: GroupsV2 {
-//        SSKEnvironment.shared.groupsV2
-//    }
-
     var groupV2UpdatesObjc: GroupV2Updates {
         SSKEnvironment.shared.groupV2Updates
     }
