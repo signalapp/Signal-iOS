@@ -110,11 +110,8 @@ public class ThreadDetailsCell: ConversationViewCell {
             return
         }
 
-        self.avatarView = ConversationAvatarImageView(
-            thread: viewItem.thread,
-            diameter: UInt(avatarDiameter),
-            contactsManager: Environment.shared.contactsManager
-        )
+        self.avatarView = ConversationAvatarImageView(thread: viewItem.thread,
+                                                      diameter: UInt(avatarDiameter))
 
         avatarContainer.addSubview(avatarView!)
         avatarView?.autoSetDimension(.height, toSize: avatarDiameter)

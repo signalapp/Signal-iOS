@@ -384,14 +384,6 @@ extension NewGroupConfirmViewController: GroupAttributesEditorHelperDelegate {
 
 class NewLegacyGroupView: UIView {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     private let v1Members: [PickedRecipient]
 
     private let tableViewController = OWSTableViewController()

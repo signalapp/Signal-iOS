@@ -7,7 +7,6 @@ import ZXingObjC
 import MultipeerConnectivity
 
 class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
-    var deviceTransferService: DeviceTransferService { .shared }
 
     var capture: ZXCapture?
     var isCapturing = false

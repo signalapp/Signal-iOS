@@ -1400,8 +1400,7 @@ typedef enum : NSUInteger {
 
 - (void)createHeaderViews
 {
-    ConversationHeaderView *headerView = [[ConversationHeaderView alloc] initWithThread:self.thread
-                                                                        contactsManager:self.contactsManager];
+    ConversationHeaderView *headerView = [[ConversationHeaderView alloc] initWithThread:self.thread];
     headerView.accessibilityLabel = NSLocalizedString(@"CONVERSATION_SETTINGS", "title for conversation settings screen");
     self.headerView = headerView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);

@@ -657,10 +657,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: Dynamic Header
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     private func senderName(message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:

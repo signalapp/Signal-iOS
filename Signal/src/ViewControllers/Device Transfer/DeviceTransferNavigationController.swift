@@ -5,7 +5,6 @@
 import Foundation
 
 class DeviceTransferNavigationController: UINavigationController {
-    var deviceTransferService: DeviceTransferService { .shared }
 
     required init() {
         super.init(nibName: nil, bundle: nil)

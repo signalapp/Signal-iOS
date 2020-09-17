@@ -143,7 +143,7 @@ extension ConversationSettingsViewController {
             let viewController = self.viewController
             let isThreadInProfileWhitelist =
                 viewController.databaseStorage.uiRead { transaction in
-                    return Self.profileManager.isThread(inProfileWhitelist: viewController.thread,
+                    return UIView.profileManager.isThread(inProfileWhitelist: viewController.thread,
                                                         transaction: transaction)
             }
             let hasSharedProfile = String(format: "Whitelisted: %@", isThreadInProfileWhitelist ? "Yes" : "No")
