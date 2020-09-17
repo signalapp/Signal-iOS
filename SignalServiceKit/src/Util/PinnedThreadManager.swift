@@ -77,7 +77,7 @@ public class PinnedThreadManager: NSObject {
                     // Pinning a thread should unarchive it and make it visible if it was not already so.
                     thread.unarchiveThreadAndMarkVisible(updateStorageService: true, transaction: transaction)
                 } else {
-                    SDSDatabaseStorage.shared.touch(thread: thread, transaction: transaction)
+                    SDSDatabaseStorage.shared.touch(thread: thread, shouldReindex: false, transaction: transaction)
                 }
             }
         }

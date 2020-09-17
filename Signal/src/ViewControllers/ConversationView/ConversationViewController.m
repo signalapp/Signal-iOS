@@ -2746,9 +2746,6 @@ typedef enum : NSUInteger {
         }
         failure:^(NSError *error) {
             OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                [self.databaseStorage touchInteraction:message transaction:transaction];
-            });
         }];
 }
 

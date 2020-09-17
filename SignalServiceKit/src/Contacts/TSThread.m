@@ -654,6 +654,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     [transactionForMethod addTransactionFinalizationBlockForKey:self.transactionFinalizationKey
                                                           block:^(SDSAnyWriteTransaction *transactionForBlock) {
                                                               [self.databaseStorage touchThread:self
+                                                                                  shouldReindex:NO
                                                                                     transaction:transactionForBlock];
                                                           }];
 }
