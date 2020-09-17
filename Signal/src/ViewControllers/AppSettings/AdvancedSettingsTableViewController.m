@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 #pragma mark -
@@ -153,8 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
     censorshipSection.headerTitle = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER",
         @"Table header for the 'censorship circumvention' section.");
     BOOL isAnySocketOpen = TSSocketManager.shared.socketState == OWSWebSocketStateOpen;
-    if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
-        if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyDisabled) {
+    if (OWSSignalService.shared.hasCensoredPhoneNumber) {
+        if (OWSSignalService.shared.isCensorshipCircumventionManuallyDisabled) {
             censorshipSection.footerTitle
                 = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED",
                     @"Table footer for the 'censorship circumvention' section shown when censorship circumvention has "
@@ -192,13 +192,12 @@ NS_ASSUME_NONNULL_BEGIN
     // * ...The internet is not reachable, since we don't want to let users to activate
     //      censorship circumvention unnecessarily, e.g. if they just don't have a valid
     //      internet connection.
-    OWSTableSwitchBlock isCensorshipCircumventionOnBlock = ^{
-        return OWSSignalService.sharedInstance.isCensorshipCircumventionActive;
-    };
+    OWSTableSwitchBlock isCensorshipCircumventionOnBlock
+        = ^{ return OWSSignalService.shared.isCensorshipCircumventionActive; };
     // Close over reachabilityManager to avoid leaking a reference to self.
     id<SSKReachabilityManager> reachabilityManager = self.reachabilityManager;
     OWSTableSwitchBlock isManualCensorshipCircumventionOnEnabledBlock = ^{
-        OWSSignalService *service = OWSSignalService.sharedInstance;
+        OWSSignalService *service = OWSSignalService.shared;
         if (SSKDebugFlags.exposeCensorshipCircumvention) {
             return YES;
         } else if (service.isCensorshipCircumventionActive) {
@@ -221,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           target:weakSelf
                                         selector:@selector(didToggleEnableCensorshipCircumventionSwitch:)]];
 
-    if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated) {
+    if (OWSSignalService.shared.isCensorshipCircumventionManuallyActivated) {
         OWSCountryMetadata *manualCensorshipCircumventionCountry =
             [weakSelf ensureManualCensorshipCircumventionCountry];
         OWSAssertDebug(manualCensorshipCircumventionCountry);
@@ -296,7 +295,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     OWSCountryMetadata *countryMetadata = nil;
-    NSString *countryCode = OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode;
+    NSString *countryCode = OWSSignalService.shared.manualCensorshipCircumventionCountryCode;
     if (countryCode) {
         countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
     }
@@ -316,7 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (countryMetadata) {
         // Ensure the "manual censorship circumvention" country state is in sync.
-        OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryCode;
+        OWSSignalService.shared.manualCensorshipCircumventionCountryCode = countryCode;
     }
 
     return countryMetadata;
@@ -365,7 +364,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableCensorshipCircumventionSwitch:(UISwitch *)sender
 {
-    OWSSignalService *service = OWSSignalService.sharedInstance;
+    OWSSignalService *service = OWSSignalService.shared;
     if (sender.isOn) {
         service.isCensorshipCircumventionManuallyDisabled = NO;
         service.isCensorshipCircumventionManuallyActivated = YES;

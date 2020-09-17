@@ -11,7 +11,7 @@ public extension GroupsV2Impl {
     // MARK: - Dependencies
 
     private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private static var databaseStorage: SDSDatabaseStorage {

@@ -47,11 +47,11 @@ public class MessageFetcherJob: NSObject {
     }
 
     private class var signalService: OWSSignalService {
-        return OWSSignalService.sharedInstance()
+        return OWSSignalService.shared()
     }
 
     private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: -

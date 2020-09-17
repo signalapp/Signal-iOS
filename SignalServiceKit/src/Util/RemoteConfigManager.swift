@@ -568,7 +568,7 @@ private extension ServiceRemoteConfigManager {
 
     private func remoteExpirationDate(minimumVersions: [MinimumVersion]) -> Date? {
         var oldestEnforcementDate: Date?
-        let currentVersion = AppVersion.sharedInstance().currentAppVersionLong
+        let currentVersion = AppVersion.shared().currentAppVersionLong
         for minimumVersion in minimumVersions {
             // We only are interested in minimum versions greater than our current version.
             // Note: This method of comparison will only work as long as we always use

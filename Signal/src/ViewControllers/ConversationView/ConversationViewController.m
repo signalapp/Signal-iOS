@@ -3664,9 +3664,9 @@ typedef enum : NSUInteger {
 {
     // Prevent device from sleeping while recording a voice message.
     if (audioRecorder) {
-        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:audioRecorder];
+        [DeviceSleepManager.shared addBlockWithBlockObject:audioRecorder];
     } else if (_audioRecorder) {
-        [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:_audioRecorder];
+        [DeviceSleepManager.shared removeBlockWithBlockObject:_audioRecorder];
     }
 
     _audioRecorder = audioRecorder;

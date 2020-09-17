@@ -64,7 +64,7 @@
 
 - (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 #pragma mark - UIViewController

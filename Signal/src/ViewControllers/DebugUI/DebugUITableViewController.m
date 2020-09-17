@@ -30,14 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // This is useful if you're using long-running actions in the
     // Debug UI, like "send 1k messages", etc.
-    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
+    [DeviceSleepManager.shared addBlockWithBlockObject:self];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
 
-    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [DeviceSleepManager.shared removeBlockWithBlockObject:self];
 }
 
 #pragma mark - Factory Methods

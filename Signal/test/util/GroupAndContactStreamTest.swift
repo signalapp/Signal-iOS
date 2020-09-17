@@ -11,7 +11,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: - Test Life Cycle

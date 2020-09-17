@@ -10,7 +10,7 @@ class AppUpdateNag: NSObject {
 
     // MARK: Public
 
-    @objc(sharedInstance)
+    @objc(shared)
     public static let shared: AppUpdateNag = {
         let versionService = AppStoreVersionService()
         let nagManager = AppUpdateNag(versionService: versionService)

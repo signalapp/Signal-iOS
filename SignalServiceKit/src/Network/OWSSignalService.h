@@ -16,7 +16,7 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 - (SDSKeyValueStore *)keyValueStore;
 
-+ (instancetype)sharedInstance;
++ (instancetype)shared;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

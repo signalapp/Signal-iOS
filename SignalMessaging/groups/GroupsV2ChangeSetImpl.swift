@@ -46,7 +46,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: -

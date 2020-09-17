@@ -24,7 +24,7 @@ import SignalMessaging
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

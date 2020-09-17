@@ -36,7 +36,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
 @implementation AppVersion
 
-+ (instancetype)sharedInstance
++ (instancetype)shared
 {
     static AppVersion *instance = nil;
     static dispatch_once_t onceToken;

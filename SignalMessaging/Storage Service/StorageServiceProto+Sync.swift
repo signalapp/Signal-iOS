@@ -569,11 +569,11 @@ extension StorageServiceProtoAccountRecord {
     }
 
     static var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     static var udManager: OWSUDManager {

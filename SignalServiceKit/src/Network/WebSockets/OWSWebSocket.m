@@ -238,7 +238,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
 - (OWSSignalService *)signalService
 {
-    return [OWSSignalService sharedInstance];
+    return [OWSSignalService shared];
 }
 
 - (OWSMessageReceiver *)messageReceiver
@@ -248,7 +248,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 
 - (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 - (OutageDetection *)outageDetection

@@ -318,7 +318,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     __weak ConversationListViewController *weakSelf = self;
     ReminderView *deregisteredView = [ReminderView
-        nagWithText:TSAccountManager.sharedInstance.isPrimaryDevice
+        nagWithText:TSAccountManager.shared.isPrimaryDevice
             ? NSLocalizedString(@"DEREGISTRATION_WARNING", @"Label warning the user that they have been de-registered.")
             : NSLocalizedString(
                 @"UNLINKED_WARNING", @"Label warning the user that they have been unlinked from their primary device.")
@@ -596,7 +596,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     self.archiveReminderView.hidden = self.conversationListMode != ConversationListMode_Archive;
     self.deregisteredView.hidden
-        = !TSAccountManager.sharedInstance.isDeregistered || TSAccountManager.sharedInstance.isTransferInProgress;
+        = !TSAccountManager.shared.isDeregistered || TSAccountManager.shared.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
 
     self.expiredView.hidden = !AppExpiry.shared.isExpiringSoon;
@@ -1449,7 +1449,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.messageFetcherJob runObjc]
         .then(^{
-            if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+            if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
                 return [AnyPromise promiseWithValue:nil];
             }
 

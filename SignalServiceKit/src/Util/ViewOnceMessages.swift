@@ -19,7 +19,7 @@ public class ViewOnceMessages: NSObject {
     }
 
     private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: - Events

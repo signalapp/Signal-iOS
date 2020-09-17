@@ -48,7 +48,7 @@ public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
         // MARK: - Dependencies
 
         private var tsAccountManager: TSAccountManager {
-            return TSAccountManager.sharedInstance()
+            return TSAccountManager.shared()
         }
 
         // MARK: -

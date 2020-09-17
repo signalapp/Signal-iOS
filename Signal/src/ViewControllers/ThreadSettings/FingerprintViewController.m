@@ -128,7 +128,7 @@ typedef void (^CustomLayoutBlock)(void);
         return self;
     }
 
-    _accountManager = [TSAccountManager sharedInstance];
+    _accountManager = [TSAccountManager shared];
 
     [self observeNotifications];
 

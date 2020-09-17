@@ -15,7 +15,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private var databaseStorage: SDSDatabaseStorage {
@@ -64,7 +64,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
-        _ = AppVersion.sharedInstance()
+        _ = AppVersion.shared()
 
         Cryptography.seedRandom()
 
@@ -275,7 +275,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        AppVersion.sharedInstance().saeLaunchDidComplete()
+        AppVersion.shared().saeLaunchDidComplete()
 
         ensureRootViewController()
 

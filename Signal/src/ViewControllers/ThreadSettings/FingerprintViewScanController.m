@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewScanController.h"
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(address.isValid);
 
     self.recipientAddress = address;
-    self.accountManager = [TSAccountManager sharedInstance];
+    self.accountManager = [TSAccountManager shared];
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
     self.contactName = [contactsManager displayNameForAddress:address];

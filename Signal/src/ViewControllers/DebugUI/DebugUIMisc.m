@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^() { [DebugUIMisc enableExternalDatabaseAccess]; }]];
 
     [items addObject:[OWSTableItem itemWithTitle:@"Update account attributes"
-                                     actionBlock:^() { [TSAccountManager.sharedInstance updateAccountAttributes]; }]];
+                                     actionBlock:^() { [TSAccountManager.shared updateAccountAttributes]; }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"re-registering.");
 
-    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
+    if (![[TSAccountManager shared] resetForReregistration]) {
         OWSFailDebug(@"could not reset for re-registration.");
         return;
     }
@@ -250,7 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled
 {
     OWSCountryMetadata *countryMetadata = nil;
-    NSString *countryCode = OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode;
+    NSString *countryCode = OWSSignalService.shared.manualCensorshipCircumventionCountryCode;
     if (countryCode) {
         countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
     }
@@ -268,8 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssertDebug(countryMetadata);
-    OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryCode;
-    OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = isEnabled;
+    OWSSignalService.shared.manualCensorshipCircumventionCountryCode = countryCode;
+    OWSSignalService.shared.isCensorshipCircumventionManuallyActivated = isEnabled;
 }
 
 + (void)clearHasDismissedOffers

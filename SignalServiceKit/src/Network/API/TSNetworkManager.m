@@ -106,7 +106,7 @@ dispatch_queue_t NetworkManagerQueue()
 
 - (OWSSignalService *)signalService
 {
-    return [OWSSignalService sharedInstance];
+    return [OWSSignalService shared];
 }
 
 #pragma mark -
@@ -331,7 +331,7 @@ dispatch_queue_t NetworkManagerQueue()
 
 + (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 #pragma mark - Singleton

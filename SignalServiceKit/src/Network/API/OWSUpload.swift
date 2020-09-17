@@ -49,7 +49,7 @@ fileprivate extension OWSUpload {
     }
 
     static var signalService: OWSSignalService {
-        return OWSSignalService.sharedInstance()
+        return OWSSignalService.shared()
     }
 
     // MARK: -

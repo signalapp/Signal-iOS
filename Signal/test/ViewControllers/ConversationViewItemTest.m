@@ -29,7 +29,7 @@
 {
     [super setUp];
 
-    [[TSAccountManager sharedInstance] registerForTestsWithLocalNumber:@"+13231231234" uuid:[NSUUID new]];
+    [[TSAccountManager shared] registerForTestsWithLocalNumber:@"+13231231234" uuid:[NSUUID new]];
 
     __block TSThread *thread;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

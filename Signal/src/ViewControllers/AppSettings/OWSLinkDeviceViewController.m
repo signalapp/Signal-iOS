@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 - (TSSocketManager *)socketManager

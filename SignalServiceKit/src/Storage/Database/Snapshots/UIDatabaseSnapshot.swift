@@ -43,7 +43,7 @@ public class UIDatabaseObserver: NSObject {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

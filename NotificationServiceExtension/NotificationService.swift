@@ -104,7 +104,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         Logger.info("")
 
-        _ = AppVersion.sharedInstance()
+        _ = AppVersion.shared()
 
         Cryptography.seedRandom()
 
@@ -169,7 +169,7 @@ class NotificationService: UNNotificationServiceExtension {
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        AppVersion.sharedInstance().nseLaunchDidComplete()
+        AppVersion.shared().nseLaunchDidComplete()
     }
 
     func askMainAppToHandleReceipt(handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void) {

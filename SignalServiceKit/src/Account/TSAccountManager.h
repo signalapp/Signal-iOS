@@ -39,7 +39,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 #pragma mark - Initializers
 
-+ (TSAccountManager *)sharedInstance;
++ (TSAccountManager *)shared;
 
 - (void)warmCaches;
 

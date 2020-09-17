@@ -36,11 +36,11 @@ public class MessageProcessing: NSObject {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private var signalService: OWSSignalService {
-        return OWSSignalService.sharedInstance()
+        return OWSSignalService.shared()
     }
 
     private var groupsV2MessageProcessor: GroupsV2MessageProcessor {

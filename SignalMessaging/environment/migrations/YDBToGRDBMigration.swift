@@ -102,7 +102,7 @@ extension YDBToGRDBMigration {
     }
 
     var signalService: OWSSignalService {
-        return OWSSignalService.sharedInstance()
+        return OWSSignalService.shared()
     }
 
     var profileManager: OWSProfileManager {

@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 #pragma mark - Factory Methods

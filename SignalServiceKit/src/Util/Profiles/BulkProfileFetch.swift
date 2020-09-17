@@ -14,7 +14,7 @@ public class BulkProfileFetch: NSObject {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var reachabilityManager: SSKReachabilityManager {

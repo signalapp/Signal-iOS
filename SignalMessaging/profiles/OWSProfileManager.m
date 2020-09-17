@@ -113,7 +113,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSSingletonAssert();
 
     [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
-        if (TSAccountManager.sharedInstance.isRegistered) {
+        if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
             [OWSProfileManager updateProfileOnServiceIfNecessaryObjc];
         }
@@ -149,7 +149,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
 - (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 - (OWSIdentityManager *)identityManager

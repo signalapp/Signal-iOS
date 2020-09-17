@@ -872,9 +872,9 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            if TSAccountManager.sharedInstance().isRegistered(transaction: transaction.asAnyWrite) {
+            if TSAccountManager.shared().isRegistered(transaction: transaction.asAnyWrite) {
                 Logger.info("marking existing user as onboarded")
-                TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction.asAnyWrite)
+                TSAccountManager.shared().setIsOnboarded(true, transaction: transaction.asAnyWrite)
             }
         }
 

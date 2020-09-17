@@ -30,7 +30,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 + (OWS2FAManager *)ows2FAManager

@@ -267,7 +267,7 @@ extension GiphyError: LocalizedError {
 
     // MARK: - Properties
 
-    static let sharedInstance = GiphyAPI()
+    static let shared = GiphyAPI()
 
     // Force usage as a singleton
     override private init() {

@@ -322,7 +322,7 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 #endif
 
-    [AppVersion sharedInstance];
+    [AppVersion shared];
 
     [self setupNSEInteroperation];
 
@@ -330,7 +330,7 @@ void uncaughtExceptionHandler(NSException *exception)
     // (e.g. long database upgrades).
     //
     // This block will be cleared in storageIsReady.
-    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
+    [DeviceSleepManager.shared addBlockWithBlockObject:self];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;
@@ -451,7 +451,7 @@ void uncaughtExceptionHandler(NSException *exception)
     self.didAppLaunchFail = YES;
 
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
-    [AppVersion sharedInstance];
+    [AppVersion shared];
 
     self.window = [OWSWindow new];
 
@@ -1220,9 +1220,9 @@ void uncaughtExceptionHandler(NSException *exception)
                                         preferences:Environment.shared.preferences];
     }
 
-    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [DeviceSleepManager.shared removeBlockWithBlockObject:self];
 
-    [AppVersion.sharedInstance mainAppLaunchDidComplete];
+    [AppVersion.shared mainAppLaunchDidComplete];
 
     [Environment.shared.audioSession setup];
 

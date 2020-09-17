@@ -14,7 +14,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private var udManager: OWSUDManagerImpl {

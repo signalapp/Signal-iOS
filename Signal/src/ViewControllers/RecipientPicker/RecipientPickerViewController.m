@@ -212,7 +212,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
     [self.contactsManager userRequestedSystemContactsRefresh]
         .then(^{
-            if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+            if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
                 return [AnyPromise promiseWithValue:nil];
             }
 

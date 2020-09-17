@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSAccountManager *)accountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 #pragma mark - Table Contents

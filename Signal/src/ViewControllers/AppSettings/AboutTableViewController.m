@@ -78,7 +78,7 @@
     OWSTableSection *informationSection = [OWSTableSection new];
     informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
-                                                  accessoryText:AppVersion.sharedInstance.currentAppVersionLong]];
+                                                  accessoryText:AppVersion.shared.currentAppVersionLong]];
 
     [informationSection
         addItem:[OWSTableItem
@@ -216,8 +216,7 @@
 
     // Strip prefix from category, otherwise it's too long to fit into cell on a small device.
     NSString *audioCategory =
-        [AVAudioSession.sharedInstance.category stringByReplacingOccurrencesOfString:@"AVAudioSessionCategory"
-                                                                          withString:@""];
+        [AVAudioSession.shared.category stringByReplacingOccurrencesOfString:@"AVAudioSessionCategory" withString:@""];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Audio Category: %@", audioCategory]]];
 

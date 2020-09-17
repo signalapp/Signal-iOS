@@ -38,7 +38,7 @@ public class GroupManager: NSObject {
     // MARK: - Dependencies
 
     private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private class var databaseStorage: SDSDatabaseStorage {

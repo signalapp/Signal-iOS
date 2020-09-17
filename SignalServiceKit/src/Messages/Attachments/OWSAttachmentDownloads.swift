@@ -10,7 +10,7 @@ public extension OWSAttachmentDownloads {
     // MARK: - Dependencies
 
     private class var signalService: OWSSignalService {
-        return .sharedInstance()
+        return .shared()
     }
 
     private class var databaseStorage: SDSDatabaseStorage {

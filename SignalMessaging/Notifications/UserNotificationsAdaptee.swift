@@ -82,7 +82,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     // MARK: - Dependencies
 
     var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

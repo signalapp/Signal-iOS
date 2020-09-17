@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // We can use any object.
         NSObject *sleepBlockObject = [NSObject new];
-        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:sleepBlockObject];
+        [DeviceSleepManager.shared addBlockWithBlockObject:sleepBlockObject];
 
         dispatch_block_t completionBlock = ^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -225,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [VersionMigrations performUpdateCheckWithCompletion:^() {
                         OWSAssertIsOnMainThread();
 
-                        [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:sleepBlockObject];
+                        [DeviceSleepManager.shared removeBlockWithBlockObject:sleepBlockObject];
 
                         if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
                             [SSKEnvironment.shared warmCaches];

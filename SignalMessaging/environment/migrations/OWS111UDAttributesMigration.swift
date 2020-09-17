@@ -12,7 +12,7 @@ public class OWS111UDAttributesMigration: YDBDatabaseMigration {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: -

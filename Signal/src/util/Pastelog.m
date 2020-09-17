@@ -548,7 +548,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
           [UIDevice currentDevice].systemVersion,
           [NSString stringFromSysctlKey:@"kern.osversion"]];
 
-    [body appendFormat:@"Signal Version: %@ \n", AppVersion.sharedInstance.currentAppVersionLong];
+    [body appendFormat:@"Signal Version: %@ \n", AppVersion.shared.currentAppVersionLong];
     if (url != nil) {
         [body appendFormat:@"Log URL: %@ \n", url];
     }

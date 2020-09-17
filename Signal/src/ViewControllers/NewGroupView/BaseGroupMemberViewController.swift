@@ -52,7 +52,7 @@ public class BaseGroupMemberViewController: OWSViewController {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var contactsViewHelper: ContactsViewHelper {

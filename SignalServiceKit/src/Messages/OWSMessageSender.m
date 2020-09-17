@@ -236,10 +236,10 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         return;
     }
 
-    if (TSAccountManager.sharedInstance.isDeregistered) {
+    if (TSAccountManager.shared.isDeregistered) {
         OWSLogWarn(@"Unable to send because the application is deregistered.");
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppDeregistered,
-            TSAccountManager.sharedInstance.isPrimaryDevice
+            TSAccountManager.shared.isPrimaryDevice
                 ? NSLocalizedString(@"ERROR_SENDING_DEREGISTERED",
                     @"Error indicating a send failure due to a deregistered application.")
                 : NSLocalizedString(
@@ -351,7 +351,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 - (OWSIdentityManager *)identityManager

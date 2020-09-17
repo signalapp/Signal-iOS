@@ -20,7 +20,7 @@ class GroupsV2ProfileKeyUpdater {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var databaseStorage: SDSDatabaseStorage {

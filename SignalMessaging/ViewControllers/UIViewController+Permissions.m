@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIViewController+Permissions.h"
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[AVAudioSession sharedInstance] requestRecordPermission:callback];
+    [[AVAudioSession shared] requestRecordPermission:callback];
 }
 
 - (void)ows_showNoMicrophonePermissionActionSheet

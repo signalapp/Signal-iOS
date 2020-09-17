@@ -19,7 +19,7 @@ class MemberRequestView: UIStackView {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: -

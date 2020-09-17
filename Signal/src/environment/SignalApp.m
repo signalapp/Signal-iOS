@@ -339,7 +339,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
         [self showOnboardingView:onboarding];
     }
 
-    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+    [AppUpdateNag.shared showAppUpgradeNagIfNecessary];
 
     [UIViewController attemptRotationToDeviceOrientation];
 }

@@ -452,7 +452,7 @@ class AnySearchIndexer {
     // MARK: - Dependencies
 
     private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private class var contactsManager: ContactsManagerProtocol {

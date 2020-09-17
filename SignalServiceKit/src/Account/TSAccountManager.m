@@ -240,7 +240,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (TSAccountManager *)sharedInstance
++ (TSAccountManager *)shared
 {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
     
@@ -441,7 +441,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 + (nullable NSString *)localNumber
 {
-    return [[self sharedInstance] localNumber];
+    return [[self shared] localNumber];
 }
 
 - (nullable NSString *)localNumber
@@ -491,7 +491,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 + (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [self.sharedInstance localAddressWithTransaction:transaction];
+    return [self.shared localAddressWithTransaction:transaction];
 }
 
 - (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -508,7 +508,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 + (nullable SignalServiceAddress *)localAddress
 {
-    return [[self sharedInstance] localAddress];
+    return [[self shared] localAddress];
 }
 
 - (nullable SignalServiceAddress *)localAddress
@@ -837,7 +837,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             // `RegistrationStateDidChangeNotification` which is only safe to fire after
             // the data store is reset.
 
-            [self.sharedInstance postRegistrationStateDidChangeNotification];
+            [self.shared postRegistrationStateDidChangeNotification];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNetworkConnectivityFailure(error)) {

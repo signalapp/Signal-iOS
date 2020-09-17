@@ -165,7 +165,7 @@ public extension SyncManagerProtocolSwift {
     // MARK: -
 
     var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     var databaseStorage: SDSDatabaseStorage {

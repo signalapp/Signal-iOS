@@ -342,7 +342,7 @@ class StorageServiceOperation: OWSOperation {
 
         var state = State.current(transaction: transaction)
 
-        let localAccountId = TSAccountManager.sharedInstance().localAccountId(transaction: transaction)
+        let localAccountId = TSAccountManager.shared().localAccountId(transaction: transaction)
 
         for accountId in updatedAccountIds {
             if accountId == localAccountId {
@@ -381,7 +381,7 @@ class StorageServiceOperation: OWSOperation {
 
         var state = State.current(transaction: transaction)
 
-        let localAccountId = TSAccountManager.sharedInstance().localAccountId(transaction: transaction)
+        let localAccountId = TSAccountManager.shared().localAccountId(transaction: transaction)
 
         for accountId in deletedAccountIds {
             if accountId == localAccountId {
@@ -850,7 +850,7 @@ class StorageServiceOperation: OWSOperation {
                 if case .manifestDecryptionFailed(let previousManifestVersion) = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
-                    if TSAccountManager.sharedInstance().isPrimaryDevice {
+                    if TSAccountManager.shared().isPrimaryDevice {
                         Logger.info("Manifest decryption failed, recreating manifest.")
                         return self.createNewManifest(version: previousManifestVersion + 1)
                     }
@@ -1170,7 +1170,7 @@ class StorageServiceOperation: OWSOperation {
                 if case .itemDecryptionFailed = storageError {
                     // If this is the primary device, throw everything away and re-encrypt
                     // the social graph with the keys we have locally.
-                    if TSAccountManager.sharedInstance().isPrimaryDevice {
+                    if TSAccountManager.shared().isPrimaryDevice {
                         Logger.info("Item decryption failed, recreating manifest.")
                         return self.createNewManifest(version: manifest.version + 1)
                     }

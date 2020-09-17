@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "VersionMigrations.h"
@@ -48,8 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(Environment.shared);
     OWSAssertDebug(completion);
 
-    NSString *_Nullable lastCompletedLaunchAppVersion = AppVersion.sharedInstance.lastCompletedLaunchAppVersion;
-    NSString *currentVersion = AppVersion.sharedInstance.currentAppVersion;
+    NSString *_Nullable lastCompletedLaunchAppVersion = AppVersion.shared.lastCompletedLaunchAppVersion;
+    NSString *currentVersion = AppVersion.shared.currentAppVersion;
 
     OWSLogInfo(@"Checking migrations. currentVersion: %@, lastCompletedLaunchAppVersion: %@",
         currentVersion,

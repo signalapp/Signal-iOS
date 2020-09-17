@@ -73,7 +73,7 @@ public class PinSetupViewController: OWSViewController {
         enableRegistrationLock: Bool = OWS2FAManager.shared().isRegistrationLockEnabled,
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void
     ) {
-        assert(TSAccountManager.sharedInstance().isRegisteredPrimaryDevice)
+        assert(TSAccountManager.shared().isRegisteredPrimaryDevice)
         self.mode = mode
         self.initialMode = initialMode ?? mode
         self.pinType = pinType

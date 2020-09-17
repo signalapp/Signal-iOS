@@ -42,7 +42,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -
@@ -69,7 +69,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             Logger.verbose("success")
 
             // TODO: This is temporary for testing.
-            let localAddress = TSAccountManager.sharedInstance().localAddress!
+            let localAddress = TSAccountManager.shared().localAddress!
             firstly {
                 ProfileFetcherJob.fetchProfilePromise(address: localAddress,
                                                       mainAppOnly: false,

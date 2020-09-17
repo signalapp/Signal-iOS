@@ -34,7 +34,7 @@ public class KeyBackupService: NSObject {
     }
 
     static var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     static var storageServiceManager: StorageServiceManagerProtocol {

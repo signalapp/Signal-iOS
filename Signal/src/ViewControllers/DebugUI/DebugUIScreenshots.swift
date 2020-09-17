@@ -23,7 +23,7 @@ public extension DebugUIScreenshots {
     }
 
     static var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

@@ -21,7 +21,7 @@ class GroupAttributesViewController: OWSViewController {
     }
 
     fileprivate var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

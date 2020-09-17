@@ -21,7 +21,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
     }
 
     fileprivate var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var contactsManager: OWSContactsManager {

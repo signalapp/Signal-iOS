@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugLogger.h"
@@ -85,7 +85,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 
 - (void)enableTTYLogging
 {
-    [DDLog addLogger:DDTTYLogger.sharedInstance];
+    [DDLog addLogger:DDTTYLogger.shared];
 }
 
 - (NSURL *)errorLogsDir
