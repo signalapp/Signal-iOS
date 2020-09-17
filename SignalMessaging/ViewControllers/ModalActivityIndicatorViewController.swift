@@ -28,7 +28,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     var wasDimissed: Bool = false
 
-    private static let kPresentationDelayDefault: TimeInterval = 0.15
+    private static let kPresentationDelayDefault: TimeInterval = 0.05
     private let presentationDelay: TimeInterval
 
     // MARK: Initializers
