@@ -126,9 +126,6 @@ class ConversationPickerViewController: OWSViewController {
     }
 
     let blockListCache = BlockListCache()
-    var fullTextSearcher: FullTextSearcher {
-        return FullTextSearcher.shared
-    }
 
     func buildSearchResults(searchText: String) -> Promise<ComposeScreenSearchResultSet?> {
         guard searchText.count > 1 else {

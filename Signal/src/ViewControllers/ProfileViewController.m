@@ -57,24 +57,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @implementation ProfileViewController
 
-#pragma mark - Dependencies
-
-+ (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 + (SDSKeyValueStore *)keyValueStore
 {
     return [[SDSKeyValueStore alloc] initWithCollection:@"kProfileView_Collection"];
 }
-
-- (id<SSKReachabilityManager>)reachabilityManager
-{
-    return SSKEnvironment.shared.reachabilityManager;
-}
-
-#pragma mark -
 
 - (instancetype)initWithMode:(ProfileViewMode)profileViewMode
            completionHandler:(void (^)(ProfileViewController *))completionHandler

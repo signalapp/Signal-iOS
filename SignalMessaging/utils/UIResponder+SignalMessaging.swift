@@ -74,6 +74,10 @@ public extension UIResponder {
         SSKEnvironment.shared.disappearingMessagesJob
     }
 
+    var fullTextSearcher: FullTextSearcher { .shared }
+
+    static var fullTextSearcher: FullTextSearcher { .shared }
+
     var identityManager: OWSIdentityManager {
         SSKEnvironment.shared.identityManager
     }

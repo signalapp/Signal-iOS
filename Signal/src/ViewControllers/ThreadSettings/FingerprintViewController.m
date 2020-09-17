@@ -90,15 +90,6 @@ typedef void (^CustomLayoutBlock)(void);
 
 @implementation FingerprintViewController
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 + (void)presentFromViewController:(UIViewController *)viewController address:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);

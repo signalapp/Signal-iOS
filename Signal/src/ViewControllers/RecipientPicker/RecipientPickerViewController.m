@@ -78,35 +78,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
 @synthesize pickedRecipients = _pickedRecipients;
 
-#pragma mark - Dependencies
-
-- (FullTextSearcher *)fullTextSearcher
-{
-    return FullTextSearcher.shared;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager shared];
-}
-
-- (ContactsViewHelper *)contactsViewHelper
-{
-    return Environment.shared.contactsViewHelper;
-}
-
-#pragma mark -
-
 - (instancetype)init
 {
     self = [super init];
