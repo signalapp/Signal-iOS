@@ -219,7 +219,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         self.write { transaction in
-            self.databaseStorage.touch(thread: someThread!, transaction: transaction)
+            self.databaseStorage.touch(thread: someThread!, shouldReindex: true, transaction: transaction)
             Logger.verbose("Touch complete")
         }
 
@@ -245,7 +245,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         self.write { transaction in
-            self.databaseStorage.touch(interaction: lastMessage!, transaction: transaction)
+            self.databaseStorage.touch(interaction: lastMessage!, shouldReindex: true, transaction: transaction)
             Logger.verbose("Touch complete")
         }
 
@@ -401,7 +401,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         self.asyncWrite { transaction in
-            self.databaseStorage.touch(thread: someThread!, transaction: transaction)
+            self.databaseStorage.touch(thread: someThread!, shouldReindex: true, transaction: transaction)
             Logger.verbose("Touch complete")
         }
 
@@ -427,7 +427,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
         mockObserver.set(expectation: self.expectation(description: "Database Storage Observer"))
 
         self.asyncWrite { transaction in
-            self.databaseStorage.touch(interaction: lastMessage!, transaction: transaction)
+            self.databaseStorage.touch(interaction: lastMessage!, shouldReindex: true, transaction: transaction)
             Logger.verbose("Touch complete")
         }
 
