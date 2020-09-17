@@ -11,67 +11,67 @@ public extension UIResponder {
     // MARK: - Dependencies
 
     var backup: OWSBackup {
-        return AppEnvironment.shared.backup
+        AppEnvironment.shared.backup
     }
 
     static var backup: OWSBackup {
-        return AppEnvironment.shared.backup
+        AppEnvironment.shared.backup
     }
 
     var accountManager: AccountManager {
-        return AppEnvironment.shared.accountManager
+        AppEnvironment.shared.accountManager
     }
 
     static var accountManager: AccountManager {
-        return AppEnvironment.shared.accountManager
+        AppEnvironment.shared.accountManager
     }
 
     var callUIAdapter: CallUIAdapter {
-        return AppEnvironment.shared.callService.callUIAdapter
+        AppEnvironment.shared.callService.callUIAdapter
     }
 
     static var callUIAdapter: CallUIAdapter {
-        return AppEnvironment.shared.callService.callUIAdapter
+        AppEnvironment.shared.callService.callUIAdapter
     }
 
     var notificationPresenter: NotificationPresenter {
-        return AppEnvironment.shared.notificationPresenter
+        AppEnvironment.shared.notificationPresenter
     }
 
     static var notificationPresenter: NotificationPresenter {
-        return AppEnvironment.shared.notificationPresenter
+        AppEnvironment.shared.notificationPresenter
     }
 
     var outboundCallInitiator: OutboundCallInitiator {
-        return AppEnvironment.shared.outboundCallInitiator
+        AppEnvironment.shared.outboundCallInitiator
     }
 
     static var outboundCallInitiator: OutboundCallInitiator {
-        return AppEnvironment.shared.outboundCallInitiator
+        AppEnvironment.shared.outboundCallInitiator
     }
 
     var pushRegistrationManager: PushRegistrationManager {
-        return AppEnvironment.shared.pushRegistrationManager
+        AppEnvironment.shared.pushRegistrationManager
     }
 
     static var pushRegistrationManager: PushRegistrationManager {
-        return AppEnvironment.shared.pushRegistrationManager
+        AppEnvironment.shared.pushRegistrationManager
     }
 
     var sessionResetJobQueue: SessionResetJobQueue {
-        return AppEnvironment.shared.sessionResetJobQueue
+        AppEnvironment.shared.sessionResetJobQueue
     }
 
     static var sessionResetJobQueue: SessionResetJobQueue {
-        return AppEnvironment.shared.sessionResetJobQueue
+        AppEnvironment.shared.sessionResetJobQueue
     }
 
     var userNotificationActionHandler: UserNotificationActionHandler {
-        return AppEnvironment.shared.userNotificationActionHandler
+        AppEnvironment.shared.userNotificationActionHandler
     }
 
     static var userNotificationActionHandler: UserNotificationActionHandler {
-        return AppEnvironment.shared.userNotificationActionHandler
+        AppEnvironment.shared.userNotificationActionHandler
     }
 }
 
@@ -79,6 +79,11 @@ public extension UIResponder {
 
 @objc
 extension UIResponder {
+
+    var giphyAPI: GiphyAPI { .shared }
+
+    static var giphyAPI: GiphyAPI { .shared }
+
     var deviceTransferService: DeviceTransferService { .shared }
 
     static var deviceTransferService: DeviceTransferService { .shared }

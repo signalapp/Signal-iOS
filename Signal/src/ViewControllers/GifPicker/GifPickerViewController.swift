@@ -138,12 +138,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer?.invalidate()
     }
 
-    // MARK: - Dependencies
-
-    var giphyAPI: GiphyAPI {
-        return GiphyAPI.shared
-    }
-
     // MARK: -
     @objc func didBecomeActive() {
         AssertIsOnMainThread()

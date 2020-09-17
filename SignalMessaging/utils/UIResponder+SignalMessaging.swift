@@ -11,263 +11,263 @@ public extension UIResponder {
     // MARK: - Dependencies
 
     var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
+        Environment.shared.audioSession
     }
 
     static var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
+        Environment.shared.audioSession
     }
 
     var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
+        SSKEnvironment.shared.attachmentDownloads
     }
 
     static var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
+        SSKEnvironment.shared.attachmentDownloads
     }
 
     var blockingManager: OWSBlockingManager {
-        return .shared()
+        .shared()
     }
 
     static var blockingManager: OWSBlockingManager {
-        return .shared()
+        .shared()
     }
 
     var bulkProfileFetch: BulkProfileFetch {
-        return SSKEnvironment.shared.bulkProfileFetch
+        SSKEnvironment.shared.bulkProfileFetch
     }
 
     static var bulkProfileFetch: BulkProfileFetch {
-        return SSKEnvironment.shared.bulkProfileFetch
+        SSKEnvironment.shared.bulkProfileFetch
     }
 
     var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
+        Environment.shared.contactsManager
     }
 
     static var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
+        Environment.shared.contactsManager
     }
 
     var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
+        Environment.shared.contactsViewHelper
     }
 
     static var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
+        Environment.shared.contactsViewHelper
     }
 
     var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
+        SDSDatabaseStorage.shared
     }
 
     static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
+        SDSDatabaseStorage.shared
     }
 
     var disappearingMessagesJob: OWSDisappearingMessagesJob {
-        return SSKEnvironment.shared.disappearingMessagesJob
+        SSKEnvironment.shared.disappearingMessagesJob
     }
 
     static var disappearingMessagesJob: OWSDisappearingMessagesJob {
-        return SSKEnvironment.shared.disappearingMessagesJob
+        SSKEnvironment.shared.disappearingMessagesJob
     }
 
     var identityManager: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManager
+        SSKEnvironment.shared.identityManager
     }
 
     static var identityManager: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManager
+        SSKEnvironment.shared.identityManager
     }
 
 //    @objc
 //    @available(swift, obsoleted: 1.0)
 //    var groupsV2: GroupsV2 {
-//        return SSKEnvironment.shared.groupsV2
+//        SSKEnvironment.shared.groupsV2
 //    }
 //    
 //    @objc
 //    @available(swift, obsoleted: 1.0)
 //    static var groupsV2: GroupsV2 {
-//        return SSKEnvironment.shared.groupsV2
+//        SSKEnvironment.shared.groupsV2
 //    }
 
     var groupV2UpdatesObjc: GroupV2Updates {
-        return SSKEnvironment.shared.groupV2Updates
+        SSKEnvironment.shared.groupV2Updates
     }
 
     static var groupV2UpdatesObjc: GroupV2Updates {
-        return SSKEnvironment.shared.groupV2Updates
+        SSKEnvironment.shared.groupV2Updates
     }
 
     var launchJobs: LaunchJobs {
-        return Environment.shared.launchJobs
+        Environment.shared.launchJobs
     }
 
     static var launchJobs: LaunchJobs {
-        return Environment.shared.launchJobs
+        Environment.shared.launchJobs
     }
 
     var linkPreviewManager: OWSLinkPreviewManager {
-        return SSKEnvironment.shared.linkPreviewManager
+        SSKEnvironment.shared.linkPreviewManager
     }
 
     static var linkPreviewManager: OWSLinkPreviewManager {
-        return SSKEnvironment.shared.linkPreviewManager
+        SSKEnvironment.shared.linkPreviewManager
     }
 
     var messageFetcherJob: MessageFetcherJob {
-        return SSKEnvironment.shared.messageFetcherJob
+        SSKEnvironment.shared.messageFetcherJob
     }
 
     static var messageFetcherJob: MessageFetcherJob {
-        return SSKEnvironment.shared.messageFetcherJob
+        SSKEnvironment.shared.messageFetcherJob
     }
 
     var messageManager: OWSMessageManager {
-        return SSKEnvironment.shared.messageManager
+        SSKEnvironment.shared.messageManager
     }
 
     static var messageManager: OWSMessageManager {
-        return SSKEnvironment.shared.messageManager
+        SSKEnvironment.shared.messageManager
     }
 
     var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
+        SSKEnvironment.shared.messageSender
     }
 
     static var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
+        SSKEnvironment.shared.messageSender
     }
 
     var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
+        SSKEnvironment.shared.messageSenderJobQueue
     }
 
     static var messageSenderJobQueue: MessageSenderJobQueue {
-        return SSKEnvironment.shared.messageSenderJobQueue
+        SSKEnvironment.shared.messageSenderJobQueue
     }
 
     var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
+        SSKEnvironment.shared.networkManager
     }
 
     static var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
+        SSKEnvironment.shared.networkManager
     }
 
     var ows2FAManager: OWS2FAManager {
-        return .shared()
+        .shared()
     }
 
     static var ows2FAManager: OWS2FAManager {
-        return .shared()
+        .shared()
     }
 
     var readReceiptManager: OWSReadReceiptManager {
-        return OWSReadReceiptManager.shared()
+        OWSReadReceiptManager.shared()
     }
 
     static var readReceiptManager: OWSReadReceiptManager {
-        return OWSReadReceiptManager.shared()
+        OWSReadReceiptManager.shared()
     }
 
     var preferences: OWSPreferences {
-        return Environment.shared.preferences
+        Environment.shared.preferences
     }
 
     static var preferences: OWSPreferences {
-        return Environment.shared.preferences
+        Environment.shared.preferences
     }
 
     var primaryStorage: OWSPrimaryStorage? {
-        return SSKEnvironment.shared.primaryStorage
+        SSKEnvironment.shared.primaryStorage
     }
 
     static var primaryStorage: OWSPrimaryStorage? {
-        return SSKEnvironment.shared.primaryStorage
+        SSKEnvironment.shared.primaryStorage
     }
 
     var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
+        OWSProfileManager.shared()
     }
 
     static var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
+        OWSProfileManager.shared()
     }
 
     var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
+        SSKEnvironment.shared.reachabilityManager
     }
 
     static var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
+        SSKEnvironment.shared.reachabilityManager
     }
 
     var socketManager: TSSocketManager {
-        return SSKEnvironment.shared.socketManager
+        SSKEnvironment.shared.socketManager
     }
 
     static var socketManager: TSSocketManager {
-        return SSKEnvironment.shared.socketManager
+        SSKEnvironment.shared.socketManager
     }
 
     var stickerManager: StickerManager {
-        return SSKEnvironment.shared.stickerManager
+        SSKEnvironment.shared.stickerManager
     }
 
     static var stickerManager: StickerManager {
-        return SSKEnvironment.shared.stickerManager
+        SSKEnvironment.shared.stickerManager
     }
 
     var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
+        SSKEnvironment.shared.storageCoordinator
     }
 
     static var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
+        SSKEnvironment.shared.storageCoordinator
     }
 
     var syncManager: SyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
+        SSKEnvironment.shared.syncManager
     }
 
     static var syncManager: SyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
+        SSKEnvironment.shared.syncManager
     }
 
     var tsAccountManager: TSAccountManager {
-        return .shared()
+        .shared()
     }
 
     static var tsAccountManager: TSAccountManager {
-        return .shared()
+        .shared()
     }
 
     var typingIndicators: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
+        SSKEnvironment.shared.typingIndicators
     }
 
     static var typingIndicators: TypingIndicators {
-        return SSKEnvironment.shared.typingIndicators
+        SSKEnvironment.shared.typingIndicators
     }
 
     var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
+        SSKEnvironment.shared.udManager
     }
 
     static var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
+        SSKEnvironment.shared.udManager
     }
 
     var windowManager: OWSWindowManager {
-        return Environment.shared.windowManager
+        Environment.shared.windowManager
     }
 
     static var windowManager: OWSWindowManager {
-        return Environment.shared.windowManager
+        Environment.shared.windowManager
     }
 }
 
@@ -278,18 +278,18 @@ public extension UIResponder {
     // MARK: - Dependencies
 
     var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+        SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
     static var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+        SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
     var groupV2Updates: GroupV2UpdatesSwift {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+        SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
     }
 
     static var groupV2Updates: GroupV2UpdatesSwift {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+        SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
     }
 }
