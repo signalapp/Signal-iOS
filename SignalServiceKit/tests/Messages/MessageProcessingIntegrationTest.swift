@@ -59,9 +59,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         // for unit tests, we must manually start the decryptJobQueue
         SSKEnvironment.shared.messageDecryptJobQueue.setup()
+        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = true
     }
 
     override func tearDown() {
+        SSKEnvironment.shared.batchMessageProcessor.shouldProcessDuringTests = false
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
 
         super.tearDown()
