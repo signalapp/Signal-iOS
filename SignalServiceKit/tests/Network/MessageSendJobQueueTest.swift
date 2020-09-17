@@ -29,11 +29,10 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let expectation = sentExpectation(message: message)
 
         let jobQueue = MessageSenderJobQueue()
-        jobQueue.setup()
         self.write { transaction in
             jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
-
+        jobQueue.setup()
         self.wait(for: [expectation], timeout: 0.1)
     }
 

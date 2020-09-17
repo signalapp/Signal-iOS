@@ -61,6 +61,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeD
 // in the order in which they were received.
 @interface OWSBatchMessageProcessor : NSObject
 
+#ifdef TESTABLE_BUILD
+@property (nonatomic) BOOL shouldProcessDuringTests;
+#endif
+
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData
             wasReceivedByUD:(BOOL)wasReceivedByUD

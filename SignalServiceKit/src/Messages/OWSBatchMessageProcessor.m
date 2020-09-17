@@ -113,6 +113,10 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 @property (nonatomic) BOOL isDrainingQueue;
 @property (atomic) BOOL isAppInBackground;
 
+#ifdef TESTABLE_BUILD
+@property (nonatomic) BOOL shouldProcessDuringTests;
+#endif
+
 @end
 
 #pragma mark -
@@ -271,12 +275,16 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         return;
     }
 
-    if (!SSKEnvironment.shared.storageCoordinator.isStorageReady) {
-        // Don't process queues. This should only happen in tests.
-        OWSAssertDebug(CurrentAppContext().isRunningTests);
+#ifdef TESTABLE_BUILD
+    // By default, we don't process this queue during the tests
+    // to avoid spurious failures caused by accessing the database
+    // when it isn't configured.
+    if (CurrentAppContext().isRunningTests && !self.shouldProcessDuringTests) {
+        OWSAssertDebug(SSKEnvironment.shared.storageCoordinator.isStorageReady);
         self.isDrainingQueue = NO;
         return;
     }
+#endif
 
     // We want a value that is just high enough to yield perf benefits.
     const NSUInteger kIncomingMessageBatchSize = 32;
@@ -451,6 +459,15 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 {
     return [self.processingQueue hasPendingJobsWithTransaction:transaction];
 }
+
+#ifdef TESTABLE_BUILD
+- (void)setShouldProcessDuringTests:(BOOL)shouldProcessDuringTests
+{
+    _shouldProcessDuringTests = shouldProcessDuringTests;
+
+    self.processingQueue.shouldProcessDuringTests = shouldProcessDuringTests;
+}
+#endif
 
 @end
 
