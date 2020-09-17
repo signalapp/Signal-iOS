@@ -126,7 +126,7 @@ final class CallKitCallManager: NSObject {
         Logger.verbose("call: \(call)")
         call.wasRemovedFromSystem = true
         guard calls.removeFirst(where: { $0 === call }) != nil else {
-            owsFailDebug("no call matching: \(call) to remove")
+            Logger.warn("no call matching: \(call) to remove")
             return
         }
     }

@@ -155,7 +155,15 @@ extension SignalCall: CallManagerCallReference { }
     }
 
     private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
+        return .shared
+    }
+
+    private var profileManager: OWSProfileManager {
+        return .shared()
+    }
+
+    private var identityManager: OWSIdentityManager {
+        return .shared()
     }
 
     // MARK: - Notifications
@@ -213,7 +221,7 @@ extension SignalCall: CallManagerCallReference { }
         call.callRecord = callRecord
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
+        let localDeviceId = tsAccountManager.storedDeviceId()
 
         do {
             try callManager.placeCall(call: call, callMediaType: call.offerMediaType.asCallMediaType, localDevice: localDeviceId)
@@ -422,6 +430,37 @@ extension SignalCall: CallManagerCallReference { }
 
     // MARK: - Signaling Functions
 
+    private func allowsInboundCallsInThread(_ thread: TSContactThread) -> Bool {
+        return databaseStorage.read { transaction in
+            // IFF one of the following things is true, we can handle inbound call offers
+            // * The thread is in our profile whitelist
+            // * The thread belongs to someone in our system contacts
+            // * The thread existed before messages requests
+            return self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
+                || self.contactsManager.isSystemContact(address: thread.contactAddress)
+                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead)
+        }
+    }
+
+    private struct CallIdentityKeys {
+      let localIdentityKey: Data
+      let contactIdentityKey: Data
+    }
+
+    private func getIdentityKeys(thread: TSContactThread) -> CallIdentityKeys? {
+        return databaseStorage.read { transaction -> CallIdentityKeys? in
+            guard let localIdentityKey = self.identityManager.identityKeyPair(with: transaction)?.publicKey else {
+                owsFailDebug("missing localIdentityKey")
+                return nil
+            }
+            guard let contactIdentityKey = self.identityManager.identityKey(for: thread.contactAddress, transaction: transaction) else {
+                owsFailDebug("missing contactIdentityKey")
+                return nil
+            }
+            return CallIdentityKeys(localIdentityKey: localIdentityKey, contactIdentityKey: contactIdentityKey)
+        }
+    }
+
     /**
      * Received an incoming call Offer from call initiator.
      */
@@ -472,7 +511,7 @@ extension SignalCall: CallManagerCallReference { }
             return
         }
 
-        if let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(to: thread.contactAddress) {
+        if let untrustedIdentity = self.identityManager.untrustedIdentityForSending(to: thread.contactAddress) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
             let callerName = self.contactsManager.displayName(for: thread.contactAddress)
@@ -496,6 +535,26 @@ extension SignalCall: CallManagerCallReference { }
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.asyncWrite { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
+
+            newCall.state = .localFailure
+            terminate(call: newCall)
+
+            return
+        }
+
+        guard let identityKeys = getIdentityKeys(thread: thread) else {
+            owsFailDebug("missing identity keys, skipping call.")
+            let callRecord = TSCall(
+                callType: .incomingMissed,
+                offerType: newCall.offerMediaType,
+                thread: thread,
+                sentAtTimestamp: sentAtTimestamp
+            )
+            assert(newCall.callRecord == nil)
+            newCall.callRecord = callRecord
+            databaseStorage.write { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
 
@@ -559,34 +618,19 @@ extension SignalCall: CallManagerCallReference { }
 
         newCall.backgroundTask = backgroundTask
 
-        let messageAgeSec: UInt64
+        var messageAgeSec: UInt64 = 0
         if serverReceivedTimestamp > 0 && serverDeliveryTimestamp >= serverReceivedTimestamp {
             messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
-        } else {
-            owsFailDebug("Unable to calculate age for call offer: \(serverDeliveryTimestamp) \(serverReceivedTimestamp)")
-            messageAgeSec = 0
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
-        let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
+        let localDeviceId = tsAccountManager.storedDeviceId()
+        let isPrimaryDevice = tsAccountManager.isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
-        }
-    }
-
-    private func allowsInboundCallsInThread(_ thread: TSContactThread) -> Bool {
-        return databaseStorage.read { transaction in
-            // IFF one of the following things is true, we can handle inbound call offers
-            // * The thread is in our profile whitelist
-            // * The thread belongs to someone in our system contacts
-            // * The thread existed before messages requests
-            return SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
-                || self.contactsManager.isSystemContact(address: thread.contactAddress)
-                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead)
         }
     }
 
@@ -597,8 +641,15 @@ extension SignalCall: CallManagerCallReference { }
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
+        guard let identityKeys = getIdentityKeys(thread: thread) else {
+            if let currentCall = currentCall, currentCall.callId == callId {
+                handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"))
+            }
+            return
+        }
+
         do {
-            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing)
+            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = currentCall, currentCall.callId == callId {
@@ -948,21 +999,29 @@ extension SignalCall: CallManagerCallReference { }
         case .reconnected:
             self.handleReconnected(call: call)
 
-        case .endedReceivedOfferExpired:
+        case .receivedOfferExpired:
             // TODO - This is the case where an incoming offer's timestamp is
             // not within the range +/- 120 seconds of the current system time.
             // At the moment, this is not an issue since we are currently setting
             // the timestamp separately when we receive the offer (above).
+            // This should not be a failure, it is just an 'old' call.
             handleMissedCall(call)
             call.state = .localFailure
             terminate(call: call)
 
-        case .endedReceivedOfferWhileActive:
+        case .receivedOfferWhileActive:
             handleMissedCall(call)
+            // TODO - This should not be a failure.
             call.state = .localFailure
             terminate(call: call)
 
-        case .endedIgnoreCallsFromNonMultiringCallers:
+        case .receivedOfferWithGlare:
+            handleMissedCall(call)
+            // TODO - This should not be a failure.
+            call.state = .localFailure
+            terminate(call: call)
+            
+        case .ignoreCallsFromNonMultiringCallers:
             handleMissedCall(call)
             call.state = .localFailure
             terminate(call: call)
@@ -1409,8 +1468,9 @@ extension SignalCall: CallManagerCallReference { }
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
 
-        return self.accountManager.getTurnServerInfo()
-        .map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
+        return firstly {
+            accountManager.getTurnServerInfo()
+        }.map(on: .global()) { turnServerInfo -> [RTCIceServer] in
             Logger.debug("got turn server urls: \(turnServerInfo.urls)")
 
             return turnServerInfo.urls.map { url in

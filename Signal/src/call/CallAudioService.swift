@@ -111,7 +111,8 @@ protocol CallAudioServiceDelegate: class {
 
     private func audioRouteDidChange() {
         guard let currentAudioSource = currentAudioSource else {
-            return owsFailDebug("Switched to route without audio source")
+            Logger.warn("Switched to route without audio source")
+            return
         }
 
         DispatchQueue.main.async { [weak self] in
@@ -517,7 +518,7 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    // mark: - Ringer State
+    // MARK: - Ringer State
 
     // let encodedDarwinNotificationName = "com.apple.springboard.ringerstate".encodedForSelector
     private static let ringerStateNotificationName = DarwinNotificationName("dAF+P3ICAn12PwUCBHoAeHMBcgR1PwR6AHh2BAUGcgZ2".decodedForSelector!)
