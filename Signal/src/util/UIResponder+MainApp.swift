@@ -42,12 +42,28 @@ public extension UIResponder {
         return AppEnvironment.shared.notificationPresenter
     }
 
+    var outboundCallInitiator: OutboundCallInitiator {
+        return AppEnvironment.shared.outboundCallInitiator
+    }
+
+    static var outboundCallInitiator: OutboundCallInitiator {
+        return AppEnvironment.shared.outboundCallInitiator
+    }
+
     var pushRegistrationManager: PushRegistrationManager {
         return AppEnvironment.shared.pushRegistrationManager
     }
 
     static var pushRegistrationManager: PushRegistrationManager {
         return AppEnvironment.shared.pushRegistrationManager
+    }
+
+    var sessionResetJobQueue: SessionResetJobQueue {
+        return AppEnvironment.shared.sessionResetJobQueue
+    }
+
+    static var sessionResetJobQueue: SessionResetJobQueue {
+        return AppEnvironment.shared.sessionResetJobQueue
     }
 
     var userNotificationActionHandler: UserNotificationActionHandler {

@@ -283,100 +283,6 @@ typedef enum : NSUInteger {
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (MessageSenderJobQueue *)messageSenderJobQueue
-{
-    return SSKEnvironment.shared.messageSenderJobQueue;
-}
-
-- (OWSSessionResetJobQueue *)sessionResetJobQueue
-{
-    return AppEnvironment.shared.sessionResetJobQueue;
-}
-
-- (OWSAudioSession *)audioSession
-{
-    return Environment.shared.audioSession;
-}
-
-- (OWSMessageSender *)messageSender
-{
-    return SSKEnvironment.shared.messageSender;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
-}
-
-- (BulkProfileFetch *)bulkProfileFetch
-{
-    return SSKEnvironment.shared.bulkProfileFetch;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    return [OWSBlockingManager shared];
-}
-
-- (TSNetworkManager *)networkManager
-{
-    return SSKEnvironment.shared.networkManager;
-}
-
-- (OutboundCallInitiator *)outboundCallInitiator
-{
-    return AppEnvironment.shared.outboundCallInitiator;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (OWSNotificationPresenter *)notificationPresenter
-{
-    return AppEnvironment.shared.notificationPresenter;
-}
-
-- (id<GroupV2Updates>)groupV2Updates
-{
-    return SSKEnvironment.shared.groupV2Updates;
-}
-
-- (id<SyncManagerProtocol>)syncManager
-{
-    return SSKEnvironment.shared.syncManager;
-}
-
-- (ContactsViewHelper *)contactsViewHelper
-{
-    return Environment.shared.contactsViewHelper;
-}
-
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -531,7 +437,7 @@ typedef enum : NSUInteger {
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     // Try to update the v2 group to latest from the service.
     // This will help keep us in sync if we've missed any group updates, etc.
-    [self.groupV2Updates tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling:groupThread];
+    [self.groupV2UpdatesObjc tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling:groupThread];
 }
 
 - (void)dealloc

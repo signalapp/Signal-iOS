@@ -10,6 +10,14 @@ public extension UIResponder {
 
     // MARK: - Dependencies
 
+    var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
+    static var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
     var attachmentDownloads: OWSAttachmentDownloads {
         return SSKEnvironment.shared.attachmentDownloads
     }
@@ -24,6 +32,14 @@ public extension UIResponder {
 
     static var blockingManager: OWSBlockingManager {
         return .shared()
+    }
+
+    var bulkProfileFetch: BulkProfileFetch {
+        return SSKEnvironment.shared.bulkProfileFetch
+    }
+
+    static var bulkProfileFetch: BulkProfileFetch {
+        return SSKEnvironment.shared.bulkProfileFetch
     }
 
     var contactsManager: OWSContactsManager {
@@ -78,6 +94,14 @@ public extension UIResponder {
 //        return SSKEnvironment.shared.groupsV2
 //    }
 
+    var groupV2UpdatesObjc: GroupV2Updates {
+        return SSKEnvironment.shared.groupV2Updates
+    }
+
+    static var groupV2UpdatesObjc: GroupV2Updates {
+        return SSKEnvironment.shared.groupV2Updates
+    }
+
     var launchJobs: LaunchJobs {
         return Environment.shared.launchJobs
     }
@@ -124,6 +148,14 @@ public extension UIResponder {
 
     static var messageSenderJobQueue: MessageSenderJobQueue {
         return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
+    var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    static var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
     }
 
     var ows2FAManager: OWS2FAManager {
