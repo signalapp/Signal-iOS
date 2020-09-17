@@ -284,8 +284,8 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     // MARK: - Touch
 
-    @objc(touchInteraction:transaction:)
-    public func touch(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+    @objc(touchInteraction:shouldReindex:transaction:)
+    public func touch(interaction: TSInteraction, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let yap):
             let uniqueId = interaction.uniqueId
@@ -301,13 +301,15 @@ public class SDSDatabaseStorage: SDSTransactable {
                 } else if AppReadiness.isAppReady {
                     owsFailDebug("uiDatabaseObserver was unexpectedly nil")
                 }
-                GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
+                if shouldReindex {
+                    GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
+                }
             }
         }
     }
 
-    @objc(touchThread:transaction:)
-    public func touch(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    @objc(touchThread:shouldReindex:transaction:)
+    public func touch(thread: TSThread, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let yap):
             yap.touchObject(forKey: thread.uniqueId, inCollection: TSThread.collection())
@@ -322,7 +324,9 @@ public class SDSDatabaseStorage: SDSTransactable {
                 } else if AppReadiness.isAppReady {
                     owsFailDebug("conversationListDatabaseObserver was unexpectedly nil")
                 }
-                GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
+                if shouldReindex {
+                    GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
+                }
             }
         }
     }

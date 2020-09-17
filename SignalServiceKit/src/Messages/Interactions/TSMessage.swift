@@ -67,7 +67,7 @@ public extension TSMessage {
         // out. Everything else can be automatically read.
         if !(self is TSOutgoingMessage) { reaction.markAsRead(transaction: transaction) }
 
-        databaseStorage.touch(interaction: self, transaction: transaction)
+        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: transaction)
 
         return reaction
     }
@@ -79,7 +79,7 @@ public extension TSMessage {
         guard let reaction = reaction(for: reactor, transaction: transaction) else { return }
 
         reaction.anyRemove(transaction: transaction)
-        databaseStorage.touch(interaction: self, transaction: transaction)
+        databaseStorage.touch(interaction: self, shouldReindex: false, transaction: transaction)
 
         DispatchQueue.main.async {
             SSKEnvironment.shared.notificationsManager.cancelNotifications(reactionId: reaction.uniqueId)

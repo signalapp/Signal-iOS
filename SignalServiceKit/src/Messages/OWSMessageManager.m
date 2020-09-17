@@ -2237,10 +2237,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                               [message setQuotedMessageThumbnailAttachmentStream:
                                                                            attachmentStream];
                                                           }];
-                        } else {
-                            // We touch the message to trigger redraw of any views displaying it,
-                            // since the attachment might be a contact avatar, etc.
-                            [self.databaseStorage touchInteraction:incomingMessage transaction:transaction];
                         }
                     });
                 }
@@ -2251,9 +2247,6 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
         }];
     }
-
-    // TODO: Is this still necessary?
-    [thread scheduleTouchFinalizationWithTransaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                       thread:thread

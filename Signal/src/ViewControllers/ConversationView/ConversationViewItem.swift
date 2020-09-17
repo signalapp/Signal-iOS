@@ -109,7 +109,7 @@ public extension ConversationInteractionViewItem {
 
         let touchMessage = {
             Self.databaseStorage.write { transaction in
-                Self.databaseStorage.touch(interaction: message, transaction: transaction)
+                Self.databaseStorage.touch(interaction: message, shouldReindex: false, transaction: transaction)
             }
         }
 

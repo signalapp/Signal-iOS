@@ -101,7 +101,7 @@ extension SignalRecipient {
         ModelReadCaches.shared.evacuateAllCaches()
 
         if let contactThread = AnyContactThreadFinder().contactThread(for: address, transaction: transaction.asAnyRead) {
-            SDSDatabaseStorage.shared.touch(thread: contactThread, transaction: transaction.asAnyWrite)
+            SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction.asAnyWrite)
         }
 
         // Update SignalServiceAddressCache with the new uuid <-> phone number mapping

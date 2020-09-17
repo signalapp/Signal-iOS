@@ -572,7 +572,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         messageToNotify = latestMessage;
     }
-    [self.databaseStorage touchInteraction:messageToNotify transaction:transaction];
+    [self.databaseStorage touchInteraction:messageToNotify shouldReindex:YES transaction:transaction];
 }
 
 #pragma mark -
