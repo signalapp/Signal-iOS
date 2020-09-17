@@ -78,7 +78,7 @@ public final class SnodeAPI : NSObject {
             print("[Loki] Populating snode pool using: \(target).")
             let (promise, seal) = Promise<Snode>.pending()
             attempt(maxRetryCount: 4, recoveringOn: SnodeAPI.workQueue) {
-                HTTP.execute(.post, url, parameters: parameters).map2 { json -> Snode in
+                HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true).map2 { json -> Snode in
                     guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw SnodeAPIError.randomSnodePoolUpdatingFailed }
                     snodePool = try Set(rawSnodes.flatMap { rawSnode in
                         guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,

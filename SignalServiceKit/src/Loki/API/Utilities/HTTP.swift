@@ -1,14 +1,15 @@
 import PromiseKit
 
 public enum HTTP {
-    private static let urlSession = URLSession(configuration: .ephemeral, delegate: urlSessionDelegate, delegateQueue: nil)
-    private static let urlSessionDelegate = URLSessionDelegateImplementation()
+    private static let seedNodeURLSession = URLSession(configuration: .ephemeral)
+    private static let defaultURLSession = URLSession(configuration: .ephemeral, delegate: defaultURLSessionDelegate, delegateQueue: nil)
+    private static let defaultURLSessionDelegate = DefaultURLSessionDelegateImplementation()
 
     // MARK: Settings
     public static let timeout: TimeInterval = 20
 
     // MARK: URL Session Delegate Implementation
-    private final class URLSessionDelegateImplementation : NSObject, URLSessionDelegate {
+    private final class DefaultURLSessionDelegateImplementation : NSObject, URLSessionDelegate {
 
         func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
             // Snode to snode communication uses self-signed certificates but clients can safely ignore this
@@ -40,7 +41,7 @@ public enum HTTP {
     }
 
     // MARK: Main
-    public static func execute(_ verb: Verb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = HTTP.timeout) -> Promise<JSON> {
+    public static func execute(_ verb: Verb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = verb.rawValue
         if let parameters = parameters {
@@ -53,6 +54,7 @@ public enum HTTP {
         }
         request.timeoutInterval = timeout
         let (promise, seal) = Promise<JSON>.pending()
+        let urlSession = useSeedNodeURLSession ? seedNodeURLSession : defaultURLSession
         let task = urlSession.dataTask(with: request) { data, response, error in
             guard let data = data, let response = response as? HTTPURLResponse else {
                 if let error = error {
