@@ -42,6 +42,14 @@ public extension UIResponder {
         return SDSDatabaseStorage.shared
     }
 
+    var disappearingMessagesJob: OWSDisappearingMessagesJob {
+        return SSKEnvironment.shared.disappearingMessagesJob
+    }
+
+    static var disappearingMessagesJob: OWSDisappearingMessagesJob {
+        return SSKEnvironment.shared.disappearingMessagesJob
+    }
+
     var identityManager: OWSIdentityManager {
         return SSKEnvironment.shared.identityManager
     }
@@ -62,12 +70,36 @@ public extension UIResponder {
 //        return SSKEnvironment.shared.groupsV2
 //    }
 
+    var launchJobs: LaunchJobs {
+        return Environment.shared.launchJobs
+    }
+
+    static var launchJobs: LaunchJobs {
+        return Environment.shared.launchJobs
+    }
+
     var linkPreviewManager: OWSLinkPreviewManager {
         return SSKEnvironment.shared.linkPreviewManager
     }
 
     static var linkPreviewManager: OWSLinkPreviewManager {
         return SSKEnvironment.shared.linkPreviewManager
+    }
+
+    var messageFetcherJob: MessageFetcherJob {
+        return SSKEnvironment.shared.messageFetcherJob
+    }
+
+    static var messageFetcherJob: MessageFetcherJob {
+        return SSKEnvironment.shared.messageFetcherJob
+    }
+
+    var messageManager: OWSMessageManager {
+        return SSKEnvironment.shared.messageManager
+    }
+
+    static var messageManager: OWSMessageManager {
+        return SSKEnvironment.shared.messageManager
     }
 
     var messageSender: MessageSender {
@@ -94,6 +126,14 @@ public extension UIResponder {
         return .shared()
     }
 
+    var readReceiptManager: OWSReadReceiptManager {
+        return OWSReadReceiptManager.shared()
+    }
+
+    static var readReceiptManager: OWSReadReceiptManager {
+        return OWSReadReceiptManager.shared()
+    }
+
     var preferences: OWSPreferences {
         return Environment.shared.preferences
     }
@@ -102,12 +142,28 @@ public extension UIResponder {
         return Environment.shared.preferences
     }
 
+    var primaryStorage: OWSPrimaryStorage? {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
+    static var primaryStorage: OWSPrimaryStorage? {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
     var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()
     }
 
     static var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()
+    }
+
+    var socketManager: TSSocketManager {
+        return SSKEnvironment.shared.socketManager
+    }
+
+    static var socketManager: TSSocketManager {
+        return SSKEnvironment.shared.socketManager
     }
 
     var stickerManager: StickerManager {
@@ -148,6 +204,14 @@ public extension UIResponder {
 
     static var udManager: OWSUDManager {
         return SSKEnvironment.shared.udManager
+    }
+
+    var windowManager: OWSWindowManager {
+        return Environment.shared.windowManager
+    }
+
+    static var windowManager: OWSWindowManager {
+        return Environment.shared.windowManager
     }
 }
 

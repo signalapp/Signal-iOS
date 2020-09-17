@@ -33,6 +33,22 @@ public extension UIResponder {
     static var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }
+
+    var pushRegistrationManager: PushRegistrationManager {
+        return AppEnvironment.shared.pushRegistrationManager
+    }
+
+    static var pushRegistrationManager: PushRegistrationManager {
+        return AppEnvironment.shared.pushRegistrationManager
+    }
+
+    var userNotificationActionHandler: UserNotificationActionHandler {
+        return AppEnvironment.shared.userNotificationActionHandler
+    }
+
+    static var userNotificationActionHandler: UserNotificationActionHandler {
+        return AppEnvironment.shared.userNotificationActionHandler
+    }
 }
 
 // MARK: -

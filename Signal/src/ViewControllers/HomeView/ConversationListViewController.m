@@ -123,23 +123,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _threadMapping = [ThreadMapping new];
 }
 
-#pragma mark - Dependencies
-
-- (OWSContactsManager *)contactsManager
-{
-    return Environment.shared.contactsManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (nullable MessageFetcherJob *)messageFetcherJob
-{
-    return SSKEnvironment.shared.messageFetcherJob;
-}
-
 #pragma mark -
 
 - (void)observeNotifications
