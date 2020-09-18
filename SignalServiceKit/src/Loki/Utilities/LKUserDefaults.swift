@@ -19,7 +19,9 @@ public enum LKUserDefaults {
     }
 
     public enum Double : Swift.String {
+        /// - Note: Deprecated
         case lastDeviceTokenUpload = "lastDeviceTokenUploadTime"
+        case lastDeviceTokenUpload2 = "lastDeviceTokenUpload2"
     }
 
     public enum Int: Swift.String {

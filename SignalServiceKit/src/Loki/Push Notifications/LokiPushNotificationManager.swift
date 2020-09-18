@@ -26,7 +26,7 @@ public final class LokiPushNotificationManager : NSObject {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let oldToken = userDefaults[.deviceToken]
-        let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
+        let lastUploadTime = userDefaults[.lastDeviceTokenUpload2]
         let isUsingFullAPNs = userDefaults[.isUsingFullAPNs]
         let now = Date().timeIntervalSince1970
         guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
@@ -45,7 +45,7 @@ public final class LokiPushNotificationManager : NSObject {
                 return print("[Loki] Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
             }
             userDefaults[.deviceToken] = hexEncodedToken
-            userDefaults[.lastDeviceTokenUpload] = now
+            userDefaults[.lastDeviceTokenUpload2] = now
             userDefaults[.isUsingFullAPNs] = false
             return
         }
@@ -71,7 +71,7 @@ public final class LokiPushNotificationManager : NSObject {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let oldToken = userDefaults[.deviceToken]
-        let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
+        let lastUploadTime = userDefaults[.lastDeviceTokenUpload2]
         let now = Date().timeIntervalSince1970
         guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
             print("[Loki] Device token hasn't changed or expired; no need to re-upload.")
@@ -89,7 +89,7 @@ public final class LokiPushNotificationManager : NSObject {
                 return print("[Loki] Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
             }
             userDefaults[.deviceToken] = hexEncodedToken
-            userDefaults[.lastDeviceTokenUpload] = now
+            userDefaults[.lastDeviceTokenUpload2] = now
             userDefaults[.isUsingFullAPNs] = true
             return
         }
