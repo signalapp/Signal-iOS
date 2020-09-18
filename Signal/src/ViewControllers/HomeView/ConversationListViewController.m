@@ -77,7 +77,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, readonly) OWSSearchBar *searchBar;
 @property (nonatomic) ConversationSearchViewController *searchResultsController;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockListCache *blocklistCache;
 
 // Views
