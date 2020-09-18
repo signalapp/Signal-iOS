@@ -5,9 +5,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class MessageBody;
+@class MessageSender;
 @class OWSContact;
 @class OWSLinkPreviewDraft;
-@class OWSMessageSender;
 @class OWSQuotedReplyModel;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;

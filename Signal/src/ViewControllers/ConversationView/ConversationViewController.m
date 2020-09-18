@@ -53,6 +53,7 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/Contact.h>
+#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
@@ -63,7 +64,6 @@
 #import <SignalServiceKit/OWSFormat.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -280,7 +280,6 @@ typedef enum : NSUInteger {
                                                     // since we may need to update the sender names on the messages.
                                                     [weakSelf resetContentAndLayoutWithSneakyTransaction];
                                                 }];
-
     return self;
 }
 

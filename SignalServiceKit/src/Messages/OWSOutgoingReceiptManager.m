@@ -4,8 +4,8 @@
 
 #import "OWSOutgoingReceiptManager.h"
 #import "AppReadiness.h"
+#import "MessageSender.h"
 #import "OWSError.h"
-#import "OWSMessageSender.h"
 #import "OWSReceiptsForSenderMessage.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
@@ -89,7 +89,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
 #pragma mark - Dependencies
 
-- (OWSMessageSender *)messageSender
+- (MessageSender *)messageSender
 {
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 

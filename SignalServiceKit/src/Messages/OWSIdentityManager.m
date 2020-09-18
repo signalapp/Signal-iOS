@@ -5,11 +5,11 @@
 #import "OWSIdentityManager.h"
 #import "AppContext.h"
 #import "AppReadiness.h"
+#import "MessageSender.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
-#import "OWSMessageSender.h"
 #import "OWSOutgoingNullMessage.h"
 #import "OWSRecipientIdentity.h"
 #import "OWSVerificationStateChangeMessage.h"
@@ -97,7 +97,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
 #pragma mark - Dependencies
 
-- (OWSMessageSender *)messageSender
+- (MessageSender *)messageSender
 {
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 

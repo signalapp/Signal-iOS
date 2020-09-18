@@ -18,7 +18,7 @@ public enum MessageSenderError: Int, Error {
 // MARK: -
 
 @objc
-public class MessageSending: NSObject {
+public extension MessageSender {
 
     // MARK: - Dependencies
 
@@ -54,16 +54,17 @@ public class MessageSending: NSObject {
         return SSKEnvironment.shared.udManager
     }
 
-    // MARK: -
+    fileprivate var deviceManager: OWSDeviceManager {
+        return OWSDeviceManager.shared()
+    }
 
-    @available(*, unavailable, message:"Do not instantiate this class.")
-    private override init() {
+    fileprivate static var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
     }
 
     // MARK: -
 
-    @objc
-    public class func isPrekeyRateLimitError(_ error: Error) -> Bool {
+    class func isPrekeyRateLimitError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.prekeyRateLimit:
             return true
@@ -72,8 +73,7 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func isUntrustedIdentityError(_ error: Error) -> Bool {
+    class func isUntrustedIdentityError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.untrustedIdentity:
             return true
@@ -82,8 +82,7 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func isMissingDeviceError(_ error: Error) -> Bool {
+    class func isMissingDeviceError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.missingDevice:
             return true
@@ -92,12 +91,16 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func ensureSessionsforMessageSendsObjc(_ messageSends: [OWSMessageSend],
-                                                        ignoreErrors: Bool) -> AnyPromise {
+    class func ensureSessionsforMessageSendsObjc(_ messageSends: [OWSMessageSend],
+                                                 ignoreErrors: Bool) -> AnyPromise {
         AnyPromise(ensureSessions(forMessageSends: messageSends,
                                   ignoreErrors: ignoreErrors))
     }
+}
+
+// MARK: -
+
+fileprivate extension MessageSender {
 
     private struct SessionStates {
         let deviceAlreadyHasSession = AtomicUInt(0)
@@ -201,12 +204,17 @@ public class MessageSending: NSObject {
         }
         return promises
     }
+}
 
-    @objc
-    public class func makePrekeyRequest(messageSend: OWSMessageSend,
-                                        deviceId: NSNumber,
-                                        success: @escaping (PreKeyBundle?) -> Void,
-                                        failure: @escaping (Error) -> Void) {
+// MARK: -
+
+@objc
+public extension MessageSender {
+
+    class func makePrekeyRequest(messageSend: OWSMessageSend,
+                                 deviceId: NSNumber,
+                                 success: @escaping (PreKeyBundle?) -> Void,
+                                 failure: @escaping (Error) -> Void) {
         assert(!Thread.isMainThread)
 
         let recipientAddress = messageSend.recipient.address
@@ -318,11 +326,10 @@ public class MessageSending: NSObject {
         }
     }
 
-    @objc
-    public class func handleUntrustedIdentityKeyError(accountId: String,
-                                                      recipientAddress: SignalServiceAddress,
-                                                      preKeyBundle: PreKeyBundle,
-                                                      transaction: SDSAnyWriteTransaction) {
+    class func handleUntrustedIdentityKeyError(accountId: String,
+                                               recipientAddress: SignalServiceAddress,
+                                               preKeyBundle: PreKeyBundle,
+                                               transaction: SDSAnyWriteTransaction) {
         saveRemoteIdentity(recipientAddress: recipientAddress,
                            preKeyBundle: preKeyBundle,
                            transaction: transaction)
@@ -350,7 +357,7 @@ public class MessageSending: NSObject {
 
 // MARK: - Prekey Rate Limits & Untrusted Identities
 
-fileprivate extension MessageSending {
+fileprivate extension MessageSender {
 
     static let cacheQueue = DispatchQueue(label: "MessageSender.cacheQueue")
 
@@ -435,7 +442,7 @@ fileprivate extension MessageSending {
 
 // MARK: - Missing Devices
 
-fileprivate extension MessageSending {
+fileprivate extension MessageSender {
 
     private struct CacheKey: Hashable {
         let recipientAddress: SignalServiceAddress
@@ -510,7 +517,7 @@ public class MessageSendInfo: NSObject {
 
 // MARK: -
 
-extension MessageSending {
+extension MessageSender {
 
     @objc
     @available(swift, obsoleted: 1.0)
@@ -729,5 +736,360 @@ extension MessageSending {
 public extension TSMessage {
     var isSyncMessage: Bool {
         nil != self as? OWSOutgoingSyncMessage
+    }
+}
+
+// MARK: -
+
+@objc
+public extension MessageSender {
+
+    private static let completionQueue: DispatchQueue = {
+        return DispatchQueue(label: "org.whispersystems.signal.messageSendCompletion",
+                             qos: .utility,
+                             autoreleaseFrequency: .workItem)
+    }()
+
+    typealias DeviceMessageType = [String: AnyObject]
+
+    func performMessageSendRequest(_ messageSend: OWSMessageSend,
+                                   deviceMessages: [DeviceMessageType]) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let recipient: SignalRecipient = messageSend.recipient
+        let message: TSOutgoingMessage = messageSend.message
+
+        if deviceMessages.isEmpty {
+            // This might happen:
+            //
+            // * The first (after upgrading?) time we send a sync message to our linked devices.
+            // * After unlinking all linked devices.
+            // * After trying and failing to link a device.
+            // * The first time we send a message to a user, if they don't have their
+            //   default device.  For example, if they have unregistered
+            //   their primary but still have a linked device. Or later, when they re-register.
+            //
+            // When we're not sure if we have linked devices, we need to try
+            // to send self-sync messages even if they have no device messages
+            // so that we can learn from the service whether or not there are
+            // linked devices that we don't know about.
+            Logger.warn("Sending a message with no device messages.")
+        }
+
+        let requestMaker = RequestMaker(label: "Message Send",
+                                        requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
+                                            OWSRequestFactory.submitMessageRequest(with: recipient.address,
+                                                                                   messages: deviceMessages,
+                                                                                   timeStamp: message.timestamp,
+                                                                                   udAccessKey: udAccessKey)
+        },
+                                        udAuthFailureBlock: {
+                                            // Note the UD auth failure so subsequent retries
+                                            // to this recipient also use basic auth.
+                                            messageSend.setHasUDAuthFailed()
+        },
+                                        websocketFailureBlock: {
+                                            // Note the websocket failure so subsequent retries
+                                            // to this recipient also use REST.
+                                            messageSend.hasWebsocketSendFailed = true
+        },
+                                        address: recipient.address,
+                                        udAccess: messageSend.udSendingAccess?.udAccess,
+                                        canFailoverUDAuth: false)
+
+        // Client-side fanout can yield many
+        firstly {
+            requestMaker.makeRequest()
+        }.done(on: Self.completionQueue) { (result: RequestMakerResult) in
+            self.messageSendDidSucceed(messageSend,
+                                       deviceMessages: deviceMessages,
+                                       wasSentByUD: result.wasSentByUD,
+                                       wasSentByWebsocket: result.wasSentByWebsocket)
+        }.catch(on: Self.completionQueue) { (error: Error) in
+            var unpackedError = error
+            if case NetworkManagerError.taskError(_, let underlyingError) = unpackedError {
+                unpackedError = underlyingError
+            }
+            let nsError = unpackedError as NSError
+
+            var statusCode: Int = 0
+            var responseData: Data?
+            if case RequestMakerUDAuthError.udAuthFailure = error {
+                // Try again.
+                Logger.info("UD request auth failed; failing over to non-UD request.")
+                nsError.isRetryable = true
+            } else if nsError.domain == TSNetworkManagerErrorDomain {
+                statusCode = nsError.code
+
+                if let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
+                    responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data
+                } else {
+                    owsFailDebug("Missing underlying error: \(error)")
+                }
+            } else {
+                owsFailDebug("Unexpected error: \(error)")
+            }
+
+            self.messageSendDidFail(messageSend,
+                                    deviceMessages: deviceMessages,
+                                    statusCode: statusCode,
+                                    responseError: nsError,
+                                    responseData: responseData)
+        }
+    }
+
+    private func messageSendDidSucceed(_ messageSend: OWSMessageSend,
+                                       deviceMessages: [DeviceMessageType],
+                                       wasSentByUD: Bool,
+                                       wasSentByWebsocket: Bool) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let recipient: SignalRecipient = messageSend.recipient
+        let message: TSOutgoingMessage = messageSend.message
+
+        Logger.info("Successfully sent message: \(type(of: message)), recipient: \(recipient.address), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD)")
+
+        if messageSend.isLocalAddress && deviceMessages.isEmpty {
+            Logger.info("Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.")
+            // In order to avoid skipping necessary sync messages, the default value
+            // for mayHaveLinkedDevices is YES.  Once we've successfully sent a
+            // sync message with no device messages (e.g. the service has confirmed
+            // that we have no linked devices), we can set mayHaveLinkedDevices to NO
+            // to avoid unnecessary message sends for sync messages until we learn
+            // of a linked device (e.g. through the device linking UI or by receiving
+            // a sync message, etc.).
+            deviceManager.clearMayHaveLinkedDevices()
+        }
+
+        Self.databaseStorage.write { transaction in
+            message.update(withSentRecipient: recipient.address, wasSentByUD: wasSentByUD, transaction: transaction)
+
+            // If we've just delivered a message to a user, we know they
+            // have a valid Signal account. This is low trust, because we
+            // don't actually know for sure the fully qualified address is
+            // valid.
+            SignalRecipient.mark(asRegisteredAndGet: recipient.address, trustLevel: .low, transaction: transaction)
+
+            Self.profileManager.didSendOrReceiveMessage(from: recipient.address, transaction: transaction)
+        }
+
+        messageSend.success()
+    }
+
+    private struct MessageSendFailureResponse: Decodable {
+        let code: Int?
+        let extraDevices: [Int]?
+        let missingDevices: [Int]?
+        let staleDevices: [Int]?
+
+        static func parse(_ responseData: Data?) -> MessageSendFailureResponse? {
+            guard let responseData = responseData else {
+                return nil
+            }
+            do {
+                return try JSONDecoder().decode(MessageSendFailureResponse.self, from: responseData)
+            } catch {
+                owsFailDebug("Error: \(error)")
+                return nil
+            }
+        }
+    }
+
+    private func messageSendDidFail(_ messageSend: OWSMessageSend,
+                                    deviceMessages: [DeviceMessageType],
+                                    statusCode: Int,
+                                    responseError: Error,
+                                    responseData: Data?) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let recipient: SignalRecipient = messageSend.recipient
+        let message: TSOutgoingMessage = messageSend.message
+
+        Logger.info("Failed to send message: \(type(of: message)), recipient: \(recipient.address), timestamp: \(message.timestamp), to recipient: \(recipient.address)")
+
+        let retrySend = {
+            if messageSend.remainingAttempts <= 0 {
+                messageSend.failure(responseError)
+                return
+            }
+
+            Logger.verbose("Retrying: \(message.debugDescription)")
+            self.sendMessage(toRecipient: messageSend)
+        }
+
+        let handle404 = {
+            self.failSendForUnregisteredRecipient(messageSend)
+        }
+
+        switch statusCode {
+        case 401:
+            Logger.warn("Unable to send due to invalid credentials. Did the user's client get de-authed by registering elsewhere?")
+            let error = OWSErrorWithCodeDescription(OWSErrorCode.signalServiceFailure,
+                                                    NSLocalizedString("ERROR_DESCRIPTION_SENDING_UNAUTHORIZED",
+                                                                      comment: "Error message when attempting to send message")) as NSError
+            // No need to retry if we've been de-authed.
+            error.isRetryable = false
+            messageSend.failure(error)
+            return
+        case 404:
+            handle404()
+            return
+        case 409:
+            // Mismatched devices
+            Logger.warn("Mismatched devices for recipient: \(recipient.address) (\(deviceMessages.count))")
+
+            guard let response = MessageSendFailureResponse.parse(responseData) else {
+                let nsError = OWSAssertionError("Couldn't parse JSON response.") as NSError
+                nsError.isRetryable = true
+                messageSend.failure(nsError)
+                return
+            }
+
+            if 404 == response.code {
+                // Some 404s are returned as 409.
+                owsFailDebug("404 returned as 409.")
+                handle404()
+                return
+            }
+
+            handleMismatchedDevices(response, recipient: recipient)
+
+            if messageSend.isLocalAddress {
+                // Don't use websocket; it may have obsolete cached state.
+                messageSend.hasWebsocketSendFailed = true
+            }
+
+            retrySend()
+
+        case 410:
+            // Stale devices
+            Logger.warn("Stale devices for recipient: \(recipient.address)")
+
+            guard let response = MessageSendFailureResponse.parse(responseData) else {
+                let nsError = OWSAssertionError("Couldn't parse JSON response.") as NSError
+                nsError.isRetryable = true
+                messageSend.failure(nsError)
+                return
+            }
+
+            handleStaleDevices(response, recipient: recipient)
+
+            if messageSend.isLocalAddress {
+                // Don't use websocket; it may have obsolete cached state.
+                messageSend.hasWebsocketSendFailed = true
+            }
+
+            retrySend()
+        default:
+            retrySend()
+        }
+    }
+
+    func failSendForUnregisteredRecipient(_ messageSend: OWSMessageSend) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let recipient: SignalRecipient = messageSend.recipient
+        let message: TSOutgoingMessage = messageSend.message
+
+        Logger.verbose("Unregistered recipient: \(recipient.address)")
+
+        let isSyncMessage = nil != message as? OWSOutgoingSyncMessage
+        if !isSyncMessage {
+            markRecipientAsUnregistered(recipient, message: message, thread: messageSend.thread)
+        }
+
+        let error = OWSErrorMakeNoSuchSignalRecipientError() as NSError
+        // No need to retry if the recipient is not registered.
+        error.isRetryable = false
+        // If one member of a group deletes their account,
+        // the group should ignore errors when trying to send
+        // messages to this ex-member.
+        error.shouldBeIgnoredForGroups = true
+        messageSend.failure(error)
+    }
+
+    private func markRecipientAsUnregistered(_ recipient: SignalRecipient,
+                                             message: TSOutgoingMessage,
+                                             thread: TSThread) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        Self.databaseStorage.write { transaction in
+            if thread.isGroupThread {
+                // Mark as "skipped" group members who no longer have signal accounts.
+                message.update(withSkippedRecipient: recipient.address, transaction: transaction)
+            }
+
+            if !SignalRecipient.isRegisteredRecipient(recipient.address, transaction: transaction) {
+                return
+            }
+
+            SignalRecipient.mark(asUnregistered: recipient.address, transaction: transaction)
+            // TODO: Should we deleteAllSessionsForContact here?
+            //       If so, we'll need to avoid doing a prekey fetch every
+            //       time we try to send a message to an unregistered user.
+        }
+    }
+}
+
+// MARK: -
+
+extension MessageSender {
+    private func handleMismatchedDevices(_ response: MessageSendFailureResponse,
+                                         recipient: SignalRecipient) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let extraDevices = response.extraDevices ?? []
+        let missingDevices = response.missingDevices ?? []
+
+        Logger.info("extraDevices: \(extraDevices) for \(recipient.address)")
+        Logger.info("missingDevices: \(missingDevices) for \(recipient.address)")
+
+        if !missingDevices.isEmpty {
+            if recipient.address.isLocalAddress {
+                self.deviceManager.setMayHaveLinkedDevices()
+            }
+        }
+
+        guard !extraDevices.isEmpty || !missingDevices.isEmpty else {
+            owsFailDebug("No extra or missing device.")
+            return
+        }
+
+        Self.databaseStorage.write { transaction in
+            let devicesToAdd = missingDevices.map { NSNumber(value: $0) }
+            let devicesToRemove = extraDevices.map { NSNumber(value: $0) }
+            recipient.updateRegisteredRecipientWithDevices(toAdd: devicesToAdd,
+                                                           devicesToRemove: devicesToRemove,
+                                                           transaction: transaction)
+
+            if !extraDevices.isEmpty {
+                Logger.info("Deleting sessions for extra devices: \(extraDevices)")
+                for extraDeviceId in extraDevices {
+                    Self.sessionStore.deleteSession(for: recipient.address, deviceId: Int32(extraDeviceId), transaction: transaction)
+                }
+            }
+        }
+    }
+
+    // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
+    private func handleStaleDevices(_ response: MessageSendFailureResponse,
+                                    recipient: SignalRecipient) {
+        owsAssertDebug(!Thread.isMainThread)
+
+        let staleDevices = response.staleDevices ?? []
+
+        Logger.info("staleDevices: \(staleDevices) for \(recipient.address)")
+
+        guard !staleDevices.isEmpty else {
+            // TODO: Is this assert necessary?
+            owsFailDebug("Missing staleDevices.")
+            return
+        }
+
+        Self.databaseStorage.write { transaction in
+            for staleDeviceId in staleDevices {
+                Self.sessionStore.deleteSession(for: recipient.address, deviceId: Int32(staleDeviceId), transaction: transaction)
+            }
+        }
     }
 }

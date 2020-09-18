@@ -10,8 +10,8 @@
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -42,7 +42,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     return Environment.shared.contactsManager;
 }
 
-- (OWSMessageSender *)messageSender
+- (MessageSender *)messageSender
 {
     return SSKEnvironment.shared.messageSender;
 }

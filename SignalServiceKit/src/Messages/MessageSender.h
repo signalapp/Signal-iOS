@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSBlockingManager;
+@class OWSMessageSend;
 @class OutgoingMessagePreparer;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
@@ -35,7 +36,7 @@ typedef void (^RetryableFailureHandler)(NSError *_Nonnull error);
 NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @interface OWSOutgoingAttachmentInfo : NSObject
 
-@property (nonatomic, readonly) id<DataSource>dataSource;
+@property (nonatomic, readonly) id<DataSource> dataSource;
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) NSString *caption;
@@ -59,8 +60,7 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 
 #pragma mark -
 
-NS_SWIFT_NAME(MessageSender)
-@interface OWSMessageSender : NSObject
+@interface MessageSender : NSObject
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
@@ -95,6 +95,9 @@ NS_SWIFT_NAME(MessageSender)
                         failure:(void (^)(NSError *error))failureHandler;
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
+
+// TODO: Make this private.
+- (void)sendMessageToRecipient:(OWSMessageSend *)messageSend;
 
 @end
 

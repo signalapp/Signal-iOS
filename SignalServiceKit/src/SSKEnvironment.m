@@ -17,7 +17,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @interface SSKEnvironment ()
 
 @property (nonatomic) id<ContactsManagerProtocol> contactsManager;
-@property (nonatomic) OWSMessageSender *messageSender;
+@property (nonatomic) MessageSender *messageSender;
 @property (nonatomic) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic, nullable) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic) TSNetworkManager *networkManager;
@@ -69,7 +69,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
-                          messageSender:(OWSMessageSender *)messageSender
+                          messageSender:(MessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
              pendingReadReceiptRecorder:(id<PendingReadReceiptRecorder>)pendingReadReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager

@@ -22,6 +22,6 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AppVersion.h>
+#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSMath.h>
-#import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>

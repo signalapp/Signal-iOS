@@ -31,7 +31,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     return OWSBlockingManager.shared;
 }
 
-+ (OWSMessageSender *)messageSender
++ (MessageSender *)messageSender
 {
     return SSKEnvironment.shared.messageSender;
 }
