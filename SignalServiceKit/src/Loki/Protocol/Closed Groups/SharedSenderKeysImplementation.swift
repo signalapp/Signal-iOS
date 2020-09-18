@@ -3,7 +3,7 @@ import PromiseKit
 import SessionMetadataKit
 
 @objc(LKSharedSenderKeysImplementation)
-public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysProtocol {
+public final class SharedSenderKeysImplementation : NSObject {
     private static let gcmTagSize: UInt = 16
     private static let ivSize: UInt = 12
 
@@ -180,7 +180,7 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
         return Data(try aes.decrypt(ciphertext.bytes))
     }
 
-    public func isClosedGroup(_ publicKey: String) -> Bool {
+    @objc public func isClosedGroup(_ publicKey: String) -> Bool {
         return Storage.getUserClosedGroupPublicKeys().contains(publicKey)
     }
 
