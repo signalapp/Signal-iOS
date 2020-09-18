@@ -733,6 +733,7 @@ typedef enum : NSUInteger {
         [BenchManager
             completeEventWithEventId:[NSString stringWithFormat:@"presenting-conversation-%@", self.thread.uniqueId]];
     }
+    [self reloadBottomBar];
     [self updateInputToolbarLayout];
 
     // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
@@ -3927,7 +3928,13 @@ typedef enum : NSUInteger {
     self.inputToolbar.mentionDelegate = self;
     [self.inputToolbar setMessageBody:existingDraft animated:NO];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
-    [self reloadBottomBar];
+    // reloadBottomBar is expensive and we need to avoid it while
+    // initially configuring the view. viewWillAppear() will call
+    // reloadBottomBar(). After viewWillAppear(), we need to call
+    // reloadBottomBar() to reflect changes in the theme.
+    if (self.hasViewWillAppearOccurred) {
+        [self reloadBottomBar];
+    }
 }
 
 #pragma mark - AttachmentApprovalViewControllerDelegate
