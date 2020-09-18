@@ -7,14 +7,6 @@ import Foundation
 @objc
 class LinkedDevicesTableViewController: OWSTableViewController {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     private var devices = [OWSDevice]()
 
     private var pollingRefreshTimer: Timer?
