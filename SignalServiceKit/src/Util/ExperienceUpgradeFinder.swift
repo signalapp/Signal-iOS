@@ -13,6 +13,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case notificationPermissionReminder
     case contactPermissionReminder
     case linkPreviews
+    case researchMegaphone1
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -55,6 +56,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
         case .linkPreviews:
             return true
+        case .researchMegaphone1:
+            return RemoteConfig.researchMegaphone
         }
     }
 
@@ -75,7 +78,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     var skipForNewUsers: Bool {
         switch self {
         case .messageRequests,
-             .introducingPins:
+             .introducingPins,
+             .researchMegaphone1:
             return false
         default:
             return true
@@ -105,6 +109,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return .medium
         case .contactPermissionReminder:
             return .medium
+        case .researchMegaphone1:
+            return .low
         }
     }
 
@@ -164,6 +170,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .notificationPermissionReminder:   return .notificationPermissionReminder
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
+        case .researchMegaphone1:               return .researchMegaphone1
         }
     }
 }
@@ -248,7 +255,11 @@ public class ExperienceUpgradeFinder: NSObject {
 
         while true {
             guard let experienceUpgrade = try? cursor.next() else { break }
-            if !experienceUpgrade.isComplete { experienceUpgrades.append(experienceUpgrade) }
+
+            if !experienceUpgrade.isComplete && !experienceUpgrade.hasCompletedVisibleDuration {
+                experienceUpgrades.append(experienceUpgrade)
+            }
+
             unsavedIds.removeAll { $0 == experienceUpgrade.uniqueId }
         }
 
@@ -289,6 +300,13 @@ public extension ExperienceUpgrade {
         return Int(secondsSinceFirstView / kDayInterval)
     }
 
+    var hasCompletedVisibleDuration: Bool {
+        switch id {
+        case .researchMegaphone1: return daysSinceFirstViewed >= 7
+        default: return false
+        }
+    }
+
     var hasViewed: Bool { firstViewedTimestamp > 0 }
 
     func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
@@ -310,6 +328,7 @@ public enum ObjcExperienceUpgradeId: Int {
     case notificationPermissionReminder
     case contactPermissionReminder
     case linkPreviews
+    case researchMegaphone1
 
     public var swiftRepresentation: ExperienceUpgradeId {
         switch self {
@@ -319,6 +338,7 @@ public enum ObjcExperienceUpgradeId: Int {
         case .notificationPermissionReminder:   return .notificationPermissionReminder
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
+        case .researchMegaphone1:               return .researchMegaphone1
         }
     }
 }

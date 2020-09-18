@@ -151,6 +151,11 @@ public class OWSFlatButton: UIView {
     }
 
     @objc
+    public func setAttributedTitle(_ title: NSAttributedString) {
+        button.setAttributedTitle(title, for: .normal)
+    }
+
+    @objc
     public func setImage(_ image: UIImage) {
         button.setImage(image, for: .normal)
     }

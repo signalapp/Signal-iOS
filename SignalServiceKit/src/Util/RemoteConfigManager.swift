@@ -12,11 +12,13 @@ public class RemoteConfig: BaseFlags {
     // into a getter below...
     private let isEnabledFlags: [String: Bool]
     private let valueFlags: [String: AnyObject]
+    private let researchMegaphone: Bool
 
     init(isEnabledFlags: [String: Bool],
          valueFlags: [String: AnyObject]) {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
+        self.researchMegaphone = Self.isResearchMegaphoneEnabled(valueFlags: valueFlags)
     }
 
     @objc
@@ -139,7 +141,83 @@ public class RemoteConfig: BaseFlags {
         return isEnabled(.attachmentUploadV3v1)
     }
 
+    @objc
+    public static var researchMegaphone: Bool {
+        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else { return false }
+        return remoteConfig.researchMegaphone
+    }
+
+    private static func isResearchMegaphoneEnabled(valueFlags: [String: AnyObject]) -> Bool {
+        let rawFlag = Flags.SupportedValuesFlags.researchMegaphone.rawFlag
+
+        guard let value = valueFlags[rawFlag] as? String else { return false }
+
+        guard !value.isEmpty else { return false }
+
+        // The value should always be a comma-separated list of country codes colon-separated
+        // from how many buckets out of 1 million should be enabled to see the research
+        // megaphone in that country code. There will also optional be a wildcard "*" bucket
+        // that any unspecified country codes should use. If neither the local country code
+        // or the wildcard is specified, we assume the megaphone is not enabled.
+        let countEnabledPerCountryCode = value
+            .components(separatedBy: ",")
+            .reduce(into: [String: Int]()) { result, value in
+                let components = value.components(separatedBy: ":")
+                guard components.count == 2 else { return owsFailDebug("Invalid research megaphone value \(value)")}
+                let countryCode = components[0]
+                let countEnabled = Int(components[1])
+                result[countryCode] = countEnabled
+        }
+
+        guard !countEnabledPerCountryCode.isEmpty else { return false }
+
+        guard let localE164 = TSAccountManager.shared().localNumber,
+            let localCountryCode = PhoneNumber(fromE164: localE164)?.getCountryCode()?.stringValue else {
+                owsFailDebug("Missing local number")
+                return false
+        }
+
+        let localCountEnabled = countEnabledPerCountryCode[localCountryCode]
+        let wildcardCountEnabled = countEnabledPerCountryCode["*"]
+
+        if let countEnabled = localCountEnabled ?? wildcardCountEnabled {
+            return isBucketEnabled(key: rawFlag, countEnabled: countEnabled, bucketSize: 1000000)
+        } else {
+            return false
+        }
+    }
+
     // MARK: -
+
+    private static func isBucketEnabled(key: String, countEnabled: Int, bucketSize: Int) -> Bool {
+        guard let uuid = TSAccountManager.shared().localUuid else {
+            owsFailDebug("Missing local UUID")
+            return false
+        }
+
+        guard var data = key.data(using: .utf8) else {
+            owsFailDebug("Failed to get data from key")
+            return false
+        }
+
+        let uuidBytes = withUnsafePointer(to: uuid.uuid) {
+            Data(bytes: $0, count: MemoryLayout.size(ofValue: uuid.uuid))
+        }
+
+        data.append(uuidBytes)
+
+        guard let hash = Cryptography.computeSHA256Digest(data) else {
+            owsFailDebug("Failed to calculate hash")
+            return false
+        }
+
+        // current_user_bucket = ABS(SHA256(key + BIGENDIAN(localUuid))) % bucketSize
+        let currentUserBucket = hash.withUnsafeBytes {
+            abs($0.load(as: Int64.self)) % Int64(bucketSize)
+        }
+
+        return countEnabled > currentUserBucket
+    }
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
@@ -255,6 +333,7 @@ private struct Flags {
     enum SupportedValuesFlags: String, FlagType {
         case maxGroupsV2MemberCount
         case clientExpiration
+        case researchMegaphone
     }
 }
 
@@ -270,10 +349,10 @@ private protocol FlagType: CaseIterable {
 
 private extension FlagType {
     var rawFlag: String {
-        if rawValue == "maxGroupsV2MemberCount" {
-            return "global.maxGroupSize"
-        } else {
-            return Flags.prefix + rawValue
+        switch rawValue {
+        case "maxGroupsV2MemberCount": return "global.maxGroupSize"
+        case "researchMegaphone": return "research.megaphone.1"
+        default: return Flags.prefix + rawValue
         }
     }
 
