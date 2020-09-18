@@ -60,7 +60,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (OWSProfileManager *)profileManager
 {
-    return OWSProfileManager.sharedManager;
+    return OWSProfileManager.shared;
 }
 
 - (SignalAccountReadCache *)signalAccountReadCache

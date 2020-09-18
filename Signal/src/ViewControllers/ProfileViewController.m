@@ -106,7 +106,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
 
-    _avatarData = [OWSProfileManager.sharedManager localProfileAvatarData];
+    _avatarData = [OWSProfileManager.shared localProfileAvatarData];
 
     [self createViews];
     [self updateNavigationItem];
@@ -233,7 +233,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         givenNameTextField.placeholder = NSLocalizedString(
             @"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT", @"Default text for the given name field of the profile view.");
         givenNameTextField.delegate = self;
-        givenNameTextField.text = OWSProfileManager.sharedManager.localGivenName;
+        givenNameTextField.text = OWSProfileManager.shared.localGivenName;
         givenNameTextField.textAlignment = NSTextAlignmentRight;
         SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, givenNameTextField);
         [givenNameTextField addTarget:self
@@ -277,7 +277,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         familyNameTextField.placeholder = NSLocalizedString(
             @"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT", @"Default text for the family name field of the profile view.");
         familyNameTextField.delegate = self;
-        familyNameTextField.text = OWSProfileManager.sharedManager.localFamilyName;
+        familyNameTextField.text = OWSProfileManager.shared.localFamilyName;
         familyNameTextField.textAlignment = NSTextAlignmentRight;
         SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, familyNameTextField);
         [familyNameTextField addTarget:self
@@ -534,7 +534,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return;
     }
 
-    if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedGivenName]) {
+    if ([OWSProfileManager.shared isProfileNameTooLong:normalizedGivenName]) {
         [OWSActionSheets
             showErrorAlertWithMessage:NSLocalizedString(@"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
                                           @"Error message shown when user tries to update profile with a given name "
@@ -542,7 +542,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return;
     }
 
-    if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedFamilyName]) {
+    if ([OWSProfileManager.shared isProfileNameTooLong:normalizedFamilyName]) {
         [OWSActionSheets
             showErrorAlertWithMessage:NSLocalizedString(@"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
                                           @"Error message shown when user tries to update profile with a family name "
@@ -701,7 +701,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)updateUsername
 {
-    NSString *_Nullable username = [OWSProfileManager.sharedManager localUsername];
+    NSString *_Nullable username = [OWSProfileManager.shared localUsername];
     if (username) {
         self.usernameLabel.text = [CommonFormats formatUsername:username];
         self.usernameLabel.textColor = Theme.primaryTextColor;
@@ -777,7 +777,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     // Only nag until the user sets a profile _name_.  Profile names are
     // recommended; profile avatars are optional.
-    if ([OWSProfileManager sharedManager].localGivenName.length > 0) {
+    if ([OWSProfileManager shared].localGivenName.length > 0) {
         return NO;
     }
 

@@ -29,7 +29,7 @@
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 #pragma mark -
@@ -78,7 +78,7 @@
     OWSTableSection *informationSection = [OWSTableSection new];
     informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
-                                                  accessoryText:AppVersion.sharedInstance.currentAppVersionLong]];
+                                                  accessoryText:AppVersion.shared.currentAppVersionLong]];
 
     [informationSection
         addItem:[OWSTableItem

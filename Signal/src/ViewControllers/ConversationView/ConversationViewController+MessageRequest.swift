@@ -23,7 +23,7 @@ extension ConversationViewController: MessageRequestDelegate {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var contactManager: OWSContactsManager {

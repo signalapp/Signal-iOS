@@ -196,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
     [super setUp];
 
     // Hack to make sure we don't explode when sending sync message.
-    [[TSAccountManager sharedInstance] storeLocalNumber:@"+13231231234"];
+    [[TSAccountManager shared] storeLocalNumber:@"+13231231234"];
 
     self.thread = [[TSContactThread alloc] initWithUniqueId:@"fake-thread-id"];
     [self.thread save];

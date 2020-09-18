@@ -68,7 +68,7 @@ public class StickerManager: NSObject {
     }
 
     private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: - Properties
@@ -103,7 +103,7 @@ public class StickerManager: NSObject {
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             StickerManager.cleanupOrphans()
 
-            if TSAccountManager.sharedInstance().isRegisteredAndReady {
+            if TSAccountManager.shared().isRegisteredAndReady {
                 StickerManager.refreshContents()
             }
         }

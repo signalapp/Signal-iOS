@@ -33,7 +33,7 @@ public extension OWSProfileManager {
         }.then { update in
             return self.attemptToUpdateProfileOnService(update: update)
         }.then { (_) throws -> Promise<Void> in
-            guard let localAddress = TSAccountManager.sharedInstance().localAddress else {
+            guard let localAddress = TSAccountManager.shared().localAddress else {
                 throw OWSAssertionError("missing local address")
             }
             return ProfileFetcherJob.fetchProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
@@ -116,7 +116,7 @@ extension OWSProfileManager {
     }
 
     private class var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private class var syncManager: SyncManagerProtocol {
@@ -124,7 +124,7 @@ extension OWSProfileManager {
     }
 
     private class var avatarUrlSession: OWSURLSession {
-        return OWSSignalService.sharedInstance().urlSessionForCdn(cdnNumber: 0)
+        return OWSSignalService.shared().urlSessionForCdn(cdnNumber: 0)
     }
 
     // MARK: -

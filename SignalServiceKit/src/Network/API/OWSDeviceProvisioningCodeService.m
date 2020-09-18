@@ -33,7 +33,7 @@ NSString *const OWSDeviceProvisioningCodeServiceProvisioningCodeKey = @"verifica
 
 - (instancetype)init
 {
-    return [self initWithNetworkManager:[TSNetworkManager sharedManager]];
+    return [self initWithNetworkManager:[TSNetworkManager shared]];
 }
 
 - (void)requestProvisioningCodeWithSuccess:(void (^)(NSString *))successCallback

@@ -18,7 +18,7 @@ class DebugUIGroupsV2: DebugUIPage {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var contactsManager: OWSContactsManager {

@@ -47,12 +47,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSBlockingManager *)blockingManager
 {
-    return OWSBlockingManager.sharedManager;
+    return OWSBlockingManager.shared;
 }
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 - (OWSContactsManager *)contactsManager

@@ -40,7 +40,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 #pragma mark -
 
-+ (instancetype)sharedInstance
++ (instancetype)shared
 {
     static dispatch_once_t onceToken;
     static Theme *instance;
@@ -62,10 +62,10 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     OWSSingletonAssert();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        // IOS-782: +[Theme sharedInstance] re-enterant initialization
+        // IOS-782: +[Theme shared] re-enterant initialization
         // AppReadiness will invoke the block synchronously if the app is already ready.
-        // This doesn't work here, because we'll end up reenterantly calling +sharedInstance
-        // if the app is in dark mode and the first call to +[Theme sharedInstance] happens
+        // This doesn't work here, because we'll end up reenterantly calling +shared
+        // if the app is in dark mode and the first call to +[Theme shared] happens
         // after the app is ready.
         //
         // It looks like that pattern is only hit in the share extension, but we're better off
@@ -90,7 +90,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (BOOL)isDarkThemeEnabled
 {
-    return [self.sharedInstance isDarkThemeEnabled];
+    return [self.shared isDarkThemeEnabled];
 }
 
 - (BOOL)isDarkThemeEnabled
@@ -130,7 +130,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (ThemeMode)getOrFetchCurrentTheme
 {
-    return [self.sharedInstance getOrFetchCurrentTheme];
+    return [self.shared getOrFetchCurrentTheme];
 }
 
 - (ThemeMode)getOrFetchCurrentTheme
@@ -171,7 +171,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (void)setCurrentTheme:(ThemeMode)mode
 {
-    [self.sharedInstance setCurrentTheme:mode];
+    [self.shared setCurrentTheme:mode];
 }
 
 - (void)setCurrentTheme:(ThemeMode)mode
@@ -225,7 +225,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (void)systemThemeChanged
 {
-    [self.sharedInstance systemThemeChanged];
+    [self.shared systemThemeChanged];
 }
 
 - (void)systemThemeChanged

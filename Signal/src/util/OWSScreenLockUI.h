@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 - (void)setupWithRootWindow:(UIWindow *)rootWindow;
 

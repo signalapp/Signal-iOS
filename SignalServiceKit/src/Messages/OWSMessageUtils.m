@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     static OWSMessageUtils *sharedMyManager = nil;
     static dispatch_once_t onceToken;

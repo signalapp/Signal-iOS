@@ -339,7 +339,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 #pragma mark -
@@ -414,10 +414,8 @@ NS_ASSUME_NONNULL_BEGIN
     // to verify our account state.
     return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
-        [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
-            success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-                resolve(@(1));
-            }
+        [[TSNetworkManager shared] makeRequest:currentSignedPreKey
+            success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) { resolve(@(1)); }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 // TODO: We may want to surface this in the UI.
                 OWSLogError(@"could not verify account status: %@.", error);
@@ -1063,7 +1061,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Because we do "lazy attachment restores", we need to include the record names for all
     // records that haven't been restored yet.
-    NSArray<NSString *> *restoringRecordNames = [OWSBackup.sharedManager attachmentRecordNamesForLazyRestore];
+    NSArray<NSString *> *restoringRecordNames = [OWSBackup.shared attachmentRecordNamesForLazyRestore];
     [activeRecordNames addObjectsFromArray:restoringRecordNames];
 
     [self cleanUpMetadataCacheWithActiveRecordNames:activeRecordNames];

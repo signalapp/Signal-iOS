@@ -54,14 +54,12 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 @synthesize isCensorshipCircumventionActive = _isCensorshipCircumventionActive;
 
-+ (instancetype)sharedInstance
++ (instancetype)shared
 {
-    static OWSSignalService *sharedInstance = nil;
+    static OWSSignalService *shared = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[self alloc] initDefault];
-    });
-    return sharedInstance;
+    dispatch_once(&onceToken, ^{ shared = [[self alloc] initDefault]; });
+    return shared;
 }
 
 - (instancetype)initDefault

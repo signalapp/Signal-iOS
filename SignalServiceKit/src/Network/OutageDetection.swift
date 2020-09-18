@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,7 +7,7 @@ import os
 
 @objc
 public class OutageDetection: NSObject {
-    @objc(sharedManager)
+    @objc(shared)
     public static let shared = OutageDetection()
 
     @objc public static let outageStateDidChange = Notification.Name("OutageStateDidChange")

@@ -38,7 +38,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
     if ([self.tsAccountManager isRegistered]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             TSRequest *request = [OWSRequestFactory updatePrimaryDeviceAttributesRequest];
-            [[TSNetworkManager sharedManager] makeRequest:request
+            [[TSNetworkManager shared] makeRequest:request
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     OWSLogInfo(@"successfully ran");
                     [self markAsCompleteWithSneakyTransaction];

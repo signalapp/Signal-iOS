@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     // Ensure that OWSBackgroundTaskManager is created now.
-    [OWSBackgroundTaskManager sharedManager];
+    [OWSBackgroundTaskManager shared];
 
     StorageCoordinator *storageCoordinator = [StorageCoordinator new];
     SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;

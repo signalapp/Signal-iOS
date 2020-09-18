@@ -210,7 +210,7 @@ lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
 
 - (BOOL)hasSafetyNumbers
 {
-    return !![[OWSIdentityManager sharedManager] identityKeyForAddress:self.contactAddress];
+    return !![[OWSIdentityManager shared] identityKeyForAddress:self.contactAddress];
 }
 
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId

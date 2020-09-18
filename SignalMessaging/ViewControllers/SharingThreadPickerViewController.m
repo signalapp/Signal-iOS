@@ -602,42 +602,39 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSLogDebug(@"Confirming identity for recipient: %@", address);
 
-    DatabaseStorageAsyncWrite(
-        SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-            OWSVerificationState verificationState =
-                [[OWSIdentityManager sharedManager] verificationStateForAddress:address transaction:transaction];
-            switch (verificationState) {
-                case OWSVerificationStateVerified: {
-                    OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
-                    break;
-                }
-                case OWSVerificationStateDefault: {
-                    // If we learned of a changed SN during send, then we've already recorded the new identity
-                    // and there's nothing else we need to do for the resend to succeed.
-                    // We don't want to redundantly set status to "default" because we would create a
-                    // "You marked Alice as unverified" notice, which wouldn't make sense if Alice was never
-                    // marked as "Verified".
-                    OWSLogInfo(@"recipient has acceptable verification status. Next send will succeed.");
-                    break;
-                }
-                case OWSVerificationStateNoLongerVerified: {
-                    OWSLogInfo(@"marked recipient: %@ as default verification status.", address);
-                    NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForAddress:address
-                                                                                        transaction:transaction];
-                    OWSAssertDebug(identityKey);
-                    [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
-                                                                 identityKey:identityKey
-                                                                     address:address
-                                                       isUserInitiatedChange:YES
-                                                                 transaction:transaction];
-                    break;
-                }
+    DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
+        OWSVerificationState verificationState = [[OWSIdentityManager shared] verificationStateForAddress:address
+                                                                                              transaction:transaction];
+        switch (verificationState) {
+            case OWSVerificationStateVerified: {
+                OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
+                break;
             }
+            case OWSVerificationStateDefault: {
+                // If we learned of a changed SN during send, then we've already recorded the new identity
+                // and there's nothing else we need to do for the resend to succeed.
+                // We don't want to redundantly set status to "default" because we would create a
+                // "You marked Alice as unverified" notice, which wouldn't make sense if Alice was never
+                // marked as "Verified".
+                OWSLogInfo(@"recipient has acceptable verification status. Next send will succeed.");
+                break;
+            }
+            case OWSVerificationStateNoLongerVerified: {
+                OWSLogInfo(@"marked recipient: %@ as default verification status.", address);
+                NSData *identityKey = [[OWSIdentityManager shared] identityKeyForAddress:address
+                                                                             transaction:transaction];
+                OWSAssertDebug(identityKey);
+                [[OWSIdentityManager shared] setVerificationState:OWSVerificationStateDefault
+                                                      identityKey:identityKey
+                                                          address:address
+                                            isUserInitiatedChange:YES
+                                                      transaction:transaction];
+                break;
+            }
+        }
 
-            [transaction addAsyncCompletion:^{
-                [self resendMessage:message fromViewController:fromViewController];
-            }];
-        });
+        [transaction addAsyncCompletion:^{ [self resendMessage:message fromViewController:fromViewController]; }];
+    });
 }
 
 - (void)resendMessage:(TSOutgoingMessage *)message fromViewController:(UIViewController *)fromViewController

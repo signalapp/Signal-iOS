@@ -31,7 +31,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
 - (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction;

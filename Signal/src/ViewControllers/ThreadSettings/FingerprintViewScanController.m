@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewScanController.h"
@@ -38,13 +38,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(address.isValid);
 
     self.recipientAddress = address;
-    self.accountManager = [TSAccountManager sharedInstance];
+    self.accountManager = [TSAccountManager shared];
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
     self.contactName = [contactsManager displayNameForAddress:address];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
+        [[OWSIdentityManager shared] recipientIdentityForAddress:address];
     OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
@@ -183,10 +183,10 @@ NS_ASSUME_NONNULL_BEGIN
                                            @"Button that marks user as verified after a successful fingerprint scan.")
                                  style:ActionSheetActionStyleDefault
                                handler:^(ActionSheetAction *action) {
-                                   [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateVerified
-                                                                              identityKey:identityKey
-                                                                                  address:address
-                                                                    isUserInitiatedChange:YES];
+                                   [OWSIdentityManager.shared setVerificationState:OWSVerificationStateVerified
+                                                                       identityKey:identityKey
+                                                                           address:address
+                                                             isUserInitiatedChange:YES];
                                    [viewController dismissViewControllerAnimated:true completion:nil];
                                }]];
     ActionSheetAction *dismissAction =

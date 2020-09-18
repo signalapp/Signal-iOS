@@ -354,7 +354,7 @@ public struct StorageService {
     // MARK: - Dependencies
 
     private static var urlSession: OWSURLSession {
-        return OWSSignalService.sharedInstance().urlSessionForStorageService()
+        return OWSSignalService.shared().urlSessionForStorageService()
     }
 
     private static var signalServiceClient: SignalServiceClient {

@@ -15,7 +15,7 @@ public class ReactionManager: NSObject {
     }
 
     private static var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private static var messageSender: MessageSender {

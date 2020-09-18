@@ -71,7 +71,7 @@ struct GroupUpdateCopy {
     }
 
     private static var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     // MARK: -

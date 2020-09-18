@@ -138,7 +138,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         Logger.info("")
 
-        let wasRegistered = TSAccountManager.sharedInstance().isRegistered
+        let wasRegistered = TSAccountManager.shared().isRegistered
 
         let grdbStorage = createGrdbStorage()
         _grdbStorage = grdbStorage
@@ -152,7 +152,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         SSKEnvironment.shared.warmCaches()
         OWSIdentityManager.shared().recreateDatabaseQueue()
 
-        if wasRegistered != TSAccountManager.sharedInstance().isRegistered {
+        if wasRegistered != TSAccountManager.shared().isRegistered {
             NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
         }
     }

@@ -27,7 +27,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, BlockMode) {
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 - (void)addBlockedAddress:(SignalServiceAddress *)address blockMode:(BlockMode)blockMode;
 

@@ -46,7 +46,7 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
     return instance;
 }
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     static OWSDeviceManager *instance = nil;
     static dispatch_once_t onceToken;
@@ -124,7 +124,7 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 
 + (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 - (OWSIdentityManager *)identityManager

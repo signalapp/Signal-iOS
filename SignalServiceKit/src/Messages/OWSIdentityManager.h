@@ -33,7 +33,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage;
 - (void)recreateDatabaseQueue;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 - (void)generateNewIdentityKey;
 - (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction;

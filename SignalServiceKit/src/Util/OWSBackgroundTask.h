@@ -18,7 +18,7 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 - (void)observeNotifications;
 

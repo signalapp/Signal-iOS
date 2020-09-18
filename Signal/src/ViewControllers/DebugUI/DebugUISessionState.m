@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                             actionBlock:^{
                                 OWSLogError(@"Flipping identity Key. Flip again to return.");
 
-                                OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
+                                OWSIdentityManager *identityManager = [OWSIdentityManager shared];
                                 SignalServiceAddress *address = thread.contactAddress;
 
                                 NSData *currentKey = [identityManager identityKeyForAddress:address];
@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.sessionStore resetSessionStore:transaction];
-        [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
+        [[OWSIdentityManager shared] clearIdentityState:transaction];
     });
 }
 

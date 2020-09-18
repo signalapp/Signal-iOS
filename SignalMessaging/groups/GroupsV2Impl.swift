@@ -14,7 +14,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private var databaseStorage: SDSDatabaseStorage {
@@ -30,7 +30,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     }
 
     private var urlSession: OWSURLSession {
-        return OWSSignalService.sharedInstance().urlSessionForStorageService()
+        return OWSSignalService.shared().urlSessionForStorageService()
     }
 
     private var profileManager: OWSProfileManager {

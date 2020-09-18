@@ -48,7 +48,7 @@ class SyncPushTokensJob: NSObject {
                 shouldUploadTokens = true
             }
 
-            if AppVersion.sharedInstance().lastAppVersion != AppVersion.sharedInstance().currentAppVersion {
+            if AppVersion.shared().lastAppVersion != AppVersion.shared().currentAppVersion {
                 Logger.info("Uploading due to fresh install or app upgrade.")
                 shouldUploadTokens = true
             }

@@ -35,7 +35,7 @@ public class CreatePreKeysOperation: OWSOperation {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

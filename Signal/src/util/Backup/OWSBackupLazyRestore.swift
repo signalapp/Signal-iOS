@@ -16,7 +16,7 @@ public class BackupLazyRestore: NSObject {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     var databaseStorage: SDSDatabaseStorage {

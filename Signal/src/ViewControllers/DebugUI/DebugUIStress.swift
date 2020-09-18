@@ -17,7 +17,7 @@ public extension DebugUIStress {
     }
 
     private class var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

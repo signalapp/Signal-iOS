@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSTableContents *contents = [OWSTableContents new];
 
-    NSString *currentCountryCode = OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode;
+    NSString *currentCountryCode = OWSSignalService.shared.manualCensorshipCircumventionCountryCode;
 
     __weak DomainFrontingCountryViewController *weakSelf = self;
 
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(countryMetadata);
 
-    OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode;
+    OWSSignalService.shared.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode;
 
     [self.navigationController popViewControllerAnimated:YES];
 }

@@ -92,17 +92,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSIdentityManager *)identityManager
 {
-    return [OWSIdentityManager sharedManager];
+    return [OWSIdentityManager shared];
 }
 
 + (OWSBlockingManager *)blockingManager
 {
-    return [OWSBlockingManager sharedManager];
+    return [OWSBlockingManager shared];
 }
 
 + (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 + (id<SyncManagerProtocol>)syncManager
@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendVerificationSyncMessage
 {
-    [OWSIdentityManager.sharedManager tryToSyncQueuedVerificationStates];
+    [OWSIdentityManager.shared tryToSyncQueuedVerificationStates];
 }
 
 + (void)syncConversationSettingsWithThread:(TSThread *)thread

@@ -65,9 +65,9 @@ protocol DeviceTransferServiceObserver: class {
 ///
 @objc
 class DeviceTransferService: NSObject {
-    var tsAccountManager: TSAccountManager { .sharedInstance() }
+    var tsAccountManager: TSAccountManager { .shared() }
     var databaseStorage: SDSDatabaseStorage { .shared }
-    var sleepManager: DeviceSleepManager { .sharedInstance }
+    var sleepManager: DeviceSleepManager { .shared }
     var modelReadCaches: ModelReadCaches { .shared }
 
     @objc

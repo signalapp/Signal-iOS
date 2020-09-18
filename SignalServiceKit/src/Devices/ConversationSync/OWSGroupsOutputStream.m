@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [groupBuilder setColor:groupThread.conversationColorName];
 
-    if ([OWSBlockingManager.sharedManager isGroupIdBlocked:group.groupId]) {
+    if ([OWSBlockingManager.shared isGroupIdBlocked:group.groupId]) {
         [groupBuilder setBlocked:YES];
     }
 

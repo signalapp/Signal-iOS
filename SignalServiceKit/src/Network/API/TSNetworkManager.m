@@ -106,7 +106,7 @@ dispatch_queue_t NetworkManagerQueue()
 
 - (OWSSignalService *)signalService
 {
-    return [OWSSignalService sharedInstance];
+    return [OWSSignalService shared];
 }
 
 #pragma mark -
@@ -331,12 +331,12 @@ dispatch_queue_t NetworkManagerQueue()
 
 + (TSAccountManager *)tsAccountManager
 {
-    return TSAccountManager.sharedInstance;
+    return TSAccountManager.shared;
 }
 
 #pragma mark - Singleton
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     OWSAssertDebug(SSKEnvironment.shared.networkManager);
 
@@ -422,7 +422,7 @@ dispatch_queue_t NetworkManagerQueue()
 
             successParam(task, responseObject);
 
-            [OutageDetection.sharedManager reportConnectionSuccess];
+            [OutageDetection.shared reportConnectionSuccess];
         });
     };
     TSNetworkManagerSuccess failure = ^(NSURLSessionDataTask *task, NSError *error) {
@@ -526,7 +526,7 @@ dispatch_queue_t NetworkManagerQueue()
     [TSNetworkManager logCurlForTask:task];
 #endif
 
-    [OutageDetection.sharedManager reportConnectionFailure];
+    [OutageDetection.shared reportConnectionFailure];
 
     if (statusCode == AppExpiry.appExpiredStatusCode) {
         [AppExpiry.shared setHasAppExpiredAtCurrentVersion];

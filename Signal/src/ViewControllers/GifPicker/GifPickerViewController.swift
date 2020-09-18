@@ -141,7 +141,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - Dependencies
 
     var giphyAPI: GiphyAPI {
-        return GiphyAPI.sharedInstance
+        return GiphyAPI.shared
     }
 
     // MARK: -

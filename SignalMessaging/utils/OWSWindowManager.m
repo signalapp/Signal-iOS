@@ -98,7 +98,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 @implementation OWSWindowManager
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     OWSAssertDebug(Environment.shared.windowManager);
 

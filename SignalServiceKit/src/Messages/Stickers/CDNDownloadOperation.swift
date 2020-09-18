@@ -10,7 +10,7 @@ open class CDNDownloadOperation: OWSOperation {
     // MARK: - Dependencies
 
     private var signalService: OWSSignalService {
-        OWSSignalService.sharedInstance()
+        OWSSignalService.shared()
     }
 
     private var cdn0urlSession: OWSURLSession {

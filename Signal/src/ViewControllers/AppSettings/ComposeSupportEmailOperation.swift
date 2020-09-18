@@ -29,7 +29,7 @@ struct SupportEmailModel {
                                                      comment: "Localized subject for support request emails")
     var device: String = AppVersion.hardwareInfoString
     var osBuild: String = AppVersion.iOSVersionString
-    var signalBuild: String = AppVersion.sharedInstance().currentAppVersion
+    var signalBuild: String = AppVersion.shared().currentAppVersion
     var locale: String = NSLocale.current.identifier
 
     var userDescription: String?

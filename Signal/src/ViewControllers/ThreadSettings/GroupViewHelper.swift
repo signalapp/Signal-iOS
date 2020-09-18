@@ -22,7 +22,7 @@ class GroupViewHelper: NSObject {
     // MARK: - Dependencies
 
     var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     var contactsManager: OWSContactsManager {

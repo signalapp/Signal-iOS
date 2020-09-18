@@ -24,7 +24,7 @@ public class NewGroupConfirmViewController: OWSViewController {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

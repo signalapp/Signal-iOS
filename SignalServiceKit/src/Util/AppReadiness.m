@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AppReadiness
 
-+ (instancetype)sharedManager
++ (instancetype)shared
 {
     static AppReadiness *sharedMyManager = nil;
     static dispatch_once_t onceToken;
@@ -45,15 +45,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)isAppReady
 {
-    AppReadiness *instance = self.sharedManager;
+    AppReadiness *instance = self.shared;
     return [instance.readyFlag isSet];
 }
 
 + (void)runNowOrWhenAppWillBecomeReady:(AppReadyBlock)block
 {
-    DispatchMainThreadSafe(^{
-        [self.sharedManager runNowOrWhenAppWillBecomeReady:block];
-    });
+    DispatchMainThreadSafe(^{ [self.shared runNowOrWhenAppWillBecomeReady:block]; });
 }
 
 - (void)runNowOrWhenAppWillBecomeReady:(AppReadyBlock)block
@@ -71,9 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)runNowOrWhenAppDidBecomeReady:(AppReadyBlock)block
 {
-    DispatchMainThreadSafe(^{
-        [self.sharedManager runNowOrWhenAppDidBecomeReady:block];
-    });
+    DispatchMainThreadSafe(^{ [self.shared runNowOrWhenAppDidBecomeReady:block]; });
 }
 
 - (void)runNowOrWhenAppDidBecomeReady:(AppReadyBlock)block
@@ -91,9 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)runNowOrWhenAppDidBecomeReadyPolite:(AppReadyBlock)block
 {
-    DispatchMainThreadSafe(^{
-        [self.sharedManager runNowOrWhenAppDidBecomeReadyPolite:block];
-    });
+    DispatchMainThreadSafe(^{ [self.shared runNowOrWhenAppDidBecomeReadyPolite:block]; });
 }
 
 // We now have many (36+ in best case; many more in worst case)
@@ -126,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)setAppIsReady
 {
-    [self.sharedManager setAppIsReady];
+    [self.shared setAppIsReady];
 }
 
 - (void)setAppIsReady

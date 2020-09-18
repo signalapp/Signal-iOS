@@ -10,7 +10,7 @@ public class BulkUUIDLookup: NSObject {
     // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var reachabilityManager: SSKReachabilityManager {

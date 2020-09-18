@@ -284,7 +284,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private var databaseStorage: SDSDatabaseStorage {

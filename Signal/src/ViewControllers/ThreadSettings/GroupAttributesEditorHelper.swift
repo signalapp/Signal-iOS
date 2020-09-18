@@ -24,7 +24,7 @@ class GroupAttributesEditorHelper: NSObject {
     }
 
     fileprivate var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

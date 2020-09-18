@@ -66,11 +66,11 @@ extension SignalCall: CallManagerCallReference { }
             // Prevent device from sleeping while we have an active call.
             if oldValue != newValue {
                 if let oldValue = oldValue {
-                    DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
+                    DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
                 }
                 if let newValue = newValue {
                     assert(calls.contains(newValue))
-                    DeviceSleepManager.sharedInstance.addBlock(blockObject: newValue)
+                    DeviceSleepManager.shared.addBlock(blockObject: newValue)
                     self.startCallTimer()
                 } else {
                     stopAnyCallTimer()
@@ -147,7 +147,7 @@ extension SignalCall: CallManagerCallReference { }
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     private var notificationPresenter: NotificationPresenter {
@@ -1020,7 +1020,7 @@ extension SignalCall: CallManagerCallReference { }
             // TODO - This should not be a failure.
             call.state = .localFailure
             terminate(call: call)
-            
+
         case .ignoreCallsFromNonMultiringCallers:
             handleMissedCall(call)
             call.state = .localFailure

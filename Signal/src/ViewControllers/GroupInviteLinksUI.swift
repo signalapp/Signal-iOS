@@ -84,7 +84,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     // MARK: -

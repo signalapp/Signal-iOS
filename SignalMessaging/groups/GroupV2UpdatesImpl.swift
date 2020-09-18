@@ -25,7 +25,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private var profileManager: OWSProfileManager {
@@ -173,7 +173,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
 
         private var tsAccountManager: TSAccountManager {
-            return TSAccountManager.sharedInstance()
+            return TSAccountManager.shared()
         }
 
         private var messageProcessing: MessageProcessing {

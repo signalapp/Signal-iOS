@@ -143,7 +143,7 @@ public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseV
         }
 
         SDSDatabaseStorage.shared.write { transaction in
-            TSAccountManager.sharedInstance().setIsDiscoverableByPhoneNumber(
+            TSAccountManager.shared().setIsDiscoverableByPhoneNumber(
                 self.isDiscoverableByPhoneNumber,
                 updateStorageService: true,
                 transaction: transaction

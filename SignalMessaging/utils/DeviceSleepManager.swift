@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ import SignalServiceKit
 public class DeviceSleepManager: NSObject {
 
     @objc
-    public static let sharedInstance = DeviceSleepManager()
+    public static let shared = DeviceSleepManager()
 
     let serialQueue = DispatchQueue(label: "DeviceSleepManager")
 

@@ -28,7 +28,7 @@ public class AccountManager: NSObject {
     }
 
     private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+        return TSAccountManager.shared()
     }
 
     private var accountServiceClient: AccountServiceClient {

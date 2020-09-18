@@ -43,7 +43,7 @@ public class MessageSending: NSObject {
     }
 
     fileprivate static var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     fileprivate static var blockingManager: OWSBlockingManager {

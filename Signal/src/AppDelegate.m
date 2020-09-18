@@ -107,12 +107,12 @@ void uncaughtExceptionHandler(NSException *exception)
 
 - (OWSProfileManager *)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return [OWSProfileManager shared];
 }
 
 - (OWSReadReceiptManager *)readReceiptManager
 {
-    return [OWSReadReceiptManager sharedManager];
+    return [OWSReadReceiptManager shared];
 }
 
 - (id<OWSUDManager>)udManager
@@ -322,7 +322,7 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 #endif
 
-    [AppVersion sharedInstance];
+    [AppVersion shared];
 
     [self setupNSEInteroperation];
 
@@ -330,7 +330,7 @@ void uncaughtExceptionHandler(NSException *exception)
     // (e.g. long database upgrades).
     //
     // This block will be cleared in storageIsReady.
-    [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
+    [DeviceSleepManager.shared addBlockWithBlockObject:self];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;
@@ -370,10 +370,10 @@ void uncaughtExceptionHandler(NSException *exception)
         [self processRemoteNotification:remoteNotification completion:nil];
     }
 
-    [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
-    [[OWSWindowManager sharedManager] setupWithRootWindow:self.window
-                                     screenBlockingWindow:OWSScreenLockUI.sharedManager.screenBlockingWindow];
-    [OWSScreenLockUI.sharedManager startObserving];
+    [OWSScreenLockUI.shared setupWithRootWindow:self.window];
+    [[OWSWindowManager shared] setupWithRootWindow:self.window
+                              screenBlockingWindow:OWSScreenLockUI.shared.screenBlockingWindow];
+    [OWSScreenLockUI.shared startObserving];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(storageIsReady)
@@ -451,7 +451,7 @@ void uncaughtExceptionHandler(NSException *exception)
     self.didAppLaunchFail = YES;
 
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
-    [AppVersion sharedInstance];
+    [AppVersion shared];
 
     self.window = [OWSWindow new];
 
@@ -695,7 +695,7 @@ void uncaughtExceptionHandler(NSException *exception)
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        if (OWS2FAManager.sharedManager.isRegistrationLockEnabled && [self.tsAccountManager isRegisteredAndReady]) {
+        if (OWS2FAManager.shared.isRegistrationLockEnabled && [self.tsAccountManager isRegisteredAndReady]) {
             // Ping server once a day to keep-alive reglock clients.
             const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
             [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
@@ -788,7 +788,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [AppEnvironment.shared.notificationPresenter clearAllNotifications];
-        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+        [OWSMessageUtils.shared updateApplicationBadgeCount];
     }];
 }
 
@@ -1220,9 +1220,9 @@ void uncaughtExceptionHandler(NSException *exception)
                                         preferences:Environment.shared.preferences];
     }
 
-    [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [DeviceSleepManager.shared removeBlockWithBlockObject:self];
 
-    [AppVersion.sharedInstance mainAppLaunchDidComplete];
+    [AppVersion.shared mainAppLaunchDidComplete];
 
     [Environment.shared.audioSession setup];
 

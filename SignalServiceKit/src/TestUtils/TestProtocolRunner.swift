@@ -149,7 +149,7 @@ public struct LocalSignalClient: SignalClient {
     }
 
     public var uuid: UUID {
-        return TSAccountManager.sharedInstance().localUuid!
+        return TSAccountManager.shared().localUuid!
     }
 
     public let deviceId: UInt32 = 1

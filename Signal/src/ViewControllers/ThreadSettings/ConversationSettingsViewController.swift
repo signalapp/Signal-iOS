@@ -54,7 +54,7 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     var tsAccountManager: TSAccountManager {
-        return .sharedInstance()
+        return .shared()
     }
 
     var blockingManager: OWSBlockingManager {

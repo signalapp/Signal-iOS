@@ -394,8 +394,8 @@ public class SignalServiceAddressCache: NSObject {
 
     @objc
     func warmCaches() {
-        let localNumber = TSAccountManager.sharedInstance().localNumber
-        let localUuid = TSAccountManager.sharedInstance().localUuid
+        let localNumber = TSAccountManager.shared().localNumber
+        let localUuid = TSAccountManager.shared().localUuid
 
         if localNumber != nil || localUuid != nil {
             hashAndCache(uuid: localUuid, phoneNumber: localNumber, trustLevel: .high)

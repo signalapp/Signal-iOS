@@ -48,7 +48,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 + (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 #pragma mark - Sender/Recipient Read Receipts
 
