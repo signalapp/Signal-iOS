@@ -45,8 +45,6 @@ const NSUInteger kMinimumSearchLength = 2;
     FindByPhoneNumberDelegate,
     MFMessageComposeViewControllerDelegate>
 
-@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
-
 @property (nonatomic, readonly) UIStackView *signalContactsStackView;
 
 @property (nonatomic, readonly) UIView *noSignalContactsView;
