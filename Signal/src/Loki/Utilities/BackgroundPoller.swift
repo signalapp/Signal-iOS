@@ -2,6 +2,7 @@ import PromiseKit
 
 @objc(LKBackgroundPoller)
 public final class BackgroundPoller : NSObject {
+    private static var closedGroupPoller: ClosedGroupPoller!
 
     private override init() { }
 
@@ -9,7 +10,8 @@ public final class BackgroundPoller : NSObject {
     public static func poll(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         var promises: [Promise<Void>] = []
         promises.append(AppEnvironment.shared.messageFetcherJob.run()) // FIXME: It'd be nicer to just use Poller directly
-        promises.append(contentsOf: ClosedGroupPoller().pollOnce())
+        closedGroupPoller = ClosedGroupPoller()
+        promises.append(contentsOf: closedGroupPoller.pollOnce())
         var openGroups: [String:PublicChat] = [:]
         Storage.read { transaction in
             openGroups = LokiDatabaseUtilities.getAllPublicChats(in: transaction)
