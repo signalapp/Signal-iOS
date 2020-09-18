@@ -60,14 +60,6 @@ class AddToBlockListViewController: OWSViewController {
 
 extension AddToBlockListViewController: RecipientPickerDelegate {
 
-    // MARK: - Dependencies
-
-    private var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
-    }
-
-    // MARK: -
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         canSelectRecipient recipient: PickedRecipient

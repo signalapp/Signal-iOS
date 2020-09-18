@@ -53,16 +53,6 @@ private class StickerPackActionButton: UIView {
 @objc
 public class ManageStickersViewController: OWSTableViewController {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var stickerManager: StickerManager {
-        return SSKEnvironment.shared.stickerManager
-    }
-
     // MARK: Initializers
 
     @objc

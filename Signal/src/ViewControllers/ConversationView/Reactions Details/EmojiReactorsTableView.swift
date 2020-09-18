@@ -16,10 +16,6 @@ class EmojiReactorsTableView: UITableView {
         didSet { reloadData() }
     }
 
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     init() {
         super.init(frame: .zero, style: .plain)
 

@@ -12,16 +12,8 @@ import SignalMessaging
 // TODO: Ensure buttons enabled & disabled as necessary.
 class CallViewController: OWSViewController, CallObserver, CallServiceObserver, CallAudioServiceDelegate {
 
-    // Dependencies
-
-    var callUIAdapter: CallUIAdapter {
-        return AppEnvironment.shared.callService.callUIAdapter
-    }
-
     // Feature Flag
     @objc public static let kShowCallViewOnSeparateWindow = true
-
-    let contactsManager: OWSContactsManager
 
     // MARK: - Properties
 
@@ -214,7 +206,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - Initializers
 
     required init(call: SignalCall) {
-        contactsManager = Environment.shared.contactsManager
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.remoteAddress)
         super.init()

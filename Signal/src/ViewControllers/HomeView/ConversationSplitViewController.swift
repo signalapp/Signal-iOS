@@ -8,13 +8,6 @@ import MultipeerConnectivity
 @objc
 class ConversationSplitViewController: UISplitViewController, ConversationSplit {
 
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage { .shared }
-    var deviceTransferService: DeviceTransferService { .shared }
-
-    // MARK: -
-
     fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
 
     private let conversationListVC = ConversationListViewController()

@@ -55,38 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Dependencies
-
-- (id<OWSUDManager>)udManager
-{
-    return SSKEnvironment.shared.udManager;
-}
-
-- (OWSPreferences *)preferences
-{
-    return Environment.shared.preferences;
-}
-
-- (OWSReadReceiptManager *)readReceiptManager
-{
-    return OWSReadReceiptManager.shared;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-- (TSAccountManager *)accountManager
-{
-    return TSAccountManager.shared;
-}
-
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -246,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Show the change pin and reglock sections
-    if (self.accountManager.isRegisteredPrimaryDevice) {
+    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *pinsSection = [OWSTableSection new];
         pinsSection.headerTitle
             = NSLocalizedString(@"SETTINGS_PINS_TITLE", @"Title for the 'PINs' section of the privacy settings.");
@@ -442,7 +410,7 @@ NS_ASSUME_NONNULL_BEGIN
     [contents addSection:unidentifiedDeliveryIndicatorsSection];
 
     // Only the primary device can adjust the unrestricted UD setting. We don't sync this setting.
-    if (self.accountManager.isRegisteredPrimaryDevice) {
+    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *unidentifiedDeliveryUnrestrictedSection = [OWSTableSection new];
         OWSTableItem *unrestrictedAccessItem = [OWSTableItem
             switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS", @"switch label")

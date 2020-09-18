@@ -38,29 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ConversationListCell
 
-#pragma mark - Dependencies
-
-- (OWSContactsManager *)contactsManager
-{
-    OWSAssertDebug(Environment.shared.contactsManager);
-
-    return Environment.shared.contactsManager;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-#pragma mark -
-
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {

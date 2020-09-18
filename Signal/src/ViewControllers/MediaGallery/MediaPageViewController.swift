@@ -112,12 +112,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("deinit")
     }
 
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: - Subview
 
     // MARK: Top Bar
@@ -662,10 +656,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     // MARK: Dynamic Header
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
 
     private func senderName(message: TSMessage) -> String {
         switch message {

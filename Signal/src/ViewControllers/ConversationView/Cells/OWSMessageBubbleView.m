@@ -72,22 +72,6 @@ typedef struct {
 
 @implementation OWSMessageBubbleView
 
-#pragma mark - Dependencies
-
-- (OWSAttachmentDownloads *)attachmentDownloads
-{
-    return SSKEnvironment.shared.attachmentDownloads;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-#pragma mark -
-
 - (instancetype)init
 {
     self = [super initWithFrame:CGRectZero];

@@ -181,17 +181,6 @@ extension MemberActionSheet: CNContactViewControllerDelegate {
 }
 
 private class MemberHeader: UIStackView {
-    var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var profileManager: OWSProfileManager {
-        return .shared()
-    }
 
     private var dismiss: () -> Void
 

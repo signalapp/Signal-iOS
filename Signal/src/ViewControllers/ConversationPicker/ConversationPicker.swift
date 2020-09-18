@@ -26,22 +26,6 @@ protocol ConversationPickerDelegate: AnyObject {
 @objc
 class ConversationPickerViewController: OWSViewController {
 
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    // MARK: -
-
     weak var delegate: ConversationPickerDelegate?
 
     enum Section: Int, CaseIterable {
@@ -142,9 +126,6 @@ class ConversationPickerViewController: OWSViewController {
     }
 
     let blockListCache = BlockListCache()
-    var fullTextSearcher: FullTextSearcher {
-        return FullTextSearcher.shared
-    }
 
     func buildSearchResults(searchText: String) -> Promise<ComposeScreenSearchResultSet?> {
         guard searchText.count > 1 else {

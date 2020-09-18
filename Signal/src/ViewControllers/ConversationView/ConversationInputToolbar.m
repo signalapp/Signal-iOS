@@ -132,18 +132,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (OWSLinkPreviewManager *)linkPreviewManager
-{
-    return SSKEnvironment.shared.linkPreviewManager;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 #pragma mark -
 
 - (CGSize)intrinsicContentSize

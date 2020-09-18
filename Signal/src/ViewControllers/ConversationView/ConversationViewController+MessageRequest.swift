@@ -8,38 +8,6 @@ import SafariServices
 @objc
 extension ConversationViewController: MessageRequestDelegate {
 
-    // MARK: - Dependencies
-
-    private static var databaseStorage: SDSDatabaseStorage {
-        return SSKEnvironment.shared.databaseStorage
-    }
-
-    private var blockingManager: OWSBlockingManager {
-        return .shared()
-    }
-
-    private var profileManager: OWSProfileManager {
-        return .shared()
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    private var contactManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    private var syncManager: SyncManagerProtocol {
-        return SSKEnvironment.shared.syncManager
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: -
-
     func messageRequestViewDidTapBlock(mode: MessageRequestMode) {
         AssertIsOnMainThread()
 
@@ -112,7 +80,7 @@ extension ConversationViewController: MessageRequestDelegate {
             return
         }
         let addedByAddress = SignalServiceAddress(uuid: addedByUuid)
-        let addedByName = contactManager.displayName(for: addedByAddress)
+        let addedByName = contactsManager.displayName(for: addedByAddress)
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
 

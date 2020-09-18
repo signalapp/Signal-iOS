@@ -7,22 +7,11 @@ import UIKit
 import PromiseKit
 
 @objc
-public class GroupInviteLinksUI: NSObject {
-
-    // MARK: - Dependencies
-
-    private class var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private class var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    // MARK: -
+public class GroupInviteLinksUI: UIView {
 
     @available(*, unavailable, message:"Do not instantiate this class.")
-    private override init() {
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc
@@ -72,22 +61,6 @@ public class GroupInviteLinksUI: NSObject {
 // MARK: -
 
 class GroupInviteLinksActionSheet: ActionSheetController {
-
-    // MARK: - Dependencies
-
-    private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    private var tsAccountManager: TSAccountManager {
-        return .shared()
-    }
-
-    // MARK: -
 
     private let groupInviteLinkInfo: GroupInviteLinkInfo
     private let groupV2ContextInfo: GroupV2ContextInfo

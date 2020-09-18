@@ -48,7 +48,6 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         }
     }
 
-    private var databaseStorage: SDSDatabaseStorage { .shared }
     private var hasPendingRestoration: Bool {
         databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
     }

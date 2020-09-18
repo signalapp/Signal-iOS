@@ -13,12 +13,6 @@ public class ConversationMediaView: UIView {
         case failed
     }
 
-    // MARK: - Dependencies
-
-    private var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
-    }
-
     // MARK: -
 
     private let mediaCache: NSCache<NSString, AnyObject>

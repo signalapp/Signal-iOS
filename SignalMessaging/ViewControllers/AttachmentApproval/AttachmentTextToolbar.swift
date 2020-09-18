@@ -22,14 +22,6 @@ protocol AttachmentTextToolbarDelegate: class, MentionTextViewDelegate {
 
 class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
 
-    // MARK: - Dependencies
-
-    private var preferences: OWSPreferences {
-        return Environment.shared.preferences
-    }
-
-    // MARK: - Properties
-
     var options: AttachmentApprovalViewControllerOptions {
         didSet {
             updateContent()

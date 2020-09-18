@@ -78,7 +78,7 @@ extension ContactConversationItem: ConversationItem {
 
     // MARK: - Dependencies
 
-    var contactManager: OWSContactsManager {
+    var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
     }
 
@@ -102,7 +102,7 @@ extension ContactConversationItem: ConversationItem {
 
     var image: UIImage? {
         return databaseStorage.uiRead { transaction in
-            return self.contactManager.image(for: self.address, transaction: transaction)
+            return self.contactsManager.image(for: self.address, transaction: transaction)
         }
     }
 }

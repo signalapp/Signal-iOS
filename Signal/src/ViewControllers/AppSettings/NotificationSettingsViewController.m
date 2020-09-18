@@ -8,6 +8,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
@@ -31,18 +32,6 @@
     [super viewDidAppear:animated];
 
     [self updateTableContents];
-}
-
-#pragma mark - Dependencies
-
-- (OWSPreferences *)preferences
-{
-    return Environment.shared.preferences;
-}
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark - Table Contents

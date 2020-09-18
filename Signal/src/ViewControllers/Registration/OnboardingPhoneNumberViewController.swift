@@ -8,14 +8,6 @@ import PromiseKit
 @objc
 public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.shared()
-    }
-
-    // MARK: -
-
     private let countryNameLabel = UILabel()
     private let callingCodeLabel = UILabel()
     private let phoneNumberTextField = UITextField()

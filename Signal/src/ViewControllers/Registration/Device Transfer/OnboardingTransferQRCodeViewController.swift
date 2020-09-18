@@ -7,8 +7,6 @@ import MultipeerConnectivity
 
 public class OnboardingTransferQRCodeViewController: OnboardingBaseViewController {
 
-    var deviceTransferService: DeviceTransferService { .shared }
-
     private let qrCodeView = QRCodeView()
 
     override public func loadView() {

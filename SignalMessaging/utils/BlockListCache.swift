@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,6 +33,8 @@ public protocol BlockListCacheDelegate: class {
 ///         ...
 ///      }
 ///
+//
+// TODO: Hang on SSKEnvironment?
 @objc(OWSBlockListCache)
 public class BlockListCache: NSObject {
 

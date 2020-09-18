@@ -20,20 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AdvancedSettingsTableViewController
 
-#pragma mark - Dependencies
-
-- (id<SSKReachabilityManager>)reachabilityManager
-{
-    return SSKEnvironment.shared.reachabilityManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    return TSAccountManager.shared;
-}
-
-#pragma mark -
-
 - (void)loadView
 {
     [super loadView];

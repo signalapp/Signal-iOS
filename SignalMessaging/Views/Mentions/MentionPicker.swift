@@ -20,10 +20,6 @@ class MentionPicker: UIView {
 
     lazy private(set) var filteredMentionableUsers = mentionableUsers
 
-    static var contactsManager: OWSContactsManager { Environment.shared.contactsManager }
-    static var databaseStorage: SDSDatabaseStorage { .shared }
-    static var profileManager: OWSProfileManager { .shared() }
-
     let style: Mention.Style
     let selectedAddressCallback: (SignalServiceAddress) -> Void
 

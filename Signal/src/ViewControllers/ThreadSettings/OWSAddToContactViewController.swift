@@ -19,14 +19,6 @@ public class OWSAddToContactViewController: OWSViewController {
 
     fileprivate let contactCellReuseIdentifier = "contactCellReuseIdentifier"
 
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    var contactsViewHelper: ContactsViewHelper {
-        return Environment.shared.contactsViewHelper
-    }
-
     @objc public init(address: SignalServiceAddress) {
         self.address = address
         super.init()

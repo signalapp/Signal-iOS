@@ -7,14 +7,6 @@ import Foundation
 @objc
 public class MediaDownloadView: UIView {
 
-    // MARK: - Dependencies
-
-    private var attachmentDownloads: OWSAttachmentDownloads {
-        return SSKEnvironment.shared.attachmentDownloads
-    }
-
-    // MARK: -
-
     private let attachmentId: String
     private let progressView: CircularProgressView
 

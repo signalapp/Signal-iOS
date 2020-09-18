@@ -7,7 +7,6 @@ import MultipeerConnectivity
 
 @objc
 public class OnboardingTransferProgressViewController: OnboardingBaseViewController {
-    var deviceTransferService: DeviceTransferService { .shared }
 
     let progressView: TransferProgressView
 

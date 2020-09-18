@@ -28,20 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation BlockListViewController
 
-#pragma mark - Dependencies
-
-- (OWSBlockingManager *)blockingManager
-{
-    return OWSBlockingManager.shared;
-}
-
-- (ContactsViewHelper *)contactsViewHelper
-{
-    return Environment.shared.contactsViewHelper;
-}
-
-#pragma mark -
-
 - (void)loadView
 {
     [super loadView];

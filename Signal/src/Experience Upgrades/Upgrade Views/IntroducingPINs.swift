@@ -57,10 +57,6 @@ class IntroducingPinsMegaphone: MegaphoneView {
 class IntroducingPinsSplash: SplashViewController {
     override var isReadyToComplete: Bool { KeyBackupService.hasMasterKey }
 
-    var ows2FAManager: OWS2FAManager {
-        return .shared()
-    }
-
     override var canDismissWithGesture: Bool { return false }
 
     // MARK: - View lifecycle

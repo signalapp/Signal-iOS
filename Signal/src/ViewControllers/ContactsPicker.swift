@@ -35,10 +35,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     private let contactCellReuseIdentifier = "contactCellReuseIdentifier"
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
     private let collation = UILocalizedIndexedCollation.current()
     public var collationForTests: UILocalizedIndexedCollation {
         get {

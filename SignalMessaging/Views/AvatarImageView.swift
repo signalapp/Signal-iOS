@@ -47,17 +47,8 @@ public class AvatarImageView: UIImageView {
 @objc
 public class ConversationAvatarImageView: AvatarImageView {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     var thread: TSThread
     let diameter: UInt
-    let contactsManager: OWSContactsManager
 
     // nil if group avatar
     let recipientAddress: SignalServiceAddress?
@@ -65,10 +56,9 @@ public class ConversationAvatarImageView: AvatarImageView {
     // nil if contact avatar
     let groupThreadId: String?
 
-    required public init(thread: TSThread, diameter: UInt, contactsManager: OWSContactsManager) {
+    required public init(thread: TSThread, diameter: UInt) {
         self.thread = thread
         self.diameter = diameter
-        self.contactsManager = contactsManager
 
         switch thread {
         case let contactThread as TSContactThread:

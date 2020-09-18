@@ -8,18 +8,6 @@ import PromiseKit
 @objc
 public class StickerSharingViewController: SelectThreadViewController {
 
-    // MARK: Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    var linkPreviewManager: OWSLinkPreviewManager {
-        return SSKEnvironment.shared.linkPreviewManager
-    }
-
-    // MARK: -
-
     private let stickerPackInfo: StickerPackInfo
 
     init(stickerPackInfo: StickerPackInfo) {

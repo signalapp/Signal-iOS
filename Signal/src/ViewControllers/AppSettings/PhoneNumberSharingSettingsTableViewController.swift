@@ -6,17 +6,6 @@ import Foundation
 
 @objc
 class PhoneNumberSharingSettingsTableViewController: OWSTableViewController {
-    static var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    var udManager: OWSUDManager {
-        return SSKEnvironment.shared.udManager
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
 
     @objc
     class var nameForCurrentMode: String {

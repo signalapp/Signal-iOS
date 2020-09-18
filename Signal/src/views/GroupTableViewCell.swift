@@ -7,14 +7,6 @@ import SignalServiceKit
 
 @objc class GroupTableViewCell: UITableViewCell {
 
-    // MARK: - Dependencies
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-
-    // MARK: -
-
     private let avatarView = AvatarImageView()
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()

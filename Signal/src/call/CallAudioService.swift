@@ -139,7 +139,7 @@ protocol CallAudioServiceDelegate: class {
 
             // Apple Docs say that setting mode to AVAudioSessionModeVideoChat has the
             // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
-            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // option, and inspect AVAudioSession.shared.categoryOptions == 0. And availableInputs
             // does not include my linked bluetooth device
             setAudioSession(category: .playAndRecord,
                             mode: .videoChat,
@@ -147,7 +147,7 @@ protocol CallAudioServiceDelegate: class {
         } else {
             // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
             // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
-            // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
+            // option, and inspect AVAudioSession.shared.categoryOptions == 0. And availableInputs
             // does not include my linked bluetooth device
             setAudioSession(category: .playAndRecord,
                             mode: .voiceChat,
