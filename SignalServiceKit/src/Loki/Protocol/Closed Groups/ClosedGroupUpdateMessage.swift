@@ -50,7 +50,6 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
                 let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
             self.kind = .info(groupPublicKey: groupPublicKey, name: name, senderKeys: senderKeys, members: members, admins: admins)
         case "senderKeyRequest":
-            guard let name = coder.decodeObject(forKey: "name") as? String else { return nil }
             self.kind = .senderKeyRequest(groupPublicKey: groupPublicKey)
         case "senderKey":
             guard let senderKeys = coder.decodeObject(forKey: "senderKeys") as? [ClosedGroupSenderKey],
