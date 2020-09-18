@@ -161,11 +161,11 @@ public class RemoteConfig: BaseFlags {
         // or the wildcard is specified, we assume the megaphone is not enabled.
         let countEnabledPerCountryCode = value
             .components(separatedBy: ",")
-            .reduce(into: [String: Int]()) { result, value in
+            .reduce(into: [String: UInt64]()) { result, value in
                 let components = value.components(separatedBy: ":")
                 guard components.count == 2 else { return owsFailDebug("Invalid research megaphone value \(value)")}
                 let countryCode = components[0]
-                let countEnabled = Int(components[1])
+                let countEnabled = UInt64(components[1])
                 result[countryCode] = countEnabled
         }
 
@@ -189,15 +189,19 @@ public class RemoteConfig: BaseFlags {
 
     // MARK: -
 
-    private static func isBucketEnabled(key: String, countEnabled: Int, bucketSize: Int) -> Bool {
+    private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64) -> Bool {
         guard let uuid = TSAccountManager.shared().localUuid else {
             owsFailDebug("Missing local UUID")
             return false
         }
 
-        guard var data = key.data(using: .utf8) else {
+        return countEnabled > bucket(key: key, uuid: uuid, bucketSize: bucketSize)
+    }
+
+    static func bucket(key: String, uuid: UUID, bucketSize: UInt64) -> UInt64 {
+        guard var data = (key + ".").data(using: .utf8) else {
             owsFailDebug("Failed to get data from key")
-            return false
+            return 0
         }
 
         let uuidBytes = withUnsafePointer(to: uuid.uuid) {
@@ -208,15 +212,20 @@ public class RemoteConfig: BaseFlags {
 
         guard let hash = Cryptography.computeSHA256Digest(data) else {
             owsFailDebug("Failed to calculate hash")
-            return false
+            return 0
         }
 
-        // current_user_bucket = ABS(SHA256(key + BIGENDIAN(localUuid))) % bucketSize
-        let currentUserBucket = hash.withUnsafeBytes {
-            abs($0.load(as: Int64.self)) % Int64(bucketSize)
+        guard hash.count == 32 else {
+            owsFailDebug("Hash has incorrect length \(hash.count)")
+            return 0
         }
 
-        return countEnabled > currentUserBucket
+        // uuid_bucket = UINT64_FROM_FIRST_8_BYTES_BIG_ENDIAN(SHA256(rawFlag + "." + uuidBytes)) % bucketSize
+        let uuidBucket = hash[0..<8].withUnsafeBytes {
+            UInt64(bigEndian: $0.load(as: UInt64.self)) % bucketSize
+        }
+
+        return uuidBucket
     }
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {
