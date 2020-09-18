@@ -1323,7 +1323,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             }
         }
 
-        if (!SSKFeatureFlags.phoneNumberSharing) {
+        if (!SSKFeatureFlags.phoneNumberSharing || SSKDebugFlags.allowV1GroupsUpdates) {
             [groupBuilder setMembersE164:membersE164];
             [groupBuilder setMembers:members];
         } else {
