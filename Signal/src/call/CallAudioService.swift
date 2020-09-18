@@ -36,7 +36,7 @@ protocol CallAudioServiceDelegate: class {
     }
 
     var avAudioSession: AVAudioSession {
-        return AVAudioSession.shared()
+        return AVAudioSession.sharedInstance()
     }
 
     // MARK: - Initializers

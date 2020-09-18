@@ -83,7 +83,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 
 - (void)enableTTYLogging
 {
-    [DDLog addLogger:DDTTYLogger.shared];
+    [DDLog addLogger:DDTTYLogger.sharedInstance];
 }
 
 - (NSURL *)errorLogsDir
