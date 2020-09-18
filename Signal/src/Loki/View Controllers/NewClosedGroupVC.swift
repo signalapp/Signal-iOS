@@ -340,7 +340,7 @@ private extension NewClosedGroupVC {
             profilePictureView.update()
             displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
             let icon = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
-            tickImageView.image = icon.asTintedImage(color: Colors.text)!
+            tickImageView.image = isDarkMode ? icon : icon.asTintedImage(color: Colors.text)!
         }
     }
 }
