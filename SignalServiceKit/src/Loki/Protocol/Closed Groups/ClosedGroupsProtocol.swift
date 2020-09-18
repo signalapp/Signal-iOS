@@ -241,8 +241,8 @@ public final class ClosedGroupsProtocol : NSObject {
         case .new: return !(closedGroupUpdate.name ?? "").isEmpty && !(closedGroupUpdate.groupPrivateKey ?? Data()).isEmpty && !closedGroupUpdate.senderKeys.isEmpty
             && !closedGroupUpdate.members.isEmpty && !closedGroupUpdate.admins.isEmpty
         case .info: return !(closedGroupUpdate.name ?? "").isEmpty && !closedGroupUpdate.members.isEmpty && !closedGroupUpdate.admins.isEmpty // senderKeys may be empty
-        case .senderKey: return true
-        case .senderKeyRequest: return !closedGroupUpdate.senderKeys.isEmpty
+        case .senderKeyRequest: return true
+        case .senderKey: return !closedGroupUpdate.senderKeys.isEmpty
         }
     }
 
