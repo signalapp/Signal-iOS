@@ -21,9 +21,9 @@ public final class LokiPushNotificationManager : NSObject {
     private override init() { }
 
     // MARK: Registration
-    /// Registers the user for silent push notifications (that then trigger the app
-    /// into fetching messages). Only the user's device token is needed for this.
-    static func register(with token: Data, isForcedUpdate: Bool) -> Promise<Void> {
+    /// Unregisters the user for push notifications.
+    /// Only the user's device token is needed for this.
+    static func unregister(with token: Data, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let oldToken = userDefaults[.deviceToken]
@@ -35,10 +35,10 @@ public final class LokiPushNotificationManager : NSObject {
             return Promise<Void> { $0.fulfill(()) }
         }
         let parameters = [ "token" : hexEncodedToken ]
-        let url = URL(string: "\(server)/register")!
+        let url = URL(string: "\(server)/unregister")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -60,11 +60,11 @@ public final class LokiPushNotificationManager : NSObject {
         return promise
     }
 
-    /// Registers the user for silent push notifications (that then trigger the app
-    /// into fetching messages). Only the user's device token is needed for this.
-    @objc(registerWithToken:isForcedUpdate:)
-    static func objc_register(with token: Data, isForcedUpdate: Bool) -> AnyPromise {
-        return AnyPromise.from(register(with: token, isForcedUpdate: isForcedUpdate))
+    /// Unregisters the user for push notifications.
+    /// Only the user's device token is needed for this.
+    @objc(unregisterWithToken:isForcedUpdate:)
+    static func objc_unregister(with token: Data, isForcedUpdate: Bool) -> AnyPromise {
+        return AnyPromise.from(unregister(with: token, isForcedUpdate: isForcedUpdate))
     }
 
     /// Registers the user for normal push notifications. Requires the user's device
@@ -83,7 +83,7 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -119,17 +119,17 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/\(operation.rawValue)")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
-                return print("[Loki] Couldn't subscribe to PNs for closed group with ID: \(closedGroupPublicKey).")
+                return print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
             }
             guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't subscribe to PNs for closed group with ID: \(closedGroupPublicKey) due to error: \(json["message"] as? String ?? "nil").")
+                return print("[Loki] Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(json["message"] as? String ?? "nil").")
             }
             return
         }
         promise.catch2 { error in
-            print("[Loki] Couldn't subscribe to PNs for closed group with ID: \(closedGroupPublicKey).")
+            print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
         }
         return promise
     }

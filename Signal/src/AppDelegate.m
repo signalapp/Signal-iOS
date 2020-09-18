@@ -763,7 +763,7 @@ static NSTimeInterval launchStartedAt;
     if (isUsingFullAPNs) {
         __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
     } else {
-        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken isForcedUpdate:NO];
+        __unused AnyPromise *promise = [LKPushNotificationManager unregisterWithToken:deviceToken isForcedUpdate:NO];
     }
 }
 
@@ -949,7 +949,7 @@ static NSTimeInterval launchStartedAt;
     NSString *hexEncodedDeviceToken = [userDefaults stringForKey:@"deviceToken"];
     if (isUsingFullAPNs && hexEncodedDeviceToken != nil) {
         NSData *deviceToken = [NSData dataFromHexString:hexEncodedDeviceToken];
-        [[LKPushNotificationManager registerWithToken:deviceToken isForcedUpdate:YES] retainUntilComplete]; // This actually unregisters the user; we should rename the function
+        [[LKPushNotificationManager unregisterWithToken:deviceToken isForcedUpdate:YES] retainUntilComplete];
     }
     [ThreadUtil deleteAllContent];
     [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
