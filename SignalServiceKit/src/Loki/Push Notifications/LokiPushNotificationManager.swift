@@ -9,7 +9,7 @@ public final class LokiPushNotificationManager : NSObject {
     #else
     private static let server = "https://live.apns.getsession.org"
     #endif
-    internal static let PNServerPublicKey = "642a6585919742e5a2d4dc51244964fbcd8bcab2b75612407de58b810740d049"
+    internal static let pnServerPublicKey = "642a6585919742e5a2d4dc51244964fbcd8bcab2b75612407de58b810740d049"
     private static let tokenExpirationInterval: TimeInterval = 12 * 60 * 60
 
     public enum ClosedGroupOperation: String {
@@ -21,8 +21,7 @@ public final class LokiPushNotificationManager : NSObject {
     private override init() { }
 
     // MARK: Registration
-    /// Unregisters the user for push notifications.
-    /// Only the user's device token is needed for this.
+    /// Unregisters the user from push notifications. Only the user's device token is needed for this.
     static func unregister(with token: Data, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
@@ -38,7 +37,7 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/unregister")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -60,14 +59,13 @@ public final class LokiPushNotificationManager : NSObject {
         return promise
     }
 
-    /// Unregisters the user for push notifications.
-    /// Only the user's device token is needed for this.
+    /// Unregisters the user from push notifications. Only the user's device token is needed for this.
     @objc(unregisterWithToken:isForcedUpdate:)
     static func objc_unregister(with token: Data, isForcedUpdate: Bool) -> AnyPromise {
         return AnyPromise.from(unregister(with: token, isForcedUpdate: isForcedUpdate))
     }
 
-    /// Registers the user for normal push notifications. Requires the user's device
+    /// Registers the user for push notifications. Requires the user's device
     /// token and their Session ID.
     static func register(with token: Data, publicKey: String, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
@@ -83,7 +81,7 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -105,7 +103,7 @@ public final class LokiPushNotificationManager : NSObject {
         return promise
     }
 
-    /// Registers the user for normal push notifications. Requires the user's device
+    /// Registers the user for push notifications. Requires the user's device
     /// token and their Session ID.
     @objc(registerWithToken:hexEncodedPublicKey:isForcedUpdate:)
     static func objc_register(with token: Data, publicKey: String, isForcedUpdate: Bool) -> AnyPromise {
@@ -119,7 +117,7 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/\(operation.rawValue)")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
             }
@@ -134,30 +132,29 @@ public final class LokiPushNotificationManager : NSObject {
         return promise
     }
     
-    @objc(notifyMessage:)
-    static func objc_notify(_ signalMessage: SignalMessage) -> AnyPromise {
-        return AnyPromise.from(notify(signalMessage))
-    }
-    
-    static func notify(_ signalMessage: SignalMessage) -> Promise<Void> {
+    static func notify(for signalMessage: SignalMessage) -> Promise<Void> {
         let message = LokiMessage.from(signalMessage: signalMessage)!
-        guard message.ttl == TTLUtilities.getTTL(for: .regular)  else { return Promise<Void> { $0.fulfill(()) } }
         let parameters = [ "data" : message.data.description, "send_to" : message.recipientPublicKey]
         let url = URL(string: "\(server)/notify")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: PNServerPublicKey).map2 { response in
+        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
-                return print("[Loki] Couldn't notify message.")
+                return print("[Loki] Couldn't notify PN server.")
             }
             guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't notify message due to error: \(json["message"] as? String ?? "nil").")
+                return print("[Loki] Couldn't notify PN server due to error: \(json["message"] as? String ?? "nil").")
             }
             return
         }
         promise.catch2 { error in
-            print("[Loki] Couldn't notify message.")
+            print("[Loki] Couldn't notify PN server.")
         }
         return promise
+    }
+
+    @objc(notifyForMessage:)
+    static func objc_notify(for signalMessage: SignalMessage) -> AnyPromise {
+        return AnyPromise.from(notify(for: signalMessage))
     }
 }

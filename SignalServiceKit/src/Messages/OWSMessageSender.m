@@ -900,7 +900,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
-        
+
+    BOOL notifyPNServer = ((message.body != nil && message.body.length > 0) || message.hasAttachments);
+
     OWSLogInfo(@"Attempting to send message: %@, timestamp: %llu, recipient: %@.",
         message.class,
         message.timestamp,
@@ -1135,7 +1137,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
-                    [LKPushNotificationManager notifyMessage:signalMessage];
+                    if (notifyPNServer) {
+                        [LKPushNotificationManager notifyForMessage:signalMessage];
+                    }
                     [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:messageSend.isUDSend wasSentByWebsocket:false];
                 })
                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
