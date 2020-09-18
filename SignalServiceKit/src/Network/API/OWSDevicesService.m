@@ -13,10 +13,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const NSNotificationName_DeviceListUpdateSucceeded = @"NSNotificationName_DeviceListUpdateSucceeded";
-NSString *const NSNotificationName_DeviceListUpdateFailed = @"NSNotificationName_DeviceListUpdateFailed";
-NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
-    = @"NSNotificationName_DeviceListUpdateModifiedDeviceList";
+NSNotificationName const NSNotificationNameDeviceListUpdateSucceeded = @"NSNotificationNameDeviceListUpdateSucceeded";
+NSNotificationName const NSNotificationNameDeviceListUpdateFailed = @"NSNotificationNameDeviceListUpdateFailed";
+NSNotificationName const NSNotificationNameDeviceListUpdateModifiedDeviceList
+    = @"NSNotificationNameDeviceListUpdateModifiedDeviceList";
 
 @implementation OWSDevicesService
 
@@ -43,19 +43,19 @@ NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
                 });
 
                 [NSNotificationCenter.defaultCenter
-                    postNotificationNameAsync:NSNotificationName_DeviceListUpdateSucceeded
+                    postNotificationNameAsync:NSNotificationNameDeviceListUpdateSucceeded
                                        object:nil];
 
                 if (didAddOrRemove) {
                     [NSNotificationCenter.defaultCenter
-                        postNotificationNameAsync:NSNotificationName_DeviceListUpdateModifiedDeviceList
+                        postNotificationNameAsync:NSNotificationNameDeviceListUpdateModifiedDeviceList
                                            object:nil];
                 }
             }
             failure:^(NSError *error) {
                 OWSLogError(@"Request device list failed with error: %@", error);
 
-                [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_DeviceListUpdateFailed
+                [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationNameDeviceListUpdateFailed
                                                                        object:error];
             }];
     });

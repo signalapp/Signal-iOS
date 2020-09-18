@@ -54,9 +54,21 @@ typedef void (^OWSTableSubPageBlock)(UIViewController *viewController);
 typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 typedef BOOL (^OWSTableSwitchBlock)(void);
 
+@interface OWSTableItemEditAction : NSObject
+
+@property (nonatomic) OWSTableActionBlock block;
+@property (nonatomic) NSString *title;
+
++ (OWSTableItemEditAction *)actionWithTitle:(nullable NSString *)title block:(OWSTableActionBlock)block;
+
+@end
+
+#pragma mark -
+
 @interface OWSTableItem : NSObject
 
 @property (nonatomic, weak) UIViewController *tableViewController;
+@property (nonatomic, nullable) OWSTableItemEditAction *deleteAction;
 
 + (UITableViewCell *)newCell;
 + (void)configureCell:(UITableViewCell *)cell;

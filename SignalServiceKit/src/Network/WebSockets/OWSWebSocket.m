@@ -301,7 +301,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceListUpdateModifiedDeviceList:)
-                                                 name:NSNotificationName_DeviceListUpdateModifiedDeviceList
+                                                 name:NSNotificationNameDeviceListUpdateModifiedDeviceList
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(environmentDidChange:)

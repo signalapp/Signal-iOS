@@ -37,6 +37,8 @@
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
 #import "OWSDatabaseMigration.h"
+#import "OWSDeviceTableViewCell.h"
+#import "OWSLinkDeviceViewController.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageCell.h"
 #import "OWSMessageFooterView.h"
