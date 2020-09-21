@@ -80,7 +80,6 @@ typedef NS_CLOSED_ENUM(NSUInteger,
 
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
-@property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) BOOL isViewVisible;
 @property (nonatomic, readonly) BOOL isPresentingMessageActions;
 @property (nonatomic, readonly) ConversationHeaderView *headerView;
