@@ -75,6 +75,7 @@ pod 'AFNetworking/NSURLSession', inhibit_warnings: true
 pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'lottie-ios', :inhibit_warnings => true
+pod 'BonMot', inhibit_warnings: true
 
 # For catalyst we need to be on master until 3.6.7 or later is released
 pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true, binary: true

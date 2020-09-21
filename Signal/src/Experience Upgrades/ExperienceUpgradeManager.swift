@@ -158,7 +158,8 @@ class ExperienceUpgradeManager: NSObject {
              .pinReminder,
              .notificationPermissionReminder,
              .contactPermissionReminder,
-             .linkPreviews:
+             .linkPreviews,
+             .researchMegaphone1:
             return true
         case .messageRequests:
             // no need to annoy user with banner for message requests. They are self explanatory.
@@ -180,6 +181,8 @@ class ExperienceUpgradeManager: NSObject {
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .linkPreviews:
             return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .researchMegaphone1:
+            return ResearchMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }
