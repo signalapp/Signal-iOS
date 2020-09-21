@@ -185,7 +185,7 @@ extension ConversationSettingsViewController {
         builder.addSubtitleLabel(text: groupMembersText,
                                  font: .ows_dynamicTypeSubheadline)
 
-        if RemoteConfig.groupsV2GoodCitizen,
+        if RemoteConfig.groupsV2CreateGroups,
             groupThread.isGroupV1Thread {
             let legacyGroupView = builder.addLegacyGroupView()
             legacyGroupView.isUserInteractionEnabled = true
