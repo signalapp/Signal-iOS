@@ -18,7 +18,7 @@ public class PlaceholderIcon {
     convenience init(seed: String, colours: [UIColor]? = nil) {
         // Ensure we have a correct hash
         var hash = seed
-        if !hash.matches("^[0-9A-Fa-f]+$") || hash.count < 12 { hash = seed.sha512() }
+        if (hash.matches("^[0-9A-Fa-f]+$") && hash.count >= 12) { hash = seed.sha512() }
         
         guard let number = Int(hash.substring(to: 12), radix: 16) else {
             owsFailDebug("Failed to generate number from seed string: \(seed).")
