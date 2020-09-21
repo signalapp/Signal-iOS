@@ -50,9 +50,6 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2InviteLinks: Bool {
-        if groupsV2GoodCitizen {
-            return true
-        }
         if DebugFlags.groupsV2ForceInviteLinks { return true }
         return isEnabled(.groupsV2InviteLinks)
     }

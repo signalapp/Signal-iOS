@@ -479,6 +479,16 @@ typedef enum : NSUInteger {
     return !groupThread.isLocalUserFullMember;
 }
 
+- (BOOL)isLocalUserRequestingMember
+{
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        return groupThread.isLocalUserRequestingMember;
+    } else {
+        return NO;
+    }
+}
+
 - (void)updateInputVisibility
 {
     if ([self isInPreviewPlatter]) {
@@ -1438,7 +1448,7 @@ typedef enum : NSUInteger {
 
     BOOL isMuted = self.thread.isMuted;
     BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
-    BOOL isVerified = YES;
+    BOOL isVerified = self.thread.recipientAddresses.count > 0;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
         if ([[OWSIdentityManager shared] verificationStateForAddress:address] != OWSVerificationStateVerified) {
             isVerified = NO;
@@ -5285,38 +5295,28 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    if (self.userLeftGroup) {
+    if (self.threadViewModel.hasPendingMessageRequest || self.isLocalUserRequestingMember) {
+        [self.requestView removeFromSuperview];
+        if (self.isLocalUserRequestingMember) {
+            MemberRequestView *memberRequestView =
+                [[MemberRequestView alloc] initWithThreadViewModel:self.threadViewModel fromViewController:self];
+            memberRequestView.delegate = self;
+            self.requestView = memberRequestView;
+        } else {
+            MessageRequestView *messageRequestView =
+                [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
+            messageRequestView.delegate = self;
+            self.requestView = messageRequestView;
+        }
+        [self reloadBottomBar];
+    } else {
         if (self.requestView != nil) {
             [self dismissMessageRequestView];
         } else {
             [self reloadBottomBar];
             [self updateInputVisibility];
         }
-        return;
     }
-
-    if (!self.threadViewModel.hasPendingMessageRequest && !self.isLocalUserRequestingMember) {
-        if (self.requestView != nil) {
-            // We're currently showing the message request view but no longer need to,
-            // probably because this request was accepted on another device. Dismiss it.
-            [self dismissMessageRequestView];
-        }
-        return;
-    }
-
-    [self.requestView removeFromSuperview];
-    if (self.isLocalUserRequestingMember) {
-        MemberRequestView *memberRequestView = [[MemberRequestView alloc] initWithThreadViewModel:self.threadViewModel
-                                                                               fromViewController:self];
-        memberRequestView.delegate = self;
-        self.requestView = memberRequestView;
-    } else {
-        MessageRequestView *messageRequestView =
-            [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
-        messageRequestView.delegate = self;
-        self.requestView = messageRequestView;
-    }
-    [self reloadBottomBar];
 }
 
 - (void)dismissMessageRequestView
@@ -5352,16 +5352,6 @@ typedef enum : NSUInteger {
         completion:^(BOOL finished) {
             [dismissingView removeFromSuperview];
         }];
-}
-
-- (BOOL)isLocalUserRequestingMember
-{
-    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return groupThread.isLocalUserRequestingMember;
-    } else {
-        return NO;
-    }
 }
 
 #pragma mark - LocationPickerDelegate
