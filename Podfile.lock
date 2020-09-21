@@ -195,6 +195,9 @@ PODS:
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
+  - ZXingObjC (3.6.5):
+    - ZXingObjC/All (= 3.6.5)
+  - ZXingObjC/All (3.6.5)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.2.1)
@@ -224,6 +227,7 @@ DEPENDENCIES:
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage
+  - ZXingObjC (~> 3.6.4)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -242,6 +246,7 @@ SPEC REPOS:
     - SSZipArchive
     - SwiftProtobuf
     - YYImage
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   GRKOpenSSLFramework:
@@ -324,7 +329,8 @@ SPEC CHECKSUMS:
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
+  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: b4f88816a817cc27f499940c644c0449ef5d7cc7
+PODFILE CHECKSUM: c26d913ac0e7de8c047412658746634a46681fed
 
 COCOAPODS: 1.9.3

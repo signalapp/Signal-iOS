@@ -62,6 +62,7 @@ def shared_pods
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
+  pod 'ZXingObjC', '~> 3.6.4', :inhibit_warnings => true
 end
 
 target 'Signal' do

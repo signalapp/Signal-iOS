@@ -1,4 +1,3 @@
-import SwiftCSV
 
 final class IP2Country {
     var countryNamesCache: [String:String] = [:]
