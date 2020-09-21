@@ -570,6 +570,16 @@ typedef enum : NSUInteger {
     }
 }
 
+- (BOOL)isLocalUserFullMember
+{
+    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        return groupThread.isLocalUserFullMember;
+    } else {
+        return YES;
+    }
+}
+
 - (void)updateInputVisibility
 {
     if ([self isInPreviewPlatter]) {
@@ -1529,7 +1539,7 @@ typedef enum : NSUInteger {
 
     BOOL isMuted = self.thread.isMuted;
     BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
-    BOOL isVerified = YES;
+    BOOL isVerified = self.thread.recipientAddresses.count > 0;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
         if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address] != OWSVerificationStateVerified) {
             isVerified = NO;
