@@ -129,6 +129,7 @@ PODS:
     - SQLCipher/common
   - SSZipArchive (2.2.3)
   - Starscream (3.0.6)
+  - SwiftCSV (0.5.6)
   - SwiftProtobuf (1.5.0)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
@@ -195,6 +196,9 @@ PODS:
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
+  - ZXingObjC (3.6.5):
+    - ZXingObjC/All (= 3.6.5)
+  - ZXingObjC/All (3.6.5)
 
 DEPENDENCIES:
   - AFNetworking (~> 3.2.1)
@@ -222,8 +226,10 @@ DEPENDENCIES:
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
+  - SwiftCSV (~> 0.5.6)
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
   - YYImage
+  - ZXingObjC (~> 3.6.4)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -240,8 +246,10 @@ SPEC REPOS:
     - SAMKeychain
     - SQLCipher
     - SSZipArchive
+    - SwiftCSV
     - SwiftProtobuf
     - YYImage
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   GRKOpenSSLFramework:
@@ -321,10 +329,12 @@ SPEC CHECKSUMS:
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
+  SwiftCSV: efb4a15dd7f2f1212b3d6986f97a3369ff6c5100
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
+  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: b4f88816a817cc27f499940c644c0449ef5d7cc7
+PODFILE CHECKSUM: 8803b27f35a08849d8e3e6595c88b62522a16ae7
 
 COCOAPODS: 1.9.3
