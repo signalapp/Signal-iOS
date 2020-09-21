@@ -519,6 +519,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     // Secondary devices should always declare support for gv2.
     if (RemoteConfig.groupsV2GoodCitizen || isSecondaryDevice) {
         capabilities[@"gv2"] = @(YES);
+        capabilities[@"gv2-2"] = @(YES);
     }
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
