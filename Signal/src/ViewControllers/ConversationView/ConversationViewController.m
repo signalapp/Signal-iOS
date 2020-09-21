@@ -570,16 +570,6 @@ typedef enum : NSUInteger {
     }
 }
 
-- (BOOL)isLocalUserFullMember
-{
-    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return groupThread.isLocalUserFullMember;
-    } else {
-        return YES;
-    }
-}
-
 - (void)updateInputVisibility
 {
     if ([self isInPreviewPlatter]) {
