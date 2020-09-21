@@ -243,7 +243,10 @@ public final class SnodeAPI : NSObject {
 
     internal static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> [SSKProtoEnvelope] {
         guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
-        updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages)
+        if let (lastHash, expirationDate) = updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages),
+            UserDefaults.standard[.isUsingFullAPNs] {
+            LokiPushNotificationManager.acknowledgeDelivery(forMessageWithHash: lastHash, expiration: expirationDate, publicKey: getUserHexEncodedPublicKey())
+        }
         let rawNewMessages = removeDuplicates(from: rawMessages, associatedWith: publicKey)
         let newMessages = parseProtoEnvelopes(from: rawNewMessages)
         return newMessages

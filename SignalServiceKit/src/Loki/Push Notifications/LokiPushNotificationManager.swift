@@ -28,14 +28,13 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/unregister")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+        let promise: Promise<Void> = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't unregister from push notifications.")
             }
             guard json["code"] as? Int != 0 else {
                 return print("[Loki] Couldn't unregister from push notifications due to error: \(json["message"] as? String ?? "nil").")
             }
-            return
         }
         promise.catch2 { error in
             print("[Loki] Couldn't unregister from push notifications.")
@@ -59,7 +58,7 @@ public final class LokiPushNotificationManager : NSObject {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let oldToken = userDefaults[.deviceToken]
-        let lastUploadTime = userDefaults[.lastDeviceTokenUpload2]
+        let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
         let now = Date().timeIntervalSince1970
         guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
             print("[Loki] Device token hasn't changed or expired; no need to re-upload.")
@@ -69,7 +68,7 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+        let promise: Promise<Void> = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -77,9 +76,8 @@ public final class LokiPushNotificationManager : NSObject {
                 return print("[Loki] Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
             }
             userDefaults[.deviceToken] = hexEncodedToken
-            userDefaults[.lastDeviceTokenUpload2] = now
+            userDefaults[.lastDeviceTokenUpload] = now
             userDefaults[.isUsingFullAPNs] = true
-            return
         }
         promise.catch2 { error in
             print("[Loki] Couldn't register device token.")
@@ -144,5 +142,22 @@ public final class LokiPushNotificationManager : NSObject {
     @objc(notifyForMessage:)
     static func objc_notify(for signalMessage: SignalMessage) -> AnyPromise {
         return AnyPromise.from(notify(for: signalMessage))
+    }
+
+    static func acknowledgeDelivery(forMessageWithHash hash: String, expiration: UInt64, publicKey: String) {
+        let parameters: JSON = [ "lastHash" : hash, "pubKey" : publicKey, "expiration" : expiration]
+        let url = URL(string: "\(server)/acknowledge_message_delivery")!
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
+        TSNetworkManager.shared().makeRequest(request, success: { _, response in
+            guard let json = response as? JSON else {
+                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash).")
+            }
+            guard json["code"] as? Int != 0 else {
+                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(json["message"] as? String ?? "nil").")
+            }
+        }, failure: { _, error in
+            print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(error).")
+        })
     }
 }
