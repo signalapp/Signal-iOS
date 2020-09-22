@@ -34,7 +34,7 @@ public class RemoteConfig: BaseFlags {
         guard modernContactDiscovery else { return false }
         guard FeatureFlags.groupsV2Supported else { return false }
         if DebugFlags.groupsV2ForceEnable { return true }
-        return isEnabled(.groupsV2CreateGroupsV3)
+        return isEnabled(.groupsV2CreateGroupsV4)
     }
 
     @objc
@@ -50,6 +50,9 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2InviteLinks: Bool {
+        guard groupsV2GoodCitizen else {
+            return false
+        }
         if DebugFlags.groupsV2ForceInviteLinks { return true }
         return isEnabled(.groupsV2InviteLinks)
     }
@@ -315,7 +318,7 @@ private struct Flags {
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
         case kbs
-        case groupsV2CreateGroupsV3
+        case groupsV2CreateGroupsV4
         case groupsV2GoodCitizenV4
         case deleteForEveryone
         case versionedProfiles
