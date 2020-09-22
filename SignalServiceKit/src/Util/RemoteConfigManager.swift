@@ -54,7 +54,7 @@ public class RemoteConfig: BaseFlags {
             return false
         }
         if DebugFlags.groupsV2ForceInviteLinks { return true }
-        return isEnabled(.groupsV2InviteLinks)
+        return isEnabled(.groupsV2InviteLinksV2)
     }
 
     @objc
@@ -326,7 +326,7 @@ private struct Flags {
         case uuidSafetyNumbers
         case modernContactDiscoveryV3
         case attachmentUploadV3v1
-        case groupsV2InviteLinks
+        case groupsV2InviteLinksV2
     }
 
     // Values defined in this array remain set once they are
