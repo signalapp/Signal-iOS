@@ -243,6 +243,7 @@ public class KeyBackupService: NSObject {
                         isMasterKeyBackedUp: true,
                         pinType: PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
+                        enclaveName: TSConstants.keyBackupEnclave.name,
                         transaction: transaction
                     )
                 }
@@ -320,6 +321,7 @@ public class KeyBackupService: NSObject {
                         isMasterKeyBackedUp: true,
                         pinType: PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
+                        enclaveName: TSConstants.keyBackupEnclave.name,
                         transaction: transaction
                     )
                 }
@@ -570,6 +572,7 @@ public class KeyBackupService: NSObject {
     private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
     private static let hasPendingRestorationIdentifier = "hasPendingRestoration"
     private static let isMasterKeyBackedUpIdentifer = "isMasterKeyBackedUp"
+    private static let enclaveNameIdentifier = "enclaveName"
     private static let cacheQueue = DispatchQueue(label: "org.signal.KeyBackupService")
 
     private static var cachedState: State?
@@ -581,6 +584,7 @@ public class KeyBackupService: NSObject {
         let hasPendingRestoration: Bool
         let isMasterKeyBackedUp: Bool
         let syncedDerivedKeys: [DerivedKey: Data]
+        let enclaveName: String?
 
         init(transaction: SDSAnyReadTransaction) {
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
@@ -619,6 +623,8 @@ public class KeyBackupService: NSObject {
                 syncedDerivedKeys[type] = keyValueStore.getData(type.rawValue, transaction: transaction)
             }
             self.syncedDerivedKeys = syncedDerivedKeys
+
+            enclaveName = keyValueStore.getString(enclaveNameIdentifier, transaction: transaction)
         }
     }
 
@@ -645,7 +651,29 @@ public class KeyBackupService: NSObject {
 
     @objc
     public static func warmCaches() {
-        _ = getOrLoadStateWithSneakyTransaction()
+        let state = getOrLoadStateWithSneakyTransaction()
+        migrateEnclavesIfNecessary(state: state)
+    }
+
+    private static func migrateEnclavesIfNecessary(state: State) {
+        guard state.enclaveName != TSConstants.keyBackupEnclave.name,
+            state.masterKey != nil,
+            tsAccountManager.isRegisteredAndReady else { return }
+
+        guard let pin = OWS2FAManager.shared().pinCode else {
+            return owsFailDebug("Can't migrate KBS enclave because local pin is missing")
+        }
+
+        Logger.info("Migrating from KBS enclave \(String(describing: state.enclaveName)) to \(TSConstants.keyBackupEnclave.name)")
+
+        generateAndBackupKeys(
+            with: pin,
+            rotateMasterKey: false
+        ).done {
+            Logger.info("Successfuly migrated KBS enclave")
+        }.catch { error in
+            owsFailDebug("Failed to migrate KBS enclave \(error)")
+        }
     }
 
     /// Removes the KBS keys locally from the device, they can still be
@@ -673,6 +701,7 @@ public class KeyBackupService: NSObject {
         isMasterKeyBackedUp: Bool,
         pinType: PinType,
         encodedVerificationString: String,
+        enclaveName: String,
         transaction: SDSAnyWriteTransaction
     ) {
         let previousState = getOrLoadState(transaction: transaction)
@@ -703,6 +732,12 @@ public class KeyBackupService: NSObject {
         keyValueStore.setString(
             encodedVerificationString,
             key: encodedVerificationStringIdentifier,
+            transaction: transaction
+        )
+
+        keyValueStore.setString(
+            enclaveName,
+            key: enclaveNameIdentifier,
             transaction: transaction
         )
 
@@ -781,6 +816,7 @@ public class KeyBackupService: NSObject {
             isMasterKeyBackedUp: false,
             pinType: .alphanumeric,
             encodedVerificationString: "",
+            enclaveName: "",
             transaction: transaction
         )
 
