@@ -55,6 +55,8 @@ public class KeyBackupService: NSObject {
         return getOrLoadStateWithSneakyTransaction().masterKey != nil
     }
 
+    public static var currentEnclave: KeyBackupEnclave { return TSConstants.keyBackupEnclave }
+
     /// Indicates whether or not we have a master key stored in KBS
     @objc
     public static var hasBackedUpMasterKey: Bool {
@@ -106,7 +108,9 @@ public class KeyBackupService: NSObject {
     public static func restoreKeys(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
-        // record of you.
+        // record of you. It's important that these are ordered from neweset enclave
+        // to oldest enclave, so we start with the newest enclave and then progressively
+        // check older enclaves.
         let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
         return restoreKeys(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
     }
@@ -204,7 +208,7 @@ public class KeyBackupService: NSObject {
             return backupKeyRequest(
                 accessKey: accessKey,
                 encryptedMasterKey: encryptedMasterKey,
-                enclave: TSConstants.keyBackupEnclave,
+                enclave: currentEnclave,
                 auth: auth
             ).map { ($0, masterKey) }
         }.done(on: .global()) { response, masterKey in
@@ -219,9 +223,11 @@ public class KeyBackupService: NSObject {
             }
 
             // We should always receive a new token to use on our next request.
+            // Since the backup request is always for the current enclave, the
+            // token is also always for the current enclave.
             try Token.updateNext(
                 data: tokenData,
-                enclaveName: TSConstants.keyBackupEnclave.name
+                enclaveName: currentEnclave.name
             )
 
             switch status {
@@ -236,17 +242,32 @@ public class KeyBackupService: NSObject {
             case .ok:
                 let encodedVerificationString = try deriveEncodedVerificationString(pin: pin)
 
-                // We successfully stored the new keys in KBS, save them in the database
+                // We successfully stored the new keys in KBS, save them in the database.
+                // Since the backup request is always for the current enclave, we want to
+                // record the current enclave's name.
                 databaseStorage.write { transaction in
                     store(
                         masterKey: masterKey,
                         isMasterKeyBackedUp: true,
                         pinType: PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
-                        enclaveName: TSConstants.keyBackupEnclave.name,
+                        enclaveName: currentEnclave.name,
                         transaction: transaction
                     )
                 }
+            }
+        }.then { () -> Promise<Void> in
+            // If we restored from an enclave that's not the current enclave,
+            // we need to delete the keys from the old enclave.
+            guard enclave != currentEnclave else { return Promise.value(()) }
+            Logger.info("Deleting restored keys from old enclave")
+            return deleteKeyRequest(
+                enclave: enclave
+            ).done { _ in
+                Logger.info("Successfully deleted keys from previous enclave")
+            }.recover { error in
+                owsFailDebug("Failed to delete keys from previous enclave \(error)")
+                throw error
             }
         }.recover(on: .global()) { error in
             guard let kbsError = error as? KBSError else {
@@ -269,7 +290,7 @@ public class KeyBackupService: NSObject {
     public static func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> Promise<Void> {
         return fetchBackupId(
             auth: nil,
-            enclave: TSConstants.keyBackupEnclave
+            enclave: currentEnclave
         ).map(on: .global()) { backupId -> (Data, Data, Data) in
             let masterKey: Data = {
                 if rotateMasterKey { return generateMasterKey() }
@@ -283,7 +304,7 @@ public class KeyBackupService: NSObject {
             backupKeyRequest(
                 accessKey: accessKey,
                 encryptedMasterKey: encryptedMasterKey,
-                enclave: TSConstants.keyBackupEnclave
+                enclave: currentEnclave
             ).map { ($0, masterKey) }
         }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
@@ -299,7 +320,7 @@ public class KeyBackupService: NSObject {
             // We should always receive a new token to use on our next request. Store it now.
             try Token.updateNext(
                 data: tokenData,
-                enclaveName: TSConstants.keyBackupEnclave.name
+                enclaveName: currentEnclave.name
             )
 
             switch status {
@@ -321,7 +342,7 @@ public class KeyBackupService: NSObject {
                         isMasterKeyBackedUp: true,
                         pinType: PinType(forPin: pin),
                         encodedVerificationString: encodedVerificationString,
-                        enclaveName: TSConstants.keyBackupEnclave.name,
+                        enclaveName: currentEnclave.name,
                         transaction: transaction
                     )
                 }
@@ -352,7 +373,7 @@ public class KeyBackupService: NSObject {
     /// Remove the keys locally from the device and from the KBS,
     /// they will not be able to be restored.
     public static func deleteKeys() -> Promise<Void> {
-        return deleteKeyRequest(enclave: TSConstants.keyBackupEnclave).ensure {
+        return deleteKeyRequest(enclave: currentEnclave).ensure {
             // Even if the request to delete our keys from KBS failed,
             // purge them from the database.
             databaseStorage.write { clearKeys(transaction: $0) }
@@ -656,7 +677,7 @@ public class KeyBackupService: NSObject {
     }
 
     private static func migrateEnclavesIfNecessary(state: State) {
-        guard state.enclaveName != TSConstants.keyBackupEnclave.name,
+        guard state.enclaveName != currentEnclave.name,
             state.masterKey != nil,
             tsAccountManager.isRegisteredAndReady else { return }
 
@@ -664,12 +685,27 @@ public class KeyBackupService: NSObject {
             return owsFailDebug("Can't migrate KBS enclave because local pin is missing")
         }
 
-        Logger.info("Migrating from KBS enclave \(String(describing: state.enclaveName)) to \(TSConstants.keyBackupEnclave.name)")
+        Logger.info("Migrating from KBS enclave \(String(describing: state.enclaveName)) to \(currentEnclave.name)")
 
         generateAndBackupKeys(
             with: pin,
             rotateMasterKey: false
-        ).done {
+        ).then { () -> Promise<Void> in
+            guard let previousEnclave = TSConstants.keyBackupPreviousEnclaves.first(where: { $0.name == state.enclaveName }) else {
+                // This can happen in legitimate cases, for example the user waited so
+                // long to update to an app that supports the new enclave, that the old
+                // enclave is no longer supported. In practice, this should be very rare.
+                Logger.warn("Can't identify previous enclave, skipping delete")
+                return Promise.value(())
+            }
+
+            return deleteKeyRequest(enclave: previousEnclave).asVoid().recover { error in
+                // We ignore errors from the delete key request, because the migration was
+                // successful. Most likely, this will happen because the old enclave is no
+                // longer passing attestation. We just do our best to try and clean up.
+                owsFailDebug("Failed to delete keys from previous enclave during migration \(error)")
+            }
+        }.done {
             Logger.info("Successfuly migrated KBS enclave")
         }.catch { error in
             owsFailDebug("Failed to migrate KBS enclave \(error)")

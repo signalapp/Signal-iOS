@@ -32,7 +32,7 @@ private protocol TSConstantsProtocol: class {
     var serverPublicParamsBase64: String { get }
 }
 
-public struct KeyBackupEnclave {
+public struct KeyBackupEnclave: Equatable {
     let name: String
     let mrenclave: String
     let serviceId: String
