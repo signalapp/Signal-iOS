@@ -157,6 +157,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(ThreadRecord.databaseTableName)
                 WHERE \(threadColumn: .isMarkedUnread) = 1
+                AND \(threadColumn: .shouldThreadBeVisible) = 1
             """
 
             guard let markedUnreadCount = try UInt.fetchOne(transaction.database, sql: markedUnreadThreadQuery) else {
