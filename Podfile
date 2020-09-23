@@ -104,6 +104,7 @@ post_install do |installer|
   configure_warning_flags(installer)
   configure_testable_build(installer)
   disable_bitcode(installer)
+  copy_acknowledgements
 end
 
 # PureLayout by default makes use of UIApplication, and must be configured to be built for an extension.
@@ -161,4 +162,10 @@ def disable_bitcode(installer)
       config.build_settings['ENABLE_BITCODE'] = 'NO'
     end
   end
+end
+
+def copy_acknowledgements
+  raw_acknowledgements = File.read('Pods/Target Support Files/Pods-Signal/Pods-Signal-Acknowledgements.plist')
+  formatted_acknowledgements = raw_acknowledgements.gsub(/(?<!>)(?<!\n)\n( *)(?![ \*])(?![ -])(?!\n)(?!<)/, ' ')
+  File.open('Signal/Settings.bundle/Acknowledgements.plist', "w") { |file| file.puts formatted_acknowledgements }
 end
