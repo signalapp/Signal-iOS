@@ -115,13 +115,15 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
         if let notificationType = notificationPreference?.notificationPreviewType() {
             switch notificationType {
             case .nameNoPreview:
-                notificationContent.body = "New Message!"
+                notificationContent.body = "New Message"
             case .noNameNoPreview:
                 notificationContent.title = ""
-                notificationContent.body = "New Message!"
+                notificationContent.body = "New Message"
             default:
                 notificationContent.body = newNotificationBody
             }
+        } else {
+            notificationContent.body = newNotificationBody
         }
         
         if notificationContent.body.count < 1 {
