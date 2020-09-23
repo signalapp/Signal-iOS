@@ -366,7 +366,7 @@ extension ConversationSettingsViewController {
             let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsMessageSound,
                                                                 itemName: NSLocalizedString("SETTINGS_ITEM_NOTIFICATION_SOUND",
                                                                                             comment: "Label for settings view that allows user to change the notification sound."),
-                                                                accessoryText: OWSSounds.displayName(for: sound))
+                                                                accessoryText: OWSSounds.displayName(forSound: sound))
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "notifications")
             return cell
             },
