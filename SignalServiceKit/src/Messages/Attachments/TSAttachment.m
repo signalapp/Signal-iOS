@@ -20,8 +20,6 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 @property (nonatomic, nullable) NSString *sourceFilename;
 
-@property (nonatomic) NSString *contentType;
-
 @property (nonatomic, nullable) NSString *blurHash;
 
 @end
@@ -456,6 +454,13 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.attachmentReadCache didRemoveAttachment:self transaction:transaction];
+}
+
+- (void)setDefaultContentType:(NSString *)contentType
+{
+    if ([self.contentType isEqualToString:OWSMimeTypeApplicationOctetStream]) {
+        _contentType = contentType;
+    }
 }
 
 #pragma mark - Update With...

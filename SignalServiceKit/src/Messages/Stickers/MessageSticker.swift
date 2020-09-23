@@ -153,6 +153,9 @@ public class MessageSticker: MTLModel {
         guard let attachmentPointer = TSAttachmentPointer(fromProto: dataProto, albumMessage: nil) else {
             throw StickerError.invalidInput
         }
+
+        attachmentPointer.setDefaultContentType(OWSMimeTypeImageWebp)
+
         attachmentPointer.anyInsert(transaction: transaction)
         return attachmentPointer
     }
