@@ -110,7 +110,20 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             newNotificationBody = contentProto?.dataMessage?.body ?? "You've got a new message"
         }
         newNotificationBody = handleMentionIfNecessary(rawMessageBody: newNotificationBody, threadID: thread.uniqueId!, transaction: transaction)
-        notificationContent.body = newNotificationBody
+        
+        let notificationPreference = Environment.shared.preferences
+        if let notificationType = notificationPreference?.notificationPreviewType() {
+            switch notificationType {
+            case .nameNoPreview:
+                notificationContent.body = "New Message!"
+            case .noNameNoPreview:
+                notificationContent.title = ""
+                notificationContent.body = "New Message!"
+            default:
+                notificationContent.body = newNotificationBody
+            }
+        }
+        
         if notificationContent.body.count < 1 {
             self.completeWithFailure(content: notificationContent)
         } else {
