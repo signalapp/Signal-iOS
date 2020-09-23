@@ -20,8 +20,6 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 
 @property (nonatomic, nullable) NSString *sourceFilename;
 
-@property (nonatomic) NSString *contentType;
-
 @property (nonatomic, nullable) NSString *blurHash;
 
 @end

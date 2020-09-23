@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (atomic) NSString *cdnKey;
 @property (atomic) UInt32 cdnNumber;
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
-@property (nonatomic, readonly) NSString *contentType;
+@property (nonatomic) NSString *contentType;
 @property (nonatomic) TSAttachmentType attachmentType;
 
 // Though now required, may incorrectly be 0 on legacy attachments.
