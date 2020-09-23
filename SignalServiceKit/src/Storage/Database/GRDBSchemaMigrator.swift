@@ -85,6 +85,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addOfferTypeToCalls
         case addServerDeliveryTimestamp
         case updateAnimatedStickers
+        case updateMarkedUnreadIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -119,7 +120,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 14
+    public static let grdbSchemaVersionLatest: UInt = 15
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -844,6 +845,19 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.alter(table: "model_InstalledSticker") { (table: TableAlteration) -> Void in
                     table.add(column: "contentType", .text)
                 }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.updateMarkedUnreadIndex.rawValue) { db in
+            do {
+                try db.drop(index: "index_model_TSThread_on_isMarkedUnread")
+                try db.create(
+                    index: "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible",
+                    on: "model_TSThread",
+                    columns: ["isMarkedUnread", "shouldThreadBeVisible"]
+                )
             } catch {
                 owsFail("Error: \(error)")
             }
