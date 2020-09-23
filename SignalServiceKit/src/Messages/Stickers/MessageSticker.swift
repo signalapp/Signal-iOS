@@ -154,10 +154,7 @@ public class MessageSticker: MTLModel {
             throw StickerError.invalidInput
         }
 
-        if dataProto.contentType?.isEmpty != false && attachmentPointer.contentType == OWSMimeTypeApplicationOctetStream {
-            Logger.warn("Assuming sticker is webp, received with unspecified content-type")
-            attachmentPointer.contentType = OWSMimeTypeImageWebp
-        }
+        attachmentPointer.setDefaultContentType(OWSMimeTypeImageWebp)
 
         attachmentPointer.anyInsert(transaction: transaction)
         return attachmentPointer

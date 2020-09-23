@@ -456,6 +456,13 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     [self.attachmentReadCache didRemoveAttachment:self transaction:transaction];
 }
 
+- (void)setDefaultContentType:(NSString *)contentType
+{
+    if ([self.contentType isEqualToString:OWSMimeTypeApplicationOctetStream]) {
+        _contentType = contentType;
+    }
+}
+
 #pragma mark - Update With...
 
 - (void)updateWithBlurHash:(NSString *)blurHash transaction:(SDSAnyWriteTransaction *)transaction

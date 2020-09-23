@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (atomic) NSString *cdnKey;
 @property (atomic) UInt32 cdnNumber;
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
-@property (nonatomic) NSString *contentType;
+@property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic) TSAttachmentType attachmentType;
 
 // Though now required, may incorrectly be 0 on legacy attachments.
@@ -140,6 +140,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly) BOOL isOversizeText;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
+
+// This should only ever be used before the attachment is saved,
+// after that point the content type will be already set.
+- (void)setDefaultContentType:(NSString *)contentType;
 
 #pragma mark - Update With...
 
