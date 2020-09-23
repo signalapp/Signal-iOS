@@ -96,6 +96,7 @@ typedef struct {
     imageMetadata.imageFormat = imageFormat;
     imageMetadata.pixelSize = pixelSize;
     imageMetadata.isAnimated = isAnimated;
+    imageMetadata.hasAlpha = hasAlpha;
     return imageMetadata;
 }
 
