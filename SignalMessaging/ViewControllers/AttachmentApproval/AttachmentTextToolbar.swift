@@ -294,14 +294,9 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
 
         // Check the system font size and increase text inset accordingly
         // to keep the text vertically centered
-        let currentFontSize = textViewFont.pointSize
-        // Default body font size is 17 according to the HIG (Typography)
-        let systemDefaultFontSize: CGFloat = 17
-        let ourDefaultInset: CGFloat = 7
-        let insetFontAdjustment = systemDefaultFontSize > currentFontSize ? systemDefaultFontSize - currentFontSize : 0
-        let topInset = ourDefaultInset + insetFontAdjustment
-        let bottomInset = systemDefaultFontSize > currentFontSize ? topInset - 1 : topInset
-        textView.textContainerInset = UIEdgeInsets(top: topInset, left: ourDefaultInset, bottom: bottomInset, right: ourDefaultInset)
+        textView.updateVerticalInsetsForDynamicBodyType(defaultInsets: 7)
+        textView.textContainerInset.left = 7
+        textView.textContainerInset.right = 7
 
         return textView
     }
