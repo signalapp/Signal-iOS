@@ -50,7 +50,9 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     init(attachmentItem: SignalAttachmentItem) {
         self.attachmentItem = attachmentItem
         super.init(nibName: nil, bundle: nil)
-        assert(!attachment.hasError)
+        if attachment.hasError {
+            owsFailDebug(attachment.error.debugDescription)
+        }
     }
 
     public required init?(coder aDecoder: NSCoder) {

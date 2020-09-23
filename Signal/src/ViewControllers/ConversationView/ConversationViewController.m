@@ -4098,6 +4098,14 @@ typedef enum : NSUInteger {
      didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
                messageText:(NSString *_Nullable)messageText
 {
+    for (SignalAttachment *attachment in attachments) {
+        if ([attachment hasError]) {
+            OWSLogWarn(@"Invalid attachment: %@.", attachment ? [attachment errorName] : @"Missing data");
+            [self showErrorAlertForAttachment:attachment];
+            return;
+        }
+    }
+    
     [self tryToSendAttachments:attachments messageText:messageText];
     [self.inputToolbar clearTextMessageAnimated:NO];
     [self resetMentions];

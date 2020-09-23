@@ -63,7 +63,9 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     // of nice that it's written in a flexible way in case we'd want to use it elsewhere again in the future.
     @objc
     public required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
-        assert(!attachment.hasError)
+        if attachment.hasError {
+            owsFailDebug(attachment.error.debugDescription)
+        }
         self.attachment = attachment
         self.mode = mode
         super.init(frame: CGRect.zero)
@@ -336,7 +338,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         case .small, .large:
             return Colors.accent
         case .attachmentApproval:
-            return UIColor.white
+            return Colors.text
         }
     }
 
