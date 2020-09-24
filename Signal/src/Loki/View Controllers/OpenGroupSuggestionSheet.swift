@@ -69,9 +69,4 @@ final class OpenGroupSuggestionSheet : Sheet {
         }
         close()
     }
-
-    override func close() {
-        UserDefaults.standard[.hasSeenOpenGroupSuggestionSheet] = true
-        super.close()
-    }
 }
