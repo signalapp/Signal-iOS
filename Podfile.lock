@@ -19,9 +19,6 @@ PODS:
   - CocoaLumberjack/Core (3.6.2)
   - CryptoSwift (1.3.1)
   - FeedKit (8.1.1)
-  - GCDWebServer (3.5.4):
-    - GCDWebServer/Core (= 3.5.4)
-  - GCDWebServer/Core (3.5.4)
   - GRKOpenSSLFramework (1.0.2.12)
   - libPhoneNumber-iOS (0.9.15)
   - Mantle (2.1.0):
@@ -122,6 +119,7 @@ PODS:
     - Starscream
     - SwiftProtobuf (~> 1.5.0)
     - YapDatabase/SQLCipher
+  - Sodium (0.8.0)
   - SQLCipher (4.4.0):
     - SQLCipher/standard (= 4.4.0)
   - SQLCipher/common (4.4.0)
@@ -203,7 +201,6 @@ DEPENDENCIES:
   - AFNetworking (~> 3.2.1)
   - CryptoSwift (~> 1.3)
   - FeedKit (~> 8.1)
-  - GCDWebServer (~> 3.5.2)
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView (~> 4.7)
@@ -222,6 +219,7 @@ DEPENDENCIES:
   - SessionMetadataKit/Tests (from `https://github.com/loki-project/session-ios-metadata-kit`)
   - SessionServiceKit (from `.`)
   - SessionServiceKit/Tests (from `.`)
+  - Sodium (~> 0.8.0)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
@@ -235,13 +233,13 @@ SPEC REPOS:
     - CocoaLumberjack
     - CryptoSwift
     - FeedKit
-    - GCDWebServer
     - libPhoneNumber-iOS
     - NVActivityIndicatorView
     - PromiseKit
     - PureLayout
     - Reachability
     - SAMKeychain
+    - Sodium
     - SQLCipher
     - SSZipArchive
     - SwiftProtobuf
@@ -308,7 +306,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   CryptoSwift: f12f037f6d0fcd6d48c96db0071b653de64e6c4d
   FeedKit: 3418eed25f0b493b205b4de1b8511ac21d413fa9
-  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
@@ -323,6 +320,7 @@ SPEC CHECKSUMS:
   SessionHKDFKit: b0f4e669411703ab925aba07491c5611564d1419
   SessionMetadataKit: d37afdc47d20c7046faa139a92e68fa99f76c95b
   SessionServiceKit: b12afb3975b33a9579802111f948838861d914bb
+  Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
@@ -331,6 +329,6 @@ SPEC CHECKSUMS:
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: c26d913ac0e7de8c047412658746634a46681fed
+PODFILE CHECKSUM: 128e2d9df0c3e7862c266dd4be1d512a8d88ef65
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0.rc.1

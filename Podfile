@@ -74,10 +74,10 @@ target 'Signal' do
   # Loki third party pods
   ###
 
-  pod 'GCDWebServer', '~> 3.5.2', :inhibit_warnings => true # TODO: We can probably ditch this as we're not doing P2P anymore
-  pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'CryptoSwift', '~> 1.3', :inhibit_warnings => true
+  pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', '~> 4.7', :inhibit_warnings => true
+  pod 'Sodium', '~> 0.8.0', :inhibit_warnings => true
 
   target 'SignalTests' do
     inherit! :search_paths
