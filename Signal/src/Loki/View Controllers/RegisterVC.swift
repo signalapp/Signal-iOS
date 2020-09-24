@@ -1,3 +1,4 @@
+import Sodium
 
 final class RegisterVC : BaseVC {
     private var seed: Data! { didSet { updateKeyPair() } }
@@ -129,11 +130,15 @@ final class RegisterVC : BaseVC {
     
     // MARK: Updating
     private func updateSeed() {
-        seed = Randomness.generateRandomBytes(16)
+        seed = Data.getSecureRandomData(ofSize: 16)!
     }
     
     private func updateKeyPair() {
-        keyPair = Curve25519.generateKeyPair(fromSeed: seed + seed)
+        let padding = Data(repeating: 0, count: 16)
+        let ed25519KeyPair = Sodium().sign.keyPair(seed: (seed + padding).bytes)!
+        let x25519PublicKey = Sodium().sign.toX25519(ed25519PublicKey: ed25519KeyPair.publicKey)!
+        let x25519SecretKey = Sodium().sign.toX25519(ed25519SecretKey: ed25519KeyPair.secretKey)!
+        keyPair = ECKeyPair(publicKey: Data(x25519PublicKey), privateKey: Data(x25519SecretKey))
     }
     
     private func updatePublicKeyLabel() {
