@@ -2716,6 +2716,9 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Dźwięki";
 
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nazwa, zawartość i akcja";
 
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Przypomnimy Ci o tym ponownie jutro.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Przypomnimy Ci o tym ponownie za dwa tygodnie.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Przypomnimy Ci o tym ponownie za tydzień.";
@@ -3522,6 +3525,27 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Zarejestruj się ponownie aby otrzymywać powiadomienia Push";
+
+/* Body for research megaphone */
+"RESEARCH_MEGAPHONE_BODY" = "Chcemy poznać Twoją opinię, aby uczynić Signal najlepszym komunikatorem na świecie.";
+
+/* Title for research megaphone */
+"RESEARCH_MEGAPHONE_TITLE" = "Przekaż Signal swoją opinię";
+
+/* Text for the research modal footer */
+"RESEARCH_MODAL_FOOTER" = "Ta ankieta jest hostowana przez Surveygizmo na zabezpieczonej domenie surveys.signalusers.org";
+
+/* Button text for declining the research modal */
+"RESEARCH_MODAL_NO_THANKS" = "Nie, dzięki";
+
+/* Text explaining why the user should take the survey */
+"RESEARCH_MODAL_PLEA" = "<bold>Wierzymy w prawo do prywatności.</bold>\n\nSignal nie śledzi Cię, ani nie gromadzi Twoich danych. Przy ulepszaniu aplikacji Signal polegamy na opiniach naszych użytkowników i <bold>pragniemy poznać również Twoją</bold>.\n\nPrzeprowadzamy ankietę, aby zrozumieć jak korzystasz z Signal. Nasza ankieta nie zbiera żadnych informacji, które mogą Cię zidentyfikować. Jeśli chcesz podzielić się dodatkowymi informacjami, będziesz mieć możliwość podania informacji kontaktowych.\n\nJeśli masz kilka minut i jakieś uwagi, chcielibyśmy je poznać.";
+
+/* Button text for taking the research survey */
+"RESEARCH_MODAL_TAKE_SURVEY" = "Wypełnij ankietę";
+
+/* Title for the research megaphone modal */
+"RESEARCH_MODAL_TITLE" = "Badanie Signal";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Ponów";

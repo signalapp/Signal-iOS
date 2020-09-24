@@ -5,7 +5,7 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "接受新的安全碼";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "附件";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "附檔";
 
 /* Accessibility label for audio. */
 "ACCESSIBILITY_LABEL_AUDIO" = "音訊";
@@ -176,7 +176,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "标题";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "附件匯出失敗。";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "附檔匯出失敗。";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "儲存失敗";
@@ -197,13 +197,13 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "傳送";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "附件";
+"ATTACHMENT_DEFAULT_FILENAME" = "附檔";
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "下載失敗。請點擊再試一次。";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "附件傳送錯誤";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "附檔傳送錯誤";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "無法轉換照片。";
@@ -221,7 +221,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "無法調整照片尺寸。";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "附件太大。";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "附檔太大。";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "附檔包含了無效的內容。";
@@ -230,7 +230,7 @@
 "ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "附檔含有一個無效的檔案格式。";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "附件是空白的。";
+"ATTACHMENT_ERROR_MISSING_DATA" = "附檔是空白的。";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "選擇媒體來傳送";
@@ -257,7 +257,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "拍完照片後，你可以在這裡傳送你的最近的照片。";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "附件";
+"ATTACHMENT_LABEL" = "附檔";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "選取文件失敗。";
@@ -1346,7 +1346,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "此聯絡人不是 Signal 使用者。";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "附件下載失敗。";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "附檔下載失敗。";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "附檔失敗：請要求此聯絡人更新到Signal最新版本，並再重傳一次。";
@@ -1436,7 +1436,7 @@
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "讀取較舊的媒體檔中...";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "附件";
+"GENERIC_ATTACHMENT_LABEL" = "附檔";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "無法讀取所要求的 GIF。請確認你是否在線上。";
@@ -2192,7 +2192,7 @@
 "KEY_COMMAND_ARCHIVE" = "封存聊天";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "顯示附件";
+"KEY_COMMAND_ATTACHMENTS" = "顯示附檔";
 
 /* A keyboard command to open the current conversation's settings. */
 "KEY_COMMAND_CONVERSATION_INFO" = "轉到聊天資訊";
@@ -2393,7 +2393,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "上傳中";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "該訊息沒有內容或附件。";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "該訊息沒有內容或附檔。";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "已接收";
@@ -2715,6 +2715,9 @@
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "音效";
+
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "姓名，內容和操作        ";
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "我們明天會再次提醒你。";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "我們會在幾週後再次提醒你。";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "我們會在一周後再次提醒你。";
@@ -3356,7 +3359,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "找不到原始訊息。";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "附件";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "附檔";
 
 /* Indicates this message is a quoted reply to an audio file. */
 "QUOTED_REPLY_TYPE_AUDIO" = "聲音";
@@ -3522,6 +3525,27 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "重新註冊推播通知";
+
+/* Body for research megaphone */
+"RESEARCH_MEGAPHONE_BODY" = "為了使Signal成為地球上最好的訊息傳遞應用程式，我們很想聽聽你的意見。";
+
+/* Title for research megaphone */
+"RESEARCH_MEGAPHONE_TITLE" = "告訴Signal你的想法";
+
+/* Text for the research modal footer */
+"RESEARCH_MODAL_FOOTER" = "該問卷由Surveygizmo託管在安全域Surveys.signalusers.org中";
+
+/* Button text for declining the research modal */
+"RESEARCH_MODAL_NO_THANKS" = "不，謝謝。";
+
+/* Text explaining why the user should take the survey */
+"RESEARCH_MODAL_PLEA" = "<bold>我們相信隱私。</bold>\n\nSignal無法追踪你或收集你的資料。 為了改善所有人的Signal，我們依靠使用者的回應，<bold>我們希望能收到你的反映。</bold>\n\n我們正在進行一項調查，以了解你如何使用Signal。 我們的調查不會收集任何可以識別你身份的資料。 如果你有興趣分享其他反映，則可以選擇提供聯絡資訊。\n\n如果你有幾分鐘的時間要提供反映意見，我們很高興收到你的來信。";
+
+/* Button text for taking the research survey */
+"RESEARCH_MODAL_TAKE_SURVEY" = "參加問卷";
+
+/* Title for the research megaphone modal */
+"RESEARCH_MODAL_TITLE" = "Signal 研究";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "重試";
@@ -4208,13 +4232,13 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "還沒準備好";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "無法寄出附件";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "無法寄出附檔";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "上傳中...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "無法準備附件";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "無法準備附檔";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "分享至 Signal";
@@ -4475,7 +4499,7 @@
 "UNREGISTER_SIGNAL_FAIL" = "無法從 Signal註銷。";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "接收到不支援的附件類型。";
+"UNSUPPORTED_ATTACHMENT" = "接收到不支援的附檔類型。";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "你的裝置不支援這項功能。";

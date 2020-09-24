@@ -2716,6 +2716,9 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sons";
 
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nome, Conteúdo e Ações";
 
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Iremos recordar-lhe de novo amanhã.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Iremos recordar-lhe dentro de algumas semanas.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Iremos recordar-lhe dentro de uma semana.";
@@ -3522,6 +3525,27 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Reinscrever-se nas notificações push ";
+
+/* Body for research megaphone */
+"RESEARCH_MEGAPHONE_BODY" = "Para poder transformar o Signal na melhor aplicação de mensagens do planeta, gostaríamos de obter o seu feedback.";
+
+/* Title for research megaphone */
+"RESEARCH_MEGAPHONE_TITLE" = "Diga ao Signal o que acha";
+
+/* Text for the research modal footer */
+"RESEARCH_MODAL_FOOTER" = "O questionário está alojado pela Surveygizmo no domínio seguro surveys.signalusers.org";
+
+/* Button text for declining the research modal */
+"RESEARCH_MODAL_NO_THANKS" = "Não, obrigado";
+
+/* Text explaining why the user should take the survey */
+"RESEARCH_MODAL_PLEA" = "<bold>Acreditamos na privacidade.</bold>\n\nO Signal não rastreia ou recolhe os seus dados. Para melhorar o Signal para todos, dependemos do feedback dos seus utilizadores, <bold>e nós adoramos os seus</bold>.\n\nEstamos a lançar um questionário para perceber como é que utiliza o Signal. O nosso questionário não recolhe nenhuns dados que o possam identificar. Se está interessado em partilhar o seu  feedback adicional tem a opção para fornecer a informação de contacto.\n\nSe tiver alguns minutos e feedback para fornecer iríamos adorar ouvi-lo.";
+
+/* Button text for taking the research survey */
+"RESEARCH_MODAL_TAKE_SURVEY" = "Preencher o questionário";
+
+/* Title for the research megaphone modal */
+"RESEARCH_MODAL_TITLE" = "Pesquisa Signal";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Tentar novamente";

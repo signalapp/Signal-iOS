@@ -881,12 +881,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSThread_on_isMarkedUnread"
-        ON "model_TSThread"("isMarkedUnread"
-)
-;
-
-CREATE
     INDEX "index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
         ON "model_TSInteraction"("uniqueThreadId"
     ,"recordType"
@@ -932,5 +926,12 @@ CREATE
     UNIQUE INDEX "index_model_TSMention_on_uniqueMessageId_and_uuidString"
         ON "model_TSMention"("uniqueMessageId"
     ,"uuidString"
+)
+;
+
+CREATE
+    INDEX "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible"
+        ON "model_TSThread"("isMarkedUnread"
+    ,"shouldThreadBeVisible"
 )
 ;

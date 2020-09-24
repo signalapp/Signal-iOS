@@ -2716,6 +2716,9 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Hangok";
 
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Név, szöveg és művelet";
 
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Holnap újra emlékeztetünk.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Pár héten belül újra emlékeztetünk.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Egy héten belül újra emlékeztetünk.";
@@ -3522,6 +3525,27 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Újraregisztrálás a push értesítésekért";
+
+/* Body for research megaphone */
+"RESEARCH_MEGAPHONE_BODY" = "A legjobb csevegőalkalmazás címének eléréséhez szívesen vennének a visszajelzéseidet.";
+
+/* Title for research megaphone */
+"RESEARCH_MEGAPHONE_TITLE" = "Üzenj a Signal fejlesztőknek";
+
+/* Text for the research modal footer */
+"RESEARCH_MODAL_FOOTER" = "A kérdőív a Surveygizmo jóvoltából érhető el a surveys.signalusers.org biztonságos domain alatt.";
+
+/* Button text for declining the research modal */
+"RESEARCH_MODAL_NO_THANKS" = "Nem, köszönöm";
+
+/* Text explaining why the user should take the survey */
+"RESEARCH_MODAL_PLEA" = "<bold>Hiszünk a személyes adatok privát birtoklásának jogában.</bold>\n\nA Signal nem gyűjt senkiről semmilyen felhasználói viselkedést érintő adatot. Ezért hogy valahogy képbe kerüljünk az igényeket illetően, szükségünk lenne a programot használók véleményére - <bold>például a tiédre</bold>.\n\nElindítottunk egy kérdőíves felmérést, hogy megértsük a felhasználói szokásokat. A kitöltés során semmilyen téged beazonosító adat nem kerül birtokunkba. Viszont ha a jövőben is szeretnél további visszajezéssel a segítségünkre lenni, akkor megadhatsz magadról kapcsolattartáshoz szükséges információkat is.\n\nHa van pár perced, örömmel vennénk, ha segítenél a kérdőív kitöltésével.";
+
+/* Button text for taking the research survey */
+"RESEARCH_MODAL_TAKE_SURVEY" = "Kérdőív kitöltése";
+
+/* Title for the research megaphone modal */
+"RESEARCH_MODAL_TITLE" = "Signal kutatás";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Újra";

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS107LegacySounds.h"
@@ -23,7 +23,7 @@ static NSString *const OWS107LegacySoundsMigrationId = @"107";
 {
     OWSAssertDebug(transaction);
 
-    [OWSSounds setGlobalNotificationSound:OWSSound_SignalClassic transaction:transaction.asAnyWrite];
+    [OWSSounds setGlobalNotificationSound:OWSStandardSound_SignalClassic transaction:transaction.asAnyWrite];
 }
 
 @end

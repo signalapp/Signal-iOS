@@ -81,7 +81,11 @@ class ConversationInputTextView: MentionTextView {
             }
         }
 
-        textContainerInset = UIEdgeInsets(top: 7, left: leftInset, bottom: 7, right: rightInset)
+        // Check the system font size and increase text inset accordingly
+        // to keep the text vertically centered
+        updateVerticalInsetsForDynamicBodyType(defaultInsets: 7)
+        textContainerInset.left = leftInset
+        textContainerInset.right = rightInset
     }
 
     private func ensurePlaceholderConstraints() {

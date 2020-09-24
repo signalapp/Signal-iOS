@@ -2716,6 +2716,9 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Звуки";
 
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Имя, содержимое и действия";
 
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Мы напомним вам снова завтра.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Мы напомним вам снова через пару недель.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Мы напомним вам снова через неделю.";
@@ -3522,6 +3525,27 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Зарегистрироваться заново";
+
+/* Body for research megaphone */
+"RESEARCH_MEGAPHONE_BODY" = "Чтобы сделать Signal лучшим приложением для обмена сообщениями на планете, мы были бы рады услышать вашу обратную связь.";
+
+/* Title for research megaphone */
+"RESEARCH_MEGAPHONE_TITLE" = "Расскажите Signal, что вы думаете";
+
+/* Text for the research modal footer */
+"RESEARCH_MODAL_FOOTER" = "Опрос размещён Surveygizmo на безопасном домене surveys.signalusers.org";
+
+/* Button text for declining the research modal */
+"RESEARCH_MODAL_NO_THANKS" = "Нет, спасибо";
+
+/* Text explaining why the user should take the survey */
+"RESEARCH_MODAL_PLEA" = "<bold>Мы верим в конфиденциальность.</bold>\n\nSignal не следит за вами и не собирает ваши данные. Чтобы улучшать Signal для всех, мы полагаемся на обратную связь от пользователей, <bold>и мы были бы рады услышать вашу</bold>.\n\nМы проводим опрос, чтобы понять, как вы используете Signal. Наш опрос не собирает никакой информации, которая идентифицирует вас. Если вам интересно поделиться дополнительной обратной связью, у вас будет опция предоставить контактную информацию.\n\nЕсли у вас есть несколько минут и обратная связь, которой вы хотите поделиться, мы были бы рады услышать от вас.";
+
+/* Button text for taking the research survey */
+"RESEARCH_MODAL_TAKE_SURVEY" = "Пройти опрос";
+
+/* Title for the research megaphone modal */
+"RESEARCH_MODAL_TITLE" = "Исследование Signal";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Повторить";

@@ -1,4 +1,4 @@
-NSAppleMusicUsageDescription = "Signal需要使用Apple Music播放媒體附件。";
+NSAppleMusicUsageDescription = "Signal需要使用Apple Music播放媒體附檔。";
 NSCameraUsageDescription = "Signal使用你的相機拍照和進行視訊通話。";
 NSContactsUsageDescription = "Signal使用你的聯絡人搜尋你認識的聯絡人。 我們不會將你的聯絡人儲存在伺服器上。";
 NSFaceIDUsageDescription = "Signal 的螢幕鎖定使用 Face ID。";

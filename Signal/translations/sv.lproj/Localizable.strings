@@ -2716,6 +2716,9 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Ljud";
 
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Namn, innehåll och åtgärder";
 
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Vi påminner dig igen imorgon.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Vi påminner dig om ett par veckor.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Vi påminner dig om en vecka.";
@@ -3522,6 +3525,27 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Omregistrera för pushnotiser";
+
+/* Body for research megaphone */
+"RESEARCH_MEGAPHONE_BODY" = "För att göra Signal till den bästa meddelande-appen på planeten, skulle vi gärna höra din åsikt.";
+
+/* Title for research megaphone */
+"RESEARCH_MEGAPHONE_TITLE" = "Berätta för Signal vad du tycker";
+
+/* Text for the research modal footer */
+"RESEARCH_MODAL_FOOTER" = "Undersökningen anordnas av Surveygizmo på den säkra domänen surveys.signalusers.org";
+
+/* Button text for declining the research modal */
+"RESEARCH_MODAL_NO_THANKS" = "Nej tack";
+
+/* Text explaining why the user should take the survey */
+"RESEARCH_MODAL_PLEA" = "<bold>Vi tror på integritet.</bold>\n\nSignal spårar inte dig och samlar inte in dina uppgifter. För att förbättra Signal för alla förlitar vi oss på användarrespons, <bold>och vi skulle vilja få din</bold>.\n\nVi genomför en undersökning för att förstå hur du använder Signal. Vår undersökning samlar inte in några uppgifter som kommer att identifiera dig. Om du är intresserad av att dela ytterligare åsikter har du möjlighet att ge kontaktinformation.\n\nOm du har några minuter och respons att erbjuda skulle vi gärna höra från dig.";
+
+/* Button text for taking the research survey */
+"RESEARCH_MODAL_TAKE_SURVEY" = "Ta undersökningen";
+
+/* Title for the research megaphone modal */
+"RESEARCH_MODAL_TITLE" = "Signal-forskning";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Försök igen";
@@ -4235,7 +4259,7 @@
 "STICKER_MESSAGE_PREVIEW" = "Klistermärkesmeddelande";
 
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Klistermärkespaket installerat";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Klistermärkepaket installerat";
 
 /* Label for a sticker that failed to download. */
 "STICKERS_FAILED_DOWNLOAD" = "Klistermärke";
@@ -4250,7 +4274,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Klistermärken du mottagit";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Vissa klistermärkespaket kunde inte läsas in";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Vissa klistermärkepaket kunde inte läsas in";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installera klistermärken";
@@ -4268,13 +4292,13 @@
 "STICKERS_MANAGE_VIEW_TITLE" = "Klistermärken";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Klistermärkespaket";
+"STICKERS_PACK_DEFAULT_TITLE" = "Klistermärkepaket";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Dela klistermärkespaket";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Dela klistermärkepaket";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Klistermärkespaket";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Klistermärkepaket";
 
 /* Label indicating that the sticker pack failed to load. */
 "STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Klistermärkespaketet kunde inte läsas in";

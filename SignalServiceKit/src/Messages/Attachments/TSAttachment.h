@@ -141,6 +141,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
 
+// This should only ever be used before the attachment is saved,
+// after that point the content type will be already set.
+- (void)setDefaultContentType:(NSString *)contentType;
+
 #pragma mark - Update With...
 
 - (void)updateWithBlurHash:(NSString *)blurHash transaction:(SDSAnyWriteTransaction *)transaction;

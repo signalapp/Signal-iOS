@@ -794,7 +794,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d sur %dcorrespondances";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Paramètres de conversation";
+"CONVERSATION_SETTINGS" = "Paramètres de la conversation";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Ajouter des membres";
@@ -2716,6 +2716,9 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Sons";
 
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nom, contenu et actions";
 
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Nous vous le rappellerons demain.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Nous vous le rappellerons dans quelques semaines.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Nous vous le rappellerons dans une semaine.";
@@ -3522,6 +3525,27 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Réactiver les notifications poussées";
+
+/* Body for research megaphone */
+"RESEARCH_MEGAPHONE_BODY" = "Pour faire de Signal la meilleure appli de messagerie au monde, nous aimerions avoir votre avis.";
+
+/* Title for research megaphone */
+"RESEARCH_MEGAPHONE_TITLE" = "Dites à Signal ce que vous pensez";
+
+/* Text for the research modal footer */
+"RESEARCH_MODAL_FOOTER" = "Le sondage est hébergé par Surveygizmo sur le domaine sécurisé surveys.signalusers.org";
+
+/* Button text for declining the research modal */
+"RESEARCH_MODAL_NO_THANKS" = "Non merci";
+
+/* Text explaining why the user should take the survey */
+"RESEARCH_MODAL_PLEA" = "<bold>Nous croyons en la protection des renseignements personnels.</bold>\n\nSignal ne vous suit pas à la trace ni ne recueille vos données. Afin d’améliorer Signal pour tous, nous comptons sur la rétroaction des utilisateurs <bold>et nous aimerions connaître la vôtre.\n\nNous effectuons un sondage afin de comprendre comment vous utilisez Signal. Notre sondage ne recueille aucune donnée qui permettrait de vous identifier. Si vous souhaitez nous faire part d’autres commentaires, la possibilité de nous indiquer vos coordonnées vous sera offerte.\n\nSi vous avez quelques minutes à nous consacrer et une rétroaction à nous communiquer, nous serions ravis de vous lire.";
+
+/* Button text for taking the research survey */
+"RESEARCH_MODAL_TAKE_SURVEY" = "Répondre au sondage";
+
+/* Title for the research megaphone modal */
+"RESEARCH_MODAL_TITLE" = "Recherche Signal";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Réessayer";
@@ -4028,7 +4052,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Compter les conversations en sourdine";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Compte en pastille";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Pastille de comptage";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Des notifications d’appels et de messages peuvent apparaître quand votre téléphone est verrouillé. Vous souhaiterez peut-être limiter ce qui est indiqué dans ces notifications.";
@@ -4049,7 +4073,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Me trouver par mon numéro de téléphone";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Me trouver par mon numéro de téléphone";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Me trouver d’après mon numéro de téléphone";
 
 /* Label for the 'phone number sharing' setting. */
 "SETTINGS_PHONE_NUMBER_SHARING" = "Voir mon numéro de téléphone";

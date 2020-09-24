@@ -203,7 +203,7 @@ protocol CallAudioServiceDelegate: class {
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-            self.play(sound: OWSSound.callConnecting)
+            self.play(sound: .callConnecting)
         }
     }
 
@@ -216,7 +216,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        self.play(sound: OWSSound.callOutboundRinging)
+        self.play(sound: .callOutboundRinging)
     }
 
     private func handleLocalRinging(call: SignalCall) {
@@ -266,7 +266,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: OWSSound.callBusy)
+        play(sound: .callBusy)
 
         // Let the busy sound play for 4 seconds. The full file is longer than necessary
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
@@ -310,12 +310,12 @@ protocol CallAudioServiceDelegate: class {
         stopRinging()
     }
 
-    private func prepareToPlay(sound: OWSSound) -> OWSAudioPlayer? {
-        guard let newPlayer = OWSSounds.audioPlayer(for: sound, audioBehavior: .call) else {
-            owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(for: sound))")
+    private func prepareToPlay(sound: OWSStandardSound) -> OWSAudioPlayer? {
+        guard let newPlayer = OWSSounds.audioPlayer(forSound: sound.rawValue, audioBehavior: .call) else {
+            owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(forSound: sound.rawValue))")
             return nil
         }
-        Logger.info("playing sound: \(OWSSounds.displayName(for: sound))")
+        Logger.info("playing sound: \(OWSSounds.displayName(forSound: sound.rawValue))")
 
         // It's important to stop the current player **before** starting the new player. In the case that
         // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise
@@ -326,7 +326,7 @@ protocol CallAudioServiceDelegate: class {
         return newPlayer
     }
 
-    private func play(sound: OWSSound) {
+    private func play(sound: OWSStandardSound) {
         guard let newPlayer = prepareToPlay(sound: sound) else { return }
         newPlayer.play()
     }
