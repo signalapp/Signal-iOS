@@ -2716,6 +2716,9 @@
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "ಶಬ್ದಗಳು";
 
+/* Label for settings UI that allows user to add a new notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "ಹೆಸರು, ವಿಷಯ ಮತ್ತು ಕ್ರಿಯೆಗಳು";
 
@@ -3182,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "ನಾಳೆ ಮತ್ತೊಮ್ಮೆ ಇದನ್ನು ನಾವು ನಿಮಗೆ ನೆನಪಿಸುತ್ತೇವೆ.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "ಕೆಲವೇ ವಾರಗಳಲ್ಲಿ ನಾವು ಮತ್ತೊಮ್ಮೆ ಇದನ್ನು ನಿಮಗೆ ನೆನಪಿಸುತ್ತೇವೆ.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "ಒಂದು ವಾರದಲ್ಲಿ ನಾವು ಮತ್ತೊಮ್ಮೆ ಇದನ್ನು ನಿಮಗೆ ನೆನಪಿಸುತ್ತೇವೆ.";
