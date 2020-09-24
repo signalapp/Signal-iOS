@@ -845,7 +845,7 @@ extension PinnedThreadManager {
             }
         }
 
-        try updatePinnedThreadIds(pinnedThreadIds, transaction: transaction)
+        updatePinnedThreadIds(pinnedThreadIds, transaction: transaction)
     }
 
     public class func pinnedConversationProtos(

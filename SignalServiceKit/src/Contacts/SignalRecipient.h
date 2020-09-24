@@ -33,6 +33,7 @@ typedef NS_CLOSED_ENUM(
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUUIDString:(NSString *)uuidString NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

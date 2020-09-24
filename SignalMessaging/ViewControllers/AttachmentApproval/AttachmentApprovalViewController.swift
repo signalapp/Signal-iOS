@@ -960,7 +960,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
 
     var prepViewControllerShouldIgnoreTapGesture: Bool {
         guard bottomToolView.isEditing else { return false }
-        bottomToolView.resignFirstResponder()
+        _ = bottomToolView.resignFirstResponder()
         return true
     }
 }
