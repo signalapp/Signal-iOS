@@ -12,8 +12,8 @@ import PromiseKit
 /// See [the documentation](https://github.com/loki-project/session-protocol-docs/wiki/Medium-Size-Groups) for more information.
 @objc(LKClosedGroupsProtocol)
 public final class ClosedGroupsProtocol : NSObject {
-    public static let isSharedSenderKeysEnabled = false
-    public static let groupSizeLimit = 10
+    public static let isSharedSenderKeysEnabled = true
+    public static let groupSizeLimit = 20
 
     // MARK: - Sending
 
