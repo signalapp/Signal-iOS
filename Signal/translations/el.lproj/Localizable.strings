@@ -2006,10 +2006,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Τι είναι οι ομάδες παλαιού τύπου;";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Οι ομάδες παλαιού τύπου δεν μπορούν να μετατραπούν σε νέες ομάδες, αλλά μπορείς να δημιουργήσεις μια νέα ομάδα με τα ίδια μέλη.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Πως \"αναβαθμίζω\" μια ομάδα παλαιού τύπου;";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Για τη δημιουργία ομάδας νέου τύπου, όλα τα μέλη θα πρέπει να αναβαθμίσουν στην πιο πρόσφατη έκδοση του Signal.";
@@ -2030,7 +2030,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ μέλη δεν έχουν υποστήριξη για Νέες ομάδες, οπότε αυτή η ομάδα θα είναι παλαιού τύπου. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Αυτή η ομάδα είναι παλαιού τύπου. Για πρόσβαση σε χαρακτηριστικά όπως οι διαχειριστές ομάδας, δημιουργήστε μια νέα ομάδα. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Ομάδα παλαιού τύπου";

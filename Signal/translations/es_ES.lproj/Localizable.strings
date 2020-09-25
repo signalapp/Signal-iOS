@@ -1058,7 +1058,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "Información sobre registro de depuración";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "¿Elimination todos los mensajes del chat?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "¿Eliminar todos los mensajes del chat?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Eliminar todos los mensajes";
@@ -1706,7 +1706,7 @@
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Cualquiera que reciba este enlace puede unirse al chat en grupo. Compártelo sólo con gente en la que confíes.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Enlace al grupo";
+"GROUP_LINK_VIEW_TITLE" = "Enlace al chat en grupo";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ te ha agregado.";
@@ -2006,10 +2006,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "¿Qué son los grupos antiguos?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Los grupos antiguos no pueden convertirse en grupos nuevos, pero puedes crear un grupo nuevo con la misma gente.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "¿Cómo «actualizo» un grupo antiguo?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Para crear un nuevo grupo, sus participantes deben tener su versión de Signal actualizada.";
@@ -2030,7 +2030,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ participantes no soportan el nuevo sistema de grupos. Este será un grupo del sistema antiguo. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Este es un grupo que usa el sistema antiguo de Signal. Para acceder a características como admins de grupo, crea un grupo nuevo. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grupo antiguo";
@@ -2591,7 +2591,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Has alcanzado el número máximo de dispositivos que se pueden enlazar en tu cuenta. Desenlaza un dispositivo o prueba de nuevo más tarde.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "No recibirás notificaciones de mensajes en chats silenciados durante el tiempo seleccionado.";
+"MUTE_BEHAVIOR_EXPLANATION" = "No recibirás notificaciones de mensajes en chats silenciados.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Silenciada";
@@ -2717,7 +2717,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Notificaciones sonoras";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Sonido personalizado de notificaciones ...";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nombre, contenido y acciones";
@@ -2924,7 +2924,7 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No hay invitaciones que mostrar.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "%@ agregad*.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "%@ ha sido agregad*.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ solicitudes pendientes.";
@@ -2933,7 +2933,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Ver solicitudes";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "%@ rechazad*.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "%@ ha sido rechazad*.";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Retirar invitación inválida";
@@ -3185,7 +3185,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Te lo recordaremos de nuevo mañana.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Te lo recordaremos de nuevo en un par de semanas.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Te lo recordaremos de nuevo en una semana.";
@@ -4073,13 +4073,13 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Encontrarme por mi número de teléfono";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Encontrarme con número";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Encontrarme por número";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "Ver mi número de teléfono";
+"SETTINGS_PHONE_NUMBER_SHARING" = "Mostrar mi número de teléfono";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Ver número";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Mostrar número";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Desactivar recordatorios";
@@ -4121,7 +4121,7 @@
 "SETTINGS_READ_RECEIPT" = "Notificaciones de lectura";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Mostrar y compartir cuándo se han leído los mensajes. Este ajuste es opcional y se aplica a todos los chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Muestra y transmite cuándo se han leído los mensajes. Este ajuste es opcional y se aplica a todos los chats.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Desactivar";
@@ -4181,7 +4181,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Indicador de tecleo";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Mostrar y compartir cuándo se escriben mensajes. Este ajuste es opcional y se aplica a todos los chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Muestra y transmite cuándo se escriben mensajes. Este ajuste es opcional y se aplica a todos los chats.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Remitente confidencial";
@@ -4352,7 +4352,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Participa en «%@», «%@» y %lu grupos adicionales";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En este chat puedes añadir notas, mensajes personales, fotos ... que sólo tú puedes ver. Si tu cuenta tiene dispositivos enlazados, el contenido se sincronizará.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En este chat puedes añadir notas, mensajes personales, fotos ... que sólo tú puedes ver. Si tu cuenta tiene dispositivos enlazados, el contenido nuevo se sincronizará.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Participa en «%@»";
