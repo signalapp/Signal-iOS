@@ -34,6 +34,7 @@
 #import <SessionServiceKit/TSThread.h>
 
 @import ContactsUI;
+@import PromiseKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1176,13 +1177,21 @@ const CGFloat kIconViewLength = 24;
 - (void)leaveGroup
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
-        [gThread leaveGroupWithTransaction:transaction];
-    } error:nil];
+    if (gThread.usesSharedSenderKeys) {
+        NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [[LKClosedGroupsProtocol leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
+        } error:nil];
+    } else {
+        TSOutgoingMessage *message =
+            [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
+
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            [gThread leaveGroupWithTransaction:transaction];
+        } error:nil];
+    }
 
     [self.navigationController popViewControllerAnimated:YES];
 }

@@ -128,6 +128,11 @@ public final class ClosedGroupsProtocol : NSObject {
         infoMessage.save(with: transaction)
     }
 
+    @objc(leaveGroupWithPublicKey:transaction:)
+    public static func objc_leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        return AnyPromise.from(leave(groupPublicKey, using: transaction))
+    }
+
     public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
         return removeMembers([ userPublicKey ], from: groupPublicKey, using: transaction)
