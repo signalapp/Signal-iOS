@@ -2006,10 +2006,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "ماهي المجموعات من الطراز القديم؟";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "المجموعات من الطراز القديم لا يمكن تحويلها إلى الطراز الجديد، ولكن يمكنك أن تنشأ مجموعة جديدة بنفس الأعضاء ولكن من الطراز الجديد.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "كيف أقوم بتطوير مجموعة من الطراز القديم؟";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "عندما تنشئ مجموعة من الطراز الجديد، جميع الأعضاء يتوجب عليهم تحديث Signal لأحدث نسخة.";
@@ -2030,7 +2030,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@أعضاء لا يدعمون المجموعات من الطراز الجديد، لذا ستكون المجموعة من الطراز القديم. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. للحصول على ميزات مثل مشرفين المجموعة، قم بإنشاء مجموعة جديدة.%@ذ";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "مجموعة من الطراز القديم";

@@ -178,6 +178,8 @@ public class UIDatabaseObserver: NSObject {
     }
 
     private func ensureDisplayLink() {
+        AssertIsOnMainThread()
+
         guard CurrentAppContext().hasUI else {
             // The NSE never does uiReads, we can skip the display link.
             return
@@ -188,6 +190,9 @@ public class UIDatabaseObserver: NSObject {
                 return false
             }
             guard !CurrentAppContext().isInBackground() else {
+                return false
+            }
+            guard self.hasPendingSnapshotUpdate.get() else {
                 return false
             }
             return true
@@ -374,6 +379,7 @@ extension UIDatabaseObserver: TransactionObserver {
             }
             // Enqueue the update.
             self.hasPendingSnapshotUpdate.set(true)
+            self.ensureDisplayLink()
             // Try to update immediately.
             self.updateSnapshotIfNecessary()
         }
@@ -402,6 +408,7 @@ extension UIDatabaseObserver: TransactionObserver {
             // If there's no new database changes, we don't need to update the snapshot.
             return
         }
+        ensureDisplayLink()
 
         // Update the snapshot now.
         updateSnapshot()

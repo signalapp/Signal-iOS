@@ -626,11 +626,11 @@ class ConversationSettingsViewController: OWSTableViewController {
     }
 
     func didTapLeaveGroup() {
-        if isLastAdminInV2Group {
+        guard canLocalUserLeaveGroupWithoutChoosingNewAdmin else {
             showReplaceAdminAlert()
-        } else {
-            showLeaveGroupConfirmAlert()
+            return
         }
+        showLeaveGroupConfirmAlert()
     }
 
     func showLeaveGroupConfirmAlert(replacementAdminUuid: UUID? = nil) {
@@ -682,24 +682,20 @@ class ConversationSettingsViewController: OWSTableViewController {
         navigationController?.pushViewController(replaceAdminViewController, animated: true)
     }
 
-    private var isLastAdminInV2Group: Bool {
+    private var canLocalUserLeaveGroupWithoutChoosingNewAdmin: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
-            return false
+            return true
         }
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            return false
+            return true
         }
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("missing local address")
-            return false
+            return true
         }
-        let groupMembership = groupModelV2.groupMembership
-        guard groupMembership.isFullMemberAndAdministrator(localAddress),
-            groupMembership.fullMemberAdministrators.count == 1 else {
-                return false
-        }
-        return true
+        return GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: localAddress,
+                                                                          groupMembership: groupModelV2.groupMembership)
     }
 
     private var replacementAdminCandidates: Set<SignalServiceAddress> {

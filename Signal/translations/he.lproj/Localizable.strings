@@ -2006,10 +2006,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "מהן קבוצות מיושנות?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "קבוצות מיושנות אינן ניתנות להמרה אל קבוצות חדשות, אבל אתה יכול ליצור קבוצה חדשה עם אותם חברי קבוצה.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "איך אני \"משדרג\" קבוצה מיושנת?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "כדי ליצור קבוצה חדשה, כל חברי הקבוצה צריכים לעדכן אל הגרסה האחרונה של Signal.";
@@ -2030,7 +2030,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ חברי קבוצה אינם תומכים בקבוצות חדשות, כך שקבוצה זו תהיה קבוצה מיושנת. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "זוהי קבוצה מיושנת. כדי להשיג גישה אל מאפיינים כמו מנהלני קבוצה, צור קבוצה חדשה. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "קבוצה מיושנת";

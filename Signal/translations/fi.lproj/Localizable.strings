@@ -1718,22 +1718,22 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ nimitti sinut ylläpitäjäksi.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Hyväksyit kutsun ryhmään.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Hyväksyit kutsun liittyä ryhmään.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Hyväksyit kutsun ryhmään käyttäjältä %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Hyväksyit kutsun liittyä ryhmään käyttäjältä %@.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Hylkäsit kutsun ryhmään.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Hylkäsit kutsun liittyä ryhmään.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Hylkäsit kutsun ryhmään käyttäjältä %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Hylkäsit kutsun liittyä ryhmään käyttäjältä %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ peruutti kutsusi ryhmään.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ peruutti kutsusi liittyä ryhmään.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Kutsusi ryhmään peruttiin.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Kutsusi liittyä ryhmään peruttiin.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ kutsui sinut.";
@@ -1808,13 +1808,13 @@
 "GROUP_NAME_PLACEHOLDER" = "Ryhmän nimi (vaaditaan)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ hyväksyi kutsun ryhmään.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ hyväksyi kutsun liittyä ryhmään.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ hyväksyi kutsusi ryhmään.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ hyväksyi kutsusi liittyä ryhmään.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ hyväksyi kutsun ryhmään käyttäjältä %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ hyväksyi kutsun liittyä ryhmään käyttäjältä %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Lisäsit käyttäjän %@.";
@@ -1826,13 +1826,13 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ lisättiin ryhmään.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 henkilö hylkäsi kutsun ryhmään.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 henkilö hylkäsi kutsun liittyä ryhmään.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 käyttäjän %@ kutsuma henkilö hylkäsi kutsun ryhmään.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 käyttäjän %@ kutsuma henkilö hylkäsi kutsun liittyä ryhmään.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ hylkäsi kutsusi ryhmään.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ hylkäsi kutsusi liittyä ryhmään.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ on nyt ylläpitäjä.";
@@ -1844,16 +1844,16 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ nimitti käyttäjän %2$@ ylläpitäjäksi.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1 henkilön kutsu ryhmään on peruttu.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1 henkilön kutsu liittyä ryhmään on peruttu.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Käyttäjän %@ kutsu ryhmään on peruttu.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Käyttäjän %@ kutsu liittyä ryhmään on peruttu.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ perui 1 henkilön kutsu ryhmään.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ perui 1 henkilön kutsu liittyä ryhmään.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ perui %2$@ henkilön kutsut ryhmään.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ perui %2$@ henkilön kutsut liittyä ryhmään.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "%@ henkilön kutsut ryhmään on peruttu.";
@@ -2006,10 +2006,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Mitä ovat vanhan tyylin ryhmät?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Vanhan tyylin ryhmiä ei voida muuttaa uusiksi ryhmiksi, mutta voit luoda uuden ryhmän samoilla jäsenillä.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kuinka voin \"päivittää\" vanhan tyylin ryhmän?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Uuden ryhmän luomiseksi kaikkien jäsenten tulee päivittää Signalin uusimpaan versioon.";
@@ -2030,7 +2030,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ jäsentä ei tue uusia ryhmiä, joten tästä tulee vanhan tyylin ryhmä. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Tämä on vanhan tyylin ryhmä. Luo uusi ryhmä käyttääksesi uusia ominaisuuksia, kuten ylläpitäjyyttä. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Vanhan tyylin ryhmä";
@@ -3827,7 +3827,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Muut yhteystiedot";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Äskeiset keskustelut";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Viimeisimmät keskustelut";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Lähetä uudelleen";

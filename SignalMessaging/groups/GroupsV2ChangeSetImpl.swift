@@ -643,7 +643,17 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 didChange = true
             }
         }
-        if let access = self.accessForAddFromInviteLink {
+
+        var accessForAddFromInviteLink = self.accessForAddFromInviteLink
+        if currentGroupMembership.allMembersOfAnyKind.count == 1 &&
+            currentGroupMembership.isFullMemberAndAdministrator(localUuid) &&
+            self.shouldLeaveGroupDeclineInvite {
+            // If we're the last admin to leave the group,
+            // disable the group invite link.
+            accessForAddFromInviteLink = .unsatisfiable
+        }
+
+        if let access = accessForAddFromInviteLink {
             if currentAccess.addFromInviteLink == access {
                 // Redundant change, not a conflict.
             } else {
@@ -670,9 +680,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if self.shouldLeaveGroupDeclineInvite {
-            let isLastAdminInV2Group = (currentGroupMembership.isFullMemberAndAdministrator(localUuid) &&
-                fullMemberAdministratorCount == 1)
-            guard !isLastAdminInV2Group else {
+            let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localUuid,
+                                                                                           groupMembership: currentGroupMembership)
+            guard canLeaveGroup else {
                 // This could happen if the last two admins leave at the same time
                 // and race.
                 throw GroupsV2Error.lastAdminCantLeaveGroup

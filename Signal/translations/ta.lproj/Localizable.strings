@@ -2006,10 +2006,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "மரபு குழுக்கள் என்றால் என்ன?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "மரபு குழுக்களை புதிய குழுக்களாக மாற்ற முடியாது, ஆனால் அதே உறுப்பினர்களுடன் புதிய குழுவை உருவாக்கலாம்.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "பழைய மரபு குழுவை எவ்வாறு \"புதுப்பிப்பது\"?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "புதிய குழுவை உருவாக்க, அனைத்து உறுப்பினர்களும் சிக்னலின் சமீபத்திய பதிப்பிற்கு புதுப்பிக்க Signal Update வேண்டும்.";
@@ -2030,7 +2030,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ இந்த உறுப்பினர்கள் புதிய குழுக்களை ஆதரிக்கவில்லை, எனவே இது ஒரு மரபு குழுவாக இருக்கும். %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "இது ஒரு பழைய மரபு குழு. குழு நிர்வாகிகள் போன்ற அம்சங்களை அணுக, புதிய குழுவை உருவாக்கவும். %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "பழைய மரபு குழு";

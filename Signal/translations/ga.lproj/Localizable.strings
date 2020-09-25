@@ -2006,10 +2006,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Cad is Grúpa Oidhreachta ann?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Ní féidir Grúpa Nua a dhéanamh de Ghrúpa Oidhreachta, ach is féidir leat Grúpa Nua a chruthú a bhfuil na baill chéanna ann.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Conas is féidir Grúpa Oidhreachta a “uasghrádú”?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Chun grúpa den chineál nua a chruthú, ba chóir do na baill go léir an leagan is déanaí de Signal a shuiteáil.";
@@ -2030,7 +2030,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "Ní thacaíonn %1$@ ball le Grúpaí Nua, mar sin beidh an grúpa seo ina Ghrúpa Oidhreachta. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Is Grúpa Oidhreachta é seo. Ní mór duit Grúpa Nua a chruthú má tá tú ag iarraidh gnéithe nua ar nós riarthóirí grúpa a úsáid. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grúpa Oidhreachta";
