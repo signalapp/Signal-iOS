@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SafariServices
 import PromiseKit
 
 protocol GroupMemberViewDelegate: class {
@@ -172,7 +171,7 @@ public class BaseGroupMemberViewController: OWSViewController {
             return
         }
         guard groupMemberViewDelegate.groupMemberViewCanAddRecipient(recipient) else {
-            showInvalidGroupMemberAlert(recipient: recipient)
+            GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
             return
         }
         guard !groupMemberViewDelegate.groupMemberViewIsGroupFull() else {
@@ -228,32 +227,9 @@ public class BaseGroupMemberViewController: OWSViewController {
         return members
     }
 
-    private func showInvalidGroupMemberAlert(recipient: PickedRecipient) {
-        let actionSheet = ActionSheetController(title: CommonStrings.errorAlertTitle,
-                                                message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER",
-                                                                           comment: "Error message indicating the a user can't be added to a group."))
-
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore,
-                                                style: .default) { _ in
-                                                    self.showCantAddMemberView()
-        })
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
-                                                style: .default))
-        presentActionSheet(actionSheet)
-    }
-
     private func showGroupFullAlert() {
         OWSActionSheets.showErrorAlert(message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL",
                                                                   comment: "Message for 'group full' error alert when a user can't be added to a group."))
-    }
-
-    private func showCantAddMemberView() {
-        guard let url = URL(string: "https://support.signal.org/hc/articles/360007319331") else {
-            owsFailDebug("Invalid url.")
-            return
-        }
-        let vc = SFSafariViewController(url: url)
-        present(vc, animated: true, completion: nil)
     }
 
     // MARK: -
@@ -402,9 +378,9 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
         DispatchQueue.global().async {
             if !self.doesRecipientSupportGroupsV2(recipient) {
-                self.tryToEnableGroupsV2ForAddress(address,
-                                                   isBlocking: false,
-                                                   ignoreErrors: true)
+                _ = self.tryToEnableGroupsV2ForAddress(address,
+                                                       isBlocking: false,
+                                                       ignoreErrors: true)
             }
         }
     }
@@ -438,7 +414,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          showInvalidRecipientAlert recipient: PickedRecipient) {
         AssertIsOnMainThread()
-        showInvalidGroupMemberAlert(recipient: recipient)
+        GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
     }
 
     private func doesRecipientSupportGroupsV2(_ recipient: PickedRecipient) -> Bool {
