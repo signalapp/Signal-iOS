@@ -670,9 +670,9 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if self.shouldLeaveGroupDeclineInvite {
-            let isLastAdminInV2Group = (currentGroupMembership.isFullMemberAndAdministrator(localUuid) &&
-                fullMemberAdministratorCount == 1)
-            guard !isLastAdminInV2Group else {
+            let canLeaveGroup = GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: localUuid,
+                                                                                           groupMembership: currentGroupMembership)
+            guard canLeaveGroup else {
                 // This could happen if the last two admins leave at the same time
                 // and race.
                 throw GroupsV2Error.lastAdminCantLeaveGroup

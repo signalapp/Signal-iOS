@@ -132,6 +132,29 @@ public class GroupManager: NSObject {
         return true
     }
 
+    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localUuid: UUID,
+                                                                     groupMembership: GroupMembership) -> Bool {
+        canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: SignalServiceAddress(uuid: localUuid),
+                                                      groupMembership: groupMembership)
+    }
+
+    public static func canLocalUserLeaveGroupWithoutChoosingNewAdmin(localAddress: SignalServiceAddress,
+                                                                     groupMembership: GroupMembership) -> Bool {
+        guard groupMembership.isFullMemberAndAdministrator(localAddress) else {
+            // Only admins need to appoint new admins before leaving the group.
+            return true
+        }
+        guard groupMembership.fullMemberAdministrators.count == 1 else {
+            // There's more than one admin.
+            return true
+        }
+        guard groupMembership.allMembersOfAnyKind.count > 1 else {
+            // There's no one else in the group, we can abandon it.
+            return true
+        }
+        return false
+    }
+
     // MARK: - Group Models
 
     // This should only be used for certain legacy edge cases.
