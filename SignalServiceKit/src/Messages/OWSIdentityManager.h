@@ -75,9 +75,9 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;
 
-#pragma mark - Debug
-
 - (nullable ECKeyPair *)identityKeyPair;
+
+#pragma mark - Debug
 
 #if DEBUG
 // Clears everything except the local identity key.

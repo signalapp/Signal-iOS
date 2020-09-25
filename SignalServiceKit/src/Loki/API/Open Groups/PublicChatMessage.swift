@@ -113,7 +113,6 @@ public final class PublicChatMessage : NSObject {
             return nil
         }
         let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
-        // TODO: Sign using the ED25519 private key here
         guard let signatureData = try? Ed25519.sign(data, with: userKeyPair) else {
             print("[Loki] Failed to sign public chat message.")
             return nil
