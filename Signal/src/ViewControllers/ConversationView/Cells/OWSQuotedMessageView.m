@@ -322,7 +322,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 4;
 
     if (self.isForPreview) {
         UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *cancelIcon = [[UIImage imageNamed:@"X"] asTintedImageWithColor:LKColors.text];
+        UIColor *tintColor = [LKAppModeUtilities isLightMode] ? UIColor.blackColor : UIColor.whiteColor;
+        UIImage *cancelIcon = [[UIImage imageNamed:@"X"] asTintedImageWithColor:tintColor];
         [cancelButton setImage:cancelIcon forState:UIControlStateNormal];
         cancelButton.contentMode = UIViewContentModeScaleAspectFit;
         [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
