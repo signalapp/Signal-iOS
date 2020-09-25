@@ -470,7 +470,7 @@ open class MentionTextView: OWSTextView {
 
 extension MentionTextView {
     open override var keyCommands: [UIKeyCommand]? {
-        guard let pickerView = pickerView else { return nil }
+        guard pickerView != nil else { return nil }
 
         return [
             UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(upArrowPressed(_:))),

@@ -30,7 +30,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
 
-@property (atomic) NSNumber *areReadReceiptsEnabledCached;
+@property (atomic, nullable) NSNumber *areReadReceiptsEnabledCached;
 
 @end
 

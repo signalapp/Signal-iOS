@@ -205,7 +205,7 @@ public class VideoEditorModel: NSObject {
                 return
             }
 
-            promise.done(on: DispatchQueue.global()) { filePath in
+            _ = promise.done(on: DispatchQueue.global()) { filePath in
                 do {
                     try FileManager.default.removeItem(at: URL(fileURLWithPath: filePath))
                 } catch {

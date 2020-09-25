@@ -125,7 +125,7 @@ public class AppExpiry: NSObject {
             return owsFailDebug("Ignoring expiration date change for expired build.")
         }
 
-        Logger.warn("\(newExpirationDate)")
+        Logger.warn("\(String(describing: newExpirationDate))")
 
         if let newExpirationDate = newExpirationDate {
             // Ignore any expiration date that is later than when the app expires by default.
