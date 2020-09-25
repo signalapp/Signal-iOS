@@ -301,7 +301,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         let group = thread.groupModel
         // Check that the sender is a member of the group (before the update)
-        var membersAndLinkedDevices: Set<String> = Set(members)
+        var membersAndLinkedDevices: Set<String> = Set(group.groupMemberIds)
         for member in group.groupMemberIds {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
             membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
