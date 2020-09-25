@@ -643,7 +643,17 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 didChange = true
             }
         }
-        if let access = self.accessForAddFromInviteLink {
+
+        var accessForAddFromInviteLink = self.accessForAddFromInviteLink
+        if currentGroupMembership.allMembersOfAnyKind.count == 1 &&
+            currentGroupMembership.isFullMemberAndAdministrator(localUuid) &&
+            self.shouldLeaveGroupDeclineInvite {
+            // If we're the last admin to leave the group,
+            // disable the group invite link.
+            accessForAddFromInviteLink = .unsatisfiable
+        }
+
+        if let access = accessForAddFromInviteLink {
             if currentAccess.addFromInviteLink == access {
                 // Redundant change, not a conflict.
             } else {
