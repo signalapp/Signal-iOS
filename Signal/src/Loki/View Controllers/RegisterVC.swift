@@ -2,7 +2,8 @@ import Sodium
 
 final class RegisterVC : BaseVC {
     private var seed: Data! { didSet { updateKeyPair() } }
-    private var keyPair: ECKeyPair! { didSet { updatePublicKeyLabel() } }
+    private var ed25519KeyPair: Sign.KeyPair!
+    private var x25519KeyPair: ECKeyPair! { didSet { updatePublicKeyLabel() } }
     
     // MARK: Components
     private lazy var publicKeyLabel: UILabel = {
@@ -135,14 +136,14 @@ final class RegisterVC : BaseVC {
     
     private func updateKeyPair() {
         let padding = Data(repeating: 0, count: 16)
-        let ed25519KeyPair = Sodium().sign.keyPair(seed: (seed + padding).bytes)!
+        ed25519KeyPair = Sodium().sign.keyPair(seed: (seed + padding).bytes)!
         let x25519PublicKey = Sodium().sign.toX25519(ed25519PublicKey: ed25519KeyPair.publicKey)!
         let x25519SecretKey = Sodium().sign.toX25519(ed25519SecretKey: ed25519KeyPair.secretKey)!
-        keyPair = ECKeyPair(publicKey: Data(x25519PublicKey), privateKey: Data(x25519SecretKey))
+        x25519KeyPair = ECKeyPair(publicKey: Data(x25519PublicKey), privateKey: Data(x25519SecretKey))
     }
     
     private func updatePublicKeyLabel() {
-        let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
+        let hexEncodedPublicKey = x25519KeyPair.hexEncodedPublicKey
         let characterCount = hexEncodedPublicKey.count
         var count = 0
         let limit = 32
@@ -170,11 +171,13 @@ final class RegisterVC : BaseVC {
     
     // MARK: Interaction
     @objc private func register() {
-        let identityManager = OWSIdentityManager.shared()
-        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
-        databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-        databaseConnection.setObject(keyPair!, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair!.hexEncodedPublicKey
+        let dbConnection = OWSIdentityManager.shared().dbConnection
+        let collection = OWSPrimaryStorageIdentityKeyStoreCollection
+        dbConnection.setObject(seed.toHexString(), forKey: LKSeedKey, inCollection: collection)
+        dbConnection.setObject(ed25519KeyPair.secretKey.toHexString(), forKey: LKED25519SecretKey, inCollection: collection)
+        dbConnection.setObject(ed25519KeyPair.publicKey.toHexString(), forKey: LKED25519PublicKey, inCollection: collection)
+        dbConnection.setObject(x25519KeyPair!, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: collection)
+        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair!.hexEncodedPublicKey
         OWSPrimaryStorage.shared().setRestorationTime(0)
         UserDefaults.standard[.hasViewedSeed] = false
         let displayNameVC = DisplayNameVC()
@@ -182,7 +185,7 @@ final class RegisterVC : BaseVC {
     }
     
     @objc private func copyPublicKey() {
-        UIPasteboard.general.string = keyPair.hexEncodedPublicKey
+        UIPasteboard.general.string = x25519KeyPair.hexEncodedPublicKey
         copyPublicKeyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyPublicKeyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.copyPublicKeyButton.setTitle("Copied", for: UIControl.State.normal)

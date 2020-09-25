@@ -33,6 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Storing our own identity key
 NSString *const OWSPrimaryStorageIdentityKeyStoreIdentityKey = @"TSStorageManagerIdentityKeyStoreIdentityKey";
+NSString *const LKSeedKey = @"LKLokiSeed";
+NSString *const LKED25519SecretKey = @"LKED25519SecretKey";
+NSString *const LKED25519PublicKey = @"LKED25519PublicKey";
 NSString *const OWSPrimaryStorageIdentityKeyStoreCollection = @"TSStorageManagerIdentityKeyStoreCollection";
 
 // Storing recipients identity keys
@@ -57,7 +60,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 @interface OWSIdentityManager ()
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
