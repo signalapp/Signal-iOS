@@ -22,6 +22,7 @@ public final class DeviceLinkingUtilities : NSObject {
         let slavePublicKey = slaveKeyPair.hexEncodedPublicKey
         var kind = UInt8(LKDeviceLinkMessageKind.request.rawValue)
         let data = Data(hex: masterPublicKey) + Data(bytes: &kind, count: MemoryLayout.size(ofValue: kind))
+        // TODO: Sign using the ED25519 private key here 
         let slaveSignature = try! Ed25519.sign(data, with: slaveKeyPair)
         let thread = TSContactThread.getOrCreateThread(contactId: masterPublicKey)
         return DeviceLinkMessage(in: thread, masterPublicKey: masterPublicKey, slavePublicKey: slavePublicKey, masterSignature: nil, slaveSignature: slaveSignature)
@@ -33,6 +34,7 @@ public final class DeviceLinkingUtilities : NSObject {
         let slavePublicKey = deviceLink.slave.publicKey
         var kind = UInt8(LKDeviceLinkMessageKind.authorization.rawValue)
         let data = Data(hex: slavePublicKey) + Data(bytes: &kind, count: MemoryLayout.size(ofValue: kind))
+        // TODO: Sign using the ED25519 private key here
         let masterSignature = try! Ed25519.sign(data, with: masterKeyPair)
         let slaveSignature = deviceLink.slave.signature!
         let thread = TSContactThread.getOrCreateThread(contactId: slavePublicKey)
