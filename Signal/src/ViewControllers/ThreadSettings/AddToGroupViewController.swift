@@ -163,11 +163,27 @@ public class AddToGroupViewController: OWSTableViewController {
             proceedTitle: NSLocalizedString("ADD_TO_GROUP_ACTION_PROCEED_BUTTON",
                                             comment: "The button on the 'add to group' confirmation to add the user to the group."),
             proceedStyle: .default) { _ in
-                self.addToGroup(groupThread, shortName: shortName)
+                self.addToGroupStep1(groupThread, shortName: shortName)
         }
     }
 
-    private func addToGroup(_ groupThread: TSGroupThread, shortName: String) {
+    private func addToGroupStep1(_ groupThread: TSGroupThread, shortName: String) {
+        AssertIsOnMainThread()
+        guard groupThread.isGroupV2Thread else {
+            addToGroupStep2(groupThread, shortName: shortName)
+            return
+        }
+        let doesUserSupportGroupsV2 = databaseStorage.read { transaction in
+            GroupManager.doesUserSupportGroupsV2(address: self.address, transaction: transaction)
+        }
+        guard doesUserSupportGroupsV2 else {
+            GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
+            return
+        }
+        addToGroupStep2(groupThread, shortName: shortName)
+    }
+
+    private func addToGroupStep2(_ groupThread: TSGroupThread, shortName: String) {
         let oldGroupModel = groupThread.groupModel
         guard let newGroupModel = buildNewGroupModel(oldGroupModel: oldGroupModel) else {
             let error = OWSAssertionError("Couldn't build group model.")
