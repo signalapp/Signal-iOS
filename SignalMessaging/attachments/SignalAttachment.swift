@@ -817,29 +817,17 @@ public class SignalAttachment: NSObject {
             let dataFileExtension: String
             let imageData: Data
 
-            if attachment.mimeType == OWSMimeTypeImageWebp {
-                guard let pngImageData = dstImage.pngData() else {
-                    attachment.error = .couldNotConvertImage
-                    return attachment
-                }
-
-                dataUTI = kUTTypePNG as String
-                dataMIMEType = OWSMimeTypeImagePng
-                dataFileExtension = "png"
-                imageData = pngImageData
-            } else {
-                guard let jpgImageData = dstImage.jpegData(
-                    compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)
-                ) else {
-                    attachment.error = .couldNotConvertImage
-                    return attachment
-                }
-
-                dataUTI = kUTTypeJPEG as String
-                dataMIMEType = OWSMimeTypeImageJpeg
-                dataFileExtension = "jpg"
-                imageData = jpgImageData
+            guard let jpgImageData = dstImage.jpegData(
+                compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)
+            ) else {
+                attachment.error = .couldNotConvertImage
+                return attachment
             }
+
+            dataUTI = kUTTypeJPEG as String
+            dataMIMEType = OWSMimeTypeImageJpeg
+            dataFileExtension = "jpg"
+            imageData = jpgImageData
 
             guard let dataSource = DataSourceValue.dataSource(with: imageData, fileExtension: dataFileExtension) else {
                 attachment.error = .couldNotConvertImage
