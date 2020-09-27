@@ -704,7 +704,7 @@ typedef struct {
 {
     if (imageFormat == ImageFormat_Webp) {
         CGSize imageSize = [self sizeForWebpData];
-        if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
+        if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:isAnimated]) {
             return ImageMetadata.invalid;
         }
         return [ImageMetadata validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES isAnimated:isAnimated];
