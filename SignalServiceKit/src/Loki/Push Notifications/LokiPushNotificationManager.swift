@@ -143,21 +143,4 @@ public final class LokiPushNotificationManager : NSObject {
     static func objc_notify(for signalMessage: SignalMessage) -> AnyPromise {
         return AnyPromise.from(notify(for: signalMessage))
     }
-
-    static func acknowledgeDelivery(forMessageWithHash hash: String, expiration: UInt64, publicKey: String) {
-        let parameters: JSON = [ "lastHash" : hash, "pubKey" : publicKey, "expiration" : expiration]
-        let url = URL(string: "\(server)/acknowledge_message_delivery")!
-        let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        TSNetworkManager.shared().makeRequest(request, success: { _, response in
-            guard let json = response as? JSON else {
-                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash).")
-            }
-            guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(json["message"] as? String ?? "nil").")
-            }
-        }, failure: { _, error in
-            print("[Loki] Couldn't acknowledge delivery for message with hash: \(hash) due to error: \(error).")
-        })
-    }
 }

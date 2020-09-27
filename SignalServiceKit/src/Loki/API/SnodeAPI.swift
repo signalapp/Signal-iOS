@@ -243,25 +243,20 @@ public final class SnodeAPI : NSObject {
 
     internal static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> [SSKProtoEnvelope] {
         guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
-        if let (lastHash, expirationDate) = updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages),
-            UserDefaults.standard[.isUsingFullAPNs] {
-            LokiPushNotificationManager.acknowledgeDelivery(forMessageWithHash: lastHash, expiration: expirationDate, publicKey: getUserHexEncodedPublicKey())
-        }
+        updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages)
         let rawNewMessages = removeDuplicates(from: rawMessages, associatedWith: publicKey)
         let newMessages = parseProtoEnvelopes(from: rawNewMessages)
         return newMessages
     }
     
-    private static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from rawMessages: [JSON]) -> (String, UInt64)? {
+    private static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from rawMessages: [JSON]) {
         if let lastMessage = rawMessages.last, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
             try! Storage.writeSync { transaction in
                 Storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey, to: [ "hash" : lastHash, "expirationDate" : NSNumber(value: expirationDate) ], using: transaction)
             }
-            return (lastHash, expirationDate)
         } else if (!rawMessages.isEmpty) {
             print("[Loki] Failed to update last message hash value from: \(rawMessages).")
         }
-        return nil
     }
     
     private static func removeDuplicates(from rawMessages: [JSON], associatedWith publicKey: String) -> [JSON] {
