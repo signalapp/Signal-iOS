@@ -118,6 +118,7 @@ open class ActionSheetController: OWSViewController {
 
         // Prefer to be full width, but don't exceed the maximum width
         scrollView.autoSetDimension(.width, toSize: 414, relation: .lessThanOrEqual)
+        scrollView.autoMatch(.width, to: .width, of: view, withOffset: 0, relation: .lessThanOrEqual)
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
             scrollView.autoPinWidthToSuperview()
         }
