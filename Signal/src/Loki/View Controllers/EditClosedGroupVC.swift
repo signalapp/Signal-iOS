@@ -232,10 +232,14 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         let members = Set(self.members)
         let name = self.name
         try! Storage.writeSync { [weak self] transaction in
-            ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done {
+            ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
                 guard let self = self else { return }
-                self.navigationController!.popViewController(animated: true)
-            }.catch { error in
+                if let conversationVC = self.navigationController!.viewControllers.first(where: { $0 is ConversationViewController }) {
+                    self.navigationController!.popToViewController(conversationVC, animated: true)
+                } else {
+                    self.navigationController!.popViewController(animated: true)
+                }
+            }.catch(on: DispatchQueue.main) { error in
                 guard let self = self else { return }
                 self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
             }
