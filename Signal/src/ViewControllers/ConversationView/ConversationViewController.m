@@ -4584,7 +4584,8 @@ typedef enum : NSUInteger {
         }
     }
 
-    if (self.scrollContinuity == kScrollContinuityBottom && self.lastKnownDistanceFromBottom) {
+    if (self.scrollContinuity == kScrollContinuityBottom && self.lastKnownDistanceFromBottom
+        && CurrentAppContext().isAppForegroundAndActive) {
         NSValue *_Nullable contentOffset =
             [self contentOffsetForLastKnownDistanceFromBottom:self.lastKnownDistanceFromBottom.floatValue];
         if (contentOffset) {
