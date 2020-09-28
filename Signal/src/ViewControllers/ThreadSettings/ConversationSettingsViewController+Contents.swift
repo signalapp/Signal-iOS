@@ -794,7 +794,6 @@ extension ConversationSettingsViewController {
                                                 accessibilityIdentifier: "conversation_settings_requests_and_invites",
                                                 actionBlock: {  [weak self] in
                                                     self?.showMemberRequestsAndInvitesView()
-
         }))
 
         if RemoteConfig.groupsV2InviteLinks {
@@ -808,7 +807,6 @@ extension ConversationSettingsViewController {
                                                     accessibilityIdentifier: "conversation_settings_group_link",
                                                     actionBlock: {  [weak self] in
                                                         self?.showGroupLinkView()
-
             }))
         }
 
