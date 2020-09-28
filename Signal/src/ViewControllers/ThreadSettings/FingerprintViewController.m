@@ -94,9 +94,20 @@ typedef void (^CustomLayoutBlock)(void);
 {
     OWSAssertDebug(address.isValid);
 
+    BOOL canRenderSafetyNumber;
+    if (RemoteConfig.uuidSafetyNumbers) {
+        canRenderSafetyNumber = address.uuid != nil;
+    } else {
+        canRenderSafetyNumber = address.phoneNumber != nil;
+    }
+
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager shared] recipientIdentityForAddress:address];
     if (!recipientIdentity) {
+        canRenderSafetyNumber = NO;
+    }
+
+    if (!canRenderSafetyNumber) {
         [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
                                                       @"Title for alert explaining that a user cannot be verified.")
                                           message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
