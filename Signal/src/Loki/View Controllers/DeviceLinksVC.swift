@@ -150,7 +150,8 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
                     storage.removePreKeyBundle(forContact: linkedDevicePublicKey, transaction: transaction)
                     storage.deleteAllSessions(forContact: linkedDevicePublicKey, protocolContext: transaction)
                     for groupPublicKey in Storage.getUserClosedGroupPublicKeys() {
-                        ClosedGroupsProtocol.removeMembers([ linkedDevicePublicKey ], from: groupPublicKey, using: transaction)
+                        // TODO: Possibly re-implement in the future
+                        // ClosedGroupsProtocol.removeMembers([ linkedDevicePublicKey ], from: groupPublicKey, using: transaction)
                     }
                 }
             }, failure: { _ in
@@ -160,7 +161,8 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
                     storage.removePreKeyBundle(forContact: linkedDevicePublicKey, transaction: transaction)
                     storage.deleteAllSessions(forContact: linkedDevicePublicKey, protocolContext: transaction)
                     for groupPublicKey in Storage.getUserClosedGroupPublicKeys() {
-                        ClosedGroupsProtocol.removeMembers([ linkedDevicePublicKey ], from: groupPublicKey, using: transaction)
+                        // TODO: Possibly re-implement in the future
+                        // ClosedGroupsProtocol.removeMembers([ linkedDevicePublicKey ], from: groupPublicKey, using: transaction)
                     }
                 }
             })
