@@ -2,14 +2,9 @@
 @objc(LKEditClosedGroupVC)
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let thread: TSGroupThread
+    private var name = ""
+    private var members: [String] = [] { didSet { tableView.reloadData() } }
     private var isEditingGroupName = false { didSet { handleIsEditingGroupNameChanged() } }
-
-    private lazy var members: [String] = {
-        func getDisplayName(for hexEncodedPublicKey: String) -> String {
-            return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
-        }
-        return GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
-    }()
 
     // MARK: Components
     private lazy var groupNameLabel: UILabel = {
@@ -63,6 +58,11 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         navigationItem.backBarButtonItem = backButton
         setUpViewHierarchy()
         updateNavigationBarButtons()
+        name = thread.groupModel.groupName!
+        func getDisplayName(for publicKey: String) -> String {
+            return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
+        }
+        members = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
     }
 
     private func setUpViewHierarchy() {
@@ -146,8 +146,10 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let removeAction = UITableViewRowAction(style: .destructive, title: "Remove") { _, _ in
-            // TODO: Implement
+        let publicKey = members[indexPath.row]
+        let removeAction = UITableViewRowAction(style: .destructive, title: "Remove") { [weak self] _, _ in
+            guard let self = self, let index = self.members.firstIndex(of: publicKey) else { return }
+            self.members.remove(at: index)
         }
         removeAction.backgroundColor = Colors.destructive
         return [ removeAction ]
@@ -162,7 +164,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         } else {
             navigationItem.leftBarButtonItem = nil
         }
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleSaveGroupNameButtonTapped))
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDoneButtonTapped))
         doneButton.tintColor = Colors.text
         navigationItem.rightBarButtonItem = doneButton
     }
@@ -189,15 +191,49 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         isEditingGroupName = false
     }
 
-    @objc private func handleSaveGroupNameButtonTapped() {
+    @objc private func handleDoneButtonTapped() {
+        if isEditingGroupName {
+            updateGroupName()
+        } else {
+            commitChanges()
+        }
+    }
+
+    private func updateGroupName() {
+        let name = groupNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        guard !name.isEmpty else {
+            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
+        }
+        guard name.count < ClosedGroupsProtocol.maxNameSize else {
+            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
+        }
         isEditingGroupName = false
+        self.name = name
+        groupNameLabel.text = name
     }
 
     @objc private func addMembers() {
         let title = "Add Members"
-        let userSelectionVC = UserSelectionVC(with: title, excluding: Set(members)) { selectedUsers in
-            print(selectedUsers)
+        let userSelectionVC = UserSelectionVC(with: title, excluding: Set(members)) { [weak self] selectedUsers in
+            guard let self = self else { return }
+            var members = self.members
+            members.append(contentsOf: selectedUsers)
+            func getDisplayName(for publicKey: String) -> String {
+                return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
+            }
+            self.members = members.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
         }
         navigationController!.pushViewController(userSelectionVC, animated: true, completion: nil)
+    }
+
+    private func commitChanges() {
+        // TODO: Implement
+    }
+
+    // MARK: Convenience
+    private func showError(title: String, message: String = "") {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+        presentAlert(alert)
     }
 }

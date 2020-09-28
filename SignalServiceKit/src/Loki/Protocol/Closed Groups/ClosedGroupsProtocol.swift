@@ -14,6 +14,7 @@ import PromiseKit
 public final class ClosedGroupsProtocol : NSObject {
     public static let isSharedSenderKeysEnabled = true
     public static let groupSizeLimit = 20
+    public static let maxNameSize = 64
 
     // MARK: - Sending
 
