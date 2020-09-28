@@ -520,6 +520,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (RemoteConfig.groupsV2GoodCitizen || isSecondaryDevice) {
         capabilities[@"gv2"] = @(YES);
         capabilities[@"gv2-2"] = @(YES);
+        capabilities[@"gv2-3"] = @(YES);
     }
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
