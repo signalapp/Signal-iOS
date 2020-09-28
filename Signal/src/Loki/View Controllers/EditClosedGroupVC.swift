@@ -92,6 +92,12 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         addMembersButton.setTitle("Add Members", for: UIControl.State.normal)
         addMembersButton.addTarget(self, action: #selector(addMembers), for: UIControl.Event.touchUpInside)
         addMembersButton.contentEdgeInsets = UIEdgeInsets(top: 0, leading: Values.mediumSpacing, bottom: 0, trailing: Values.mediumSpacing)
+        if (Set(ContactUtilities.getAllContacts()).subtracting(members).isEmpty) {
+            addMembersButton.isUserInteractionEnabled = false
+            let disabledColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+            addMembersButton.layer.borderColor = disabledColor.cgColor
+            addMembersButton.setTitleColor(disabledColor, for: UIControl.State.normal)
+        }
         // Middle stack view
         let middleStackView = UIStackView(arrangedSubviews: [ membersLabel, addMembersButton ])
         middleStackView.axis = .horizontal
@@ -130,6 +136,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
         let publicKey = members[indexPath.row]
         cell.publicKey = publicKey
+        cell.update()
         return cell
     }
 
@@ -187,6 +194,8 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
 
     @objc private func addMembers() {
-
+        let title = "Add Members"
+        let userSelectionVC = UserSelectionVC(with: title, excluding: Set(members))
+        navigationController!.pushViewController(userSelectionVC, animated: true, completion: nil)
     }
 }

@@ -1150,7 +1150,7 @@ const CGFloat kIconViewLength = 24;
 - (void)editGroup
 {
     LKEditClosedGroupVC *editClosedGroupVC = [[LKEditClosedGroupVC alloc] initWithThreadID:self.thread.uniqueId];
-    [self.navigationController pushViewController:editClosedGroupVC animated:YES];
+    [self.navigationController pushViewController:editClosedGroupVC animated:YES completion:nil];
 }
 
 - (void)didTapLeaveGroup

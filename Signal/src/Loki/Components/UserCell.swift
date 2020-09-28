@@ -79,7 +79,7 @@ final class UserCell : UITableViewCell {
     }
 
     // MARK: Updating
-    private func update() {
+    func update() {
         profilePictureView.hexEncodedPublicKey = publicKey
         profilePictureView.update()
         displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
