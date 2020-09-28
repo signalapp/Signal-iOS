@@ -227,7 +227,19 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
 
     private func commitChanges() {
-        // TODO: Implement
+        let groupID = thread.groupModel.groupId
+        let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
+        let members = Set(self.members)
+        let name = self.name
+        try! Storage.writeSync { [weak self] transaction in
+            ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done {
+                guard let self = self else { return }
+                self.navigationController!.popViewController(animated: true)
+            }.catch { error in
+                guard let self = self else { return }
+                self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+            }
+        }
     }
 
     // MARK: Convenience
