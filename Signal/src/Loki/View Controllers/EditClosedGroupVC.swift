@@ -195,7 +195,9 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
 
     @objc private func addMembers() {
         let title = "Add Members"
-        let userSelectionVC = UserSelectionVC(with: title, excluding: Set(members))
+        let userSelectionVC = UserSelectionVC(with: title, excluding: Set(members)) { selectedUsers in
+            print(selectedUsers)
+        }
         navigationController!.pushViewController(userSelectionVC, animated: true, completion: nil)
     }
 }

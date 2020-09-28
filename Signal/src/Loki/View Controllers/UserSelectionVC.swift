@@ -1,7 +1,9 @@
 
-final class UserSelectionVC : BaseVC, UITableViewDataSource {
+final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let navBarTitle: String
     private let usersToExclude: Set<String>
+    private let completion: (Set<String>) -> Void
+    private var selectedUsers: Set<String> = []
 
     private lazy var users: [String] = {
         var result = ContactUtilities.getAllContacts()
@@ -13,6 +15,7 @@ final class UserSelectionVC : BaseVC, UITableViewDataSource {
     @objc private lazy var tableView: UITableView = {
         let result = UITableView()
         result.dataSource = self
+        result.delegate = self
         result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
@@ -22,9 +25,10 @@ final class UserSelectionVC : BaseVC, UITableViewDataSource {
     }()
 
     // MARK: Lifecycle
-    @objc init(with title: String, excluding usersToExclude: Set<String>) {
+    @objc init(with title: String, excluding usersToExclude: Set<String>, completion: @escaping (Set<String>) -> Void) {
         self.navBarTitle = title
         self.usersToExclude = usersToExclude
+        self.completion = completion
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -36,6 +40,7 @@ final class UserSelectionVC : BaseVC, UITableViewDataSource {
         setUpGradientBackground()
         setUpNavBarStyle()
         setNavBarTitle(navBarTitle)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDoneButtonTapped))
         view.addSubview(tableView)
         tableView.pin(to: view)
     }
@@ -49,8 +54,24 @@ final class UserSelectionVC : BaseVC, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
         let publicKey = users[indexPath.row]
         cell.publicKey = publicKey
-        cell.accessory = .tick(isSelected: false)
+        let isSelected = selectedUsers.contains(publicKey)
+        cell.accessory = .tick(isSelected: isSelected)
         cell.update()
         return cell
+    }
+
+    // MARK: Interaction
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let publicKey = users[indexPath.row]
+        if !selectedUsers.contains(publicKey) { selectedUsers.insert(publicKey) } else { selectedUsers.remove(publicKey) }
+        guard let cell = tableView.cellForRow(at: indexPath) as? UserCell else { return }
+        let isSelected = selectedUsers.contains(publicKey)
+        cell.accessory = .tick(isSelected: isSelected)
+        cell.update()
+    }
+
+    @objc private func handleDoneButtonTapped() {
+        completion(selectedUsers)
+        navigationController!.popViewController(animated: true)
     }
 }
