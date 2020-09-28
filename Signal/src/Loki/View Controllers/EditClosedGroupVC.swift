@@ -31,7 +31,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         let result = UITableView()
         result.dataSource = self
         result.delegate = self
-        result.register(Cell.self, forCellReuseIdentifier: "Cell")
+        result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.isScrollEnabled = false
@@ -127,7 +127,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
         let publicKey = members[indexPath.row]
         cell.publicKey = publicKey
         return cell
@@ -139,7 +139,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let removeAction = UITableViewRowAction(style: .destructive, title: "Remove") { [weak self] _, _ in
+        let removeAction = UITableViewRowAction(style: .destructive, title: "Remove") { _, _ in
             // TODO: Implement
         }
         removeAction.backgroundColor = Colors.destructive
@@ -188,85 +188,5 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
 
     @objc private func addMembers() {
 
-    }
-
-
-}
-
-
-
-// MARK: - Cell
-
-private extension EditClosedGroupVC {
-
-    final class Cell : UITableViewCell {
-        var publicKey = "" { didSet { update() } }
-
-        // MARK: Components
-        private lazy var profilePictureView = ProfilePictureView()
-
-        private lazy var displayNameLabel: UILabel = {
-            let result = UILabel()
-            result.textColor = Colors.text
-            result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-            result.lineBreakMode = .byTruncatingTail
-            return result
-        }()
-
-        private lazy var separator: UIView = {
-            let result = UIView()
-            result.backgroundColor = Colors.separator
-            result.set(.height, to: Values.separatorThickness)
-            return result
-        }()
-
-        // MARK: Initialization
-        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
-            setUpViewHierarchy()
-        }
-
-        required init?(coder: NSCoder) {
-            super.init(coder: coder)
-            setUpViewHierarchy()
-        }
-
-        private func setUpViewHierarchy() {
-            // Set the cell background color
-            backgroundColor = Colors.cellBackground
-            // Set up the highlight color
-            let selectedBackgroundView = UIView()
-            selectedBackgroundView.backgroundColor = .clear // Disabled for now
-            self.selectedBackgroundView = selectedBackgroundView
-            // Set up the profile picture image view
-            let profilePictureViewSize = Values.smallProfilePictureSize
-            profilePictureView.set(.width, to: profilePictureViewSize)
-            profilePictureView.set(.height, to: profilePictureViewSize)
-            profilePictureView.size = profilePictureViewSize
-            // Set up the main stack view
-            let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
-            stackView.axis = .horizontal
-            stackView.alignment = .center
-            stackView.spacing = Values.mediumSpacing
-            contentView.addSubview(stackView)
-            stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
-            stackView.pin(.top, to: .top, of: contentView, withInset: Values.mediumSpacing)
-            contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.mediumSpacing)
-            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.mediumSpacing)
-            stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
-            // Set up the separator
-            contentView.addSubview(separator)
-            separator.pin(.leading, to: .leading, of: contentView)
-            contentView.pin(.trailing, to: .trailing, of: separator)
-            separator.pin(.bottom, to: .bottom, of: contentView)
-            separator.set(.width, to: UIScreen.main.bounds.width)
-        }
-
-        // MARK: Updating
-        private func update() {
-            profilePictureView.hexEncodedPublicKey = publicKey
-            profilePictureView.update()
-            displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
-        }
     }
 }
