@@ -66,7 +66,7 @@ public final class SharedSenderKeysImplementation : NSObject {
         let nextMessageKey = try HMAC(key: Data(hex: ratchet.chainKey).bytes, variant: .sha256).authenticate([ UInt8(1) ])
         let nextChainKey = try HMAC(key: Data(hex: ratchet.chainKey).bytes, variant: .sha256).authenticate([ UInt8(2) ])
         let nextKeyIndex = ratchet.keyIndex + 1
-        return ClosedGroupRatchet(chainKey: nextChainKey.toHexString(), keyIndex: nextKeyIndex, messageKeys: ratchet.messageKeys + [ nextMessageKey.toHexString() ])
+        return ClosedGroupRatchet(chainKey: nextChainKey.toHexString(), keyIndex: nextKeyIndex, messageKeys: [ nextMessageKey.toHexString() ])
     }
 
     /// - Note: Sync. Don't call from the main thread.
