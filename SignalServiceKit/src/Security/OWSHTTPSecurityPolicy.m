@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSHTTPSecurityPolicy.h"
@@ -46,11 +46,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (NSData *)certificateDataForService:(NSString *)service {
-    SecCertificateRef certRef = [self certificateForService:service];
-    return (__bridge_transfer NSData *)SecCertificateCopyData(certRef);
+    SecCertificateRef certRef = [self newCertificateForService:service];
+    NSData *result = (__bridge_transfer NSData *)SecCertificateCopyData(certRef);
+    CFRelease(certRef);
+    return result;
 }
 
-+ (SecCertificateRef)certificateForService:(NSString *)service
++ (SecCertificateRef)newCertificateForService:(NSString *)service CF_RETURNS_RETAINED
 {
     NSData *certificateData = [self dataFromCertificateFileForService:service];
     return SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));

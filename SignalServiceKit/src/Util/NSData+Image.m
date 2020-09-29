@@ -528,6 +528,7 @@ typedef struct {
     }
 
     UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
+    CFRelease(cgImage);
     return uiImage;
 }
 
