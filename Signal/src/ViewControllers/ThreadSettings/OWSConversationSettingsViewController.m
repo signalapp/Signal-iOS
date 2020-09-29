@@ -649,8 +649,13 @@ const CGFloat kIconViewLength = 24;
 
     // Group settings section.
 
-    
-    if (self.isGroupThread && self.isPrivateGroupChat) {
+    __block BOOL isUserMember;
+    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey transaction:transaction];
+    }];
+
+    if (self.isGroupThread && self.isPrivateGroupChat && isUserMember) {
         if (((TSGroupThread *)self.thread).usesSharedSenderKeys) {
             [mainSection addItem:[OWSTableItem
                 itemWithCustomCellBlock:^{
@@ -682,25 +687,22 @@ const CGFloat kIconViewLength = 24;
 //                [weakSelf showGroupMembersView];
 //            }]
 //        ];
-        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        if ([((TSGroupThread *)self.thread).groupModel.groupMemberIds containsObject:userPublicKey]) {
-            [mainSection addItem:[OWSTableItem
-                itemWithCustomCellBlock:^{
-                    UITableViewCell *cell =
-                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
-                                                             @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_leave"
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                             OWSConversationSettingsViewController, @"leave_group")];
-                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+        [mainSection addItem:[OWSTableItem
+            itemWithCustomCellBlock:^{
+                UITableViewCell *cell =
+                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                         @"table cell label in conversation settings")
+                                            iconName:@"table_ic_group_leave"
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                         OWSConversationSettingsViewController, @"leave_group")];
+                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
 
-                    return cell;
-                }
-                actionBlock:^{
-                    [weakSelf didTapLeaveGroup];
-                }]
-            ];
-        }
+                return cell;
+            }
+            actionBlock:^{
+                [weakSelf didTapLeaveGroup];
+            }]
+        ];
     }
     
 

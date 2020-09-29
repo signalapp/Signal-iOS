@@ -151,6 +151,7 @@ public final class ClosedGroupsProtocol : NSObject {
                 }
             }
         } else {
+            seal.fulfill(())
             // Generate ratchets for any new members
             newSenderKeys = newMembers.map { publicKey in
                 let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)

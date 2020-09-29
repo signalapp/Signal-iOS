@@ -227,18 +227,24 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
     }
 
     private func commitChanges() {
+        let popToConversationVC: (EditClosedGroupVC) -> Void = { editVC in
+            if let conversationVC = editVC.navigationController!.viewControllers.first(where: { $0 is ConversationViewController }) {
+                editVC.navigationController!.popToViewController(conversationVC, animated: true)
+            } else {
+                editVC.navigationController!.popViewController(animated: true)
+            }
+        }
         let groupID = thread.groupModel.groupId
         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
         let members = Set(self.members)
         let name = self.name
+        guard members != Set(thread.groupModel.groupMemberIds) || name != thread.groupModel.groupName else {
+            return popToConversationVC(self)
+        }
         try! Storage.writeSync { [weak self] transaction in
             ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
                 guard let self = self else { return }
-                if let conversationVC = self.navigationController!.viewControllers.first(where: { $0 is ConversationViewController }) {
-                    self.navigationController!.popToViewController(conversationVC, animated: true)
-                } else {
-                    self.navigationController!.popViewController(animated: true)
-                }
+                popToConversationVC(self)
             }.catch(on: DispatchQueue.main) { error in
                 guard let self = self else { return }
                 self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
