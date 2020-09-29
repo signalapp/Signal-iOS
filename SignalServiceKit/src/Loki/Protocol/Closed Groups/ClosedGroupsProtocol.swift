@@ -243,8 +243,8 @@ public final class ClosedGroupsProtocol : NSObject {
     private static func isValid(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate) -> Bool {
         guard !closedGroupUpdate.groupPublicKey.isEmpty else { return false }
         switch closedGroupUpdate.type {
-        case .new: return !(closedGroupUpdate.name ?? "").isEmpty && !(closedGroupUpdate.groupPrivateKey ?? Data()).isEmpty && !closedGroupUpdate.senderKeys.isEmpty
-            && !closedGroupUpdate.members.isEmpty && !closedGroupUpdate.admins.isEmpty
+        case .new: return !(closedGroupUpdate.name ?? "").isEmpty && !(closedGroupUpdate.groupPrivateKey ?? Data()).isEmpty && !closedGroupUpdate.members.isEmpty
+            && !closedGroupUpdate.admins.isEmpty // senderKeys may be empty
         case .info: return !(closedGroupUpdate.name ?? "").isEmpty && !closedGroupUpdate.members.isEmpty && !closedGroupUpdate.admins.isEmpty // senderKeys may be empty
         case .senderKeyRequest: return true
         case .senderKey: return !closedGroupUpdate.senderKeys.isEmpty
@@ -252,6 +252,7 @@ public final class ClosedGroupsProtocol : NSObject {
     }
 
     private static func handleNewGroupMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, using transaction: YapDatabaseReadWriteTransaction) {
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         // Unwrap the message
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
         let name = closedGroupUpdate.name
@@ -264,6 +265,25 @@ public final class ClosedGroupsProtocol : NSObject {
             guard members.contains(senderKey.publicKey.toHexString()) else { return } // TODO: This currently doesn't take into account multi device
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey.toHexString(), ratchet: ratchet, using: transaction)
+        }
+        // Sort out any discrepancies between the provided sender keys and what's required
+        let missingSenderKeys = Set(members).subtracting(senderKeys.map { $0.publicKey.toHexString() })
+        let userPublicKey = getUserHexEncodedPublicKey()
+        if missingSenderKeys.contains(userPublicKey) {
+            establishSessionsIfNeeded(with: [String](missingSenderKeys), using: transaction)
+            let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+            let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
+            for member in members {
+                guard member != userPublicKey else { continue }
+                let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+                thread.save(with: transaction)
+                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: userSenderKey)
+                let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+                messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
+            }
+        }
+        for publicKey in missingSenderKeys.subtracting([ userPublicKey ]) {
+            requestSenderKey(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
         }
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
