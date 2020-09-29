@@ -146,7 +146,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *headerView;
 @property (nonatomic, nullable) UIView *bannerView;
-@property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
 @property (nonatomic) ConversationViewAction actionOnOpen;
 
@@ -347,6 +346,12 @@ typedef enum : NSUInteger {
 - (TSThread *)thread {
     OWSAssertDebug(self.threadViewModel);
     return self.threadViewModel.threadRecord;
+}
+
+- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
+{
+    OWSAssertDebug(self.threadViewModel);
+    return self.threadViewModel.disappearingMessagesConfiguration;
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
@@ -722,10 +727,6 @@ typedef enum : NSUInteger {
     // We should have already requested contact access at this point, so this should be a no-op
     // unless it ever becomes possible to load this VC without going via the ConversationListViewController.
     [self.contactsManager requestSystemContactsOnce];
-
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
-    }];
 
     [self updateBarButtonItems];
     [self updateNavigationTitle];
@@ -1763,23 +1764,6 @@ typedef enum : NSUInteger {
     if (valueChanged) {
         [self resetContentAndLayoutWithTransaction:transaction];
     }
-}
-
-- (void)updateDisappearingMessagesConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    self.disappearingMessagesConfiguration = [self.thread disappearingMessagesConfigurationWithTransaction:transaction];
-}
-
-- (void)setDisappearingMessagesConfiguration:
-    (nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
-{
-    if (_disappearingMessagesConfiguration.isEnabled == disappearingMessagesConfiguration.isEnabled
-        && _disappearingMessagesConfiguration.durationSeconds == disappearingMessagesConfiguration.durationSeconds) {
-        return;
-    }
-
-    _disappearingMessagesConfiguration = disappearingMessagesConfiguration;
-    [self updateNavigationBarSubtitleLabel];
 }
 
 #pragma mark Bubble User Actions
@@ -3719,7 +3703,6 @@ typedef enum : NSUInteger {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         // We updated the group, so if there was a pending message request we should accept it.
         [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread transaction:transaction];
-        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
     });
 }
 
@@ -4891,7 +4874,6 @@ typedef enum : NSUInteger {
     if (self.isGroupConversation) {
         [self updateNavigationTitle];
     }
-    [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
 
     if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Minor) {
         [self showMessageRequestDialogIfRequiredAsync];
