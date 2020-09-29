@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Gweinyddwyr yn Unig";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Dewisiwch pwy all olygu aelodaeth grŵp:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Pob Aelod";
@@ -871,6 +871,9 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "Bydd %@ yn gallu golygu'r grŵp hwn a'i aelodau.";
 
+/* Label for 'member invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Ceisiadau Aelodaeth & Gwahoddiadau";
 
@@ -879,9 +882,6 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Aelod";
-
-/* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Dewisiwch pwy all olygu aelodaeth grŵp.";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Hysbysu Pob Tro";
@@ -1618,6 +1618,9 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ni allwch chi ychwanegu defnyddwyr i'r grŵp hwn yn awtomatig. Maen't wedi eu gwahodd, a ni fyddent yn gweld unrhyw negeseuon grŵp nes iddynt dderbyn.";
 
+/* The title for the 'group invites' view. */
+"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Nid yw'r ddolen grŵp hon yn ddilys bellach.";
 
@@ -2006,10 +2009,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Beth yw Hen Grwpiau?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Ni ellir uwchraddio Hen Grwpiau i Grwpiau Newydd eto, ond gallwch greu Grŵp Newydd gyda'r un aelodau os ydyn nhw ar y fersiwn ddiweddaraf o Signal.\n\nBydd Signal yn cynnig ffordd i uwchraddio Hen Grwpiau yn y dyfodol.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Gai “uwchraddio” Hen Grŵp?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "I greu Grŵp Newydd, dylai'r holl aelodau ddiweddaru i'r fersiwn ddiweddaraf o Signal.";
@@ -2030,7 +2033,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "Nid yw %1$@ aelod yn cefnogi Grwpiau Newydd, felly Hen Grŵp fydd hwn. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Mae hwn yn Hen Grwp. Dim ond ar gyfer Grwpiau Newydd y mae nodweddion fel gweinyddwr grŵp ar gael. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Hen Grŵp";
@@ -2717,7 +2720,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Seiniau";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Ychwanegu sain arbennig...";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Enw, Cynnwys, a Gweithredoedd";
@@ -3185,7 +3188,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Byddwn yn eich atgoffa eto yfory.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Byddwn yn eich atgoffa ymhen pythefthnos.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Byddwn yn eich atgoffa ymhen wythnos.";
@@ -3527,25 +3530,25 @@
 "REREGISTER_FOR_PUSH" = "Ailgofrestrwch i gael hysbysiadau gwthio";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "I wneud Signal yr ap negeseuon gorau ar y planed, hoffwn glywed eich adborth.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Tell Signal what you think";
+"RESEARCH_MEGAPHONE_TITLE" = "Dywedwch wrth Signal beth you eich barn";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "Surveygizmo sydd yn cynnal yr arolwg yn y parth diogel surveys.signalusers.org";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "Dim diolch";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>Credwn mewn preifatrwydd.</bold>\n\nNid yw Signal yn eich olrhain nac yn casglu eich data. Er mwyn gwella Signal i bawb, rydym yn dibynnu ar adborth defnyddwyr, <bold>a byddem wrth ein bod â'ch adborth chi</bold>.\n\nRydyn ni'n cynnal arolwg i ddeall sut rydych chi'n defnyddio Signal. Nid yw ein harolwg yn casglu unrhyw ddata a fydd yn eich adnabod chi. Os oes gennych ddiddordeb mewn rhannu adborth ychwanegol, bydd gennych yr opsiwn i ddarparu gwybodaeth gyswllt.\n\nOs oes gennych ychydig funudau ac adborth i'w gynnig, byddem wrth ein bodd yn clywed gennych.";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Take the survey";
+"RESEARCH_MODAL_TAKE_SURVEY" = "Cymryd yr Arolwg";
 
 /* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Research";
+"RESEARCH_MODAL_TITLE" = "Ymchwil Signal";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Ailgynnig";

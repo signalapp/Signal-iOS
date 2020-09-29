@@ -560,7 +560,7 @@ public class LinkPreviewView: UIStackView {
             return
         }
 
-        self.addBackgroundView(withBackgroundColor: Theme.secondaryBackgroundColor)
+        addBackgroundView(withBackgroundColor: Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray02)
 
         if let imageView = createImageView(state: state) {
             if sentIsHero(state: state) {

@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Tik administratoriai";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Pasirinkite, kas gali keisti grupės narystes:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Visi nariai";
@@ -871,6 +871,9 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ galės taisyti šią grupę ir jos narių sąrašą.";
 
+/* Label for 'member invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Narių prašymai ir pakvietimai";
 
@@ -879,9 +882,6 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "Narių: %@";
-
-/* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Pasirinkite, kas gali keisti grupės narystes.";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Visada pranešti";
@@ -1618,6 +1618,9 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Jūs negalite automatiškai pridėti šių naudotojų į šią grupę. Jie yra pakviesti prisijungti prie grupės ir nematys jokių grupėje esančių žinučių tol, kol nepriims kvietimo.";
 
+/* The title for the 'group invites' view. */
+"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ši grupės nuoroda daugiau nebegalioja.";
 
@@ -2006,10 +2009,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Kas yra pasenusios grupės?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Pasenusios grupės negali būti naujintos į naująsias grupes, bet galite sukurti naująją grupę su tais pačiais nariais, jeigu jie naudoja naujausią Signal versiją.\n\nAteityje Signal pateiks būdą kaip naujinti pasenusias grupes į naująsias.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Ar galiu naujinti pasenusią grupę?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Norint sukurti naująją grupę, visi nariai turėtų atsinaujinti į naujausią Signal versiją.";
@@ -2030,7 +2033,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ nariai nepalaiko naujųjų grupių, todėl tai bus pasenusi grupė. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Tai yra pasenusi grupė. Tokios ypatybės, kaip grupės administratoriai, yra prieinamos tik naujosiose grupėse. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Pasenusi grupė";
@@ -3167,7 +3170,7 @@
 "PIN_REMINDER_EXPLANATION" = "Tam, kad įsimintumėte savo PIN kodą, mes periodiškai prašysime jį įvesti. Bėgant laikui, mes tai darysime rečiau.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Pamiršote savo PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Užmiršote savo PIN kodą?";
 
 /* Action text for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Patvirtinti PIN kodą";
@@ -3422,7 +3425,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Naudotojas negali būti pasirinktas.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "Aš pamiršau savo PIN.";
+"REGISTER_2FA_FORGOT_PIN" = "Aš užmiršau savo PIN kodą.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Reikia pagalbos?";
@@ -4085,7 +4088,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Išjungti priminimus";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Įsiminkite arba laikykite savo PIN kodą saugioje vietoje, nes jo neįmanoma atkurti. Jei pamiršite savo PIN kodą, galite prarasti duomenis, kai iš naujo registruosite savo Signal paskyrą.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Įsiminkite arba laikykite savo PIN kodą saugioje vietoje, nes jo neįmanoma atkurti. Jei užmiršite savo PIN kodą, galite prarasti duomenis, kai iš naujo registruosite savo Signal paskyrą.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Patvirtinkite savo Signal PIN kodą";
@@ -4133,7 +4136,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Įjungti";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jeigu registruodamiesi su Signal, vėl pamiršite savo Signal PIN kodą, tuomet 7 dienoms būsite užblokuoti nuo savo paskyros.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jeigu registruodamiesi su Signal, vėl užmiršite savo Signal PIN kodą, tuomet 7 dienoms būsite užblokuoti nuo savo paskyros.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Įjungti registracijos užraktą?";

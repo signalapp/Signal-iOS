@@ -114,6 +114,8 @@ private class EmojiReactorCell: UITableViewCell {
             diameter: UInt(avatarDiameter)
         )
 
+        nameLabel.textColor = Theme.primaryTextColor
+
         emojiLabel.text = item.emoji
 
         if item.address.isLocalAddress {

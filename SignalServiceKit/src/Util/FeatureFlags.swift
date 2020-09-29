@@ -363,9 +363,6 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     @objc
-    public static let groupsV2editMemberAccess = build.includes(.qa)
-
-    @objc
     public static let groupsV2ForceInviteLinks = build.includes(.qa)
 
     @objc

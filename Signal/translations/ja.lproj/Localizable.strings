@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "管理者のみ";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "グループメンバーシップを編集できるメンバーを選択:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "すべてのメンバー";
@@ -871,6 +871,9 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@がこのグループの設定やメンバーを編集できるようになります";
 
+/* Label for 'member invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "メンバー申請と招待";
 
@@ -879,9 +882,6 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@人のメンバー";
-
-/* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "グループメンバーシップを編集できるメンバーを選択します。";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "常に通知する";
@@ -1618,6 +1618,9 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "これらのユーザを自動的にこのグループに追加することはできません。ユーザは受信した招待を受け入れるまでグループメッセージを閲覧できません。";
 
+/* The title for the 'group invites' view. */
+"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "このグループリンクはすでに無効です。";
 
@@ -2006,10 +2009,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "レガシーグループとは？";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "旧式グループ（レガシー グループ）は現在、新しい形式のグループに変換できませんが、最新のSignalでは、同じメンバーの新グループを作成できます。\n\nSingnalは、旧式グループを変換できる方法を提供する予定です。";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "旧式グループ（レガシーグループ）を変換（新グループにアップグレード）できますか？";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "新グループを作成するには、すべてのメンバーが最新バージョンのSignalにアップデートしてください。";
@@ -2030,7 +2033,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "新グループをサポートしないメンバーが%1$@人いるため、このグループはレガシーグループになります。%2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "これはレガシーグループです。グループの管理機能などの新機能を利用するには、新グループを作成してください。%@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "レガシーグループ";
@@ -2717,7 +2720,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "サウンド";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "カスタム通知音を追加…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "名前、内容、アクション";
@@ -3185,7 +3188,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "明日、PINを再度入力していただきます。";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "数週間後に再度お知らせします。";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "来週、PINを再度入力していただきます。";
@@ -3527,22 +3530,22 @@
 "REREGISTER_FOR_PUSH" = "プッシュ通知を再登録する";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "Signalを地上最良のメッセージアプリにするため、私たちはあなたの声を待っています。";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Tell Signal what you think";
+"RESEARCH_MEGAPHONE_TITLE" = "Signalへのご提案";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "この調査は、安全なドメイン（surveys.signalusers.org）上でSurveygizmoが管理しています。";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "今はしない";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>私たちはプライバシーを尊重します</bold>\n\nSignalは、あなたのデータを収集したり追跡することはありません。したがって、Signalを改善するために必要な情報はあなたの声にかかっています。<bold>ご提案を歓迎します。</bold>\n\n私たちは現在、ユーザーがどのようにSignalを使っているか、アンケートをしています。この調査であなたを特定するデータを取得することはありません。追加のデータをSignalに提供する場合、連絡先を入力するオプションを設けます。\n\n数分のお時間があるなら、ご意見・ご提案を歓迎します。";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Take the survey";
+"RESEARCH_MODAL_TAKE_SURVEY" = "調査に参加";
 
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signalリサーチ";

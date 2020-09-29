@@ -1092,6 +1092,8 @@ public class GroupManager: NSObject {
             infoMessage.anyInsert(transaction: transaction)
         }
 
+        databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
+
         return UpdateDMConfigurationResult(action: .updated,
                                            oldDisappearingMessageToken: oldToken,
                                            newDisappearingMessageToken: newToken,

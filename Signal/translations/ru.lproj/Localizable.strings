@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Только администраторы";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Выберите, кто может редактировать членство в группе:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Все участники";
@@ -871,6 +871,9 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ сможет редактировать эту группу и её участников.";
 
+/* Label for 'member invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Запросы на участие и приглашения";
 
@@ -879,9 +882,6 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ участников";
-
-/* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Выберите, кто может редактировать членство в группе.";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Всегда уведомлять";
@@ -1618,6 +1618,9 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Эти пользователи не могут быть автоматически добавлены вами в эту группу. Они были приглашены присоединиться и не увидят никакие сообщения группы до того, как примут приглашение.";
 
+/* The title for the 'group invites' view. */
+"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Эта ссылка на группу уже недействительна.";
 
@@ -2006,10 +2009,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Что такое Старые группы?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Старые группы пока не могут быть обновлены до Новых групп, но вы можете создать Новую группу с теми же участниками, если они используют новейшую версию Signal.\n\nSignal предоставит возможность обновить Старые группы в будущем.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Могу ли я обновить Старую группу?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Для создания Новой группы все участники должны обновиться до новейшей версии Signal.";
@@ -2030,7 +2033,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ участников не поддерживают Новые группы, так что эта группа будет Старой группой. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Это Старая группа. Такие функции, как администраторы групп, доступны только для Новых групп. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Старая группа";

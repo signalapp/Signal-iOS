@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "صرف ایڈمنز";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "منتخب کریں کہ کون گروپ کی ممبرشپ میں ترمیم کرسکتا ہے:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "تمام ممبران";
@@ -871,6 +871,9 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
 
+/* Label for 'member invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
 
@@ -879,9 +882,6 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ممبران";
-
-/* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "منتخب کریں کہ کون گروپ کی رکنیت میں ترمیم کرسکتا ہے۔";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
@@ -1617,6 +1617,9 @@
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "یہ صارفین آپ کے ذریعہ خود بخود اس گروپ میں شامل نہیں ہوسکتے ہیں۔ انہیں شرکت کے لئے مدعو کیا گیا ہے ، اور جب تک وہ قبول نہیں کریں گے کوئی گروپ پیغامات نہیں دیکھیں گے۔";
+
+/* The title for the 'group invites' view. */
+"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";

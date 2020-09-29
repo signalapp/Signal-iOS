@@ -329,6 +329,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.class readWithBlock:block];
 }
 
++ (id<GroupsV2>)groupsV2
+{
+    return SSKEnvironment.shared.groupsV2;
+}
+
 #pragma mark -
 
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
@@ -3902,16 +3907,37 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSLogInfo(@"injectIncomingMessageInThread: %lu", (unsigned long)counter);
 
     NSString *randomText = [self randomText];
+    randomText = [[randomText stringByAppendingString:randomText] stringByAppendingString:@"\n"];
+    randomText = [[randomText stringByAppendingString:randomText] stringByAppendingString:@"\n"];
+    randomText = [[randomText stringByAppendingString:randomText] stringByAppendingString:@"\n"];
+    randomText = [[randomText stringByAppendingString:randomText] stringByAppendingString:@"\n"];
+    randomText = [[randomText stringByAppendingString:randomText] stringByAppendingString:@"\n"];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
 
     SSKProtoDataMessageBuilder *dataMessageBuilder = [SSKProtoDataMessage builder];
     [dataMessageBuilder setBody:text];
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
-        [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
-        [dataMessageBuilder setGroup:groupBuilder.buildIgnoringErrors];
+        if (thread.isGroupV2Thread) {
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
+
+            NSError *error;
+            SSKProtoGroupContextV2 *_Nullable groupContextV2 =
+                [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
+                                               changeActionsProtoData:nil
+                                                                error:&error];
+            if (groupContextV2 == nil || error != nil) {
+                OWSFailDebug(@"Error: %@", error);
+            }
+            [dataMessageBuilder setGroupV2:groupContextV2];
+        } else {
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            SSKProtoGroupContextBuilder *groupBuilder =
+                [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
+            [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
+            [dataMessageBuilder setGroup:groupBuilder.buildIgnoringErrors];
+        }
     }
 
     SSKProtoContentBuilder *payloadBuilder = [SSKProtoContent builder];

@@ -16,6 +16,7 @@ public class ThreadViewModel: NSObject {
     @objc public let isMuted: Bool
     @objc public let hasPendingMessageRequest: Bool
     @objc public let addedToGroupByName: String?
+    @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
 
     var isContactThread: Bool {
         return !isGroupThread
@@ -35,6 +36,7 @@ public class ThreadViewModel: NSObject {
     @objc
     public init(thread: TSThread, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
+        self.disappearingMessagesConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
 
         self.isGroupThread = thread.isGroupThread
         self.name = Environment.shared.contactsManager.displayName(for: thread, transaction: transaction)
