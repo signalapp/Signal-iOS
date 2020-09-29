@@ -326,7 +326,6 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         // Store the ratchets for any new members (it's important that this happens before the code below)
         senderKeys.forEach { senderKey in
-            guard membersAndLinkedDevices.contains(senderKey.publicKey.toHexString()) else { return }
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey.toHexString(), ratchet: ratchet, using: transaction)
         }
