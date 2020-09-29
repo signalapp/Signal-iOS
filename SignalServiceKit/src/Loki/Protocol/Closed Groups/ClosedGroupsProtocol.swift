@@ -101,6 +101,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         let group = thread.groupModel
         let oldMembers = Set(group.groupMemberIds)
+        let newMembers = members.subtracting(oldMembers)
         let membersAsData = members.map { Data(hex: $0) }
         let admins = group.groupAdminIds
         let adminsAsData = admins.map { Data(hex: $0) }
@@ -111,6 +112,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let wasAnyUserRemoved = Set(members).intersection(oldMembers) != oldMembers
         let removedMembers = oldMembers.subtracting(members)
         let isUserLeaving = removedMembers.contains(userPublicKey)
+        var newSenderKeys: [ClosedGroupSenderKey] = []
         if wasAnyUserRemoved {
             if isUserLeaving && removedMembers.count != 1 {
                 print("[Loki] Can't remove self and others simultaneously.")
@@ -150,29 +152,28 @@ public final class ClosedGroupsProtocol : NSObject {
             }
         } else {
             // Generate ratchets for any new members
-            let newMembers = members.subtracting(oldMembers)
-            let senderKeys: [ClosedGroupSenderKey] = newMembers.map { publicKey in
+            newSenderKeys = newMembers.map { publicKey in
                 let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
                 return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: Data(hex: publicKey))
             }
             // Send a closed group update message to the existing members with the new members' ratchets (this message is aimed at the group)
-            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: senderKeys,
+            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: newSenderKeys,
                 members: membersAsData, admins: adminsAsData)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
-            // Establish sessions if needed
-            establishSessionsIfNeeded(with: [String](newMembers), using: transaction)
-            // Send closed group update messages to the new members using established channels
-            var allSenderKeys = Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)
-            allSenderKeys.formUnion(senderKeys)
-            for member in newMembers {
-                let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
-                thread.save(with: transaction)
-                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
-                    groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: [ClosedGroupSenderKey](allSenderKeys), members: membersAsData, admins: adminsAsData)
-                let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-                messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
-            }
+        }
+        // Establish sessions if needed
+        establishSessionsIfNeeded(with: [String](newMembers), using: transaction)
+        // Send closed group update messages to the new members using established channels
+        var allSenderKeys = Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)
+        allSenderKeys.formUnion(newSenderKeys)
+        for member in newMembers {
+            let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+            thread.save(with: transaction)
+            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
+                groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: [ClosedGroupSenderKey](allSenderKeys), members: membersAsData, admins: adminsAsData)
+            let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+            messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
         // Update the group
         let newGroupModel = TSGroupModel(title: name, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
