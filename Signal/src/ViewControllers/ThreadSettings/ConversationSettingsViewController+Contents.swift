@@ -788,9 +788,13 @@ extension ConversationSettingsViewController {
         section.customHeaderHeight = 14
         section.customFooterHeight = 14
 
+        let itemTitle = (RemoteConfig.groupsV2InviteLinks
+            ? NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
+                                comment: "Label for 'member requests & invites' action in conversation settings view.")
+            : NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_INVITES",
+                                comment: "Label for 'member invites' action in conversation settings view."))
         section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
-                                                name: NSLocalizedString("CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES",
-                                                                        comment: "Label for 'member requests & invites' action in conversation settings view."),
+                                                name: itemTitle,
                                                 accessibilityIdentifier: "conversation_settings_requests_and_invites",
                                                 actionBlock: {  [weak self] in
                                                     self?.showMemberRequestsAndInvitesView()
