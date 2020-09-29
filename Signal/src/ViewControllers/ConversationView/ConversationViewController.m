@@ -4260,6 +4260,7 @@ typedef enum : NSUInteger {
         [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
                                                                completion:^(BOOL didConfirmIdentity) {
                                                                    if (didConfirmIdentity) {
+                                                                       [weakSelf resetVerificationStateToDefault];
                                                                        [weakSelf tryToSendTextMessage:messageBody
                                                                                   updateKeyboardState:NO];
                                                                    }

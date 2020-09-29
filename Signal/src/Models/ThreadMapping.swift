@@ -349,6 +349,8 @@ class ThreadMapping: NSObject {
         let newPinnedThreadIds: [String] = pinnedThreads.orderedKeys
         let newUnpinnedThreadIds: [String] = unpinnedThreads.map { $0.uniqueId }
 
+        let allNewThreadIds = Set(newPinnedThreadIds + newUnpinnedThreadIds)
+
         // We want to be economical and issue as few changes as possible.
         // We can skip some "moves".  E.g. if we "delete" the first item,
         // we don't need to explicitly "move" the other items up an index.
@@ -449,7 +451,7 @@ class ThreadMapping: NSObject {
         // * The old indexPath for moves uses pre-update indices.
         // * The new indexPath for moves uses post-update indices.
         // * We move in ascending "new" order.
-        guard Set<String>(newPinnedThreadIds + newUnpinnedThreadIds) == Set<String>(naivePinnedThreadIdOrdering + naiveUnpinnedThreadIdOrdering) else {
+        guard allNewThreadIds == Set<String>(naivePinnedThreadIdOrdering + naiveUnpinnedThreadIdOrdering) else {
             throw OWSAssertionError("Could not map contents.")
         }
 
@@ -520,7 +522,7 @@ class ThreadMapping: NSObject {
         // performs reloads internally.
 
         var movedThreadIds = [String]()
-        let possiblyMovedWithinSectionThreadIds = updatedItemIds
+        let possiblyMovedWithinSectionThreadIds = allNewThreadIds
             .subtracting(insertedThreadIds)
             .subtracting(deletedThreadIds)
             .subtracting(movedToNewSectionThreadIds)
