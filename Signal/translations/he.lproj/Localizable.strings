@@ -20,7 +20,7 @@
 "ACCESSIBILITY_LABEL_MESSAGE" = "הודעה";
 
 /* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "אתה";
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "את/ה";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "מדבקה";
@@ -41,7 +41,7 @@
 "ACTION_VIDEO_CALL" = "שיחת וידיאו";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "הוסף חבר קבוצה";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "הוסף חבר/ת קבוצה";
 
 /* Label for the 'add group members' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "הוסף חברי קבוצה";
@@ -53,7 +53,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "להוסיף %1$@ חברי קבוצה אל “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "הוסף חבר קבוצה חדש";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "הוסף חבר/ת קבוצה חדש/ה";
 
 /* Title for the 'add group members' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "הוסף חברי קבוצה חדשים";
@@ -80,7 +80,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "הוסף אל %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ כבר חבר קבוצה של %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ כבר חבר/ת קבוצה של %@";
 
 /* The title for the 'add to group' view's recents section */
 "ADD_TO_GROUP_RECENTS_TITLE" = "אחרונים";
@@ -116,7 +116,7 @@
 "APN_Message" = "הודעה חדשה!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal אינו יכול להיות מופעל. אנא שלח יומן ניפוי תקלים אל support@signal.org כך שנוכל לפתור סוגייה זו.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "לא ניתן להפעיל את Signal. נא לשלוח יומן ניפוי באגים (תקלים) אל support@signal.org כך שנוכל לפתור סוגיה זו.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "שגיאה";
@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "רק מנהלנים";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "בחר מי יכול לערוך חֲבֵרוּת קבוצה:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "כל חברי הקבוצה";
@@ -871,6 +871,9 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ יוכל/תוכל לערוך קבוצה זו ואת חברי הקבוצה שלה.";
 
+/* Label for 'member invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "בקשות והזמנות של חברי קבוצה";
 
@@ -879,9 +882,6 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ חברי קבוצה";
-
-/* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "בחר מי יכול לערוך חֲבֵרוּת קבוצה.";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "יידע תמיד";
@@ -1562,22 +1562,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ כיבה/כיבתה את קישור הקבוצה.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "קישור הקבוצה הופעל עם אישור מנהלן מופעל.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "הפעלת את קישור הקבוצה עם אישור מנהלן מופעל.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ הפעיל/ה את קישור הקבוצה עם אישור מנהלן מופעל.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "קישור הקבוצה הופעל עם אישור מנהלן כבוי.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "הפעלת את קישור הקבוצה עם אישור מנהלן כבוי.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ הפעיל/ה את קישור הקבוצה עם אישור מנהלן כבוי.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "קישור הקבוצה אופס.";
@@ -1589,22 +1589,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ איפס/ה את קישור הקבוצה.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "אישור מנהלן כובה עבור קישור הקבוצה.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "כיבית אישור מנהלן עבור קישור הקבוצה.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ כיבה/כיבתה אישור מנהלן עבור קישור הקבוצה.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "אישור מנהלן הופעל עבור קישור הקבוצה.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "הפעלת אישור מנהלן עבור קישור הקבוצה.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ הפעיל/ה אישור מנהלן עבור קישור הקבוצה.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ אינו יכול להתווסף באופן אוטומטי אל קבוצה זו על ידך. הוא הוזמן להצטרף, ולא יראה הודעות קבוצה כלשהן עד שהוא יסכים.";
@@ -1617,6 +1617,9 @@
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "משתמשים אלו אינם יכולים להתווסף באופן אוטומטי אל קבוצה זו על ידך. הם הוזמנו להצטרף, ולא יראו הודעות קבוצה כלשהן עד שהם יסכימו.";
+
+/* The title for the 'group invites' view. */
+"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "קישור קבוצה זה אינו תקף יותר.";
@@ -1643,7 +1646,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "אנא נסה שוב.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "זה אינו קישור קבוצה תקף. וודא שהקישור שלם ונכון לפני ניסיון להצטרף.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "קישור בלתי תקף";
@@ -1703,7 +1706,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "שתף באמצעות Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "כל אחד עם קישור זה יכול להצטרף אל הקבוצה, או לשלוח בקשה להצטרף. שתף אותו עם אנשים שאתה בוטח בהם.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "קישור קבוצה";
@@ -1781,13 +1784,13 @@
 "GROUP_MEMBER_COUNT_LABEL_0" = "אין חברי קבוצה";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "חבר אחד";
+"GROUP_MEMBER_COUNT_LABEL_1" = "חבר/ת קבוצה 1";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
 "GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ חברי קבוצה";
 
 /* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "אתה";
+"GROUP_MEMBER_LOCAL_USER" = "את/ה";
 
 /* Accessibility label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "שיחת שמע";
@@ -1892,25 +1895,25 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ הסיר את %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "אישרת בקשה להצטרף אל הקבוצה מאת %@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ אישר/ה בקשה להצטרף אל הקבוצה מאת %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "בקשה להצטרף אל הקבוצה מאת %@ אושרה.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ביטל/ה את בקשתו/בקשתה להצטרף אל הקבוצה.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "דחית בקשה להצטרף אל הקבוצה מאת %@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ דחה/דחתה בקשה להצטרף אל קבוצה מאת %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "בקשה להצטרף אל הקבוצה מאת %@ נדחתה.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ ביקש/ה להצטרף באמצעות קישור הקבוצה.";
@@ -2006,10 +2009,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "מהן קבוצות מיושנות?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "קבוצות מיושנות אינן יכולות להשתדרג עדין אל קבוצות חדשות, אבל אתה יכול ליצור קבוצה חדשה עם אותם חברי קבוצה אם יש להם את הגרסה האחרונה של Signal.\n\nSignal יציע דרך לשדרג קבוצות מיושנות בעתיד.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "האם אני יכול לשדרג קבוצה מיושנת?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "כדי ליצור קבוצה חדשה, כל חברי הקבוצה צריכים לעדכן אל הגרסה האחרונה של Signal.";
@@ -2030,7 +2033,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ חברי קבוצה אינם תומכים בקבוצות חדשות, כך שקבוצה זו תהיה קבוצה מיושנת. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "זוהי קבוצה מיושנת. מאפיינים כמו מנהלני קבוצה זמינים רק בקבוצות חדשות. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "קבוצה מיושנת";
@@ -2054,7 +2057,7 @@
 "HELP_SUPPORT_CENTER" = "מרכז תמיכה";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "התכתבויות מאוחסנות בארכיון";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "חסום";
@@ -2138,7 +2141,7 @@
 "IN_CALL_TERMINATED" = "השיחה הסתיימה.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "התכתבויות אלו מאוחסנות בארכיון ויופיעו בתיבה הנכנסת רק אם הודעות חדשות מתקבלות.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "תן לתיבה שלך משהו לכתוב עליו בית. התחל ע״י שליחת הודעה לחבר.";
@@ -2147,7 +2150,7 @@
 "INCOMING_CALL_FORMAT" = "%@ התקשר/ה אליך";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "אתה יכול לשלוח או לקבל הודעות מסונכרנות מהטלפון שלך או ממכשיר iPad שלך. ↵למען אבטחתך, היסטורית התכתבויות אינה מועברת אל מכשירים מקושרים חדשים.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ נמצא ב־Signal!";
@@ -2189,7 +2192,7 @@
 "KEY_COMMAND_ALL_MEDIA" = "לך אל כל המדיה";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Chat";
+"KEY_COMMAND_ARCHIVE" = "אחסן התכתבות בארכיון";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "הראה צרופות";
@@ -2225,7 +2228,7 @@
 "KEY_COMMAND_STICKERS" = "הראה מדבקות";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "הוצא התכתבות מארכיון";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "למד עוד";
@@ -2246,7 +2249,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "קישור מכשיר נכשל";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "מכשיר זה יוכל לראות את הקבוצות ואנשי הקשר שלך, לקבל גישה אל ההתכתבויות שלך ולשלוח הודעות בשמך.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "לקשר מכשיר זה?";
@@ -2330,7 +2333,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "מחק עבור כולם";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the chat. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "הודעה זו תימחק לצמיתות עבור כל אחד שנמצא בהתכתבות. חברי קבוצה יוכלו לראות שמחקת הודעה.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "עבור מי אתה רוצה למחוק הודעה זו?";
@@ -2432,7 +2435,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "מחק";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "התכתבות זו תימחק מכל המכשירים שלך.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "למחוק התכתבות?";
@@ -2465,10 +2468,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "מחק";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your chat with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "אתה חייב לשתף את הפרופיל שלך כדי להמשיך את ההתכתבות שלך עם %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your chat with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "אתה חייב לשתף את הפרופיל שלך כדי להמשיך בהתכתבות שלך עם קבוצה זו.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "הוזמנת אל קבוצה זאת על ידי %@. האם אתה רוצה לאפשר לחברים של קבוצה זו לשלוח לך הודעות?";
@@ -2495,7 +2498,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "לבטל את בקשתך להצטרף אל קבוצה זו?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "בקשתך להצטרף נשלחה אל מנהלן הקבוצה. תיודע כאשר הוא מחליט.";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "היכרות עם בקשות התכתבות";
@@ -2504,7 +2507,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "הוסף שם פרופיל";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "אתה יכול לבחור כעת באפשרויות \"קבל\" או \"מחק\" התכתבות חדשה. שמות מאפשרים לאנשים לדעת עם מי הם מתכתבים.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "שם הפרופיל שלך נשמר.";
@@ -2717,7 +2720,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "צלילים";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "הוסף צליל מותאם אישית…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "שם, תוכן, ופעולות";
@@ -3002,13 +3005,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "כולם";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "כל אחד שיש לו את מספר הטלפון שלך באנשי הקשר שלו, יראה אותך כאיש קשר ב־Signal. אחרים יוכלו למצוא אותך בחיפוש.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "אף אחד";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "אף אחד ב־Signal לא יוכל למצוא אותך עם מספר הטלפון שלך. לא תהיה גלוי כאיש קשר בפני אנשים שיש להם את מספר הטלפון שלך באנשי הקשר שלהם ואחרים לא יוכלו למצוא אותך עם מספר הטלפון שלך בחיפוש.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "דוגמה: %@";
@@ -3023,7 +3026,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "כולם";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "מספר הטלפון שלך יהיה גלוי אל אנשים וקבוצות שאתה מתכתב. אנשים שיש להם את מספר הטלפון שלך באנשי הקשר שלהם יראו אותו גם ב־Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "אף אחד";
@@ -3185,7 +3188,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "נזכיר לך שוב מחר.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "נזכיר לך שוב עוד שבועיים.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "נזכיר לך שוב עוד שבוע.";
@@ -3200,7 +3203,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN חייב להיות לפחות 4 ספרות.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "אתה יכול להצמיד רק עד 4 התכתבויות.";
+"PINNED_CONVERSATION_LIMIT" = "אתה יכול להצמיד עד 4 התכתבויות בלבד.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "מוצמד";
@@ -3413,7 +3416,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "הגיב עם %@ אל ההודעה הקולית שלך";
 
 /* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "אתה";
+"REACTIONS_DETAIL_YOU" = "את/ה";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "נקרא";
@@ -3527,19 +3530,19 @@
 "REREGISTER_FOR_PUSH" = "הירשם מחדש עבור התראות דחיפה";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "כדי להפוך את Signal אל יישום ההתכתבות הטוב ביותר ביקום, נשמח לשמוע את המשוב שלך.";
 
 /* Title for research megaphone */
 "RESEARCH_MEGAPHONE_TITLE" = "אמור אל Signal מה אתה חושב";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "הסקר מאורח על ידי Surveygizmo בתחום המאובטח surveys.signalusers.org";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "לא תודה";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>אנחנו מאמינים בפרטיות.</bold>\n\nSignal אינו עוקב אחריך או אוסף את הנתונים שלך. כדי לשפר את Signal עבור כולם, אנחנו מסתמכים על משוב משתמשים, <bold>ונשמח לקבל את שלך</bold>.\n\nאנחנו מפעילים סקר כדי להבין כיצד אתה משתמש ב־Signal. הסקר שלנו אינו אוסף נתונים כלשהם שיזהו אותך. אם אתה מעוניין בשיתוף של משוב נוסף, תהיה לך אפשרות לספק מידע ליצירת קשר.\n\nאם יש לך כמה דקות ומשוב להציע, נשמח לשמוע ממך.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "ענה על הסקר";

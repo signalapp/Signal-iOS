@@ -68,7 +68,7 @@
 "ADD_TO_CONTACTS_OFFER" = "Möchtest du diesen Benutzer zu deinen Kontakten hinzufügen?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Zu einer weiteren Gruppe hinzufügen";
+"ADD_TO_GROUP" = "Zu weiterer Gruppe hinzufügen";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Zur Gruppe hinzufügen";
@@ -836,7 +836,7 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Unterhaltungsfarbe";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Wer kann Gruppendetails bearbeiten";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Gruppendetails bearbeiten";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Nur Admins";
@@ -851,13 +851,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Bearbeiten";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Wer kann Mitglieder hinzufügen";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Mitglieder hinzufügen";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Nur Admins";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Wähle, wer die Gruppenmitgliedschaft bearbeiten kann:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle Mitglieder";
@@ -871,6 +871,9 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ wird diese Gruppe und deren Mitglieder bearbeiten können.";
 
+/* Label for 'member invites' action in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Beitrittsanfragen & Einladungen";
 
@@ -880,14 +883,11 @@
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Mitglieder";
 
-/* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Wähle, wer die Gruppenmitgliedschaft bearbeiten kann.";
-
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Immer benachrichtigen";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nicht benachrichtigen falls stummgeschaltet";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nicht benachrichtigen";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Benachrichtigungen erhalten, wenn du in stummgeschalteten Unterhaltungen erwähnt wirst?";
@@ -1618,6 +1618,9 @@
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Diese Benutzer können von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Sie wurden eingeladen beizutreten, werden aber keine Gruppennachrichten erhalten, bis sie die Einladung angenommen haben.";
 
+/* The title for the 'group invites' view. */
+"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Dieser Gruppen-Link ist nicht mehr gültig.";
 
@@ -2000,40 +2003,40 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ blockieren";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Alt-Gruppen sind Gruppen, die nicht kompatibel sind mit Features von Neu-Gruppen wie Admins oder anschaulicheren Gruppenaktualisierungen.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Gruppen alten Typs sind Gruppen, die nicht kompatibel sind mit Features von Gruppen neuen Typs, wie Admins oder anschaulicheren Gruppenaktualisierungen.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Was sind Alt-Gruppen?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Was sind Gruppen alten Typs?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Gruppen alten Typs können derzeit nicht in Gruppen neuen Typs umgewandelt werden, aber du kannst eine Gruppe neuen Typs mit denselben Mitgliedern erstellen, falls diese die neueste Signal-Version verwenden.\n\nSignal wird zukünftig eine Möglichkeit anbieten, Gruppen alten Typs umzuwandeln.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kann ich eine Gruppe alten Typs umwandeln?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Zum Erstellen einer Neu-Gruppe sollten alle Mitglieder Signal auf die neueste Version aktualisieren.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Zum Erstellen einer Gruppe neuen Typs sollten alle Mitglieder Signal auf die neueste Version aktualisieren.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Alt- vs. Neu-Gruppen";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Gruppen alten vs. neuen Typs";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es wird eine Alt-Gruppe erstellt, da 1 Mitglied eine alte Signal-Version verwendet. Du kannst eine Neu-Gruppe mit diesem Mitglied erstellen, sobald es Signal aktualisiert hat, oder es vor Erstellen der Gruppe entfernen.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es wird eine Gruppe alten Typs erstellt, da 1 Mitglied eine alte Signal-Version verwendet. Du kannst eine Gruppe neuen Typs mit diesem Mitglied erstellen, sobald es Signal aktualisiert hat, oder es vor Erstellen der Gruppe entfernen.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Es wird eine Alt-Gruppe erstellt, da %@ Mitglieder eine alte Signal-Version verwenden. Du kannst eine Neu-Gruppe mit diesen Mitgliedern erstellen, sobald sie Signal aktualisiert haben, oder sie vor Erstellen der Gruppe entfernen.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Es wird eine Gruppe alten Typs erstellt, da %@ Mitglieder eine alte Signal-Version verwenden. Du kannst eine  Gruppe neuen Typs mit diesen Mitgliedern erstellen, sobald sie Signal aktualisiert haben, oder sie vor Erstellen der Gruppe entfernen.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 Mitglied unterstützt keine Neu-Gruppen, daher wird diese Gruppe als Alt-Gruppe erstellt. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 Mitglied unterstützt keine Gruppen neuen Typs, daher wird diese Gruppe als Gruppe alten Typs erstellt. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ Mitglieder unterstützen keine Neu-Gruppen, daher wird diese Gruppe als Alt-Gruppe erstellt. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ Mitglieder unterstützen keine Gruppen neuen Typs, daher wird diese Gruppe als Gruppe alten Typs erstellt. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dies ist eine Gruppe alten Typs. Funktionen wie Gruppen-Admins sind nur in Gruppen neuen Typs verfügbar. %@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Alt-Gruppe";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "Gruppe alten Typs";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Mehr erfahren";
@@ -2918,7 +2921,7 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ hat %2$@ Personen eingeladen";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Es gibt keine ausstehenden Beitrittsanfragen.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Keine ausstehenden Beitrittsanfragen.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Keine Einladungen.";
@@ -2957,16 +2960,16 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Gruppeneinladung für »%@« widerrufen?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details zu von anderen Gruppenmitgliedern eingeladenen Personen werden nicht angezeigt. Erst wenn Eingeladene annehmen, werden deren Informationen mit der Gruppe geteilt. Solange sie nicht angenommen haben, werden sie keine Gruppennachrichten erhalten.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Du kannst keine Details zu von anderen Gruppenmitgliedern eingeladenen Personen ansehen. Erst wenn die Eingeladenen der Gruppe beitreten, sind ihre Details für dich und die anderen Gruppenmitglieder einsehbar. Bis zum Beitritt erhalten die Eingeladenen auch keine Gruppennachrichten.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen auf dieser Liste versuchen der Gruppe »%@« über den Gruppen-Link beizutreten.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen auf dieser Liste möchten der Gruppe »%@« über den Gruppen-Link beizutreten.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Ungültige Einladungen";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Einladungen anderer Gruppenmitglieder";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Von Gruppenmitgliedern Eingeladene";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Ausstehende Beitrittsanfragen";
