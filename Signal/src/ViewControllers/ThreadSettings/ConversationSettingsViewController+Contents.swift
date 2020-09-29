@@ -532,58 +532,48 @@ extension ConversationSettingsViewController {
     private func buildGroupAccessSections(groupModelV2: TSGroupModelV2,
                                           contents: OWSTableContents) {
 
-        do {
-            let section = OWSTableSection()
-            section.customHeaderHeight = 14
+        let section = OWSTableSection()
+        section.customHeaderHeight = 14
 
-            section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
-                                                    comment: "Footer for the 'attributes access' section in conversation settings view.")
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
 
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
+            let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.members)
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
+                                                                itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS",
+                                                                                            comment: "Label for 'edit membership access' action in conversation settings view."),
+                                                                accessoryText: accessStatus)
+            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_membership_access")
+            return cell
+            },
+                                 actionBlock: { [weak self] in
+                                    self?.showGroupMembershipAccessView()
+        }))
 
-                let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.attributes)
-                let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
-                                                                    itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
-                                                                                                comment: "Label for 'edit attributes access' action in conversation settings view."),
-                                                                    accessoryText: accessStatus)
-                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_attributes_access")
-                return cell
-                },
-                                     actionBlock: { [weak self] in
-                                        self?.showGroupAttributesAccessView()
-            }))
-            contents.addSection(section)
-        }
+        section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
+                                                comment: "Footer for the 'attributes access' section in conversation settings view.")
 
-        if DebugFlags.groupsV2editMemberAccess {
-            let section = OWSTableSection()
-            section.customHeaderHeight = 14
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
 
-            section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER",
-                                                    comment: "Footer for the 'membership access' section in conversation settings view.")
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-
-                let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.members)
-                let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
-                                                                    itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS",
-                                                                                                comment: "Label for 'edit membership access' action in conversation settings view."),
-                                                                    accessoryText: accessStatus)
-                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_membership_access")
-                return cell
-                },
-                                     actionBlock: { [weak self] in
-                                        self?.showGroupMembershipAccessView()
-            }))
-            contents.addSection(section)
-        }
+            let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.attributes)
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
+                                                                itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
+                                                                                            comment: "Label for 'edit attributes access' action in conversation settings view."),
+                                                                accessoryText: accessStatus)
+            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_attributes_access")
+            return cell
+            },
+                                 actionBlock: { [weak self] in
+                                    self?.showGroupAttributesAccessView()
+        }))
+        contents.addSection(section)
     }
 
     private func accessoryLabel(forAccess access: GroupV2Access) -> String {
