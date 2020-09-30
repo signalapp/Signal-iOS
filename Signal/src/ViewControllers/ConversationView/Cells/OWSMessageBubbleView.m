@@ -5,7 +5,6 @@
 #import "OWSMessageBubbleView.h"
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
-#import "OWSAudioMessageView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
 #import "OWSContactShareButtonsView.h"
@@ -840,13 +839,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachment);
     OWSAssertDebug([attachment isAudio]);
 
-    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:attachment
-                                                                                 isIncoming:self.isIncoming
-                                                                                   viewItem:self.viewItem
-                                                                          conversationStyle:self.conversationStyle];
-    self.viewItem.lastAudioMessageView = audioMessageView;
-    [audioMessageView createContents];
-    [self addProgressViewsIfNecessary:audioMessageView shouldShowDownloadProgress:NO];
+    LKVoiceMessageView *voiceMessageView = [[LKVoiceMessageView alloc] initWithVoiceMessage:attachment viewItem:self.viewItem];
+
+    self.viewItem.lastAudioMessageView = voiceMessageView;
+    [voiceMessageView update];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -855,7 +851,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     };
 
-    return audioMessageView;
+    return voiceMessageView;
 }
 
 - (UIView *)loadViewForGenericAttachment
@@ -1068,7 +1064,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            result = CGSizeMake(maxMessageWidth, [LKVoiceMessageView getHeightFor:self.viewItem]);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);

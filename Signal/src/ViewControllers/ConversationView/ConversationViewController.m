@@ -2430,7 +2430,7 @@ typedef enum : NSUInteger {
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:attachmentStream.originalFilePath]) {
-        OWSFailDebug(@"Missing video file: %@", attachmentStream.originalMediaURL);
+        OWSFailDebug(@"Missing audio file: %@", attachmentStream.originalMediaURL);
     }
 
     [self dismissKeyBoard];

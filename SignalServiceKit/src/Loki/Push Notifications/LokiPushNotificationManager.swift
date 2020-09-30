@@ -5,7 +5,7 @@ public final class LokiPushNotificationManager : NSObject {
 
     // MARK: Settings
     #if DEBUG
-    private static let server = "https://dev.apns.getsession.org"
+    private static let server = "https://live.apns.getsession.org"
     #else
     private static let server = "https://live.apns.getsession.org"
     #endif
