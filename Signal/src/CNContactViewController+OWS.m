@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "CNContactViewController+OWS.h"
@@ -19,9 +19,9 @@
         // We swizzle the cancel callback and force the keyboard to
         // dismiss.
         if (@available(iOS 14, *)) {
-            OWSFailDebug(@"Check if this is still needed.");
+            // do nothing
         } else if (@available(iOS 13, *)) {
-            SEL originalSelector = @selector(editCancel:);
+            SEL originalSelector = NSSelectorFromString(@"editCancel:");
             SEL swizzledSelector = @selector(ows_editCancel:);
 
             Method originalMethod = class_getInstanceMethod(class, originalSelector);

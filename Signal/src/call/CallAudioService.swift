@@ -49,7 +49,7 @@ protocol CallAudioServiceDelegate: class {
         // Configure audio session so we don't prompt user with Record permission until call is connected.
 
         audioSession.configureRTCAudio()
-        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: OperationQueue()) { _ in
             assert(!Thread.isMainThread)
             self.audioRouteDidChange()
         }

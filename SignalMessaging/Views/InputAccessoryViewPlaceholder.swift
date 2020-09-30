@@ -49,17 +49,6 @@ public class InputAccessoryViewPlaceholder: UIView {
         // Measure how much of the keyboard is currently offscreen.
         let offScreenHeight = keyboardFrame.maxY - referenceFrame.maxY
 
-        // This works around a bug in the share extension in iOS 13 where
-        // the keyboard frame given to us by the OS is slightly off.
-        // TODO: See if apple fixes this in iOS 14
-        if #available(iOS 13, *), !CurrentAppContext().isMainApp {
-            keyboardFrame.size.height += 15
-
-            if #available(iOS 14, *) {
-                owsFailDebug("Check if this is fixed")
-            }
-        }
-
         // The onscreen region represents the overlap.
         return max(0, keyboardFrame.height - offScreenHeight)
     }

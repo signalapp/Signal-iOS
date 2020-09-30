@@ -169,7 +169,7 @@ open class ActionSheetController: OWSViewController {
         // Ensure the scrollView's layout has completed
         // as we're about to use its bounds to calculate
         // the masking view and contentOffset.
-        scrollView.layoutIfNeeded()
+        scrollView.layoutSubviews()
 
         let cornerRadius: CGFloat = 16
         let path = UIBezierPath(
