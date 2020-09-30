@@ -55,7 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (SecCertificateRef)newCertificateForService:(NSString *)service CF_RETURNS_RETAINED
 {
     NSData *certificateData = [self dataFromCertificateFileForService:service];
-    return SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
+    SecCertificateRef certRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
+    OWSAssert(certRef);
+    return certRef;
 }
 
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString *)domain
