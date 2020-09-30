@@ -157,12 +157,6 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
 
-    if (CurrentAppContext().reportedApplicationState == UIApplicationStateBackground) {
-        OWSLogError(@"Skipping microphone permissions request when app is in background.");
-        callback(NO);
-        return;
-    }
-
     [[AVAudioSession sharedInstance] requestRecordPermission:callback];
 }
 
