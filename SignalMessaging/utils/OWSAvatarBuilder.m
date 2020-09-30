@@ -172,6 +172,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
             (id)[UIColor colorWithWhite:0.f alpha:0.15f].CGColor,
         ],
         gradientLocations);
+    CFRelease(colorspace);
     if (!gradient) {
         return nil;
     }
