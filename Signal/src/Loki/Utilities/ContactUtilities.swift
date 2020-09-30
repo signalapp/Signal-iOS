@@ -12,6 +12,9 @@ enum ContactUtilities {
         func getDisplayName(for publicKey: String) -> String {
             return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
         }
+        if let index = result.firstIndex(of: getUserHexEncodedPublicKey()) {
+            result.remove(at: index)
+        }
         return result.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
     }
 }
