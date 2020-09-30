@@ -649,11 +649,13 @@ const CGFloat kIconViewLength = 24;
 
     // Group settings section.
 
-    __block BOOL isUserMember;
-    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey transaction:transaction];
-    }];
+    __block BOOL isUserMember = NO;
+    if (self.isGroupThread) {
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey transaction:transaction];
+        }];
+    }
 
     if (self.isGroupThread && self.isPrivateGroupChat && isUserMember) {
         if (((TSGroupThread *)self.thread).usesSharedSenderKeys) {
