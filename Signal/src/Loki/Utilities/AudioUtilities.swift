@@ -27,7 +27,7 @@ enum AudioUtilities {
         }
     }
 
-    static func getVolumeSamples(for audioFileURL: URL, targetSampleCount: Int = 32) -> Promise<(duration: Double, volumeSamples: [Float])> {
+    static func getVolumeSamples(for audioFileURL: URL, targetSampleCount: Int = 32) -> Promise<[Float]> {
         return loadFile(audioFileURL).then { fileInfo in
             AudioUtilities.parseSamples(from: fileInfo, with: targetSampleCount)
         }
@@ -59,7 +59,7 @@ enum AudioUtilities {
         return promise
     }
 
-    private static func parseSamples(from fileInfo: FileInfo, with targetSampleCount: Int) -> Promise<(duration: Double, volumeSamples: [Float])> {
+    private static func parseSamples(from fileInfo: FileInfo, with targetSampleCount: Int) -> Promise<[Float]> {
         // Prepare the reader
         guard let reader = try? AVAssetReader(asset: fileInfo.asset) else { return Promise(error: Error.parsingFailed) }
         let range = 0..<fileInfo.sampleCount
@@ -128,8 +128,7 @@ enum AudioUtilities {
         }
         guard reader.status == .completed else { return Promise(error: Error.parsingFailed) }
         // Return
-        let duration = fileInfo.asset.duration.seconds
-        return Promise { $0.fulfill((duration, result)) }
+        return Promise { $0.fulfill(result) }
     }
 
     private static func processSamples(from sampleBuffer: inout Data, outputSamples: inout [Float], samplesToProcess: Int,

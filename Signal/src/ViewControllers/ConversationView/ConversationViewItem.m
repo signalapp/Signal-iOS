@@ -475,7 +475,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     _audioPlaybackState = audioPlaybackState;
 
-    [self.lastAudioMessageView update];
+    // No need to update the voice message view here
 }
 
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration
@@ -484,7 +484,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     self.audioProgressSeconds = progress;
 
-    [self.lastAudioMessageView update];
+    [self.lastAudioMessageView updateForProgress:progress duration:duration];
 }
 
 #pragma mark - Displayable Text

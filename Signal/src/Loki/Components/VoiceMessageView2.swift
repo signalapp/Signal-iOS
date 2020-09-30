@@ -2,17 +2,16 @@ import Accelerate
 
 @objc(LKVoiceMessageView2)
 final class VoiceMessageView2 : UIView {
-    private let audioFileURL: URL
-    private let player: AVAudioPlayer
-    private var duration: Double = 1
+    private let voiceMessage: TSAttachment
     private var isAnimating = false
-    private var volumeSamples: [Float] = [] { didSet { updateShapeLayer() } }
+    private var volumeSamples: [Float] = [] { didSet { updateShapeLayers() } }
+    private var progress: CGFloat = 0
+    private var duration: CGFloat = 1 // Not initialized at 0 to avoid division by zero
 
     // MARK: Components
     private lazy var loader: UIView = {
         let result = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(0.2)
-        result.layer.cornerRadius = Values.messageBubbleCornerRadius
         return result
     }()
 
@@ -29,34 +28,41 @@ final class VoiceMessageView2 : UIView {
     }()
 
     // MARK: Settings
-    private let margin = Values.smallSpacing
+    private let margin: CGFloat = 4
     private let sampleSpacing: CGFloat = 1
 
     // MARK: Initialization
-    init(audioFileURL: URL) {
-        self.audioFileURL = audioFileURL
-        player = try! AVAudioPlayer(contentsOf: audioFileURL)
+    @objc(initWithVoiceMessage:)
+    init(voiceMessage: TSAttachment) {
+        self.voiceMessage = voiceMessage
         super.init(frame: CGRect.zero)
         initialize()
     }
 
     override init(frame: CGRect) {
-        preconditionFailure("Use init(audioFileURL:) instead.")
+        preconditionFailure("Use init(voiceMessage:associatedWith:) instead.")
     }
 
     required init?(coder: NSCoder) {
-        preconditionFailure("Use init(audioFileURL:) instead.")
+        preconditionFailure("Use init(voiceMessage:associatedWith:) instead.")
     }
 
     private func initialize() {
         setUpViewHierarchy()
-        AudioUtilities.getVolumeSamples(for: audioFileURL).done(on: DispatchQueue.main) { [weak self] duration, volumeSamples in
-            guard let self = self else { return }
-            self.duration = duration
-            self.volumeSamples = volumeSamples
-            self.stopAnimating()
-        }.catch(on: DispatchQueue.main) { error in
-            print("[Loki] Couldn't sample audio file due to error: \(error).")
+        if voiceMessage.isDownloaded {
+            loader.alpha = 0
+            guard let url = (voiceMessage as? TSAttachmentStream)?.originalMediaURL else {
+                return print("[Loki] Couldn't get URL for voice message.")
+            }
+            AudioUtilities.getVolumeSamples(for: url).done(on: DispatchQueue.main) { [weak self] volumeSamples in
+                guard let self = self else { return }
+                self.volumeSamples = volumeSamples
+                self.stopAnimating()
+            }.catch(on: DispatchQueue.main) { error in
+                print("[Loki] Couldn't sample audio file due to error: \(error).")
+            }
+        } else {
+            showLoader()
         }
     }
 
@@ -65,16 +71,11 @@ final class VoiceMessageView2 : UIView {
         set(.height, to: 40)
         addSubview(loader)
         loader.pin(to: self)
-        backgroundColor = Colors.sentMessageBackground
-        layer.cornerRadius = Values.messageBubbleCornerRadius
         layer.insertSublayer(backgroundShapeLayer, at: 0)
         layer.insertSublayer(foregroundShapeLayer, at: 1)
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(togglePlayback))
-        addGestureRecognizer(tapGestureRecognizer)
-        showLoader()
     }
 
-    // MARK: User Interface
+    // MARK: UI & Updating
     private func showLoader() {
         isAnimating = true
         loader.alpha = 1
@@ -98,10 +99,17 @@ final class VoiceMessageView2 : UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        updateShapeLayer()
+        updateShapeLayers()
     }
 
-    private func updateShapeLayer() {
+    @objc(updateForProgress:duration:)
+    func update(for progress: CGFloat, duration: CGFloat) {
+        self.progress = progress
+        self.duration = duration
+        updateShapeLayers()
+    }
+
+    private func updateShapeLayers() {
         guard !volumeSamples.isEmpty else { return }
         let max = CGFloat(volumeSamples.max()!)
         let min = CGFloat(volumeSamples.min()!)
@@ -117,20 +125,11 @@ final class VoiceMessageView2 : UIView {
             let y = margin + (h - sH) / 2
             let subPath = UIBezierPath(roundedRect: CGRect(x: x, y: y, width: sW, height: sH), cornerRadius: sW / 2)
             backgroundPath.append(subPath)
-            if player.currentTime / duration > Double(i) / Double(volumeSamples.count) { foregroundPath.append(subPath) }
+            if progress / duration > CGFloat(i) / CGFloat(volumeSamples.count) { foregroundPath.append(subPath) }
         }
         backgroundPath.close()
         foregroundPath.close()
         backgroundShapeLayer.path = backgroundPath.cgPath
         foregroundShapeLayer.path = foregroundPath.cgPath
-    }
-
-    @objc private func togglePlayback() {
-        player.play()
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] timer in
-            guard let self = self else { return timer.invalidate() }
-            self.updateShapeLayer()
-            if !self.player.isPlaying { timer.invalidate() }
-        }
     }
 }

@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.audioPlayer play];
     [self.audioPlayerPoller invalidate];
-    self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.05f
+    self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.5f
                                                                   target:self
                                                                 selector:@selector(audioPlayerUpdated:)
                                                                 userInfo:nil
