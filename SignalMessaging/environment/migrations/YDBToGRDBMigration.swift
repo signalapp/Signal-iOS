@@ -621,9 +621,44 @@ public class GRDBUnorderedRecordMigrator<T>: GRDBMigrator where T: SDSModel {
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         let count = self.count
         Logger.info("\(label): \(count)")
+
+        var signalRecipientUuids = Set<String>()
+        var signalRecipientPhoneNumbers = Set<String>()
         try Bench(title: label, memorySamplerRatio: memorySamplerRatio(count: count), logInProduction: true) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyKeysAndObjects { (_, legacyRecord) in
+
+                // SignalRecipients have GRDB uniqueness constraints on the
+                // phone number and uuid columns. Therefore we need to
+                // de-duplicate during the migration or migration will fail.
+                if let signalRecipient = legacyRecord as? SignalRecipient {
+                    if let uuidString = signalRecipient.recipientUUID,
+                        signalRecipientUuids.contains(uuidString) {
+                        // If YDB contains two recipients with the same UUID, discard one.
+                        Logger.warn("Discarding duplicate SignalRecipient: \(uuidString)")
+                        return
+                    }
+                    if let phoneNumber = signalRecipient.recipientPhoneNumber,
+                        signalRecipientPhoneNumbers.contains(phoneNumber) {
+                        // If YDB contains two recipients with the same phone, try to
+                        // discard just the phone number. If the recipient has a uuid,
+                        // we can preserve it. If not, discard the recipient.
+                        if signalRecipient.recipientUUID == nil {
+                            Logger.warn("Discarding duplicate SignalRecipient: \(phoneNumber)")
+                            return
+                        } else {
+                            Logger.warn("Discarding duplicate SignalRecipient phone number: \(phoneNumber)")
+                            signalRecipient.removePhoneNumberForDatabaseMigration()
+                        }
+                    }
+                    if let uuidString = signalRecipient.recipientUUID {
+                        signalRecipientUuids.insert(uuidString)
+                    }
+                    if let phoneNumber = signalRecipient.recipientPhoneNumber {
+                        signalRecipientPhoneNumbers.insert(phoneNumber)
+                    }
+                }
+
                 recordCount += 1
                 legacyRecord.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 memorySampler.sample()
