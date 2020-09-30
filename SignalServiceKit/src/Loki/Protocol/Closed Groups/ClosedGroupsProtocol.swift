@@ -112,6 +112,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let wasAnyUserRemoved = Set(members).intersection(oldMembers) != oldMembers
         let removedMembers = oldMembers.subtracting(members)
         let isUserLeaving = removedMembers.contains(userPublicKey)
+        var allSenderKeys = Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)
         var newSenderKeys: [ClosedGroupSenderKey] = []
         if wasAnyUserRemoved {
             if isUserLeaving && removedMembers.count != 1 {
@@ -150,7 +151,7 @@ public final class ClosedGroupsProtocol : NSObject {
                     }
                 }
             }
-        } else {
+        } else if !newMembers.isEmpty {
             seal.fulfill(())
             // Generate ratchets for any new members
             newSenderKeys = newMembers.map { publicKey in
@@ -162,11 +163,16 @@ public final class ClosedGroupsProtocol : NSObject {
                 members: membersAsData, admins: adminsAsData)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
+        } else {
+            seal.fulfill(())
+            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name,
+                senderKeys: [ClosedGroupSenderKey](allSenderKeys), members: membersAsData, admins: adminsAsData)
+            let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+            messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
         // Establish sessions if needed
         establishSessionsIfNeeded(with: [String](newMembers), using: transaction)
         // Send closed group update messages to the new members using established channels
-        var allSenderKeys = Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)
         allSenderKeys.formUnion(newSenderKeys)
         for member in newMembers {
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
