@@ -411,7 +411,9 @@ public final class ClosedGroupsProtocol : NSObject {
         // Respond to the request
         print("[Loki] Responding to sender key request from: \(senderPublicKey).")
         SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction) // This internally takes care of multi device
-        let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+        guard let userRatchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey) else {
+            return print("[Loki] Missing own ratchet.")
+        }
         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
         let thread = TSContactThread.getOrCreateThread(withContactId: senderPublicKey, transaction: transaction)
         thread.save(with: transaction)
@@ -424,19 +426,8 @@ public final class ClosedGroupsProtocol : NSObject {
     private static func handleSenderKeyMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, from senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Prepare
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
-        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
-        guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
-            return print("[Loki] Ignoring closed group sender key for nonexistent group.")
-        }
-        let group = thread.groupModel
         guard let senderKey = closedGroupUpdate.senderKeys.first else {
             return print("[Loki] Ignoring invalid closed group sender key.")
-        }
-        // Check that the requesting user is a member of the group
-        var membersAndLinkedDevices: Set<String> = Set(group.groupMemberIds)
-        for member in group.groupMemberIds {
-            let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
-            membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.publicKey, $0.slave.publicKey ] })
         }
         guard senderKey.publicKey.toHexString() == senderPublicKey else {
             return print("[Loki] Ignoring invalid closed group sender key.")

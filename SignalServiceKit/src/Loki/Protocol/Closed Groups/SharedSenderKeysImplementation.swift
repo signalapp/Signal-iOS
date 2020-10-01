@@ -177,7 +177,12 @@ public final class SharedSenderKeysImplementation : NSObject {
             throw RatchetingError.messageKeyMissing(targetKeyIndex: keyIndex, groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
         }
         let aes = try AES(key: Data(hex: messageKey).bytes, blockMode: gcm, padding: .noPadding)
-        return Data(try aes.decrypt(ciphertext.bytes))
+        do {
+            return Data(try aes.decrypt(ciphertext.bytes))
+        } catch {
+            ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+            throw error
+        }
     }
 
     @objc public func isClosedGroup(_ publicKey: String) -> Bool {
