@@ -2638,7 +2638,7 @@
 "vc_create_closed_group_empty_state_button_title" = "Начать Сессию";
 "vc_create_closed_group_group_name_missing_error" = "Пожалуйста, введите название группы";
 "vc_create_closed_group_group_name_too_long_error" = "Пожалуйста, введите более короткое имя группы";
-"vc_create_closed_group_too_many_group_members_error" = "В закрытой группе не может быть больше 10 участников";
+"vc_create_closed_group_too_many_group_members_error" = "В закрытой группе не может быть больше 20 участников";
 "vc_create_closed_group_invalid_session_id_error" = "Один из участников вашей группы имеет недопустимый Session ID";
 
 "vc_join_public_chat_title" = "Присоединиться к открытой группе";

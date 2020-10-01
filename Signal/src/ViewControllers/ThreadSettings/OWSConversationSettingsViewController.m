@@ -34,6 +34,7 @@
 #import <SessionServiceKit/TSThread.h>
 
 @import ContactsUI;
+@import PromiseKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -648,55 +649,62 @@ const CGFloat kIconViewLength = 24;
 
     // Group settings section.
 
-    
-    if (self.isGroupThread && self.isPrivateGroupChat) {
-//        [OWSTableItem
-//            itemWithCustomCellBlock:^{
-//                UITableViewCell *cell =
-//                    [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
-//                                                         @"table cell label in conversation settings")
-//                                            iconName:@"table_ic_group_edit"
-//                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-//                                                         OWSConversationSettingsViewController, @"edit_group")];
-//                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
-//                return cell;
-//            }
-//            actionBlock:^{
-//                [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
-//            }],
-        [mainSection addItem:[OWSTableItem
-            itemWithCustomCellBlock:^{
-                UITableViewCell *cell =
-                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
-                                                         @"table cell label in conversation settings")
-                                            iconName:@"table_ic_group_members"
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                         OWSConversationSettingsViewController, @"group_members")];
-                return cell;
-            }
-            actionBlock:^{
-                [weakSelf showGroupMembersView];
-            }]
-        ];
+    __block BOOL isUserMember = NO;
+    if (self.isGroupThread) {
         NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        if ([((TSGroupThread *)self.thread).groupModel.groupMemberIds containsObject:userPublicKey]) {
+        [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey transaction:transaction];
+        }];
+    }
+
+    if (self.isGroupThread && self.isPrivateGroupChat && isUserMember) {
+        if (((TSGroupThread *)self.thread).usesSharedSenderKeys) {
             [mainSection addItem:[OWSTableItem
                 itemWithCustomCellBlock:^{
                     UITableViewCell *cell =
-                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                        [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
                                                              @"table cell label in conversation settings")
-                                                iconName:@"table_ic_group_leave"
+                                                iconName:@"table_ic_group_edit"
                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                             OWSConversationSettingsViewController, @"leave_group")];
+                                                             OWSConversationSettingsViewController, @"edit_group")];
                     cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
-
                     return cell;
                 }
                 actionBlock:^{
-                    [weakSelf didTapLeaveGroup];
+                    [weakSelf editGroup];
                 }]
             ];
         }
+//        [mainSection addItem:[OWSTableItem
+//            itemWithCustomCellBlock:^{
+//                UITableViewCell *cell =
+//                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
+//                                                         @"table cell label in conversation settings")
+//                                            iconName:@"table_ic_group_members"
+//                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+//                                                         OWSConversationSettingsViewController, @"group_members")];
+//                return cell;
+//            }
+//            actionBlock:^{
+//                [weakSelf showGroupMembersView];
+//            }]
+//        ];
+        [mainSection addItem:[OWSTableItem
+            itemWithCustomCellBlock:^{
+                UITableViewCell *cell =
+                    [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                         @"table cell label in conversation settings")
+                                            iconName:@"table_ic_group_leave"
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                         OWSConversationSettingsViewController, @"leave_group")];
+                cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+
+                return cell;
+            }
+            actionBlock:^{
+                [weakSelf didTapLeaveGroup];
+            }]
+        ];
     }
     
 
@@ -1143,6 +1151,12 @@ const CGFloat kIconViewLength = 24;
     [self presentContactViewController];
 }
 
+- (void)editGroup
+{
+    LKEditClosedGroupVC *editClosedGroupVC = [[LKEditClosedGroupVC alloc] initWithThreadID:self.thread.uniqueId];
+    [self.navigationController pushViewController:editClosedGroupVC animated:YES completion:nil];
+}
+
 - (void)didTapLeaveGroup
 {
     UIAlertController *alert =
@@ -1176,13 +1190,21 @@ const CGFloat kIconViewLength = 24;
 - (void)leaveGroup
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
-        [gThread leaveGroupWithTransaction:transaction];
-    } error:nil];
+    if (gThread.usesSharedSenderKeys) {
+        NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [[LKClosedGroupsProtocol leaveGroupWithPublicKey:groupPublicKey transaction:transaction] retainUntilComplete];
+        } error:nil];
+    } else {
+        TSOutgoingMessage *message =
+            [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
+
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            [gThread leaveGroupWithTransaction:transaction];
+        } error:nil];
+    }
 
     [self.navigationController popViewControllerAnimated:YES];
 }

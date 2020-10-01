@@ -49,6 +49,9 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDoneButtonTapped))
+        doneButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = doneButton
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
@@ -118,7 +121,11 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
-    
+
+    @objc private func handleDoneButtonTapped() {
+        enterPublicKeyVC.startNewPrivateChatIfPossible()
+    }
+
     func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
         let hexEncodedPublicKey = string
         startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
@@ -140,7 +147,7 @@ final class NewPrivateChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
 private final class EnterPublicKeyVC : UIViewController {
     weak var newPrivateChatVC: NewPrivateChatVC!
     
-    private lazy var userHexEncodedPublicKey: String = {
+    private lazy var userPublicKey: String = {
         if let masterHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] {
             return masterHexEncodedPublicKey
         } else {
@@ -179,7 +186,7 @@ private final class EnterPublicKeyVC : UIViewController {
         userPublicKeyLabel.numberOfLines = 0
         userPublicKeyLabel.textAlignment = .center
         userPublicKeyLabel.lineBreakMode = .byCharWrapping
-        userPublicKeyLabel.text = userHexEncodedPublicKey
+        userPublicKeyLabel.text = userPublicKey
         // Set up share button
         let shareButton = Button(style: .unimportant, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
@@ -232,7 +239,7 @@ private final class EnterPublicKeyVC : UIViewController {
     
     // MARK: Interaction
     @objc private func copyPublicKey() {
-        UIPasteboard.general.string = userHexEncodedPublicKey
+        UIPasteboard.general.string = userPublicKey
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.copyButton.setTitle("Copied", for: UIControl.State.normal)
@@ -241,13 +248,13 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     @objc private func sharePublicKey() {
-        let shareVC = UIActivityViewController(activityItems: [ userHexEncodedPublicKey ], applicationActivities: nil)
+        let shareVC = UIActivityViewController(activityItems: [ userPublicKey ], applicationActivities: nil)
         newPrivateChatVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
-    @objc private func startNewPrivateChatIfPossible() {
-        let hexEncodedPublicKey = publicKeyTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
-        newPrivateChatVC.startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
+    @objc fileprivate func startNewPrivateChatIfPossible() {
+        let publicKey = publicKeyTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        newPrivateChatVC.startNewPrivateChatIfPossible(with: publicKey)
     }
 }
 

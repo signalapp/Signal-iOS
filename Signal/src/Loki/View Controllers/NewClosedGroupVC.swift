@@ -1,42 +1,32 @@
 import PromiseKit
 
-final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIScrollViewDelegate {
-    private var selectedContacts: Set<String> = []
+private protocol TableViewTouchDelegate {
     
-    private lazy var contacts: [String] = {
-        var result: [String] = []
-        let storage = OWSPrimaryStorage.shared()
-        storage.dbReadConnection.read { transaction in
-            TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
-                guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible else { return }
-                let publicKey = thread.contactIdentifier()
-                guard UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) != nil else { return }
-                // We shouldn't be able to add slave devices to groups
-                guard storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) == nil else { return }
-                result.append(publicKey)
-            }
-        }
-        func getDisplayName(for hexEncodedPublicKey: String) -> String {
-            return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
-        }
-        let userPublicKey = getUserHexEncodedPublicKey()
-        var userLinkedDevices: Set<String> = [ userPublicKey ]
-        OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
-        }
-        result = result.filter { !userLinkedDevices.contains($0) }
-        result = result.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
-        return result
-    }()
+    func tableViewWasTouched(_ tableView: TableView)
+}
+
+private final class TableView : UITableView {
+    var touchDelegate: TableViewTouchDelegate?
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        touchDelegate?.tableViewWasTouched(self)
+        return super.hitTest(point, with: event)
+    }
+}
+
+final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate, TableViewTouchDelegate, UITextFieldDelegate, UIScrollViewDelegate {
+    private let contacts = ContactUtilities.getAllContacts()
+    private var selectedContacts: Set<String> = []
     
     // MARK: Components
     private lazy var nameTextField = TextField(placeholder: NSLocalizedString("vc_create_closed_group_text_field_hint", comment: ""))
-    
-    private lazy var tableView: UITableView = {
-        let result = UITableView()
+
+    private lazy var tableView: TableView = {
+        let result = TableView()
         result.dataSource = self
         result.delegate = self
-        result.register(Cell.self, forCellReuseIdentifier: "Cell")
+        result.touchDelegate = self
+        result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.isScrollEnabled = false
@@ -58,6 +48,10 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         doneButton.tintColor = Colors.text
         navigationItem.rightBarButtonItem = doneButton
         // Set up content
+        setUpViewHierarchy()
+    }
+
+    private func setUpViewHierarchy() {
         if !contacts.isEmpty {
             let mainStackView = UIStackView()
             mainStackView.axis = .vertical
@@ -70,8 +64,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
             mainStackView.addArrangedSubview(nameTextFieldContainer)
             let separator = UIView()
-            let alpha: CGFloat = isLightMode ? 0.2 : 1
-            separator.backgroundColor = Colors.separator.withAlphaComponent(alpha)
+            separator.backgroundColor = Colors.separator
             separator.set(.height, to: Values.separatorThickness)
             mainStackView.addArrangedSubview(separator)
             tableView.set(.height, to: CGFloat(contacts.count * 67)) // A cell is exactly 67 points high
@@ -106,16 +99,18 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         }
     }
     
-    // MARK: Data
+    // MARK: Table View Data Source
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return contacts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
-        let contact = contacts[indexPath.row]
-        cell.hexEncodedPublicKey = contact
-        cell.hasTick = selectedContacts.contains(contact)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
+        let publicKey = contacts[indexPath.row]
+        cell.publicKey = publicKey
+        let isSelected = selectedContacts.contains(publicKey)
+        cell.accessory = .tick(isSelected: isSelected)
+        cell.update()
         return cell
     }
     
@@ -124,10 +119,13 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         crossfadeLabel.text = textField.text!.isEmpty ? NSLocalizedString("vc_create_closed_group_title", comment: "") : textField.text!
     }
 
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    fileprivate func tableViewWasTouched(_ tableView: TableView) {
         if nameTextField.isFirstResponder {
             nameTextField.resignFirstResponder()
         }
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let nameTextFieldCenterY = nameTextField.convert(nameTextField.bounds.center, to: scrollView).y
         let tableViewOriginY = tableView.convert(tableView.bounds.origin, to: scrollView).y
         let titleLabelAlpha = 1 - (scrollView.contentOffset.y - nameTextFieldCenterY) / (tableViewOriginY - nameTextFieldCenterY)
@@ -137,14 +135,12 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let contact = contacts[indexPath.row]
-        if !selectedContacts.contains(contact) {
-            selectedContacts.insert(contact)
-        } else {
-            selectedContacts.remove(contact)
-        }
-        guard let cell = tableView.cellForRow(at: indexPath) as? Cell else { return }
-        cell.hasTick = selectedContacts.contains(contact)
+        let publicKey = contacts[indexPath.row]
+        if !selectedContacts.contains(publicKey) { selectedContacts.insert(publicKey) } else { selectedContacts.remove(publicKey) }
+        guard let cell = tableView.cellForRow(at: indexPath) as? UserCell else { return }
+        let isSelected = selectedContacts.contains(publicKey)
+        cell.accessory = .tick(isSelected: isSelected)
+        cell.update()
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -169,7 +165,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
         }
-        guard name.count < 64 else {
+        guard name.count < ClosedGroupsProtocol.maxNameSize else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
         guard selectedContacts.count >= 1 else {
@@ -254,93 +250,5 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     @objc private func createNewPrivateChat() {
         presentingViewController?.dismiss(animated: true, completion: nil)
         SignalApp.shared().homeViewController!.createNewPrivateChat()
-    }
-}
-
-// MARK: - Cell
-
-private extension NewClosedGroupVC {
-    
-    final class Cell : UITableViewCell {
-        var hexEncodedPublicKey = "" { didSet { update() } }
-        var hasTick = false { didSet { update() } }
-        
-        // MARK: Components
-        private lazy var profilePictureView = ProfilePictureView()
-        
-        private lazy var displayNameLabel: UILabel = {
-            let result = UILabel()
-            result.textColor = Colors.text
-            result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-            result.lineBreakMode = .byTruncatingTail
-            return result
-        }()
-        
-        private lazy var tickImageView: UIImageView = {
-            let result = UIImageView()
-            result.contentMode = .scaleAspectFit
-            let size: CGFloat = 24
-            result.set(.width, to: size)
-            result.set(.height, to: size)
-            return result
-        }()
-        
-        private lazy var separator: UIView = {
-            let result = UIView()
-            let alpha: CGFloat = isLightMode ? 0.2 : 1
-            result.backgroundColor = Colors.separator.withAlphaComponent(alpha)
-            result.set(.height, to: Values.separatorThickness)
-            return result
-        }()
-        
-        // MARK: Initialization
-        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
-            setUpViewHierarchy()
-        }
-        
-        required init?(coder: NSCoder) {
-            super.init(coder: coder)
-            setUpViewHierarchy()
-        }
-        
-        private func setUpViewHierarchy() {
-            // Set the cell background color
-            backgroundColor = Colors.cellBackground
-            // Set up the highlight color
-            let selectedBackgroundView = UIView()
-            selectedBackgroundView.backgroundColor = .clear // Disabled for now
-            self.selectedBackgroundView = selectedBackgroundView
-            // Set up the profile picture image view
-            let profilePictureViewSize = Values.smallProfilePictureSize
-            profilePictureView.set(.width, to: profilePictureViewSize)
-            profilePictureView.set(.height, to: profilePictureViewSize)
-            profilePictureView.size = profilePictureViewSize
-            // Set up the main stack view
-            let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel, tickImageView ])
-            stackView.axis = .horizontal
-            stackView.alignment = .center
-            stackView.spacing = Values.mediumSpacing
-            stackView.set(.height, to: profilePictureViewSize)
-            contentView.addSubview(stackView)
-            stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
-            stackView.pin(.top, to: .top, of: contentView, withInset: Values.mediumSpacing)
-            contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.mediumSpacing)
-            stackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
-            // Set up the separator
-            addSubview(separator)
-            separator.pin(.leading, to: .leading, of: self)
-            separator.pin(.bottom, to: .bottom, of: self)
-            separator.set(.width, to: UIScreen.main.bounds.width)
-        }
-        
-        // MARK: Updating
-        private func update() {
-            profilePictureView.hexEncodedPublicKey = hexEncodedPublicKey
-            profilePictureView.update()
-            displayNameLabel.text = UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? hexEncodedPublicKey
-            let icon = hasTick ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
-            tickImageView.image = isDarkMode ? icon : icon.asTintedImage(color: Colors.text)!
-        }
     }
 }

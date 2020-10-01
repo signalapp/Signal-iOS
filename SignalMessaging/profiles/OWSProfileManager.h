@@ -74,6 +74,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId;
 
+- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID avoidWriteTransaction:(BOOL)avoidWriteTransaction;
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID;
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction;
 

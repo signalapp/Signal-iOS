@@ -215,24 +215,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         }
 
         switch (envelope.type) {
-            case SSKProtoEnvelopeTypeFallbackMessage: {
-                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [self decryptFallbackMessage:envelope
-                         envelopeData:envelopeData
-                         successBlock:^(OWSMessageDecryptResult *result) {
-                             OWSLogDebug(@"Decrypted fallback message.");
-                             successBlock(result, transaction);
-                         }
-                         failureBlock:^(NSError * _Nullable error) {
-                             OWSLogError(@"Decrypting fallback message from: %@ failed with error: %@.",
-                                envelopeAddress(envelope),
-                                error);
-                             failureBlock();
-                         }];
-                } error:nil];
-                // Return to avoid double-acknowledging
-                return;
-            }
             case SSKProtoEnvelopeTypeCiphertext: {
                 [self throws_decryptSecureMessage:envelope
                     envelopeData:envelopeData
@@ -337,42 +319,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     }
 
     failureBlock();
-}
-
-- (void)decryptFallbackMessage:(SSKProtoEnvelope *)envelope
-                  envelopeData:(NSData *)envelopeData
-                  successBlock:(void (^)(OWSMessageDecryptResult *result))successBlock
-                  failureBlock:(void (^)(NSError *_Nullable error))failureBlock
-{
-    OWSAssertDebug(envelope);
-    OWSAssertDebug(envelopeData);
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
-    
-    NSData *ivAndCiphertext = envelope.content;
-    if (ivAndCiphertext == nil) {
-        OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, @"Envelope has no content.");
-        return failureBlock(error);
-    }
-    
-    NSString *recipientId = envelope.source;
-    ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientPublicKey:recipientId privateKey:identityKeyPair.privateKey];
-
-    NSData *_Nullable plaintext = [[cipher decrypt:ivAndCiphertext] removePadding];
-    if (plaintext == nil) {
-        NSString *errorDescription = [NSString stringWithFormat:@"Failed to decrypt fallback message from: %@.", recipientId];
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
-        return failureBlock(error);
-    }
-   
-    OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
-                                                                        plaintextData:plaintext
-                                                                               source:envelope.source
-                                                                         sourceDevice:envelope.sourceDevice
-                                                                          isUDMessage:NO];
-    successBlock(result);
 }
 
 - (void)throws_decryptSecureMessage:(SSKProtoEnvelope *)envelope
