@@ -840,6 +840,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([attachment isAudio]);
 
     LKVoiceMessageView2 *voiceMessageView = [[LKVoiceMessageView2 alloc] initWithVoiceMessage:attachment];
+    voiceMessageView.duration = (int)self.viewItem.audioDurationSeconds;
 
     self.viewItem.lastAudioMessageView = voiceMessageView;
 

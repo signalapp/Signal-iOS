@@ -27,7 +27,7 @@ enum AudioUtilities {
         }
     }
 
-    static func getVolumeSamples(for audioFileURL: URL, targetSampleCount: Int = 32) -> Promise<[Float]> {
+    static func getVolumeSamples(for audioFileURL: URL, targetSampleCount: Int) -> Promise<[Float]> {
         return loadFile(audioFileURL).then { fileInfo in
             AudioUtilities.parseSamples(from: fileInfo, with: targetSampleCount)
         }
