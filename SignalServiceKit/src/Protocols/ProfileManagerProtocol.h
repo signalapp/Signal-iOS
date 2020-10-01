@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSAES256Key *)localProfileKey;
 
 - (nullable NSString *)localProfileName;
+- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID avoidingWriteTransaction:(BOOL)avoidWriteTransaction;
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID;
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (nullable NSString *)profilePictureURL;

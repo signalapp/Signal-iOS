@@ -13,6 +13,15 @@ public final class UserDisplayNameUtilities : NSObject {
     }
     
     // MARK: Sessions
+    @objc(getPrivateChatDisplayNameAvoidWriteTransaction:)
+    public static func getPrivateChatDisplayNameAvoidingWriteTransaction(for publicKey: String) -> String? {
+        if publicKey == userPublicKey {
+            return userDisplayName
+        } else {
+            return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: publicKey, avoidingWriteTransaction: true)
+        }
+    }
+
     @objc public static func getPrivateChatDisplayName(for publicKey: String) -> String? {
         if publicKey == userPublicKey {
             return userDisplayName
