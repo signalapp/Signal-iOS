@@ -252,7 +252,6 @@ message DataMessage {
       INFO               = 1; // groupPublicKey, name, senderKeys, members, admins
       SENDER_KEY_REQUEST = 2; // groupPublicKey
       SENDER_KEY         = 3; // groupPublicKey, senderKeys
-
     }
 
     message SenderKey {
