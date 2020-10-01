@@ -235,84 +235,32 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         // Recipient(s)
         if let outgoingMessage = message as? TSOutgoingMessage {
 
-            let isGroupThread = thread.isGroupThread()
+            func getSeparator() -> UIView {
+                let result = UIView()
+                result.set(.height, to: Values.separatorThickness)
+                result.backgroundColor = Colors.separator
+                return result
+            }
 
-            let recipientStatusGroups: [MessageReceiptStatus] = [
-                .read,
-                .uploading,
-                .delivered,
-                .sent,
-                .sending,
-                .failed,
-                .skipped
-            ]
-            for recipientStatusGroup in recipientStatusGroups {
-                var groupRows = [UIView]()
+            if !outgoingMessage.recipientIds().isEmpty {
+                rows += [ getSeparator() ]
+            }
 
-                // TODO: It'd be nice to inset these dividers from the edge of the screen.
-                let addDivider = {
-                    let divider = UIView()
-                    divider.backgroundColor = Theme.hairlineColor
-                    divider.autoSetDimension(.height, toSize: CGHairlineWidth())
-                    groupRows.append(divider)
-                }
+            rows += outgoingMessage.recipientIds().flatMap { publicKey -> [UIView] in
+                // We use ContactCellView, not ContactTableViewCell.
+                // Table view cells don't layout properly outside the
+                // context of a table view.
+                let cellView = ContactCellView()
+                cellView.configure(withRecipientId: publicKey)
+                let wrapper = UIView()
+                wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
+                wrapper.addSubview(cellView)
+                cellView.autoPinEdgesToSuperviewMargins()
+                return [ wrapper, getSeparator() ]
+            }
 
-                let messageRecipientIds = outgoingMessage.recipientIds()
-
-                for recipientId in messageRecipientIds {
-                    guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
-                        owsFailDebug("no message status for recipient: \(recipientId).")
-                        continue
-                    }
-
-                    // We use the "short" status message to avoid being redundant with the section title.
-                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientState: recipientState)
-
-                    guard recipientStatus == recipientStatusGroup else {
-                        continue
-                    }
-
-                    if groupRows.count < 1 {
-                        if isGroupThread {
-                            groupRows.append(valueRow(name: string(for: recipientStatusGroup),
-                                                      value: ""))
-                        }
-
-                        addDivider()
-                    }
-
-                    // We use ContactCellView, not ContactTableViewCell.
-                    // Table view cells don't layout properly outside the
-                    // context of a table view.
-                    let cellView = ContactCellView()
-                    if self.shouldShowUD, recipientState.wasSentByUD {
-                        let udAccessoryView = self.buildUDAccessoryView(text: shortStatusMessage)
-                        cellView.setAccessory(udAccessoryView)
-                    } else {
-                        cellView.accessoryMessage = shortStatusMessage
-                    }
-                    cellView.configure(withRecipientId: recipientId)
-
-                    let wrapper = UIView()
-                    wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
-                    wrapper.addSubview(cellView)
-                    cellView.autoPinEdgesToSuperviewMargins()
-                    groupRows.append(wrapper)
-                }
-
-                if groupRows.count > 0 {
-                    addDivider()
-
-                    let spacer = UIView()
-                    spacer.autoSetDimension(.height, toSize: 10)
-                    groupRows.append(spacer)
-                }
-
-                Logger.verbose("\(groupRows.count) rows for \(recipientStatusGroup)")
-                guard groupRows.count > 0 else {
-                    continue
-                }
-                rows += groupRows
+            if !outgoingMessage.recipientIds().isEmpty {
+                rows += [ UIView.vSpacer(10) ]
             }
         }
 

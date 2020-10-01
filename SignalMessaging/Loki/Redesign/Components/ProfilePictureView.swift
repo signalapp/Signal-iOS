@@ -45,6 +45,15 @@ public final class ProfilePictureView : UIView {
     }
     
     // MARK: Updating
+    @objc(updateForContact:)
+    public func update(for publicKey: String) {
+        openGroupProfilePicture = nil
+        hexEncodedPublicKey = publicKey
+        additionalHexEncodedPublicKey = nil
+        isRSSFeed = false
+        update()
+    }
+
     @objc(updateForThread:)
     public func update(for thread: TSThread) {
         openGroupProfilePicture = nil
@@ -71,23 +80,21 @@ public final class ProfilePictureView : UIView {
                 additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
                 isRSSFeed = false
             }
+            update()
         } else { // A one-to-one chat
-            hexEncodedPublicKey = thread.contactIdentifier()!
-            additionalHexEncodedPublicKey = nil
-            isRSSFeed = false
+            update(for: thread.contactIdentifier()!)
         }
-        update()
     }
 
     @objc public func update() {
         AssertIsOnMainThread()
-        func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
-            guard !hexEncodedPublicKey.isEmpty else { return nil }
-            if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) {
+        func getProfilePicture(of size: CGFloat, for publicKey: String) -> UIImage? {
+            guard !publicKey.isEmpty else { return nil }
+            if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: publicKey) {
                 return profilePicture
             } else {
-                let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: hexEncodedPublicKey) ?? hexEncodedPublicKey
-                return Identicon.generatePlaceholderIcon(seed: hexEncodedPublicKey, text: displayName, size: size)
+                let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey) ?? publicKey
+                return Identicon.generatePlaceholderIcon(seed: publicKey, text: displayName, size: size)
             }
         }
         let size: CGFloat
