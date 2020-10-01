@@ -1063,7 +1063,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMessageWidth, 40.0f);
+            result = CGSizeMake(maxMessageWidth, LKVoiceMessageView2.contentHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);

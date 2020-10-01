@@ -6,7 +6,6 @@ final class VoiceMessageView2 : UIView {
     private var isAnimating = false
     private var volumeSamples: [Float] = [] { didSet { updateShapeLayers() } }
     private var progress: CGFloat = 0
-    private var duration: CGFloat = 1 // Not initialized at 0 to avoid division by zero
 
     // MARK: Components
     private lazy var loader: UIView = {
@@ -31,6 +30,8 @@ final class VoiceMessageView2 : UIView {
     private let margin: CGFloat = 4
     private let sampleSpacing: CGFloat = 1
 
+    @objc public static let contentHeight: CGFloat = 40
+
     // MARK: Initialization
     @objc(initWithVoiceMessage:)
     init(voiceMessage: TSAttachment) {
@@ -54,12 +55,21 @@ final class VoiceMessageView2 : UIView {
             guard let url = (voiceMessage as? TSAttachmentStream)?.originalMediaURL else {
                 return print("[Loki] Couldn't get URL for voice message.")
             }
-            AudioUtilities.getVolumeSamples(for: url).done(on: DispatchQueue.main) { [weak self] volumeSamples in
-                guard let self = self else { return }
-                self.volumeSamples = volumeSamples
+            if let cachedVolumeSamples = Storage.getVolumeSamples(for: voiceMessage.uniqueId!) {
+                self.volumeSamples = cachedVolumeSamples
                 self.stopAnimating()
-            }.catch(on: DispatchQueue.main) { error in
-                print("[Loki] Couldn't sample audio file due to error: \(error).")
+            } else {
+                let voiceMessageID = voiceMessage.uniqueId!
+                AudioUtilities.getVolumeSamples(for: url).done(on: DispatchQueue.main) { [weak self] volumeSamples in
+                    guard let self = self else { return }
+                    self.volumeSamples = volumeSamples
+                    Storage.write { transaction in
+                        Storage.setVolumeSamples(for: voiceMessageID, to: volumeSamples, using: transaction)
+                    }
+                    self.stopAnimating()
+                }.catch(on: DispatchQueue.main) { error in
+                    print("[Loki] Couldn't sample audio file due to error: \(error).")
+                }
             }
         } else {
             showLoader()
@@ -68,7 +78,7 @@ final class VoiceMessageView2 : UIView {
 
     private func setUpViewHierarchy() {
         set(.width, to: 200)
-        set(.height, to: 40)
+        set(.height, to: VoiceMessageView2.contentHeight)
         addSubview(loader)
         loader.pin(to: self)
         layer.insertSublayer(backgroundShapeLayer, at: 0)
@@ -83,9 +93,9 @@ final class VoiceMessageView2 : UIView {
     }
 
     private func animateLoader() {
-        loader.frame = CGRect(x: 0, y: 0, width: 0, height: 40)
+        loader.frame = CGRect(x: 0, y: 0, width: 0, height: VoiceMessageView2.contentHeight)
         UIView.animate(withDuration: 2) { [weak self] in
-            self?.loader.frame = CGRect(x: 0, y: 0, width: 200, height: 40)
+            self?.loader.frame = CGRect(x: 0, y: 0, width: 200, height: VoiceMessageView2.contentHeight)
         } completion: { [weak self] _ in
             guard let self = self else { return }
             if self.isAnimating { self.animateLoader() }
@@ -102,10 +112,9 @@ final class VoiceMessageView2 : UIView {
         updateShapeLayers()
     }
 
-    @objc(updateForProgress:duration:)
-    func update(for progress: CGFloat, duration: CGFloat) {
+    @objc(updateForProgress:)
+    func update(for progress: CGFloat) {
         self.progress = progress
-        self.duration = duration
         updateShapeLayers()
     }
 
@@ -125,7 +134,7 @@ final class VoiceMessageView2 : UIView {
             let y = margin + (h - sH) / 2
             let subPath = UIBezierPath(roundedRect: CGRect(x: x, y: y, width: sW, height: sH), cornerRadius: sW / 2)
             backgroundPath.append(subPath)
-            if progress / duration > CGFloat(i) / CGFloat(volumeSamples.count) { foregroundPath.append(subPath) }
+            if progress > CGFloat(i) / CGFloat(volumeSamples.count) { foregroundPath.append(subPath) }
         }
         backgroundPath.close()
         foregroundPath.close()

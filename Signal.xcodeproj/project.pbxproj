@@ -572,6 +572,7 @@
 		C31D1DE32521718E005D4DA8 /* UserSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */; };
 		C31D1DE9252172D4005D4DA8 /* ContactUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DE8252172D4005D4DA8 /* ContactUtilities.swift */; };
 		C31F8117252546F200DD9FD9 /* file_example_MP3_2MG.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C31F8116252546F200DD9FD9 /* file_example_MP3_2MG.mp3 */; };
+		C31F812625258FB000DD9FD9 /* Storage+VolumeSamples.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31F812525258FB000DD9FD9 /* Storage+VolumeSamples.swift */; };
 		C329FEEC24F7277900B1C64C /* LightModeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEEB24F7277900B1C64C /* LightModeSheet.swift */; };
 		C329FEEF24F7743F00B1C64C /* UIViewController+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */; };
 		C34C8F7423A7830B00D82669 /* SpaceMono-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */; };
@@ -1372,6 +1373,7 @@
 		C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSelectionVC.swift; sourceTree = "<group>"; };
 		C31D1DE8252172D4005D4DA8 /* ContactUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUtilities.swift; sourceTree = "<group>"; };
 		C31F8116252546F200DD9FD9 /* file_example_MP3_2MG.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = file_example_MP3_2MG.mp3; sourceTree = "<group>"; };
+		C31F812525258FB000DD9FD9 /* Storage+VolumeSamples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+VolumeSamples.swift"; sourceTree = "<group>"; };
 		C329FEEB24F7277900B1C64C /* LightModeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightModeSheet.swift; sourceTree = "<group>"; };
 		C329FEED24F7742E00B1C64C /* UIViewController+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Utilities.swift"; sourceTree = "<group>"; };
 		C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Bold.ttf"; sourceTree = "<group>"; };
@@ -2602,6 +2604,7 @@
 			isa = PBXGroup;
 			children = (
 				B8CCF63B239757C10091D419 /* Components */,
+				C31F812425258F9C00DD9FD9 /* Database */,
 				C32B405424A961E1001117B5 /* Dependencies */,
 				B8CCF63C239757DB0091D419 /* Utilities */,
 				B8CCF63D2397580E0091D419 /* View Controllers */,
@@ -2752,6 +2755,14 @@
 				C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */,
 			);
 			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		C31F812425258F9C00DD9FD9 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				C31F812525258FB000DD9FD9 /* Storage+VolumeSamples.swift */,
+			);
+			path = Database;
 			sourceTree = "<group>";
 		};
 		C32B405424A961E1001117B5 /* Dependencies */ = {
@@ -3998,6 +4009,7 @@
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				B88847BC23E10BC6009836D2 /* GroupMembersVC.swift in Sources */,
 				B85357BF23A1AE0800AAF6CD /* SeedReminderView.swift in Sources */,
+				C31F812625258FB000DD9FD9 /* Storage+VolumeSamples.swift in Sources */,
 				B85357C723A1FB5100AAF6CD /* LinkDeviceVCDelegate.swift in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				C35E8AAE2485E51D00ACB629 /* IP2Country.swift in Sources */,
