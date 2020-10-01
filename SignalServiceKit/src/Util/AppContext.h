@@ -109,6 +109,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;
 
+- (void)openSystemSettings;
+
 // Returns nil if isMainApp is NO
 - (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion;
 

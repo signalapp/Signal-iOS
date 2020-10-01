@@ -116,6 +116,10 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (void)openSystemSettings
+{
+}
+
 - (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
 {
     return nil;

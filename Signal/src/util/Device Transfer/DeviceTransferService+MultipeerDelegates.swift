@@ -12,7 +12,7 @@ extension DeviceTransferService: MCNearbyServiceBrowserDelegate {
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Swift.Error) {
-        owsFailDebug("Failed to start browsing for peers \(error)")
+        Logger.error("Failed to start browsing for peers \(error)")
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerId: MCPeerID) {}

@@ -117,6 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
         completionCallback(NO);
     }
 
+    // TODO Xcode 12: When we're compiling on in Xcode 12, adjust this to
+    // use the new non-deprecated API that returns the "limited" status.
     PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
 
     switch (status) {

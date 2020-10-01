@@ -655,6 +655,7 @@
 		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */; };
+		885091C02525650100428A37 /* PHPhotoLibrary+Xcode11.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */; };
 		8851DB3F24CCE9C8001EACD2 /* MentionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */; };
 		8851DB4124CCE9E5001EACD2 /* Mention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4024CCE9E5001EACD2 /* Mention.swift */; };
 		8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */; };
@@ -1646,6 +1647,7 @@
 		884596EF24B93E13002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/Localizable.strings; sourceTree = "<group>"; };
 		884596F024B93E32002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchMegaphone.swift; sourceTree = "<group>"; };
+		885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHPhotoLibrary+Xcode11.swift"; sourceTree = "<group>"; };
 		8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTextView.swift; sourceTree = "<group>"; };
 		8851DB4024CCE9E5001EACD2 /* Mention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mention.swift; sourceTree = "<group>"; };
 		8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputTextView.swift; sourceTree = "<group>"; };
@@ -2204,6 +2206,7 @@
 			isa = PBXGroup;
 			children = (
 				349ED991221EE80D008045B0 /* AppPreferences.swift */,
+				885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */,
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
@@ -4640,6 +4643,7 @@
 				887C6A7824DBB16E00141B64 /* ResizingScrollView.swift in Sources */,
 				34AC09E2211B39B100997B47 /* ReturnToCallViewController.swift in Sources */,
 				345DE96023ED9AA500A8E6E3 /* GroupsV2ProfileKeyUpdater.swift in Sources */,
+				885091C02525650100428A37 /* PHPhotoLibrary+Xcode11.swift in Sources */,
 				34080E4022E9F50200B4D9DA /* YDBToGRDBMigration.swift in Sources */,
 				34123C60239AA93B00782788 /* ViewOnceTooltip.swift in Sources */,
 				34AC0A12211B39EA00997B47 /* ContactTableViewCell.m in Sources */,
