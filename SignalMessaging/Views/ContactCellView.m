@@ -211,7 +211,11 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
-    [self.profilePictureView updateForThread:self.thread];
+    if (self.thread != nil) {
+        [self.profilePictureView updateForThread:self.thread];
+    } else {
+        [self.profilePictureView updateForContact:self.recipientId];
+    }
 }
 
 - (void)updateProfileName
