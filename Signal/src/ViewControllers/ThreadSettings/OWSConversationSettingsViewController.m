@@ -769,7 +769,7 @@ const CGFloat kIconViewLength = 24;
                         cell.preservesSuperviewLayoutMargins = YES;
                         cell.contentView.preservesSuperviewLayoutMargins = YES;
 
-                        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
+                        UIImageView *iconView = [strongSelf viewForIconWithName:@"Mute"];
 
                         UILabel *rowLabel = [UILabel new];
                         rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
@@ -832,24 +832,17 @@ const CGFloat kIconViewLength = 24;
     // Block Conversation section.
 
     if (!isNoteToSelf && [self.thread isKindOfClass:TSContactThread.class]) {
-        [mainSection addItem:
-            [OWSTableItem itemWithCustomCellBlock:^{
-                NSString *title = @"Reset Secure Session";
-                UIView *iconViewContainer = [UIView new];
-                UIImageView *iconView = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"system_message_security"] asTintedImageWithColor:LKColors.text]];
-                [iconViewContainer addSubview:iconView];
-                [iconViewContainer autoSetDimension:ALDimensionWidth toSize:kIconViewLength];
-                [iconViewContainer autoSetDimension:ALDimensionHeight toSize:kIconViewLength];
-                [iconView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-                [iconView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:1];
-                [iconView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:2];
-                [iconView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:1];
-                [iconView autoSetDimension:ALDimensionWidth toSize:kIconViewLength - 2];
-                [iconView autoSetDimension:ALDimensionHeight toSize:kIconViewLength - 2];
-                return [weakSelf cellWithName:title iconView:iconViewContainer];
-            }
-            actionBlock:^{ [weakSelf resetSecureSession]; }]
-        ];
+        [mainSection addItem:[OWSTableItem
+                                 itemWithCustomCellBlock:^{
+                                     return [weakSelf
+                                          disclosureCellWithName:@"Reset Secure Session"
+                                                        iconName:@"system_message_security"
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                     OWSConversationSettingsViewController, @"reset_secure_ession")];
+                                 }
+                                 actionBlock:^{
+                                     [weakSelf resetSecureSession];
+                                 }]];
 
         mainSection.footerTitle = NSLocalizedString(
             @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
