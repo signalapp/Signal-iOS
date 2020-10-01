@@ -30,7 +30,7 @@ final class VoiceMessageView2 : UIView {
 
     private lazy var foregroundShapeLayer: CAShapeLayer = {
         let result = CAShapeLayer()
-        result.fillColor = Colors.accent.cgColor
+        result.fillColor = isLightMode ? UIColor.white.cgColor : Colors.accent.cgColor
         return result
     }()
 
