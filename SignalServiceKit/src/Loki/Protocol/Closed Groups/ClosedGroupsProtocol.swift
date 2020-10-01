@@ -411,9 +411,8 @@ public final class ClosedGroupsProtocol : NSObject {
         // Respond to the request
         print("[Loki] Responding to sender key request from: \(senderPublicKey).")
         SessionManagementProtocol.sendSessionRequestIfNeeded(to: senderPublicKey, using: transaction) // This internally takes care of multi device
-        guard let userRatchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey) else {
-            return print("[Loki] Missing own ratchet.")
-        }
+        let userRatchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey)
+            ?? SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
         let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: Data(hex: userPublicKey))
         let thread = TSContactThread.getOrCreateThread(withContactId: senderPublicKey, transaction: transaction)
         thread.save(with: transaction)
