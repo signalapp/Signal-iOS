@@ -133,7 +133,7 @@ const int32_t kGroupIdLength = 16;
 
     if ([membersWhoLeft count] > 0) {
         NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString*(NSString* item) {
-            return [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:item];
+            return [LKUserDisplayNameUtilities getPrivateChatDisplayNameAvoidWriteTransaction:item];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString

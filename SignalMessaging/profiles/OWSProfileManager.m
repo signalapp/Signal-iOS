@@ -1026,6 +1026,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID
 {
+    return [self profileNameForRecipientWithID:recipientID avoidingWriteTransaction:NO];
+}
+
+- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID avoidingWriteTransaction:(BOOL)avoidWriteTransaction
+{
     if ([self.tsAccountManager.localNumber isEqualToString:recipientID]) {
         return self.localUserProfile.profileName;
     }
@@ -1047,18 +1052,22 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
     }
 
-    __block NSString *result;
+    if (!avoidWriteTransaction) {
+        __block NSString *result;
 
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
-    } error:nil];
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
+        } error:nil];
 
-    NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
-    NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
-    if ([result hasSuffix:suffix]) {
-        return [result substringToIndex:result.length - suffix.length];
+        NSString *shortID = [recipientID substringWithRange:NSMakeRange(recipientID.length - 8, 8)];
+        NSString *suffix = [NSString stringWithFormat:@" (...%@)", shortID];
+        if ([result hasSuffix:suffix]) {
+            return [result substringToIndex:result.length - suffix.length];
+        } else {
+            return result;
+        }
     } else {
-        return result;
+        return recipientID;
     }
 }
 
