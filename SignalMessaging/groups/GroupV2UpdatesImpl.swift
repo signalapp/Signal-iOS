@@ -558,10 +558,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let oldGroupModel = oldGroupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")
             }
-            guard !oldGroupModel.isPlaceholderModel else {
-                // Placeholders can only be replaced by a snapshot.
-                throw GroupsV2Error.cantApplyChangesToPlaceholder
-            }
             let groupV2Params = try oldGroupModel.groupV2Params()
 
             var groupThread = oldGroupThread
@@ -573,7 +569,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
             var shouldUpdateProfileKeyInGroup = false
             var profileKeysByUuid = [UUID: Data]()
-            for groupChange in groupChanges {
+            for (index, groupChange) in groupChanges.enumerated() {
+
                 let changeRevision = groupChange.revision
                 if let upToRevision = upToRevision {
                     guard upToRevision >= changeRevision else {
@@ -612,6 +609,26 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
                 }
 
+                // We should only replace placeholder models using
+                // latest snapshots _except_ in the case where the
+                // local user is a requesting member and the first
+                // change action approves their request to join the
+                // group.
+                if oldGroupModel.isPlaceholderModel {
+                    guard index == 0 else {
+                        throw GroupsV2Error.cantApplyChangesToPlaceholder
+                    }
+                    guard isSingleRevisionUpdate else {
+                        throw GroupsV2Error.cantApplyChangesToPlaceholder
+                    }
+                    guard groupChange.snapshot != nil else {
+                        throw GroupsV2Error.cantApplyChangesToPlaceholder
+                    }
+                    guard oldGroupModel.groupMembership.isRequestingMember(localUuid) else {
+                        throw GroupsV2Error.cantApplyChangesToPlaceholder
+                    }
+                }
+
                 let newGroupModel: TSGroupModel
                 let newDisappearingMessageToken: DisappearingMessageToken?
                 let newProfileKeys: [UUID: Data]
@@ -629,6 +646,17 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     newGroupModel = changedGroupModel.newGroupModel
                     newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
                     newProfileKeys = changedGroupModel.profileKeys
+                }
+
+                // We should only replace placeholder models using
+                // _latest_ snapshots _except_ in the case where the
+                // local user is a requesting member and the first
+                // change action approves their request to join the
+                // group.
+                if oldGroupModel.isPlaceholderModel {
+                    guard newGroupModel.groupMembership.isFullMember(localUuid) else {
+                        throw GroupsV2Error.cantApplyChangesToPlaceholder
+                    }
                 }
 
                 if changeRevision == oldGroupModel.revision {
