@@ -289,13 +289,28 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         dismiss(animated: true)
     }
 
+    private func showActionSheet(title: String?,
+                                 message: String? = nil,
+                                 buttonTitle: String? = nil,
+                                 buttonAction: ActionSheetAction.Handler? = nil) {
+        OWSActionSheets.showActionSheet(title: title,
+                                        message: message,
+                                        buttonTitle: buttonTitle,
+                                        buttonAction: buttonAction,
+                                        fromViewController: self)
+    }
+
     @objc
     func didTapJoin(_ sender: UIButton) {
         AssertIsOnMainThread()
 
+        Logger.info("")
+
         guard doesLocalUserSupportGroupsV2 else {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
-                                                                      comment: "Error message indicating that the local user does not support groups v2."))
+            Logger.warn("Local user does not support groups v2.")
+            showActionSheet(title: CommonStrings.errorAlertTitle,
+                            message: NSLocalizedString("GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE",
+                                                       comment: "Error message indicating that the local user does not support groups v2."))
             return
         }
 
@@ -370,9 +385,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                         message = NSLocalizedString("GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",
                                                     comment: "Error message the attempt to request to join the group failed.")
                     }
-                    OWSActionSheets.showActionSheet(title: title,
-                                                    message: message,
-                                                    fromViewController: self)
+                    self.showActionSheet(title: title, message: message)
                 }
             }
         }
