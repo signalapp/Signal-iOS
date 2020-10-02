@@ -39,9 +39,9 @@ enum AudioUtilities {
             return Promise(error: Error.noAudioTrack)
         }
         let (promise, seal) = Promise<FileInfo>.pending()
-        asset.loadValuesAsynchronously(forKeys: [ "duration" ]) {
+        asset.loadValuesAsynchronously(forKeys: [ #keyPath(AVAsset.duration) ]) {
             var nsError: NSError?
-            let status = asset.statusOfValue(forKey: "duration", error: &nsError)
+            let status = asset.statusOfValue(forKey: #keyPath(AVAsset.duration), error: &nsError)
             switch status {
             case .loaded:
                 guard let formatDescriptions = track.formatDescriptions as? [CMAudioFormatDescription],

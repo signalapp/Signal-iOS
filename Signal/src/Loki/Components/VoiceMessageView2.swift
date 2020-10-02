@@ -3,6 +3,7 @@ import Accelerate
 @objc(LKVoiceMessageView2)
 final class VoiceMessageView2 : UIView {
     private let voiceMessage: TSAttachment
+    private let isOutgoing: Bool
     private var isAnimating = false
     private var volumeSamples: [Float] = [] { didSet { updateShapeLayers() } }
     private var progress: CGFloat = 0
@@ -30,7 +31,7 @@ final class VoiceMessageView2 : UIView {
 
     private lazy var foregroundShapeLayer: CAShapeLayer = {
         let result = CAShapeLayer()
-        result.fillColor = isLightMode ? UIColor.white.cgColor : Colors.accent.cgColor
+        result.fillColor = (isLightMode && isOutgoing) ? UIColor.white.cgColor : Colors.accent.cgColor
         return result
     }()
 
@@ -41,9 +42,10 @@ final class VoiceMessageView2 : UIView {
     @objc public static let contentHeight: CGFloat = 32
 
     // MARK: Initialization
-    @objc(initWithVoiceMessage:)
-    init(voiceMessage: TSAttachment) {
+    @objc(initWithVoiceMessage:isOutgoing:)
+    init(voiceMessage: TSAttachment, isOutgoing: Bool) {
         self.voiceMessage = voiceMessage
+        self.isOutgoing = isOutgoing
         super.init(frame: CGRect.zero)
         initialize()
     }
