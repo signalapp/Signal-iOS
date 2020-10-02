@@ -839,7 +839,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachment);
     OWSAssertDebug([attachment isAudio]);
 
-    LKVoiceMessageView2 *voiceMessageView = [[LKVoiceMessageView2 alloc] initWithVoiceMessage:attachment isOutgoing:self.isOutgoing];
+    LKVoiceMessageView *voiceMessageView = [[LKVoiceMessageView alloc] initWithVoiceMessage:attachment isOutgoing:self.isOutgoing];
     [voiceMessageView setDuration:(int)self.viewItem.audioDurationSeconds];
     [voiceMessageView updateForProgress:self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds];
 
@@ -1065,7 +1065,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMessageWidth, LKVoiceMessageView2.contentHeight);
+            result = CGSizeMake(maxMessageWidth, LKVoiceMessageView.contentHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);

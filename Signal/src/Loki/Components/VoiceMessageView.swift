@@ -1,7 +1,7 @@
 import Accelerate
 
-@objc(LKVoiceMessageView2)
-final class VoiceMessageView2 : UIView {
+@objc(LKVoiceMessageView)
+final class VoiceMessageView : UIView {
     private let voiceMessage: TSAttachment
     private let isOutgoing: Bool
     private var isAnimating = false
@@ -91,7 +91,7 @@ final class VoiceMessageView2 : UIView {
 
     private func setUpViewHierarchy() {
         set(.width, to: 200)
-        set(.height, to: VoiceMessageView2.contentHeight)
+        set(.height, to: VoiceMessageView.contentHeight)
         addSubview(loader)
         loader.pin(to: self)
         layer.insertSublayer(backgroundShapeLayer, at: 0)
@@ -109,9 +109,9 @@ final class VoiceMessageView2 : UIView {
     }
 
     private func animateLoader() {
-        loader.frame = CGRect(x: 0, y: 0, width: 0, height: VoiceMessageView2.contentHeight)
+        loader.frame = CGRect(x: 0, y: 0, width: 0, height: VoiceMessageView.contentHeight)
         UIView.animate(withDuration: 2) { [weak self] in
-            self?.loader.frame = CGRect(x: 0, y: 0, width: 200, height: VoiceMessageView2.contentHeight)
+            self?.loader.frame = CGRect(x: 0, y: 0, width: 200, height: VoiceMessageView.contentHeight)
         } completion: { [weak self] _ in
             guard let self = self else { return }
             if self.isAnimating { self.animateLoader() }

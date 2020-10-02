@@ -24,7 +24,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
-@class LKVoiceMessageView2;
+@class LKVoiceMessageView;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
@@ -99,7 +99,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark - Audio Playback
 
-@property (nonatomic, weak) LKVoiceMessageView2 *lastAudioMessageView;
+@property (nonatomic, weak) LKVoiceMessageView *lastAudioMessageView;
 
 @property (nonatomic, readonly) CGFloat audioDurationSeconds;
 @property (nonatomic, readonly) CGFloat audioProgressSeconds;
