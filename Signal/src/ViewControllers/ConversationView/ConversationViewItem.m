@@ -475,7 +475,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     _audioPlaybackState = audioPlaybackState;
 
-    // No need to update the voice message view here
+    BOOL isPlaying = (audioPlaybackState == AudioPlaybackState_Playing);
+    [self.lastAudioMessageView setIsPlaying:isPlaying];
 }
 
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration

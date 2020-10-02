@@ -15,8 +15,11 @@ final class VoiceMessageView : UIView {
     private var progress: CGFloat = 0
     @objc var delegate: VoiceMessageViewDelegate?
     @objc var duration: Int = 0 { didSet { updateDurationLabel() } }
+    @objc var isPlaying = false { didSet { updateToggleImageView() } }
 
     // MARK: Components
+    private lazy var toggleImageView = UIImageView(image: #imageLiteral(resourceName: "Play"))
+
     private lazy var durationLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
@@ -39,8 +42,10 @@ final class VoiceMessageView : UIView {
     // MARK: Settings
     private let vMargin: CGFloat = 0
     private let sampleSpacing: CGFloat = 1
+    private let toggleContainerSize: CGFloat = 32
+    private let leadingInset: CGFloat = 0
 
-    @objc public static let contentHeight: CGFloat = 32
+    @objc public static let contentHeight: CGFloat = 40
 
     // MARK: Initialization
     @objc(initWithVoiceMessage:isOutgoing:)
@@ -93,6 +98,23 @@ final class VoiceMessageView : UIView {
         set(.height, to: VoiceMessageView.contentHeight)
         layer.insertSublayer(backgroundShapeLayer, at: 0)
         layer.insertSublayer(foregroundShapeLayer, at: 1)
+        let toggleContainer = UIView()
+        toggleContainer.clipsToBounds = false
+        toggleContainer.addSubview(toggleImageView)
+        toggleImageView.set(.width, to: 12)
+        toggleImageView.set(.height, to: 12)
+        toggleImageView.center(in: toggleContainer)
+        toggleContainer.set(.width, to: toggleContainerSize)
+        toggleContainer.set(.height, to: toggleContainerSize)
+        toggleContainer.layer.cornerRadius = toggleContainerSize / 2
+        toggleContainer.backgroundColor = UIColor.white
+        let glowRadius: CGFloat = isLightMode ? 1 : 2
+        let glowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
+        let glowConfiguration = UIView.CircularGlowConfiguration(size: toggleContainerSize, color: glowColor, radius: glowRadius)
+        toggleContainer.setCircularGlow(with: glowConfiguration)
+        addSubview(toggleContainer)
+        toggleContainer.center(.vertical, in: self)
+        toggleContainer.pin(.leading, to: .leading, of: self, withInset: leadingInset)
         addSubview(durationLabel)
         durationLabel.center(.vertical, in: self)
         durationLabel.pin(.trailing, to: .trailing, of: self)
@@ -111,16 +133,17 @@ final class VoiceMessageView : UIView {
     }
 
     private func updateShapeLayers() {
+        clipsToBounds = false // Bit of a hack to do this here, but the containing stack view turns this off all the time
         guard !volumeSamples.isEmpty else { return }
         let sMin = CGFloat(volumeSamples.min()!)
         let sMax = CGFloat(volumeSamples.max()!)
-        let w = width() - durationLabel.width() - Values.smallSpacing
+        let w = width() - leadingInset - toggleContainerSize - durationLabel.width() - 2 * Values.smallSpacing
         let h = height() - 2 * vMargin
         let sW = (w - sampleSpacing * CGFloat(volumeSamples.count - 1)) / CGFloat(volumeSamples.count)
         let backgroundPath = UIBezierPath()
         let foregroundPath = UIBezierPath()
         for (i, value) in volumeSamples.enumerated() {
-            let x = CGFloat(i) * (sW + sampleSpacing)
+            let x = leadingInset + toggleContainerSize + Values.smallSpacing + CGFloat(i) * (sW + sampleSpacing)
             let fraction = (CGFloat(value) - sMin) / (sMax - sMin)
             let sH = max(8, h * fraction)
             let y = vMargin + (h - sH) / 2
@@ -137,5 +160,9 @@ final class VoiceMessageView : UIView {
     private func updateDurationLabel() {
         durationLabel.text = OWSFormat.formatDurationSeconds(duration)
         updateShapeLayers()
+    }
+
+    private func updateToggleImageView() {
+        toggleImageView.image = isPlaying ? #imageLiteral(resourceName: "Pause") : #imageLiteral(resourceName: "Play")
     }
 }
