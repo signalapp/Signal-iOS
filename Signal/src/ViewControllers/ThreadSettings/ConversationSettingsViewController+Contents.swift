@@ -725,9 +725,7 @@ extension ConversationSettingsViewController {
 
                 cell.configure(withRecipientAddress: memberAddress)
 
-                if isGroupAdmin {
-                    cell.setAttributedSubtitle(nil)
-                } else if isVerified {
+                if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
                 } else {
                     cell.setAttributedSubtitle(nil)
