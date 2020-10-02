@@ -233,7 +233,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Atodiad yn wag";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Dewisiwch Gyfryngau i'w Hanfon";
+"ATTACHMENT_HINT" = "Dewis Cyfryngau i'w Hanfon";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Camera";
@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Gweinyddwyr yn Unig";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Dewiswch pwy all ychwanegu aelodau i'r grŵp hwn:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Pob Aelod";
@@ -872,7 +872,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "Bydd %@ yn gallu golygu'r grŵp hwn a'i aelodau.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Gwahoddiadau";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Ceisiadau Aelodaeth & Gwahoddiadau";
@@ -1187,7 +1187,7 @@
 "DISAPPEARING_MESSAGES" = "Negeseuon Byrhoedlog";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Bydd y negeseuon yn y sgwrs hon yn diflannu ar ôl %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Bydd pob neges yn y sgwrs yn diflannu ar ôl %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Pan fydd wedi'i alluogi, bydd negeseuon a anfonir ac a dderbynnir yn y sgwrs hon yn diflannu ar ôl iddynt gael eu gweld.";
@@ -1619,7 +1619,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ni allwch chi ychwanegu defnyddwyr i'r grŵp hwn yn awtomatig. Maen't wedi eu gwahodd, a ni fyddent yn gweld unrhyw negeseuon grŵp nes iddynt dderbyn.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "Gwahoddiadau";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Nid yw'r ddolen grŵp hon yn ddilys bellach.";
@@ -2189,7 +2189,7 @@
 "KEEP_MESSAGES_FOREVER" = "Na fydd negeseuon yn diflannu.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Mynd i Pob Cyfrwng";
+"KEY_COMMAND_ALL_MEDIA" = "Mynd i Holl Gyfryngau";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Archifio'r Sgwrs";
@@ -2297,7 +2297,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Neges";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Pob Cyfrwng";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Holl Gyfryngau";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Camera";
@@ -3989,7 +3989,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Dim Canlyniadau Chwilio";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Wedi'i Rwystro";
+"SETTINGS_BLOCK_LIST_TITLE" = "Wedi'u Rhwystro";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Trosglwyddo Galwadau Bob Amser";

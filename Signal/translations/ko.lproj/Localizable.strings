@@ -200,7 +200,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "첨부 파일";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "다운로드 실패. 다시 시도하려면 탭하세요.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "다운로드에 실패했습니다. 탭하면 다시 시도합니다.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "첨부 파일 보내는 중 오류 발생";
@@ -431,7 +431,7 @@
 "BLUR_TOOLTIP" = "새 기능: 얼굴 또는 그린 곳을 가릴 수 있습니다.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "보기";
+"BROWSE_FILES_BUTTON" = "찾아보기";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "계속";
@@ -461,10 +461,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "다시 걸기";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "음성 통화 수신 중...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 음성 통화 수신 중…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "부재중 음성 통화";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 부재중 음성 통화";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal에서 전화 또는 음성 메시지를 녹음하려면 iOS 설정 앱에서 마이크 접근 권한을 허용해야 합니다.";
@@ -491,13 +491,13 @@
 "CALL_USER_ALERT_TITLE" = "전화하시겠습니까?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "영상 통화 수신 중...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 영상 통화 수신 중…";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "부재중 영상 통화";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 부재중 영상 통화";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "카메라 끄고 통화";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "카메라 끄고 응답";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "응답";
@@ -569,19 +569,19 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal이 iCloud 계정에 접근 후 백업할 수 있는 권한이 없습니다. iOS 설정 앱에서 Signal의 iCloud 계정 접근 권한을 허용해주세요.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this chat.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "이 대화의 송신 메시지 색을 선택하세요.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "오직 나만이 이 색을 볼 수 있습니다.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "대화 색상";
+"COLOR_PICKER_SHEET_TITLE" = "대화 색";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "클립보드로 비교";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
+"COMPOSE_BUTTON_HINT" = "함께 대화를 시작할 Signal 사용자를 선택하거나 검색하세요.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "작성";
@@ -602,7 +602,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS 설정 앱에서 연락처 권한을 허용하면 내 연락처에서 누가 Signal을 사용하고 있는지 알 수 있습니다.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "메시지를 삭제하고 서버에서 등록을 해제합니다. 완료 후 앱은 자동으로 종료됩니다.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "메시지를 삭제하고 서버에서 등록을 해제한 후 애플리케이션을 초기화합니다. 완료 후 앱은 자동으로 종료됩니다.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "계정을 삭제하시겠습니까?";
@@ -683,7 +683,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "조직";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "대화에서 연락처 이름과 사진을 보려면:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "하단 \"설정으로 이동\"을 탭하세요";
@@ -701,7 +701,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "켜기";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your chats.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "대화에서 연락처 이름과 사진을 볼 수 있습니다.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "연락처를 켜시겠습니까?";
@@ -770,7 +770,7 @@
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "다운로드";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "대화는 %@개 이상 선택할 수 없습니다.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "그룹";
@@ -812,7 +812,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "모두";
 
 /* Label indicating that no member can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "비활성화됨";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "꺼짐";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "그룹 이름과 사진, 사라지는 메시지 시간을 수정할 수 있는 사람을 선택하세요.";
@@ -833,7 +833,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "연락처 정보";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "대화 색상";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "대화 색";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "그룹 정보를 수정할 수 있는 사람";
@@ -851,13 +851,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "수정";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "멤버를 추가할 수 있는 사람";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "관리자만";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "이 그룹에 멤버를 추가할 수 있는 사람 선택:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "모든 멤버";
@@ -869,13 +869,13 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "관리자 만들기";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ 님이 이 그룹과 멤버를 수정할 수 있게 됩니다.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "멤버 초대";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "멤버 요청 & 초대";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "멤버 요청 및 초대";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "멤버";
@@ -887,10 +887,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "항상 알림 받기";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "알림을 끈 대화에서 언급 알림 무시";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "알림을 끈 대화에서 언급되면 알림을 받으시겠습니까?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "언급";
@@ -938,7 +938,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ 님을 그룹 관리자 권한으로 제외하시겠습니까?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "대화 검색하기";
+"CONVERSATION_SETTINGS_SEARCH" = "대화 검색";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "그룹 차단 해제";
@@ -980,7 +980,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "메시지 더 가져오는 중…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "더 알아보기";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "더 보기";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "세션을 초기화하면 %@ 님의 메시지를 다시 받을 수 있게 되나, 이미 손상된 메시지는 복구할 수 없습니다.";
@@ -1052,13 +1052,13 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist 링크가 클립보드로 복사되었습니다. 곧 GitHub 이슈 목록으로 이동합니다.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub 제한";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub 리디렉션";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "디버그 로그에 대한 정보";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "이 대화의 모든 메시지를 삭제하시겠습니까?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "대화의 모든 메시지를 삭제하시겠습니까?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "모든 메시지 삭제";
@@ -1130,10 +1130,10 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "계속하면 같은 전화번호로 등록한 다른 모든 기기의 Signal을 비활성화합니다.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "새 기기를 검증할 수 없습니다. 다시 시도해주세요.";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "새 기기를 검증할 수 없습니다. 다시 시도해 주세요.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "이동을 완료할 수 없습니다. 기기들이 서로 가까이 있는지 확인하고 다시 시도해주세요.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "이동을 완료할 수 없습니다. 기기들이 서로 가까이 있는지 확인하고 다시 시도해 주세요.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "이 iPad를 연결하려면 이전 iPad를 스캔해야 합니다";
@@ -1178,7 +1178,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "새 기기를 카메라로 가져오세요";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "두 기기를 가까이 두세요. 모두 켠 상태에서 Signal을 켜두세요.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "두 기기에서 Signal을 실행한 후 서로 가까이 두세요. 기기를 끄지 마세요.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "데이터 이동 중";
@@ -1187,19 +1187,19 @@
 "DISAPPEARING_MESSAGES" = "사라지는 메시지";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%@ 뒤 이 대화의 메시지가 사라집니다.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "이 설정을 켜면, 이 대화에서 주고 받은 메시지가 열람 후 일정 시간 뒤에 사라지게 됩니다.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "현재 메세지들이 %@ 후에 사라집니다.";
+"DISAPPEARING_MESSAGES_HINT" = "현재 메시지가 %@ 후 사라지도록 설정됨";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "사라지는 메시지 설정";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "꺼짐.";
+"DISMISS_BUTTON_TEXT" = "취소";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "검열 우회 위치";
@@ -1241,16 +1241,16 @@
 "EDIT_ITEM_COPY_ACTION" = "복사";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "안녕하세요.\n\n최근 저는 iPhone에서 나눈 대화를 안전하게 지키기 위해 Signal을 사용하고 있습니다. 저와 나눈 대화와 통화를 안전하게 지키고 싶다면 설치를 추천해 드리고 싶습니다.\n\nSignal은 iPhone과 Android에서 이용할 수 있습니다. 여기에서 다운로드하세요. %@\n\nSignal은 기존의 메시지 앱과 다름없이 이용할 수 있습니다. 사진과 비디오를 보내고, 통화하고, 그룹 대화를 나눌 수도 있죠. 가장 중요한 것은, Signal을 만든 사람조차 저희가 나눈 대화를 볼 수 없다는 점입니다.\n\nSignal을 만든 Open Whisper Systems에 대해서 자세히 알아보실 수도 있습니다. %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal로 옮깁시다";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "이 기기에서는 이메일을 보낼 수 있도록 설정되어 있지 않습니다. 지원 요청을 보내려면 이 기기에서 이메일을 보낼 수 있도록 설정하거나, support@signal.org 주소로 이메일을 보내주세요.";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "이메일 이용 불가";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "활동";
@@ -1286,13 +1286,13 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "다른 사람들을 초대해보세요.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "등록 잠금을 적용할 수 없습니다.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "등록 잠금을 켤 수 없습니다.";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "통화 중";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "전화 실패";
+"END_CALL_UNCATEGORIZED_FAILURE" = "전화를 걸 수 없습니다.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "연락처에 접근할 수 없습니다.";
@@ -1304,13 +1304,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "메시지를 보낼 수 없습니다.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "이메일 앱 열 수 없음";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "지원 요청 만들 수 없음";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "로그 업로드 실패함";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "로그 업로드에 실패했습니다.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "사전 키 데이터가 갱신되지 않아 발송에 실패했습니다.";
@@ -1319,7 +1319,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "내가 차단한 사용자에게는 메시지를 보낼 수 없습니다.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal이 인터넷에 연결할 수 없습니다. 다시 시도하세요.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal이 인터넷에 연결할 수 없습니다. 다시 시도해 주세요.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "올바른 수신자가 없어 메시지를 보낼 수 없습니다.";
@@ -1337,7 +1337,7 @@
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "이 기기의 전화번호 등록이 해제되었습니다. Signal을 다시 설치하세요.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "서버에서 오류가 발생했습니다. 나중에 다시 시도하세요.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "서버에서 오류가 발생했습니다. 나중에 다시 시도해 주세요.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "알 수 없는 오류가 발생했습니다.";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "등록되지 않은 사용자: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "설치된 Signal 버전이 만기되었습니다. 여기를 탭하여 최신 버전으로 업데이트하세요.";
+"EXPIRATION_ERROR" = "설치된 Signal 버전이 만료되었습니다! 탭하여 최신 버전으로 업데이트하세요.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "%d일 후 설치된 Signal 버전이 만료됩니다. 탭하여 최신 버전으로 업데이트하세요.";
@@ -1403,7 +1403,7 @@
 "EXPIRATION_WARNING_TODAY" = "설치된 Signal 버전이 오늘 만료됩니다. 탭하여 최신 버전으로 업데이트하세요.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "이 연락처에서 너무 많은 오류가 발생했습니다. 나중에 다시 시도하세요.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "이 연락처에서 너무 많은 오류가 발생했습니다. 나중에 다시 시도해 주세요.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%@ 님과의 안전 번호가 최근 변경되었습니다. 메시지를 보내기 전 안전 번호를 검증해보세요.";
@@ -1427,7 +1427,7 @@
 "FORWARD_MESSAGE" = "메시지 전달";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "이 대화에 미디어가 없습니다.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "새로운 미디어 불러오는 중…";
@@ -1454,7 +1454,7 @@
 "GIF_PICKER_VIEW_TITLE" = "GIF 검색";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "오류 발생. 탭하여 다시 시도하세요.";
+"GIF_VIEW_SEARCH_ERROR" = "오류가 발생했습니다. 탭하면 다시 시도합니다.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "결과가 없습니다.";
@@ -1466,13 +1466,13 @@
 "GO_TO_SETTINGS_BUTTON" = "설정으로 이동";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "현재 Signal 버전에는 데이터베이스 최적화와 성능 개선이 포함되어 있습니다. 앱을 열어 완료하세요.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "이번 Signal 버전에는 데이터베이스 최적화와 성능 개선이 포함되어 있습니다. 앱을 열어 완료하세요.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "데이터베이스 최적화 중";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 정보를 수정할 수 있는 사람을 \"%@\" 님으로 변경했습니다.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "내가 그룹 정보를 수정할 수 있는 사람을 \"%@\" 님으로 변경했습니다.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 정보를 수정할 수 있는 사람을 \"%2$@\" 님으로 변경했습니다.";
@@ -1493,10 +1493,10 @@
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "알 수 없음";
 
 /* Description of the 'unsatisfiable' access level. */
-"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "비활성화됨";
+"GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "꺼짐";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 멤버십을 수정할 수 있는 사람을 \"%@\" 님으로 변경했습니다.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "내가 그룹 멤버십을 수정할 수 있는 사람을 \"%@\" 님으로 변경했습니다.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 멤버십을 수정할 수 있는 사람을 \"%2$@\" 님으로 변경했습니다.";
@@ -1505,109 +1505,109 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "이제 \"%@\" 님이 그룹 멤버십을 변경할 수 있습니다.";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "그룹을 생성했습니다.";
+"GROUP_CREATED_BY_LOCAL_USER" = "내가 그룹을 생성했습니다.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹에 초대했습니다.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ 님이 나를 그룹에 초대했습니다.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "그룹이 생성되었습니다.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "모든 멤버를 그룹에 추가할 수 없습니다. 탭하여 다시 시도하세요.";
+"GROUP_CREATION_FAILED" = "모든 멤버를 그룹에 추가할 수 없습니다. 탭하면 다시 시도합니다.";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "잘못된 초대를 추가했습니다.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "내가 잘못된 초대를 추가했습니다.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "내가 잘못된 초대를 추가했습니다.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ 님이 잘못된 초대를 추가했습니다.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ 님이 잘못된 초대를 추가했습니다.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "잘못된 초대가 추가되었습니다.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "잘못된 초대가 취소되었습니다.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "내가 잘못된 초대를 취소했습니다.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "내가 잘못된 초대를 취소했습니다.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ 님이 잘못된 초대를 취소했습니다.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ 님이 잘못된 초대를 취소했습니다.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "잘못된 초대가 취소되었습니다.";
 
 /* Message indicating that the group invite link was disabled. */
 "GROUP_INVITE_LINK_DISABLED" = "그룹 링크가 꺼졌습니다.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "그룹 링크를 껐습니다.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "내가 그룹 링크를 껐습니다.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@가 그룹 링크를 껐습니다.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 링크를 껐습니다.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "그룹 링크가 켜졌습니다. (관리자 참가 승인 필요)";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "내가 그룹 링크를 켰습니다. (관리자 참가 승인 필요)";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 링크를 켰습니다. (관리자 참가 승인 필요)";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "그룹 링크가 켜졌습니다. (관리자 참가 승인 불필요)";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "내가 그룹 링크를 켰습니다. (관리자 참가 승인 불필요)";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 링크를 켰습니다. (관리자 참가 승인 불필요)";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "그룹 링크 초기화";
+"GROUP_INVITE_LINK_RESET" = "그룹 링크가 초기화되었습니다.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "그룹 링크를 재설정했습니다.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "내가 그룹 링크를 초기화했습니다.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@가 그룹 링크를 재설정했습니다.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 링크를 초기화했습니다.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "그룹 링크 관리자 참가 승인 기능이 꺼졌습니다.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "내가 그룹 링크 관리자 참가 승인 기능을 껐습니다.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 링크 관리자 참가 승인 기능을 껐습니다.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "그룹 링크 관리자 참가 승인 기능이 켜졌습니다.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "내가 그룹 링크 관리자 참가 승인 기능을 켰습니다.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 링크 관리자 참가 승인 기능을 켰습니다.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ 님을 자동으로 그룹에 추가할 수 없습니다. 참가 초대는 받았지만, 수락할 때까지 그룹 메시지를 볼 수 없습니다.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ 님을 그룹에 자동으로 추가할 수 없습니다. 참가 초대는 보내졌으나 상대는 이를 수락할 때까지 그룹 메시지를 볼 수 없습니다.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "초대 보냄";
@@ -1616,61 +1616,61 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "초대 %@개 보냄";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "사용자를 자동으로 그룹에 추가할 수 없습니다. 참가 초대는 받았지만, 수락할 때까지 그룹 메시지를 볼 수 없습니다.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "사용자들을 그룹에 자동으로 추가할 수 없습니다. 참가 초대는 보내졌으나 상대는 이를 수락할 때까지 그룹 메시지를 볼 수 없습니다.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "멤버 초대";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "그룹 링크가 유효하지 않습니다.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "그룹 링크가 더 이상 유효하지 않습니다.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "그룹에 참가할 수 없습니다.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "그룹에 참가할 수 없음";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "그룹";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "참가하기";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "참가";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "불러오는 중…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "그룹에 참가하고 그룹 멤버에게 내 이름과 사진을 공유하시겠습니까?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "온라인인지 확인한 후 다시 시도하세요.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "온라인인지 확인한 후 다시 시도해 주세요.";
 
 /* Error message the attempt to request to join the group failed. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "다시 시도해 주세요.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "그룹 링크가 올바르지 않습니다. 링크가 정확한지 확인해보세요.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "잘못된 링크";
 
 /* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link is no longer valid";
+"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "링크가 더 이상 유효하지 않음";
 
 /* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "그룹에 참여하기";
+"GROUP_LINK_JOIN_GROUP_BUTTON" = "그룹 참가";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "이 그룹에 참가하려면 이 기기의 Signal을 업데이트하세요.";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "이 코드를 스캔한 사람들이 내 그룹에 참가할 수 있게 됩니다. 이 설정을 켠 경우 관리자는 멤버 참가를 일일이 승인해야 합니다.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "코드 공유하기";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "코드 공유";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR 코드";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "새 멤버 승인";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "링크 복사";
@@ -1682,7 +1682,7 @@
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "관리 및 공유";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "그룹 링크로 참가하려는 새 멤버를 승인하려면 관리자 권한이 필요합니다.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "멤버 요청";
@@ -1691,7 +1691,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "링크 초기화";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "그룹 링크를 초기화하시겠습니까? 이 링크로 사람들이 그룹에 참가할 수 없게 됩니다.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "공유";
@@ -1703,52 +1703,52 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR 코드";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "시그널로 공유하기";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal로 공유";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "이 링크를 가지고 있는 모두가 그룹에 참가하거나 참가 요청을 보낼 수 있습니다. 믿을 수 있는 사람들에게 공유하세요.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "그룹 링크";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ 님이 추가했습니다.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ 님이 나를 추가했습니다.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "관리자가 되었습니다.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "내가 관리자가 되었습니다.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ 님이 관리자로 지정했습니다.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ 님이 나를 관리자로 지정했습니다.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "그룹 초대를 수락하였습니다.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "내가 그룹 초대를 수락했습니다.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "%@ 님이 보낸 그룹 초대를 수락했습니다.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "내가 %@ 님이 보낸 그룹 초대를 수락했습니다.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "그룹 초대를 거절했습니다.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "내가 그룹 초대를 거절했습니다.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "%@ 님이 보낸 그룹 초대를 거절했습니다.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "내가 %@ 님이 보낸 그룹 초대를 거절했습니다.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 초대를 파기했습니다.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ 님이 내 그룹 초대를 취소했습니다.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "그룹 초대가 파기되었습니다.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "내 그룹 초대가 취소되었습니다.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ 님이 초대했습니다.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ 님이 나를 초대했습니다.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "그룹에 초대되었습니다.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "내가 그룹에 초대되었습니다.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "그룹에 참가하였습니다.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "내가 그룹에 참가했습니다.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "그룹 링크를 통해 그룹에 참가하였습니다.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "내가 그룹 링크로 그룹에 참가했습니다.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ 님이 나를 제외했습니다.";
@@ -1757,22 +1757,22 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "그룹에서 제외되었습니다.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ 님이 내 그룹 참가 요청을 승인했습니다.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "내 그룹 참가 요청을 취소했습니다.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "내 그룹 참가 요청이 거절되었습니다.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "그룹 참가 요청을 보냈습니다.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "관리자 권한이 파기되었습니다.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "내 관리자 권한이 취소되었습니다.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@이(가) 당신의 관리자 권한을 파기하였습니다.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ 님이 내 관리자 권한을 취소했습니다.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "관리자";
@@ -1808,25 +1808,25 @@
 "GROUP_MEMBERS_VIDEO_CALL" = "영상 통화";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "그룹 이름(필수)";
+"GROUP_NAME_PLACEHOLDER" = "그룹 이름 (필수)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ 님이 그룹 초대를 수락했습니다.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ 님이 그룹 초대를 수락했습니다.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ 님이 내 그룹 초대를 수락했습니다.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ 님의 %2$@ 님의 그룹 초대를 수락했습니다.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님의 그룹 초대를 수락했습니다.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "%@를 추가했습니다.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "내가 %@ 님을 추가했습니다.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@가 %2$@를 추가했습니다.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님을 추가했습니다.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@가 그룹에 추가되었습니다.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ 님이 그룹에 추가되었습니다.";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "사용자 한 명이 그룹 초대를 거절하였습니다.";
@@ -1838,34 +1838,34 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@이(가) 당신의 그룹 초대를 거절하였습니다.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@이(가) 관리자로 지정되었습니다.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ 님이 관리자가 되었습니다.";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "%@을(를) 관리자로 지정하였습니다.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "내가 %@ 님을 관리자로 지정했습니다.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@이(가) %2$@을(를) 관리자로 지정하였습니다.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님을 관리자로 지정했습니다.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1명의 그룹 초대가 파기되었습니다.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1명의 그룹 초대가 취소되었습니다.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%@명의 그룹 초대가 파기되었습니다.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%@명의 그룹 초대가 취소되었습니다.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ 님이 1명의 그룹 초대를 파기했습니다.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ 님이 1명의 그룹 초대를 취소했습니다.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ 님이 %2$@명의 그룹 초대를 파기했습니다.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ 님이 %2$@명의 그룹 초대를 취소했습니다.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "%@명의 그룹 초대가 파기되었습니다.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "%@명의 그룹 초대가 취소되었습니다.  ";
 
 /* Message indicating that a single remote user was invited to the group. */
 "GROUP_REMOTE_USER_INVITED_1" = "사용자 한 명이 그룹에 초대되었습니다.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ 님이 그룹에 초대되었습니다.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "%@을(를) 그룹에 초대하였습니다.";
@@ -1883,7 +1883,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ 님이 그룹에 참가했습니다.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ 님이 그룹 링크로 그룹에 참가했습니다.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ 님이 그룹에서 나갔습니다.";
@@ -1895,46 +1895,46 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님을 제외했습니다.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "%@ 님의 그룹 참가 요청을 승인했습니다.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ 님이 %1$@ 님의 그룹 참가 요청을 승인했습니다.";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "%@ 님의 그룹 참가 요청이 승인되었습니다.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ 님이 그룹 참가 요청을 취소했습니다.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "내가 %@ 님의 그룹 참가 요청을 거절했습니다.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ 님이 %1$@ 님의 그룹 참가 요청을 거절했습니다.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ 님의 그룹 참가 요청이 거절되었습니다.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ 님이 그룹 링크를 통해 그룹 참가를 요청했습니다.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ 님이 관리자 권한을 파기했습니다.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ 님의 관리자 권한이 취소되었습니다.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "%@ 님의 관리자 권한을 파기했습니다.  ";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "내가 %@ 님의 관리자 권한을 취소했습니다.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님의 관리자 권한을 파기했습니다.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님의 관리자 권한을 취소했습니다.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "멤버 요청";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "대기중인 초대";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "대기 중인 초대";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "멤버 요청 & 초대";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "멤버 요청 및 초대";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "그룹 업데이트됨.";
@@ -2003,40 +2003,40 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ 차단";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "구형 그룹은 새로운 그룹 기능들(관리자, 더욱 자세한 그룹 관리 등)을 이용할 수 없습니다.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "What are Legacy Groups?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "구형 그룹은 무엇인가요?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "아직 구형 그룹을 새로운 그룹으로 업그레이드할 수는 없지만, 그룹 멤버가 모두 최신 버전의 Signal을 사용하고 있다면 새로운 그룹을 만들 수도 있습니다.\n\n향후 Signal에서 구형 그룹을 업그레이드하는 방법을 준비할 예정입니다.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "구형 그룹을 업그레이드할 수 있나요?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "새 형태의 그룹을 만드려면 모든 멤버가 최신 버전의 Signal로 업데이트해야 합니다.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. New Groups";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "구형 그룹과 새로운 그룹의 차이점";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "멤버 1명이 구 버전의 Signal을 사용하고 있기에 구형 그룹이 만들어졌습니다. 해당 멤버가 Signal을 업데이트하면 새로운 모습의 그룹을 만들 수 있습니다. 또는, 그룹을 만들기 전에 해당 멤버를 제외할 수도 있습니다.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "멤버 %@명이 구 버전의 Signal을 사용하고 있기에 구형 그룹이 만들어졌습니다. 해당 멤버가 Signal을 업데이트하면 새로운 모습의 그룹을 만들 수 있습니다. 또는, 그룹을 만들기 전에 해당 멤버를 제외할 수도 있습니다.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "멤버 1명이 새 그룹 기능을 지원하지 않습니다. 이 그룹은 구형 그룹으로 유지됩니다. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "멤버 %1$@명이 새 그룹 기능을 지원하지 않습니다. 이 그룹은 구형 그룹으로 유지됩니다. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "이 그룹은 구형 그룹입니다. 그룹 관리자 같은 기능들은 새로운 그룹에서만 이용할 수 있습니다. %@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "구형 그룹";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "더 알아보기";
@@ -2081,7 +2081,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "여기서 첫 대화를 시작하세요.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ 님이 그룹에 추가했습니다.";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ 님이 나를 그룹에 추가했습니다.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "메시지 요청";
@@ -2129,10 +2129,10 @@
 "IN_CALL_RINGING" = "발신 중…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "음성 통화...";
+"IN_CALL_RINGING_AUDIO" = "음성 통화…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "영상 통화...";
+"IN_CALL_RINGING_VIDEO" = "영상 통화…";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "응답함. 보안 처리 중…";
@@ -2141,19 +2141,19 @@
 "IN_CALL_TERMINATED" = "통화 종료됨";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "이 대화들은 보관 처리되었으며 새 메시지를 받을 때에만 받은 메시지에 표시됩니다.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "외로워 보이네요. 친구들과 이야기를 나눠보면 어떨까요?";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "수신 전화 : \"%@\"";
+"INCOMING_CALL_FORMAT" = "%@ 님의 전화";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "휴대전화 또는 iPad에서 동기화된 메시지를 보내거나 받을 수 있습니다.\n보안을 위해 대화 기록은 새로 연결하는 기기로 전송되지 않습니다.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ 이 Signal 에 연결되어 있습니다.";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ 님이 Signal에 가입했습니다!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "스티커";
@@ -2177,7 +2177,7 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "검색";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "친구들 초대";
+"INVITE_FRIENDS_PICKER_TITLE" = "친구 초대";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "여러 사용자를 동시에 초대하게 된다면 수신자들이 서로를 볼 수 있는 그룹 메시지를 시작하게 됩니다.";
@@ -2201,7 +2201,7 @@
 "KEY_COMMAND_CONVERSATION_INFO" = "대화 정보로 이동";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "입력 바 활성화";
+"KEY_COMMAND_FOCUS_COMPOSER" = "입력 바 포커스";
 
 /* A keyboard command to open the current conversations GIF picker. */
 "KEY_COMMAND_GIF_SEARCH" = "GIF 검색으로 이동";
@@ -2228,7 +2228,7 @@
 "KEY_COMMAND_STICKERS" = "스티커 표시";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "보관 취소한 대화";
+"KEY_COMMAND_UNARCHIVE" = "대화 보관 취소";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "더 알아보기";
@@ -2249,10 +2249,10 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "기기 연결 실패";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "이 기기에서 내 그룹과 연락처를 보고, 대화에 접근하고, 내 명의로 메시지를 보낼 수 있습니다.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "해당 기기를 연결하시겠습니까?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "이 기기를 연결하시겠습니까?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "재시도";
@@ -2276,13 +2276,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "기기 연결 실패";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "이제 모든 사이트에서 링크 미리보기를 생성합니다.";
 
 /* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "비활성화";
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "끄기";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "모든 링크 미리보기";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "이름, 주소로 검색";
@@ -2333,7 +2333,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "모두에게서 삭제";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the chat. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "이 메시지가 대화에 참가한 모든 이들에게서 삭제됩니다. 멤버는 내가 메시지를 삭제했다는 것을 볼 수 있습니다.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "이 메시지를 누구에게서 삭제하시겠습니까?";
@@ -2390,7 +2390,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "보냄";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "건너뛰어짐";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "건너뜀";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "업로드 중";
@@ -2399,13 +2399,13 @@
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "메시지에 내용 또는 첨부 파일이 없습니다.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "받은 시간:";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "받은 시간";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENDER" = "발신자";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "보낸 시간:";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "보낸 시간";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "파일명";
@@ -2417,7 +2417,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "차단";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "차단하고 삭제하기";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "차단 후 삭제";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "차단한 사용자는 나에게 전화 또는 메시지를 보낼 수 없습니다.";
@@ -2429,13 +2429,13 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "이 그룹에서 나가게 되며 메시지 또는 새 소식을 받을 수 없게 됩니다.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%@을(를) 차단하고 나가겠습니까?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%@ 그룹을 차단하고 나가시겠습니까?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "삭제";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "이 대화는 당신의 모든 기기에서 삭제됩니다.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "내 모든 기기에서 이 대화가 삭제됩니다.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "대화를 삭제하시겠습니까?";
@@ -2444,7 +2444,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "삭제하고 나가기";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "이 그룹에서 나가게 되며 모든 기기에서 삭제될 것입니다.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "이 그룹에서 나가게 되며, 내 모든 기기에서 이 그룹이 삭제됩니다.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "그룹을 삭제하고 나가시겠습니까?";
@@ -2462,28 +2462,28 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "이 그룹을 차단 해제하고 그룹 멤버에게 내 이름과 사진을 공유하시겠습니까? 차단을 해제하기 전까지는 메시지를 받지 않습니다.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "이 그룹을 차단 해제하시겠습니까? 차단을 해제하기 전까지 상대는 내가 메시지를 보았는지 알 수 없습니다.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "삭제";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your chat with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@ 님과 대화를 계속하려면 프로필을 공유해야 합니다.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your chat with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "이 그룹과 대화를 계속하려면 프로필을 공유해야 합니다.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ 님이 그룹에 초대했습니다. 그룹 멤버들이 메시지를 보내도록 허용하시겠습니까?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ 님이 나를 이 그룹에 초대했습니다. 그룹 멤버들이 나에게 메시지를 보낼 수 있도록 허용하시겠습니까?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ 님에게 내 이름과 사진을 공유하고 메시지를 보내도록 하시겠습니까? 수락하기 전까지 상대방은 내가 메시지를 봤는지 알 수 없습니다.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ 님에게 내 이름과 사진을 공유하고 메시지를 보내도록 허용하시겠습니까? 수락하기 전까지 상대는 내가 메시지를 보았는지 알 수 없습니다.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "이 그룹에 참가하고 내 이름과 사진을 멤버와 공유하시겠습니까? 수락하기 전까지 상대방은 내가 메시지를 봤는지 알 수 없습니다.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "이 그룹에 참가하고 내 이름과 사진을 멤버와 공유하시겠습니까? 수락하기 전까지 상대는 내가 메시지를 보았는지 알 수 없습니다.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "이 그룹에 참가하시겠습니까? 수락하기 전까지 상대는 내가 메시지를 보았는지 알 수 없습니다.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "프로필 공유";
@@ -2495,10 +2495,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "요청 취소하기";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "그룹 참가 신청을 취소하시겠습니까?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "내 참가 요청을 그룹 관리자에게 보냈습니다. 관리자가 조치를 취할 때 알림을 받게 됩니다.";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "메시지 요청을 소개합니다";
@@ -2507,7 +2507,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "프로필 이름 추가";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "새 대화를 \"수락\" 또는 \"삭제\"할 수 있습니다. 다른 사람들에게 내가 누구인지 이름으로 알려보세요.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "내 프로필 이름이 저장되었습니다.";
@@ -2591,10 +2591,10 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "더 이상 기기를 연결할 수 없습니다.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "계정과 연결할 수 있는 최대 기기 수에 도달했습니다. 기기를 제거하고 다시 시도하세요.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "계정과 연결할 수 있는 최대 기기 수에 도달했습니다. 기기를 제거하고 다시 시도해 주세요.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "알림을 끈 대화에서는 알림을 받을 수 없습니다.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "알림 끄기";
@@ -2603,7 +2603,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "건너뛰기";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "온라인인지 확인한 후 다시 시도하세요.";
+"NETWORK_ERROR_RECOVERY" = "온라인인지 확인한 후 다시 시도해 주세요.";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "전화번호로 찾기";
@@ -2621,7 +2621,7 @@
 "NEW_GROUP_CREATION_FAILED" = "새 그룹을 생성할 수 없습니다.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "새 그룹을 생성할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "새 그룹을 생성할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "그룹 이름을 입력하세요.";
@@ -2798,16 +2798,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "권한 활성화";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new chat activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "알림을 통해 메시지가 온 시간, 그리고 새 대화 활동에 관한 소식들을 받을 수 있습니다.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "메시지 수신";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "%@ 휴대전화 번호로 나를 찾을 수 있는 사람들을 선택하세요";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "내 번호로 나를 찾을 수 있는 사람";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "시작하려면 전화번호를 입력하세요";
@@ -2906,13 +2906,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "그룹에 추가";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\" 님을 그룹에 추가하시겠습니까?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "요청 거절하기";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\" 님의 초대를 거부하시겠습니까?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ 님이 1명을 초대했습니다.";
@@ -2927,10 +2927,10 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "표시할 초대가 없습니다.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%@\" 님을 추가했습니다.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pending member requests.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "대기 중인 멤버 요청 %@개";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "요청 보기";
@@ -2939,34 +2939,34 @@
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "거절됨 : \"%@\"";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "잘못된 초대 취소";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "잘못된 초대 %@개 취소";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "초대 파기";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "초대 취소";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "'%@' 님이 보낸 그룹 초대를 파기하시겠습니까?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" 님이 보낸 그룹 초대를 취소하시겠습니까?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "'%2$@' 님이 보낸 초대 %1$@개를 파기하시겠습니까?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "\"%2$@\" 님이 보낸 그룹 초대 %1$@개를 취소하시겠습니까?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "초대 파기";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "초대 취소";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "'%@' 님에 대한 그룹 초대를 파기하시겠습니까?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" 님에게 보내는 그룹 초대를 취소하시겠습니까?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "다른 그룹 멤버들이 초대한 사람들의 세부정보는 표시되지 않습니다. 초대된 사람이 그룹에 참가한다면 해당인의 정보가 그룹에 즉시 공유됩니다. 초대된 사람은 참가할 때까지 그룹 내 메시지를 볼 수 없습니다.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "그룹 링크로 \"%@\"에 참가하려는 사람들의 목록입니다.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "잘못된 초대";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "다른 그룹 멤버들이 보낸 초대";
@@ -3005,13 +3005,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "모두에게";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "내 휴대전화 번호를 연락처로 가지고 있는 모든 사람들이 나를 Signal 연락처에서 볼 수 있습니다. 다른 사람들은 나를 검색으로 찾아볼 수 있습니다.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "아무도";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal을 이용하는 모두가 내 휴대전화 번호를 통해 나를 찾아볼 수 없습니다. 내 휴대전화 번호를 연락처로 가지고 있는 사람 또한 연락처에서 나를 볼 수 없으며, 다른 사람들 또한 휴대전화 번호 검색을 통하여 나를 찾을 수 없습니다.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "예시: %@";
@@ -3020,13 +3020,13 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "내 연락처";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "내 연락처에 있는 사람만 Signal에서 나를 볼 수 있습니다.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "모두에게";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "내가 메시지를 보낸 사람 또는 그룹에 내 휴대전화 번호가 보이게 됩니다. 내 번호를 휴대전화 연락처에 가지고 있는 사람 또한 Signal에서 나를 볼 수 있습니다.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "아무도";
@@ -3107,7 +3107,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "PIN 비활성화";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "PIN을 끌 경우, 또다른 iOS 기기에서 이동하지 않은 채로 Signal에 재등록할 때 모든 데이터를 잃어버리게 됩니다. PIN이 꺼져 있을 때에는 등록 잠금을 켤 수 없습니다.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "경고";
@@ -3119,13 +3119,13 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN 생성 실패";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN 번호는 Signal에 저장된 정보를 암호화하여 오직 나만 접근할 수 있게 만듭니다. 내 프로필, 설정, 그리고 연락처는 Signal을 다시 설치할 때 복원됩니다.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "PIN에 대해 더 알아보기";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PIN이 일치하지 않습니다. 다시 시도하세요.";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN이 일치하지 않습니다. 다시 시도해 주세요.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN은 최소 4자리입니다";
@@ -3146,7 +3146,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "끄기";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "PIN을 끄기 전 먼저 등록 잠금부터 꺼야 합니다.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "등록 잠금을 끄시겠습니까?";
@@ -3161,7 +3161,7 @@
 "PIN_CREATION_WEAK_ERROR" = "더 강력한 PIN 선택";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "지금은 PIN을 끌 수 없습니다. 나중에 다시 알려드리겠습니다.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN 비활성화 실패";
@@ -3194,7 +3194,7 @@
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "일주일 후 다시 알려드리겠습니다.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "잘못된 PIN입니다. 다시 시도하세요.";
+"PIN_REMINDER_MISMATCH_ERROR" = "잘못된 PIN입니다. 다시 시도해 주세요.";
 
 /* The title for the 'pin reminder' dialog. */
 "PIN_REMINDER_TITLE" = "Signal PIN 입력";
@@ -3224,7 +3224,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN을 만들었습니다. 설정에서 변경할 수 있습니다.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN 비활성화 됨";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN이 꺼졌습니다.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "미디어 재생";
@@ -3242,13 +3242,13 @@
 "PRIVACY_TAP_TO_SCAN" = "탭하여 스캔";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "인증 삭제";
+"PRIVACY_UNVERIFY_BUTTON" = "검증 초기화";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "%@ 님의 안전 번호가 달라 보입니다. 올바른 연락처로 검증하셨나요?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "클립보드에 있는 번호가 이 대화의 안전 번호와 일치하지 않습니다.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal이 클립보드에서 안전 번호를 찾을 수 없습니다. 올바르게 복사하셨나요?";
@@ -3275,13 +3275,13 @@
 "PRIVACY_VERIFY_BUTTON" = "검증으로 표시";
 
 /* No comment provided by engineer. */
-"PROCEED_BUTTON" = "진행하다";
+"PROCEED_BUTTON" = "진행";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ 님이 프로필 이름을 %@에서 %@(으)로 바꾸었습니다.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ 님이 프로필 이름을 %@(으)로 바꾸었습니다. ";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "프로필 사진 설정";
@@ -3302,7 +3302,7 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "이름이 너무 깁니다.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(선택 사항)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(선택)";
 
 /* Label for the family name field of the profile view. */
 "PROFILE_VIEW_FAMILY_NAME_FIELD" = "성";
@@ -3317,7 +3317,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "프로필은 인터넷에 연결됐을 때만 업데이트할 수 있습니다.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new chats, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "프로필은 단대단 암호화됩니다. 새로운 대화를 시작하거나 수락할 때, 새 그룹에 참가할 때, 그리고 내 연락처에게 내 프로필 및 프로필 변경사항이 표시됩니다.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "저장";
@@ -3356,7 +3356,7 @@
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "메시지 원본을 찾을 수 없습니다.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "메시지 원본에 더 이상 액세스할 수 없습니다.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "메시지 원본을 더 이상 이용할 수 없습니다.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "메시지 원본을 찾을 수 없습니다.";
@@ -3377,7 +3377,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "동영상";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "모든 %@";
+"REACTION_DETAIL_ALL_FORMAT" = "모두 · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "내 메시지에 %@ 이모지로 반응함";
@@ -3464,13 +3464,13 @@
 "REGISTER_CONTACTS_WELCOME" = "환영합니다!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "다시 시도해 보세요.";
+"REGISTER_FAILED_TRY_AGAIN" = "다시 시도";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "너무 많이 시도하셨습니다. 잠시 후 다시 시도하세요.";
+"REGISTER_RATE_LIMITING_BODY" = "너무 많이 시도하셨습니다. 몇 분 후 다시 시도해 주세요.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "너무 많이 시도하셨습니다. 잠시 후 다시 시도하세요.";
+"REGISTER_RATE_LIMITING_ERROR" = "너무 많이 시도하셨습니다. 몇 분 후 다시 시도해 주세요.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "푸시 알림 재등록에 실패했습니다.";
@@ -3482,7 +3482,7 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "번호 입력";
 
 /* No comment provided by engineer. */
-"REGISTRATION_ERROR" = "등록 오류!";
+"REGISTRATION_ERROR" = "등록 오류";
 
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "보내드린 코드를 확인하기 전까진 계정을 활성화할 수 없습니다.";
@@ -3521,7 +3521,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "거절";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "등록하려는 전화번호가 다른 서버에 등록되어 있습니다. 다른 서버에서 등록 해제한 후 다시 시도하세요.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "등록하려는 전화번호가 이미 다른 서버에 등록되어 있습니다. 다른 서버에서 등록을 해제한 후 다시 시도해 주세요.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "새 관리자 선택";
@@ -3530,34 +3530,34 @@
 "REREGISTER_FOR_PUSH" = "푸시 알림 재등록";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "Signal을 세계 최고의 메시징 앱으로 만드려면 당신의 피드백이 필요합니다.";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "당신이 생각한 것을 시그널에 말해주세요.";
+"RESEARCH_MEGAPHONE_TITLE" = "Signal에게 의견을 알려주세요";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "설문은 Surveygizmo에서 주최하며 surveys.signalusers.org 보안 도메인으로 접속하실 수 있습니다.";
 
 /* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "아니요";
+"RESEARCH_MODAL_NO_THANKS" = "괜찮습니다";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>개인정보를 중요하게 여깁니다.</bold>\n\nSignal은 여러분의 정보를 추적하거나 수집하지 않습니다. Signal을 더욱 나은 모습으로 만들기 위해서 저희는 사용자의 의견을 듣고 있습니다. <bold>여러분의 피드백은 중요하니까요</bold>.\n\n사용자가 어떻게 Signal을 이용하는지 알기 위해 저희는 설문을 진행하고 있습니다. 설문에서는 개인을 특정하는 그 어떤 정보도 수집하지 않습니다. 추가적인 의견을 전달하고 싶으신 분들을 위해 연락처를 남길 수 있는 공간 또한 마련해두었습니다.\n\n설문에 참여하실 수 있으신가요? 당신의 의견을 듣고 싶습니다.";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "설문조사하기";
+"RESEARCH_MODAL_TAKE_SURVEY" = "설문조사로 이동";
 
 /* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal 검색";
+"RESEARCH_MODAL_TITLE" = "Signal 리서치";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "재시도";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "그룹에 계속 추가";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "무시하고 그룹에 추가";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "계속 전화";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "무시하고 전화";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "무시하고 보내기";
@@ -3596,7 +3596,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "인증에 실패하였습니다.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "인증 시도가 너무 많습니다. 나중에 다시 시도하세요.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "인증 실패 횟수가 너무 많습니다. 나중에 다시 시도해 주세요.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "화면 잠금을 사용하려면 iOS 설정에서 암호를 켜야 합니다.";
@@ -3779,7 +3779,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "지원되지 않는 버전";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "다른 기기에서 iPad QR 코드를 지원하지 않는 Signal 레거시 버전을 실행하고 있습니다. 최신 Signal 버전을 설치한 후 다시 시도해주세요.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "다른 기기에서 iPad QR 코드를 지원하지 않는 Signal 구 버전을 실행하고 있습니다. 최신 Signal 버전을 설치한 후 다시 시도해 주세요.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "스캔 기기 업데이트";
@@ -3836,13 +3836,13 @@
 "SEND_AGAIN_BUTTON" = "다시 보내기";
 
 /* Label for the button to send a message */
-"SEND_BUTTON_TITLE" = "발신";
+"SEND_BUTTON_TITLE" = "보내기";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "메세지 전송에 실패하였습니다.";
+"SEND_FAILED_NOTIFICATION_BODY" = "메세지 보내기에 실패하였습니다.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "초대 전송 실패, 나중에 다시 시도해주십시오.";
+"SEND_INVITE_FAILURE" = "초대 보내기에 실패했습니다. 나중에 다시 시도해 주세요.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "당신은 친구가 Signal를 사용할 수 있도록 초대하였습니다!";
@@ -3875,7 +3875,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "위치 : %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "기능이 활성화 될 경우, Signal은 검열 우회를 시도합니다. Signal이 검열 당하는 지역이 아니라면 검열 우회 기능을 활성화 하지 마십시오.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "이 기능을 켠다면 Signal이 검열 우회를 시도합니다. Signal이 검열된 곳이 아니라면 이 기능을 켜지 마십시오.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "검열 우회가 계정의 휴대전화에서 활성화되습니다.";
@@ -3980,7 +3980,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "차단한 사용자 추가";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "내가 차단한 연락처와 그룹의 목록입니다.";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal에 연락처가 없습니다.";
@@ -4013,7 +4013,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "모든 기록(첨부 파일, 전화 등)을 삭제하시겠습니까? 되돌릴 수 없습니다.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "모든 자료를 삭제합니다";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "모두 삭제";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "시그널에 기부하기";
@@ -4043,16 +4043,16 @@
 "SETTINGS_LINK_PREVIEWS" = "링크 미리보기 생성";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "보내는 메시지에 포함된 웹사이트의 링크 미리보기를 함께 첨부합니다.";
 
 /* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Messaging";
+"SETTINGS_MESSAGING" = "메시징";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "설정";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "알림이 꺼진 대화 포함";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "배지 숫자";
@@ -4124,7 +4124,7 @@
 "SETTINGS_READ_RECEIPT" = "읽은 메시지";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "메시지 열람 여부 상태를 보거나 공유할 수 있습니다. 이 설정은 선택 가능하며, 모든 대화에 적용됩니다.";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "끄기";
@@ -4184,7 +4184,7 @@
 "SETTINGS_TYPING_INDICATORS" = "입력 안내";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "메시지 입력 여부 상태를 보거나 공유할 수 있습니다. 이 설정은 선택 가능하며, 모든 대화에 적용됩니다.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "발신자 암호화";
@@ -4205,7 +4205,7 @@
 "SETTINGS_VERSION" = "버전";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can...";
+"SETTINGS_WHO_CAN" = "나를 볼 수 있는 사람";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "메일";
@@ -4322,7 +4322,7 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "무슨 일이 일어났는지 알려주세요.";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "support@signal.org 이메일 주소로 지원 요청을 보내주세요.";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS 지원 요청";
@@ -4334,10 +4334,10 @@
 "SUPPORT_FAQ_PROMPT" = "아직 FAQ를 읽지 않으셨나요? ";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "디버그 로그 포함";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "로드 중";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "불러오는 중";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "꺼짐";
@@ -4355,7 +4355,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ 및 그룹 %lu개의 멤버";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "이 대화에서는 스스로 메모를 남길 수 있습니다. 내 계정에 연결된 기기 또한 새 메모가 같이 동기화됩니다.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@의 멤버 ";
@@ -4367,7 +4367,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ 및 %@의 멤버";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@일째";
+"TIME_AMOUNT_DAYS" = "%@일";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@일";
@@ -4391,7 +4391,7 @@
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@초";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ 일";
+"TIME_AMOUNT_SINGLE_DAY" = "%@일";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_HOUR" = "%@시간";
@@ -4454,10 +4454,10 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "최신 Signal 버전으로 업데이트되었습니다. 이제 내 기기에서 해당 메시지 유형을 수신할 수 있습니다.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "이제 최신 Signal 버전을 사용하고 있으므로 %@님에게 메시지를 다시 보내라고 요청할 수 있습니다.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "이제 최신 버전의 Signal을 이용하고 계시네요. %@ 님에게 다시 메시지를 보내달라고 요청해보세요.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "이제 최신 Signal 버전을 사용하고 있으므로 발신자에게 메시지를 다시 보내라고 요청할 수 있습니다.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "이제 최신 버전의 Signal을 이용하고 계시네요. 발신자에게 다시 메시지를 보내달라고 요청해보세요.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "알 수 없음";
@@ -4478,7 +4478,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "기기가 연결 해제되면 더 이상 메시지를 보내거나 받을 수 없게 됩니다.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "'%@' 님을 연결 해제하시겠습니까?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" 기기의 연결을 해제하시겠습니까?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "기기가 더 이상 연결되지 않습니다. 메시지를 계속 보내려면 휴대전화를 Signal에 다시 연결하세요.";
@@ -4490,7 +4490,7 @@
 "UNNAMED_DEVICE" = "이름 없는 기기";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "고정 취소하기";
+"UNPIN_ACTION" = "고정 취소";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "대화";
@@ -4505,7 +4505,7 @@
 "UNSUPPORTED_ATTACHMENT" = "지원되지 않는 첨부 파일 유형입니다.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "당신의 기기는 이 기능을 지원하지 않습니다.";
+"UNSUPPORTED_FEATURE_ERROR" = "이 기기는 해당 기능을 지원하지 않습니다.";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "연락처 업데이트";
@@ -4514,7 +4514,7 @@
 "UPDATE_GROUP_FAILED" = "그룹을 업데이트할 수 없습니다.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "그룹을 업데이트할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "그룹을 업데이트할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "내 PIN 만들기";
@@ -4523,13 +4523,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PIN에 대해 더 알아보기";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN 번호는 Signal에 저장된 정보를 암호화하여 오직 나만 접근할 수 있게 만듭니다. 내 프로필, 설정, 그리고 연락처는 Signal을 다시 설치할 때 복원됩니다.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN 소개";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN 비활성화";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN 끄기";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "향후 Signal은 iOS 11 혹은 이상 버전에서만 작동합니다. 설정 앱 >> 일반 >> 소프트웨어 업데이트에서 업그레이드할 수 있습니다.";
@@ -4553,7 +4553,7 @@
 "USERNAME_NOT_FOUND_FORMAT" = "%@ 님은 Signal 사용자가 아닙니다. 사용자 이름을 제대로 입력했는지 확인하세요.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "사용자를 찾을 수 없습니다.";
+"USERNAME_NOT_FOUND_TITLE" = "사용자 찾을 수 없음";
 
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "사용자 이름 입력";
@@ -4571,13 +4571,13 @@
 "USERNAME_TOO_SHORT_ERROR" = "사용자 이름은 최소 4자리 이상이어야 합니다.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@은 사용중입니다.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@은(는) 이미 사용 중입니다.";
 
 /* Error moessage shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "사용자 이름 업데이트에 실패했습니다.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "기기 이름은 공백이 불가합니다";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "기기 이름은 비워둘 수 없습니다";
 
 /* error label near a field */
 "VALIDATION_ERROR_TOO_LONG" = "기기 이름이 너무 깁니다";
@@ -4607,7 +4607,7 @@
 "VIDEO_CALL_LABEL" = "영상 통화";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "이미 메세지를 확인하셨습니다.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "이미 이 메시지는 확인했습니다.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "여기를 탭하여 메시지를 본 후 사라지게 하세요.";
@@ -4631,7 +4631,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop 설정이 완료되었습니다.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "이 메시지를 삭제했습니다.";
+"YOU_DELETED_THIS_MESSAGE" = "내가 이 메시지를 삭제했습니다.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "사라지는 메시지 기능을 껐습니다.";

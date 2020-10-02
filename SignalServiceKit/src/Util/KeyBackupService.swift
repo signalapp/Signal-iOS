@@ -241,6 +241,7 @@ public class KeyBackupService: NSObject {
                 // the given token has already been spent. we'll use the new token
                 // on the next attempt.
                 owsFailDebug("attempted restore with spent token")
+                throw KBSError.assertion
             case .notYetValid:
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
@@ -385,7 +386,7 @@ public class KeyBackupService: NSObject {
             initializationVectorLength: kAESGCM256_DefaultIVLength,
             key: key
         ) else {
-//            owsFailDebug("failed to decrypt data")
+            Logger.error("failed to decrypt data")
             throw KBSError.assertion
         }
 
