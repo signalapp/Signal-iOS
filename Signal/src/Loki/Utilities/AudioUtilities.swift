@@ -5,7 +5,6 @@ enum AudioUtilities {
     private static let noiseFloor: Float = -80
 
     private struct FileInfo {
-        let url: URL
         let sampleCount: Int
         let asset: AVAsset
         let track: AVAssetTrack
@@ -33,10 +32,29 @@ enum AudioUtilities {
         }
     }
 
-    private static func loadFile(_ audioFileURL: URL) -> Promise<FileInfo> {
+    private static func loadFile(_ audioFileURL: URL, isRetry: Bool = false) -> Promise<FileInfo> {
         let asset = AVURLAsset(url: audioFileURL)
         guard let track = asset.tracks(withMediaType: AVMediaType.audio).first else {
-            return Promise(error: Error.noAudioTrack)
+            if isRetry {
+                return Promise(error: Error.loadingFailed)
+            } else {
+                // Workaround for issue where MP3 files sent by Android get saved as M4A
+                var newAudioFileURL = audioFileURL.deletingPathExtension()
+                let fileName = newAudioFileURL.lastPathComponent
+                newAudioFileURL = newAudioFileURL.deletingLastPathComponent()
+                newAudioFileURL = newAudioFileURL.appendingPathComponent("\(fileName).mp3")
+                let fileManager = FileManager.default
+                if fileManager.fileExists(atPath: newAudioFileURL.path) {
+                    return loadFile(newAudioFileURL, isRetry: true)
+                } else {
+                    do {
+                        try FileManager.default.copyItem(at: audioFileURL, to: newAudioFileURL)
+                    } catch {
+                        return Promise(error: Error.loadingFailed)
+                    }
+                    return loadFile(newAudioFileURL, isRetry: true)
+                }
+            }
         }
         let (promise, seal) = Promise<FileInfo>.pending()
         asset.loadValuesAsynchronously(forKeys: [ #keyPath(AVAsset.duration) ]) {
@@ -49,7 +67,7 @@ enum AudioUtilities {
                     let asbd = CMAudioFormatDescriptionGetStreamBasicDescription(audioFormatDescription)
                     else { return seal.reject(Error.noAudioFormatDescription) }
                 let sampleCount = Int((asbd.pointee.mSampleRate) * Float64(asset.duration.value) / Float64(asset.duration.timescale))
-                let fileInfo = FileInfo(url: audioFileURL, sampleCount: sampleCount, asset: asset, track: track)
+                let fileInfo = FileInfo(sampleCount: sampleCount, asset: asset, track: track)
                 seal.fulfill(fileInfo)
             default:
                 print("Couldn't load asset due to error: \(nsError?.localizedDescription ?? "no description provided").")
