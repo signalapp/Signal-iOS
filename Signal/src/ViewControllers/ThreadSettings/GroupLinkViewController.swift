@@ -169,8 +169,12 @@ public class GroupLinkViewController: OWSTableViewController {
 
     @objc
     func didToggleGroupLinkEnabled(_ sender: UISwitch) {
-        let approveNewMembers = groupModelV2.access.addFromInviteLink == .administrator
-        let linkMode = self.linkMode(isGroupInviteLinkEnabled: sender.isOn,
+        let isGroupInviteLinkEnabled = sender.isOn
+        // Whenever we activate the group link, default to requiring admin approval.
+        let approveNewMembers = (groupModelV2.access.addFromInviteLink == .administrator ||
+            isGroupInviteLinkEnabled)
+
+        let linkMode = self.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
                                      approveNewMembers: approveNewMembers)
         updateLinkMode(linkMode: linkMode)
     }
