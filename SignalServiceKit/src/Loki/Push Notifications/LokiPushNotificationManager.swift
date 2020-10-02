@@ -29,7 +29,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise: Promise<Void> = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response as? JSON else {
+            guard let json = response["body"] as? JSON else {
                 return print("[Loki] Couldn't unregister from push notifications.")
             }
             guard json["code"] as? Int != 0 else {
@@ -69,7 +69,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise: Promise<Void> = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response as? JSON else {
+            guard let json = response["body"] as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
             guard json["code"] as? Int != 0 else {
@@ -104,7 +104,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response as? JSON else {
+            guard let json = response["body"] as? JSON else {
                 return print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
             }
             guard json["code"] as? Int != 0 else {
@@ -125,7 +125,7 @@ public final class LokiPushNotificationManager : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response as? JSON else {
+            guard let json = response["body"] as? JSON else {
                 return print("[Loki] Couldn't notify PN server.")
             }
             guard json["code"] as? Int != 0 else {
