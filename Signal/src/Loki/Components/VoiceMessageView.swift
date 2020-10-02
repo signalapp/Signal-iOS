@@ -1,21 +1,22 @@
 import Accelerate
 
+@objc(LKVoiceMessageViewDelegate)
+protocol VoiceMessageViewDelegate {
+
+    func showLoader()
+    func hideLoader()
+}
+
 @objc(LKVoiceMessageView)
 final class VoiceMessageView : UIView {
     private let voiceMessage: TSAttachment
     private let isOutgoing: Bool
-    private var isAnimating = false
     private var volumeSamples: [Float] = [] { didSet { updateShapeLayers() } }
     private var progress: CGFloat = 0
+    @objc var delegate: VoiceMessageViewDelegate?
     @objc var duration: Int = 0 { didSet { updateDurationLabel() } }
 
     // MARK: Components
-    private lazy var loader: UIView = {
-        let result = UIView()
-        result.backgroundColor = Colors.text.withAlphaComponent(0.2)
-        return result
-    }()
-
     private lazy var durationLabel: UILabel = {
         let result = UILabel()
         result.textColor = Colors.text
@@ -47,7 +48,6 @@ final class VoiceMessageView : UIView {
         self.voiceMessage = voiceMessage
         self.isOutgoing = isOutgoing
         super.init(frame: CGRect.zero)
-        initialize()
     }
 
     override init(frame: CGRect) {
@@ -58,17 +58,16 @@ final class VoiceMessageView : UIView {
         preconditionFailure("Use init(voiceMessage:associatedWith:) instead.")
     }
 
-    private func initialize() {
+    @objc func initialize() {
         setUpViewHierarchy()
         if voiceMessage.isDownloaded {
-            loader.alpha = 0
             guard let url = (voiceMessage as? TSAttachmentStream)?.originalMediaURL else {
                 return print("[Loki] Couldn't get URL for voice message.")
             }
             let targetSampleCount = 48
             if let cachedVolumeSamples = Storage.getVolumeSamples(for: voiceMessage.uniqueId!), cachedVolumeSamples.count == targetSampleCount {
                 self.volumeSamples = cachedVolumeSamples
-                self.stopAnimating()
+                self.delegate?.hideLoader()
             } else {
                 let voiceMessageID = voiceMessage.uniqueId!
                 AudioUtilities.getVolumeSamples(for: url, targetSampleCount: targetSampleCount).done(on: DispatchQueue.main) { [weak self] volumeSamples in
@@ -78,22 +77,20 @@ final class VoiceMessageView : UIView {
                         Storage.setVolumeSamples(for: voiceMessageID, to: volumeSamples, using: transaction)
                     }
                     self.durationLabel.alpha = 1
-                    self.stopAnimating()
+                    self.delegate?.hideLoader()
                 }.catch(on: DispatchQueue.main) { error in
                     print("[Loki] Couldn't sample audio file due to error: \(error).")
                 }
             }
         } else {
             durationLabel.alpha = 0
-            showLoader()
+            delegate?.showLoader()
         }
     }
 
     private func setUpViewHierarchy() {
         set(.width, to: 200)
         set(.height, to: VoiceMessageView.contentHeight)
-        addSubview(loader)
-        loader.pin(to: self)
         layer.insertSublayer(backgroundShapeLayer, at: 0)
         layer.insertSublayer(foregroundShapeLayer, at: 1)
         addSubview(durationLabel)
@@ -102,27 +99,6 @@ final class VoiceMessageView : UIView {
     }
 
     // MARK: UI & Updating
-    private func showLoader() {
-        isAnimating = true
-        loader.alpha = 1
-        animateLoader()
-    }
-
-    private func animateLoader() {
-        loader.frame = CGRect(x: 0, y: 0, width: 0, height: VoiceMessageView.contentHeight)
-        UIView.animate(withDuration: 2) { [weak self] in
-            self?.loader.frame = CGRect(x: 0, y: 0, width: 200, height: VoiceMessageView.contentHeight)
-        } completion: { [weak self] _ in
-            guard let self = self else { return }
-            if self.isAnimating { self.animateLoader() }
-        }
-    }
-
-    private func stopAnimating() {
-        isAnimating = false
-        loader.alpha = 0
-    }
-
     override func layoutSubviews() {
         super.layoutSubviews()
         updateShapeLayers()
