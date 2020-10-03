@@ -128,6 +128,28 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return self;
 }
 
+#if TESTABLE_BUILD
+- (instancetype)initWithPhoneNumber:(nullable NSString *)phoneNumber
+                               uuid:(nullable NSUUID *)uuid
+                            devices:(NSArray<NSNumber *> *)devices
+{
+    OWSAssertDebug(phoneNumber.length > 0 || uuid.UUIDString.length > 0);
+
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    _recipientUUID = uuid.UUIDString;
+    _recipientPhoneNumber = phoneNumber;
+    _recipientSchemaVersion = SignalRecipientSchemaVersion;
+    _devices = [NSOrderedSet orderedSetWithArray:devices];
+
+    return self;
+}
+#endif
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
@@ -655,6 +677,14 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 + (BOOL)shouldBeIndexedForFTS
 {
     return YES;
+}
+
+- (void)removePhoneNumberForDatabaseMigration
+{
+    OWSAssertDebug(self.recipientUUID != nil);
+    OWSAssertDebug(self.recipientPhoneNumber != nil);
+
+    _recipientPhoneNumber = nil;
 }
 
 @end

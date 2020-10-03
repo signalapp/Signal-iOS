@@ -1409,7 +1409,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     }
 
     public func isPossibleGroupInviteLink(_ url: URL) -> Bool {
-        return url.scheme == "https" && url.host == "signal.group"
+        guard url.host == "signal.group" else {
+            return false
+        }
+        guard let scheme = url.scheme else {
+            return false
+        }
+        let schemes = ["https", "sgnl"]
+        return schemes.contains(scheme)
     }
 
     public func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
