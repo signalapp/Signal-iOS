@@ -1,5 +1,4 @@
-* You can now select custom tones for notifications (thanks to public contributor @Topheee)
-* You can now enable the flash while recording videos (thanks to public contributor @htdahms)
-* You can now share PDFs from safari (thanks to public contributor @fumiakiy)
-* Vertical alignment of the “New Message” text is now centered when using smaller font sizes (thanks to public contributor @fumiakiy)
-
+* Ability to choose custom sounds for notifications (contributed by Cristopher Kobusch)
+* Ability to enable the torch / flash while recording a video (contributed by Heinrich Dahms)
+* Fixing vertical alignment in the input text view when using smaller than default text size (widely requested by beta users, fixed by Fumiaki Yoshimatsu)
+* Allow sharing of PDFs from Safari (contributed by Fumiaki Yoshimatsu)
