@@ -1,19 +1,12 @@
 import Accelerate
 
-@objc(LKVoiceMessageViewDelegate)
-protocol VoiceMessageViewDelegate {
-
-    func showLoader()
-    func hideLoader()
-}
-
 @objc(LKVoiceMessageView)
 final class VoiceMessageView : UIView {
     private let voiceMessage: TSAttachment
     private let isOutgoing: Bool
+    private var isLoading = false
     private var volumeSamples: [Float] = [] { didSet { updateShapeLayers() } }
-    private var progress: CGFloat = 0
-    @objc var delegate: VoiceMessageViewDelegate?
+    @objc var progress: CGFloat = 0 { didSet { updateShapeLayers() } }
     @objc var duration: Int = 0 { didSet { updateDurationLabel() } }
     @objc var isPlaying = false { didSet { updateToggleImageView() } }
 
@@ -40,10 +33,11 @@ final class VoiceMessageView : UIView {
     }()
 
     // MARK: Settings
-    private let vMargin: CGFloat = 0
-    private let sampleSpacing: CGFloat = 1
-    private let toggleContainerSize: CGFloat = 32
     private let leadingInset: CGFloat = 0
+    private let sampleSpacing: CGFloat = 1
+    private let targetSampleCount = 48
+    private let toggleContainerSize: CGFloat = 32
+    private let vMargin: CGFloat = 0
 
     @objc public static let contentHeight: CGFloat = 40
 
@@ -69,27 +63,24 @@ final class VoiceMessageView : UIView {
             guard let url = (voiceMessage as? TSAttachmentStream)?.originalMediaURL else {
                 return print("[Loki] Couldn't get URL for voice message.")
             }
-            let targetSampleCount = 48
             if let cachedVolumeSamples = Storage.getVolumeSamples(for: voiceMessage.uniqueId!), cachedVolumeSamples.count == targetSampleCount {
+                self.hideLoader()
                 self.volumeSamples = cachedVolumeSamples
-                self.delegate?.hideLoader()
             } else {
                 let voiceMessageID = voiceMessage.uniqueId!
                 AudioUtilities.getVolumeSamples(for: url, targetSampleCount: targetSampleCount).done(on: DispatchQueue.main) { [weak self] volumeSamples in
                     guard let self = self else { return }
+                    self.hideLoader()
                     self.volumeSamples = volumeSamples
                     Storage.write { transaction in
                         Storage.setVolumeSamples(for: voiceMessageID, to: volumeSamples, using: transaction)
                     }
-                    self.durationLabel.alpha = 1
-                    self.delegate?.hideLoader()
                 }.catch(on: DispatchQueue.main) { error in
                     print("[Loki] Couldn't sample audio file due to error: \(error).")
                 }
             }
         } else {
-            durationLabel.alpha = 0
-            delegate?.showLoader()
+            showLoader()
         }
     }
 
@@ -121,14 +112,30 @@ final class VoiceMessageView : UIView {
     }
 
     // MARK: UI & Updating
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateShapeLayers()
+    private func showLoader() {
+        isLoading = true
+        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] timer in
+            guard let self = self else { return timer.invalidate() }
+            if self.isLoading {
+                self.updateFakeVolumeSamples()
+            } else {
+                timer.invalidate()
+            }
+        }
+        updateFakeVolumeSamples()
     }
 
-    @objc(updateForProgress:)
-    func update(for progress: CGFloat) {
-        self.progress = progress
+    private func updateFakeVolumeSamples() {
+        let fakeVolumeSamples = (0..<targetSampleCount).map { _ in Float.random(in: 0...1) }
+        volumeSamples = fakeVolumeSamples
+    }
+
+    private func hideLoader() {
+        isLoading = false
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
         updateShapeLayers()
     }
 
@@ -153,7 +160,16 @@ final class VoiceMessageView : UIView {
         }
         backgroundPath.close()
         foregroundPath.close()
-        backgroundShapeLayer.path = backgroundPath.cgPath
+        if isLoading {
+            let animation = CABasicAnimation(keyPath: "path")
+            animation.duration = 0.25
+            animation.toValue = backgroundPath
+            animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+            backgroundShapeLayer.add(animation, forKey: "path")
+            backgroundShapeLayer.path = backgroundPath.cgPath
+        } else {
+            backgroundShapeLayer.path = backgroundPath.cgPath
+        }
         foregroundShapeLayer.path = foregroundPath.cgPath
     }
 

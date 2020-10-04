@@ -485,7 +485,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     self.audioProgressSeconds = progress;
 
-    [self.lastAudioMessageView updateForProgress:progress / duration];
+    [self.lastAudioMessageView setProgress:progress / duration];
 }
 
 #pragma mark - Displayable Text

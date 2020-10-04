@@ -20,7 +20,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate, LKVoiceMessageViewDelegate>
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
@@ -49,10 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageFooterView *footerView;
 
 @property (nonatomic, nullable) OWSContactShareButtonsView *contactShareButtonsView;
-
-@property (nonatomic) UIView *loader;
-
-@property (nonatomic) BOOL isAnimating;
 
 @end
 
@@ -112,10 +108,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.linkPreviewView = [[LinkPreviewView alloc] initWithDraftDelegate:nil];
 
     self.footerView = [OWSMessageFooterView new];
-
-    self.loader = [UIView new];
-    self.loader.backgroundColor = [LKColors.text colorWithAlphaComponent:0.6f];
-    self.loader.alpha = 0.0f;
 }
 
 - (OWSMessageTextView *)newTextView
@@ -422,9 +414,6 @@ NS_ASSUME_NONNULL_BEGIN
             addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaSize.CGSizeValue.height]];
     }
 
-    [self.bubbleView addSubview:self.loader];
-    [self.loader autoPinEdgesToSuperviewEdges];
-
     [self insertContactShareButtonsIfNecessary];
 
     [self updateBubbleColor];
@@ -672,34 +661,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)showLoader
-{
-    self.isAnimating = YES;
-    self.loader.alpha = 1.0f;
-    [self animateLoader];
-}
-
-- (void)animateLoader
-{
-    __weak OWSMessageBubbleView *weakSelf = self;
-    self.loader.frame = CGRectMake(0.0f, 0.0f, 0.0f, self.frame.size.height);
-    [UIView animateWithDuration:2 animations:^{
-        if (weakSelf != nil) {
-            weakSelf.loader.frame = CGRectMake(0.0f, 0.0f, weakSelf.frame.size.width, weakSelf.frame.size.height);
-        }
-    } completion:^(BOOL isFinished) {
-        if (weakSelf != nil && weakSelf.isAnimating) {
-            [weakSelf animateLoader];
-        }
-    }];
-}
-
-- (void)hideLoader
-{
-    self.isAnimating = NO;
-    self.loader.alpha = 0.0f;
-}
-
 #pragma mark - Subviews
 
 - (void)configureBodyTextView
@@ -880,8 +841,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     LKVoiceMessageView *voiceMessageView = [[LKVoiceMessageView alloc] initWithVoiceMessage:attachment isOutgoing:self.isOutgoing];
     [voiceMessageView setDuration:(int)self.viewItem.audioDurationSeconds];
-    [voiceMessageView updateForProgress:self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds];
-    [voiceMessageView setDelegate:self];
+    [voiceMessageView setProgress:self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds];
     [voiceMessageView initialize];
 
     self.viewItem.lastAudioMessageView = voiceMessageView;
