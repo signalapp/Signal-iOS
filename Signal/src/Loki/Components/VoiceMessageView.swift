@@ -5,6 +5,7 @@ final class VoiceMessageView : UIView {
     private let voiceMessage: TSAttachment
     private let isOutgoing: Bool
     private var isLoading = false
+    private var isForcedAnimation = false
     private var volumeSamples: [Float] = [] { didSet { updateShapeLayers() } }
     @objc var progress: CGFloat = 0 { didSet { updateShapeLayers() } }
     @objc var duration: Int = 0 { didSet { updateDurationLabel() } }
@@ -71,6 +72,7 @@ final class VoiceMessageView : UIView {
                 AudioUtilities.getVolumeSamples(for: url, targetSampleCount: targetSampleCount).done(on: DispatchQueue.main) { [weak self] volumeSamples in
                     guard let self = self else { return }
                     self.hideLoader()
+                    self.isForcedAnimation = true
                     self.volumeSamples = volumeSamples
                     Storage.write { transaction in
                         Storage.setVolumeSamples(for: voiceMessageID, to: volumeSamples, using: transaction)
@@ -160,7 +162,7 @@ final class VoiceMessageView : UIView {
         }
         backgroundPath.close()
         foregroundPath.close()
-        if isLoading {
+        if isLoading || isForcedAnimation {
             let animation = CABasicAnimation(keyPath: "path")
             animation.duration = 0.25
             animation.toValue = backgroundPath
@@ -171,6 +173,7 @@ final class VoiceMessageView : UIView {
             backgroundShapeLayer.path = backgroundPath.cgPath
         }
         foregroundShapeLayer.path = foregroundPath.cgPath
+        isForcedAnimation = false
     }
 
     private func updateDurationLabel() {
