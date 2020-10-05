@@ -653,8 +653,6 @@ typedef enum : NSUInteger {
 
     [self createContents];
 
-    [self registerCellClasses];
-
     [self createConversationScrollButtons];
     [self createHeaderViews];
 
@@ -760,6 +758,8 @@ typedef enum : NSUInteger {
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _loadMoreHeader);
 
+    [self registerCellClasses];
+    
     [self updateShowLoadMoreHeader];
 }
 
@@ -986,7 +986,7 @@ typedef enum : NSUInteger {
     self.lastReloadDate = [NSDate new];
     [self.conversationViewModel viewDidResetContentAndLayout];
     [self.collectionView.collectionViewLayout invalidateLayout];
-    [self.collectionView reloadData];
+    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:0]];
 
     if (self.viewHasEverAppeared) {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
