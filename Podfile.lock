@@ -336,7 +336,7 @@ CHECKOUT OPTIONS:
     :commit: 97ae15634e386b4fd403484e5e2680e72d283bb4
     :git: https://github.com/signalapp/SignalProtocolKit.git
   blurhash:
-    :commit: c0538ea830d4ecc0f4dfcaf3dc53c0003847df20
+    :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
     :commit: 4fc1c10e98fff2534b5379a9bb587430fdb8e577
@@ -379,7 +379,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   Argon2: b11fcfa58057e2522356ddc6a817cd875297edfe
   AxolotlKit: ac03e4d79486b62d08282c840da410116227683e
-  blurhash: 150e9ffe986f028a38f7b469b5a279eab45352df
+  blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   BonMot: 2217a66e5ddc6a8d2ffb759fe8c85a8528e0d3e7
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6

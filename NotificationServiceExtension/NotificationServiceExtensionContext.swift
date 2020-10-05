@@ -82,6 +82,7 @@ class NotificationServiceExtensionContext: NSObject, AppContext {
     func setStatusBarHidden(_ isHidden: Bool, animated isAnimated: Bool) {}
 
     func frontmostViewController() -> UIViewController? { nil }
+    func openSystemSettings() {}
     func openSystemSettingsAction(completion: (() -> Void)? = nil) -> ActionSheetAction? { nil }
 
     func setNetworkActivityIndicatorVisible(_ value: Bool) {}

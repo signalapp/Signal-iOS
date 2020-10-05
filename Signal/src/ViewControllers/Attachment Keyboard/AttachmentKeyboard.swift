@@ -45,7 +45,11 @@ class AttachmentKeyboard: CustomKeyboard {
     )
 
     private var mediaLibraryAuthorizationStatus: PHAuthorizationStatus {
-        return PHPhotoLibrary.authorizationStatus()
+        if #available(iOS 14, *) {
+            return PHPhotoLibrary.ows_authorizationStatus(for: .readWrite)
+        } else {
+            return PHPhotoLibrary.authorizationStatus()
+        }
     }
 
     // MARK: -
@@ -184,7 +188,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
     func checkPermissions(completion: @escaping () -> Void) {
         switch mediaLibraryAuthorizationStatus {
-        case .authorized:
+        case .authorized, .limited:
             showRecentPhotos()
         case .denied, .restricted:
             showRecentPhotosError()
@@ -218,7 +222,16 @@ class AttachmentKeyboard: CustomKeyboard {
 
 extension AttachmentKeyboard: RecentPhotosDelegate {
     var isMediaLibraryAccessGranted: Bool {
-        return mediaLibraryAuthorizationStatus == .authorized
+        if #available(iOS 14, *) {
+            return [.authorized, .limited].contains(mediaLibraryAuthorizationStatus)
+        } else {
+            return mediaLibraryAuthorizationStatus == .authorized
+        }
+    }
+
+    var isMediaLibraryAccessLimited: Bool {
+        guard #available(iOS 14, *) else { return false }
+        return mediaLibraryAuthorizationStatus == .limited
     }
 
     func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {

@@ -266,6 +266,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
 }
 
+- (void)openSystemSettings
+{
+    [UIApplication.sharedApplication openSystemSettings];
+}
+
 - (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
 {
     return [[ActionSheetAction alloc] initWithTitle:CommonStrings.openSettingsButton
