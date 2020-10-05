@@ -310,7 +310,7 @@ class ViewOnceMessageViewController: OWSViewController {
 
             let label = UILabel()
             label.textColor = Theme.darkThemePrimaryColor
-            label.font = UIFont.ows_dynamicTypeBody.ows_monospaced()
+            label.font = UIFont.ows_dynamicTypeBody.ows_monospaced
             label.setShadow()
 
             videoContainer.addSubview(label)

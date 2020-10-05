@@ -158,7 +158,7 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
         titleLabel.text = title
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
 
         let bodyLabel = UILabel()

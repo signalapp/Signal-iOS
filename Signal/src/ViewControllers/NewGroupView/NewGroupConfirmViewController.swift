@@ -449,7 +449,7 @@ class NewLegacyGroupView: UIView {
         tableViewController.contents = contents
         tableViewController.view.autoSetDimension(.height, toSize: 200)
 
-        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
         let okayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
                                               font: buttonFont,

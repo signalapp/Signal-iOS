@@ -533,7 +533,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
         return NSAttributedString(string: items.joined(separator: ", "),
                                   attributes: [
-                                    .font: UIFont.ows_dynamicTypeSubheadline.ows_semibold(),
+                                    .font: UIFont.ows_dynamicTypeSubheadline.ows_semibold,
                                     .foregroundColor: Theme.secondaryTextAndIconColor
         ])
     }

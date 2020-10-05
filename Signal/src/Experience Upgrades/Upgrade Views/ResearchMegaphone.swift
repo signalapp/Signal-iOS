@@ -57,7 +57,7 @@ private class ResearchModal: UIViewController {
             .font(.ows_dynamicTypeBody2),
             .color(Theme.primaryTextColor),
             .xmlRules([
-                .style("bold", StringStyle(.font(UIFont.ows_dynamicTypeBody2.ows_semibold())))
+                .style("bold", StringStyle(.font(UIFont.ows_dynamicTypeBody2.ows_semibold)))
             ])
         )
 
@@ -84,7 +84,7 @@ private class ResearchModal: UIViewController {
                 Special.noBreakSpace,
                 #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate).styled(with: .baselineOffset(-4))
             ]).styled(with:
-                .font(UIFont.ows_dynamicTypeBody.ows_semibold()),
+                .font(UIFont.ows_dynamicTypeBody.ows_semibold),
                 .color(.ows_white)
             )
         )
@@ -111,7 +111,7 @@ private class ResearchModal: UIViewController {
                 "RESEARCH_MODAL_NO_THANKS",
                 comment: "Button text for declining the research modal"
             ),
-            font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+            font: UIFont.ows_dynamicTypeBody.ows_semibold,
             titleColor: Theme.accentBlueColor
         )
         noThanksButton.autoSetDimension(.height, toSize: OWSFlatButton.heightForFont(.ows_dynamicTypeBody))

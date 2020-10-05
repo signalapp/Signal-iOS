@@ -81,7 +81,7 @@ class UsernameViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("USERNAME_FIELD", comment: "Label for the username field in the username view.")
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
 
         usernameRow.addSubview(titleLabel)
         titleLabel.autoPinLeadingToSuperviewMargin()

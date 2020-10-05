@@ -275,7 +275,7 @@ public class AddToGroupViewController: OWSTableViewController {
         textView.textContainer.lineFragmentPadding = 0
         textView.isScrollEnabled = false
         textView.textColor = Theme.primaryTextColor
-        textView.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        textView.font = UIFont.ows_dynamicTypeBody.ows_semibold
         textView.backgroundColor = Theme.washColor
         let tableEdgeInsets: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
         textView.textContainerInset = UIEdgeInsets(top: 5, left: tableEdgeInsets, bottom: 5, right: tableEdgeInsets)

@@ -825,7 +825,7 @@ public class LinkPreviewView: UIStackView {
         }
         let label = UILabel()
         label.text = text
-        label.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold()
+        label.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
         label.textColor = Theme.primaryTextColor
         label.numberOfLines = sentTitleLineCount
         label.lineBreakMode = .byTruncatingTail

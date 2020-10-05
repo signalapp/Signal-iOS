@@ -124,7 +124,7 @@ class EmojiCountCell: UICollectionViewCell {
 
         emoji.font = .systemFont(ofSize: 22)
 
-        count.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_monospaced().ows_semibold()
+        count.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_monospaced.ows_semibold
         count.textColor = Theme.primaryTextColor
     }
 

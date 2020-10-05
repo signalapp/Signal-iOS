@@ -96,7 +96,7 @@ class AudioMessageView: UIStackView {
         progressSlider.autoVCenterInSuperview()
 
         playbackTimeLabel.textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
-        playbackTimeLabel.font = UIFont.ows_dynamicTypeCaption1.ows_monospaced()
+        playbackTimeLabel.font = UIFont.ows_dynamicTypeCaption1.ows_monospaced
         playbackTimeLabel.setContentHuggingHigh()
 
         let playerStack = UIStackView(arrangedSubviews: [playPauseAnimation, waveformContainer, playbackTimeLabel])

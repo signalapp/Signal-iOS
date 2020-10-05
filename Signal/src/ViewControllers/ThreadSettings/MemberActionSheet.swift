@@ -246,7 +246,7 @@ private class MemberHeader: UIStackView {
         }
 
         let titleLabel = UILabel()
-        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping

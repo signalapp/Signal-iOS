@@ -55,7 +55,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         stackView.addArrangedSubview(countryRow)
 
         countryRowTitleLabel.text = NSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
-        countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         countryRowTitleLabel.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "countryRowTitleLabel")
 
@@ -64,7 +64,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         countryRowTitleLabel.autoPinHeightToSuperviewMargins()
 
         countryCodeLabel.textColor = Theme.accentBlueColor
-        countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        countryCodeLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         countryCodeLabel.textAlignment = .right
         countryCodeLabel.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "countryCodeLabel")
@@ -81,7 +81,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
         phoneNumberRowTitleLabel.text = NSLocalizedString("REGISTRATION_PHONENUMBER_BUTTON",
                                                           comment: "Label for the phone number textfield")
-        phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         phoneNumberRowTitleLabel.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "phoneNumberRowTitleLabel")
 

@@ -102,7 +102,7 @@ public class PinConfirmationViewController: OWSViewController {
 
         let titleLabel = UILabel()
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle3Clamped.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle3Clamped.ows_semibold
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -154,7 +154,7 @@ public class PinConfirmationViewController: OWSViewController {
         pinStack.autoSetDimension(.width, toSize: 227)
         pinStackRow.setContentHuggingVerticalHigh()
 
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let submitButton = OWSFlatButton.button(
             title: actionText,

@@ -59,7 +59,7 @@ class MemberRequestView: UIStackView {
         let cancelTitle = NSLocalizedString("MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON",
                                             comment: "Label for button to cancel your request to join the group.")
         let cancelButton = OWSFlatButton.button(title: cancelTitle,
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                  titleColor: Theme.secondaryTextAndIconColor,
                                                  backgroundColor: Theme.washColor,
                                                  target: self,

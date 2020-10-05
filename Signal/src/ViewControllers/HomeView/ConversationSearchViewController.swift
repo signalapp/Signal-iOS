@@ -295,7 +295,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         let label = UILabel()
         label.textColor = Theme.secondaryTextAndIconColor
         label.text = title
-        label.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        label.font = UIFont.ows_dynamicTypeBody.ows_semibold
         label.tag = section
 
         let wrapper = UIView()

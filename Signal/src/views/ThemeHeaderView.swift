@@ -30,7 +30,7 @@ public class ThemeHeaderView: UIView {
     }
 
     static var labelFont: UIFont {
-        return UIFont.ows_dynamicTypeBody.ows_semibold()
+        return UIFont.ows_dynamicTypeBody.ows_semibold
     }
 
     static var desiredHeight: CGFloat {
