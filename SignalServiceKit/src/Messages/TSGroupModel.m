@@ -117,9 +117,6 @@ const int32_t kGroupIdLength = 16;
         updatedGroupInfoString =
             [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
     }
-    if ([updatedGroupInfoString length] == 0) {
-        updatedGroupInfoString = NSLocalizedString(@"GROUP_UPDATED", @"");
-    }
     NSSet *oldMembers = [NSSet setWithArray:_groupMemberIds];
     NSSet *newMembers = [NSSet setWithArray:newModel.groupMemberIds];
 
@@ -169,7 +166,9 @@ const int32_t kGroupIdLength = 16;
             }
         }
     }
-
+    if ([updatedGroupInfoString length] == 0) {
+        updatedGroupInfoString = NSLocalizedString(@"GROUP_UPDATED", @"");
+    }
     return updatedGroupInfoString;
 }
 

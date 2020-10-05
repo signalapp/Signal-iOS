@@ -109,16 +109,19 @@ public final class SharedSenderKeysImplementation : NSObject {
             return ratchet
         } else {
             var currentKeyIndex = ratchet.keyIndex
-            var result = ratchet
+            var current = ratchet
+            var messageKeys: [String] = []
             while currentKeyIndex < targetKeyIndex {
                 do {
-                    result = try step(result)
-                    currentKeyIndex = result.keyIndex
+                    current = try step(current)
+                    messageKeys += current.messageKeys
+                    currentKeyIndex = current.keyIndex
                 } catch {
                     print("[Loki] Couldn't step ratchet due to error: \(error).")
                     throw error
                 }
             }
+            let result = ClosedGroupRatchet(chainKey: current.chainKey, keyIndex: current.keyIndex, messageKeys: messageKeys) // Includes any skipped message keys
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, using: transaction)
             return result
         }
