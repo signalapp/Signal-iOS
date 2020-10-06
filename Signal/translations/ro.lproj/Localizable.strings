@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nu acum";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Acceptați noul număr de siguranță";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Acceptă noul număr de siguranță";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Atașament";
@@ -44,22 +44,22 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Adaugă membru";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Adăugați membri";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Adaugă membri";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Adăugați membrul la “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Adaugă membrul la “%2$@”?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Adăugați %1$@ membrii la “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Adaugă %1$@ membrii la “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Adaugă un membru nou";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Adăugați membri noi";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Adaugă membri noi";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Adăugați membri";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Adaugă membri";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Vrei să partajezi profilul tău cu acest grup?";
@@ -68,16 +68,16 @@
 "ADD_TO_CONTACTS_OFFER" = "Vrei să adaugi acest utilizator la contactele tale?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Adaugaţi la alt grup";
+"ADD_TO_GROUP" = "Adaugă la alt grup";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Adaugaţi la grup";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Adaugă la grup";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Adăugaţi pe %@ la acest grup?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Adaugi pe %@ la acest grup?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Adăugaţi la %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Adaugă la %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ este deja membru din %@";
@@ -89,7 +89,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ a fost adăugat la %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Adaugaţi la alt grup";
+"ADD_TO_GROUP_TITLE" = "Adaugă la alt grup";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Vrei să partajezi profilul tău cu acest utilizator?";
@@ -113,10 +113,10 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Răspunde";
 
 /* notification body */
-"APN_Message" = "Mesaj  nou!";
+"APN_Message" = "Mesaj nou!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nu poate fi lansat. Te rog trimite jurnalul tău de depanare la support@signal.org ca să investigăm problema.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nu poate porni. Te rog trimite jurnalul tău de depanare la support@signal.org ca să investigăm problema.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Eroare";
@@ -125,25 +125,25 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Baza de date nu a putut fi încărcată";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Vă rugăm să actualizați Signal la ultima versiune.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Te rog să actualizezi Signal la ultima versiune.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versiune de bază de date necunoscută.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Datele transferate de pe dispozitivul dvs. vechi nu au putut fi restabilite. Vă rugăm să trimiteți un jurnal de depanare la support@signal.org pentru a putea rezolva această problemă. Dacă reinstalați Signal, istoricul mesajelor dvs. poate fi pierdut.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Datele transferate de pe dispozitivul tău vechi nu au putut fi restabilite. Te rog să trimiți un jurnal de depanare la support@signal.org pentru a putea rezolva această problemă. Dacă reinstalezi Signal, istoricul mesajelor tale poate fi pierdut.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Transferul nu s-a putut finaliza";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Introduceți numele dvs.";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Introdu numele tău";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Nu acum";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versiunea %@ este disponibilă acum în App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versiunea %@ este disponibilă acum în Magazinul de Aplicații.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "O nouă versiune de Signal este disponibilă";
@@ -206,7 +206,7 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Eroare la trimiterea atașamentului";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Imagine nu a putut fi convertită.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Imaginea nu a putut fi convertită.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Nu s-a putut procesa video-ul.";
@@ -233,7 +233,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Atașamentul este gol.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Alegeți media pentru trimitere";
+"ATTACHMENT_HINT" = "Alege media pentru trimitere";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Cameră";
@@ -251,10 +251,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Locație";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Permiteți accesul la pozele dvs. în setări pentru a le putea trimite aici.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Permite accesul la pozele tale în setări pentru a le putea trimite aici.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "După ce ați făcut fotografii, veți putea să trimiteți recentele aici.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "După ce ai făcut fotografii, vei putea să trimiteți cele mai recente aici.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Atașament";
@@ -263,7 +263,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Eroare la selectarea documentului.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Vă rugăm să creați o arhivă comprimată cu acest fișier sau director și să încercați să o trimiteți pe aceasta.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Te rog să creezi o arhivă comprimată cu acest fișier sau director și să încerci să o trimiți pe aceasta.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fișier nesuportat";
@@ -308,34 +308,34 @@
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Răspuns pentru serviciu invalid";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Se curăță backup-ul";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Se curăță copia de rezervă";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Se inițializează backup-ul";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Se inițializează copia de rezervă";
 
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Se exportă datele";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Se exportă backup-ul";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Se exportă copia de rezervă";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Se încarcă backup-ul";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Se încarcă copia de rezervă";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup-ul nu a putut fi importat.";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Copia de rezervă nu a putut fi importată.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Se configurează backup-ul";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Se configurează copia de rezervă";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Se descarcă datele din backup";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Se descarcă datele din copia de rezervă";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Se finalizează backup-ul";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Se finalizează copia de rezervă";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Se importă backup-ul.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Se importă copia de rezervă.";
 
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Se restaurează baza de date";
@@ -344,10 +344,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Se restaurează fișierele";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup disponibil";
+"BACKUP_RESTORE_DECISION_TITLE" = "Copie de rezervă disponibilă";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Se restaurează backup-ul";
+"BACKUP_RESTORE_DESCRIPTION" = "Se restaurează copia de rezervă";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progres";
@@ -356,19 +356,19 @@
 "BACKUP_RESTORE_STATUS" = "Stare";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Eroare neașteptată la backup";
+"BACKUP_UNEXPECTED_ERROR" = "Eroare neașteptată a copiei de rezervă";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Nu veți mai putea primi mesaje sau actualizări de la acest grup.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Nu vei mai putea primi mesaje sau actualizări de la acest grup.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blochează";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blocați și părăsiți grupul \"%@\" ?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blochează și părăsește grupul \"%@\" ?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blochez pe %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blochezi pe %@?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Grupuri blocate";
@@ -386,19 +386,19 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblochează";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Vei putea să vă trimiteți mesaje și să vă sunați reciproc.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "O să puteți să vă trimiteți mesaje și să vă sunați reciproc.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Membrii existenți vor putea să vă adauge la grup din nou.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Membrii existenți vor putea să te adauge la grup din nou.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Membrii grupului vă vor putea adăuga din nou la acest grup.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Membrii grupului te vor putea adăuga din nou la acest grup.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Deblochez acest grup?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Deblochezi acest grup?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Deblochez pe %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Deblochezi pe %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blochează";
@@ -422,19 +422,19 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ a fost deblocat.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Membrii existenți pot acum să vă adauge la grup din nou.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Membrii existenți pot acum să te adauge la grup din nou.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Utilizatorii blocați nu vor putea să vă sune sau să vă trimită mesaje.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Utilizatorii blocați nu vor putea să te sune sau să îți trimită mesaje.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nou: Estompați fețe sau desenați oriunde pentru a estompa.";
+"BLUR_TOOLTIP" = "Nou: Estompează fețe sau desenează oriunde pentru a estompa.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Navigați";
+"BROWSE_FILES_BUTTON" = "Navighează";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continuați";
+"BUTTON_CONTINUE" = "Continuă";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Gata";
@@ -458,10 +458,10 @@
 "BUTTON_YES" = "Da";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Sună încă o dată";
+"CALL_AGAIN_BUTTON_TITLE" = "Sună din nou";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Apel de intrare audio...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Se primește un apel audio...";
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Apel audio nepreluat";
@@ -485,10 +485,10 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Apelează";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Doriți să sunați pe %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Dorești să suni pe %@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Apelez?";
+"CALL_USER_ALERT_TITLE" = "Apelezi?";
 
 /* notification body */
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Apel de intrare video...";
@@ -497,7 +497,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Apel video nepreluat";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Răspundeți fără video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Răspunde fără video";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Răspunde";
@@ -515,16 +515,16 @@
 "CALL_VIEW_MUTE_LABEL" = "Mut";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ va primi o solicitare de mesaj de la dvs. Puteți suna odată ce cererea dvs. de mesaj este acceptată. ";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ va primi o solicitare de mesaj de la tine. Poți suna de îndată ce cererea ta de mesaj este acceptată. ";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Schimbă direcția camerei";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Treceți la apel audio";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Schimbă la apel audio";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Treceți la apel video";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Schimbă la apel video";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Apelează înapoi";
@@ -533,25 +533,25 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilizator Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Faceți o poză și pe urmă trimiteți-o";
+"CAMERA_BUTTON_HINT" = "Fă o poză și trimite-o";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Cameră";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Acest utilizator nu poate fi verificat până nu schimbați mesaje cu el.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Acest utilizator nu poate fi verificat până nu schimbi mesaje cu el.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Eroare";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selectați țara";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selectează țara";
 
 /* The label for the 'do not restore backup' button. */
 "CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Nu restaura";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Nu s-a putut determina dacă există un backup care poate fi restaurat.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Nu s-a putut determina dacă există un o copie de rezervă care poate fi restaurată.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Eroare";
@@ -560,19 +560,19 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Restaurează";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal nu a putut determina starea contului dvs. iCloud. Conectați-vă la contul dvs. iCloud în aplicația iOS Setări pentru a putea face backup la datele Signal.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal nu a putut determina starea contului tău de iCloud. Conectează-te la contul tău iCloud în aplicația iOS Setări pentru a putea face o copie de rezervă la datele tale Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nu există un cont iCloud. Conectează-te la contul tău iCloud în aplicația iOS Setări pentru a putea face backup la datele tale Signal.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nu există un cont iCloud. Conectează-te la contul tău iCloud în aplicația iOS Setări pentru a putea face o copie de rezervă la datele tale Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal nu a primit accesul la contul tău iCloud pentru backup-uri. Permite-i Signal accesul la contul tău iCloud în aplicația iOS Setări pentru a putea face backup la datele tale Signal.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal nu a primit accesul la contul tău iCloud pentru a putea face copii de rezervă. Permite Signal accesul la contul tău iCloud în aplicația iOS Setări pentru a putea face copii de rezervă la datele tale.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Alege culoarea mesajelor trimise în această conversație.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Doar tu vei vedea culoare pe care ai ales-o.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Doar tu vei vedea culoarea pe care ai ales-o.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Culoare conversaţie";
@@ -584,7 +584,7 @@
 "COMPOSE_BUTTON_HINT" = "Selectați sau căutați un utilizator de Signal pentru a începe o conversație.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compuneți";
+"COMPOSE_BUTTON_LABEL" = "Compune";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacte";
@@ -593,10 +593,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupuri";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Căutare număr de telefon";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Caută număr de telefon";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Căutare nume de utilizator";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Caută nume de utilizator";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Poți activa accesul la contacte din aplicația iOS Setări pentru a putea vedea care dintre contactele tale sunt utilizatori Signal.";
@@ -605,25 +605,25 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Această acțiune va reseta aplicația prin șteregerea mesajelor tale și prin anularea înregistrării la server. Această aplicație se va închide după ce procesul s-a încheiat.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Sunteți sigur că vreți să ștergeți contul dvs.?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Ești sigur că vrei să-ți ștergi contul?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Această acțiune va reseta aplicația prin ștergerea tuturor mesajelor dvs. de pe acest dispozitiv. Puteți asocia din nou telefonul dvs., dar acest lucru nu va restabili mesajele șterse. Aplicația se va închide după finalizarea acestui proces.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Această acțiune va reseta aplicația prin ștergerea tuturor mesajelor tale de pe acest dispozitiv. Poți asocia din nou telefonul, dar acest lucru nu va restabili mesajele șterse. Aplicația se va închide după finalizarea acestui proces.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Sunteți sigur că vreți să ștergeți toate datele dvs.?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ești sigur că vreți să ștergi toate datele?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Nu vei mai putea trimite sau primi mesaje in acest grup.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Sunteți sigur că doriți să părăsiți grupul?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Ești sigur că vrei să părăsești grupul?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Asociați un dispozitiv nou";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Asociază un dispozitiv nou";
 
 /* No comment provided by engineer. */
-"CONFIRMATION_TITLE" = "Confirmați";
+"CONFIRMATION_TITLE" = "Confirmă";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adresă";
@@ -686,19 +686,19 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Pentru a vedea numele și fotografiile contactelor tale în conversații:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Apăsaţi pe \"Navigaţi la Setări\" mai jos";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Apasă pe „Mergi la Setări” mai jos";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activaţi \"Contacte\"";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activează „Contacte”";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activaţi contactele";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activează contactele";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Nu acum";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activare";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activează";
 
 /* Body for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Afișează numele și fotografiile contactelor tale în converații.";
@@ -716,10 +716,10 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Nici un număr de telefon disponibil.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Selectați contactul";
+"CONTACT_PICKER_TITLE" = "Selectează contactul";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Partajați contactul";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Partajează contactul";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Editează numele";
@@ -731,31 +731,31 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nici un câmp al contactului nu a fost selectat.";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contactați suportul";
+"CONTACT_SUPPORT" = "Contactează suportul";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal nu a putut finaliza solicitarea dvs. de asistență.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal nu a putut finaliza solicitarea ta de asistență.";
 
 /* button text */
-"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Încercați din nou";
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Încearcă din nou";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Log-urile dvs. de depanare ne vor ajuta să rezolvăm mai rapid problema dvs. Trimiterea log-urilor dvs. este opțională.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Jurnalele tale de depanare ne vor ajuta să rezolvăm mai rapid problema. Trimiterea lor este opțională.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Trimiteți log-ul de depanare?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Trimiți jurnalul de depanare?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Trimiteți împreună cu log-ul de depanare";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Trimite împreună cu jurnalul de depanare";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Trimiteți fără log-ul de depanare";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Trimite fără jurnalul de depanare";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Deschideți în Hărți";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Deschide în Hărți";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Trimiteți email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Trimite email";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Contact fără nume";
@@ -797,13 +797,13 @@
 "CONVERSATION_SETTINGS" = "Setări conversație";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Adăugați membri";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Adaugă membri";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Adaugă la contactul existent";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Adăugați la contactele de sistem";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Adaugă la contactele de sistem";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratori";
@@ -815,19 +815,19 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Dezactivat";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Alegeți cine poate edita numele grupului, poza și perioada pentru dispariția mesajelor.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Alege cine poate edita numele grupului, poza și perioada pentru dispariția mesajelor.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Nu veți mai putea primi mesaje sau actualizări de la acest utilizator.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Nu vei mai putea primi mesaje sau actualizări de la acest utilizator.";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Nu veți mai putea primi mesaje sau actualizări de la acest grup.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blocați grupul";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blochează grupul";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Blocare utilizator";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Blochează utilizator";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informații contact";
@@ -863,16 +863,16 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Toți membrii";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Link grup";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Adresa grupului";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Faceți Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Fă Admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ va putea edita acest grup și membrii acestuia.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Invită membri";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Solicitări și invitații ale membrilor";
@@ -890,16 +890,16 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Fără notificări dacă e pe mod silențios";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Doriți să primiți notificări atunci când sunteți menționat în convorbiri fără sunet?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Dorești să primești notificări atunci când ești menționat în convorbiri silențioase?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mențiuni";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mut";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silențios";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mut";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Silențios";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nu este pe silențios";
@@ -926,19 +926,19 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Creează contact nou";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Eliminați din grup";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Elimină din grup";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Eliminați pe %@ din grup?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Elimină pe %@ din grup?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Eliminați ca administrator";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Elimină ca administrator";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Revocați pe %@ ca și admin de grup?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Caută conversație";
+"CONVERSATION_SETTINGS_SEARCH" = "Caută în conversație";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Deblocare grup";
@@ -956,13 +956,13 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Schimbări nesalvate";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Vizualizați toți membrii";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Vezi toți membrii";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Acest utilizator se află în lista dvs. de contacte.";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Acest utilizator se află în lista ta de contacte.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Partajați profilul";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Partajează profilul";
 
 /* Action that shares user profile with a group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Partajează-ți profilul";
@@ -974,13 +974,13 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Adaugă la contacte";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Ștergere toate";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Șterge tot";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Se încarcă mai multe mesaje...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Citiți mai multe";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Citește mai mult";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetarea sesiunii tale v-a permite să primești în viitor mesaje de la %@, însă nu v-a putea recupera mesajele deja corupte.";
@@ -1022,7 +1022,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Nu s-au putut încărca jurnalele.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Ce ați vrea să faceți cu link-ul la jurnalul de depanare?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Ce ai vrea să faci cu adresa la jurnalul de depanare?";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Nu s-a gasit nici un jurnal.";
@@ -1031,7 +1031,7 @@
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Deschide un raport de eroare";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copiază Link-ul";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copiază adresa";
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Suport";
@@ -1049,7 +1049,7 @@
 "DEBUG_LOG_COULD_NOT_EMAIL" = "Aplicația de e-mail nu a putut fi deschisă.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Link-ul gist a fost copiat în clipboard-ul tău. O să fi redirecționat la lista de probleme de pe GitHub.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Adresa a fost copiată în clipboard-ul tău. O să fi redirecționat la lista de probleme de pe GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirecționare GitHub";
@@ -1058,16 +1058,16 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informații despre jurnalele de depanare";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Ştergeți toate mesajele din conversație?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Ștergi toate mesajele din conversație?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Ștergeți toate mesajele";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Șterge toate mesajele";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Ștergeți %ld mesaje?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Ștergi %ld mesaje?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Șterg mesajul?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Ștergi mesajul?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Înregistrează din nou acest număr de telefon";
@@ -1619,7 +1619,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Acești utilizatori nu pot fi adăugați automat la acest grup de către dvs. Au fost invitați să se alăture și nu vor vedea niciun mesaj de grup până când nu acceptă.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "Invită membri";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Acest link de grup nu mai este valid.";
@@ -3005,13 +3005,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Toată lumea";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Oricine are numărul tău de telefon în lista de contacte, te va vedea ca un contact pe Signal. Alții te vor putea găsi folosing numărul tău de telefon utilizând funcția Căutare.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nimeni";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nimeni nu te va putea găsi pe Signal folosind numărul tău de telefon. Nu vei fi vizibil ca și contact pentru persoanele care au numărul tău de telefon în lista lor de contacte, în timp ce alții nu te vor putea găsi folosind numărul tău de telefon utilizând funcția Căutare. ";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemplu: %@";
@@ -3026,7 +3026,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Toată lumea";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Numărul tău de telefon va fi vizibil pentru pentru persoanele și grupurile către care trimiți mesaje. Persoanele care au numărul tău de telefon în lista lor de contacte îl vor vedea și în Signal. ";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Nimeni";
@@ -3248,7 +3248,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi un număr de siguranță pentru %@. Ești sigur că verifici contactul corect?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numărul din clipboard-ul tău nu pare a fi un număr de siguranță corect pentru această conversație.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal nu a putut găsi nici un număr de siguranță în clipboard-ul tău. L-ai copiat corect?";
@@ -3530,19 +3530,19 @@
 "REREGISTER_FOR_PUSH" = "Reînregistrează-te pentru a primi notificarile push";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "Pentru a putea să facem din Signal cea mai bună aplicație de mesagerie de pe planetă, ne-ar plăcea să-ți auzim părerea. ";
 
 /* Title for research megaphone */
 "RESEARCH_MEGAPHONE_TITLE" = "Spune-ne ce părere ai";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "Acest studiu este găzduit de Surveygizmo pe domeniul securizat surveys.signalusers.org";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "Nu, mulţumesc";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>Credem în confidențialitate</bold>\n\nSignal nu te urmărește și nu-ți colectează informațiile. Pentru a îmbunătăți aplicația pentru toată lumea, ne bazăm pe opiniile utilizatorilor noștri <bold>și ne-ar plăcea să o azim pe a ta</bold>.\n\nDerulăm un sondaj pentru a înțelege mai bine cum folosești Signal. Studiul nostru nu colectează informații care te-ar putea identifica. Dacă ești interesat în a împărtăși păreri suplimentare cu noi, vei avea opțiunea să ne furnizezi informații de contact. \n\nDacă ai câteva minute la dispoziție și păreri de oferit, ne-ar plăcea să auzim de tine.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Completează studiul";
@@ -4052,7 +4052,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Setări";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Numără conversațiile silențioase";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Număr insignă";
@@ -4124,7 +4124,7 @@
 "SETTINGS_READ_RECEIPT" = "Confirmări citire";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Vezi și distribuie când mesajele au fost citite. Această setare este opțională și se aplică pentru toate conversațiile. ";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Dezactivare";
@@ -4184,7 +4184,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Indicatori de tastare";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Vezi și distribuie când mesajele sunt tastate. Această setare este opțională și se aplică la toate conversațiile. ";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Expeditor ascuns";
@@ -4355,7 +4355,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membru al %@, %@, și %lu grupuri adiționale";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Poți adăuga notițe personale în această conversație. Dacă ai adăugat dispozitive asociate la contul tău, notițele noi vor fi sincronizate. ";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membru al %@";

@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal'in mevcut konumunuzu paylaşmak i�
 NSMicrophoneUsageDescription = "Signal'in sesli aramalar gerçekleştirmek ve sesli iletiler gönderebilmek için mikrofonunuza erişime ihtiyacı var.";
 NSPhotoLibraryAddUsageDescription = "Signal fotoğrafları albümlerinize kaydedecektir.";
 NSPhotoLibraryUsageDescription = "Signal, göndermek istediğiniz fotoğrafları albümlerinizden seçmenizi sağlayacaktır.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";
+NSLocalNetworkUsageDescription = "Signal, hesabınızı doğrudan yeni bir telefona aktarmanıza izin vermek için yerel ağı kullanır. Yeni bir aygıta aktarım başlatmayı açıkça seçmediğiniz sürece kullanılmayacaktır.";

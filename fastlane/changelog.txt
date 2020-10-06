@@ -1,1 +1,4 @@
-• Pin your favorite chats at the very top so the talk never stops.
+* Ability to choose custom sounds for notifications (contributed by Cristopher Kobusch)
+* Ability to enable the torch / flash while recording a video (contributed by Heinrich Dahms)
+* Fixing vertical alignment in the input text view when using smaller than default text size (widely requested by beta users, fixed by Fumiaki Yoshimatsu)
+* Allow sharing of PDFs from Safari (contributed by Fumiaki Yoshimatsu)

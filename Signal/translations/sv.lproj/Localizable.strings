@@ -1388,13 +1388,13 @@
 "ERROR_SENDING_DEREGISTERED" = "Din enhet är inte längre registrerad. Vänligen registrera dig för att skicka ytterligare meddelanden.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Din version av Signal har löpt ut. Vänligen uppdatera för att skicka fler meddelanden.";
+"ERROR_SENDING_EXPIRED" = "Din version av Signal har gått ut. Vänligen uppdatera för att skicka fler meddelanden.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Oregistrerad kontakt: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Din version av Signal har löpt ut idag! Tryck för att uppdatera till den senaste versionen.";
+"EXPIRATION_ERROR" = "Din version av Signal har gått ut idag! Tryck för att uppdatera till den senaste versionen.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Din version av Signal kommer att löpa ut om %d dagar. Klicka för att uppdatera till den senaste versionen.";

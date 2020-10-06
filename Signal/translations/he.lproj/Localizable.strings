@@ -41,7 +41,7 @@
 "ACTION_VIDEO_CALL" = "שיחת וידיאו";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "הוסף חבר/ת קבוצה";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "הוסף חבר קבוצה";
 
 /* Label for the 'add group members' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "הוסף חברי קבוצה";
@@ -53,7 +53,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "להוסיף %1$@ חברי קבוצה אל “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "הוסף חבר/ת קבוצה חדש/ה";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "הוסף חבר קבוצה חדש";
 
 /* Title for the 'add group members' confirmation alert. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "הוסף חברי קבוצה חדשים";
@@ -116,7 +116,7 @@
 "APN_Message" = "הודעה חדשה!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "לא ניתן להפעיל את Signal. נא לשלוח יומן ניפוי באגים (תקלים) אל support@signal.org כך שנוכל לפתור סוגיה זו.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal אינו יכול להיות מופעל. אנא שלח יומן ניפוי תקלים אל support@signal.org כך שנוכל לפתור סוגייה זו.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "שגיאה";
@@ -857,7 +857,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "רק מנהלנים";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "בחר מי יכול להוסיף חברי קבוצה אל קבוצה זו:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "כל חברי הקבוצה";
@@ -872,7 +872,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ יוכל/תוכל לערוך קבוצה זו ואת חברי הקבוצה שלה.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "הזמנות של חברי קבוצה";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "בקשות והזמנות של חברי קבוצה";
@@ -1619,7 +1619,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "משתמשים אלו אינם יכולים להתווסף באופן אוטומטי אל קבוצה זו על ידך. הם הוזמנו להצטרף, ולא יראו הודעות קבוצה כלשהן עד שהם יסכימו.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "הזמנות של חברי קבוצה";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "קישור קבוצה זה אינו תקף יותר.";
@@ -3530,7 +3530,7 @@
 "REREGISTER_FOR_PUSH" = "הירשם מחדש עבור התראות דחיפה";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "כדי להפוך את Signal אל יישום ההתכתבות הטוב ביותר ביקום, נשמח לשמוע את המשוב שלך.";
+"RESEARCH_MEGAPHONE_BODY" = "כדי להפוך את Signal ליישום ההתכתבות הטוב ביותר ביקום, נשמח לשמוע את המשוב שלך.";
 
 /* Title for research megaphone */
 "RESEARCH_MEGAPHONE_TITLE" = "אמור אל Signal מה אתה חושב";
