@@ -49,7 +49,7 @@ public class DateHeaderCell: ConversationViewCell {
             return
         }
 
-        titleLabel.font = UIFont.ows_dynamicTypeFootnote.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeFootnote.ows_semibold
         titleLabel.textColor = Theme.secondaryTextAndIconColor
 
         let date = Date(millisecondsSince1970: viewItem.interaction.timestamp)

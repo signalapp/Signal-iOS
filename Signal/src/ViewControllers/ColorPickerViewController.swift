@@ -204,7 +204,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("COLOR_PICKER_SHEET_TITLE", comment: "Modal Sheet title when picking a conversation color.")
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
 
         headerView.addSubview(titleLabel)

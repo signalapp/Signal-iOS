@@ -37,7 +37,7 @@ public class UnreadIndicatorCell: ConversationViewCell {
         titleLabel.text = NSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR",
                                             comment: "Indicator that separates read from unread messages.")
         titleLabel.numberOfLines = 0
-        titleLabel.font = UIFont.ows_dynamicTypeFootnote.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeFootnote.ows_semibold
     }
 
     var stackView: UIStackView!

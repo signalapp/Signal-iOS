@@ -225,7 +225,7 @@ open class ActionSheetController: OWSViewController {
         if let title = title {
             let titleLabel = UILabel()
             titleLabel.textColor = Theme.primaryTextColor
-            titleLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()
+            titleLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
             titleLabel.numberOfLines = 0
             titleLabel.lineBreakMode = .byWordWrapping
             titleLabel.textAlignment = .center
@@ -414,7 +414,7 @@ public class ActionSheetAction: NSObject {
                 titleLabel?.font = .ows_dynamicTypeBodyClamped
                 setTitleColor(Theme.primaryTextColor, for: .init())
             case .cancel:
-                titleLabel?.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+                titleLabel?.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
                 setTitleColor(Theme.primaryTextColor, for: .init())
             case .destructive:
                 titleLabel?.font = .ows_dynamicTypeBodyClamped

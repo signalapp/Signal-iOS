@@ -607,7 +607,7 @@ class TitleView: UIView {
         stackView.autoPinEdgesToSuperviewEdges()
 
         label.textColor = .ows_gray05
-        label.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        label.font = UIFont.ows_dynamicTypeBody.ows_semibold
 
         iconView.tintColor = .ows_gray05
         iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)

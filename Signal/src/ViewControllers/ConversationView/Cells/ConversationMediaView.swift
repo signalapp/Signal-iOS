@@ -160,7 +160,7 @@ public class ConversationMediaView: UIView {
 
         let downloadLabel = UILabel()
         downloadLabel.textColor = Theme.primaryTextColor
-        downloadLabel.font = UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold()
+        downloadLabel.font = UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold
         downloadLabel.textAlignment = .center
         downloadLabel.numberOfLines = 0
         downloadLabel.text = NSLocalizedString("CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE",

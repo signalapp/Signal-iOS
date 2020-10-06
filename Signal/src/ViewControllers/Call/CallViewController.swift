@@ -983,7 +983,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         let okayButton = OWSFlatButton()
         okayButton.useDefaultCornerRadius()
-        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.ows_dynamicTypeBody.ows_semibold(), titleColor: Theme.accentBlueColor)
+        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.ows_dynamicTypeBody.ows_semibold, titleColor: Theme.accentBlueColor)
         okayButton.setBackgroundColors(upColor: .ows_gray05)
         okayButton.contentEdgeInsets = UIEdgeInsets(top: 13, left: 34, bottom: 13, right: 34)
 

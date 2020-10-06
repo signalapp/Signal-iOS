@@ -103,7 +103,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
 
         avatarView.autoSetDimension(.width, toSize: CGFloat(Self.avatarSize))
 
-        groupTitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        groupTitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
         groupTitleLabel.textColor = Theme.primaryTextColor
 
         groupSubtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
@@ -127,7 +127,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         messageLabel.setContentHuggingVerticalHigh()
 
         let cancelButton = OWSFlatButton.button(title: CommonStrings.cancelButton,
-                                                font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                                font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                 titleColor: Theme.secondaryTextAndIconColor,
                                                 backgroundColor: Theme.washColor,
                                                 target: self,
@@ -137,7 +137,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
 
         let joinButton = OWSFlatButton.button(title: NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
                                                                        comment: "Label for the 'join' button in the 'group invite link' action sheet."),
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                               titleColor: .ows_accentBlue,
                                               backgroundColor: Theme.washColor,
                                               target: self,
@@ -146,7 +146,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
         self.joinButton = joinButton
 
         let invalidOkayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                               titleColor: Theme.primaryTextColor,
                                               backgroundColor: Theme.washColor,
                                               target: self,

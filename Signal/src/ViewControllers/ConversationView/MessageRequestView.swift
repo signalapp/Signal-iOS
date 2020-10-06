@@ -285,7 +285,7 @@ class MessageRequestView: UIStackView {
 
     func prepareButton(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSFlatButton {
         let flatButton = OWSFlatButton()
-        flatButton.setTitle(title: title, font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold(), titleColor: titleColor)
+        flatButton.setTitle(title: title, font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold, titleColor: titleColor)
         flatButton.setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05)
         flatButton.setPressedBlock(touchHandler)
         flatButton.useDefaultCornerRadius()
@@ -309,7 +309,7 @@ class MessageRequestView: UIStackView {
                 .foregroundColor: Theme.secondaryTextAndIconColor
             ]
         )
-        attributedString.addAttributes([.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold()], range: boldRange)
+        attributedString.addAttributes([.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold], range: boldRange)
         return prepareLabel(attributedString: attributedString)
     }
 

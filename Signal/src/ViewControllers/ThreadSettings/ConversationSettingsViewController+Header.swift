@@ -72,7 +72,7 @@ extension ConversationSettingsViewController {
             let label = UILabel()
             label.text = viewController.threadName
             label.textColor = Theme.primaryTextColor
-            label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold()
+            label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
             label.lineBreakMode = .byTruncatingTail
             return label
         }
@@ -307,12 +307,12 @@ class ExistingLegacyGroupView: UIView {
         }
 
         let titleLabel = buildLabel()
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
         titleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_TITLE",
                                             comment: "Title for the 'legacy group' alert view.")
 
         let section1TitleLabel = buildLabel()
-        section1TitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        section1TitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
         section1TitleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE",
                                                     comment: "Title for the first section of the 'legacy group' alert view.")
 
@@ -322,7 +322,7 @@ class ExistingLegacyGroupView: UIView {
                                                    comment: "Body text for the first section of the 'legacy group' alert view.")
 
         let section2TitleLabel = buildLabel()
-        section2TitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        section2TitleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
         section2TitleLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE",
                                                     comment: "Title for the second section of the 'legacy group' alert view.")
 
@@ -336,7 +336,7 @@ class ExistingLegacyGroupView: UIView {
         section3BodyLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY",
                                                    comment: "Body text for the third section of the 'legacy group' alert view.")
 
-        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
         let okayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
                                               font: buttonFont,

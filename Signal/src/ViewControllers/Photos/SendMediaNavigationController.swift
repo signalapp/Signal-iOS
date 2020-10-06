@@ -878,7 +878,7 @@ private class DoneButton: UIView {
     private lazy var badgeLabel: UILabel = {
         let label = UILabel()
         label.textColor = .ows_white
-        label.font = UIFont.ows_dynamicTypeSubheadline.ows_monospaced()
+        label.font = UIFont.ows_dynamicTypeSubheadline.ows_monospaced
         label.textAlignment = .center
         return label
     }()

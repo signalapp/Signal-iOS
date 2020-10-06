@@ -102,7 +102,7 @@ class DeviceTransferBaseViewController: UIViewController {
         let titleLabel = UILabel()
         titleLabel.text = text
         titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
@@ -121,7 +121,7 @@ class DeviceTransferBaseViewController: UIViewController {
     }
 
     func button(title: String, selector: Selector) -> OWSFlatButton {
-        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold()
+        let font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         let buttonHeight = OWSFlatButton.heightForFont(font)
         let button = OWSFlatButton.button(title: title,
                                           font: font,

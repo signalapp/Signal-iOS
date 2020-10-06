@@ -197,7 +197,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         let titleLabel = UILabel()
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.systemFont(ofSize: 17).ows_semibold()
+        titleLabel.font = UIFont.systemFont(ofSize: 17).ows_semibold
         titleLabel.textColor = Theme.darkThemePrimaryColor
         titleLabel.text = titleText
 
@@ -296,7 +296,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             for button in buttons {
                 let buttonView = createButtonView(
                     button,
-                    font: previousButton == nil ? UIFont.systemFont(ofSize: 15).ows_semibold() : .systemFont(ofSize: 15)
+                    font: previousButton == nil ? UIFont.systemFont(ofSize: 15).ows_semibold : .systemFont(ofSize: 15)
                 )
 
                 switch buttonOrientation {

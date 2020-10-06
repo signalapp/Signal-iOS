@@ -49,7 +49,7 @@ class MessageRequestsSplash: SplashViewController {
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
@@ -75,7 +75,7 @@ class MessageRequestsSplash: SplashViewController {
 
         // Primary button
         let primaryButton = OWSFlatButton.button(title: primaryButtonTitle(),
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                  titleColor: .white,
                                                  backgroundColor: .ows_accentBlue,
                                                  target: self,

@@ -561,7 +561,7 @@ private class NoSelectedConversationViewController: OWSViewController {
         logoImageView.autoHCenterInSuperview()
         logoImageView.autoSetDimension(.height, toSize: 72)
 
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping

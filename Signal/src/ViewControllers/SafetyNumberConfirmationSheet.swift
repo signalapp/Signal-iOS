@@ -117,7 +117,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold()
+        titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.text = NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
                                             comment: "Title for the 'safety number confirmation' view")
@@ -415,7 +415,7 @@ private class SafetyNumberCell: ContactTableViewCell {
         button.setTitle(
             title: NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
                                      comment: "View safety number action for the 'safety number confirmation' view"),
-            font: UIFont.ows_dynamicTypeBody2.ows_semibold(),
+            font: UIFont.ows_dynamicTypeBody2.ows_semibold,
             titleColor: Theme.conversationButtonTextColor
         )
         button.useDefaultCornerRadius()
