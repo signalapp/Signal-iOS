@@ -193,7 +193,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
-        titleLabel.font = fixedFont.ows_semibold()
+        titleLabel.font = fixedFont.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.text = NSLocalizedString(
             "IMAGE_PICKER_CHANGE_PHOTOS_TITLE",
