@@ -3,6 +3,15 @@ import PromiseKit
 
 extension OnionRequestAPI {
 
+    internal static func encode(ciphertext: Data, json: JSON) throws -> Data {
+        // The encoding of V2 onion requests looks like: | 4 bytes: size N of ciphertext | N bytes: ciphertext | json as utf8 |
+        guard JSONSerialization.isValidJSONObject(json) else { throw HTTP.Error.invalidJSON }
+        let jsonAsData = try JSONSerialization.data(withJSONObject: json, options: [ .fragmentsAllowed ])
+        let ciphertextSize = Int32(ciphertext.count)
+        let ciphertextSizeAsData = withUnsafePointer(to: ciphertextSize) { Data(bytes: $0, count: 4) }
+        return ciphertextSizeAsData + ciphertext + jsonAsData
+    }
+
     /// Encrypts `payload` for `destination` and returns the result. Use this to build the core of an onion request.
     internal static func encrypt(_ payload: JSON, for destination: Destination) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
@@ -44,7 +53,6 @@ extension OnionRequestAPI {
             case .server(let host, _):
                 parameters = [ "host" : host, "target" : "/loki/v1/lsrpc", "method" : "POST" ]
             }
-            parameters["ciphertext"] = previousEncryptionResult.ciphertext.base64EncodedString()
             parameters["ephemeral_key"] = previousEncryptionResult.ephemeralPublicKey.toHexString()
             let x25519PublicKey: String
             switch lhs {
@@ -55,8 +63,7 @@ extension OnionRequestAPI {
                 x25519PublicKey = serverX25519PublicKey
             }
             do {
-                guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(HTTP.Error.invalidJSON) }
-                let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [ .fragmentsAllowed ])
+                let plaintext = try encode(ciphertext: previousEncryptionResult.ciphertext, json: parameters)
                 let result = try EncryptionUtilities.encrypt(plaintext, using: x25519PublicKey)
                 seal.fulfill(result)
             } catch (let error) {

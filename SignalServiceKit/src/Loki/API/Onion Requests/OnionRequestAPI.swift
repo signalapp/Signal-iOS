@@ -56,7 +56,7 @@ public enum OnionRequestAPI {
             let timeout: TimeInterval = 3 // Use a shorter timeout for testing
             HTTP.execute(.get, url, timeout: timeout).done2 { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
-                if version >= "2.0.0" {
+                if version >= "2.0.7" {
                     seal.fulfill(())
                 } else {
                     print("[Loki] [Onion Request API] Unsupported snode version: \(version).")
@@ -282,18 +282,23 @@ public enum OnionRequestAPI {
         SnodeAPI.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
-                let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
+                let url = "\(guardSnode.address):\(guardSnode.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
                 if case Destination.server = destination, Double(onion.count) > 0.75 * Double(FileServerAPI.maxFileSize) {
                     print("[Loki] Approaching request size limit: ~\(onion.count) bytes.")
                 }
                 let parameters: JSON = [
-                    "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
                 ]
+                let body: Data
+                do {
+                    body = try encode(ciphertext: onion, json: parameters)
+                } catch {
+                    return seal.reject(error)
+                }
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
-                HTTP.execute(.post, url, parameters: parameters).done2 { rawResponse in
+                HTTP.execute(.post, url, body: body).done2 { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= EncryptionUtilities.ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
                     do {
