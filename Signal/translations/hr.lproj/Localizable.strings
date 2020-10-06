@@ -2144,7 +2144,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ovi razgovori su arhivirani i prikazuju se na početnoj stranici samo ako primite nove poruke.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Stvorite nove uspomene. Započnite slanjem poruke prijatelju.";
+"INBOX_VIEW_EMPTY_INBOX" = "Stvorite nove uspomene. Započnite slanjem poruke prijateljima.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ vas je zvao/la";

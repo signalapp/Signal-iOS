@@ -842,7 +842,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "仅限管理员";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "指定能修改群名称、群头像，以及阅后即焚信息的计时器的组员：";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "所有群成员";
@@ -851,31 +851,31 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "编辑";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Add Members";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "谁能添加成员";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "仅限管理员";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can add members to this group:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "指定谁能添加成员到此群组：";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "所有群成员";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Group Link";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "群组链接";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "仅限管理员";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ 能编辑此群组及其成员。";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "入群邀请";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Member Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "入群申请和邀请";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "成员";
@@ -884,16 +884,16 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@个成员";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "总是提示";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "静音时不提示";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "静音群聊中被他人提及时，是否接收提醒？";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "提及我";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "静音";
@@ -938,7 +938,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "移除 %@ 的管理员权限？";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Chat";
+"CONVERSATION_SETTINGS_SEARCH" = "搜索聊天记录";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "取消屏蔽群组";
@@ -950,7 +950,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "取消静音";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this chat?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "是否保存对此对话的修改？";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "未保存的修改";
@@ -980,7 +980,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "正在载入更多消息...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "查看更多";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "重置此 session 后可以收到来自 %@的消息, 但是无法恢复已经被破坏的消息.";
@@ -1055,10 +1055,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "重新定向到GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "关于调试日志";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "是否删除此对话中的所有消息？";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "删除所有消息";
@@ -1187,10 +1187,10 @@
 "DISAPPEARING_MESSAGES" = "阅后即焚";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "此对话中的消息将在%@后消失。";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "启用后，此对话中的消息将在阅读后消失。";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "当前消息会在 %@ 之后消失";
@@ -1211,7 +1211,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal 需要联系人访问权限来修改联系人信息";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "移除照片";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "编辑群组";
@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "已达到群成员100人的上限。";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "无效照片。";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "群名称";
@@ -1241,43 +1241,43 @@
 "EDIT_ITEM_COPY_ACTION" = "复制";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "嗨,\n\n最近我在 iPhone 上用 Signal 进行加密聊天，希望你也能加入，这样我们就可以放心发消息和打电话而不用担心被别人偷听了。\n\nSignal 可在 iPhone 和 Android 上使用，这是下载链接: %@\n\nSignal 和你现有聊天软件一样，可发照片视频、打电话，也可以群聊。最棒的是，其他人完全无法偷看聊天内容，即便是 Signal 的创立者也做不到！\n\n这里有更多关于创立 Signal 的 Open Whisper Systems 团队的信息：%@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "切换到 Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "您的设备没有配置邮箱来发送邮件，若要请求支援，请配置您的邮箱或直接发送邮件到 support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "电子邮件不可用";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "活动";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "动物和自然";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "旗帜";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "食物和饮料";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "物品";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "最近通话";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "笑脸和情感";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "符号";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "旅行和地点";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "暂时没有联系人使用 Signal.";
@@ -1304,13 +1304,13 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "未能发送消息。";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "无法打开邮箱应用";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "无法创建支援请求";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "无法上传日志。";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Prekey 更新失败，无法发送消息。";
@@ -1394,7 +1394,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "用户未注册：%@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "您的 Signal 版本已过期！点击升级到最新版本。";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "您目前正在使用的 Signal 将会在 %d 天后过期。点击以更新到最新的版本。";
@@ -1427,7 +1427,7 @@
 "FORWARD_MESSAGE" = "转发消息";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "此对话中没有任何媒体。";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "正在加载新媒体...";
@@ -1463,7 +1463,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "输入您的搜索词";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "打开设置";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "此版本的 Signal 内置了数据库优化和性能改善功能。为了完成此步骤，你可能需要重启软件。";
@@ -1517,94 +1517,94 @@
 "GROUP_CREATION_FAILED" = "不是所有成员都能被添加到群组中。点击重试。";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "添加了无效邀请。";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "您添加了一个无效邀请。";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "您添加了多个无效邀请。";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ 添加了一个无效邀请。";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ 添加了多个无效邀请。";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "添加了多个无效邀请。";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "一个无效邀请已被撤销。";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "您撤回了一个无效邀请。";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "您撤回了多个无效邀请。";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ 撤回了一个无效邀请。";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ 撤回了多个无效邀请。";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "多个无效邀请已失效。";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+"GROUP_INVITE_LINK_DISABLED" = "群组链接已关闭。";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "您关闭了群组链接。";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ 关闭了群组链接。";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "需要管理员审核的群组链接已启用。";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "您启用了需要管理员审核的群组链接。";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 启用了需要管理员审核的群组链接。";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "无需管理员审核的群组链接已启用。";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "您启用了无需管理员审核的群组链接。";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 打开了无需管理员审核的群组链接。";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+"GROUP_INVITE_LINK_RESET" = "群组链接已重置。";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "您重置了群组链接。";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ 重置了群组链接。";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "已取消群组链接的管理员审核要求。";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "您取消了群组链接的管理员审核要求。";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 取消了群组链接的管理员审核要求。";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "已激活群组链接的管理员审核要求。";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "您激活了群组链接的管理员审核要求。";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 激活了群组链接的管理员审核要求。";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ 不能直接被你邀请入群组。他已经收到入群邀请，但在他同意之前无法收到来自该群组的任何消息。";
@@ -1619,79 +1619,79 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "这些用户不能直接被你邀请入群组。他们已经收到入群邀请，但在他们同意之前无法收到来自该群组的任何消息。";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "入群邀请";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "此群组链接已失效。";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "无法加入群组";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "群组";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Join";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "加入";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "正在加载…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "您要加入此群组并向其成员分享您的名字和头像吗？";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "请检查您的网络后再试。";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "请重试。";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "这不是一个有效的群组链接，加入前请确保链接完整正确。";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "无效链接";
 
 /* Indicator that a group invite link has expired. */
-"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "Link is no longer valid";
+"GROUP_LINK_INVITE_LINK_IS_EXPIRED" = "链接已失效";
 
 /* Button to join a group from a group link. */
-"GROUP_LINK_JOIN_GROUP_BUTTON" = "Join Group";
+"GROUP_LINK_JOIN_GROUP_BUTTON" = "加入群组";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "需要升级 Signal 来加入此群组";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "扫描此码的人即可加入您的群组。如果您激活了管理员审核，那么入群者还需要管理员同意才能入群。";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "分享二维码";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR 代码";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Approve New Members";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "审核新成员";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "复制链接";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Group Link";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "群组链接";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Manage and Share";
+"GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "管理和分享";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "通过群组链接的新成员需要经过管理员同意才能入群。";
 
 /* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Member Requests";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "入群申请";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+"GROUP_LINK_VIEW_RESET_LINK" = "重置链接";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "确定要重置群组链接吗？重置后他人将无法通过原来的链接加入群组。";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "分享";
@@ -1703,13 +1703,13 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR 代码";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Share via Signal";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "通过 Signal 分享";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can join the group, or send a request to join. Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "任何人都能通过此链接加入群组或发送入群申请，请注意分享给您信任的人。";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Group Link";
+"GROUP_LINK_VIEW_TITLE" = "群组链接";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ 将你加为联系人。";
@@ -1748,7 +1748,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "你加入了此群。";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "您通过群组链接加入了群组。";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ 将你移出了群组。";
@@ -1757,16 +1757,16 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "你已被移出群组。";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ 同意了您的入群申请。";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "您撤回了入群申请。";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "您的入群申请未通过。";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "您发送了入群申请。";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "你的管理员权限已被取消。";
@@ -1865,7 +1865,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "有1位用户收到了入群邀请。";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ 已受邀入群。";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "你邀请了 %@ 进入此群。";
@@ -1883,7 +1883,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ 加入了此群。";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ 已通过群组链接入群组。";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ 退出了此群。";
@@ -1895,28 +1895,28 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 将 %2$@ 移出了此群。";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "您同意了 %@ 的入群申请。";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ 同意了 %1$@ 的入群申请。";
 
 /* Message indicating that a remote user's request to join the group was approved. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "A request to join the group from %@ was approved.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_FORMAT" = "%@ 的入群申请已通过。";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ 撤回了其入群申请。";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "您拒绝了 %@ 的入群申请。";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ 拒绝了 %1$@ 的入群申请。";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ 的入群申请未通过。";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ 通过群组链接申请入群。";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ 撤销了他们的管理员权限。";
@@ -1928,34 +1928,34 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ 撤销了 %2$@ 的管理员权限。";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Member Requests";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "入群申请";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Pending Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "待处理的入群邀请";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Member Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "入群申请和邀请";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "群组更新完成。";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "群组头像已被移除。";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "您移除了群组头像。";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ 移除了群组头像。";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "群组头像已更新。";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "您更新了群组头像。";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ 更新了群组头像。";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "您已更新该群组";
@@ -2003,40 +2003,40 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "屏蔽 %@";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "旧版群组不兼容新版群组的功能，如管理员和更完善群组更新通知。";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "What are Legacy Groups?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "什么是旧版群组？";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "旧版群组暂时无法升级为新版群组，但若群成员都已升级到最新版 Signal，您可以创建一个包含相同成员的新版群组。\n\nSignal 将在未来提供升级旧版群组的渠道。";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Can I upgrade a Legacy Group?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "我能升级旧版群组吗？";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "所有成员均升级到最新版 Signal 后才能创建新版群组。";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Legacy vs. New Groups";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "新旧版群组对比";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "将创建旧版群组因为一位群成员还在使用旧版 Signal。您可以在他们都升级到新版 Signal 后创建新版群组，或将他们排除后再建群。";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "将创建旧版群组因为%@位群成员还在使用旧版 Signal。您可以在他们都升级到新版 Signal 后创建新版群组，或将他们排除后再建群。";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "有一位成员无法使用新版群组，所以将创建旧版群组。%@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "有%1$@位成员无法使用新版群组，所以将创建旧版群组。%2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "这是个旧版群组，管理员等功能只能在新版群组上使用。%@";
 
 /* Label indicating a legacy group. */
-"GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
+"GROUPS_LEGACY_GROUP_INDICATOR" = "旧版群组";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "了解更多";
@@ -2054,10 +2054,10 @@
 "HELP_CONTACT_US" = "联系我们";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "支持中心";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Chats";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "已归档对话";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "已屏蔽";
@@ -2078,7 +2078,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "您的一些联系人已经在使用Signal了，比如%@，%@，以及%@。";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first chat here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "开始首个对话。";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ 将你加入群组。";
@@ -2129,10 +2129,10 @@
 "IN_CALL_RINGING" = "响铃中...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audio Call…";
+"IN_CALL_RINGING_AUDIO" = "语音通话...";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "视频通话...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "已接通。确保安全中...";
@@ -2141,16 +2141,16 @@
 "IN_CALL_TERMINATED" = "通话结束。";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "这些对话已被归档，仅当有新消息到达时才会出现在收件箱中。";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "收件箱闲得发慌。快开始找您的朋友聊天吧。";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+"INCOMING_CALL_FORMAT" = "%@ 呼叫了您";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "您可以在手机或 iPad 上同时发送和接收消息。↵出于对您隐私的考虑，对话记录将不会被同步到新连结的设备上。";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ 开始使用 Signal 了！";
@@ -2192,13 +2192,13 @@
 "KEY_COMMAND_ALL_MEDIA" = "全部媒体";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Chat";
+"KEY_COMMAND_ARCHIVE" = "归档对话";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "显示附件";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Chat Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "打开对话信息";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "打开输入框";
@@ -2213,10 +2213,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "新消息";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "前往下一个对话";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "回到上一个对话";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "搜索";
@@ -2228,7 +2228,7 @@
 "KEY_COMMAND_STICKERS" = "显示表情包";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "激活对话";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "了解更多";
@@ -2249,7 +2249,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "绑定设备失败";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "此设备将能查看您的群组和联系人、读取您的对话及以您的名义发送消息。";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "绑定当前设备？";
@@ -2276,13 +2276,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "绑定设备失败";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "将对所有网站生产链接预览。";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "关闭";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "预览任意链接";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "通过名字或地址搜索";
@@ -2333,13 +2333,13 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "为所有人删除";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the chat. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "将对所有人永久删除此消息，群成员将看到您删除了一条消息。";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "您想要对谁删除此消息？";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "只对我删除";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "删除此消息";
@@ -2435,7 +2435,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "删除";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "将从您的所有设备上删除此对话。";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "删除对话？";
@@ -2456,34 +2456,34 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "屏蔽";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "是否允许 %@ 查看您的名称头像并给您发消息？取消屏蔽前您将不会收到其发来的消息。";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "是否取消屏蔽对该群组并与之分享您的名字和头像？取消屏蔽前您将不会收到其发来的消息。";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "是否取消屏蔽该群组？取消屏蔽前群成员无法知晓您是否阅读了他们的消息。";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "删除";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your chat with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "您必须分享个人资料才能继续与 %@ 聊天。";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your chat with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "您必须分享个人资料才能继续参与此群聊。";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "你被 %@ 邀请至此群组。你想收到来自其他群成员的消息么？";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "是否允许 %@ 查看您的名称头像并给您发消息？取消屏蔽前其无法知晓您是否阅读了其发来的消息。";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "是否加入此群组并与之分享您的名字和头像？接受邀请前群成员无法知道您是否阅读了他们发来的消息。";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "是否加入此群组？接受邀请前群成员无法知道您是否阅读了他们发来的消息。";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "共享资料";
@@ -2492,13 +2492,13 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "取消屏蔽";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "撤回申请";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "是否撤回该入群申请？";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "您的入群申请已发送给群组管理员，您将在管理员做出决定后收到通知。";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "隆重推出消息请求";
@@ -2507,7 +2507,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "添加用户名";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new chat. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "你可以选择“接受”或“删除”新对话。昵称能让其他用户区别发送消息的用户。";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "您的配置文件名已经保存。";
@@ -2525,7 +2525,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "失败";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "仅部分人收到消息，点击查看详情";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "已读";
@@ -2594,10 +2594,10 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "关联在您当前账户的设备数量以达上限，请移除一个设备后再试。";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted chats.";
+"MUTE_BEHAVIOR_EXPLANATION" = "您将不会收到来自静音对话的通知。";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "已静音";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "跳过";
@@ -2681,19 +2681,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "您可能在%@重启时收到了新消息。";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "接收新消息的通知：";
 
 /* First step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "轻按下面的“去设置”";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "启用“允许通知”";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "点击通知";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "启用通知";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "以后再说";
@@ -2702,10 +2702,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "开启";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "不错过任何消息。";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "是否启用通知？";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "操作包括“标记已读”，“回复”，“回拨”。";
@@ -2720,7 +2720,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "声音";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Add custom sound…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "添加自定义声音...";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "发送人，内容，操作";
@@ -2798,16 +2798,16 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "开启权限";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new chat activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "通知能让您及时收到新消息和新对话提醒。";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "获取消息";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "选择哪些人能通过电话号码%@找到您的 Signal帐号";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "哪些人能找到您的电话号码？";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "输入您的手机号以开始使用";
@@ -2894,7 +2894,7 @@
 "OUTAGE_WARNING" = "Signal 遇到了一些技术故障。我们正努力使服务尽快恢复。";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+"OUTGOING_CALL_FORMAT" = "您呼叫了 %@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF无法显示";
@@ -2906,13 +2906,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "新增到群组";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "将“%@”添加到群组？";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "拒绝入群申请";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "拒绝“%@”的入群申请？";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ 邀请了1位用户";
@@ -2921,28 +2921,28 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ 邀请了%2$@位用户";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "没有待处理的入群申请。";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "暂无邀请通知。";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Added “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "已添加“%@”。";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pending member requests.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ 条待处理入群申请。";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "View Requests";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "查看入群申请";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "已拒绝“%@”。";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "撤销无效邀请";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "撤销%@个无效邀请";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "撤回邀请";
@@ -2963,16 +2963,16 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "被其他用户邀请的用户详情暂时不可见。如果受邀者同意加入，这时他的资料才会对群内可见。在他们加入群组前，不会收到来自群组的任何消息。";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "此表中的人想通过群组链接加入“%@”。";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "无效邀请";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "由其他群成员邀请的用户";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Pending Member Requests";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "待处理入群申请";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "你邀请的用户";
@@ -3002,37 +3002,37 @@
 "PER_MESSAGE_EXPIRATION_VIEWED" = "已阅";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "所有人";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "电话簿里存有您电话号码的用户会在 Signal 联系人列表里看到您。其它知晓您电话号码的用户将能在搜索界面找到您。";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "没有人";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "所有 Signal 都无法通过电话号码找到您。电话簿里存有您电话号码的用户不会在 Signal 联系人列表中看到您。其它知晓您电话号码的用户也无法在搜索界面找到您。";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "范例：%@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "我的联系人";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "只有您的联系人能看到您 Signal 帐号的电话号码。";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "所有人";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "与您对话的联系人和群组将能看到您的电话号码。电话簿里存有您电话号码的用户也能看到您 Signal 账户关联的号码。";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "没有人";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "没有人能查看您 Signal 账户关联的电话号码。";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -3083,7 +3083,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名的相册";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Pin";
+"PIN_ACTION" = "标记";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN 码至少要有4个字符。";
@@ -3107,7 +3107,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "禁用 PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "若禁用 PIN，您在重新注册 Signal 后只能通过迁移其它 iOS 设备数据恢复账户数据，否则您将丢失所有数据。PIN 禁用时，无法启用注册锁定。";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "警告";
@@ -3122,7 +3122,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN 用于加密 Signal 存储的信息，这样只有你可以访问。重装之后，可恢复你的个人资料、设置和联系人。打开 Signal 无需使用 PIN。";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "了解更多 PIN 信息";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 不匹配。请重新尝试。";
@@ -3146,7 +3146,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "关闭";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "禁用 PIN 前必须先取消注册锁定。";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "关闭注册锁？";
@@ -3161,10 +3161,10 @@
 "PIN_CREATION_WEAK_ERROR" = "此 PIN 码过于简单";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "无法禁用 PIN，您稍后将收到通知。";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "禁用 PIN 失败";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "为了帮助您牢记 PIN，我们会定期要求您输入。此频率会逐渐降低。";
@@ -3188,7 +3188,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "我们会在明天再次提醒你。";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "我们会在几周后再次提醒你。";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "我们会在一周后再次提醒你。";
@@ -3203,10 +3203,10 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN 最少需要4位数字";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+"PINNED_CONVERSATION_LIMIT" = "您最多只能标记4个对话。";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Pinned";
+"PINNED_SECTION_TITLE" = "已标记";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "创建密码";
@@ -3224,7 +3224,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN 码已经创建。你可以在设置中修改它。";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Disabled.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "已禁用 PIN。";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒体";
@@ -3248,7 +3248,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "这看起来不是关于 %@ 的安全码. 你在验证正确的联系人吗?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "剪贴板中的数字不是当前对话的正确的安全码。";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal 无法在剪贴板中找到安全码. 你正确的复制了吗?";
@@ -3278,16 +3278,16 @@
 "PROCEED_BUTTON" = "继续";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ 更改其昵称 %@ 为 %@。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ 更改其昵称为 %@。";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "设置头像";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "移除照片";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "创建用户名";
@@ -3317,7 +3317,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "只有在网络通畅时，才能更新个人资料。";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts, when you initiate or accept new chats, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "您的个人资料已通过端对端加密。当您发起、接受新对话以及加入新新群组时，相关用户将能看到您的个人资料及更新。";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "保存";
@@ -3530,25 +3530,25 @@
 "REREGISTER_FOR_PUSH" = "重新注册推送通知服务";
 
 /* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
+"RESEARCH_MEGAPHONE_BODY" = "您的意见将成为 Signal 称霸即时通信界的基础，我们期待您的反馈！";
 
 /* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Tell Signal what you think";
+"RESEARCH_MEGAPHONE_TITLE" = "发表您的 Signal 的感想";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "此调研由 Surveygizmo 于在安全域 surveys.signalusers.org 上运行";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "不，谢谢。";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>我们尊重隐私。</bold>\n\nSignal 不会跟踪或搜集您的数据。我们需要用户反馈来改进 Signal ，<bold>你的宝贵意见不可或缺</bold>。\n\n我们正在做一份关于您使用 Signal 的调研。此调研不会搜集任何泄漏您身份的信息。若有兴趣分享更多反馈，您可以选择性提供联系方式。\n\n如果您能抽出几分钟完成调研，我们将翘首以待。";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Take the survey";
+"RESEARCH_MODAL_TAKE_SURVEY" = "参与调研";
 
 /* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Research";
+"RESEARCH_MODAL_TITLE" = "Signal 调研";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "重试";
@@ -3563,13 +3563,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "依然发送";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "以下用户可能重新安装了 Signal 或更换了设备，请重新与之验证安全码以保护您的隐私。";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "已验证";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "安全码更变";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "查看";
@@ -3773,10 +3773,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "无法获取关联码";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "升级此设备 Signal 来关联您的手机。";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "不受支持的版本";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "您的另一台设备正在使用老旧版本的Signal，故而无法扫描iPad二维码。请安装最新版本的Signal之后重试。";
@@ -3896,10 +3896,10 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "启用调试日志";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "高级 PIN 设置";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Advanced PIN Settings";
+"SETTINGS_ADVANCED_PIN_TITLE" = "高级 PIN 设置";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "禁用 PIN";
@@ -3980,7 +3980,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "添加屏蔽用户";
 
 /* An explanation of the 'blocked' setting */
-"SETTINGS_BLOCK_LIST_FOOTER" = "List of contacts and groups you have blocked.";
+"SETTINGS_BLOCK_LIST_FOOTER" = "您屏蔽的联系人和群组列表。";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "您没有任何 Signal 联系人。";
@@ -3998,7 +3998,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "使用 Signal 服务器中继所有通话，这能防止联系人获取您的 IP 地址，但此功能会降低通话质量。";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "清空聊天记录";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "版权所有 Signal Messenger \n根据 GPLv3 授权";
@@ -4022,7 +4022,7 @@
 "SETTINGS_HELP" = "帮助";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Chat History";
+"SETTINGS_HISTORYLOG_TITLE" = "清空聊天记录";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "信息";
@@ -4040,22 +4040,22 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "条款和隐私政策";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "生成链接预览";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "直接从您发送的链接网站中生成预览。";
 
 /* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Messaging";
+"SETTINGS_MESSAGING" = "消息传输";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "设置";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "将静音对话计入通知数量";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "角标数量";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "电话和消息的提示将能够在锁屏状态下显示。您可以选择是否显示这些通知内容。";
@@ -4073,16 +4073,16 @@
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "通过电话号码找到我";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "通过电话号码找到我";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "查看我的电话号码";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "查看我的电话号码";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "关闭提醒词";
@@ -4124,7 +4124,7 @@
 "SETTINGS_READ_RECEIPT" = "已读回执";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all chats.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "查看和分享已读状态，该设置为可选选项，且对所有对话生效。";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "关闭";
@@ -4184,7 +4184,7 @@
 "SETTINGS_TYPING_INDICATORS" = "“正在输入”提示";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all chats.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "查看并分享消息键入状态，此设置为可选选项，且对所有对话生效。";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "私密发件人";
@@ -4205,7 +4205,7 @@
 "SETTINGS_VERSION" = "版本";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Who can...";
+"SETTINGS_WHO_CAN" = "谁能...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Email";
@@ -4250,7 +4250,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "显示安全码";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "显示对话";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "请你下载Signal加密通讯软件！链接：";
@@ -4322,10 +4322,10 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "告诉我们发生了什么";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "请发送您的支援请求邮件到 support@signal.org";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "Signal iOS 支援请求";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "你觉得怎么样？ （可选的）";
@@ -4334,7 +4334,7 @@
 "SUPPORT_FAQ_PROMPT" = "您阅读常见问题了吗？";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "附上调试日志";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "正在加载";
@@ -4355,7 +4355,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@，%@，以及其他 %lu 个群组的成员";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "你可在此对话中给自己做笔记，如果您关联了其它设备，新笔记将同步到其它设备上。";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ 的成员";
@@ -4400,13 +4400,13 @@
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@分钟";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ second";
+"TIME_AMOUNT_SINGLE_SECOND" = "%@秒";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@个星期";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ year";
+"TIME_AMOUNT_SINGLE_YEAR" = "%@年";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@个星期";
@@ -4415,10 +4415,10 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@周";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ years";
+"TIME_AMOUNT_YEARS_FORMAT" = "%@年";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconds";
+"TIME_AMOUNT_ZERO_SECONDS" = "0秒";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "取消";
@@ -4490,13 +4490,13 @@
 "UNNAMED_DEVICE" = "未命名设备";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "取消标记";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "聊天";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "标为未读";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "无法从 Signal 注销。";
@@ -4508,19 +4508,19 @@
 "UNSUPPORTED_FEATURE_ERROR" = "您的设备不支持此功能。";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "更新联系人";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "无法更新群组信息。";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "无法创建群组，请检查您的网络后重试。";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "创建您的 PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "了解更多 PIN 信息";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN 用于加密 Signal 存储的信息，这样只有你可以访问。重装之后，可恢复你的个人资料、设置和联系人。打开 Signal 无需使用 PIN。";
@@ -4631,7 +4631,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "请完成 Signal 桌面版设置。";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "您删除了此消息。";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您取消了阅后即焚。";

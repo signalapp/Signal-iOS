@@ -62,10 +62,10 @@
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Ajouter des membres";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Souhaitez-vous partager votre profil avec ce groupe ?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec ce groupe ?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Souhaitez-vous ajouter cet utilisateur à vos contacts ?";
+"ADD_TO_CONTACTS_OFFER" = "Voulez-vous ajouter cet utilisateur à vos contacts ?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Ajouter à un autre groupe";
@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_TITLE" = "Ajouter à un autre groupe";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Souhaitez-vous partager votre profil avec cet utilisateur ?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec cet utilisateur ?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Compris";
@@ -485,7 +485,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Appeler";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Souhaitez-vous appeler %@ ?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Voulez-vous appeler %@ ?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Appeler ?";
@@ -605,19 +605,19 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Cela réinitialisera l’application en supprimant vos messages et en vous désinscrivant du serveur. L’appli se fermera une fois le processus terminé.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Souhaitez-vous vraiment supprimer votre compte ?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Voulez-vous vraiment supprimer votre compte ?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Cela réinitialisera l’application en supprimant tous vos messages de cet appareil. Vous pourrez encore relier votre téléphone de nouveau, mais cela ne récupérera pas les messages supprimés. L’appli se fermera une fois le processus terminé.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Souhaitez-vous vraiment supprimer toutes les données ?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Voulez-vous vraiment supprimer toutes les données ?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus recevoir ni envoyer de messages dans ce groupe.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Souhaitez-vous vraiment quitter ce groupe ?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Voulez-vous vraiment quitter ce groupe ?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Relier un nouvel appareil";
@@ -950,7 +950,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Réactiver les notifications";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous enregistrer les changements que vous avez apportés à cette conversation ?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Voulez-vous enregistrer les changements que vous avez apportés à cette conversation ?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Les changements n’ont pas été enregistrés";
@@ -1022,7 +1022,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Impossible de téléverser les journaux.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Que souhaitez-vous faire avec le lien vers votre journal de débogage ?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Que voulez-vous faire avec le lien vers votre journal de débogage ?";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Aucun journal n’a été trouvé.";
@@ -1088,7 +1088,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Arrêter le transfert";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Fermer cette fenêtre arrêtera le transfert en cours. Souhaitez-vous vraiment poursuivre ?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Fermer cette fenêtre arrêtera le transfert en cours. Voulez-vous vraiment poursuivre ?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Arrêter le transfert ?";
@@ -1232,7 +1232,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Mettre à jour";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous enregistrer les changements apportées à ce groupe ?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Voulez-vous enregistrer les changements apportées à ce groupe ?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
@@ -1637,7 +1637,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Chargement…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Souhaitez-vous vous joindre à ce groupe et partager votre nom et votre photo avec ses membres ?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Voulez-vous vous joindre à ce groupe et partager votre nom et votre photo avec ses membres ?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Veuillez vous assurer d’être en ligne et réessayer.";
@@ -1691,7 +1691,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Réinitialiser le lien";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Souhaitez-vous vraiment réinitialiser le lien du groupe ? Personne ne pourra plus se joindre au groupe grâce au lien actuel.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Voulez-vous vraiment réinitialiser le lien du groupe ? Personne ne pourra plus se joindre au groupe grâce au lien actuel.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Partager";
@@ -2009,10 +2009,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Que sont les groupes hérités ?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Les groupes hérités ne peuvent pour le moment pas être mis à niveau en nouveaux groupes, mais vous pouvez créer un nouveau groupe avec les mêmes membres s’ils utilisent la version la plus récente de Signal.\n\nSignal proposera à l’avenir un moyen de mettre à niveau les groupes hérités.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Les groupes hérités ne peuvent pour le moment pas être transformer en nouveaux groupes, mais vous pouvez créer un nouveau groupe avec les mêmes membres s’ils utilisent la version la plus récente de Signal.\n\nSignal proposera à l’avenir un moyen de transformer les groupes hérités.";
 
 /* Title for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Puis-je mettre un groupe hérité à niveau ?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Puis-je transformer un groupe hérité en nouveau groupe ?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Pour créer un nouveau groupe, tous les membres devraient mettre Signal à jour vers la version la plus récente.";
@@ -2336,7 +2336,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ce message sera irrémédiablement supprimé pour tous les membres de cette conversation. Les membres pourront voir que vous avez supprimé un message.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Pour qui souhaitez-vous supprimer ce message ?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Pour qui voulez-vous supprimer ce message ?";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "Supprimer pour moi";
@@ -2474,7 +2474,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Vous devez partager votre profil afin de poursuivre votre conversation avec ce groupe.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Vous avez été invité dans ce groupe par %@. Souhaitez-vous permettre aux membres de ce groupe de vous envoyer des messages ?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Vous avez été invité dans ce groupe par %@. Voulez-vous permettre aux membres de ce groupe de vous envoyer des messages ?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Autoriser %@ à échanger des messages et partager votre nom et votre photo avec ce contact ? Ce contact ne saura pas que vous avez vu ses messages tant que vous n’aurez pas accepté.";
@@ -2645,7 +2645,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Sélectionner des membres";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous abandonner ces changements ?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Voulez-vous abandonner ces changements ?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
@@ -3500,7 +3500,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Échec de confirmation";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Les numéros que vous avez envoyés ne correspondent pas à ce que nous avons envoyé. Souhaitez-vous les confirmer ?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Les numéros que vous avez envoyés ne correspondent pas à ce que nous avons envoyé. Voulez-vous les confirmer ?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Le NIP de blocage de l’inscription est erroné.";
@@ -3860,7 +3860,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Inviter un ami par texto non sécurisé ?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Souhaitez-vous inviter le numéro suivant à Signal :";
+"SEND_SMS_INVITE_TITLE" = "Voulez-vous inviter le numéro suivant à Signal :";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "À propos de Signal";
@@ -4010,7 +4010,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Supprimer toutes les données";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Souhaitez-vous vraiment supprimer tout l’historique (messages, fichiers joints, appels, etc.) ? Cette action est irréversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Voulez-vous vraiment supprimer tout l’historique (messages, fichiers joints, appels, etc.) ? Cette action est irréversible.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Tout supprimer";
@@ -4430,7 +4430,7 @@
 "UNARCHIVE_ACTION" = "Désarchiver";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "L’utilisateur n’est pas dans vos contacts. Souhaitez-vous bloquer cet utilisateur ?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "L’utilisateur n’est pas dans vos contacts. Voulez-vous bloquer cet utilisateur ?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Contact inconnu";
