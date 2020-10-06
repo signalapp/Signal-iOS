@@ -7,6 +7,13 @@ import PromiseKit
 
 extension RemoteAttestation {
 
+    struct EnclaveConfig {
+        let enclaveName: String
+        let mrenclave: String
+        let host: String
+        let censorshipCircumventionPrefix: String
+    }
+
     // MARK: - Dependencies
 
     private static var networkManager: TSNetworkManager {
@@ -15,8 +22,20 @@ extension RemoteAttestation {
 
     // MARK: -
 
-    public static func performForKeyBackup(auth: RemoteAttestationAuth?) -> Promise<RemoteAttestation> {
-        return performAttestation(for: .keyBackup, auth: auth).map { attestationResponse -> RemoteAttestation in
+    public static func performForKeyBackup(
+        auth: RemoteAttestationAuth?,
+        enclave: KeyBackupEnclave
+    ) -> Promise<RemoteAttestation> {
+        return performAttestation(
+            for: .keyBackup,
+            auth: auth,
+            config: EnclaveConfig(
+                enclaveName: enclave.name,
+                mrenclave: enclave.mrenclave,
+                host: TSConstants.keyBackupURL,
+                censorshipCircumventionPrefix: TSConstants.keyBackupCensorshipPrefix
+            )
+        ).map { attestationResponse -> RemoteAttestation in
             return try parseAttestation(params: attestationResponse.responseBody,
                                         clientEphemeralKeyPair: attestationResponse.clientEphemeralKeyPair,
                                         cookies: attestationResponse.cookies,
@@ -37,7 +56,15 @@ extension RemoteAttestation {
     }
 
     public static func performForCDS() -> Promise<CDSAttestation> {
-        return performAttestation(for: .contactDiscovery).map { attestationResponse -> CDSAttestation in
+        return performAttestation(
+            for: .contactDiscovery,
+            config: EnclaveConfig(
+                enclaveName: TSConstants.contactDiscoveryEnclaveName,
+                mrenclave: TSConstants.contactDiscoveryMrEnclave,
+                host: TSConstants.contactDiscoveryURL,
+                censorshipCircumventionPrefix: TSConstants.contactDiscoveryCensorshipPrefix
+            )
+        ).map { attestationResponse -> CDSAttestation in
             let attestationBody: [CDSAttestation.Id: [String: Any]] = try attestationResponse.responseBody.required(key: "attestations")
 
             // The client MUST reject server responses with more than 3 Remote Attestation Responses attached,
@@ -79,7 +106,11 @@ extension RemoteAttestation {
         let auth: RemoteAttestationAuth
     }
 
-    private static func performAttestation(for service: RemoteAttestationService, auth: RemoteAttestationAuth? = nil) -> Promise<AttestationResponse> {
+    private static func performAttestation(
+        for service: RemoteAttestationService,
+        auth: RemoteAttestationAuth? = nil,
+        config: EnclaveConfig
+    ) -> Promise<AttestationResponse> {
         firstly(on: .global()) { () -> Promise<RemoteAttestationAuth> in
             if let auth = auth {
                 return Promise.value(auth)
@@ -87,7 +118,6 @@ extension RemoteAttestation {
                 return getAuth(for: service)
             }
         }.then(on: .global()) { auth -> Promise<AttestationResponse> in
-            let config = enclaveConfig(for: service)
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()
 
             let request = remoteAttestationRequest(enclaveName: config.enclaveName,
@@ -193,30 +223,6 @@ extension RemoteAttestation {
 
         Logger.verbose("remote attestation complete")
         return RemoteAttestation(cookies: cookies, keys: keys, requestId: requestId, enclaveName: enclaveName, auth: auth)
-    }
-
-    // MARK: -
-
-    struct EnclaveConfig {
-        let enclaveName: String
-        let mrenclave: String
-        let host: String
-        let censorshipCircumventionPrefix: String
-    }
-
-    private static func enclaveConfig(for service: RemoteAttestationService) -> EnclaveConfig {
-        switch service {
-        case .contactDiscovery:
-            return EnclaveConfig(enclaveName: TSConstants.contactDiscoveryEnclaveName,
-                                 mrenclave: TSConstants.contactDiscoveryMrEnclave,
-                                 host: TSConstants.contactDiscoveryURL,
-                                 censorshipCircumventionPrefix: TSConstants.contactDiscoveryCensorshipPrefix)
-        case .keyBackup:
-            return EnclaveConfig(enclaveName: TSConstants.keyBackupEnclaveName,
-                                 mrenclave: TSConstants.keyBackupMrEnclave,
-                                 host: TSConstants.keyBackupURL,
-                                 censorshipCircumventionPrefix: TSConstants.keyBackupCensorshipPrefix)
-        }
     }
 }
 

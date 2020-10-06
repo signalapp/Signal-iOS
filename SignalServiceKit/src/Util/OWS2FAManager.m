@@ -106,10 +106,14 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (nullable NSString *)pinCode
 {
     __block NSString *_Nullable value;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [OWS2FAManager.keyValueStore getString:kOWS2FAManager_PinCode transaction:transaction];
-    }];
+    [self.databaseStorage
+        readWithBlock:^(SDSAnyReadTransaction *transaction) { value = [self pinCodeWithTransaction:transaction]; }];
     return value;
+}
+
+- (nullable NSString *)pinCodeWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWS2FAManager.keyValueStore getString:kOWS2FAManager_PinCode transaction:transaction];
 }
 
 - (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction
@@ -337,6 +341,11 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     if (!OWSKeyBackupService.hasBackedUpMasterKey) {
         return NO;
+    }
+
+    if ([self pinCodeWithTransaction:transaction].length == 0) {
+        OWSLogInfo(@"Missing 2FA pin, prompting for reminder so we can backfill it.");
+        return YES;
     }
 
     if (![self areRemindersEnabledTransaction:transaction]) {

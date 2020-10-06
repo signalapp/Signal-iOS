@@ -24,13 +24,18 @@ private protocol TSConstantsProtocol: class {
     var contactDiscoveryEnclaveName: String { get }
     var contactDiscoveryMrEnclave: String { get }
 
-    var keyBackupEnclaveName: String { get }
-    var keyBackupMrEnclave: String { get }
-    var keyBackupServiceId: String { get }
+    var keyBackupEnclave: KeyBackupEnclave { get }
+    var keyBackupPreviousEnclaves: [KeyBackupEnclave] { get }
 
     var applicationGroup: String { get }
 
     var serverPublicParamsBase64: String { get }
+}
+
+public struct KeyBackupEnclave: Equatable {
+    let name: String
+    let mrenclave: String
+    let serviceId: String
 }
 
 // MARK: -
@@ -82,12 +87,8 @@ public class TSConstants: NSObject {
     @objc
     public static var contactDiscoveryMrEnclave: String { return shared.contactDiscoveryMrEnclave }
 
-    @objc
-    public static var keyBackupEnclaveName: String { return shared.keyBackupEnclaveName }
-    @objc
-    public static var keyBackupMrEnclave: String { return shared.keyBackupMrEnclave }
-    @objc
-    public static var keyBackupServiceId: String { return shared.keyBackupServiceId }
+    static var keyBackupEnclave: KeyBackupEnclave { shared.keyBackupEnclave }
+    static var keyBackupPreviousEnclaves: [KeyBackupEnclave] { shared.keyBackupPreviousEnclaves }
 
     @objc
     public static var applicationGroup: String { return shared.applicationGroup }
@@ -173,9 +174,17 @@ private class TSConstantsProduction: TSConstantsProtocol {
         return contactDiscoveryEnclaveName
     }
 
-    public let keyBackupEnclaveName = "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
-    public let keyBackupMrEnclave = "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87"
-    public let keyBackupServiceId = "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
+    public let keyBackupEnclave = KeyBackupEnclave(
+        name: "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe",
+        mrenclave: "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87",
+        serviceId: "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
+    )
+
+    // An array of previously used enclaves that we should try and restore
+    // key material from during registration. These must be ordered from
+    // newest to oldest, so we check the latest enclaves for backups before
+    // checking earlier enclaves.
+    public let keyBackupPreviousEnclaves = [KeyBackupEnclave]()
 
     public let applicationGroup = "group.org.whispersystems.signal.group"
 
@@ -212,9 +221,23 @@ private class TSConstantsStaging: TSConstantsProtocol {
         return contactDiscoveryEnclaveName
     }
 
-    public let keyBackupEnclaveName = "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9"
-    public let keyBackupMrEnclave = "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87"
-    public let keyBackupServiceId = "038c40bbbacdc873caa81ac793bb75afde6dfe436a99ab1f15e3f0cbb7434ced"
+    public let keyBackupEnclave = KeyBackupEnclave(
+        name: "dcd2f0b7b581068569f19e9ccb6a7ab1a96912d09dde12ed1464e832c63fa948",
+        mrenclave: "9db0568656c53ad65bb1c4e1b54ee09198828699419ec0f63cf326e79827ab23",
+        serviceId: "89e160bfc95aa13e71caeea0cdbf3492b41c7ce3fc7c093112af7825f396682b"
+    )
+
+    // An array of previously used enclaves that we should try and restore
+    // key material from during registration. These must be ordered from
+    // newest to oldest, so we check the latest enclaves for backups before
+    // checking earlier enclaves.
+    public let keyBackupPreviousEnclaves = [
+        KeyBackupEnclave(
+            name: "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9",
+            mrenclave: "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87",
+            serviceId: "038c40bbbacdc873caa81ac793bb75afde6dfe436a99ab1f15e3f0cbb7434ced"
+        )
+    ]
 
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
 
