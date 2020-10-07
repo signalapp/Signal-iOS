@@ -2332,6 +2332,12 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
+/* Body for 'groups v2 & mentions' megaphone */
+"MEGAPHONE_GROUPS_V2_MENTIONS_BODY" = "MEGAPHONE_GROUPS_V2_MENTIONS_BODY";
+
+/* Title for 'groups v2 & mentions' megaphone */
+"MEGAPHONE_GROUPS_V2_MENTIONS_TITLE" = "MEGAPHONE_GROUPS_V2_MENTIONS_TITLE";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Remind Me Later";
 
@@ -4269,6 +4275,15 @@
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
+
+/* Footer for 'groups v2 and mentions' splash screen */
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these updates in a future update.";
+
+/* Header for 'groups v2 and mentions' splash screen */
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+
+/* Body text for 'groups v2 and mentions' splash screen */
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";

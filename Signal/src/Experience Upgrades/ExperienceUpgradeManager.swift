@@ -134,7 +134,7 @@ class ExperienceUpgradeManager: NSObject {
             return OWSProfileManager.shared().localFullName()?.isEmpty != false
         case .introducingPins:
             return true
-        case .groupsV2AndMentionsMegaphone:
+        case .groupsV2AndMentionsSplash:
             return true
         default:
             return false
@@ -147,6 +147,8 @@ class ExperienceUpgradeManager: NSObject {
             return IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
         case .messageRequests:
             return MessageRequestsSplash(experienceUpgrade: experienceUpgrade)
+        case .groupsV2AndMentionsSplash:
+            return GroupsV2AndMentionsSplash(experienceUpgrade: experienceUpgrade)
         default:
             return nil
         }
@@ -161,11 +163,12 @@ class ExperienceUpgradeManager: NSObject {
              .notificationPermissionReminder,
              .contactPermissionReminder,
              .linkPreviews,
-             .researchMegaphone1,
-            .groupsV2AndMentionsMegaphone:
+             .researchMegaphone1:
             return true
         case .messageRequests:
             // no need to annoy user with banner for message requests. They are self explanatory.
+            return false
+        case .groupsV2AndMentionsSplash:
             return false
         default:
             return false
@@ -186,8 +189,8 @@ class ExperienceUpgradeManager: NSObject {
             return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .researchMegaphone1:
             return ResearchMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .groupsV2AndMentionsMegaphone:
-            return GroupsV2AndMentionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+//        case .groupsV2AndMentionsSplash:
+//            return GroupsV2AndMentionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

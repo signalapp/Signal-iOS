@@ -14,7 +14,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case contactPermissionReminder
     case linkPreviews
     case researchMegaphone1
-    case groupsV2AndMentionsMegaphone
+    case groupsV2AndMentionsSplash
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -59,7 +59,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return true
         case .researchMegaphone1:
             return RemoteConfig.researchMegaphone
-        case .groupsV2AndMentionsMegaphone:
+        case .groupsV2AndMentionsSplash:
             // TODO:
             return RemoteConfig.groupsV2CreateGroups
         }
@@ -115,8 +115,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return .medium
         case .researchMegaphone1:
             return .low
-        case .groupsV2AndMentionsMegaphone:
-            return .low
+        case .groupsV2AndMentionsSplash:
+            return .medium
         }
     }
 
@@ -177,7 +177,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
-        case .groupsV2AndMentionsMegaphone:               return .groupsV2AndMentionsMegaphone
+        case .groupsV2AndMentionsSplash:               return .groupsV2AndMentionsSplash
         }
     }
 }
@@ -224,6 +224,7 @@ public class ExperienceUpgradeFinder: NSObject {
 
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
 
+        // TODO:
 //        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
     }
 
@@ -246,6 +247,10 @@ public class ExperienceUpgradeFinder: NSObject {
             .allCases
             .filter { $0.hasLaunched(transaction: transaction) && !$0.hasExpired && ($0.showOnLinkedDevices || isPrimaryDevice) }
             .map { $0.rawValue }
+
+        Logger.verbose("activeIds: \(activeIds)")
+        Logger.flush()
+        Logger.flush()
 
         // We don't include `isComplete` in the query as we want to initialize
         // new records for any active ids that haven't had one recorded yet.
@@ -314,14 +319,21 @@ public extension ExperienceUpgrade {
         }
     }
 
-    var hasViewed: Bool { firstViewedTimestamp > 0 }
+    var hasViewed: Bool {
+        // TODO:
+        guard id != .groupsV2AndMentionsSplash else {
+            return false
+        }
+        return firstViewedTimestamp > 0
+    }
 
     func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
-        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(String(describing: id))") }
-
-        let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
-        changeBlock(experienceUpgrade)
-        experienceUpgrade.anyUpsert(transaction: transaction)
+        // TODO:
+//        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(String(describing: id))") }
+//
+//        let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
+//        changeBlock(experienceUpgrade)
+//        experienceUpgrade.anyUpsert(transaction: transaction)
     }
 }
 
@@ -336,7 +348,7 @@ public enum ObjcExperienceUpgradeId: Int {
     case contactPermissionReminder
     case linkPreviews
     case researchMegaphone1
-    case groupsV2AndMentionsMegaphone
+    case groupsV2AndMentionsSplash
 
     public var swiftRepresentation: ExperienceUpgradeId {
         switch self {
@@ -347,7 +359,7 @@ public enum ObjcExperienceUpgradeId: Int {
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
-        case .groupsV2AndMentionsMegaphone:               return .groupsV2AndMentionsMegaphone
+        case .groupsV2AndMentionsSplash:               return .groupsV2AndMentionsSplash
         }
     }
 }
