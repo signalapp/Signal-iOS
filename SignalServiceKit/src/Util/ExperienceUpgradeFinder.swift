@@ -60,7 +60,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .researchMegaphone1:
             return RemoteConfig.researchMegaphone
         case .groupsV2AndMentionsSplash:
-            // TODO:
             return RemoteConfig.groupsV2CreateGroups
         }
     }
@@ -224,8 +223,7 @@ public class ExperienceUpgradeFinder: NSObject {
 
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
 
-        // TODO:
-//        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
+        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
     }
 
     @objc
@@ -247,10 +245,6 @@ public class ExperienceUpgradeFinder: NSObject {
             .allCases
             .filter { $0.hasLaunched(transaction: transaction) && !$0.hasExpired && ($0.showOnLinkedDevices || isPrimaryDevice) }
             .map { $0.rawValue }
-
-        Logger.verbose("activeIds: \(activeIds)")
-        Logger.flush()
-        Logger.flush()
 
         // We don't include `isComplete` in the query as we want to initialize
         // new records for any active ids that haven't had one recorded yet.
@@ -319,13 +313,7 @@ public extension ExperienceUpgrade {
         }
     }
 
-    var hasViewed: Bool {
-        // TODO:
-        guard id != .groupsV2AndMentionsSplash else {
-            return false
-        }
-        return firstViewedTimestamp > 0
-    }
+    var hasViewed: Bool { firstViewedTimestamp > 0 }
 
     func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
         // TODO:
