@@ -4,6 +4,7 @@
 
 import Foundation
 import Lottie
+import SafariServices
 
 class GroupsV2AndMentionsSplash: SplashViewController {
 
@@ -48,49 +49,83 @@ class GroupsV2AndMentionsSplash: SplashViewController {
         animationView.setContentHuggingLow()
         animationView.setCompressionResistanceLow()
 
-        animationView.addRedBorder()
+        let topStack = UIStackView()
+        topStack.axis = .vertical
+        topStack.alignment = .center
+        view.addSubview(topStack)
+        topStack.autoPinWidthToSuperview(withMargin: hMargin)
+        topStack.autoPinEdge(.top, to: .bottom, of: animationView)
 
-        let vStack = UIStackView()
-        vStack.axis = .vertical
-        vStack.alignment = .fill
-        view.addSubview(vStack)
-        vStack.autoPinWidthToSuperview(withMargin: hMargin)
-        vStack.autoPinBottomToSuperviewMargin(withInset: ScaleFromIPhone5(10))
-        // The title label actually overlaps the hero image because it has a long shadow
-        // and we want the text to partially sit on top of this.
-//        titleLabel.autoPinEdge(.top, to: .bottom, of: animationView, withOffset: -10)
-        vStack.autoPinEdge(.top, to: .bottom, of: animationView)
+        let bottomStack = UIStackView()
+        bottomStack.axis = .vertical
+        bottomStack.alignment = .fill
+        view.addSubview(bottomStack)
+        bottomStack.autoPinWidthToSuperview(withMargin: hMargin)
+        bottomStack.autoPinBottomToSuperviewMargin(withInset: ScaleFromIPhone5(10))
+        bottomStack.autoPinEdge(.top, to: .bottom, of: topStack)
 
-        let titleLabel = UILabel()
+        func buildLabel() -> UILabel {
+            let label = UILabel()
+            label.textAlignment = .center
+            label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
+            return label
+        }
+
+        let titleLabel = buildLabel()
         titleLabel.text = title
-        titleLabel.textAlignment = .center
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.numberOfLines = 1
         titleLabel.minimumScaleFactor = 0.5
         titleLabel.adjustsFontSizeToFitWidth = true
-        vStack.addArrangedSubview(titleLabel)
-        vStack.addArrangedSubview(UIView.spacer(withHeight: 6))
+        topStack.addArrangedSubview(titleLabel)
+        topStack.addArrangedSubview(UIView.spacer(withHeight: 6))
 
-        let bodyLabel = UILabel()
+        let bodyLabel = buildLabel()
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_dynamicTypeBody
         bodyLabel.textColor = Theme.primaryTextColor
-        bodyLabel.numberOfLines = 0
-        bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.textAlignment = .center
-        vStack.addArrangedSubview(bodyLabel)
-        vStack.addArrangedSubview(UIView.spacer(withHeight: 25))
+        topStack.addArrangedSubview(bodyLabel)
+        topStack.addArrangedSubview(UIView.spacer(withHeight: 25))
 
-        let footerLabel = UILabel()
+        let instructionsStack = UIStackView()
+        instructionsStack.axis = .horizontal
+        instructionsStack.alignment = .center
+        instructionsStack.spacing = 10
+        topStack.addArrangedSubview(instructionsStack)
+        topStack.addArrangedSubview(UIView.spacer(withHeight: 25))
+
+        let instructionsIconView = UIImageView()
+        instructionsIconView.setImage(imageName: Theme.iconName(.compose32))
+        instructionsIconView.setContentHuggingHigh()
+        instructionsStack.addArrangedSubview(instructionsIconView)
+
+        let instructionsLabel1 = buildLabel()
+        instructionsLabel1.font = UIFont.ows_dynamicTypeBody
+        instructionsLabel1.text = NSLocalizedString("SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER",
+                                                    comment: "Instructions for 'groups v2 and mentions' splash screen")
+        instructionsLabel1.textColor = Theme.primaryTextColor
+        instructionsLabel1.setContentHuggingHigh()
+        instructionsLabel1.numberOfLines = 1
+        instructionsStack.addArrangedSubview(instructionsLabel1)
+
+        let instructionsLabel2 = buildLabel()
+        instructionsLabel2.font = UIFont.ows_dynamicTypeBody
+        instructionsLabel2.text = NSLocalizedString("SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS",
+                                                    comment: "Instructions for 'groups v2 and mentions' splash screen")
+        instructionsLabel2.textColor = Theme.primaryTextColor
+        instructionsLabel2.numberOfLines = 1
+        instructionsLabel2.setContentHuggingHigh()
+        instructionsStack.addArrangedSubview(instructionsLabel2)
+
+        let footerLabel = buildLabel()
         footerLabel.text = NSLocalizedString("SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER",
                                            comment: "Footer for 'groups v2 and mentions' splash screen")
         footerLabel.font = UIFont.ows_dynamicTypeSubheadline
         footerLabel.textColor = Theme.secondaryTextAndIconColor
-        footerLabel.numberOfLines = 0
-        footerLabel.lineBreakMode = .byWordWrapping
-        footerLabel.textAlignment = .center
-        vStack.addArrangedSubview(footerLabel)
-        vStack.addArrangedSubview(UIView.spacer(withHeight: 25))
+        topStack.addArrangedSubview(footerLabel)
+        topStack.addArrangedSubview(UIView.spacer(withHeight: 50))
 
         let okayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
                                               font: UIFont.ows_dynamicTypeBody.ows_semibold,
@@ -99,8 +134,8 @@ class GroupsV2AndMentionsSplash: SplashViewController {
                                               target: self,
                                               selector: #selector(didTapOkayButton))
         okayButton.autoSetHeightUsingFont()
-        vStack.addArrangedSubview(okayButton)
-        vStack.addArrangedSubview(UIView.spacer(withHeight: 4))
+        bottomStack.addArrangedSubview(okayButton)
+        bottomStack.addArrangedSubview(UIView.spacer(withHeight: 4))
 
         let learnMoreButton = OWSFlatButton.button(title: CommonStrings.learnMore,
                                               font: UIFont.ows_dynamicTypeBody,
@@ -109,7 +144,7 @@ class GroupsV2AndMentionsSplash: SplashViewController {
                                               target: self,
                                               selector: #selector(didTapLearnMoreButton))
         learnMoreButton.autoSetHeightUsingFont()
-        vStack.addArrangedSubview(learnMoreButton)
+        bottomStack.addArrangedSubview(learnMoreButton)
     }
 
     @objc
@@ -119,10 +154,21 @@ class GroupsV2AndMentionsSplash: SplashViewController {
 
     @objc
     func didTapLearnMoreButton(_ sender: UIButton) {
-        // TODO:
-//        let vc = ProfileViewController(mode: .experienceUpgrade) { [weak self] _ in
-//            self?.dismiss(animated: true)
-//        }
-//        navigationController?.pushViewController(vc, animated: true)
+        dismiss(animated: true) {
+            Self.showLearnMoreView()
+        }
+    }
+
+    private class func showLearnMoreView() {
+        guard let url = URL(string: "https://support.signal.org/hc/articles/360007319331") else {
+            owsFailDebug("Invalid url.")
+            return
+        }
+        guard let fromViewController = CurrentAppContext().frontmostViewController() else {
+            owsFailDebug("Missing fromViewController.")
+            return
+        }
+        let vc = SFSafariViewController(url: url)
+        fromViewController.present(vc, animated: true, completion: nil)
     }
 }
