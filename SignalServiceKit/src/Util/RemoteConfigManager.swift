@@ -82,9 +82,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var deleteForEveryone: Bool { isEnabled(.deleteForEveryone) }
-
-    @objc
     public static var versionedProfileFetches: Bool {
         if DebugFlags.forceVersionedProfiles { return true }
         return isEnabled(.versionedProfiles)
@@ -320,7 +317,6 @@ private struct Flags {
         case kbs
         case groupsV2CreateGroupsV4
         case groupsV2GoodCitizenV4
-        case deleteForEveryone
         case versionedProfiles
         case mentions
         case uuidSafetyNumbers
