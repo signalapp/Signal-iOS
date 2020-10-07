@@ -9,6 +9,7 @@ extension OnionRequestAPI {
         let jsonAsData = try JSONSerialization.data(withJSONObject: json, options: [ .fragmentsAllowed ])
         let ciphertextSize = Int32(ciphertext.count)
         let ciphertextSizeAsData = withUnsafePointer(to: ciphertextSize) { Data(bytes: $0, count: MemoryLayout<Int32>.size) }
+        // TODO: Ensure this is all little endian
         return ciphertextSizeAsData + ciphertext + jsonAsData
     }
 
