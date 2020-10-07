@@ -8,7 +8,7 @@ extension OnionRequestAPI {
         guard JSONSerialization.isValidJSONObject(json) else { throw HTTP.Error.invalidJSON }
         let jsonAsData = try JSONSerialization.data(withJSONObject: json, options: [ .fragmentsAllowed ])
         let ciphertextSize = Int32(ciphertext.count)
-        let ciphertextSizeAsData = withUnsafePointer(to: ciphertextSize) { Data(bytes: $0, count: 4) }
+        let ciphertextSizeAsData = withUnsafePointer(to: ciphertextSize) { Data(bytes: $0, count: MemoryLayout<Int32>.size) }
         return ciphertextSizeAsData + ciphertext + jsonAsData
     }
 
@@ -23,10 +23,7 @@ extension OnionRequestAPI {
                 case .snode(let snode):
                     guard let snodeX25519PublicKey = snode.publicKeySet?.x25519Key else { return seal.reject(Error.snodePublicKeySetMissing) }
                     let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
-                    let payloadAsString = String(data: payloadAsData, encoding: .utf8)! // Snodes only accept this as a string
-                    let wrapper: JSON = [ "body" : payloadAsString, "headers" : "" ]
-                    guard JSONSerialization.isValidJSONObject(wrapper) else { return seal.reject(HTTP.Error.invalidJSON) }
-                    let plaintext = try JSONSerialization.data(withJSONObject: wrapper, options: [ .fragmentsAllowed ])
+                    let plaintext = try encode(ciphertext: payloadAsData, json: [ "headers" : "" ])
                     let result = try EncryptionUtilities.encrypt(plaintext, using: snodeX25519PublicKey)
                     seal.fulfill(result)
                 case .server(_, let serverX25519PublicKey):
