@@ -1812,6 +1812,12 @@ public class GroupManager: NSObject {
         notifyStorageServiceOfInsertedGroup(groupModel: groupModel,
                                             transaction: transaction)
 
+        if DebugFlags.internalLogging {
+            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread,
+                                                                                           transaction: transaction)
+            owsAssertDebug(dmConfiguration.asToken == newDisappearingMessageToken)
+        }
+
         return groupThread
     }
 
@@ -1988,6 +1994,12 @@ public class GroupManager: NSObject {
                                          transaction: transaction)
         default:
             break
+        }
+
+        if DebugFlags.internalLogging {
+            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread,
+                                                                                           transaction: transaction)
+            owsAssertDebug(dmConfiguration.asToken == newDisappearingMessageToken)
         }
 
         return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)
