@@ -104,7 +104,7 @@ class GroupsV2AndMentionsSplash: SplashViewController {
         let instructionsLabel1 = buildLabel()
         instructionsLabel1.font = UIFont.ows_dynamicTypeBody
         instructionsLabel1.text = NSLocalizedString("SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER",
-                                                    comment: "Instructions for 'groups v2 and mentions' splash screen")
+                                                    comment: "Joiner symbol in the instructions for 'groups v2 and mentions' splash screen")
         instructionsLabel1.textColor = Theme.primaryTextColor
         instructionsLabel1.setContentHuggingHigh()
         instructionsLabel1.numberOfLines = 1
