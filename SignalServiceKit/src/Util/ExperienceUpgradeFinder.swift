@@ -14,6 +14,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case contactPermissionReminder
     case linkPreviews
     case researchMegaphone1
+    case groupsV2AndMentionsMegaphone
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -58,6 +59,9 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return true
         case .researchMegaphone1:
             return RemoteConfig.researchMegaphone
+        case .groupsV2AndMentionsMegaphone:
+            // TODO:
+            return RemoteConfig.groupsV2CreateGroups
         }
     }
 
@@ -110,6 +114,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .contactPermissionReminder:
             return .medium
         case .researchMegaphone1:
+            return .low
+        case .groupsV2AndMentionsMegaphone:
             return .low
         }
     }
@@ -171,6 +177,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
+        case .groupsV2AndMentionsMegaphone:               return .groupsV2AndMentionsMegaphone
         }
     }
 }
@@ -217,7 +224,7 @@ public class ExperienceUpgradeFinder: NSObject {
 
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
 
-        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
+//        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
     }
 
     @objc
@@ -329,6 +336,7 @@ public enum ObjcExperienceUpgradeId: Int {
     case contactPermissionReminder
     case linkPreviews
     case researchMegaphone1
+    case groupsV2AndMentionsMegaphone
 
     public var swiftRepresentation: ExperienceUpgradeId {
         switch self {
@@ -339,6 +347,7 @@ public enum ObjcExperienceUpgradeId: Int {
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
+        case .groupsV2AndMentionsMegaphone:               return .groupsV2AndMentionsMegaphone
         }
     }
 }

@@ -196,6 +196,7 @@
 		347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F82436820C0019A52C /* GroupViewHelper.swift */; };
 		347B83FD24378DDF0019A52C /* GroupMemberRequestsAndInvitesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */; };
 		347C37FF2526005800F3D941 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 347C37FE2526005800F3D941 /* CloudKit.framework */; };
+		347C384F252DF50A00F3D941 /* GroupsV2AndMentionsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C384E252DF50900F3D941 /* GroupsV2AndMentionsMegaphone.swift */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
@@ -1128,6 +1129,7 @@
 		347B83F82436820C0019A52C /* GroupViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupViewHelper.swift; sourceTree = "<group>"; };
 		347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMemberRequestsAndInvitesViewController.swift; sourceTree = "<group>"; };
 		347C37FE2526005800F3D941 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		347C384E252DF50900F3D941 /* GroupsV2AndMentionsMegaphone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AndMentionsMegaphone.swift; sourceTree = "<group>"; };
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
@@ -3316,6 +3318,7 @@
 			isa = PBXGroup;
 			children = (
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
+				347C384E252DF50900F3D941 /* GroupsV2AndMentionsMegaphone.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */,
 				8806F21A23E90B0B00692638 /* MessageRequests.swift */,
@@ -4861,6 +4864,7 @@
 				4CFF115523A9C6DC0007F9D7 /* OWSUnreadIndicatorCell.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
 				34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */,
+				347C384F252DF50A00F3D941 /* GroupsV2AndMentionsMegaphone.swift in Sources */,
 				4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */,
 				4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,

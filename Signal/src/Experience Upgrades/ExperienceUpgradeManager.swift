@@ -134,6 +134,8 @@ class ExperienceUpgradeManager: NSObject {
             return OWSProfileManager.shared().localFullName()?.isEmpty != false
         case .introducingPins:
             return true
+        case .groupsV2AndMentionsMegaphone:
+            return true
         default:
             return false
         }
@@ -159,7 +161,8 @@ class ExperienceUpgradeManager: NSObject {
              .notificationPermissionReminder,
              .contactPermissionReminder,
              .linkPreviews,
-             .researchMegaphone1:
+             .researchMegaphone1,
+            .groupsV2AndMentionsMegaphone:
             return true
         case .messageRequests:
             // no need to annoy user with banner for message requests. They are self explanatory.
@@ -183,6 +186,8 @@ class ExperienceUpgradeManager: NSObject {
             return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .researchMegaphone1:
             return ResearchMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .groupsV2AndMentionsMegaphone:
+            return GroupsV2AndMentionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }
