@@ -212,10 +212,7 @@ public class GroupManager: NSObject {
 
     @objc
     public static var defaultGroupsVersion: GroupsVersion {
-        guard RemoteConfig.groupsV2CreateGroups else {
-            return .V1
-        }
-        return .V2
+        .V2
     }
 
     // MARK: - Create New Group
@@ -277,10 +274,7 @@ public class GroupManager: NSObject {
             // If we might create a v2 group,
             // try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
-            guard RemoteConfig.groupsV2CreateGroups else {
-                return Promise.value(groupMembership)
-            }
-            return firstly { () -> Promise<Void> in
+            firstly { () -> Promise<Void> in
                 self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allMembersOfAnyKind))
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership
@@ -814,10 +808,7 @@ public class GroupManager: NSObject {
         }
 
         return firstly { () -> Promise<Void> in
-            guard RemoteConfig.groupsV2GoodCitizen else {
-                return Promise.value(())
-            }
-            return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allMembersOfAnyKind), isBlocking: true, ignoreErrors: true)
+            self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allMembersOfAnyKind), isBlocking: true, ignoreErrors: true)
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
@@ -1498,10 +1489,6 @@ public class GroupManager: NSObject {
 
     public static func tryToFillInMissingUuids(for addresses: [SignalServiceAddress],
                                                isBlocking: Bool) -> Promise<Void> {
-        guard RemoteConfig.modernContactDiscovery else {
-            // Can't fill in UUIDs using legacy contact intersections.
-            return Promise.value(())
-        }
 
         let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
         guard phoneNumbersWithoutUuids.count > 0 else {
@@ -2181,9 +2168,7 @@ public class GroupManager: NSObject {
         guard RemoteConfig.versionedProfileUpdate else {
             // We don't need a profile key credential for the local user
             // if we're not even going to try to create a v2 group.
-            if RemoteConfig.groupsV2GoodCitizen {
-                owsFailDebug("Can't participate in v2 groups without a profile key commitment.")
-            }
+            owsFailDebug("Can't participate in v2 groups without a profile key commitment.")
             return Promise.value(())
         }
 

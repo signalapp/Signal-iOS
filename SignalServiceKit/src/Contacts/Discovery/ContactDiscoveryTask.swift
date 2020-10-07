@@ -98,11 +98,7 @@ public class ContactDiscoveryTask: NSObject {
     // MARK: - Private
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
-        if RemoteConfig.modernContactDiscovery {
-            return ModernContactDiscoveryOperation(e164sToLookup: e164FetchSet)
-        } else {
-            return LegacyContactDiscoveryOperation(e164sToLookup: e164FetchSet)
-        }
+        ModernContactDiscoveryOperation(e164sToLookup: e164FetchSet)
     }
 
     private func storeResults(

@@ -82,8 +82,7 @@ public class NewGroupConfirmViewController: OWSViewController {
         var lastSection: UIView = firstSection
 
         let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
-        if RemoteConfig.groupsV2CreateGroups,
-            membersDoNotSupportGroupsV2.count > 0 {
+        if membersDoNotSupportGroupsV2.count > 0 {
             let legacyGroupSection = UIView()
             legacyGroupSection.backgroundColor = Theme.secondaryBackgroundColor
             legacyGroupSection.preservesSuperviewLayoutMargins = true

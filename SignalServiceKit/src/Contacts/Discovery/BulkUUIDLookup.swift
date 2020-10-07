@@ -99,10 +99,6 @@ public class BulkUUIDLookup: NSObject {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
-        guard RemoteConfig.modernContactDiscovery else {
-            // Can't fill in UUIDs using legacy contact intersections.
-            return
-        }
 
         // Only one update in flight at a time.
         guard !self.isUpdateInFlight else {

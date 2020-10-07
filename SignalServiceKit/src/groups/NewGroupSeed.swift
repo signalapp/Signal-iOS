@@ -39,15 +39,10 @@ public class NewGroupSeed: NSObject {
             self.groupIdV1 = TSGroupModel.generateRandomV1GroupId()
         }
 
-        if RemoteConfig.groupsV2CreateGroups {
-            let groupsV2 = NewGroupSeed.groupsV2
-            let groupSecretParamsData = try! groupsV2.generateGroupSecretParamsData()
-            self.groupSecretParamsData = groupSecretParamsData
-            groupIdV2 = try! groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
-        } else {
-            groupSecretParamsData = nil
-            groupIdV2 = nil
-        }
+        let groupsV2 = NewGroupSeed.groupsV2
+        let groupSecretParamsData = try! groupsV2.generateGroupSecretParamsData()
+        self.groupSecretParamsData = groupSecretParamsData
+        groupIdV2 = try! groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
     }
 
     // During the v1->v2 transition period, we don't know whether

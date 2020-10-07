@@ -113,26 +113,23 @@ class DebugUIGroupsV2: DebugUIPage {
                                                        prefix: "V1 Group, Anon Updater:",
                                                        transaction: transaction)
 
-                if RemoteConfig.groupsV2CreateGroups {
-                    try self.insertGroupUpdateInfoMessages(groupThread: groupThread,
-                                                           groupsVersion: .V2,
-                                                           isLocalUpdate: true,
-                                                           prefix: "V2 Group, Local Updater:",
-                                                           transaction: transaction)
+                try self.insertGroupUpdateInfoMessages(groupThread: groupThread,
+                                                       groupsVersion: .V2,
+                                                       isLocalUpdate: true,
+                                                       prefix: "V2 Group, Local Updater:",
+                                                       transaction: transaction)
 
-                    try self.insertGroupUpdateInfoMessages(groupThread: groupThread,
-                                                           groupsVersion: .V2,
-                                                           isLocalUpdate: false,
-                                                           prefix: "V2 Group, Other Updater:",
-                                                           transaction: transaction)
+                try self.insertGroupUpdateInfoMessages(groupThread: groupThread,
+                                                       groupsVersion: .V2,
+                                                       isLocalUpdate: false,
+                                                       prefix: "V2 Group, Other Updater:",
+                                                       transaction: transaction)
 
-                    try self.insertGroupUpdateInfoMessages(groupThread: groupThread,
-                                                           groupsVersion: .V2,
-                                                           isAnonymousUpdate: true,
-                                                           prefix: "V2 Group, Anon Updater:",
-                                                           transaction: transaction)
-
-                }
+                try self.insertGroupUpdateInfoMessages(groupThread: groupThread,
+                                                       groupsVersion: .V2,
+                                                       isAnonymousUpdate: true,
+                                                       prefix: "V2 Group, Anon Updater:",
+                                                       transaction: transaction)
             } catch {
                 owsFailDebug("Error: \(error)")
             }

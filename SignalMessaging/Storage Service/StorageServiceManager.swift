@@ -1212,10 +1212,9 @@ class StorageServiceOperation: OWSOperation {
         var knownTypes: [StorageServiceProtoManifestRecordKeyType] = [
             .contact,
             .groupv1,
+            .groupv2,
             .account
         ]
-
-        if RemoteConfig.groupsV2GoodCitizen { knownTypes.append(.groupv2) }
 
         var state = State.current(transaction: transaction)
 
@@ -1488,15 +1487,6 @@ class StorageServiceOperation: OWSOperation {
         state: inout State,
         transaction: SDSAnyWriteTransaction
     ) {
-        // If groups v2 isn't enabled, treat this record as unknown.
-        // We'll parse it when groups v2 is enabled.
-        guard RemoteConfig.groupsV2GoodCitizen else {
-            var unknownIdentifiersOfType = state.unknownIdentifiersTypeMap[identifier.type] ?? []
-            unknownIdentifiersOfType.append(identifier)
-            state.unknownIdentifiersTypeMap[identifier.type] = unknownIdentifiersOfType
-            return
-        }
-
         switch groupV2Record.mergeWithLocalGroup(transaction: transaction) {
         case .invalid:
             // This record was invalid, ignore it.

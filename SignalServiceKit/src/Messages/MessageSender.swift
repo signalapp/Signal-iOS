@@ -677,10 +677,6 @@ extension MessageSender {
 
     private static func ensureRecipientAddresses(_ addresses: [SignalServiceAddress],
                                                  message: TSOutgoingMessage) -> Promise<[SignalServiceAddress]> {
-        guard RemoteConfig.modernContactDiscovery else {
-            // Until CDS is enabled, allow sending to recipients without UUIDs.
-            return Promise.value(addresses)
-        }
 
         let invalidRecipients = addresses.filter { $0.uuid == nil }
         guard !invalidRecipients.isEmpty else {

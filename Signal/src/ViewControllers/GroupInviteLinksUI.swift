@@ -19,9 +19,6 @@ public class GroupInviteLinksUI: UIView {
                                            fromViewController: UIViewController) {
         AssertIsOnMainThread()
 
-        guard RemoteConfig.groupsV2GoodCitizen else {
-            return
-        }
         let showInvalidInviteLinkAlert = {
             OWSActionSheets.showActionSheet(title: NSLocalizedString("GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE",
                                                                      comment: "Title for the 'invalid group invite link' alert."),

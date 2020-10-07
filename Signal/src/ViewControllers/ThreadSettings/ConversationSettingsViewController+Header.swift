@@ -174,8 +174,7 @@ extension ConversationSettingsViewController {
 
         let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
         var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
-        if RemoteConfig.groupsV2GoodCitizen,
-            groupThread.isGroupV1Thread {
+        if groupThread.isGroupV1Thread {
             groupMembersText.append(" ")
             groupMembersText.append("•")
             groupMembersText.append(" ")
@@ -185,8 +184,7 @@ extension ConversationSettingsViewController {
         builder.addSubtitleLabel(text: groupMembersText,
                                  font: .ows_dynamicTypeSubheadline)
 
-        if RemoteConfig.groupsV2CreateGroups,
-            groupThread.isGroupV1Thread {
+        if groupThread.isGroupV1Thread {
             let legacyGroupView = builder.addLegacyGroupView()
             legacyGroupView.isUserInteractionEnabled = true
             legacyGroupView.addGestureRecognizer(UITapGestureRecognizer(target: self,

@@ -310,8 +310,6 @@ public class DebugFlags: BaseFlags {
         }
     }
 
-    static let groupsV2ForceEnable = FeatureFlags.groupsV2Supported && build.includes(.beta)
-
     // If set, client will invite instead of adding other users.
     private static let _groupsV2forceInvites = AtomicBool(false)
     @objc
@@ -375,8 +373,6 @@ public class DebugFlags: BaseFlags {
     // * Places we make requests using tasks.
     @objc
     public static let logCurlOnSuccess = false
-
-    static let forceModernContactDiscovery = build.includes(.beta)
 
     // Our "group update" info messages should be robust to
     // various situations that shouldn't occur in production,

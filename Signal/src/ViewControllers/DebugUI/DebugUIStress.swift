@@ -80,9 +80,8 @@ public extension DebugUIStress {
             }
             return GroupManager.tryToEnableGroupsV2(for: members, isBlocking: true, ignoreErrors: true)
         }.then { () -> Promise<TSGroupThread> in
-            guard RemoteConfig.groupsV2CreateGroups,
-                GroupManager.defaultGroupsVersion == .V2 else {
-                    throw OWSAssertionError("Groups v2 not enabled.")
+            guard GroupManager.defaultGroupsVersion == .V2 else {
+                throw OWSAssertionError("Groups v2 not enabled.")
             }
             let members = try self.databaseStorage.read { (transaction: SDSAnyReadTransaction) throws -> [SignalServiceAddress] in
                 let members: [SignalServiceAddress] = groupThread.groupModel.groupMembers.filter { address in
