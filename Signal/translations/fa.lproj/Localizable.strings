@@ -1774,6 +1774,9 @@
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@امتیازات مدیریتی شما را لغو کرده است.";
 
+/* Message indicating that the local user was added to the group. */
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "مدیر";
 
@@ -2107,6 +2110,15 @@
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "شما نمی توانید بیشتر از %@ آیتم را به اشتراک بگذارید.";
 
+/* Button that will present a view for the user to change the photos Signal has access to. */
+"IMAGE_PICKER_CHANGE_PHOTOS" = "Change Photos";
+
+/* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
+
+/* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "خطا در انتخاب پیوست";
 
@@ -2333,7 +2345,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "برای همه پاک شود";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the chat. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "این پیام را می‌خواهید برای چه کسانی حذف کنید؟";
