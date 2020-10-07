@@ -802,6 +802,22 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 owsFailDebug("Error: \(error)")
             }
         }
+        for action in changeActionsProto.promoteRequestingMembers {
+            do {
+                guard let userId = action.userID else {
+                    throw OWSAssertionError("Missing userID.")
+                }
+                // Some userIds/uuidCiphertexts can be validated by
+                // the service. This is one.
+                let uuid = try groupV2Params.uuid(forUserId: userId)
+
+                if uuid == localUuid {
+                    return true
+                }
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
         return false
     }
 

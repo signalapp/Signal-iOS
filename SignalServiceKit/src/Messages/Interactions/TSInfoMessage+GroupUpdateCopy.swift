@@ -1107,8 +1107,8 @@ extension GroupUpdateCopy {
                 }
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
-                                                comment: "Message indicating that the local user has joined the group."))
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                comment: "Message indicating that the local user was added to the group."))
             case .otherUser(let updaterName, _):
                 let format = NSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}.")
@@ -1118,8 +1118,8 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
-                                                comment: "Message indicating that the local user has joined the group."))
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                comment: "Message indicating that the local user was added to the group."))
             }
         } else {
             let userName = contactsManager.displayName(for: address, transaction: transaction)
@@ -1328,8 +1328,8 @@ extension GroupUpdateCopy {
                 // requiring approval in the interim.
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
-                                                comment: "Message indicating that the local user has joined the group."))
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                comment: "Message indicating that the local user was added to the group."))
             case .otherUser(let updaterName, _):
                 let format = NSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}.")
@@ -1337,8 +1337,8 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
-                                                comment: "Message indicating that the local user has joined the group."))
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                comment: "Message indicating that the local user was added to the group."))
             }
         } else {
             let requesterName = contactsManager.displayName(for: address, transaction: transaction)
@@ -1629,10 +1629,21 @@ extension GroupUpdateCopy {
                 // If group was just created, it's implicit that we were added.
                 return
             }
-            addItem(.userMembershipState_added,
-                    address: localAddress,
-                    copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
-                                            comment: "Message indicating that the local user has joined the group."))
+
+            // TODO:
+            switch updater {
+            case .otherUser(let updaterName, _):
+                let format = NSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                                               comment: "Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}.")
+                addItem(.userMembershipState_added,
+                        address: localAddress,
+                        format: format, updaterName)
+            default:
+                addItem(.userMembershipState_added,
+                        address: localAddress,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                                                comment: "Message indicating that the local user was added to the group."))
+            }
         case .invited:
             if let localAddress = Self.tsAccountManager.localAddress,
                 let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {

@@ -1784,12 +1784,17 @@ public class GroupManager: NSObject {
         let groupThread = TSGroupThread(groupModelPrivate: groupModel)
         groupThread.anyInsert(transaction: transaction)
 
+        let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
+        _ = updateDisappearingMessagesInDatabaseAndCreateMessages(token: newDisappearingMessageToken,
+                                                                  thread: groupThread,
+                                                                  shouldInsertInfoMessage: false,
+                                                                  groupUpdateSourceAddress: nil,
+                                                                  transaction: transaction)
+
         updateProfileWhitelistIfNecessary(withGroupThread: groupThread,
                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
                                           mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
                                           transaction: transaction)
-
-        let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
 
         switch infoMessagePolicy {
         case .always, .insertsOnly:
@@ -1807,13 +1812,19 @@ public class GroupManager: NSObject {
         notifyStorageServiceOfInsertedGroup(groupModel: groupModel,
                                             transaction: transaction)
 
+        if DebugFlags.internalLogging {
+            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread,
+                                                                                           transaction: transaction)
+            owsAssertDebug(dmConfiguration.asToken == newDisappearingMessageToken)
+        }
+
         return groupThread
     }
 
     // If newDisappearingMessageToken is nil, don't update the disappearing messages configuration.
     public static func tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: TSGroupModel,
                                                                                     newDisappearingMessageToken: DisappearingMessageToken?,
-                                                                                    groupUpdateSourceAddress: SignalServiceAddress?,
+                                                                                    groupUpdateSourceAddress groupUpdateSourceAddressParam: SignalServiceAddress?,
                                                                                     canInsert: Bool,
                                                                                     mightBeAddingLocalUserToGroup: Bool,
                                                                                     infoMessagePolicy: InfoMessagePolicy = .always,
@@ -1828,9 +1839,29 @@ public class GroupManager: NSObject {
             // This thread didn't previously exist, so if we're a member we
             // have to assume we were just added.
             var wasAddedToGroup = false
-            if newGroupModel.groupsVersion == .V1, let localAddress = tsAccountManager.localAddress, newGroupModel.groupMembers.contains(localAddress) {
-                newGroupModel.addedByAddress = groupUpdateSourceAddress
+            if newGroupModel.groupsVersion == .V1,
+                let localAddress = tsAccountManager.localAddress,
+                newGroupModel.groupMembers.contains(localAddress) {
+                newGroupModel.addedByAddress = groupUpdateSourceAddressParam
                 wasAddedToGroup = true
+            }
+            // When inserting a v2 group into the database for the
+            // first time, we don't want to attribute all of the group
+            // state to the author of the most recent revision.
+            //
+            // We only want to attribute the changes if we've just been
+            // added, so that we can say "Alice added you to the group,"
+            // etc.
+            var groupUpdateSourceAddress = groupUpdateSourceAddressParam
+            if newGroupModel.groupsVersion == .V2 {
+                if let localAddress = tsAccountManager.localAddress,
+                    newGroupModel.groupMembers.contains(localAddress),
+                    mightBeAddingLocalUserToGroup {
+                    // Do not touch groupUpdateSourceAddress.
+                } else {
+                    // Discard groupUpdateSourceAddress.
+                    groupUpdateSourceAddress = nil
+                }
             }
 
             let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
@@ -1849,6 +1880,7 @@ public class GroupManager: NSObject {
             return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
 
+        let groupUpdateSourceAddress = groupUpdateSourceAddressParam
         return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                            newDisappearingMessageToken: newDisappearingMessageToken,
                                                                            groupUpdateSourceAddress: groupUpdateSourceAddress,
@@ -1962,6 +1994,12 @@ public class GroupManager: NSObject {
                                          transaction: transaction)
         default:
             break
+        }
+
+        if DebugFlags.internalLogging {
+            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread,
+                                                                                           transaction: transaction)
+            owsAssertDebug(dmConfiguration.asToken == newDisappearingMessageToken)
         }
 
         return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)
