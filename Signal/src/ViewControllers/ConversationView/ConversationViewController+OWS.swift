@@ -90,9 +90,6 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsDeleteItem(_ conversationViewItem: ConversationViewItem) {
-        // Only show the new menu at all if the feature is on.
-        guard RemoteConfig.deleteForEveryone else { return conversationViewItem.deleteAction() }
-
         let actionSheetController = ActionSheetController(message: NSLocalizedString(
             "MESSAGE_ACTION_DELETE_FOR_TITLE",
             comment: "The title for the action sheet asking who the user wants to delete the message for."
@@ -144,7 +141,6 @@ extension ConversationViewController: MessageActionsDelegate {
     //  * you haven't already remotely deleted this message
     //  * it has been less than 3 hours since you sent the message
     func canBeRemotelyDeleted(conversationViewItem: ConversationViewItem) -> Bool {
-        guard RemoteConfig.deleteForEveryone else { return false }
         guard let outgoingMessage = conversationViewItem.interaction as? TSOutgoingMessage else { return false }
         guard !outgoingMessage.wasRemotelyDeleted else { return false }
         guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 3) else { return false }
