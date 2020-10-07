@@ -189,8 +189,6 @@ class ExperienceUpgradeManager: NSObject {
             return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .researchMegaphone1:
             return ResearchMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-//        case .groupsV2AndMentionsSplash:
-//            return GroupsV2AndMentionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }
