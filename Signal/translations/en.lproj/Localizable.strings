@@ -1745,6 +1745,9 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
 
 /* Message indicating that the local user has joined the group. */
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+
+/* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
 
 /* Message indicating that the local user has joined the group. */
