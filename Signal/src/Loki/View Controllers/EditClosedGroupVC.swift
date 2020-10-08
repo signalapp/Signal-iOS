@@ -241,13 +241,17 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         guard members != Set(thread.groupModel.groupMemberIds) || name != thread.groupModel.groupName else {
             return popToConversationVC(self)
         }
-        try! Storage.writeSync { [weak self] transaction in
-            ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
-                guard let self = self else { return }
-                popToConversationVC(self)
-            }.catch(on: DispatchQueue.main) { error in
-                guard let self = self else { return }
-                self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+            try! Storage.writeSync { [weak self] transaction in
+                ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
+                    guard let self = self else { return }
+                    self.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    popToConversationVC(self)
+                }.catch(on: DispatchQueue.main) { error in
+                    guard let self = self else { return }
+                    self.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+                }
             }
         }
     }
