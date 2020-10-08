@@ -31,7 +31,7 @@ typedef NS_CLOSED_ENUM(
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *nonLocalGroupMembers;
 @property (nonatomic, readonly, nullable) NSString *groupName;
 @property (nonatomic, readonly) NSData *groupId;
-@property (nonatomic, nullable) SignalServiceAddress *addedByAddress;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *addedByAddress;
 
 #if TARGET_OS_IOS
 @property (nonatomic, readonly, nullable) UIImage *groupAvatarImage;
@@ -50,7 +50,8 @@ typedef NS_CLOSED_ENUM(
 - (instancetype)initWithGroupId:(NSData *)groupId
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
-                        members:(NSArray<SignalServiceAddress *> *)members NS_DESIGNATED_INITIALIZER;
+                        members:(NSArray<SignalServiceAddress *> *)members
+                 addedByAddress:(nullable SignalServiceAddress *)addedByAddress NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model ignoreRevision:(BOOL)ignoreRevision;
