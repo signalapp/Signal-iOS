@@ -1771,10 +1771,10 @@ public class GroupManager: NSObject {
                                                                   groupUpdateSourceAddress: sourceAddress,
                                                                   transaction: transaction)
 
-        updateProfileWhitelistIfNecessary(oldGroupModel: nil,
-                                          newGroupModel: groupModel,
-                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                          transaction: transaction)
+        autoWhitelistGroupIfNecessary(oldGroupModel: nil,
+                                      newGroupModel: groupModel,
+                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                      transaction: transaction)
 
         switch infoMessagePolicy {
         case .always, .insertsOnly:
@@ -1917,10 +1917,10 @@ public class GroupManager: NSObject {
 
             let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: true)
 
-            updateProfileWhitelistIfNecessary(oldGroupModel: oldGroupModel,
-                                              newGroupModel: newGroupModel,
-                                              groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                              transaction: transaction)
+            autoWhitelistGroupIfNecessary(oldGroupModel: oldGroupModel,
+                                          newGroupModel: newGroupModel,
+                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                          transaction: transaction)
 
             groupThread.update(with: newGroupModel, transaction: transaction)
 
@@ -2066,10 +2066,10 @@ public class GroupManager: NSObject {
 
     // MARK: - Profiles
 
-    private static func updateProfileWhitelistIfNecessary(oldGroupModel: TSGroupModel?,
-                                                          newGroupModel: TSGroupModel,
-                                                          groupUpdateSourceAddress: SignalServiceAddress?,
-                                                          transaction: SDSAnyWriteTransaction) {
+    private static func autoWhitelistGroupIfNecessary(oldGroupModel: TSGroupModel?,
+                                                      newGroupModel: TSGroupModel,
+                                                      groupUpdateSourceAddress: SignalServiceAddress?,
+                                                      transaction: SDSAnyWriteTransaction) {
 
         guard let localAddress = self.tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
