@@ -176,7 +176,7 @@ public enum OnionRequestAPI {
     private static func drop(_ snode: Snode) throws {
         var oldPaths = paths
         guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
-        var path = oldPaths.remove(at: pathIndex)
+        var path = oldPaths[pathIndex]
         guard let snodeIndex = path.firstIndex(of: snode) else { return }
         path.remove(at: snodeIndex)
         let unusedSnodes = SnodeAPI.snodePool.subtracting(oldPaths.flatMap { $0 })
@@ -184,6 +184,7 @@ public enum OnionRequestAPI {
         // randomElement() uses the system's default random generator, which is cryptographically secure
         path.append(unusedSnodes.randomElement()!)
         // Don't test the new snode as this would reveal the user's IP
+        oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
         paths = newPaths
         try! Storage.writeSync { transaction in
