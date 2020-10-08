@@ -105,7 +105,7 @@ final class PathVC : BaseVC {
 
     private func update() {
         pathStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        if OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount {
+        if !OnionRequestAPI.paths.isEmpty {
             let pathToDisplay = OnionRequestAPI.paths.first!
             let dotAnimationRepeatInterval = Double(pathToDisplay.count) + 2
             let snodeRows: [UIStackView] = pathToDisplay.enumerated().map { index, snode in
