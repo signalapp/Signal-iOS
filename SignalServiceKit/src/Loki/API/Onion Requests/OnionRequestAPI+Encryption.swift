@@ -7,9 +7,8 @@ extension OnionRequestAPI {
         // The encoding of V2 onion requests looks like: | 4 bytes: size N of ciphertext | N bytes: ciphertext | json as utf8 |
         guard JSONSerialization.isValidJSONObject(json) else { throw HTTP.Error.invalidJSON }
         let jsonAsData = try JSONSerialization.data(withJSONObject: json, options: [ .fragmentsAllowed ])
-        let ciphertextSize = Int32(ciphertext.count)
+        let ciphertextSize = Int32(ciphertext.count).littleEndian
         let ciphertextSizeAsData = withUnsafePointer(to: ciphertextSize) { Data(bytes: $0, count: MemoryLayout<Int32>.size) }
-        // TODO: Ensure this is all little endian
         return ciphertextSizeAsData + ciphertext + jsonAsData
     }
 
