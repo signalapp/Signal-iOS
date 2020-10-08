@@ -599,10 +599,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [recipientAddresses addObject:self.tsAccountManager.localAddress];
 
-    if (RemoteConfig.allowUUIDOnlyContacts) {
-        for (int i = 0; i < 3; i++) {
-            [recipientAddresses addObject:[[SignalServiceAddress alloc] initWithUuid:[NSUUID UUID] phoneNumber:nil]];
-        }
+    for (int i = 0; i < 3; i++) {
+        [recipientAddresses addObject:[[SignalServiceAddress alloc] initWithUuid:[NSUUID UUID] phoneNumber:nil]];
     }
 
     [GroupManager localCreateNewGroupObjcWithMembers:recipientAddresses

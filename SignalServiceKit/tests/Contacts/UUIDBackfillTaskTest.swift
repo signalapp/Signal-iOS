@@ -28,7 +28,6 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
                                network: network,
                                readiness: readiness)
         dut.testing_shortBackoffInterval = true
-        dut.testing_skipModernCDSFlagCheck = true
     }
 
     // MARK: - Tests

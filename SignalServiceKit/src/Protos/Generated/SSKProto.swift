@@ -347,8 +347,6 @@ public class SSKProtoEnvelope: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasSourceE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -2657,8 +2655,6 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasAuthorE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -4882,8 +4878,6 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasAuthorE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -6397,8 +6391,6 @@ public class SSKProtoVerified: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasDestinationE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -6626,8 +6618,6 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
 
         let phoneNumber: String? = {
             guard hasDestinationE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -6922,8 +6912,6 @@ public class SSKProtoSyncMessageSent: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasDestinationE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -7798,8 +7786,6 @@ public class SSKProtoSyncMessageRead: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasSenderE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -8444,8 +8430,6 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasSenderE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -9052,8 +9036,6 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasThreadE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 
@@ -11127,8 +11109,6 @@ public class SSKProtoContactDetails: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasContactE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 

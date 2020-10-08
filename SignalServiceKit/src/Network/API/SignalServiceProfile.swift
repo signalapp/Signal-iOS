@@ -65,9 +65,7 @@ public class SignalServiceProfile: NSObject {
             if let value: Bool = try capabilities.optional(key: "gv2") {
                 self.supportsGroupsV2 = value
             } else {
-                if RemoteConfig.groupsV2GoodCitizen {
-                    owsFailDebug("Missing groups v2 capability.")
-                }
+                owsFailDebug("Missing groups v2 capability.")
                 // The capability has been retired from the service.
                 self.supportsGroupsV2 = true
             }

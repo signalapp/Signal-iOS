@@ -534,7 +534,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
         if (localUuid == nil) {
-            OWSAssert(!RemoteConfig.allowUUIDOnlyContacts);
+            OWSFail(@"Missing localUuid.");
         } else {
             [self.keyValueStore setString:localUuid.UUIDString
                                       key:TSAccountManager_RegisteredUUIDKey

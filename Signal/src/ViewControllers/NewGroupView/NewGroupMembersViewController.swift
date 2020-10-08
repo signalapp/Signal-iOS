@@ -60,7 +60,7 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     var shouldTryToEnableGroupsV2ForMembers: Bool {
-        return true
+        true
     }
 
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
@@ -76,11 +76,11 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         // since we'll failover to using a v1 group if any members don't
         // support v2 groups.  Eventually, we'll want to reject certain
         // users.
-        return true
+        true
     }
 
     func groupMemberViewShouldShowMemberCount() -> Bool {
-        return RemoteConfig.groupsV2CreateGroups
+        true
     }
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
@@ -93,9 +93,6 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewIsGroupFull() -> Bool {
-        guard RemoteConfig.groupsV2CreateGroups else {
-            return false
-        }
         return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.maxGroupsV2MemberCount
     }
 

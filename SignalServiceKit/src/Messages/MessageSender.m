@@ -1010,14 +1010,12 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
 
-    if (RemoteConfig.modernContactDiscovery) {
-        // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
-        // If we have no UUID, consider the recipient unregistered.
-        BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);
-        if (isInvalidRecipient) {
-            [self failSendForUnregisteredRecipient:messageSend];
-            return;
-        }
+    // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
+    // If we have no UUID, consider the recipient unregistered.
+    BOOL isInvalidRecipient = (messageSend.recipient.recipientUUID == nil);
+    if (isInvalidRecipient) {
+        [self failSendForUnregisteredRecipient:messageSend];
+        return;
     }
 
     // Consume an attempt.

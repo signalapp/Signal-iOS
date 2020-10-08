@@ -143,9 +143,6 @@ class GroupsV2ProfileKeyUpdater {
         guard reachabilityManager.isReachable else {
             return
         }
-        guard RemoteConfig.groupsV2GoodCitizen else {
-            return
-        }
 
         serialQueue.async {
             guard !self.isUpdating else {

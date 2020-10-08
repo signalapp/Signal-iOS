@@ -273,8 +273,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var serviceIdentifier: String? {
-        if RemoteConfig.allowUUIDOnlyContacts,
-            uuid != nil {
+        if uuid != nil {
             guard let uuidString = uuidString else {
                 owsFailDebug("uuidString was unexpectedly nil")
                 return phoneNumber

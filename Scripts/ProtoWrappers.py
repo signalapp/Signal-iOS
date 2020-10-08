@@ -691,8 +691,6 @@ class MessageContext(BaseContext):
             writer.push_indent()
             writer.add('guard %s else {' % e164_field.has_accessor_name())
             writer.push_indent()
-            writer.add('// Shouldn’t happen in prod yet')
-            writer.add('assert(RemoteConfig.allowUUIDOnlyContacts)')
             writer.add('return nil')
             writer.pop_indent()
             writer.add('}')

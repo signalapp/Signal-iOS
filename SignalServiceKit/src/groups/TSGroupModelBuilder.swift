@@ -158,10 +158,6 @@ public struct TSGroupModelBuilder {
             return value
         }
 
-        guard RemoteConfig.groupsV2CreateGroups else {
-            Logger.info("Creating v1 group due to feature flags.")
-            return .V1
-        }
         if DebugFlags.groupsV2onlyCreateV1Groups {
             Logger.info("Creating v1 group due to debug flag.")
             return .V1

@@ -129,11 +129,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     }
 
     func test_contactMessage_UuidOnlyEnvelope() {
-        guard RemoteConfig.allowUUIDOnlyContacts else {
-            // This test is known to be failing.
-            // It's intended as TDD for the upcoming UUID work.
-            return
-        }
 
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,

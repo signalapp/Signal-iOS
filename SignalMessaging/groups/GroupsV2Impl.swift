@@ -258,9 +258,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // We do those things here as well, to DRY them up and to ensure they're always
     // done immediately and in a consistent way.
     public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> {
-        guard RemoteConfig.groupsV2GoodCitizen else {
-            return Promise(error: GroupsV2Error.gv2NotEnabled)
-        }
 
         let groupId = changeSet.groupId
         let groupSecretParamsData = changeSet.groupSecretParamsData
@@ -1049,8 +1046,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
 
-        guard RemoteConfig.groupsV2GoodCitizen,
-            RemoteConfig.versionedProfileFetches else {
+        guard RemoteConfig.versionedProfileFetches else {
                 return Promise(error: GroupsV2Error.gv2NotEnabled)
         }
 
@@ -1547,10 +1543,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                        inviteLinkPassword: Data,
                                        groupInviteLinkPreview: GroupInviteLinkPreview,
                                        avatarData: Data?) -> Promise<TSGroupThread> {
-
-        guard RemoteConfig.groupsV2GoodCitizen else {
-            return Promise(error: GroupsV2Error.gv2NotEnabled)
-        }
 
         let groupV2Params: GroupV2Params
         do {
