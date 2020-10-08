@@ -18,6 +18,7 @@ public final class FileServerAPI : DotNetAPI {
     public static let fileSizeORMultiplier: Double = 6
 
     @objc public static let server = "https://file.getsession.org"
+    @objc public static let fileStaticServer = "https://file-static.lokinet.org"
 
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
@@ -49,6 +50,31 @@ public final class FileServerAPI : DotNetAPI {
             }
             UserDefaults.standard[.lastProfilePictureUpload] = Date()
             return downloadURL
+        }
+    }
+    
+    @objc(downloadProfilePicture:)
+    public static func objc_downloadProfilePicture(_ downloadURL: String) -> AnyPromise {
+        return AnyPromise.from(downloadProfilePicture(downloadURL))
+    }
+    
+    public static func downloadProfilePicture(_ downloadURL: String) -> Promise<Data> {
+        var error: NSError?
+        var url = downloadURL
+        if downloadURL.contains(fileStaticServer) {
+            url = downloadURL.replacingOccurrences(of: fileStaticServer, with: "\(server)/loki/v1")
+        }
+        let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: url, parameters: nil, error: &error)
+        if let error = error {
+            print("[Loki] Couldn't download profile picture due to error: \(error).")
+            return Promise(error: error)
+        }
+        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey, isJSONRequired: false).map2 { json in
+            guard let body = json["body"] as? JSON, let dataArray = body["data"] as? [UInt8] else {
+                print("[Loki] Couldn't download profile picture.")
+                return Data()
+            }
+            return Data(dataArray)
         }
     }
     
