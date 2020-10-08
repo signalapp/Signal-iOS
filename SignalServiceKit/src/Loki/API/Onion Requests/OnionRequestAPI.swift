@@ -9,6 +9,9 @@ public enum OnionRequestAPI {
     // MARK: Settings
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
+    /// The number of times a path can fail before it's replaced.
+    private static let pathFailureThreshold: UInt = 2
+    private static var pathFailureCount: [Path:UInt] = [:]
 
     public static let pathCount: UInt = 2
 
@@ -375,13 +378,18 @@ public enum OnionRequestAPI {
             guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
             let path = paths.first { $0.contains(guardSnode) }
             func handleUnspecificError() {
-                dropGuardSnode(guardSnode)
                 guard let path = path else { return }
-                path.forEach { snode in
-                    SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                let pathFailureCount = OnionRequestAPI.pathFailureCount[path] ?? 0
+                if pathFailureCount >= pathFailureThreshold {
+                    dropGuardSnode(guardSnode)
+                    path.forEach { snode in
+                        SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                    }
+                    print("[Test] Unspecific error; dropping: \(path)")
+                    drop(path)
+                } else {
+                    OnionRequestAPI.pathFailureCount[path] = pathFailureCount + 1
                 }
-                print("[Test] Unspecific error; dropping: \(path)")
-                drop(path)
             }
             let prefix = "Next node not found: "
             if let message = json?["result"] as? String, message.hasPrefix(prefix) {
