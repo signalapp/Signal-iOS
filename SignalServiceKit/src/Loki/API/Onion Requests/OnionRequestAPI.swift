@@ -71,14 +71,16 @@ public enum OnionRequestAPI {
 
     /// Finds `guardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func getGuardSnodes() -> Promise<Set<Snode>> {
+    private static func getGuardSnodes(reusing reusableGuardSnodes: [Snode]) -> Promise<Set<Snode>> {
         if guardSnodes.count >= guardSnodeCount {
             return Promise<Set<Snode>> { $0.fulfill(guardSnodes) }
         } else {
+            print("[Test] reusableGuardSnodes: \(reusableGuardSnodes)")
             print("[Loki] [Onion Request API] Populating guard snode cache.")
             return SnodeAPI.getRandomSnode().then2 { _ -> Promise<Set<Snode>> in // Just used to populate the snode pool
-                var unusedSnodes = SnodeAPI.snodePool // Sync on LokiAPI.workQueue
-                guard unusedSnodes.count >= guardSnodeCount else { throw Error.insufficientSnodes }
+                var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes) // Sync on LokiAPI.workQueue
+                let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
+                guard unusedSnodes.count >= (guardSnodeCount - reusableGuardSnodeCount) else { throw Error.insufficientSnodes }
                 func getGuardSnode() -> Promise<Snode> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     guard let candidate = unusedSnodes.randomElement() else { return Promise<Snode> { $0.reject(Error.insufficientSnodes) } }
@@ -86,12 +88,13 @@ public enum OnionRequestAPI {
                     print("[Loki] [Onion Request API] Testing guard snode: \(candidate).")
                     // Loop until a reliable guard snode is found
                     return testSnode(candidate).map2 { candidate }.recover(on: DispatchQueue.main) { _ in
-                        withDelay(0.25, completionQueue: SnodeAPI.workQueue) { getGuardSnode() }
+                        withDelay(0.1, completionQueue: SnodeAPI.workQueue) { getGuardSnode() }
                     }
                 }
-                let promises = (0..<guardSnodeCount).map { _ in getGuardSnode() }
+                let promises = (0..<(guardSnodeCount - reusableGuardSnodeCount)).map { _ in getGuardSnode() }
                 return when(fulfilled: promises).map2 { guardSnodes in
-                    let guardSnodesAsSet = Set(guardSnodes)
+                    let guardSnodesAsSet = Set(guardSnodes + reusableGuardSnodes)
+                    print("[Test] guardSnodes: \(guardSnodesAsSet)")
                     OnionRequestAPI.guardSnodes = guardSnodesAsSet
                     return guardSnodesAsSet
                 }
@@ -101,18 +104,21 @@ public enum OnionRequestAPI {
 
     /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func buildPaths() -> Promise<[Path]> {
+    private static func buildPaths(reusing reusablePaths: [Path]) -> Promise<[Path]> {
         print("[Loki] [Onion Request API] Building onion request paths.")
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .buildingPaths, object: nil)
         }
         return SnodeAPI.getRandomSnode().then2 { _ -> Promise<[Path]> in // Just used to populate the snode pool
-            return getGuardSnodes().map2 { guardSnodes -> [Path] in
+            let reusableGuardSnodes = reusablePaths.map { $0[0] }
+            return getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
+                print("[Test] reusablePaths: \(reusablePaths)")
                 var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes)
-                let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
+                let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
+                let pathSnodeCount = (guardSnodeCount - reusableGuardSnodeCount) * pathSize - (guardSnodeCount - reusableGuardSnodeCount)
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
                 // Don't test path snodes as this would reveal the user's IP to them
-                return guardSnodes.map { guardSnode in
+                return guardSnodes.subtracting(reusableGuardSnodes).map { guardSnode in
                     let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
                         // randomElement() uses the system's default random generator, which is cryptographically secure
                         let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
@@ -123,7 +129,8 @@ public enum OnionRequestAPI {
                     return result
                 }
             }.map2 { paths in
-                OnionRequestAPI.paths = paths
+                print("[Test] paths: \(paths + reusablePaths)")
+                OnionRequestAPI.paths = paths + reusablePaths
                 try! Storage.writeSync { transaction in
                     print("[Loki] Persisting onion request paths to database.")
                     Storage.setOnionRequestPaths(paths, using: transaction)
@@ -140,11 +147,14 @@ public enum OnionRequestAPI {
     private static func getPath(excluding snode: Snode?) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         var paths = OnionRequestAPI.paths
-        if paths.count < pathCount {
+        if paths.isEmpty {
             paths = Storage.getOnionRequestPaths()
             OnionRequestAPI.paths = paths
-            if paths.count >= pathCount {
-                guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
+            if !paths.isEmpty {
+                guardSnodes.formUnion([ paths[0][0] ])
+                if paths.count >= 2 {
+                    guardSnodes.formUnion([ paths[1][0] ])
+                }
             }
         }
         // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -157,7 +167,8 @@ public enum OnionRequestAPI {
                 }
             }
         } else {
-            return buildPaths().map2 { paths in
+            print("[Test] Reusing: \(paths)")
+            return buildPaths(reusing: paths).map2 { paths in
                 if let snode = snode {
                     return paths.filter { !$0.contains(snode) }.randomElement()!
                 } else {
@@ -172,7 +183,11 @@ public enum OnionRequestAPI {
     }
 
     private static func drop(_ snode: Snode) throws {
+        // We repair the path here because we can do it sync. In the case where we drop a whole
+        // path we leave the re-building up to getPath(excluding:) because re-building the path
+        // in that case is async.
         var oldPaths = paths
+        print("[Test] [drop(_ snode: Snode)] oldPaths: \(oldPaths)")
         guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
         var path = oldPaths[pathIndex]
         guard let snodeIndex = path.firstIndex(of: snode) else { return }
@@ -184,6 +199,7 @@ public enum OnionRequestAPI {
         // Don't test the new snode as this would reveal the user's IP
         oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
+        print("[Test] [drop(_ snode: Snode)] newPaths: \(newPaths)")
         paths = newPaths
         try! Storage.writeSync { transaction in
             print("[Loki] Persisting onion request paths to database.")
@@ -191,10 +207,16 @@ public enum OnionRequestAPI {
         }
     }
 
-    private static func dropAllPaths() {
-        paths.removeAll()
+    private static func drop(_ path: Path) {
+        var paths = self.paths
+        print("[Test] [drop(_ path: Path)] oldPaths: \(paths)")
+        guard let pathIndex = paths.firstIndex(of: path) else { return }
+        paths.remove(at: pathIndex)
+        print("[Test] [drop(_ path: Path)] newPaths: \(paths)")
+        self.paths = paths
         try! Storage.writeSync { transaction in
-            Storage.clearOnionRequestPaths(using: transaction)
+            print("[Loki] Persisting onion request paths to database.")
+            Storage.setOnionRequestPaths(paths, using: transaction)
         }
     }
 
@@ -285,10 +307,11 @@ public enum OnionRequestAPI {
             "headers" : headers
         ]
         let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
-        return sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired).recover2 { error -> Promise<JSON> in
+        let promise = sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired)
+        promise.catch2 { error in
             print("[Loki] [Onion Request API] Couldn't reach server: \(url) due to error: \(error).")
-            throw error
         }
+        return promise
     }
     
     internal static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
@@ -352,11 +375,13 @@ public enum OnionRequestAPI {
             guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
             let path = paths.first { $0.contains(guardSnode) }
             func handleUnspecificError() {
-                path?.forEach { snode in
+                dropGuardSnode(guardSnode)
+                guard let path = path else { return }
+                path.forEach { snode in
                     SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                 }
-                dropAllPaths()
-                dropGuardSnode(guardSnode)
+                print("[Test] Unspecific error; dropping: \(path)")
+                drop(path)
             }
             let prefix = "Next node not found: "
             if let message = json?["result"] as? String, message.hasPrefix(prefix) {
@@ -364,6 +389,7 @@ public enum OnionRequestAPI {
                 if let path = path, let snode = path.first(where: { $0.publicKeySet?.ed25519Key == ed25519PublicKey }) {
                     SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                     do {
+                        print("[Test] Specific error; dropping: \(snode)")
                         try drop(snode)
                     } catch {
                         handleUnspecificError()
