@@ -1986,7 +1986,7 @@ public class GroupManager: NSObject {
         if DebugFlags.internalLogging {
             let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread,
                                                                                            transaction: transaction)
-            owsAssertDebug(dmConfiguration.asToken == newDisappearingMessageToken)
+            owsAssertDebug(dmConfiguration.asToken == updateDMResult.newDisappearingMessageToken)
         }
 
         return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)

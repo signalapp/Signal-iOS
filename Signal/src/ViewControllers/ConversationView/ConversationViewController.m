@@ -2753,6 +2753,9 @@ typedef enum : NSUInteger {
         return;
     }
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"");
+    }
     self.inputToolbar.quotedReply = quotedReply;
     [self.inputToolbar beginEditingMessage];
 }
@@ -3090,6 +3093,10 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"");
+    }
 
     self.lastMessageSentDate = [NSDate new];
     [self.conversationViewModel clearUnreadMessagesIndicator];

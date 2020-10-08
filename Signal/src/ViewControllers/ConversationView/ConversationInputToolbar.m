@@ -253,6 +253,10 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     self.userInteractionEnabled = YES;
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"");
+    }
+
     _quotedReplyWrapper = [UIView containerView];
     self.quotedReplyWrapper.hidden = YES;
     [self.quotedReplyWrapper setContentHuggingHorizontalLow];
@@ -481,6 +485,10 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 - (void)setQuotedReply:(nullable OWSQuotedReplyModel *)quotedReply
 {
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"%d", quotedReply != nil);
+    }
+
     if (quotedReply == _quotedReply) {
         return;
     }
@@ -518,6 +526,10 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 - (void)clearQuotedMessagePreview
 {
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"");
+    }
+
     self.quotedReplyWrapper.hidden = YES;
     for (UIView *subview in self.quotedReplyWrapper.subviews) {
         [subview removeFromSuperview];
@@ -1297,6 +1309,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 - (void)quotedReplyPreviewDidPressCancel:(QuotedReplyPreview *)preview
 {
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"");
+    }
     self.quotedReply = nil;
 }
 
