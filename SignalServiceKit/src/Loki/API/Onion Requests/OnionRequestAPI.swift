@@ -174,7 +174,7 @@ public enum OnionRequestAPI {
     }
 
     private static func drop(_ snode: Snode) throws {
-        var oldPaths = OnionRequestAPI.paths
+        var oldPaths = paths
         guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
         var path = oldPaths.remove(at: pathIndex)
         guard let snodeIndex = path.firstIndex(of: snode) else { return }
@@ -185,7 +185,7 @@ public enum OnionRequestAPI {
         path.append(unusedSnodes.randomElement()!)
         // Don't test the new snode as this would reveal the user's IP
         let newPaths = oldPaths + [ path ]
-        OnionRequestAPI.paths = newPaths
+        paths = newPaths
         try! Storage.writeSync { transaction in
             print("[Loki] Persisting onion request paths to database.")
             OWSPrimaryStorage.shared().setOnionRequestPaths(newPaths, in: transaction)
