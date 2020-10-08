@@ -477,10 +477,17 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func generateGroupSecretParamsData() throws -> Data {
+        if CurrentAppContext().isRunningTests {
+            return Randomness.generateRandomBytes(289)
+        }
         owsFail("Not implemented.")
     }
 
     public func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
+        if CurrentAppContext().isRunningTests {
+            owsAssert(groupSecretParamsData.count >= 32)
+            return groupSecretParamsData.subdata(in: Int(0)..<Int(32))
+        }
         owsFail("Not implemented.")
     }
 
