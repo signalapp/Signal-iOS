@@ -255,11 +255,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     NSArray *oldSignedPrekeys
         = (currentRecord != nil ? [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys]
                                 : allSignedPrekeys);
-
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateStyle = NSDateFormatterMediumStyle;
-    dateFormatter.timeStyle = NSDateFormatterMediumStyle;
-    dateFormatter.locale = [NSLocale systemLocale];
     
     // Sort the signed prekeys in ascending order of generation time.
     oldSignedPrekeys = [oldSignedPrekeys sortedArrayUsingComparator:^NSComparisonResult(
@@ -276,6 +271,14 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
     // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
     for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
+
+        OWSLogInfo(@"Considering signed prekey id: %lu., generatedAt: %@, createdAt: %@, wasAcceptedByService: %d",
+            (unsigned long)signedPrekey.Id,
+            (signedPrekey.generatedAt != nil ? [self.dateFormatter stringFromDate:signedPrekey.generatedAt]
+                                             : @"Unknown"),
+            (signedPrekey.createdAt != nil ? [self.dateFormatter stringFromDate:signedPrekey.createdAt] : @"Unknown"),
+            signedPrekey.wasAcceptedByService);
+
         // Always keep at least 3 keys, accepted or otherwise.
         if (oldSignedPreKeyCount <= 3) {
             break;
