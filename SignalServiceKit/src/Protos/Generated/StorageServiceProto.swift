@@ -1541,8 +1541,6 @@ public class StorageServiceProtoContactRecord: NSObject, Codable {
 
         let phoneNumber: String? = {
             guard hasServiceE164 else {
-                // Shouldn’t happen in prod yet
-                assert(RemoteConfig.allowUUIDOnlyContacts)
                 return nil
             }
 

@@ -634,9 +634,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         if (localUUID) {
             [whitelistedUUIDS removeObject:localUUID];
         } else {
-            if (RemoteConfig.allowUUIDOnlyContacts) {
-                OWSFailDebug(@"Missing localUUID");
-            }
+            OWSFailDebug(@"Missing localUUID");
         }
 
         NSSet<NSString *> *blockedPhoneNumbers = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];

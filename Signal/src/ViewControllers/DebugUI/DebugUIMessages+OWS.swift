@@ -53,8 +53,6 @@ public extension DebugUIMessages {
 
     @objc
     class func receiveUUIDEnvelopeInNewThread() {
-        assert(RemoteConfig.allowUUIDOnlyContacts)
-
         let senderClient = FakeSignalClient.generate(e164Identifier: nil)
         let localClient = LocalSignalClient()
         let runner = TestProtocolRunner()
@@ -74,13 +72,11 @@ public extension DebugUIMessages {
 
     @objc
     class func createUUIDGroup() {
-        assert(RemoteConfig.allowUUIDOnlyContacts)
-
         let uuidMembers = (0...3).map { _ in CommonGenerator.address(hasPhoneNumber: false) }
         let members = uuidMembers + [TSAccountManager.localAddress!]
         let groupName = "UUID Group"
 
-        GroupManager.localCreateNewGroup(members: members, name: groupName, shouldSendMessage: true)
+        _ = GroupManager.localCreateNewGroup(members: members, name: groupName, shouldSendMessage: true)
     }
 }
 

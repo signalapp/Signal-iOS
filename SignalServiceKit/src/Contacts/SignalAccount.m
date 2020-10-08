@@ -120,7 +120,6 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
     }
 
     OWSAssertDebug(recipientPhoneNumber != nil || recipientUUID != nil);
-    OWSAssertDebug(recipientPhoneNumber != nil || RemoteConfig.allowUUIDOnlyContacts);
 
     _contact = contact;
     _contactAvatarHash = contactAvatarHash;

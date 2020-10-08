@@ -84,11 +84,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var allowUUIDOnlyContacts: Bool {
-        true
-    }
-
-    @objc
     public static var usernames: Bool {
         FeatureFlags.usernamesSupported
     }

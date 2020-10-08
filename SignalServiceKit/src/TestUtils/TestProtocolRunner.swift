@@ -73,11 +73,7 @@ public extension SignalClient {
     }
 
     var address: SignalServiceAddress {
-        if RemoteConfig.allowUUIDOnlyContacts {
-            return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
-        } else {
-            return SignalServiceAddress(phoneNumber: e164Identifier!)
-        }
+        return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
     }
 
     func sessionCipher(for e164Identifier: SignalE164Identifier) throws -> SessionCipher {
