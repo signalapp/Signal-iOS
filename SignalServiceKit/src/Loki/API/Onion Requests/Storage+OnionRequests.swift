@@ -41,4 +41,8 @@ public extension Storage {
         print("[Test] [getOnionRequestPaths()] result: \(result)")
         return result
     }
+
+    internal static func clearOnionRequestPaths(using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.removeAllObjects(inCollection: onionRequestPathCollection)
+    }
 }

@@ -218,8 +218,12 @@ public enum OnionRequestAPI {
         print("[Test] [drop(_ path: Path)] newPaths: \(paths)")
         self.paths = paths
         try! Storage.writeSync { transaction in
-            print("[Loki] Persisting onion request paths to database.")
-            Storage.setOnionRequestPaths(paths, using: transaction)
+            if !paths.isEmpty {
+                print("[Loki] Persisting onion request paths to database.")
+                Storage.setOnionRequestPaths(paths, using: transaction)
+            } else {
+                Storage.clearOnionRequestPaths(using: transaction)
+            }
         }
     }
 
