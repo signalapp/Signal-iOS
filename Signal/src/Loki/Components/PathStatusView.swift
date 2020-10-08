@@ -17,10 +17,7 @@ final class PathStatusView : UIView {
         layer.cornerRadius = Values.pathStatusViewSize / 2
         layer.masksToBounds = false
         if OnionRequestAPI.paths.count < OnionRequestAPI.pathCount {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadConnection.read { transaction in
-                OnionRequestAPI.paths = storage.getOnionRequestPaths(in: transaction)
-            }
+            OnionRequestAPI.paths = Storage.getOnionRequestPaths()
         }
         let color = (OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount) ? Colors.accent : Colors.pathsBuilding
         setColor(to: color, isAnimated: false)

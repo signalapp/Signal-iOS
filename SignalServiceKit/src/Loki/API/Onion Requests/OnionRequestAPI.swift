@@ -126,7 +126,7 @@ public enum OnionRequestAPI {
                 OnionRequestAPI.paths = paths
                 try! Storage.writeSync { transaction in
                     print("[Loki] Persisting onion request paths to database.")
-                    OWSPrimaryStorage.shared().setOnionRequestPaths(paths, in: transaction)
+                    Storage.setOnionRequestPaths(paths, using: transaction)
                 }
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: .pathsBuilt, object: nil)
@@ -141,12 +141,10 @@ public enum OnionRequestAPI {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         var paths = OnionRequestAPI.paths
         if paths.count < pathCount {
-            Storage.read { transaction in
-                paths = OWSPrimaryStorage.shared().getOnionRequestPaths(in: transaction)
-                OnionRequestAPI.paths = paths
-                if paths.count >= pathCount {
-                    guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
-                }
+            paths = Storage.getOnionRequestPaths()
+            OnionRequestAPI.paths = paths
+            if paths.count >= pathCount {
+                guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
             }
         }
         // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -189,14 +187,14 @@ public enum OnionRequestAPI {
         paths = newPaths
         try! Storage.writeSync { transaction in
             print("[Loki] Persisting onion request paths to database.")
-            OWSPrimaryStorage.shared().setOnionRequestPaths(newPaths, in: transaction)
+            Storage.setOnionRequestPaths(newPaths, using: transaction)
         }
     }
 
     private static func dropAllPaths() {
         paths.removeAll()
         try! Storage.writeSync { transaction in
-            OWSPrimaryStorage.shared().clearOnionRequestPaths(in: transaction)
+            Storage.clearOnionRequestPaths(using: transaction)
         }
     }
 
