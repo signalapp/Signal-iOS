@@ -147,6 +147,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         return;
     }
 
+    // Don't rotate or clean up prekeys until all incoming messages
+    // have been drained, decrypted and processed.
+    MessageProcessingOperation *messageProcessingOperation = [MessageProcessingOperation new];
+
     SSKRefreshPreKeysOperation *refreshOperation = [SSKRefreshPreKeysOperation new];
 
     __weak SSKRefreshPreKeysOperation *weakRefreshOperation = refreshOperation;
@@ -159,8 +163,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         }
     }];
 
-    [refreshOperation addDependency:checkIfRefreshNecessaryOperation];
-    
     SSKRotateSignedPreKeyOperation *rotationOperation = [SSKRotateSignedPreKeyOperation new];
 
     __weak SSKRotateSignedPreKeyOperation *weakRotationOperation = rotationOperation;
@@ -174,14 +176,25 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         }
     }];
 
-    [rotationOperation addDependency:checkIfRotationNecessaryOperation];
-
     // Order matters here - if we rotated *before* refreshing, we'd risk uploading
     // two SPK's in a row since RefreshPreKeysOperation can also upload a new SPK.
-    [checkIfRotationNecessaryOperation addDependency:refreshOperation];
+    NSArray<NSOperation *> *operations = @[
+        messageProcessingOperation,
+        checkIfRefreshNecessaryOperation,
+        refreshOperation,
+        checkIfRotationNecessaryOperation,
+        rotationOperation
+    ];
 
-    NSArray<NSOperation *> *operations =
-        @[ checkIfRefreshNecessaryOperation, refreshOperation, checkIfRotationNecessaryOperation, rotationOperation ];
+    // Set up dependencies; we want to perform these operations serially.
+    NSOperation *_Nullable lastOperation;
+    for (NSOperation *operation in operations) {
+        if (lastOperation != nil) {
+            [operation addDependency:lastOperation];
+        }
+        lastOperation = operation;
+    }
+
     [self.operationQueue addOperations:operations waitUntilFinished:NO];
 }
 
@@ -269,14 +282,17 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         }
     }
 
+    OWSLogInfo(@"oldSignedPreKeyCount: %lu., oldAcceptedSignedPreKeyCount: %lu",
+        (unsigned long)oldSignedPreKeyCount,
+        (unsigned long)oldAcceptedSignedPreKeyCount);
+
     // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
     for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
 
         OWSLogInfo(@"Considering signed prekey id: %lu., generatedAt: %@, createdAt: %@, wasAcceptedByService: %d",
             (unsigned long)signedPrekey.Id,
-            (signedPrekey.generatedAt != nil ? [self.dateFormatter stringFromDate:signedPrekey.generatedAt]
-                                             : @"Unknown"),
-            (signedPrekey.createdAt != nil ? [self.dateFormatter stringFromDate:signedPrekey.createdAt] : @"Unknown"),
+            [self formatDate:signedPrekey.generatedAt],
+            [self formatDate:signedPrekey.createdAt],
             signedPrekey.wasAcceptedByService);
 
         // Always keep at least 3 keys, accepted or otherwise.
@@ -338,7 +354,9 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                                   }
                                   BOOL shouldRemove = fabs(record.createdAt.timeIntervalSinceNow) > expirationInterval;
                                   if (shouldRemove) {
-                                      OWSLogInfo(@"Removing prekey id: %lu.", (unsigned long)record.Id);
+                                      OWSLogInfo(@"Removing prekey id: %lu., createdAt: %@",
+                                          (unsigned long)record.Id,
+                                          [self formatDate:record.createdAt]);
                                       [keysToRemove addObject:key];
                                   }
                               }];
@@ -363,6 +381,24 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     }
 
     return oldRecords;
+}
+
++ (NSString *)formatDate:(nullable NSDate *)date
+{
+    return (date != nil ? [self.dateFormatter stringFromDate:date] : @"Unknown");
+}
+
++ (NSDateFormatter *)dateFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setTimeStyle:NSDateFormatterShortStyle];
+        [formatter setDateStyle:NSDateFormatterShortStyle];
+    });
+    return formatter;
 }
 
 @end
