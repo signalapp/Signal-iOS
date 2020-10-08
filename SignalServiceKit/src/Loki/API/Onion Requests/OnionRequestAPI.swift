@@ -13,9 +13,9 @@ public enum OnionRequestAPI {
     private static let pathFailureThreshold: UInt = 2
     private static var pathFailureCount: [Path:UInt] = [:]
 
-    public static let pathCount: UInt = 2
+    public static let targetPathCount: UInt = 2
 
-    private static var guardSnodeCount: UInt { return pathCount } // One per path
+    private static var guardSnodeCount: UInt { return targetPathCount } // One per path
 
     // MARK: Destination
     internal enum Destination {
@@ -105,7 +105,7 @@ public enum OnionRequestAPI {
         }
     }
 
-    /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
+    /// Builds and returns `targetPathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
     private static func buildPaths(reusing reusablePaths: [Path]) -> Promise<[Path]> {
         print("[Loki] [Onion Request API] Building onion request paths.")
@@ -161,17 +161,29 @@ public enum OnionRequestAPI {
             }
         }
         // randomElement() uses the system's default random generator, which is cryptographically secure
-        if paths.count >= pathCount {
-            return Promise<Path> { seal in
-                if let snode = snode {
-                    seal.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!)
+        if paths.count >= targetPathCount {
+            if let snode = snode {
+                return Promise { $0.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!) }
+            } else {
+                return Promise { $0.fulfill(paths.randomElement()!) }
+            }
+        } else if !paths.isEmpty {
+            print("[Test] Reusing: \(paths)")
+            if let snode = snode {
+                if let path = paths.first(where: { !$0.contains(snode) }) {
+                    buildPaths(reusing: paths).retainUntilComplete() // Re-build paths in the background
+                    return Promise { $0.fulfill(path) }
                 } else {
-                    seal.fulfill(paths.randomElement()!)
+                    return buildPaths(reusing: paths).map2 { paths in
+                        return paths.filter { !$0.contains(snode) }.randomElement()!
+                    }
                 }
+            } else {
+                buildPaths(reusing: paths).retainUntilComplete() // Re-build paths in the background
+                return Promise { $0.fulfill(paths.randomElement()!) }
             }
         } else {
-            print("[Test] Reusing: \(paths)")
-            return buildPaths(reusing: paths).map2 { paths in
+            return buildPaths(reusing: []).map2 { paths in
                 if let snode = snode {
                     return paths.filter { !$0.contains(snode) }.randomElement()!
                 } else {
