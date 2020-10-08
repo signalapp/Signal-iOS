@@ -137,15 +137,12 @@ public enum OnionRequestAPI {
     }
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
-    ///
-    /// - Note: Exposed for testing purposes.
     private static func getPath(excluding snode: Snode?) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         var paths = OnionRequestAPI.paths
         if paths.count < pathCount {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadConnection.read { transaction in
-                paths = storage.getOnionRequestPaths(in: transaction)
+            Storage.read { transaction in
+                paths = OWSPrimaryStorage.shared().getOnionRequestPaths(in: transaction)
                 OnionRequestAPI.paths = paths
                 if paths.count >= pathCount {
                     guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
@@ -172,15 +169,34 @@ public enum OnionRequestAPI {
         }
     }
 
+    private static func dropGuardSnode(_ snode: Snode) {
+        guardSnodes = guardSnodes.filter { $0 != snode }
+    }
+
+    private static func drop(_ snode: Snode) throws {
+        var oldPaths = OnionRequestAPI.paths
+        guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
+        var path = oldPaths.remove(at: pathIndex)
+        guard let snodeIndex = path.firstIndex(of: snode) else { return }
+        path.remove(at: snodeIndex)
+        let unusedSnodes = SnodeAPI.snodePool.subtracting(oldPaths.flatMap { $0 })
+        guard !unusedSnodes.isEmpty else { throw Error.insufficientSnodes }
+        // randomElement() uses the system's default random generator, which is cryptographically secure
+        path.append(unusedSnodes.randomElement()!)
+        // Don't test the new snode as this would reveal the user's IP
+        let newPaths = oldPaths + [ path ]
+        OnionRequestAPI.paths = newPaths
+        try! Storage.writeSync { transaction in
+            print("[Loki] Persisting onion request paths to database.")
+            OWSPrimaryStorage.shared().setOnionRequestPaths(newPaths, in: transaction)
+        }
+    }
+
     private static func dropAllPaths() {
         paths.removeAll()
         try! Storage.writeSync { transaction in
             OWSPrimaryStorage.shared().clearOnionRequestPaths(in: transaction)
         }
-    }
-
-    private static func dropGuardSnode(_ snode: Snode) {
-        guardSnodes = guardSnodes.filter { $0 != snode }
     }
 
     /// Builds an onion around `payload` and returns the result.
@@ -335,14 +351,30 @@ public enum OnionRequestAPI {
         }
         promise.catch2 { error in // Must be invoked on LokiAPI.workQueue
             guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
-            // Marking all the snodes in the path as unreliable here is aggressive, but otherwise users
-            // can get stuck with a failing path that just refreshes to the same path.
             let path = paths.first { $0.contains(guardSnode) }
-            path?.forEach { snode in
-                SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+            func handleUnspecificError() {
+                path?.forEach { snode in
+                    SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                }
+                dropAllPaths()
+                dropGuardSnode(guardSnode)
             }
-            dropAllPaths() // A snode in the path is bad; retry with a different path
-            dropGuardSnode(guardSnode)
+            let prefix = "Next node not found: "
+            if let message = json?["result"] as? String, message.hasPrefix(prefix) {
+                let ed25519PublicKey = message.substring(from: prefix.count)
+                if let path = path, let snode = path.first(where: { $0.publicKeySet?.ed25519Key == ed25519PublicKey }) {
+                    SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                    do {
+                        try drop(snode)
+                    } catch {
+                        handleUnspecificError()
+                    }
+                } else {
+                    handleUnspecificError()
+                }
+            } else {
+                handleUnspecificError()
+            }
         }
         return promise
     }
