@@ -1775,7 +1775,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ te ha retirado los permisos de admin.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Un(a) participante te ha añadido al grupo.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
@@ -2111,13 +2111,13 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No se pueden compartir más de %@ objetos.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "Change Photos";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "Modificar fotos";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Permite el acceso a todas las fotos en Ajustes o modifica a qué fotos puede acceder Signal.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "¿No ves tus fotos?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Fallo al seleccionar adjunto.";
@@ -2345,7 +2345,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar para tod@s";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para tod*s en el chat, si usan una versión reciente de Signal. En el chat se mostrará que lo has eliminado. ";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "¿Para quién deseas eliminar este mensaje?";
