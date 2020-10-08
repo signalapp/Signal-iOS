@@ -755,7 +755,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.navigationItem.leftBarButtonItem = settingsButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
 
-    UIBarButtonItem *compose = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCompose]
+    UIBarButtonItem *compose = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCompose24]
                                                                 style:UIBarButtonItemStylePlain
                                                                target:self
                                                                action:@selector(showNewConversationView)];

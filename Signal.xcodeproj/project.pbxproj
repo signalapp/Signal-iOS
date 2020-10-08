@@ -196,6 +196,9 @@
 		347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F82436820C0019A52C /* GroupViewHelper.swift */; };
 		347B83FD24378DDF0019A52C /* GroupMemberRequestsAndInvitesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */; };
 		347C37FF2526005800F3D941 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 347C37FE2526005800F3D941 /* CloudKit.framework */; };
+		347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */; };
+		347C3854252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */; };
+		347C3855252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json in Resources */ = {isa = PBXBuildFile; fileRef = 347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
@@ -1128,6 +1131,9 @@
 		347B83F82436820C0019A52C /* GroupViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupViewHelper.swift; sourceTree = "<group>"; };
 		347B83FC24378DDE0019A52C /* GroupMemberRequestsAndInvitesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMemberRequestsAndInvitesViewController.swift; sourceTree = "<group>"; };
 		347C37FE2526005800F3D941 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AndMentionsSplash.swift; sourceTree = "<group>"; };
+		347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_groupsv2_iOS_dark.json; sourceTree = "<group>"; };
+		347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_groupsv2_iOS_light.json; sourceTree = "<group>"; };
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
@@ -3316,6 +3322,7 @@
 			isa = PBXGroup;
 			children = (
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
+				347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */,
 				8806F21A23E90B0B00692638 /* MessageRequests.swift */,
@@ -3341,15 +3348,17 @@
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
+				8806F21C23E90C8300692638 /* messageRequestsSplash.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
-				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
-				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
-				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
 				888C827F23D795F90059464B /* pinCreationFail.json */,
 				888C828023D795FA0059464B /* pinCreationInProgress.json */,
 				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
-				8806F21C23E90C8300692638 /* messageRequestsSplash.json */,
+				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
+				347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */,
+				347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */,
+				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
 				887CD4862473587300FDD265 /* transfer.json */,
+				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -4103,6 +4112,7 @@
 				887CD4872473587300FDD265 /* transfer.json in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
+				347C3855252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json in Resources */,
 				4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */,
 				886CB07824E77E5B00753909 /* silence.aiff in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
@@ -4121,6 +4131,7 @@
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				886CB07C24E78F2200753909 /* Reflection.m4r in Resources */,
 				88A9419524099F7E000E9700 /* attachment_dark.json in Resources */,
+				347C3854252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
@@ -5109,6 +5120,7 @@
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				4C11AA5020FD59C700351FBD /* MessageStatusView.swift in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
+				347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
