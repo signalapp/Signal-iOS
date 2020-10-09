@@ -191,6 +191,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let supportAnimatedStickers_AnimatedWebp = true
 
+    @objc
+    public static let groupCalling = build.includes(.dev)
+
     private static let _ignoreCDSUndiscoverableUsersInMessageSends = AtomicBool(true)
     @objc
     public static var ignoreCDSUndiscoverableUsersInMessageSends: Bool {

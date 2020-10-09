@@ -11,7 +11,6 @@ import WebRTC
 
 protocol CallUIAdaptee {
     var notificationPresenter: NotificationPresenter { get }
-    var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
     func startOutgoingCall(call: SignalCall)
@@ -26,7 +25,7 @@ protocol CallUIAdaptee {
     func remoteBusy(_ call: SignalCall)
     func didAnswerElsewhere(call: SignalCall)
     func didDeclineElsewhere(call: SignalCall)
-    func failCall(_ call: SignalCall, error: CallError)
+    func failCall(_ call: SignalCall, error: SignalCall.CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
     func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool)
@@ -34,40 +33,32 @@ protocol CallUIAdaptee {
 
 // Shared default implementations
 extension CallUIAdaptee {
+    var callService: CallService {
+        return AppEnvironment.shared.callService
+    }
+
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callViewController = CallViewController(call: call)
+        let callViewController = IndividualCallViewController(call: call)
         callViewController.modalTransitionStyle = .crossDissolve
 
-        if CallViewController.kShowCallViewOnSeparateWindow {
-            OWSWindowManager.shared.startCall(callViewController)
-        } else {
-            guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
-                owsFailDebug("view controller unexpectedly nil")
-                return
-            }
-
-            if let presentedViewController = presentingViewController.presentedViewController {
-                presentedViewController.dismiss(animated: false) {
-                    presentingViewController.presentFullScreen(callViewController, animated: true)
-                }
-            } else {
-                presentingViewController.presentFullScreen(callViewController, animated: true)
-            }
-        }
+        OWSWindowManager.shared.startCall(callViewController)
     }
 
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {
         AssertIsOnMainThread()
 
-        notificationPresenter.presentMissedCall(call, callerName: callerName)
+        notificationPresenter.presentMissedCall(call.individualCall, callerName: callerName)
     }
 
     internal func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard let call = self.callService.buildOutgoingCallIfAvailable(address: address, hasVideo: hasLocalVideo) else {
+        guard let call = self.callService.buildOutgoingIndividualCallIfPossible(
+            address: address,
+            hasVideo: hasLocalVideo
+        ) else {
             // @integration This is not unexpected, it could happen if Bob tries
             // to start an outgoing call at the same moment Alice has already
             // sent him an Offer that is being processed.
@@ -78,7 +69,7 @@ extension CallUIAdaptee {
         Logger.debug("")
 
         startOutgoingCall(call: call)
-        call.hasLocalVideo = hasLocalVideo
+        call.individualCall.hasLocalVideo = hasLocalVideo
         self.showCall(call)
     }
 }
@@ -89,8 +80,8 @@ extension CallUIAdaptee {
  */
 @objc public class CallUIAdapter: NSObject, CallServiceObserver {
 
-    private let contactsManager: OWSContactsManager
-    internal let callService: CallService
+    var contactsManager: OWSContactsManager { Environment.shared.contactsManager }
+    var callService: CallService { AppEnvironment.shared.callService }
 
     private var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
@@ -101,7 +92,6 @@ extension CallUIAdaptee {
     }
 
     lazy var nonCallKitAdaptee = NonCallKitCallUIAdaptee(
-        callService: callService,
         notificationPresenter: notificationPresenter
     )
 
@@ -121,7 +111,6 @@ extension CallUIAdaptee {
             let useSystemCallLog = preferences.isSystemCallLogEnabled()
 
             return CallKitCallUIAdaptee(
-                callService: callService,
                 contactsManager: contactsManager,
                 notificationPresenter: notificationPresenter,
                 showNamesOnCallScreen: showNames,
@@ -133,7 +122,7 @@ extension CallUIAdaptee {
     var defaultAdaptee: CallUIAdaptee { callKitAdaptee ?? nonCallKitAdaptee }
 
     func adaptee(for call: SignalCall) -> CallUIAdaptee {
-        switch call.callAdapterType {
+        switch call.individualCall.callAdapterType {
         case .nonCallKit: return nonCallKitAdaptee
         case .default: return defaultAdaptee
         }
@@ -141,17 +130,14 @@ extension CallUIAdaptee {
 
     lazy var audioService = CallAudioService()
 
-    public required init(callService: CallService, contactsManager: OWSContactsManager) {
+    public required override init() {
         AssertIsOnMainThread()
-
-        self.contactsManager = contactsManager
-        self.callService = callService
 
         super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            callService.addObserverAndSyncState(observer: self)
+            self.callService.addObserverAndSyncState(observer: self)
         }
     }
 
@@ -182,12 +168,12 @@ extension CallUIAdaptee {
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
 
-        Logger.info("remoteAddress: \(call.remoteAddress)")
+        Logger.info("remoteAddress: \(call.individualCall.remoteAddress)")
 
         // make sure we don't terminate audio session during call
         _ = audioSession.startAudioActivity(call.audioActivity)
 
-        let callerName = self.contactsManager.displayName(for: call.remoteAddress)
+        let callerName = self.contactsManager.displayName(for: call.individualCall.remoteAddress)
 
         Logger.verbose("callerName: \(callerName)")
 
@@ -203,7 +189,7 @@ extension CallUIAdaptee {
     internal func reportMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callerName = self.contactsManager.displayName(for: call.remoteAddress)
+        let callerName = self.contactsManager.displayName(for: call.individualCall.remoteAddress)
         adaptee(for: call).reportMissedCall(call, callerName: callerName)
     }
 
@@ -221,7 +207,7 @@ extension CallUIAdaptee {
             return
         }
 
-        guard call.localId == localId else {
+        guard call.individualCall.localId == localId else {
             owsFailDebug("localId does not match current call")
             return
         }
@@ -288,7 +274,7 @@ extension CallUIAdaptee {
             return
         }
 
-        guard call.localId == localId else {
+        guard call.individualCall.localId == localId else {
             owsFailDebug("localId does not match current call")
             return
         }
@@ -302,7 +288,7 @@ extension CallUIAdaptee {
         adaptee(for: call).localHangupCall(call)
     }
 
-    internal func failCall(_ call: SignalCall, error: CallError) {
+    internal func failCall(_ call: SignalCall, error: SignalCall.CallError) {
         AssertIsOnMainThread()
 
         adaptee(for: call).failCall(call, error: error)
@@ -330,7 +316,7 @@ extension CallUIAdaptee {
     internal func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         AssertIsOnMainThread()
 
-        callService.setCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
+        callService.updateCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
     }
 
     // MARK: - CallServiceObserver
@@ -338,11 +324,10 @@ extension CallUIAdaptee {
     internal func didUpdateCall(call: SignalCall?) {
         AssertIsOnMainThread()
 
-        if let call = call {
-            audioService.handleRinging = adaptee(for: call).hasManualRinger
-        }
+        guard let call = call, call.isIndividualCall else { return }
 
-        call?.addObserverAndSyncState(observer: audioService)
+        audioService.handleRinging = adaptee(for: call).hasManualRinger
+        call.addObserverAndSyncState(observer: audioService)
     }
 
     internal func didUpdateVideoTracks(call: SignalCall?,

@@ -109,11 +109,16 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
-    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
-        let call = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, sentAtTimestamp: Date.ows_millisecondTimestamp(), offerMediaType: .audio)
+    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (IndividualCall) -> Void) -> Guarantee<Void> {
+        let call = SignalCall.incomingIndividualCall(
+            localId: UUID(),
+            remoteAddress: thread.contactAddress,
+            sentAtTimestamp: Date.ows_millisecondTimestamp(),
+            offerMediaType: .audio
+        )
 
         return delayedNotificationDispatch {
-            callBlock(call)
+            callBlock(call.individualCall)
         }
     }
 

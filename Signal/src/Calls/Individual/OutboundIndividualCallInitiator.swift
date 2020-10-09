@@ -9,7 +9,7 @@ import SignalMessaging
 /**
  * Creates an outbound call via WebRTC.
  */
-@objc public class OutboundCallInitiator: NSObject {
+@objc public class OutboundIndividualCallInitiator: NSObject {
 
     @objc public override init() {
         super.init()
@@ -55,7 +55,7 @@ import SignalMessaging
             return false
         }
 
-        guard let callUIAdapter = AppEnvironment.shared.callService.callUIAdapter else {
+        guard let callUIAdapter = AppEnvironment.shared.callService.individualCallService.callUIAdapter else {
             owsFailDebug("missing callUIAdapter")
             return false
         }

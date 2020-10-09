@@ -510,7 +510,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.preferences setIsSystemCallLogEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
-    [AppEnvironment.shared.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService.individualCallService createCallUIAdapter];
 }
 
 - (void)didToggleUDUnrestrictedAccessSwitch:(UISwitch *)sender

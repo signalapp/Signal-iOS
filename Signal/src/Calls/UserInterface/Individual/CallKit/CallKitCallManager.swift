@@ -39,23 +39,23 @@ final class CallKitCallManager: NSObject {
         if showNamesOnCallScreen {
             let type: CXHandle.HandleType
             let value: String
-            if let phoneNumber = call.remoteAddress.phoneNumber {
+            if let phoneNumber = call.individualCall.remoteAddress.phoneNumber {
                 type = .phoneNumber
                 value = phoneNumber
             } else {
                 type = .generic
-                value = call.remoteAddress.stringForDisplay
+                value = call.individualCall.remoteAddress.stringForDisplay
             }
             handle = CXHandle(type: type, value: value)
         } else {
-            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.individualCall.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
-            CallKitIdStore.setAddress(call.remoteAddress, forCallKitId: callKitId)
+            CallKitIdStore.setAddress(call.individualCall.remoteAddress, forCallKitId: callKitId)
         }
 
-        let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
+        let startCallAction = CXStartCallAction(call: call.individualCall.localId, handle: handle)
 
-        startCallAction.isVideo = call.hasLocalVideo
+        startCallAction.isVideo = call.individualCall.hasLocalVideo
 
         let transaction = CXTransaction()
         transaction.addAction(startCallAction)
@@ -64,7 +64,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func localHangup(call: SignalCall) {
-        let endCallAction = CXEndCallAction(call: call.localId)
+        let endCallAction = CXEndCallAction(call: call.individualCall.localId)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
 
@@ -72,7 +72,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func setHeld(call: SignalCall, onHold: Bool) {
-        let setHeldCallAction = CXSetHeldCallAction(call: call.localId, onHold: onHold)
+        let setHeldCallAction = CXSetHeldCallAction(call: call.individualCall.localId, onHold: onHold)
         let transaction = CXTransaction()
         transaction.addAction(setHeldCallAction)
 
@@ -80,7 +80,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {
-        let muteCallAction = CXSetMutedCallAction(call: call.localId, muted: isMuted)
+        let muteCallAction = CXSetMutedCallAction(call: call.individualCall.localId, muted: isMuted)
         let transaction = CXTransaction()
         transaction.addAction(muteCallAction)
 
@@ -88,7 +88,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func answer(call: SignalCall) {
-        let answerCallAction = CXAnswerCallAction(call: call.localId)
+        let answerCallAction = CXAnswerCallAction(call: call.individualCall.localId)
         let transaction = CXTransaction()
         transaction.addAction(answerCallAction)
 
@@ -110,7 +110,7 @@ final class CallKitCallManager: NSObject {
     private(set) var calls = [SignalCall]()
 
     func callWithLocalId(_ localId: UUID) -> SignalCall? {
-        guard let index = calls.firstIndex(where: { $0.localId == localId }) else {
+        guard let index = calls.firstIndex(where: { $0.individualCall.localId == localId }) else {
             return nil
         }
         return calls[index]
@@ -118,13 +118,15 @@ final class CallKitCallManager: NSObject {
 
     func addCall(_ call: SignalCall) {
         Logger.verbose("call: \(call)")
-        call.wasReportedToSystem = true
+        owsAssertDebug(call.isIndividualCall)
+        call.individualCall.wasReportedToSystem = true
         calls.append(call)
     }
 
     func removeCall(_ call: SignalCall) {
         Logger.verbose("call: \(call)")
-        call.wasRemovedFromSystem = true
+        owsAssertDebug(call.isIndividualCall)
+        call.individualCall.wasRemovedFromSystem = true
         guard calls.removeFirst(where: { $0 === call }) != nil else {
             Logger.warn("no call matching: \(call) to remove")
             return
@@ -133,7 +135,7 @@ final class CallKitCallManager: NSObject {
 
     func removeAllCalls() {
         Logger.verbose("")
-        calls.forEach { $0.wasRemovedFromSystem = true }
+        calls.forEach { $0.individualCall.wasRemovedFromSystem = true }
         calls.removeAll()
     }
 }

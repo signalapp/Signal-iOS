@@ -37,6 +37,9 @@ public protocol UIDatabaseChanges: AnyObject {
 
     @objc(didUpdateInteraction:)
     func didUpdate(interaction: TSInteraction) -> Bool
+
+    @objc(didUpdateThread:)
+    func didUpdate(thread: TSThread) -> Bool
 }
 
 // MARK: -
@@ -475,6 +478,11 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
     @objc(didUpdateInteraction:)
     func didUpdate(interaction: TSInteraction) -> Bool {
         interactionUniqueIds.contains(interaction.uniqueId)
+    }
+
+    @objc(didUpdateThread:)
+    func didUpdate(thread: TSThread) -> Bool {
+        threadUniqueIds.contains(thread.uniqueId)
     }
 
     func finalizePublishedState(db: Database) throws {
