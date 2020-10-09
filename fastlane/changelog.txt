@@ -1,4 +1,1 @@
-* Ability to choose custom sounds for notifications (contributed by Cristopher Kobusch)
-* Ability to enable the torch / flash while recording a video (contributed by Heinrich Dahms)
-* Fixing vertical alignment in the input text view when using smaller than default text size (widely requested by beta users, fixed by Fumiaki Yoshimatsu)
-* Allow sharing of PDFs from Safari (contributed by Fumiaki Yoshimatsu)
+* Accidentally send a message to the wrong chat? Take backs are now permitted. When deleting a recently sent message, you now have the option to Delete for Everyone in the chat.
