@@ -93,13 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteAllContent;
 
-#pragma mark - Find Content
-
-+ (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                 authorAddress:(SignalServiceAddress *)authorAddress
-                                                threadUniqueId:(NSString *)threadUniqueId
-                                                   transaction:(SDSAnyReadTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

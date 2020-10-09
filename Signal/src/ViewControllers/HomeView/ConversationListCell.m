@@ -280,6 +280,8 @@ NS_ASSUME_NONNULL_BEGIN
         UIColor *messageStatusViewTintColor
             = (Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray45Color]);
         BOOL shouldAnimateStatusIcon = NO;
+        BOOL shouldHideStatusIndicator = NO;
+
         if ([self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
 
@@ -294,12 +296,15 @@ NS_ASSUME_NONNULL_BEGIN
                 case MessageReceiptStatusSent:
                 case MessageReceiptStatusSkipped:
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
+                    shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                     break;
                 case MessageReceiptStatusDelivered:
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
+                    shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                     break;
                 case MessageReceiptStatusRead:
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
+                    shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                     break;
                 case MessageReceiptStatusFailed:
                     statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
@@ -309,7 +314,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         self.messageStatusView.tintColor = messageStatusViewTintColor;
-        self.messageStatusView.hidden = statusIndicatorImage == nil;
+        self.messageStatusView.hidden = shouldHideStatusIndicator || statusIndicatorImage == nil;
         self.unreadBadge.hidden = YES;
         if (shouldAnimateStatusIcon) {
             CABasicAnimation *animation;

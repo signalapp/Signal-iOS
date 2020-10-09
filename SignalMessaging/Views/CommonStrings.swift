@@ -35,6 +35,12 @@ import Foundation
     static public let deleteButton = NSLocalizedString("TXT_DELETE_TITLE", comment: "Label for the delete button in an alert or action sheet.")
 
     @objc
+    static public let deleteForMeButton = NSLocalizedString(
+        "MESSAGE_ACTION_DELETE_FOR_YOU",
+        comment: "The title for the action that deletes a message for the local user only."
+    )
+
+    @objc
     static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment: "Generic text for button that retries whatever the last action was.")
 
     @objc

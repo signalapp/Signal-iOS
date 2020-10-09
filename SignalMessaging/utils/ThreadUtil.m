@@ -342,62 +342,6 @@ NS_ASSUME_NONNULL_BEGIN
     [TSAttachmentStream deleteAttachmentsFromDisk];
 }
 
-#pragma mark - Find Content
-
-+ (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                 authorAddress:(SignalServiceAddress *)authorAddress
-                                                threadUniqueId:(NSString *)threadUniqueId
-                                                   transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(timestamp > 0);
-    OWSAssertDebug(authorAddress.isValid);
-
-    SignalServiceAddress *_Nullable localAddress = [self.tsAccountManager localAddressWithTransaction:transaction];
-    if (!localAddress.isValid) {
-        OWSFailDebug(@"missing local address.");
-        return nil;
-    }
-
-    BOOL (^filter)(TSInteraction *) = ^(TSInteraction *interaction) {
-        SignalServiceAddress *_Nullable messageAuthorAddress = nil;
-        if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-            messageAuthorAddress = incomingMessage.authorAddress;
-        } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-            messageAuthorAddress = localAddress;
-        }
-        if (!messageAuthorAddress.isValid) {
-            return NO;
-        }
-        
-        if (![authorAddress isEqualToAddress:messageAuthorAddress]) {
-            return NO;
-        }
-        if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
-            return NO;
-        }
-        return YES;
-    };
-
-    NSError *error;
-    NSArray<TSInteraction *> *interactions = [InteractionFinder interactionsWithTimestamp:timestamp
-                                                                                   filter:filter
-                                                                              transaction:transaction
-                                                                                    error:&error];
-    if (error != nil) {
-        OWSFailDebug(@"Error loading interactions: %@", error);
-    }
-
-    if (interactions.count < 1) {
-        return nil;
-    }
-    if (interactions.count > 1) {
-        // In case of collision, take the first.
-        OWSLogError(@"more than one matching interaction in thread.");
-    }
-    return interactions.firstObject;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

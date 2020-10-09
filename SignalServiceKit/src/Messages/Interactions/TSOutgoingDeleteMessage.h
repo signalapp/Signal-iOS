@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread message:(TSMessage *)message;
+- (instancetype)initWithThread:(TSThread *)thread message:(TSOutgoingMessage *)message;
 
 @end
 
