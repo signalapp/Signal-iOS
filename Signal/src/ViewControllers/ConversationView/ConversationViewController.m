@@ -1822,7 +1822,7 @@ typedef enum : NSUInteger {
     [actionSheet addAction:[OWSActionSheets cancelAction]];
 
     ActionSheetAction *deleteMessageAction = [[ActionSheetAction alloc]
-        initWithTitle:CommonStrings.deleteButton
+        initWithTitle:CommonStrings.deleteForMeButton
                 style:ActionSheetActionStyleDestructive
               handler:^(ActionSheetAction *action) {
                   DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {

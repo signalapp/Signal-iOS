@@ -96,10 +96,7 @@ extension ConversationViewController: MessageActionsDelegate {
         ))
 
         let deleteForMeAction = ActionSheetAction(
-            title: NSLocalizedString(
-                "MESSAGE_ACTION_DELETE_FOR_YOU",
-                comment: "The title for the action that deletes a message for the local user only."
-            ),
+            title: CommonStrings.deleteForMeButton,
             style: .destructive
         ) { _ in
             conversationViewItem.deleteAction()
@@ -220,7 +217,7 @@ extension ConversationViewController: MessageActionsDelegate {
         let alert = ActionSheetController(title: nil, message: message)
         alert.addAction(OWSActionSheets.cancelAction)
 
-        let delete = ActionSheetAction(title: CommonStrings.deleteButton, style: .destructive) { [weak self] _ in
+        let delete = ActionSheetAction(title: CommonStrings.deleteForMeButton, style: .destructive) { [weak self] _ in
             guard let self = self else { return }
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
                 guard let self = self else { return }
