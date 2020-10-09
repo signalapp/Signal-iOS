@@ -73,7 +73,7 @@ public enum OnionRequestAPI {
         return promise
     }
 
-    /// Finds `guardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
+    /// Finds `targetGuardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
     private static func getGuardSnodes(reusing reusableGuardSnodes: [Snode]) -> Promise<Set<Snode>> {
         if guardSnodes.count >= targetGuardSnodeCount {
@@ -114,7 +114,7 @@ public enum OnionRequestAPI {
         return SnodeAPI.getRandomSnode().then2 { _ -> Promise<[Path]> in // Just used to populate the snode pool
             let reusableGuardSnodes = reusablePaths.map { $0[0] }
             return getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
-                var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes)
+                var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes).subtracting(reusablePaths.flatMap { $0 })
                 let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
                 let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
@@ -217,10 +217,10 @@ public enum OnionRequestAPI {
     }
 
     private static func drop(_ path: Path) {
-        var paths = self.paths
+        var paths = OnionRequestAPI.paths
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
-        self.paths = paths
+        OnionRequestAPI.paths = paths
         try! Storage.writeSync { transaction in
             if !paths.isEmpty {
                 print("[Loki] Persisting onion request paths to database.")
