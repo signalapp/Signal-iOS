@@ -72,6 +72,7 @@
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSOutgoingDeleteMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 
 @import SafariServices;
@@ -1784,8 +1785,18 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
+- (void)resendFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
+    TSOutgoingMessage *messageToSend;
+
+    // If the message was remotely deleted, resend a *delete* message
+    // rather than the message itself.
+    if (message.wasRemotelyDeleted) {
+        messageToSend = [[TSOutgoingDeleteMessage alloc] initWithThread:self.thread message:message];
+    } else {
+        messageToSend = message;
+    }
+
     NSArray<SignalServiceAddress *> *recipientsWithChangedSafetyNumber =
         [message failedRecipientAddressesWithErrorCode:OWSErrorCodeUntrustedIdentity];
     if (recipientsWithChangedSafetyNumber.count > 0) {
@@ -1796,7 +1807,8 @@ typedef enum : NSUInteger {
                      completionHandler:^(BOOL didConfirm) {
                          if (didConfirm) {
                              DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                 [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+                                 [self.messageSenderJobQueue addMessage:messageToSend.asPreparer
+                                                            transaction:transaction];
                              });
                          }
                      }];
@@ -1825,7 +1837,8 @@ typedef enum : NSUInteger {
                           style:ActionSheetActionStyleDefault
                         handler:^(ActionSheetAction *action) {
                             DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+                                [self.messageSenderJobQueue addMessage:messageToSend.asPreparer
+                                                           transaction:transaction];
                             });
                         }];
 
@@ -2626,7 +2639,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
 
-    [self handleUnsentMessageTap:message];
+    [self resendFailedOutgoingMessage:message];
 }
 
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem

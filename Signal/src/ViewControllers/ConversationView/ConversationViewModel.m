@@ -1180,7 +1180,8 @@ NS_ASSUME_NONNULL_BEGIN
                 shouldHideFooter
                     = ([timestampText isEqualToString:nextTimestampText] && receiptStatus == nextReceiptStatus
                         && outgoingMessage.messageState != TSOutgoingMessageStateFailed
-                        && outgoingMessage.messageState != TSOutgoingMessageStateSending && !isDisappearingMessage);
+                        && outgoingMessage.messageState != TSOutgoingMessageStateSending && !isDisappearingMessage
+                        && !nextOutgoingMessage.wasRemotelyDeleted);
             }
 
             // clustering

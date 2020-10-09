@@ -1048,6 +1048,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return result;
 }
 
+- (void)updateWithRecipientAddressStates:
+            (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
+                             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateOutgoingMessageWithTransaction:transaction
+                                            block:^(TSOutgoingMessage *message) {
+                                                message.recipientAddressStates = [recipientAddressStates copy];
+                                            }];
+}
+
 #ifdef TESTABLE_BUILD
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(SDSAnyWriteTransaction *)transaction
