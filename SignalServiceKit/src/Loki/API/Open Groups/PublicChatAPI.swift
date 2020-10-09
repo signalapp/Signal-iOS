@@ -391,9 +391,7 @@ public final class PublicChatAPI : DotNetAPI {
                     var error: NSError?
                     let url = "\(server)/loki/v1\(profilePictureURL)"
                     let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: url, parameters: nil, error: &error)
-                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json",
-                                                    "Authorization" : "Bearer \(token)",
-                                                    "Accept-Ranges" : "bytes"]
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)"]
                     if let error = error {
                         print("[Loki] Couldn't download open group avatar due to error: \(error).")
                         return
