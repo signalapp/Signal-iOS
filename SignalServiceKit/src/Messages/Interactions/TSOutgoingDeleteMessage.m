@@ -66,10 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
     [super anyUpdateOutgoingMessageWithTransaction:transaction block:block];
 
     // Some older outgoing delete messages didn't store the deleted message's unique id.
+    // We want to mirror our sending state onto the original message, so it shows up
+    // within the conversation.
     if (self.messageUniqueId) {
         TSOutgoingMessage *deletedMessage = [TSOutgoingMessage anyFetchOutgoingMessageWithUniqueId:self.messageUniqueId
                                                                                        transaction:transaction];
-        [deletedMessage anyUpdateOutgoingMessageWithTransaction:transaction block:block];
+        [deletedMessage updateWithRecipientAddressStates:self.recipientAddressStates transaction:transaction];
     }
 }
 
