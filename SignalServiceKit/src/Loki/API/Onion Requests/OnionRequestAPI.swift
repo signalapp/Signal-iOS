@@ -79,7 +79,6 @@ public enum OnionRequestAPI {
         if guardSnodes.count >= targetGuardSnodeCount {
             return Promise<Set<Snode>> { $0.fulfill(guardSnodes) }
         } else {
-            print("[Test] reusableGuardSnodes: \(reusableGuardSnodes)")
             print("[Loki] [Onion Request API] Populating guard snode cache.")
             return SnodeAPI.getRandomSnode().then2 { _ -> Promise<Set<Snode>> in // Just used to populate the snode pool
                 var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes) // Sync on LokiAPI.workQueue
@@ -98,7 +97,6 @@ public enum OnionRequestAPI {
                 let promises = (0..<(targetGuardSnodeCount - reusableGuardSnodeCount)).map { _ in getGuardSnode() }
                 return when(fulfilled: promises).map2 { guardSnodes in
                     let guardSnodesAsSet = Set(guardSnodes + reusableGuardSnodes)
-                    print("[Test] guardSnodes: \(guardSnodesAsSet)")
                     OnionRequestAPI.guardSnodes = guardSnodesAsSet
                     return guardSnodesAsSet
                 }
@@ -116,7 +114,6 @@ public enum OnionRequestAPI {
         return SnodeAPI.getRandomSnode().then2 { _ -> Promise<[Path]> in // Just used to populate the snode pool
             let reusableGuardSnodes = reusablePaths.map { $0[0] }
             return getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
-                print("[Test] reusablePaths: \(reusablePaths)")
                 var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes)
                 let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
                 let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
@@ -133,7 +130,6 @@ public enum OnionRequestAPI {
                     return result
                 }
             }.map2 { paths in
-                print("[Test] paths: \(paths + reusablePaths)")
                 OnionRequestAPI.paths = paths + reusablePaths
                 try! Storage.writeSync { transaction in
                     print("[Loki] Persisting onion request paths to database.")
@@ -169,7 +165,6 @@ public enum OnionRequestAPI {
                 return Promise { $0.fulfill(paths.randomElement()!) }
             }
         } else if !paths.isEmpty {
-            print("[Test] Reusing: \(paths)")
             if let snode = snode {
                 if let path = paths.first(where: { !$0.contains(snode) }) {
                     buildPaths(reusing: paths).retainUntilComplete() // Re-build paths in the background
@@ -203,7 +198,6 @@ public enum OnionRequestAPI {
         // path we leave the re-building up to getPath(excluding:) because re-building the path
         // in that case is async.
         var oldPaths = paths
-        print("[Test] [drop(_ snode: Snode)] oldPaths: \(oldPaths)")
         guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
         var path = oldPaths[pathIndex]
         guard let snodeIndex = path.firstIndex(of: snode) else { return }
@@ -215,7 +209,6 @@ public enum OnionRequestAPI {
         // Don't test the new snode as this would reveal the user's IP
         oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
-        print("[Test] [drop(_ snode: Snode)] newPaths: \(newPaths)")
         paths = newPaths
         try! Storage.writeSync { transaction in
             print("[Loki] Persisting onion request paths to database.")
@@ -225,10 +218,8 @@ public enum OnionRequestAPI {
 
     private static func drop(_ path: Path) {
         var paths = self.paths
-        print("[Test] [drop(_ path: Path)] oldPaths: \(paths)")
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
-        print("[Test] [drop(_ path: Path)] newPaths: \(paths)")
         self.paths = paths
         try! Storage.writeSync { transaction in
             if !paths.isEmpty {
@@ -342,7 +333,6 @@ public enum OnionRequestAPI {
                     path.forEach { snode in
                         SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                     }
-                    print("[Test] Unspecific error; dropping: \(path)")
                     drop(path)
                 } else {
                     OnionRequestAPI.pathFailureCount[path] = pathFailureCount
@@ -354,7 +344,6 @@ public enum OnionRequestAPI {
                 if let path = path, let snode = path.first(where: { $0.publicKeySet?.ed25519Key == ed25519PublicKey }) {
                     SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                     do {
-                        print("[Test] Specific error; dropping: \(snode)")
                         try drop(snode)
                     } catch {
                         handleUnspecificError()

@@ -38,7 +38,6 @@ public extension Storage {
                 }
             }
         }
-        print("[Test] [getOnionRequestPaths()] result: \(result)")
         return result
     }
 
