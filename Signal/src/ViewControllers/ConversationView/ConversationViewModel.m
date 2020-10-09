@@ -1354,16 +1354,20 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSInteraction *quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
-                                                                        authorAddress:quotedReply.authorAddress
-                                                                       threadUniqueId:self.thread.uniqueId
-                                                                          transaction:transaction];
+    TSMessage *_Nullable quotedMessage = [InteractionFinder findMessageWithTimestamp:quotedReply.timestamp
+                                                                            threadId:self.thread.uniqueId
+                                                                              author:quotedReply.authorAddress
+                                                                         transaction:transaction];
 
-    if (!quotedInteraction) {
+    if (!quotedMessage) {
         return nil;
     }
 
-    return [self ensureLoadWindowContainsInteractionId:quotedInteraction.uniqueId transaction:transaction];
+    if (quotedMessage.wasRemotelyDeleted) {
+        return nil;
+    }
+
+    return [self ensureLoadWindowContainsInteractionId:quotedMessage.uniqueId transaction:transaction];
 }
 
 - (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId
