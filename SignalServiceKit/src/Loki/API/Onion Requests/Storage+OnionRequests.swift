@@ -7,6 +7,7 @@ public extension Storage {
     internal static func setOnionRequestPaths(_ paths: [OnionRequestAPI.Path], using transaction: YapDatabaseReadWriteTransaction) {
         let collection = onionRequestPathCollection
         // FIXME: This approach assumes either 1 or 2 paths of length 3 each. We should do better than this.
+        clearOnionRequestPaths(using: transaction)
         guard paths.count >= 1 else { return }
         let path0 = paths[0]
         guard path0.count == 3 else { return }
