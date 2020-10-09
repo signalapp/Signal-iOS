@@ -874,6 +874,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
 
+    // Ignore receipts for messages that have been deleted.
+    // They are no longer relevant to this message.
+    if (self.wasRemotelyDeleted) {
+        return;
+    }
+
     // If delivery notification doesn't include timestamp, use "now" as an estimate.
     if (!deliveryTimestamp) {
         deliveryTimestamp = @([NSDate ows_millisecondTimeStamp]);
@@ -903,6 +909,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
+
+    // Ignore receipts for messages that have been deleted.
+    // They are no longer relevant to this message.
+    if (self.wasRemotelyDeleted) {
+        return;
+    }
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
@@ -1046,6 +1058,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
     }
     return result;
+}
+
+- (void)updateWithRecipientAddressStates:
+            (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
+                             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateOutgoingMessageWithTransaction:transaction
+                                            block:^(TSOutgoingMessage *message) {
+                                                message.recipientAddressStates = [recipientAddressStates copy];
+                                            }];
 }
 
 #ifdef TESTABLE_BUILD

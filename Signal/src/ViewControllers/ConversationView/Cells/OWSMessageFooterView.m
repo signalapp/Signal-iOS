@@ -127,6 +127,9 @@ NS_ASSUME_NONNULL_BEGIN
         MessageReceiptStatus messageStatus =
             [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
         accessibilityLabel = [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage];
+
+        BOOL shouldHideStatusIndicator = NO;
+
         switch (messageStatus) {
             case MessageReceiptStatusUploading:
             case MessageReceiptStatusSending:
@@ -136,19 +139,22 @@ NS_ASSUME_NONNULL_BEGIN
             case MessageReceiptStatusSent:
             case MessageReceiptStatusSkipped:
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
+                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                 break;
             case MessageReceiptStatusDelivered:
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
+                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                 break;
             case MessageReceiptStatusRead:
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
+                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                 break;
             case MessageReceiptStatusFailed:
                 // No status indicator icon.
                 break;
         }
 
-        if (statusIndicatorImage == nil || outgoingMessage.wasRemotelyDeleted) {
+        if (statusIndicatorImage == nil || shouldHideStatusIndicator) {
             [self hideStatusIndicator];
         } else {
             [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];

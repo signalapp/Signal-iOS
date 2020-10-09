@@ -254,7 +254,11 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         latestCopy = [TSInteraction anyFetchWithUniqueId:self.message.uniqueId transaction:transaction];
     }];
-    if (self.message.shouldBeSaved && latestCopy == nil) {
+    BOOL messageWasRemotelyDeleted = NO;
+    if ([latestCopy isKindOfClass:[TSOutgoingMessage class]]) {
+        messageWasRemotelyDeleted = ((TSOutgoingMessage *)latestCopy).wasRemotelyDeleted;
+    }
+    if ((self.message.shouldBeSaved && latestCopy == nil) || messageWasRemotelyDeleted) {
         OWSLogInfo(@"aborting message send; message deleted.");
         NSError *error = OWSErrorWithCodeDescription(
             OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
