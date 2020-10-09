@@ -2345,7 +2345,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Törlés mindenki számára";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ez az üzenet a beszélgetés minden tagja számára  törlésre kerül. A többiek számára látható lesz, hogy töröltél egy üzenetet.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ez az üzenet a beszélgetés minden tagja számára törlésre kerül. A többiek számára látható lesz, hogy töröltél egy üzenetet.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Ki számára törölnéd az üzenetet?";
