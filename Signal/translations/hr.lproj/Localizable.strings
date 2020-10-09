@@ -4343,7 +4343,7 @@
 "SUPPORT_EMOJI_PROMPT" = "Kako se osjećate? (neobavezno)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Jeste li već pročitali naša ČČP?";
+"SUPPORT_FAQ_PROMPT" = "Jeste li već pročitali naša ČPP?";
 
 /* Label describing support switch to attach debug logs */
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Uključi i zapisnike pogreške";
