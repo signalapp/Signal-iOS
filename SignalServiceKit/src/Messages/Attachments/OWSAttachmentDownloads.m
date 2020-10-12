@@ -124,9 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         } else if (groupId.length > 0) {
             if ([self.profileManager isGroupIdInProfileWhitelist:groupId transaction:transaction]) {
-                whitelistedThread =
-                    [TSGroupThread anyFetchGroupThreadWithUniqueId:[TSGroupThread threadIdFromGroupId:groupId]
-                                                       transaction:transaction];
+                whitelistedThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
             }
         }
 

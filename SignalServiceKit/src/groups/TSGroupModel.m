@@ -152,20 +152,31 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (other == self) {
         return YES;
     }
-    if (!other || ![other isKindOfClass:[self class]]) {
+    if (!other || ![other isKindOfClass:[TSGroupModel class]]) {
         return NO;
     }
-    return [self isEqualToGroupModel:other ignoreRevision:NO];
+    return [self isEqualToGroupModel:other comparisonMode:TSGroupModelComparisonMode_CompareAll];
 }
 
-- (BOOL)isEqualToGroupModel:(TSGroupModel *)other ignoreRevision:(BOOL)ignoreRevision
+- (BOOL)isEqualToGroupModel:(TSGroupModel *)other comparisonMode:(TSGroupModelComparisonMode)comparisonMode
 {
     if (self == other) {
         return YES;
     }
-    if (![_groupId isEqualToData:other.groupId]) {
-        return NO;
+
+    switch (comparisonMode) {
+        case TSGroupModelComparisonMode_CompareAll:
+            if (![_groupId isEqualToData:other.groupId]) {
+                return NO;
+            }
+            if (self.groupsVersion != other.groupsVersion) {
+                return NO;
+            }
+            break;
+        case TSGroupModelComparisonMode_UserFacingOnly:
+            break;
     }
+
     if (![NSObject isNullableObject:self.groupName equalTo:other.groupName]) {
         return NO;
     }
@@ -178,9 +189,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
     NSSet<SignalServiceAddress *> *otherGroupMembersSet = [NSSet setWithArray:other.groupMembers];
     if (![myGroupMembersSet isEqualToSet:otherGroupMembersSet]) {
-        return NO;
-    }
-    if (self.groupsVersion != other.groupsVersion) {
         return NO;
     }
     return YES;

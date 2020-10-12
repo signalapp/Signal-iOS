@@ -30,6 +30,8 @@ public class TSGroupModelV2: TSGroupModel {
     // groups that we don't have access to on the service.
     @objc
     public var isPlaceholderModel: Bool = false
+    @objc
+    public var wasJustMigrated: Bool = false
 
     @objc
     public required init(groupId: Data,
@@ -42,6 +44,7 @@ public class TSGroupModelV2: TSGroupModel {
                          avatarUrlPath: String?,
                          inviteLinkPassword: Data?,
                          isPlaceholderModel: Bool,
+                         wasJustMigrated: Bool,
                          addedByAddress: SignalServiceAddress?) {
         assert(secretParamsData.count > 0)
 
@@ -52,6 +55,7 @@ public class TSGroupModelV2: TSGroupModel {
         self.avatarUrlPath = avatarUrlPath
         self.inviteLinkPassword = inviteLinkPassword
         self.isPlaceholderModel = isPlaceholderModel
+        self.wasJustMigrated = wasJustMigrated
 
         super.init(groupId: groupId,
                    name: name,
@@ -90,12 +94,17 @@ public class TSGroupModelV2: TSGroupModel {
     }
 
     public override func isEqual(to model: TSGroupModel,
-                                 ignoreRevision: Bool) -> Bool {
-        guard super.isEqual(to: model, ignoreRevision: ignoreRevision) else {
+                                 comparisonMode: TSGroupModelComparisonMode) -> Bool {
+        guard super.isEqual(to: model, comparisonMode: comparisonMode) else {
             return false
         }
         guard let other = model as? TSGroupModelV2 else {
-            return false
+            switch comparisonMode {
+            case .compareAll:
+                return false
+            case .userFacingOnly:
+                return true
+            }
         }
         guard other.membership == membership else {
             return false
@@ -106,7 +115,7 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.secretParamsData == secretParamsData else {
             return false
         }
-        guard ignoreRevision || other.revision == revision else {
+        guard comparisonMode != .compareAll || other.revision == revision else {
             return false
         }
         guard other.avatarUrlPath == avatarUrlPath else {
@@ -115,6 +124,7 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.inviteLinkPassword == inviteLinkPassword else {
             return false
         }
+        // Ignore isPlaceholderModel & wasJustMigrated.
         return true
     }
 
@@ -132,6 +142,8 @@ public class TSGroupModelV2: TSGroupModel {
         result += "avatarUrlPath: \(String(describing: avatarUrlPath)),\n"
         result += "inviteLinkPassword: \(inviteLinkPassword?.hexadecimalString ?? "None"),\n"
         result += "addedByAddress: \(addedByAddress?.debugDescription ?? "None"),\n"
+        result += "isPlaceholderModel: \(isPlaceholderModel),\n"
+        result += "wasJustMigrated: \(wasJustMigrated),\n"
         result += "]"
         return result
     }

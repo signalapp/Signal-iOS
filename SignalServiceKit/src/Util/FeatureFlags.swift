@@ -156,6 +156,20 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2showSplash = build.includes(.qa)
 
     @objc
+    public static let groupsV2MigrationMigration = build.includes(.dev)
+
+    @objc
+    public static let groupsV2MigrationSetCapability = groupsV2MigrationMigration && false
+
+    @objc
+    public static let groupsV2MigrationRequireCapability = false
+
+    // Controls whether or not the client will attempt to auto-migrate
+    // v1 groups to v2 groups.
+    @objc
+    public static let groupsV2MigrationAutoMigration = groupsV2MigrationMigration && false
+
+    @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
@@ -261,6 +275,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let groupsV2IgnoreCapability = false
+
+    @objc
+    public static let groupsV2IgnoreMigrationCapability = false
 
     // We can use this to test recovery from "missed updates".
     private static let _groupsV2dontSendUpdates = AtomicBool(false)

@@ -21,6 +21,7 @@ public class SignalServiceProfile: NSObject {
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
     public let supportsGroupsV2: Bool
+    public let supportsGroupsV2Migration: Bool
     public let credential: Data?
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
@@ -61,19 +62,40 @@ public class SignalServiceProfile: NSObject {
 
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
 
-        if let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) {
-            if let value: Bool = try capabilities.optional(key: "gv2") {
-                self.supportsGroupsV2 = value
-            } else {
-                owsFailDebug("Missing groups v2 capability.")
-                // The capability has been retired from the service.
-                self.supportsGroupsV2 = true
-            }
-        } else {
-            owsFailDebug("Missing capabilities.")
-            self.supportsGroupsV2 = false
-        }
+        self.supportsGroupsV2 = Self.parseCapabilityFlag(capabilityKey: "gv2",
+                                                         params: params,
+                                                         requireCapability: true)
+        self.supportsGroupsV2Migration = Self.parseCapabilityFlag(capabilityKey: "gv1-migration",
+                                                                  params: params,
+                                                                  requireCapability: FeatureFlags.groupsV2MigrationRequireCapability)
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
+    }
+
+    private static func parseCapabilityFlag(capabilityKey: String,
+                                            params: ParamParser,
+                                            requireCapability: Bool) -> Bool {
+
+        do {
+            if let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) {
+                if let value: Bool = try capabilities.optional(key: capabilityKey) {
+                    return value
+                } else {
+                    if requireCapability {
+                        owsFailDebug("Missing capability: \(capabilityKey).")
+                    } else {
+                        Logger.warn("Missing capability: \(capabilityKey).")
+                    }
+                    // The capability has been retired from the service.
+                    return true
+                }
+            } else {
+                owsFailDebug("Missing capabilities.")
+                return true
+            }
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return true
+        }
     }
 }

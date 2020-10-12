@@ -652,7 +652,10 @@ extension GroupUpdateCopy {
         if isLocalUser {
             switch updater {
             case .localUser:
-                if !DebugFlags.permissiveGroupUpdateInfoMessages {
+                if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
+                    newGroupModelV2.wasJustMigrated {
+                    // Do nothing.
+                } else if !DebugFlags.permissiveGroupUpdateInfoMessages {
                     owsFailDebug("Local user made themself administrator.")
                 } else {
                     addItem(.debug, copy: "Error: Local user made themself administrator.")

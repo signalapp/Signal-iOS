@@ -660,7 +660,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 }
 
                 if changeRevision == oldGroupModel.revision {
-                    if !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
+                    if !oldGroupModel.isEqual(to: newGroupModel, comparisonMode: .compareAll) {
                         // Sometimes we re-apply the snapshot corresponding to the
                         // current revision when refreshing the group from the service.
                         // This should match the state in the database.  If it doesn't,

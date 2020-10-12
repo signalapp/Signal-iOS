@@ -88,7 +88,34 @@ class DebugUIGroupsV2: DebugUIPage {
             })
         }
 
+        if let groupThread = thread as? TSGroupThread {
+            sectionItems.append(OWSTableItem(title: "Try to migrate group (if already migrated).") {
+                Self.migrate(groupThread: groupThread,
+                             migrationMode: .alreadyMigratedOnService)
+            })
+            sectionItems.append(OWSTableItem(title: "Try to migrate group (polite).") {
+                Self.migrate(groupThread: groupThread,
+                             migrationMode: .migrateToServicePolite)
+            })
+            sectionItems.append(OWSTableItem(title: "Try to migrate group (aggressive).") {
+                Self.migrate(groupThread: groupThread,
+                             migrationMode: .migrateToServiceAggressive)
+            })
+        }
+
         return OWSTableSection(title: "Groups v2", items: sectionItems)
+    }
+
+    private static func migrate(groupThread: TSGroupThread,
+                                migrationMode: GroupsV2MigrationMode) {
+        _ = firstly { () -> Promise<TSGroupThread> in
+            GroupsV2Migration.tryToMigrate(groupThread: groupThread,
+                                           migrationMode: migrationMode)
+        }.done { _ in
+            Logger.verbose("Done.")
+        }.catch { error in
+            Logger.verbose("Error: \(error).")
+        }
     }
 
     private func insertGroupUpdateInfoMessages(groupThread: TSGroupThread) {

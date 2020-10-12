@@ -1456,6 +1456,10 @@ class StorageServiceOperation: OWSOperation {
             break
 
         case .needsUpdate(let groupId):
+            // We might be learning of a v1 group id for the first time that
+            // corresponds to a v2 group without a v1-to-v2 group id mapping.
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+
             // If the record has unknown fields, we need to hold on to it, so that
             // when we later update this record, we can preserve the unknown fields
             state.groupV1IdToRecordWithUnknownFields[groupId]
@@ -1468,6 +1472,10 @@ class StorageServiceOperation: OWSOperation {
             state.groupV1IdToIdentifierMap[groupId] = identifier
 
         case .resolved(let groupId):
+            // We might be learning of a v1 group id for the first time that
+            // corresponds to a v2 group without a v1-to-v2 group id mapping.
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+
             // If the record has unknown fields, we need to hold on to it, so that
             // when we later update this record, we can preserve the unknown fields
             state.groupV1IdToRecordWithUnknownFields[groupId]
