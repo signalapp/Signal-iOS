@@ -275,7 +275,7 @@ public class GroupCall {
                 Logger.debug("setOutgoingAudioMuted - main.async")
 
                 if self.remoteDevices.count > 1 {
-                    self.remoteDevices[0].audioMuted = self.isOutgoingAudioMuted
+                    self.remoteDevices.sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }.first?.audioMuted = self.isOutgoingAudioMuted
                     self.delegate?.groupCall(onRemoteDeviceStatesChanged: self)
                 }
             }
@@ -295,7 +295,7 @@ public class GroupCall {
                 Logger.debug("setOutgoingVideoMuted - main.async")
 
                 if self.remoteDevices.count > 1 {
-                    self.remoteDevices[0].videoMuted = self.isOutgoingVideoMuted
+                    self.remoteDevices.sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }.first?.videoMuted = self.isOutgoingVideoMuted
                     self.delegate?.groupCall(onRemoteDeviceStatesChanged: self)
                 }
             }
@@ -344,7 +344,7 @@ public class GroupCall {
             self.remoteDevices = sortedMembers.enumerated().map { idx, member in
                 let device = RemoteDeviceState(demuxId: UInt16(idx), uuid: member.uuid)
                 device.audioMuted = Bool.random()
-                device.videoMuted = Bool.random()
+                device.videoMuted = true //Bool.random()
                 device.speakerIndex = UInt16(idx)
                 return device
             }
@@ -358,7 +358,7 @@ public class GroupCall {
             Logger.debug("updateGroupMembers - main.async - main.async")
 
             let sortedRemoteMembers = self.remoteDevices.sorted { $0.speakerIndex! < $1.speakerIndex! }
-            guard let nextToAdd = sortedRemoteMembers.first(where: { !self.joinedGroupMembers.contains($0.uuid) }) else { return }
+            guard let nextToAdd = sortedRemoteMembers.filter({ !self.joinedGroupMembers.contains($0.uuid) }).randomElement() else { return }
 
             self.joinedGroupMembers.append(nextToAdd.uuid)
             self.delegate?.groupCall(onJoinedGroupMembersChanged: self)

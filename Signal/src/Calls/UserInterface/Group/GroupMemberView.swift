@@ -21,6 +21,11 @@ class GroupMemberView: UIView {
         addSubview(noVideoView)
         noVideoView.autoPinEdgesToSuperviewEdges()
 
+        let overlayView = UIView()
+        overlayView.backgroundColor = .ows_blackAlpha40
+        noVideoView.addSubview(overlayView)
+        overlayView.autoPinEdgesToSuperviewEdges()
+
         backgroundAvatarView.contentMode = .scaleAspectFill
         noVideoView.addSubview(backgroundAvatarView)
         backgroundAvatarView.autoPinEdgesToSuperviewEdges()
@@ -95,6 +100,7 @@ class LocalGroupMemberView: GroupMemberView {
 
 class RemoteGroupMemberView: GroupMemberView {
     let videoView = RemoteVideoView()
+    var currentTrack: RTCVideoTrack?
 
     override init() {
         super.init()
@@ -133,6 +139,14 @@ class RemoteGroupMemberView: GroupMemberView {
         noVideoView.backgroundColor = OWSConversationColor.conversationColorOrDefault(
             colorName: conversationColorName
         ).themeColor
+
+        currentTrack?.remove(videoView)
+        currentTrack = nil
+
+        if let track = device.videoTrack {
+            track.add(videoView)
+            currentTrack = track
+        }
     }
 }
 

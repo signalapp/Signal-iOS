@@ -113,8 +113,8 @@ class CallControls: UIView {
 
         addSubview(controlsStack)
         controlsStack.autoPinWidthToSuperview()
-        controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom)
-        controlsStack.autoPinEdge(toSuperviewEdge: .top, withInset: 46)
+        controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 24)
+        controlsStack.autoPinEdge(toSuperviewEdge: .top, withInset: 22)
 
         updateControls()
     }
