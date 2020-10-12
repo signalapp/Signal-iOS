@@ -175,6 +175,7 @@ public protocol GroupCallDelegate: class {
 /// 10. ...
 public class GroupCall {
     public let groupId: Data
+    public let localUUID: UUID
     weak var delegate: GroupCallDelegate?
     public private(set) var isEnded = false
 
@@ -189,6 +190,7 @@ public class GroupCall {
         AssertIsOnMainThread()
 
         self.groupId = groupId
+        self.localUUID = userId
 
         localDevice = LocalDeviceState()
         remoteDevices = []
@@ -211,12 +213,7 @@ public class GroupCall {
 
             self.localDevice.connectionState = .connecting
             self.delegate?.groupCall(onLocalDeviceStateChanged: self)
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                Logger.debug("connect - main.async - main.async")
-
-                self.delegate?.groupCall(updateSfuInfo: self)
-            }
+            self.delegate?.groupCall(updateSfuInfo: self)
         }
     }
 
@@ -340,34 +337,35 @@ public class GroupCall {
 
         // Simulation
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            Logger.debug("updateGroupMembers - main.async")
+            Logger.debug("updateGroupMembers - main.async - main.async")
 
-            self.localDevice.connectionState = .connected
-            self.delegate?.groupCall(onLocalDeviceStateChanged: self)
+            let sortedMembers = members.sorted { $0.uuid.uuidString > $1.uuid.uuidString }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                Logger.debug("updateGroupMembers - main.async - main.async")
-
-                // Store the group members:
-                self.groupMembers = members
-
-                let sortedMembers  = members.sorted { $0.uuid.uuidString > $1.uuid.uuidString }
-
-                if members.count > 2 {
-                    // Pick two for "currently joined".
-                    self.joinedGroupMembers = Array(sortedMembers.map { $0.uuid }.prefix(2))
-
-                    self.remoteDevices = sortedMembers.enumerated().map { idx, member in
-                        let device = RemoteDeviceState(demuxId: UInt16(idx), uuid: member.uuid)
-                        device.audioMuted = false // Bool.random()
-                        device.videoMuted = true //Bool.random()
-                        device.speakerIndex = UInt16(idx)
-                        return device
-                    }
-                }
-
-                self.delegate?.groupCall(onJoinedGroupMembersChanged: self)
+            self.remoteDevices = sortedMembers.enumerated().map { idx, member in
+                let device = RemoteDeviceState(demuxId: UInt16(idx), uuid: member.uuid)
+                device.audioMuted = Bool.random()
+                device.videoMuted = Bool.random()
+                device.speakerIndex = UInt16(idx)
+                return device
             }
+
+            self.delegate?.groupCall(onRemoteDeviceStatesChanged: self)
+        }
+    }
+
+    private func joinNextMember() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            Logger.debug("updateGroupMembers - main.async - main.async")
+
+            let sortedRemoteMembers = self.remoteDevices.sorted { $0.speakerIndex! < $1.speakerIndex! }
+            guard let nextToAdd = sortedRemoteMembers.first(where: { !self.joinedGroupMembers.contains($0.uuid) }) else { return }
+
+            self.joinedGroupMembers.append(nextToAdd.uuid)
+            self.delegate?.groupCall(onJoinedGroupMembersChanged: self)
+
+            guard self.joinedGroupMembers.count < 16 else { return }
+
+            self.joinNextMember()
         }
     }
 
@@ -376,10 +374,13 @@ public class GroupCall {
         Logger.debug("updateSfuInfo")
 
         // Simulation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             Logger.debug("updateSfuInfo - main.async")
 
             self.delegate?.groupCall(updateGroupMembers: self)
+
+            self.localDevice.connectionState = .connected
+            self.delegate?.groupCall(onLocalDeviceStateChanged: self)
         }
     }
 
@@ -387,36 +388,18 @@ public class GroupCall {
         AssertIsOnMainThread()
         Logger.debug("updateGroupMembershipProof")
 
-        // Simulation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             Logger.debug("updateGroupMembershipProof - main.async")
 
             self.localDevice.joinState = .joined
             self.delegate?.groupCall(onLocalDeviceStateChanged: self)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                Logger.debug("updateGroupMembershipProof - main.async - main.async")
-
-                var device = RemoteDeviceState(demuxId: 1, uuid: (self.groupMembers?[0].uuid)!)
-                device.audioMuted = true
-                device.videoMuted = false
-                device.speakerIndex = 3
-                self.remoteDevices.append(device)
-
-                device = RemoteDeviceState(demuxId: 2, uuid: (self.groupMembers?[1].uuid)!)
-                device.audioMuted = false
-                device.videoMuted = false
-                device.speakerIndex = 1
-                self.remoteDevices.append(device)
-
-                device = RemoteDeviceState(demuxId: 3, uuid: (self.groupMembers?[2].uuid)!)
-                device.audioMuted = true
-                device.videoMuted = true
-                device.speakerIndex = 2
-                self.remoteDevices.append(device)
-
-                self.delegate?.groupCall(onRemoteDeviceStatesChanged: self)
+            if !self.joinedGroupMembers.contains(self.localUUID) {
+                self.joinedGroupMembers.append(self.localUUID)
+                self.delegate?.groupCall(onJoinedGroupMembersChanged: self)
             }
+
+            self.joinNextMember()
         }
     }
 }

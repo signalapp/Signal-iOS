@@ -726,6 +726,7 @@
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88ABB8B52534070400229EAA /* CallHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B42534070400229EAA /* CallHeader.swift */; };
 		88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */; };
+		88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
 		88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */; };
 		88BAE55F24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */; };
@@ -1782,6 +1783,7 @@
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
 		88ABB8B42534070400229EAA /* CallHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHeader.swift; sourceTree = "<group>"; };
 		88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGrid.swift; sourceTree = "<group>"; };
+		88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGridLayout.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
 		88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurViewController.swift; sourceTree = "<group>"; };
 		88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurRegionsItem.swift; sourceTree = "<group>"; };
@@ -3259,6 +3261,7 @@
 			children = (
 				88588D17252D312800405414 /* GroupCallViewController.swift */,
 				88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */,
+				88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */,
 				88588D1C252D5D3D00405414 /* GroupMemberView.swift */,
 			);
 			path = Group;
@@ -5204,6 +5207,7 @@
 				347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */,
 				4C9C510022F495F60054A33F /* BroadcastMediaMessageJob.swift in Sources */,
 				34E0127423FDA960002D0D13 /* DebugUIGroupsV2.swift in Sources */,
+				88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */,
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
 				AC12B86D0DA4943DF1DE9CE6 /* OWSAddToContactViewController.swift in Sources */,

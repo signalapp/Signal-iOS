@@ -22,7 +22,7 @@ class CallHeader: UIView {
     }()
 
     private var callDurationTimer: Timer?
-    private let callTitleLabel = UILabel()
+    private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
     private let groupMembersButton = UIButton()
     private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 40)
@@ -54,7 +54,7 @@ class CallHeader: UIView {
         let hStack = UIStackView()
         hStack.axis = .horizontal
         hStack.spacing = 13
-        hStack.layoutMargins = UIEdgeInsets(top: 0, left: 17, bottom: 0, right: 17)
+        hStack.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         hStack.isLayoutMarginsRelativeArrangement = true
         addSubview(hStack)
         hStack.autoPinWidthToSuperview()
@@ -68,6 +68,7 @@ class CallHeader: UIView {
         backButton.setTemplateImage(backButtonImage, tintColor: .ows_white)
         backButton.autoSetDimensions(to: CGSize(square: 40))
         backButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapBackButton), for: .touchUpInside)
+        addShadow(to: backButton)
 
         hStack.addArrangedSubview(backButton)
 
@@ -81,14 +82,19 @@ class CallHeader: UIView {
 
         // Name Label
 
+        callTitleLabel.type = .continuous
+        // This feels pretty slow when you're initially waiting for it, but when you're overlaying video calls, anything faster is distracting.
+        callTitleLabel.speed = .duration(30.0)
+        callTitleLabel.animationCurve = .linear
+        callTitleLabel.fadeLength = 10.0
+        callTitleLabel.animationDelay = 5
+        // Add trailing space after the name scrolls before it wraps around and scrolls back in.
+        callTitleLabel.trailingBuffer = ScaleFromIPhone5(80.0)
+
         callTitleLabel.font = UIFont.ows_dynamicTypeHeadlineClamped.ows_semibold
         callTitleLabel.textAlignment = .center
         callTitleLabel.textColor = UIColor.white
-        callTitleLabel.layer.shadowOffset = .zero
-        callTitleLabel.layer.shadowOpacity = 0.25
-        callTitleLabel.layer.shadowRadius = 4
-        callTitleLabel.numberOfLines = 0
-        callTitleLabel.lineBreakMode = .byWordWrapping
+        addShadow(to: callTitleLabel)
 
         vStack.addArrangedSubview(callTitleLabel)
         callTitleLabel.setContentHuggingVerticalHigh()
@@ -99,9 +105,7 @@ class CallHeader: UIView {
         callStatusLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
-        callStatusLabel.layer.shadowOffset = .zero
-        callStatusLabel.layer.shadowOpacity = 0.25
-        callStatusLabel.layer.shadowRadius = 4
+        addShadow(to: callStatusLabel)
 
         vStack.addArrangedSubview(callStatusLabel)
         callStatusLabel.setContentHuggingVerticalHigh()
@@ -109,9 +113,12 @@ class CallHeader: UIView {
 
         // Group members button
 
-        groupMembersButton.setTemplateImage(#imageLiteral(resourceName: "group-solid-24"), tintColor: .ows_white)
+        groupMembersButton.titleLabel?.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_monospaced
+        groupMembersButton.setTitleColor(.ows_white, for: .normal)
+        groupMembersButton.setTemplateImage(#imageLiteral(resourceName: "group-solid-16"), tintColor: .ows_white)
         groupMembersButton.autoSetDimensions(to: CGSize(square: 40))
         groupMembersButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapMembersButton), for: .touchUpInside)
+        addShadow(to: groupMembersButton)
 
         hStack.addArrangedSubview(groupMembersButton)
         hStack.addArrangedSubview(groupMembersButtonPlaceholder)
@@ -119,6 +126,12 @@ class CallHeader: UIView {
         updateCallTitleLabel()
         updateCallStatusLabel()
         updateGroupMembersButton()
+    }
+
+    private func addShadow(to view: UIView) {
+        view.layer.shadowOffset = .zero
+        view.layer.shadowOpacity = 0.25
+        view.layer.shadowRadius = 4
     }
 
     private func updateCallStatusLabel() {
@@ -145,7 +158,7 @@ class CallHeader: UIView {
         }
 
         callStatusLabel.text = callStatusText
-        callStatusLabel.isHidden = callStatusText.isEmpty
+        callStatusLabel.isHidden = call.groupCall.localDevice.joinState != .joined || call.groupCall.joinedGroupMembers.count > 2
 
         // Handle reconnecting blinking
         if call.groupCall.localDevice.connectionState == .reconnecting {
@@ -172,30 +185,35 @@ class CallHeader: UIView {
     func updateCallTitleLabel() {
         let callTitleText: String
 
-        let members = databaseStorage.uiRead { transaction in
-            return self.call.groupCall.joinedGroupMembers
-                .map { SignalServiceAddress(uuid: $0) }
-                .filter { !$0.isLocalAddress }
-                .map {
-                    (
-                        address: $0,
-                        displayName: self.contactsManager.displayName(for: $0, transaction: transaction),
-                        comparableName: self.contactsManager.comparableName(for: $0, transaction: transaction)
-                    )
-                }
-                .sorted { $0.comparableName > $1.comparableName }
+        let memberNames = databaseStorage.uiRead { transaction in
+            return self.call.groupCall.joinedRemoteDeviceStates
+                .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
+                .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
         }
 
         // TODO: Localization
-        switch members.count {
-        case 0:
-            callTitleText = "No one else is here"
-        case 1:
-            callTitleText = "\(members[0].displayName) is in this call"
-        case 2:
-            callTitleText = "\(members[0].displayName) and \(members[1].displayName) are in this call"
+
+        switch call.groupCall.localDevice.joinState {
+        case .joined:
+            switch memberNames.count {
+            case 0:
+                callTitleText = "No one else is here"
+            case 1:
+                callTitleText = memberNames[0]
+            default:
+                callTitleText = ""
+            }
         default:
-            callTitleText = "\(members[0].displayName), \(members[1].displayName), and \(call.groupCall.joinedGroupMembers.count - 2) others are in this call"
+            switch memberNames.count {
+            case 0:
+                callTitleText = ""
+            case 1:
+                callTitleText = "\(memberNames[0]) is in this call"
+            case 2:
+                callTitleText = "\(memberNames[0]) and \(memberNames[1]) are in this call"
+            default:
+                callTitleText = "\(memberNames[0]), \(memberNames[1]), and \(call.groupCall.joinedGroupMembers.count - 2) others are in this call"
+            }
         }
 
         callTitleLabel.text = callTitleText
@@ -203,7 +221,8 @@ class CallHeader: UIView {
     }
 
     func updateGroupMembersButton() {
-        groupMembersButton.isHidden = call.groupCall.joinedGroupMembers.isEmpty
+        groupMembersButton.setTitle(" \(call.groupCall.joinedGroupMembers.count)", for: .normal)
+        groupMembersButton.isHidden = call.groupCall.joinedGroupMembers.count < 3
         groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 

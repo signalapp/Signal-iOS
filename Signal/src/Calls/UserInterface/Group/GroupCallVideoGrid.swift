@@ -5,41 +5,29 @@
 import Foundation
 
 class GroupCallVideoGrid: UICollectionView {
+    let layout: GroupCallVideoGridLayout
     let call: SignalCall
     init(call: SignalCall) {
         self.call = call
-
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 178, height: 206)
-        layout.minimumInteritemSpacing = 6
-        layout.minimumLineSpacing = 6
+        self.layout = GroupCallVideoGridLayout()
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
         call.addObserverAndSyncState(observer: self)
+        layout.delegate = self
 
         register(GroupCallVideoGridCell.self, forCellWithReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier)
         dataSource = self
-        delegate = self
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    var remoteMemberState: [RemoteDeviceState] {
-        return call.groupCall
-            .remoteDevices
-            .filter { call.groupCall.joinedGroupMembers.contains($0.uuid) }
-            .filter { !$0.address.isLocalAddress }
-            .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
-    }
 }
 
 extension GroupCallVideoGrid: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // TODO: iPad, local video
-        return min(6, remoteMemberState.count)
+        return min(maxItems, call.groupCall.joinedRemoteDeviceStates.count)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -48,7 +36,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             for: indexPath
         ) as! GroupCallVideoGridCell
 
-        guard let remoteDevice = remoteMemberState[safe: indexPath.row] else {
+        guard let remoteDevice = call.groupCall.joinedRemoteDeviceStates[safe: indexPath.row] else {
             owsFailDebug("missing member address")
             return cell
         }
@@ -59,7 +47,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
     }
 }
 
-extension GroupCallVideoGrid: UICollectionViewDelegate {
+extension GroupCallVideoGrid: CallObserver {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
@@ -94,8 +82,30 @@ extension GroupCallVideoGrid: UICollectionViewDelegate {
     func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
 }
 
-extension GroupCallVideoGrid: CallObserver {
+extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
+    var maxColumns: Int {
+        if CurrentAppContext().frame.width > 1080 {
+            return 4
+        } else if CurrentAppContext().frame.width > 768 {
+            return 3
+        } else {
+            return 2
+        }
+    }
 
+    var maxRows: Int {
+        if CurrentAppContext().frame.height > 1024 {
+            return 4
+        } else {
+            return 3
+        }
+    }
+
+    var maxItems: Int { maxColumns * maxRows }
+
+    func deviceState(for index: Int) -> RemoteDeviceState? {
+        return call.groupCall.joinedRemoteDeviceStates[safe: index]
+    }
 }
 
 class GroupCallVideoGridCell: UICollectionViewCell {
@@ -118,5 +128,14 @@ class GroupCallVideoGridCell: UICollectionViewCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension GroupCall {
+    var joinedRemoteDeviceStates: [RemoteDeviceState] {
+        return remoteDevices
+            .filter { joinedGroupMembers.contains($0.uuid) }
+            .filter { !$0.address.isLocalAddress }
+            .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
     }
 }

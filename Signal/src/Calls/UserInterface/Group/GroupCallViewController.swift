@@ -152,7 +152,7 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    func leaveCall() {
+    func dismissCall() {
         callService.terminate(call: call)
 
         OWSWindowManager.shared.endCall(self)
@@ -224,7 +224,7 @@ extension GroupCallViewController: CallObserver {
 
 extension GroupCallViewController: CallControlsDelegate {
     func didPressHangup(sender: UIButton) {
-        leaveCall()
+        dismissCall()
     }
 
     func didPressAudioSource(sender: UIButton) {
@@ -249,7 +249,7 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressCancel(sender: UIButton) {
-        leaveCall()
+        dismissCall()
     }
 
     func didPressJoin(sender: UIButton) {
@@ -259,7 +259,11 @@ extension GroupCallViewController: CallControlsDelegate {
 
 extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
-        OWSWindowManager.shared.leaveCallView()
+        if groupCall.localDevice.joinState == .joined {
+            OWSWindowManager.shared.leaveCallView()
+        } else {
+            dismissCall()
+        }
     }
 
     func didTapMembersButton() {
