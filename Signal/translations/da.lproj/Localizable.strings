@@ -281,7 +281,7 @@
 "ATTACHMENT_TYPE_IMAGE" = "Billede";
 
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_PHOTO" = "Billed";
+"ATTACHMENT_TYPE_PHOTO" = "Billede";
 
 /* Short text label for a video attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VIDEO" = "Video";
