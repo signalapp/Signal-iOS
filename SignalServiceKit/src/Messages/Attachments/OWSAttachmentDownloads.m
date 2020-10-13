@@ -500,12 +500,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     OWSAssertDebug(job);
     TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
 
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-
     // We want to avoid large downloads from a compromised or buggy service.
     const long kMaxDownloadSize = 10 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
