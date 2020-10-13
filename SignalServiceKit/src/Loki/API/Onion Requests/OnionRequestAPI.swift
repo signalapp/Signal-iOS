@@ -281,7 +281,7 @@ public enum OnionRequestAPI {
         let payload: JSON = [
             "body" : parametersAsString,
             "endpoint": endpoint,
-            "method" : request.httpMethod,
+            "method" : request.httpMethod!,
             "headers" : headers
         ]
         let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
