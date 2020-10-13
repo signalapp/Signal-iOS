@@ -4,20 +4,45 @@
 
 import Foundation
 
-class GroupCallVideoGrid: UICollectionView {
-    let layout: GroupCallVideoGridLayout
+protocol GroupCallVideoOverflowDelegate: class {
+    var firstOverflowMemberIndex: Int { get }
+}
+
+class GroupCallVideoOverflow: UICollectionView {
+    weak var overflowDelegate: GroupCallVideoOverflowDelegate?
     let call: SignalCall
-    init(call: SignalCall) {
+
+    class var itemHeight: CGFloat {
+        return UIDevice.current.isIPad ? 96 : 72
+    }
+
+    init(call: SignalCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
-        self.layout = GroupCallVideoGridLayout()
+        self.overflowDelegate = delegate
+
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(square: Self.itemHeight)
+        layout.minimumLineSpacing = 4
+        layout.scrollDirection = .horizontal
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
-        call.addObserverAndSyncState(observer: self)
-        layout.delegate = self
+        backgroundColor = .clear
+
+        showsHorizontalScrollIndicator = false
+
+        contentInset = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+
+        // We want the collection view contents to render in the
+        // inverse of the type direction.
+        semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
+
+        autoSetDimension(.height, toSize: Self.itemHeight)
 
         register(GroupCallVideoGridCell.self, forCellWithReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier)
         dataSource = self
+
+        call.addObserverAndSyncState(observer: self)
     }
 
     required init?(coder: NSCoder) {
@@ -27,9 +52,20 @@ class GroupCallVideoGrid: UICollectionView {
     deinit { call.removeObserver(self) }
 }
 
-extension GroupCallVideoGrid: UICollectionViewDataSource {
+extension GroupCallVideoOverflow: UICollectionViewDataSource {
+    var overflowedRemoteDeviceStates: [RemoteDeviceState] {
+        guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
+
+        let joinedRemoteDeviceStates = call.groupCall.joinedRemoteDeviceStates
+
+        guard joinedRemoteDeviceStates.count > firstOverflowMemberIndex else { return [] }
+
+        // We reverse this as we're rendering in the inverted direction.
+        return Array(joinedRemoteDeviceStates[firstOverflowMemberIndex..<joinedRemoteDeviceStates.count]).reversed()
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return min(maxItems, call.groupCall.joinedRemoteDeviceStates.count)
+        return overflowedRemoteDeviceStates.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -38,7 +74,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             for: indexPath
         ) as! GroupCallVideoGridCell
 
-        guard let remoteDevice = call.groupCall.joinedRemoteDeviceStates[safe: indexPath.row] else {
+        guard let remoteDevice = overflowedRemoteDeviceStates[safe: indexPath.row] else {
             owsFailDebug("missing member address")
             return cell
         }
@@ -49,7 +85,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
     }
 }
 
-extension GroupCallVideoGrid: CallObserver {
+extension GroupCallVideoOverflow: CallObserver {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
@@ -82,62 +118,4 @@ extension GroupCallVideoGrid: CallObserver {
     func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
     func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
     func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
-}
-
-extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
-    var maxColumns: Int {
-        if CurrentAppContext().frame.width > 1080 {
-            return 4
-        } else if CurrentAppContext().frame.width > 768 {
-            return 3
-        } else {
-            return 2
-        }
-    }
-
-    var maxRows: Int {
-        if CurrentAppContext().frame.height > 1024 {
-            return 4
-        } else {
-            return 3
-        }
-    }
-
-    var maxItems: Int { maxColumns * maxRows }
-
-    func deviceState(for index: Int) -> RemoteDeviceState? {
-        return call.groupCall.joinedRemoteDeviceStates[safe: index]
-    }
-}
-
-class GroupCallVideoGridCell: UICollectionViewCell {
-    static let reuseIdentifier = "GroupCallVideoGridCell"
-    private let memberView = RemoteGroupMemberView()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        contentView.addSubview(memberView)
-        memberView.autoPinEdgesToSuperviewEdges()
-
-        contentView.layer.cornerRadius = 10
-        contentView.clipsToBounds = true
-    }
-
-    func configure(device: RemoteDeviceState) {
-        memberView.configure(device: device)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-extension GroupCall {
-    var joinedRemoteDeviceStates: [RemoteDeviceState] {
-        return remoteDevices
-            .filter { joinedGroupMembers.contains($0.uuid) }
-            .filter { !$0.address.isLocalAddress }
-            .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
-    }
 }

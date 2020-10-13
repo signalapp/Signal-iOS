@@ -8,10 +8,22 @@ import SignalRingRTC
 class GroupMemberView: UIView {
     let noVideoView = UIView()
 
-    let backgroundAvatarView = AvatarImageView()
-    let avatarView = AvatarImageView()
+    let backgroundAvatarView = UIImageView()
     let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     let muteIndicatorImage = UIImageView()
+
+    lazy var muteLeadingConstraint = muteIndicatorImage.autoPinEdge(toSuperviewEdge: .leading, withInset: muteInsets)
+    lazy var muteBottomConstraint = muteIndicatorImage.autoPinEdge(toSuperviewEdge: .bottom, withInset: muteInsets)
+
+    var muteInsets: CGFloat {
+        layoutIfNeeded()
+
+        if width > 102 {
+            return 9
+        } else {
+            return 4
+        }
+    }
 
     init() {
         super.init(frame: .zero)
@@ -33,16 +45,10 @@ class GroupMemberView: UIView {
         noVideoView.addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
 
-        noVideoView.addSubview(avatarView)
-        avatarView.autoCenterInSuperview()
-        avatarView.autoSetDimensions(to: CGSize(square: 96))
-
         muteIndicatorImage.contentMode = .scaleAspectFit
         muteIndicatorImage.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
         addSubview(muteIndicatorImage)
-        muteIndicatorImage.autoPinEdge(toSuperviewEdge: .leading, withInset: 9)
-        muteIndicatorImage.autoPinEdge(toSuperviewEdge: .bottom, withInset: 9)
-        muteIndicatorImage.autoSetDimension(.width, toSize: 16)
+        muteIndicatorImage.autoSetDimensions(to: CGSize(square: 16))
     }
 
     required init?(coder: NSCoder) {
@@ -53,8 +59,26 @@ class GroupMemberView: UIView {
 class LocalGroupMemberView: GroupMemberView {
     let videoView = LocalVideoView()
 
+    let videoOffIndicatorImage = UIImageView()
+
+    var videoOffIndicatorWidth: CGFloat {
+        if width > 102 {
+            return 28
+        } else {
+            return 16
+        }
+    }
+
+    lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
+
     override init() {
         super.init()
+
+        videoOffIndicatorImage.contentMode = .scaleAspectFit
+        videoOffIndicatorImage.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
+        noVideoView.addSubview(videoOffIndicatorImage)
+        videoOffIndicatorImage.autoMatch(.height, to: .width, of: videoOffIndicatorImage)
+        videoOffIndicatorImage.autoCenterInSuperview()
 
         videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
@@ -65,8 +89,7 @@ class LocalGroupMemberView: GroupMemberView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(device: LocalDeviceState, session: AVCaptureSession) {
-        muteIndicatorImage.isHidden = !device.audioMuted
+    func configure(device: LocalDeviceState, session: AVCaptureSession, isFullScreen: Bool = false) {
         videoView.isHidden = device.videoMuted
         videoView.captureSession = session
         noVideoView.isHidden = !videoView.isHidden
@@ -75,26 +98,26 @@ class LocalGroupMemberView: GroupMemberView {
             return owsFailDebug("missing local address")
         }
 
-        let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
-            return (
-                self.profileManager.profileAvatar(for: localAddress, transaction: transaction),
-                ConversationColorName(
+        let conversationColorName = databaseStorage.uiRead { transaction in
+            return ConversationColorName(
                     rawValue: self.contactsManager.conversationColorName(for: localAddress, transaction: transaction)
-                )
             )
         }
 
-        backgroundAvatarView.image = profileImage
+        backgroundAvatarView.image = profileManager.localProfileAvatarImage()
 
-        avatarView.image = OWSContactAvatarBuilder(
-            address: localAddress,
-            colorName: conversationColorName,
-            diameter: 96
-        ).build()
+        muteIndicatorImage.isHidden = isFullScreen || !device.audioMuted
+        muteLeadingConstraint.constant = muteInsets
+        muteBottomConstraint.constant = -muteInsets
+
+        videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
 
         noVideoView.backgroundColor = OWSConversationColor.conversationColorOrDefault(
             colorName: conversationColorName
         ).themeColor
+
+        layer.cornerRadius = isFullScreen ? 0 : 10
+        clipsToBounds = true
     }
 }
 
@@ -102,8 +125,28 @@ class RemoteGroupMemberView: GroupMemberView {
     let videoView = RemoteVideoView()
     var currentTrack: RTCVideoTrack?
 
+    let avatarView = AvatarImageView()
+    lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
+
+    var avatarDiameter: UInt {
+        layoutIfNeeded()
+
+        if width > 180 {
+            return 112
+        } else if width > 102 {
+            return 96
+        } else if width > 36 {
+            return UInt(width) - 36
+        } else {
+            return 16
+        }
+    }
+
     override init() {
         super.init()
+
+        noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
+        avatarView.autoCenterInSuperview()
 
         videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
@@ -114,8 +157,7 @@ class RemoteGroupMemberView: GroupMemberView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(device: RemoteDeviceState) {
-        muteIndicatorImage.isHidden = device.audioMuted != true
+    func configure(device: RemoteDeviceState, isFullScreen: Bool = false) {
         videoView.isHidden = device.videoMuted != false
         noVideoView.isHidden = !videoView.isHidden
 
@@ -133,8 +175,13 @@ class RemoteGroupMemberView: GroupMemberView {
         avatarView.image = OWSContactAvatarBuilder(
             address: device.address,
             colorName: conversationColorName,
-            diameter: 96
+            diameter: avatarDiameter
         ).build()
+        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
+
+        muteIndicatorImage.isHidden = isFullScreen || device.audioMuted != true
+        muteLeadingConstraint.constant = muteInsets
+        muteBottomConstraint.constant = -muteInsets
 
         noVideoView.backgroundColor = OWSConversationColor.conversationColorOrDefault(
             colorName: conversationColorName

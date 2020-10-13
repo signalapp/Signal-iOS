@@ -25,7 +25,7 @@ class CallHeader: UIView {
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
     private let groupMembersButton = UIButton()
-    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 40)
+    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 50)
     private var isBlinkingReconnectLabel = false
 
     private let call: SignalCall
@@ -116,7 +116,7 @@ class CallHeader: UIView {
         groupMembersButton.titleLabel?.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_monospaced
         groupMembersButton.setTitleColor(.ows_white, for: .normal)
         groupMembersButton.setTemplateImage(#imageLiteral(resourceName: "group-solid-16"), tintColor: .ows_white)
-        groupMembersButton.autoSetDimensions(to: CGSize(square: 40))
+        groupMembersButton.autoSetDimensions(to: CGSize(square: 50))
         groupMembersButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapMembersButton), for: .touchUpInside)
         addShadow(to: groupMembersButton)
 
@@ -127,6 +127,8 @@ class CallHeader: UIView {
         updateCallStatusLabel()
         updateGroupMembersButton()
     }
+
+    deinit { call.removeObserver(self) }
 
     private func addShadow(to view: UIView) {
         view.layer.shadowOffset = .zero

@@ -274,6 +274,8 @@ public class GroupCall {
             DispatchQueue.main.async {
                 Logger.debug("setOutgoingAudioMuted - main.async")
 
+                self.delegate?.groupCall(onLocalDeviceStateChanged: self)
+
                 if self.remoteDevices.count > 1 {
                     self.remoteDevices.sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }.first?.audioMuted = self.isOutgoingAudioMuted
                     self.delegate?.groupCall(onRemoteDeviceStatesChanged: self)
@@ -293,6 +295,8 @@ public class GroupCall {
             // Simulation
             DispatchQueue.main.async {
                 Logger.debug("setOutgoingVideoMuted - main.async")
+
+                self.delegate?.groupCall(onLocalDeviceStateChanged: self)
 
                 if self.remoteDevices.count > 1 {
                     self.remoteDevices.sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }.first?.videoMuted = self.isOutgoingVideoMuted

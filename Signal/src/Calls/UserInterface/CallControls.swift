@@ -119,6 +119,8 @@ class CallControls: UIView {
         updateControls()
     }
 
+    deinit { call.removeObserver(self) }
+
     func createTopStackView() -> UIStackView {
         let stackView = UIStackView()
         stackView.axis = .horizontal
