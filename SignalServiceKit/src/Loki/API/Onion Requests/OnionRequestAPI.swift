@@ -280,7 +280,7 @@ public enum OnionRequestAPI {
         }
         let payload: JSON = [
             "body" : parametersAsString,
-            "endpoint": endpoint,
+            "endpoint" : endpoint,
             "method" : request.httpMethod!,
             "headers" : headers
         ]
