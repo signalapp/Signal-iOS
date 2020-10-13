@@ -354,10 +354,15 @@ public final class CallService: NSObject {
         // The iOS simulator doesn't provide any sort of camera capture
         // support or emulation (http://goo.gl/rHAnC1) so don't bother
         // trying to open a local stream.
-        return (!Platform.isSimulator &&
-            UIApplication.shared.applicationState != .background &&
-                    call.individualCall.state == .connected &&
-                    call.individualCall.hasLocalVideo)
+        guard !Platform.isSimulator else { return false }
+        guard UIApplication.shared.applicationState != .background else { return false }
+
+        switch call.mode {
+        case .individual(let individualCall):
+            return individualCall.state == .connected && individualCall.hasLocalVideo
+        case .group(let groupCall):
+            return !groupCall.localDevice.videoMuted
+        }
     }
 
     func updateIsVideoEnabled() {
