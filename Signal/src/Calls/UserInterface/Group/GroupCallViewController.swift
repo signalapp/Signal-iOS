@@ -257,8 +257,48 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         return SignalServiceAddress(uuid: firstMember)
     }
 
-    func returnFromPip(pipWindow: UIWindow) {
-        // TODO:
+    @objc
+    public func returnFromPip(pipWindow: UIWindow) {
+        // The call "pip" uses our remote and local video views since only
+        // one `AVCaptureVideoPreviewLayer` per capture session is supported.
+        // We need to re-add them when we return to this view.
+        guard speakerView.superview != speakerPage && localMemberView.superview != view else {
+            return owsFailDebug("unexpectedly returned to call while we own the video views")
+        }
+
+        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
+            return owsFailDebug("failed to snapshot rootViewController")
+        }
+
+        guard let pipSnapshot = pipWindow.snapshotView(afterScreenUpdates: false) else {
+            return owsFailDebug("failed to snapshot pip")
+        }
+
+        updateCallUI()
+
+        animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
+    }
+
+    private func animateReturnFromPip(pipSnapshot: UIView, pipFrame: CGRect, splitViewSnapshot: UIView) {
+        guard let window = view.window else { return owsFailDebug("missing window") }
+        view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
+        splitViewSnapshot.autoPinEdgesToSuperviewEdges()
+
+        view.frame = pipFrame
+        view.addSubview(pipSnapshot)
+        pipSnapshot.autoPinEdgesToSuperviewEdges()
+
+        view.layoutIfNeeded()
+
+        UIView.animate(withDuration: 0.2, animations: {
+            pipSnapshot.alpha = 0
+            self.view.frame = window.frame
+            self.view.layoutIfNeeded()
+        }) { _ in
+            self.updateCallUI()
+            splitViewSnapshot.removeFromSuperview()
+            pipSnapshot.removeFromSuperview()
+        }
     }
 }
 

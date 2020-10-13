@@ -100,7 +100,7 @@ class LocalGroupMemberView: GroupMemberView {
 
         let conversationColorName = databaseStorage.uiRead { transaction in
             return ConversationColorName(
-                    rawValue: self.contactsManager.conversationColorName(for: localAddress, transaction: transaction)
+                rawValue: self.contactsManager.conversationColorName(for: localAddress, transaction: transaction)
             )
         }
 

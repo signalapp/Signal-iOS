@@ -160,7 +160,7 @@ class CallHeader: UIView {
         }
 
         callStatusLabel.text = callStatusText
-        callStatusLabel.isHidden = call.groupCall.localDevice.joinState != .joined || call.groupCall.joinedGroupMembers.count > 2
+        callStatusLabel.isHidden = call.groupCall.localDevice.joinState != .joined || call.groupCall.joinedRemoteDeviceStates.count > 1
 
         // Handle reconnecting blinking
         if call.groupCall.localDevice.connectionState == .reconnecting {
@@ -224,7 +224,7 @@ class CallHeader: UIView {
 
     func updateGroupMembersButton() {
         groupMembersButton.setTitle(" \(call.groupCall.joinedGroupMembers.count)", for: .normal)
-        groupMembersButton.isHidden = call.groupCall.joinedGroupMembers.count < 3
+        groupMembersButton.isHidden = call.groupCall.joinedRemoteDeviceStates.count < 2
         groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 
