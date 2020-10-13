@@ -349,7 +349,19 @@ extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
         let label = UILabel()
         label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         label.textColor = Theme.darkThemePrimaryColor
-        label.text = "In this call · \(sortedMembers.count) people"
+
+        if sortedMembers.count > 1 {
+            let formatString = NSLocalizedString(
+                "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT",
+                comment: "String indicating how many people are current in the call"
+            )
+            label.text = String(format: formatString, sortedMembers.count)
+        } else {
+            label.text = NSLocalizedString(
+                "GROUP_CALL_ONE_IN_THIS_CALL",
+                comment: "String indicating one person is currently in the call"
+            )
+        }
 
         let labelContainer = UIView()
         labelContainer.layoutMargins = UIEdgeInsets(top: 13, left: 16, bottom: 13, right: 16)

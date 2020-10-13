@@ -29,6 +29,7 @@ class GroupCallMemberView: UIView {
         super.init(frame: .zero)
 
         backgroundColor = .ows_gray90
+        clipsToBounds = true
 
         addSubview(noVideoView)
         noVideoView.autoPinEdgesToSuperviewEdges()

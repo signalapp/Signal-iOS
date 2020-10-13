@@ -193,13 +193,14 @@ class CallHeader: UIView {
                 .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
         }
 
-        // TODO: Localization
-
         switch call.groupCall.localDevice.joinState {
         case .joined:
             switch memberNames.count {
             case 0:
-                callTitleText = "No one else is here"
+                callTitleText = NSLocalizedString(
+                    "GROUP_CALL_NO_ONE_HERE",
+                    comment: "Text explaining that you are the only person currently in the group call"
+                )
             case 1:
                 callTitleText = memberNames[0]
             default:
@@ -210,11 +211,23 @@ class CallHeader: UIView {
             case 0:
                 callTitleText = ""
             case 1:
-                callTitleText = "\(memberNames[0]) is in this call"
+                let formatString = NSLocalizedString(
+                    "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
+                    comment: "Text explaining that there is one person in the group call. Embeds {member name}"
+                )
+                callTitleText = String(format: formatString, memberNames[0])
             case 2:
-                callTitleText = "\(memberNames[0]) and \(memberNames[1]) are in this call"
+                let formatString = NSLocalizedString(
+                    "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
+                    comment: "Text explaining that there are two people in the group call. Embeds {member name}"
+                )
+                callTitleText = String(format: formatString, memberNames[0], memberNames[1])
             default:
-                callTitleText = "\(memberNames[0]), \(memberNames[1]), and \(call.groupCall.joinedGroupMembers.count - 2) others are in this call"
+                let formatString = NSLocalizedString(
+                    "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
+                    comment: "Text explaining that there are three or more people in the group call. Embeds {member name}"
+                )
+                callTitleText = String(format: formatString, memberNames[0], memberNames[1], call.groupCall.joinedGroupMembers.count - 2)
             }
         }
 

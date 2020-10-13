@@ -64,8 +64,6 @@ class CallControls: UIView {
 
     private lazy var joinButton: UIButton = {
         let button = OWSButton()
-        // TODO: Localization
-        button.setTitle("Start Call", for: .normal)
         button.setTitleColor(.ows_white, for: .normal)
         button.setBackgroundImage(UIImage(color: .ows_accentGreen), for: .normal)
         button.titleLabel?.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
@@ -178,8 +176,9 @@ class CallControls: UIView {
 
         bottomStackView.isHidden = call.groupCall.localDevice.joinState == .joined
 
-        // TODO: Localization
-        joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? "Start Call" : "Join Call", for: .normal)
+        let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
+        let joinCallText = NSLocalizedString("GROUP_CAll_JOIN_BUTTON", comment: "Button to join an ongoing group call")
+        joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? startCallText : joinCallText, for: .normal)
     }
 
     required init(coder: NSCoder) {
