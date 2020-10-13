@@ -671,7 +671,7 @@
 		8855DF89238F2E690066D96F /* EmojiCountsCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */; };
 		88588D18252D312800405414 /* GroupCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D17252D312800405414 /* GroupCallViewController.swift */; };
 		88588D1B252D3DFF00405414 /* CallControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1A252D3DFF00405414 /* CallControls.swift */; };
-		88588D1D252D5D3D00405414 /* GroupMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1C252D5D3D00405414 /* GroupMemberView.swift */; };
+		88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */; };
 		88588D23252E513300405414 /* GroupCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D22252E513200405414 /* GroupCall.swift */; };
 		88588D26252E59CE00405414 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D25252E59CE00405414 /* CallService.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
@@ -728,6 +728,7 @@
 		88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */; };
 		88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */; };
 		88ABB8BB2535066100229EAA /* GroupCallVideoOverflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */; };
+		88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
 		88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */; };
 		88BAE55F24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */; };
@@ -1676,7 +1677,7 @@
 		8855DF88238F2E690066D96F /* EmojiCountsCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCountsCollectionView.swift; sourceTree = "<group>"; };
 		88588D17252D312800405414 /* GroupCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallViewController.swift; sourceTree = "<group>"; };
 		88588D1A252D3DFF00405414 /* CallControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControls.swift; sourceTree = "<group>"; };
-		88588D1C252D5D3D00405414 /* GroupMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberView.swift; sourceTree = "<group>"; };
+		88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		88588D22252E513200405414 /* GroupCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCall.swift; sourceTree = "<group>"; };
 		88588D25252E59CE00405414 /* CallService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallService.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
@@ -1786,6 +1787,7 @@
 		88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGrid.swift; sourceTree = "<group>"; };
 		88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGridLayout.swift; sourceTree = "<group>"; };
 		88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoOverflow.swift; sourceTree = "<group>"; };
+		88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberSheet.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
 		88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurViewController.swift; sourceTree = "<group>"; };
 		88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurRegionsItem.swift; sourceTree = "<group>"; };
@@ -3265,7 +3267,8 @@
 				88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */,
 				88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */,
 				88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */,
-				88588D1C252D5D3D00405414 /* GroupMemberView.swift */,
+				88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */,
+				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
 			);
 			path = Group;
 			sourceTree = "<group>";
@@ -4936,6 +4939,7 @@
 				4C4F5EBC22711EEB00F3DD01 /* SendMediaBottomButton.swift in Sources */,
 				88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
+				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
 				88A4CC0E246CD6CC0082211F /* OnboardingTransferProgressViewController.swift in Sources */,
 				4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */,
 				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
@@ -5171,7 +5175,7 @@
 				340E9AC0235F876800FA362C /* ForwardMessageNavigationController.swift in Sources */,
 				3465947C2433B77700E5C510 /* NewGroupMembersBar.swift in Sources */,
 				347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */,
-				88588D1D252D5D3D00405414 /* GroupMemberView.swift in Sources */,
+				88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */,
 				88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */,
 				3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */,
 				88081437234D80150004C187 /* UIResponder+OWS.swift in Sources */,

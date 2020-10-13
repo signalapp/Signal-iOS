@@ -56,7 +56,7 @@ class GroupCallMemberView: UIView {
     }
 }
 
-class LocalGroupMemberView: GroupCallMemberView {
+class GroupCallLocalMemberView: GroupCallMemberView {
     let videoView = LocalVideoView()
 
     let videoOffIndicatorImage = UIImageView()
@@ -121,7 +121,7 @@ class LocalGroupMemberView: GroupCallMemberView {
     }
 }
 
-class RemoteGroupMemberView: GroupCallMemberView {
+class GroupCallRemoteMemberView: GroupCallMemberView {
     let videoView = RemoteVideoView()
     var currentTrack: RTCVideoTrack?
 

@@ -18,8 +18,8 @@ class GroupCallViewController: UIViewController {
     private lazy var videoGrid = GroupCallVideoGrid(call: call)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
 
-    private let localMemberView = LocalGroupMemberView()
-    private let speakerView = RemoteGroupMemberView()
+    private let localMemberView = GroupCallLocalMemberView()
+    private let speakerView = GroupCallRemoteMemberView()
 
     private var speakerPage = UIView()
 
@@ -239,15 +239,8 @@ class GroupCallViewController: UIViewController {
 }
 
 extension GroupCallViewController: CallViewControllerWindowReference {
-    var localVideoViewReference: UIView {
-        // TODO:
-        localMemberView
-    }
-
-    var remoteVideoViewReference: UIView {
-        // TODO:
-        speakerView
-    }
+    var localVideoViewReference: UIView { localMemberView }
+    var remoteVideoViewReference: UIView { speakerView }
 
     var remoteVideoAddress: SignalServiceAddress {
         // TODO: get speaker
@@ -384,7 +377,8 @@ extension GroupCallViewController: CallHeaderDelegate {
     }
 
     func didTapMembersButton() {
-
+        let sheet = GroupCallMemberSheet(call: call)
+        present(sheet, animated: true)
     }
 }
 
