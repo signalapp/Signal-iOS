@@ -55,10 +55,16 @@ public final class FileServerAPI : DotNetAPI {
     
     @objc(downloadProfilePicture:)
     public static func objc_downloadProfilePicture(_ downloadURL: String) -> AnyPromise {
-        return AnyPromise.from(downloadProfilePicture(downloadURL))
+        return AnyPromise.from(downloadAttachment(downloadURL))
     }
     
-    public static func downloadProfilePicture(_ downloadURL: String) -> Promise<Data> {
+    // MARK: Attachment Download
+    @objc(downloadAttachment:)
+    public static func objc_downloadAttachment(_ downloadURL: String) -> AnyPromise {
+        return AnyPromise.from(downloadAttachment(downloadURL))
+    }
+    
+    public static func downloadAttachment(_ downloadURL: String) -> Promise<Data> {
         var error: NSError?
         var url = downloadURL
         if downloadURL.contains(fileStaticServer) {
@@ -66,12 +72,12 @@ public final class FileServerAPI : DotNetAPI {
         }
         let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: url, parameters: nil, error: &error)
         if let error = error {
-            print("[Loki] Couldn't download profile picture due to error: \(error).")
+            print("[Loki] Couldn't download attachment due to error: \(error).")
             return Promise(error: error)
         }
         return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey, isJSONRequired: false).map2 { json in
             guard let body = json["body"] as? JSON, let dataArray = body["data"] as? [UInt8] else {
-                print("[Loki] Couldn't download profile picture.")
+                print("[Loki] Couldn't download attachment.")
                 return Data()
             }
             return Data(dataArray)
