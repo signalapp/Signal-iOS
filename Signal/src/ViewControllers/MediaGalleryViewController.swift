@@ -377,7 +377,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
 
         guard let initialDetailItem = galleryItem else {
-            owsFailDebug("unexpectedly failed to build initialDetailItem.")
+//            owsFailDebug("unexpectedly failed to build initialDetailItem.")
             return
         }
 

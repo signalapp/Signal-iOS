@@ -391,19 +391,20 @@ public final class PublicChatAPI : DotNetAPI {
                     var error: NSError?
                     let url = "\(server)/loki/v1\(profilePictureURL)"
                     let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: url, parameters: nil, error: &error)
-                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)"]
+                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                     if let error = error {
                         print("[Loki] Couldn't download open group avatar due to error: \(error).")
                         return
                     }
-                    OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false).map{ json in
-                        guard let body = json["body"] as? JSON, let dataArray = body["data"] as? [UInt8] else {
-                            print("[Loki] Couldn't download open group avatar.")
+                    OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false).map(on: DispatchQueue.global(qos: .default)) { json in
+                        guard let body = json["body"] as? JSON, let data = body["data"] as? [UInt8] else {
+                            print("[Loki] Couldn't parse open group profile picture from: \(json).")
                             return
                         }
-                        let avatarData = Data(dataArray)
-                        let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(avatarData.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
-                        try! attachmentStream.write(avatarData)
+                        let profilePicture = Data(data)
+                        let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(profilePicture.count),
+                            sourceFilename: nil, caption: nil, albumMessageId: nil)
+                        try! attachmentStream.write(profilePicture)
                         groupThread.updateAvatar(with: attachmentStream)
                     }
                 }

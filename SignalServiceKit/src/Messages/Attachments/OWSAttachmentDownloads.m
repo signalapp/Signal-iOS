@@ -518,8 +518,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         failureHandlerParam(task, error);
     };
     
-    AnyPromise *promise = [LKFileServerAPI downloadAttachment:location];
-    [promise.then(^(NSData *data) {
+    [[LKFileServerAPI downloadAttachmentFrom:location].then(^(NSData *data) {
         BOOL success = [data writeToFile:tempFilePath atomically:YES];
         if (success) {
             successHandler(tempFilePath);

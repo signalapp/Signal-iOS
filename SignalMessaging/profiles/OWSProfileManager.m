@@ -1158,8 +1158,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
 
         NSString *profilePictureURL = userProfile.avatarUrlPath;
-        AnyPromise *promise = [LKFileServerAPI downloadProfilePicture:profilePictureURL];
-        [promise.then(^(NSData *data) {
+        [[LKFileServerAPI downloadAttachmentFrom:profilePictureURL].then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)
             {
                 [self.currentAvatarDownloads removeObject:userProfile.recipientId];
