@@ -5334,3 +5334,127 @@ extension GroupsProtoGroupJoinInfo.GroupsProtoGroupJoinInfoBuilder {
 }
 
 #endif
+
+// MARK: - GroupsProtoGroupExternalCredential
+
+public class GroupsProtoGroupExternalCredential: NSObject, Codable {
+
+    // MARK: - GroupsProtoGroupExternalCredentialBuilder
+
+    public class func builder() -> GroupsProtoGroupExternalCredentialBuilder {
+        return GroupsProtoGroupExternalCredentialBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupExternalCredentialBuilder {
+        let builder = GroupsProtoGroupExternalCredentialBuilder()
+        if let _value = token {
+            builder.setToken(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public class GroupsProtoGroupExternalCredentialBuilder: NSObject {
+
+        private var proto = GroupsProtos_GroupExternalCredential()
+
+        fileprivate override init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public func setToken(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.token = valueParam
+        }
+
+        public func setToken(_ valueParam: String) {
+            proto.token = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> GroupsProtoGroupExternalCredential {
+            return try GroupsProtoGroupExternalCredential(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupExternalCredential(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupExternalCredential
+
+    public var token: String? {
+        guard hasToken else {
+            return nil
+        }
+        return proto.token
+    }
+    public var hasToken: Bool {
+        return !proto.token.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupExternalCredential) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public convenience init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupExternalCredential(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: GroupsProtos_GroupExternalCredential) throws {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupExternalCredential -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupExternalCredential -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupExternalCredential {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupExternalCredential.GroupsProtoGroupExternalCredentialBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupExternalCredential? {
+        return try! self.build()
+    }
+}
+
+#endif

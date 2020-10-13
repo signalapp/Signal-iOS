@@ -19,6 +19,10 @@ public final class CallService: NSObject {
 
     public let callManager = CallManagerType()
 
+    private var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+    }
+
     @objc
     public let individualCallService = IndividualCallService()
 
@@ -524,8 +528,32 @@ extension CallService: CallObserver {
 
         guard call === currentCall else { return cleanupStaleCall(call) }
 
-        // TODO: fetch from v1/groups/token on storage service
-        call.groupCall.updateGroupMembershipProof(proof: Data())
+        // TODO: Enable the real lookup below. Right now, the API is not
+        // available in production.
+
+        guard !DebugFlags.groupCallingIgnoreMembershipProof else {
+            call.groupCall.updateGroupMembershipProof(proof: Data())
+            return
+        }
+
+        guard let groupThread = call.thread as? TSGroupThread,
+              let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            return owsFailDebug("unexpectedly missing thread")
+        }
+
+        do {
+            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel).done { credential in
+                guard let tokenData = credential.token?.data(using: .utf8) else {
+                    throw OWSAssertionError("Invalid credential")
+                }
+
+                call.groupCall.updateGroupMembershipProof(proof: tokenData)
+            }.catch { error in
+                owsFailDebug("Failed to fetch group call credential \(error)")
+            }
+        } catch {
+            owsFailDebug("Failed to fetch group call credential \(error)")
+        }
     }
 
     public func groupCallUpdateGroupMembers(_ call: SignalCall) {

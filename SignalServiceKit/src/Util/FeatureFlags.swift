@@ -410,6 +410,9 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let forceProfilesForAll = build.includes(.beta)
 
+    @objc
+    public static let groupCallingIgnoreMembershipProof = true
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)
