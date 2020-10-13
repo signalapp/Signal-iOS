@@ -169,10 +169,18 @@ public class ConversationMediaView: UIView {
             return
         }
 
+        let view: UIView
         backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
-        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
-        self.addSubview(progressView)
-        progressView.autoPinEdgesToSuperviewEdges()
+        if isOnionRouted { // Loki: Due to the way onion routing works we can't get upload progress for those attachments
+            let activityIndicatorView = UIActivityIndicatorView(style: .white)
+            activityIndicatorView.isHidden = false
+            activityIndicatorView.startAnimating()
+            view = activityIndicatorView
+        } else {
+            view = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
+        }
+        addSubview(view)
+        view.autoPinEdgesToSuperviewEdges()
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
