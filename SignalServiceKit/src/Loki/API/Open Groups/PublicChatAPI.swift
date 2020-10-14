@@ -369,7 +369,7 @@ public final class PublicChatAPI : DotNetAPI {
         }
     }
 
-    static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: PublicChatInfo, token: String, serverPublicKey: String) {
+    static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: PublicChatInfo) {
         let storage = OWSPrimaryStorage.shared()
         let publicChatID = "\(server).\(channel)"
         try! Storage.writeSync { transaction in
@@ -388,20 +388,7 @@ public final class PublicChatAPI : DotNetAPI {
             if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
                 storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
                 if let profilePictureURL = info.profilePictureURL {
-                    var error: NSError?
-                    let url = "\(server)/loki/v1\(profilePictureURL)"
-                    let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: url, parameters: nil, error: &error)
-                    request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)"]
-                    if let error = error {
-                        print("[Loki] Couldn't download open group avatar due to error: \(error).")
-                        return
-                    }
-                    OnionRequestAPI.sendOnionRequest(request, to: server, using: serverPublicKey, isJSONRequired: false).map{ json in
-                        guard let body = json["body"] as? JSON, let dataArray = body["data"] as? [UInt8] else {
-                            print("[Loki] Couldn't download open group avatar.")
-                            return
-                        }
-                        let avatarData = Data(dataArray)
+                    FileServerAPI.downloadAttachment("\(server)\(profilePictureURL)").map { avatarData in
                         let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(avatarData.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
                         try! attachmentStream.write(avatarData)
                         groupThread.updateAvatar(with: attachmentStream)
@@ -441,7 +428,7 @@ public final class PublicChatAPI : DotNetAPI {
                             storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
                         }
                         let publicChatInfo = PublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
-                        updateProfileIfNeeded(for: channel, on: server, from: publicChatInfo, token: token, serverPublicKey: serverPublicKey)
+                        updateProfileIfNeeded(for: channel, on: server, from: publicChatInfo)
                         return publicChatInfo
                     }
                 }
