@@ -66,22 +66,36 @@ public final class FileServerAPI : DotNetAPI {
     
     public static func downloadAttachment(_ downloadURL: String) -> Promise<Data> {
         var error: NSError?
-        var url = downloadURL
-        if downloadURL.contains(fileStaticServer) {
-            url = downloadURL.replacingOccurrences(of: fileStaticServer, with: "\(server)/loki/v1")
+        let url = URL(string: downloadURL)!
+        var host = "https://\(url.host!)"
+        var actualDownloadURL = downloadURL
+        if fileStaticServer.contains(host) {
+            actualDownloadURL = downloadURL.replacingOccurrences(of: fileStaticServer, with: "\(server)/loki/v1")
+            host = server
+        } else {
+            actualDownloadURL = downloadURL.replacingOccurrences(of: host, with: "\(host)/loki/v1")
         }
-        let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: url, parameters: nil, error: &error)
+        let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: actualDownloadURL, parameters: nil, error: &error)
         if let error = error {
             print("[Loki] Couldn't download attachment due to error: \(error).")
             return Promise(error: error)
         }
-        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey, isJSONRequired: false).map2 { json in
-            guard let body = json["body"] as? JSON, let dataArray = body["data"] as? [UInt8] else {
-                print("[Loki] Couldn't download attachment.")
-                return Data()
+        return getServerPublicKey(for: host).then2 { serverPublicKey in
+            OnionRequestAPI.sendOnionRequest(request, to: host, using: serverPublicKey, isJSONRequired: false).map2 { json in
+                guard let body = json["body"] as? JSON, let dataArray = body["data"] as? [UInt8] else {
+                    print("[Loki] Couldn't download attachment.")
+                    return Data()
+                }
+                return Data(dataArray)
             }
-            return Data(dataArray)
         }
+    }
+    
+    public static func getServerPublicKey(for host: String) -> Promise<String> {
+        if server.contains(host) {
+            return Promise.value(fileServerPublicKey)
+        }
+        return PublicChatAPI.getOpenGroupServerPublicKey(for: host)
     }
     
     // MARK: Open Group Server Public Key
