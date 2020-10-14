@@ -1507,9 +1507,10 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
+            return NO;
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_GenericAttachment:
-            return NO;
+            return self.attachmentStream != nil;
         case OWSMessageCellType_MediaMessage: {
             for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
                 if (!mediaAlbumItem.attachmentStream) {
