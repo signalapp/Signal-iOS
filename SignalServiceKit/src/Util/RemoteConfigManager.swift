@@ -39,13 +39,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2GoodCitizen: Bool {
-        if groupsV2CreateGroups {
-            return true
-        }
-        guard modernContactDiscovery else { return false }
-        guard FeatureFlags.groupsV2Supported else { return false }
-        if DebugFlags.groupsV2ForceEnable { return true }
-        return isEnabled(.groupsV2GoodCitizenV4)
+        return true
     }
 
     @objc
@@ -59,17 +53,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var modernContactDiscovery: Bool {
-        let allEnableConditions = [
-            // If the remote config flag is set, we're enabled
-            isEnabled(.modernContactDiscoveryV3),
-
-            // These flags force modern CDS on, even if the remote config is switched off
-            // Groups v2 implies modern CDS, so when it's enabled modern CDS must be enabled.
-            DebugFlags.forceModernContactDiscovery,
-            isEnabled(.groupsV2GoodCitizenV4)
-        ]
-
-        return allEnableConditions.contains(true)
+        return true
     }
 
     private static let forceDisableUuidSafetyNumbers = true
@@ -116,10 +100,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var mentions: Bool {
-        guard FeatureFlags.mentionsSupported else { return false }
-        if DebugFlags.forceMentions { return true }
-        guard groupsV2GoodCitizen else { return false }
-        return isEnabled(.mentions)
+        return true
     }
 
     @objc
@@ -303,7 +284,6 @@ private struct Flags {
     // Values defined in this array remain forever true once they are
     // marked true regardless of the remote state.
     enum StickyIsEnabledFlags: String, FlagType {
-        case groupsV2GoodCitizenV4
         case versionedProfiles
         case uuidSafetyNumbers
     }
@@ -316,11 +296,8 @@ private struct Flags {
     enum SupportedIsEnabledFlags: String, FlagType {
         case kbs
         case groupsV2CreateGroupsV4
-        case groupsV2GoodCitizenV4
         case versionedProfiles
-        case mentions
         case uuidSafetyNumbers
-        case modernContactDiscoveryV3
         case attachmentUploadV3v1
         case groupsV2InviteLinksV2
     }
