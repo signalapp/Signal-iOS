@@ -1412,7 +1412,7 @@
 "FAILED_VERIFICATION_TITLE" = "Verifiëren van veiligheidsnummer mislukt!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Markeren als geverifieerd";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Als geverifieerd markeren";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Sessie opnieuw instellen";
@@ -2243,7 +2243,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Gesprek dearchiveren";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Meer lezen hierover";
+"LEARN_MORE" = "Meer lezen";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Verlaten";
@@ -3284,7 +3284,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Veiligheidsnummer verifiëren";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Markeren als geverifieerd";
+"PRIVACY_VERIFY_BUTTON" = "Als geverifieerd markeren";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Doorgaan";

@@ -581,7 +581,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Clipboard-en bidez konparatu";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
+"COMPOSE_BUTTON_HINT" = "Hautatu edo bilatu Signal-eko erabiltzailea solasaldia hasteko.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Idatzi";
@@ -872,7 +872,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ erabiltzailea talde hau eta bere kideak editatzeko gai izango da";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Member Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Kideen gonbidapenak";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Kideen Eskaerak & Gonbidapenak";
@@ -1190,7 +1190,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Solasaldi honetako mezuak desagertuko dira %@ igaro ondoren. ";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Aktibatuta dagoenean, solasaldi honetan bidalitako eta jasotako mezuak desagertuko dira behin ikusiak.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Mezuak %@ ondoren desagertuko dira";
@@ -1619,7 +1619,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ezin duzu erabiltzaile hauek modu automatikoan taldean sartu. Sartzeko gonbidapena bidali zaie eta ezingo dute talde mezurik ikusi onartu arte.";
 
 /* The title for the 'group invites' view. */
-"GROUP_INVITES_VIEW_TITLE" = "Member Invites";
+"GROUP_INVITES_VIEW_TITLE" = "Kideen gonbidapenak";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Talde esteka hau dagoeneko ez da baliagarria";
@@ -1664,7 +1664,7 @@
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Kodea hau eskaneatuz gero jendea zure taldean sartu ahal izango da. Hala era, administratzaileen baimena eskatzeko aukera aktibatuta baduzu, berauen onespena beharko da taldean sartzeko.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Share Code";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Partekatu kodea";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR Kodea";
@@ -1775,7 +1775,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ erabiltzaileak administratzaile eskubideak kendu dizkizu.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Kide batek taldera gehitu zaitu.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Administratzailea";
@@ -2495,7 +2495,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Talde honetan sartu eta zure izena eta argazkia kideekin partekatu nahi duzu? Zuk onartu arte, ez dute jakingo beraien mezuak ikusi duzunik.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Talde honetan sartu? Onartu arte ez dute jakingo beraien mezuak ikusi dituzunik.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Partekatu Profila";
