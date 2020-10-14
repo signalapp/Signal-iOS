@@ -1865,7 +1865,7 @@
 "GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Приглашения в группу для %@ людей были отозваны.";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 человек был приглашен в группу.";
+"GROUP_REMOTE_USER_INVITED_1" = "1 человек был приглашён в группу.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ был(-а) приглашен(-а) в группу.";

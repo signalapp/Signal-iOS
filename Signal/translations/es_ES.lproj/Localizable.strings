@@ -14,7 +14,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Contacto";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Multimedia";
+"ACCESSIBILITY_LABEL_MEDIA" = "Adjuntos";
 
 /* Accessibility label for message. */
 "ACCESSIBILITY_LABEL_MESSAGE" = "Mensaje";
@@ -170,7 +170,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Límite de texto.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Añade una explicación ...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Añade una explicación …";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Descripción";
@@ -233,7 +233,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Archivo adjunto vacío.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Selecciona una archivo multimedia para enviar";
+"ATTACHMENT_HINT" = "Selecciona una archivo para enviar como adjunto";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Cámara";
@@ -461,7 +461,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Llamar de nuevo";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Recibiendo llamada ...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Recibiendo llamada …";
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Llamada perdida";
@@ -491,7 +491,7 @@
 "CALL_USER_ALERT_TITLE" = "¿Llamar?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Recibiendo vídeollamada ...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Recibiendo vídeollamada …";
 
 /* notification body */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Vídeollamada perdida";
@@ -605,13 +605,13 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Esta acción restablece la aplicación, elimina todos los mensajes y da de baja el número del servidor. Signal se cerrará después de completarse el proceso.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "¿Estás seguro de querer eliminar tu cuenta?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "¿Estás segur@ de querer eliminar tu cuenta?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Esta acción restablece la aplicación y elimina todos los mensajes en este dispositivo. Siempre puedes volver a enlazar tu teléfono pero no recuperarás los mensajes eliminados. Signal se cerrará después de completar el proceso.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "¿Estás seguro de querer eliminar todos los datos?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "¿Estás segur@ de querer eliminar todos los datos?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "No podrás enviar o recibir más mensajes en este grupo.";
@@ -977,7 +977,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Eliminar todos";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Cargando más mensajes ...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Cargando más mensajes …";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Leer más";
@@ -1169,7 +1169,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Recibiendo datos";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Conectando ...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Conectando …";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Posiciona el código QR en el círculo.";
@@ -1430,10 +1430,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "No hay ningún adjunto en este chat.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Cargando adjuntos recientes ...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Cargando adjuntos recientes …";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Cargando adjuntos previos ...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Cargando adjuntos previos …";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Adjunto";
@@ -1634,7 +1634,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Unirse";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Cargando ...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Cargando …";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "¿Deseas unirte a este grupo y compartir tu nombre y foto con sus participantes?";
@@ -2036,7 +2036,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ participantes no soportan el nuevo sistema de grupos. Este será un grupo del sistema antiguo. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Este es grupo que usa el sistema antiguo de Signal. Características como admins de grupo o menciones, sólo están disponibles en los nuevos grupos. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Este es un grupo que usa el sistema antiguo de Signal. Características como admins de grupo o menciones sólo están disponibles en los nuevos grupos. %@";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grupo antiguo";
@@ -2123,7 +2123,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Fallo al seleccionar adjunto.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Conectando ...";
+"IN_CALL_CONNECTING" = "Conectando …";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Atendida en otro dispositivo.";
@@ -2135,19 +2135,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Rechazada en otro dispositivo.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconectando ...";
+"IN_CALL_RECONNECTING" = "Reconectando …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Sonando ...";
+"IN_CALL_RINGING" = "Sonando …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Llamada ...";
+"IN_CALL_RINGING_AUDIO" = "Llamada …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Vídeollamada ...";
+"IN_CALL_RINGING_VIDEO" = "Vídeollamada …";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Respondida. Asegurando ...";
+"IN_CALL_SECURING" = "Respondida. Asegurando …";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Llamada finalizada.";
@@ -2201,7 +2201,7 @@
 "KEEP_MESSAGES_FOREVER" = "Los mensajes no desaparecerán.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Ir a archivos multimedia";
+"KEY_COMMAND_ALL_MEDIA" = "Ir a adjuntos";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Archivar chat";
@@ -2342,10 +2342,10 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensaje";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar del chat";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar para tod@s";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para tod*s en el chat, si usan una versión reciente de Signal. En el chat se mostrará que lo has eliminado. ";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para tod@s en el chat, si usan una versión reciente de Signal. En el chat se mostrará que lo has eliminado. ";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "¿Para quién deseas eliminar este mensaje?";
@@ -2372,7 +2372,7 @@
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Selección múltiple";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Compartir multimedia";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Compartir archivos";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mensaje";
@@ -2549,13 +2549,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Fallo al enviar";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Enviando ...";
+"MESSAGE_STATUS_SENDING" = "Enviando …";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Enviado";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Transfiriendo ...";
+"MESSAGE_STATUS_UPLOADING" = "Transfiriendo …";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mensaje nuevo";
@@ -2732,7 +2732,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Notificaciones sonoras";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Sonido personalizado de notificaciones ...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Sonido personalizado de notificaciones …";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nombre, contenido y acciones";
@@ -2972,7 +2972,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "¿Retirar la invitación a %@?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "No se pueden mostrar los detalles de personas invitadas por otros participantes del grupo. Sólo compartirán sus detalles con el grupo y verán los mensajes que se envíen a partir del momento en que decidan participar.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "No se pueden mostrar los detalles de personas invitadas por otr@s participantes del grupo. Sólo compartirán sus detalles con el grupo y verán los mensajes que se envíen a partir del momento en que decidan participar.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Las personas en esta lista han solicitado unirse al grupo «%@» vía enlace.";
@@ -2993,10 +2993,10 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fallo al procesar el mensaje recibido";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Multimedia para ver solo una vez";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Adjunto de vista única";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Multimedia";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Adjunto";
 
 /* inbox cell and notification text for a view-once photo. */
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Foto para ver solo una vez";
@@ -3146,7 +3146,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Vuelve a introducir el PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creando PIN ...";
+"PIN_CREATION_PIN_PROGRESS" = "Creando PIN …";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Puedes modificar tu PIN siempre que este dispositivo esté registrado.";
@@ -3239,7 +3239,7 @@
 "PINS_MEGAPHONE_TOAST_DISABLED" = "PIN desactivado.";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproducir adjunto multimedia";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproducir archivo multimedia";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "No has marcado la identidad de %@ como verificada.";
@@ -3467,7 +3467,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Verificando PIN ...";
+"REGISTER_2FA_PIN_PROGRESS" = "Verificando PIN …";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Enviar";
@@ -3650,16 +3650,16 @@
 "SCREENSHOT_NAME_CONTACT_SIX" = "Marco Suárez";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "María Villanueva";
+"SCREENSHOT_NAME_CONTACT_TEN" = "Violeta Gago";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
-"SCREENSHOT_NAME_CONTACT_THREE" = "Nikita Romanov";
+"SCREENSHOT_NAME_CONTACT_THREE" = "María Villanueva";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
 "SCREENSHOT_NAME_CONTACT_TWO" = "Jonay Baute";
 
 /* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
-"SCREENSHOT_NAME_GROUP_FIVE" = "Familia Pérez";
+"SCREENSHOT_NAME_GROUP_FIVE" = "Familia Fernández";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
 "SCREENSHOT_NAME_GROUP_FOUR" = "Puestas de sol 🌅";
@@ -3815,7 +3815,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Ve a Signal en tu teléfono para enlazar este iPad con tu cuenta";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "No tengo Signal en mi teléfono ...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "No tengo Signal en mi teléfono …";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ve a la App/Play Store en tu teléfono, instala Signal y completa el proceso de registro para poder enlazar este iPad con tu cuenta.";
@@ -4232,7 +4232,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Tus cifras de seguridad con %@ han cambiado. Tal vez quieras verificar su identidad antes de continuar chateando.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Cargando ...";
+"SHARE_EXTENSION_LOADING" = "Cargando …";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Inicia Signal para registrarte.";
@@ -4250,7 +4250,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Fallo al enviar adjunto";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Transfiriendo ...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Transfiriendo …";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Imposible preparar el adjunto";
@@ -4295,7 +4295,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Cromos instalados";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Cargando ...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Cargando …";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No hay ningún paquete de cromos instalado ";

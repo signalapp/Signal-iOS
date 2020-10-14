@@ -1589,22 +1589,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "»%@« hat den Gruppen-Link zurückgesetzt.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Für den Gruppen-Link wurde die Admin-Bestätigung ausgeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Die Admin-Bestätigung für den Gruppen-Link wurde ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die für den Gruppen-Link die Admin-Bestätigung ausgeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat für den Gruppen-Link die Admin-Bestätigung ausgeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat die Admin-Bestätigung für den Gruppen-Link ausgeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Für den Gruppen-Link wurde die Admin-Bestätigung eingeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Die Admin-Bestätigung für den Gruppen-Link wurde eingeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast für den Gruppen-Link die Admin-Bestätigung eingeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Du hast die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat für den Gruppen-Link die Admin-Bestätigung eingeschaltet.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "»%@« hat die Admin-Bestätigung für den Gruppen-Link eingeschaltet.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Benutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
@@ -3629,13 +3629,13 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal entsperren";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "Delia Jahn";
 
 /* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
-"SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Smith";
+"SCREENSHOT_NAME_CONTACT_FIVE" = "Jens Jäger";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
-"SCREENSHOT_NAME_CONTACT_FOUR" = "Kim Hoffmann";
+"SCREENSHOT_NAME_CONTACT_FOUR" = "Florian Lintzen";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. Include two last names if that is represented in your locale. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_NINE" = "Sophia Bayer-Finkel";
@@ -3644,22 +3644,22 @@
 "SCREENSHOT_NAME_CONTACT_ONE" = "Vorsitzender Miau";
 
 /* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";
+"SCREENSHOT_NAME_CONTACT_SEVEN" = "Annika H.";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This will have a male profile photo. */
-"SCREENSHOT_NAME_CONTACT_SIX" = "Michael Kirk";
+"SCREENSHOT_NAME_CONTACT_SIX" = "Marco Dengel";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "Maya Dorai";
+"SCREENSHOT_NAME_CONTACT_TEN" = "Maja Dorai";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
-"SCREENSHOT_NAME_CONTACT_THREE" = "Nikki Romanov";
+"SCREENSHOT_NAME_CONTACT_THREE" = "Emilia Kuhr";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
-"SCREENSHOT_NAME_CONTACT_TWO" = "Myles Larson";
+"SCREENSHOT_NAME_CONTACT_TWO" = "Matthias Over";
 
 /* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
-"SCREENSHOT_NAME_GROUP_FIVE" = "Familie Kirk";
+"SCREENSHOT_NAME_GROUP_FIVE" = "Familie Dengel";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
 "SCREENSHOT_NAME_GROUP_FOUR" = "Sonnenuntergänge 🌅";
@@ -3707,7 +3707,7 @@
 "SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "Ja!";
 
 /* Replace crepes with similar item that you bake or cook i.e. bread, croissants, naan. */
-"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "Morgen machen wir Crêpes";
+"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "Morgen machen wir Karthäuser Klöße";
 
 /* This is a message before an image of mountains + a lake. */
 "SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Hey, schaut euch das an!";

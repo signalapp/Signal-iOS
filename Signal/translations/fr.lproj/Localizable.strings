@@ -1754,7 +1754,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "Votre suppression du groupe provient de %@.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Vous ne faites plus partie du groupe.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Vous avez été supprimé du groupe.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ a approuvé votre demande de vous joindre au groupe.";
@@ -3329,7 +3329,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Le profil ne peut être mis à jour qu’une fois connecté à Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Votre profil est chiffré de bout en bout. Votre profil et les modifications qui y sont apportées seront visibles par vos contacts quand vous lancerez ou accepterez de nouvelles conversations et quand vous vous joindrez à de nouveaux groupes.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Votre profil est chiffré de bout en bout. Quand vous lancez ou acceptez de nouvelles conversations, ou vous joignez à de nouveaux groupes, il est visible par vos contacts, avec ses modifications.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Enregistrer";
