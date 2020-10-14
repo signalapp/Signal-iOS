@@ -52,6 +52,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'SAMKeychain'
   s.dependency 'Reachability'
   s.dependency 'SwiftProtobuf'
+  s.dependency 'SignalClient'
   s.dependency 'SignalCoreKit'
   s.dependency 'SignalMetadataKit'
   s.dependency 'GRDB.swift/SQLCipher'
