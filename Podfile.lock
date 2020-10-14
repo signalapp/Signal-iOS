@@ -366,7 +366,7 @@ CHECKOUT OPTIONS:
     :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
     :git: https://github.com/signalapp/YapDatabase.git
   YYImage:
-    :commit: a2e189da5c92196552475d1122a924a3732ad01e
+    :commit: d91910e6f313a255febbf69795198e74259bd51c
     :git: https://github.com/signalapp/YYImage
   ZKGroup:
     :commit: 0ea29d4a20f90464023d4e1fd38551c1b478da2a
