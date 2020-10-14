@@ -4,6 +4,7 @@
 
 import Foundation
 
+import SignalClient
 import SignalMetadataKit
 import PromiseKit
 import CommonCrypto
@@ -61,13 +62,14 @@ public class ProvisioningCipher {
         let theirMac = bytes.suffix(32)
         let messageToAuthenticate = bytes[0..<(bytes.count - 32)]
         let ciphertext = Array(bytes[17..<(bytes.count - 32)])
-        let agreement = try Curve25519.generateSharedSecret(fromPublicKey: primaryDeviceEphemeralPublicKey.keyData,
-                                                            privateKey: try secondaryDeviceKeyPair.ecPrivateKey().keyData)
 
-        let info = "TextSecure Provisioning Message".data(using: .utf8)!
-        let salt = Data([UInt8](repeating: 0, count: 32))
-        let keys = try HKDFKit.deriveKey(agreement, info: info, salt: salt, outputSize: 64)
-        let keyBytes = [UInt8](keys)
+        let agreement = try PrivateKey(secondaryDeviceKeyPair.privateKey).keyAgreement(
+            with: PublicKey(primaryDeviceEphemeralPublicKey.keyData))
+
+        let info = "TextSecure Provisioning Message"
+        let keyBytes = try info.utf8.withContiguousStorageIfAvailable {
+            try hkdf(outputLength: 64, version: 3, inputKeyMaterial: agreement, salt: [], info: $0)
+        }!
 
         let cipherKey = Array(keyBytes[0..<32])
         let macKey = keyBytes[32..<64]
