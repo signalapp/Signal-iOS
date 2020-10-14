@@ -45,6 +45,7 @@ class GroupCallMemberSheet: UIViewController {
             let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
             contentView.addSubview(blurEffectView)
             blurEffectView.autoPinEdgesToSuperviewEdges()
+            contentView.backgroundColor = .ows_blackAlpha40
         }
 
         // Prefer to be full width, but don't exceed the maximum width

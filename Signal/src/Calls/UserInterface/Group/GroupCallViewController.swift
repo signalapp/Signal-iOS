@@ -126,15 +126,19 @@ class GroupCallViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.updateScrollViewFrames()
-        }
+        coordinator.animate(alongsideTransition: { _ in
+            self.updateCallUI(size: size)
+            self.videoGrid.reloadData()
+            self.videoOverflow.reloadData()
+        }, completion: nil)
     }
 
     private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.joinedRemoteDeviceStates.count }
 
-    private func updateScrollViewFrames() {
+    private func updateScrollViewFrames(size: CGSize? = nil) {
         view.layoutIfNeeded()
+
+        let size = size ?? view.frame.size
 
         if groupCall.joinedGroupMembers.count < 3 || groupCall.localDevice.joinState != .joined {
             videoGrid.frame = .zero
@@ -142,10 +146,10 @@ class GroupCallViewController: UIViewController {
             speakerPage.frame = CGRect(
                 x: 0,
                 y: 0,
-                width: view.width,
-                height: view.height
+                width: size.width,
+                height: size.height
             )
-            scrollView.contentSize = CGSize(width: view.width, height: view.height)
+            scrollView.contentSize = size
             scrollView.contentOffset = .zero
             scrollView.isScrollEnabled = false
         } else {
@@ -156,16 +160,16 @@ class GroupCallViewController: UIViewController {
             videoGrid.frame = CGRect(
                 x: 0,
                 y: view.safeAreaInsets.top,
-                width: view.width,
-                height: view.height - view.safeAreaInsets.top - callControls.height - (hasOverflowMembers ? videoOverflow.height : 0)
+                width: size.width,
+                height: size.height - view.safeAreaInsets.top - callControls.height - (hasOverflowMembers ? videoOverflow.height + 16 : 0)
             )
             speakerPage.frame = CGRect(
                 x: 0,
-                y: view.height,
-                width: view.width,
-                height: view.height
+                y: size.height,
+                width: size.width,
+                height: size.height
             )
-            scrollView.contentSize = CGSize(width: view.width, height: view.height * 2)
+            scrollView.contentSize = CGSize(width: size.width, height: size.height * 2)
 
             if wasVideoGridHidden {
                 scrollView.contentOffset = .zero
@@ -173,7 +177,7 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    func updateCallUI() {
+    func updateCallUI(size: CGSize? = nil) {
         let localDevice = groupCall.localDevice
 
         localMemberView.configure(
@@ -208,10 +212,11 @@ class GroupCallViewController: UIViewController {
                         .width,
                         toSize: GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio
                     )
-                    localMemberView.autoPinEdge(.top, to: .top, of: videoOverflow)
+                    let shouldShiftUp = !hasOverflowMembers && scrollView.contentOffset.y < view.height
+                    localMemberView.autoPinEdge(.top, to: .top, of: videoOverflow, withOffset: shouldShiftUp ? -16 : 0)
                 } else {
                     localMemberView.autoSetDimensions(to: ReturnToCallViewController.pipSize)
-                    localMemberView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -16)
+                    localMemberView.autoPinEdge(.bottom, to: .top, of: callControls)
                 }
 
                 localMemberView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
@@ -224,7 +229,7 @@ class GroupCallViewController: UIViewController {
             localMemberView.autoPinEdgesToSuperviewEdges()
         }
 
-        updateScrollViewFrames()
+        updateScrollViewFrames(size: size)
     }
 
     func dismissCall() {
@@ -397,6 +402,7 @@ extension GroupCallViewController: UIScrollViewDelegate {
         // If we changed pages, update the overflow view.
         if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
             videoOverflow.reloadData()
+            updateCallUI()
         }
     }
 }

@@ -91,8 +91,6 @@ class GroupCallVideoGridLayout: UICollectionViewLayout {
 
         guard let (numberOfRows, numberOfColumns) = possibleGrids.first else { return owsFailDebug("missing grid") }
 
-        print("NAT___ numberOfRows: \(numberOfRows), numberOfColumns: \(numberOfColumns), numberOfItems: \(numberOfItems), possibleGrids: \(possibleGrids)")
-
         let totalViewWidth = collectionView.width
         let totalViewHeight = collectionView.height
 

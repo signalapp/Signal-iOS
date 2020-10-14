@@ -136,14 +136,6 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
             AssertIsOnMainThread()
             Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self)")
 
-            // Update connectedDate
-//            if case .connected = self.state {
-//                // if it's the first time we've connected (not a reconnect)
-//                if connectedDate == nil {
-//                    connectedDate = NSDate()
-//                }
-//            }
-
             updateCallRecordType()
 
             delegate?.individualCallStateDidChange(self, state: state)

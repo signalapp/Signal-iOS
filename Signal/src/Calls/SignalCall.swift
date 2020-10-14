@@ -69,7 +69,11 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     let videoCaptureController = VideoCaptureController()
 
-    public var connectedDate: Date?
+    // Should be used only on the main thread
+    public var connectedDate: Date? {
+        didSet { AssertIsOnMainThread() }
+    }
+
     public let thread: TSThread?
 
     public var error: CallError?

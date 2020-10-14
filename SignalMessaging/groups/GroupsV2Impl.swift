@@ -2106,7 +2106,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return firstly { () -> Promise<OWSHTTPResponse> in
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupModel.groupId,
-                                              behavior403: .ignore)
+                                              behavior403: .fetchGroupUpdates)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoGroupExternalCredential in
             guard let groupProtoData = response.responseData else {
                 throw OWSAssertionError("Invalid responseObject.")

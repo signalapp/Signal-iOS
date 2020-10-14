@@ -61,6 +61,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
     let videoView = LocalVideoView()
 
     let videoOffIndicatorImage = UIImageView()
+    let videoOffLabel = UILabel()
 
     var videoOffIndicatorWidth: CGFloat {
         if width > 102 {
@@ -68,6 +69,10 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         } else {
             return 16
         }
+    }
+
+    override var bounds: CGRect {
+        didSet { videoView.frame = bounds }
     }
 
     lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
@@ -81,9 +86,17 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoOffIndicatorImage.autoMatch(.height, to: .width, of: videoOffIndicatorImage)
         videoOffIndicatorImage.autoCenterInSuperview()
 
+        videoOffLabel.font = .ows_dynamicTypeSubheadline
+        videoOffLabel.text = "Your video is off"
+        videoOffLabel.textAlignment = .center
+        videoOffLabel.textColor = Theme.darkThemePrimaryColor
+        noVideoView.addSubview(videoOffLabel)
+        videoOffLabel.autoPinWidthToSuperview()
+        videoOffLabel.autoPinEdge(.top, to: .bottom, of: videoOffIndicatorImage, withOffset: 10)
+
         videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
-        videoView.autoPinEdgesToSuperviewEdges()
+        videoView.frame = bounds
     }
 
     required init?(coder: NSCoder) {
@@ -94,6 +107,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoView.isHidden = device.videoMuted
         videoView.captureSession = session
         noVideoView.isHidden = !videoView.isHidden
+        videoOffLabel.isHidden = !videoView.isHidden || !isFullScreen
 
         guard let localAddress = tsAccountManager.localAddress else {
             return owsFailDebug("missing local address")
