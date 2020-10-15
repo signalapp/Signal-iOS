@@ -11,7 +11,6 @@
 #import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
 #import <Curve25519Kit/Curve25519.h>
-#import <HKDFKit/HKDFKit.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -49,120 +48,6 @@ NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
 #pragma mark -
 
 @implementation RemoteAttestationAuth
-
-@end
-
-#pragma mark -
-
-@interface RemoteAttestationKeys ()
-
-@property (nonatomic) ECKeyPair *clientEphemeralKeyPair;
-@property (nonatomic) NSData *serverEphemeralPublic;
-@property (nonatomic) NSData *serverStaticPublic;
-
-@property (nonatomic) OWSAES256Key *clientKey;
-@property (nonatomic) OWSAES256Key *serverKey;
-
-@end
-
-#pragma mark -
-
-@implementation RemoteAttestationKeys
-
-- (nullable RemoteAttestationKeys *)initWithClientEphemeralKeyPair:(ECKeyPair *)clientEphemeralKeyPair
-                                             serverEphemeralPublic:(NSData *)serverEphemeralPublic
-                                                serverStaticPublic:(NSData *)serverStaticPublic
-                                                             error:(NSError **)error
-{
-    self = [super init];
-    
-    if (!clientEphemeralKeyPair) {
-        *error = RemoteAttestationErrorMakeWithReason(
-            RemoteAttestationAssertionError, @"Missing clientEphemeralKeyPair");
-        return nil;
-    }
-    if (serverEphemeralPublic.length < 1) {
-        *error = RemoteAttestationErrorMakeWithReason(
-            RemoteAttestationAssertionError, @"Invalid serverEphemeralPublic");
-        return nil;
-    }
-    if (serverStaticPublic.length < 1) {
-        *error = RemoteAttestationErrorMakeWithReason(
-            RemoteAttestationAssertionError, @"Invalid serverStaticPublic");
-        return nil;
-    }
-    _clientEphemeralKeyPair = clientEphemeralKeyPair;
-    _serverEphemeralPublic = serverEphemeralPublic;
-    _serverStaticPublic = serverStaticPublic;
-    if (![self deriveKeys]) {
-        *error = RemoteAttestationErrorMakeWithReason(
-            RemoteAttestationAssertionError, @"failed to derive keys");
-        return nil;
-    }
-    return self;
-}
-
-// Returns YES on success.
-- (BOOL)deriveKeys
-{
-    NSData *ephemeralToEphemeral;
-    NSData *ephemeralToStatic;
-    @try {
-        ephemeralToEphemeral =
-            [Curve25519 throws_generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.clientEphemeralKeyPair];
-        ephemeralToStatic =
-            [Curve25519 throws_generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.clientEphemeralKeyPair];
-    } @catch (NSException *exception) {
-        OWSFailDebug(@"could not generate shared secrets: %@", exception);
-        return NO;
-    }
-
-    NSData *masterSecret = [ephemeralToEphemeral dataByAppendingData:ephemeralToStatic];
-    NSData *publicKeys = [NSData join:@[
-        self.clientEphemeralKeyPair.publicKey,
-        self.serverEphemeralPublic,
-        self.serverStaticPublic,
-    ]];
-
-    NSData *_Nullable derivedMaterial;
-    @try {
-        derivedMaterial =
-            [HKDFKit throws_deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
-    } @catch (NSException *exception) {
-        OWSFailDebug(@"could not derive service key: %@", exception);
-        return NO;
-    }
-
-    if (!derivedMaterial) {
-        OWSFailDebug(@"missing derived service key.");
-        return NO;
-    }
-    if (derivedMaterial.length != kAES256_KeyByteLength * 2) {
-        OWSFailDebug(@"derived service key has unexpected length.");
-        return NO;
-    }
-
-    NSData *_Nullable clientKeyData =
-        [derivedMaterial subdataWithRange:NSMakeRange(kAES256_KeyByteLength * 0, kAES256_KeyByteLength)];
-    OWSAES256Key *_Nullable clientKey = [OWSAES256Key keyWithData:clientKeyData];
-    if (!clientKey) {
-        OWSFailDebug(@"clientKey has unexpected length.");
-        return NO;
-    }
-
-    NSData *_Nullable serverKeyData =
-        [derivedMaterial subdataWithRange:NSMakeRange(kAES256_KeyByteLength * 1, kAES256_KeyByteLength)];
-    OWSAES256Key *_Nullable serverKey = [OWSAES256Key keyWithData:serverKeyData];
-    if (!serverKey) {
-        OWSFailDebug(@"serverKey has unexpected length.");
-        return NO;
-    }
-
-    self.clientKey = clientKey;
-    self.serverKey = serverKey;
-
-    return YES;
-}
 
 @end
 
