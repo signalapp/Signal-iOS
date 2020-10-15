@@ -61,7 +61,7 @@ public class StickerView: NSObject {
 
         let stickerView: UIView
         switch stickerType {
-        case .webp, .apng:
+        case .webp, .apng, .gif:
             guard let stickerImage = YYImage(contentsOfFile: stickerDataUrl.path) else {
                 owsFailDebug("Sticker could not be parsed.")
                 return nil
