@@ -87,7 +87,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
                 owsFailDebug("Could not encode QR code.")
                 return
             }
-            let fileUrl = OWSFileSystem.temporaryFileUrl()
+            let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: "png")
             try imageData.write(to: fileUrl)
             AttachmentSharing.showShareUI(for: fileUrl, sender: sender)
         } catch {
