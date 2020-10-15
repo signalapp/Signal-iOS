@@ -155,7 +155,7 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     public func upload(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        return (canUseV3 && RemoteConfig.attachmentUploadV3
+        return (canUseV3
             ? uploadV3(progressBlock: progressBlock)
             : uploadV2(progressBlock: progressBlock))
     }

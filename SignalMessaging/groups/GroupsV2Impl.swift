@@ -62,7 +62,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // if we've just reset the zkgroup state, since that
             // have the same effect.
             guard !didReset,
-                RemoteConfig.versionedProfileUpdate,
                 self.tsAccountManager.isRegisteredAndReady else {
                     return
             }
@@ -123,8 +122,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
-            if RemoteConfig.versionedProfileUpdate,
-                self.tsAccountManager.isRegisteredAndReady {
+            if self.tsAccountManager.isRegisteredAndReady {
                 firstly {
                     self.reuploadLocalProfilePromise()
                 }.catch { error in
@@ -1046,10 +1044,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
 
-        guard RemoteConfig.versionedProfileFetches else {
-                return Promise(error: GroupsV2Error.gv2NotEnabled)
-        }
-
         // 1. Use known credentials, where possible.
         var credentialMap = ProfileKeyCredentialMap()
 
@@ -1141,9 +1135,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // or v2 group.  We have to create a v1 group unless we know the
     // uuid and profile key credential for all members.
     public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void> {
-        guard RemoteConfig.versionedProfileFetches else {
-            return Promise.value(())
-        }
 
         var uuidsWithoutProfileKeyCredentials = [UUID]()
         databaseStorage.read { transaction in
@@ -1323,10 +1314,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Profiles
 
     public func reuploadLocalProfilePromise() -> Promise<Void> {
-        guard RemoteConfig.versionedProfileUpdate else {
-            return Promise(error: OWSAssertionError("Versioned profiles are not enabled."))
-        }
-        return self.profileManager.reuploadLocalProfilePromise()
+        profileManager.reuploadLocalProfilePromise()
     }
 
     // MARK: - Restore Groups

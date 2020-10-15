@@ -2165,13 +2165,6 @@ public class GroupManager: NSObject {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
 
-        guard RemoteConfig.versionedProfileUpdate else {
-            // We don't need a profile key credential for the local user
-            // if we're not even going to try to create a v2 group.
-            owsFailDebug("Can't participate in v2 groups without a profile key commitment.")
-            return Promise.value(())
-        }
-
         return databaseStorage.read(.promise) { transaction -> Bool in
             return self.groupsV2.hasProfileKeyCredential(for: localAddress,
                                                          transaction: transaction)

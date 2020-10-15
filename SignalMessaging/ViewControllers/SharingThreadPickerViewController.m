@@ -314,10 +314,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (NSArray<SignalServiceAddress *> *)attachmentApprovalMentionableAddresses
 {
-    if (!RemoteConfig.mentions) {
-        return @[];
-    }
-
     if ([self.thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if (groupThread.groupModel.groupsVersion == GroupsVersionV2) {
