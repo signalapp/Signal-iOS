@@ -43,6 +43,12 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
+    public static var profilesForAll: Bool {
+        if DebugFlags.forceProfilesForAll { return true }
+        return isEnabled(.profilesForAll)
+    }
+
+    @objc
     public static var maxGroupsV2MemberCount: UInt {
         let defaultValue: UInt = 151
         guard AppReadiness.isAppReady else {
@@ -245,6 +251,7 @@ private struct Flags {
         case kbs
         case uuidSafetyNumbers
         case groupsV2InviteLinksV2
+        case profilesForAll
     }
 
     // Values defined in this array remain set once they are
