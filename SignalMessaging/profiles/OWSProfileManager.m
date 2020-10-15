@@ -1157,43 +1157,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
 
-        NSString *tempDirectory = OWSTemporaryDirectory();
-        NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
-
         NSString *profilePictureURL = userProfile.avatarUrlPath;
-        NSError *serializationError;
-        NSMutableURLRequest *request =
-            [self.avatarHTTPManager.requestSerializer requestWithMethod:@"GET"
-                                                              URLString:profilePictureURL
-                                                             parameters:nil
-                                                                  error:&serializationError];
-        if (serializationError) {
-            OWSFailDebug(@"serializationError: %@", serializationError);
-            return;
-        }
-
-        NSURLSession* session = [NSURLSession sharedSession];
-        NSURLSessionTask* downloadTask = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-            
+        [[LKFileServerAPI downloadAttachmentFrom:profilePictureURL].then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)
             {
                 [self.currentAvatarDownloads removeObject:userProfile.recipientId];
             }
-            
-            if (error) {
-                OWSLogError(@"Dowload failed: %@", error);
-                return;
-            }
-
-            NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSURL *tempFileUrl = [NSURL fileURLWithPath:tempFilePath];
-            NSError *moveError;
-            if (![fileManager moveItemAtURL:location toURL:tempFileUrl error:&moveError]) {
-                OWSLogError(@"MoveItemAtURL for avatar failed: %@", moveError);
-                return;
-            }
-            
-            NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
+            NSData *_Nullable encryptedData = data;
             NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
             UIImage *_Nullable image = nil;
             if (decryptedData) {
@@ -1213,19 +1183,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 if (latestUserProfile.avatarUrlPath.length > 0) {
                     [self downloadAvatarForUserProfile:latestUserProfile];
                 }
-            } else if (error) {
-                if ([response isKindOfClass:NSHTTPURLResponse.class]
-                    && ((NSHTTPURLResponse *)response).statusCode == 403) {
-                    OWSLogInfo(@"no avatar for: %@", userProfile.recipientId);
-                } else {
-                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.recipientId, error);
-                }
             } else if (!encryptedData) {
                 OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.recipientId);
             } else if (!decryptedData) {
                 OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.recipientId);
             } else if (!image) {
-                OWSLogError(@"avatar image for %@ could not be loaded with error: %@", userProfile.recipientId, error);
+                OWSLogError(@"avatar image for %@ could not be loaded.", userProfile.recipientId);
             } else {
                 [self updateProfileAvatarCache:image filename:fileName];
 
@@ -1248,9 +1211,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
             OWSAssertDebug(backgroundTask);
             backgroundTask = nil;
-        }];
-
-        [downloadTask resume];
+        }) retainUntilComplete];
     });
 }
 
