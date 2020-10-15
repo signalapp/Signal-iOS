@@ -853,6 +853,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
 
+    OWSLogWarn(@"Send to recipient failed: %@ (isRetryable: %d)", error, error.isRetryable);
+
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
                                                 TSOutgoingMessageRecipientState *_Nullable recipientState

@@ -284,7 +284,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 - (void)didFailWithError:(NSError *)error
 {
-    OWSLogError(@"failed with error: %@", error);
+    OWSLogError(@"Failed with error: %@ (isRetryable: %d)", error, error.isRetryable);
     self.failureHandler(error);
 }
 
