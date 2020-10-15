@@ -112,7 +112,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 @property (nonatomic) OWSTableCustomCellBlock customCellBlock;
 @property (nonatomic) UITableViewCell *customCell;
-@property (nonatomic) NSNumber *customRowHeight;
 
 @end
 
@@ -165,17 +164,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 }
 
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
-                          customRowHeight:(CGFloat)customRowHeight
-                              actionBlock:(nullable OWSTableActionBlock)actionBlock
-{
-    OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
-
-    OWSTableItem *item = [self itemWithCustomCellBlock:customCellBlock actionBlock:actionBlock];
-    item.customRowHeight = @(customRowHeight);
-    return item;
-}
-
-+ (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                               actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     OWSAssertDebug(customCellBlock);
@@ -183,6 +171,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = customCellBlock;
+    item.customRowHeight = @(UITableViewAutomaticDimension);
     return item;
 }
 
@@ -293,6 +282,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.accessibilityIdentifier = accessibilityIdentifier;
         return cell;
     };
+    item.customRowHeight = @(UITableViewAutomaticDimension);
     return item;
 }
 
@@ -543,6 +533,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         return cell;
     };
+    item.customRowHeight = @(UITableViewAutomaticDimension);
     return item;
 }
 
@@ -727,7 +718,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OWSTableItem *item = [self itemForIndexPath:indexPath];
-    if (item.customRowHeight) {
+    if (item.customRowHeight != nil) {
         return [item.customRowHeight floatValue];
     }
     return kOWSTable_DefaultCellHeight;

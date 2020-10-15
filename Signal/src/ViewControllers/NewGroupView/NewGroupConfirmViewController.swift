@@ -186,8 +186,7 @@ public class NewGroupConfirmViewController: OWSViewController {
                         cell.configure(withRecipientAddress: address)
 
                         return cell
-                },
-                    customRowHeight: UITableView.automaticDimension))
+                }))
             }
         } else {
             section.add(OWSTableItem.softCenterLabel(withText: NSLocalizedString("GROUP_MEMBERS_NO_OTHER_MEMBERS",
@@ -440,8 +439,7 @@ class NewLegacyGroupView: UIView {
                     cell.selectionStyle = .none
                     cell.configure(withRecipientAddress: address)
                     return cell
-            },
-                customRowHeight: UITableView.automaticDimension))
+            }))
         }
         let contents = OWSTableContents()
         contents.addSection(section)

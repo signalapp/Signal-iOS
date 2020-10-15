@@ -59,7 +59,8 @@ final class HelpViewController: OWSTableViewController {
                     cell.accessoryType = .disclosureIndicator
                     cell.textLabel?.text = supportCenterLabel
                     return cell
-                }, customRowHeight: UITableView.automaticDimension, actionBlock: {
+                },
+                             actionBlock: {
                     UIApplication.shared.open(SupportConstants.supportURL, options: [:])
                 }),
 
@@ -68,7 +69,8 @@ final class HelpViewController: OWSTableViewController {
                     cell.accessoryType = .disclosureIndicator
                     cell.textLabel?.text = contactLabel
                     return cell
-                }, customRowHeight: UITableView.automaticDimension, actionBlock: {
+                },
+                             actionBlock: {
                     guard ComposeSupportEmailOperation.canSendEmails else {
                         let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
                                                                   message: localizedSheetMessage)

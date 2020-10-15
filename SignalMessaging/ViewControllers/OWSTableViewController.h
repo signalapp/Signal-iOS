@@ -69,6 +69,7 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @property (nonatomic, weak) UIViewController *tableViewController;
 @property (nonatomic, nullable) OWSTableItemEditAction *deleteAction;
+@property (nonatomic, nullable) NSNumber *customRowHeight;
 
 + (UITableViewCell *)newCell;
 + (void)configureCell:(UITableViewCell *)cell;
@@ -79,10 +80,6 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 + (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
                      customRowHeight:(CGFloat)customRowHeight
                          actionBlock:(nullable OWSTableActionBlock)actionBlock;
-
-+ (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
-                          customRowHeight:(CGFloat)customRowHeight
-                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                               actionBlock:(nullable OWSTableActionBlock)actionBlock;
@@ -172,7 +169,6 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
                             selector:(SEL)selector;
 
 - (nullable UITableViewCell *)customCell;
-- (NSNumber *)customRowHeight;
 
 @end
 

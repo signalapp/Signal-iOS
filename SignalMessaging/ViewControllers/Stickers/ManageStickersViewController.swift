@@ -184,7 +184,6 @@ public class ManageStickersViewController: OWSTableViewController {
                 }
                 return self.buildTableCell(installedStickerPack: dataSource)
                 },
-                                     customRowHeight: UITableView.automaticDimension,
                                      actionBlock: { [weak self] in
                                         guard let packInfo = dataSource.info else {
                                             owsFailDebug("Source missing info.")
@@ -202,7 +201,6 @@ public class ManageStickersViewController: OWSTableViewController {
                 }
                 return self.buildTableCell(availableStickerPack: dataSource)
                 },
-                         customRowHeight: UITableView.automaticDimension,
                          actionBlock: { [weak self] in
                             guard let packInfo = dataSource.info else {
                                 owsFailDebug("Source missing info.")
@@ -405,8 +403,7 @@ public class ManageStickersViewController: OWSTableViewController {
                 return UITableViewCell()
             }
             return self.buildEmptySectionCell(labelText: labelText)
-            },
-                                          customRowHeight: UITableView.automaticDimension)
+            })
     }
 
     private func buildEmptySectionCell(labelText: String) -> UITableViewCell {

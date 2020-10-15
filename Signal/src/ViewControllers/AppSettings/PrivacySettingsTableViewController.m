@@ -385,7 +385,6 @@ NS_ASSUME_NONNULL_BEGIN
 
                         return cell;
                     }
-                            customRowHeight:UITableViewAutomaticDimension
                                 actionBlock:nil]];
 
     NSMutableAttributedString *unidentifiedDeliveryFooterText = [[NSMutableAttributedString alloc]
