@@ -77,9 +77,6 @@ class MessageRequestView: UIStackView {
             databaseStorage.uiRead { transaction in
         hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
             }
-        // We expect this flow to never be hit when hasSentMessages
-        // would be false unless the thread has been blocked.
-        assert(!hasSentMessages || isThreadBlocked)
 
             addArrangedSubview(prepareMessageRequestPrompt(hasSentMessages: hasSentMessages,
         isThreadBlocked: isThreadBlocked))
@@ -106,9 +103,10 @@ class MessageRequestView: UIStackView {
     // * Contact threads
     // * v1 groups
     // * v2 groups if user does not have a pending invite.
-    func prepareMessageRequestPrompt(hasSentMessages: Bool, isThreadBlocked: Bool) -> UILabel {
+    func prepareMessageRequestPrompt(hasSentMessages: Bool, isThreadBlocked: Bool) -> UITextView {
         if thread.isGroupThread {
             let string: String
+            var appendLearnMoreLink = false
             if thread.isGroupV1Thread {
                 if isThreadBlocked {
                     string = NSLocalizedString(
@@ -120,6 +118,7 @@ class MessageRequestView: UIStackView {
                         "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT",
                         comment: "A prompt notifying that the user must share their profile with this group."
                     )
+                    appendLearnMoreLink = true
                 } else {
                     string = NSLocalizedString(
                         "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
@@ -142,12 +141,16 @@ class MessageRequestView: UIStackView {
                 }
             }
 
-            return prepareLabel(attributedString: NSAttributedString(string: string, attributes: [
-                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
-                .foregroundColor: Theme.secondaryTextAndIconColor
-            ]))
+            return prepareTextView(
+                attributedString: NSAttributedString(string: string, attributes: [
+                    .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                    .foregroundColor: Theme.secondaryTextAndIconColor
+                ]),
+                appendLearnMoreLink: appendLearnMoreLink
+            )
         } else if let thread = thread as? TSContactThread {
             let formatString: String
+            var appendLearnMoreLink = false
 
             if isThreadBlocked {
                 formatString = NSLocalizedString(
@@ -159,6 +162,7 @@ class MessageRequestView: UIStackView {
                     "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}."
                 )
+                appendLearnMoreLink = true
             } else {
                 formatString = NSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT",
@@ -170,10 +174,14 @@ class MessageRequestView: UIStackView {
                 return self.contactsManager.shortDisplayName(for: thread.contactAddress, transaction: transaction)
             }
 
-            return preparePromptLabel(formatString: formatString, embeddedString: shortName)
+            return preparePromptTextView(
+                formatString: formatString,
+                embeddedString: shortName,
+                appendLearnMoreLink: appendLearnMoreLink
+            )
         } else {
             owsFailDebug("unexpected thread type")
-            return UILabel()
+            return UITextView()
         }
     }
 
@@ -200,17 +208,23 @@ class MessageRequestView: UIStackView {
                 }]
         } else if hasSentMessages {
             buttons = [
-                prepareButton(title: CommonStrings.learnMore,
-                              titleColor: Theme.secondaryTextAndIconColor) { [weak self] in
-                                self?.delegate?.messageRequestViewDidTapLearnMore()
+                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_BLOCK_BUTTON",
+                                                       comment: "A button used to block a user on an incoming message request."),
+                              titleColor: .ows_accentRed) { [weak self] in
+                                self?.delegate?.messageRequestViewDidTapBlock(mode: mode)
                 },
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON",
-                                                       comment: "A button used to share your profile with an existing thread."),
+                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_DELETE_BUTTON",
+                                                       comment: "incoming message request button text which deletes a conversation"),
+                              titleColor: .ows_accentRed) { [weak self] in
+                                self?.delegate?.messageRequestViewDidTapDelete()
+                },
+                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON",
+                                                       comment: "A button used to continue a conversation and share your profile."),
                               titleColor: Theme.accentBlueColor) { [weak self] in
-                                // This is the same action as accepting the message request, but displays
-                                // with slightly different visuals if the user has already been messaging
-                                // this user in the past but didn't share their profile.
-                                self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
+                    // This is the same action as accepting the message request, but displays
+                    // with slightly different visuals if the user has already been messaging
+                    // this user in the past but didn't share their profile.
+                    self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
                 }]
         } else {
             buttons = [
@@ -236,16 +250,19 @@ class MessageRequestView: UIStackView {
 
     // MARK: - Group V2 Invites
 
-    func prepareGroupV2InvitePrompt() -> UILabel {
+    func prepareGroupV2InvitePrompt() -> UITextView {
         let string = NSLocalizedString(
             "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
             comment: "A prompt asking if the user wants to accept a group invite."
         )
 
-        return prepareLabel(attributedString: NSAttributedString(string: string, attributes: [
-            .font: UIFont.ows_dynamicTypeSubheadlineClamped,
-            .foregroundColor: Theme.secondaryTextAndIconColor
-        ]))
+        return prepareTextView(
+            attributedString: NSAttributedString(string: string, attributes: [
+                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                .foregroundColor: Theme.secondaryTextAndIconColor
+            ]),
+            appendLearnMoreLink: false
+        )
     }
 
     func prepareGroupV2InviteButtons() -> UIStackView {
@@ -281,7 +298,7 @@ class MessageRequestView: UIStackView {
         return flatButton
     }
 
-    private func preparePromptLabel(formatString: String, embeddedString: String) -> UILabel {
+    private func preparePromptTextView(formatString: String, embeddedString: String, appendLearnMoreLink: Bool) -> UITextView {
         // Get the range of the formatter marker to calculate the start of the bold area
         var boldRange = (formatString as NSString).range(of: "%@")
 
@@ -298,15 +315,33 @@ class MessageRequestView: UIStackView {
             ]
         )
         attributedString.addAttributes([.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold], range: boldRange)
-        return prepareLabel(attributedString: attributedString)
+        return prepareTextView(attributedString: attributedString, appendLearnMoreLink: appendLearnMoreLink)
     }
 
-    private func prepareLabel(attributedString: NSAttributedString) -> UILabel {
-        let label = UILabel()
-        label.attributedText = attributedString
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        return label
+    private func prepareTextView(attributedString: NSAttributedString, appendLearnMoreLink: Bool) -> UITextView {
+        let textView = UITextView()
+        textView.isOpaque = false
+        textView.isEditable = false
+        textView.contentInset = .zero
+        textView.textContainer.lineFragmentPadding = 0
+        textView.isScrollEnabled = false
+
+        if appendLearnMoreLink {
+            textView.attributedText = .composed(of: [
+                attributedString,
+                " ",
+                CommonStrings.learnMore.styled(
+                    with: .link(URL(string: "https://support.signal.org/hc/articles/360007459591")!),
+                    .font(.ows_dynamicTypeSubheadlineClamped),
+                    .underline([], nil),
+                    .color(Theme.accentBlueColor)
+                )
+            ])
+        } else {
+            textView.attributedText = attributedString
+        }
+
+        return textView
     }
 
     private func prepareButtonStack(_ buttons: [UIView]) -> UIStackView {

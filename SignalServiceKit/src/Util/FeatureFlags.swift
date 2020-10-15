@@ -404,6 +404,9 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let allowV1GroupsUpdates = build.includes(.qa)
 
+    @objc
+    public static let forceProfilesForAll = build.includes(.beta)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)
