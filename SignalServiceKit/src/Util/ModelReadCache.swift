@@ -211,7 +211,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                 if readFromCache(cacheKey: cacheKey)?.value == nil {
                     let cacheKeyForValue = adapter.cacheKey(forValue: value)
                     let canUseCacheForValue = canUseCache(cacheKey: cacheKey, transaction: transaction)
-                    owsFailDebug("Missing value in cache: \(cacheKey.key), cacheKeyForValue: \(cacheKeyForValue), canUseCacheForValue: \(canUseCacheForValue), \(logName)")
+                    Logger.verbose("Missing value in cache: \(cacheKey.key), cacheKeyForValue: \(cacheKeyForValue), canUseCacheForValue: \(canUseCacheForValue), \(logName)")
                 }
             }
             #endif
