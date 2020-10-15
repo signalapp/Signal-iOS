@@ -90,11 +90,12 @@ public final class SharedSenderKeysImplementation : NSObject {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    private func stepRatchet(for groupPublicKey: String, senderPublicKey: String, until targetKeyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction) throws -> ClosedGroupRatchet {
+    private func stepRatchet(for groupPublicKey: String, senderPublicKey: String, until targetKeyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction, isRetry: Bool = false) throws -> ClosedGroupRatchet {
         #if DEBUG
         assert(!Thread.isMainThread)
         #endif
-        guard let ratchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey) else {
+        let collection: Storage.ClosedGroupRatchetCollectionType = (isRetry) ? .old : .current
+        guard let ratchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: collection) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
             print("[Loki] \(error.errorDescription!)")
             throw error
@@ -122,7 +123,8 @@ public final class SharedSenderKeysImplementation : NSObject {
                 }
             }
             let result = ClosedGroupRatchet(chainKey: current.chainKey, keyIndex: current.keyIndex, messageKeys: messageKeys) // Includes any skipped message keys
-            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, using: transaction)
+            let collection: Storage.ClosedGroupRatchetCollectionType = (isRetry) ? .old : .current
+            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, in: collection, using: transaction)
             return result
         }
     }
@@ -161,17 +163,21 @@ public final class SharedSenderKeysImplementation : NSObject {
         return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction)
     }
 
-    public func decrypt(_ ivAndCiphertext: Data, for groupPublicKey: String, senderPublicKey: String, keyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction) throws -> Data {
+    public func decrypt(_ ivAndCiphertext: Data, for groupPublicKey: String, senderPublicKey: String, keyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction, isRetry: Bool = false) throws -> Data {
         let ratchet: ClosedGroupRatchet
         do {
-            ratchet = try stepRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, until: keyIndex, using: transaction)
+            ratchet = try stepRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, until: keyIndex, using: transaction, isRetry: isRetry)
         } catch {
-            // FIXME: It'd be cleaner to handle this in OWSMessageDecrypter (where all the other decryption errors are handled), but this was a lot more
-            // convenient because there's an easy way to get the sender public key from here.
-            if case RatchetingError.loadingFailed(_, _) = error {
-                ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+            if !isRetry {
+                return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction, isRetry: true)
+            } else {
+                // FIXME: It'd be cleaner to handle this in OWSMessageDecrypter (where all the other decryption errors are handled), but this was a lot more
+                // convenient because there's an easy way to get the sender public key from here.
+                if case RatchetingError.loadingFailed(_, _) = error {
+                    ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+                }
+                throw error
             }
-            throw error
         }
         let iv = ivAndCiphertext[0..<Int(SharedSenderKeysImplementation.ivSize)]
         let ciphertext = ivAndCiphertext[Int(SharedSenderKeysImplementation.ivSize)...]
@@ -183,8 +189,12 @@ public final class SharedSenderKeysImplementation : NSObject {
         do {
             return Data(try aes.decrypt(ciphertext.bytes))
         } catch {
-            ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
-            throw error
+            if !isRetry {
+                return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction, isRetry: true)
+            } else {
+                ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+                throw error
+            }
         }
     }
 
