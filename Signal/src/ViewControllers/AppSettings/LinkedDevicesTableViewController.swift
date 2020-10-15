@@ -202,7 +202,7 @@ class LinkedDevicesTableViewController: OWSTableViewController {
                     OWSTableItem.configureCell(cell)
                     cell.configure(with: device)
                     return cell
-                }, customRowHeight: UITableView.automaticDimension)
+                })
                 let deleteTitle = NSLocalizedString("UNLINK_ACTION",
                                                     comment: "button title for unlinking a device")
                 item.deleteAction = OWSTableItemEditAction(title: deleteTitle) { [weak self] in
@@ -224,8 +224,7 @@ class LinkedDevicesTableViewController: OWSTableViewController {
             cell.accessoryType = .disclosureIndicator
             cell.accessibilityIdentifier = "add_new_linked_device"
             return cell
-        },
-                                          customRowHeight: UITableView.automaticDimension) { [weak self] in
+        }) { [weak self] in
                 self?.getCameraPermissionsThenShowLinkNewDeviceView()
 
             })

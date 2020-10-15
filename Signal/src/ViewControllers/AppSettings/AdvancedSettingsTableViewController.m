@@ -453,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
                                            color:(UIColor *)color
 {
     __weak AdvancedSettingsTableViewController *weakSelf = self;
-    return [OWSTableItem
+    OWSTableItem *item = [OWSTableItem
         itemWithCustomCellBlock:^{
             UITableViewCell *cell = [OWSTableItem newCell];
             cell.preservesSuperviewLayoutMargins = YES;
@@ -476,8 +476,9 @@ NS_ASSUME_NONNULL_BEGIN
 
             return cell;
         }
-                customRowHeight:90.f
                     actionBlock:nil];
+    item.customRowHeight = @(90.f);
+    return item;
 }
 
 @end

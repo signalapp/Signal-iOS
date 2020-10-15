@@ -274,7 +274,6 @@ extension ConversationSettingsViewController {
 
             return cell
             },
-                                 customRowHeight: UITableView.automaticDimension,
                                  actionBlock: nil))
 
         if disappearingMessagesConfiguration.isEnabled {
@@ -322,7 +321,6 @@ extension ConversationSettingsViewController {
 
                 return cell
                 },
-                                     customRowHeight: UITableView.automaticDimension,
                                      actionBlock: nil))
         }
 
@@ -370,7 +368,6 @@ extension ConversationSettingsViewController {
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "notifications")
             return cell
             },
-                                 customRowHeight: UITableView.automaticDimension,
                                  actionBlock: { [weak self] in
                                     self?.showSoundSettingsView()
         }))
@@ -417,7 +414,6 @@ extension ConversationSettingsViewController {
 
             return cell
             },
-                                 customRowHeight: UITableView.automaticDimension,
                                  actionBlock: { [weak self] in
                                     self?.showMuteUnmuteActionSheet()
         }))
@@ -438,7 +434,6 @@ extension ConversationSettingsViewController {
 
                 return cell
                 },
-                                     customRowHeight: UITableView.automaticDimension,
                                      actionBlock: { [weak self] in
                                         self?.showMentionNotificationModeActionSheet()
             }))
@@ -633,8 +628,7 @@ extension ConversationSettingsViewController {
                 contentRow.autoPinEdgesToSuperviewMargins()
 
                 return cell
-                },
-                                     customRowHeight: UITableView.automaticDimension) { [weak self] in
+                }) { [weak self] in
                                         self?.showAddMembersView()
             })
         }
@@ -735,8 +729,7 @@ extension ConversationSettingsViewController {
                 cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: cellName)
 
                 return cell
-                },
-                                     customRowHeight: UITableView.automaticDimension) { [weak self] in
+                }) { [weak self] in
                                         self?.didSelectGroupMember(memberAddress)
             })
         }
@@ -770,8 +763,7 @@ extension ConversationSettingsViewController {
                 contentRow.autoPinEdgesToSuperviewMargins()
 
                 return cell
-                },
-                                     customRowHeight: UITableView.automaticDimension) { [weak self] in
+                }) { [weak self] in
                                         self?.showAllGroupMembers()
             })
         }
@@ -794,7 +786,7 @@ extension ConversationSettingsViewController {
         section.add(OWSTableItem.disclosureItem(icon: .settingsViewRequestAndInvites,
                                                 name: itemTitle,
                                                 accessibilityIdentifier: "conversation_settings_requests_and_invites",
-                                                actionBlock: {  [weak self] in
+                                                actionBlock: { [weak self] in
                                                     self?.showMemberRequestsAndInvitesView()
         }))
 
@@ -807,7 +799,7 @@ extension ConversationSettingsViewController {
                                                                             comment: "Label for 'group link' action in conversation settings view."),
                                                     accessoryText: groupLinkStatus,
                                                     accessibilityIdentifier: "conversation_settings_group_link",
-                                                    actionBlock: {  [weak self] in
+                                                    actionBlock: { [weak self] in
                                                         self?.showGroupLinkView()
             }))
         }

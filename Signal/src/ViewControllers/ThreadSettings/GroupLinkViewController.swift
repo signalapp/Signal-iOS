@@ -105,8 +105,7 @@ public class GroupLinkViewController: OWSTableViewController {
                 cell.accessibilityIdentifier = "group_link_view_enable_group_link"
 
                 return cell
-            },
-                                     customRowHeight: UITableView.automaticDimension))
+            }))
 
             if groupModelV2.isGroupInviteLinkEnabled {
                 section.add(OWSTableItem.actionItem(icon: ThemeIcon.messageActionShare,

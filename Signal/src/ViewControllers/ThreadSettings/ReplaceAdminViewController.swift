@@ -62,7 +62,6 @@ class ReplaceAdminViewController: OWSTableViewController {
 
                 return cell
                 },
-                                     customRowHeight: UITableView.automaticDimension,
                                      actionBlock: { [weak self] in
                                         self?.candidateWasSelected(candidate: address)
                 }

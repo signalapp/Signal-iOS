@@ -245,7 +245,7 @@ extension ContactSupportViewController {
                     self.descriptionField.autoPinEdgesToSuperviewMargins()
                     self.descriptionField.autoSetDimension(.height, toSize: 125, relation: .greaterThanOrEqual)
                     return cell
-                }, customRowHeight: UITableView.automaticDimension),
+                }),
 
                 // Debug log switch
                 OWSTableItem(customCell: createDebugLogCell(), customRowHeight: UITableView.automaticDimension),
@@ -259,7 +259,8 @@ extension ContactSupportViewController {
                     cell.textLabel?.text = faqPromptText
                     cell.textLabel?.textColor = Theme.accentBlueColor
                     return cell
-                }, customRowHeight: UITableView.automaticDimension, actionBlock: {
+                },
+                   actionBlock: {
                     UIApplication.shared.open(SupportConstants.supportURL, options: [:])
                 })
             ]),

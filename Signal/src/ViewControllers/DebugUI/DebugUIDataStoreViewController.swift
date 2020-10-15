@@ -41,18 +41,19 @@ class DebugUIReportsViewController: OWSTableViewController {
         )
 
         if let report = self.currentReport {
-            contents.addSection(
-                OWSTableSection(title: "Report: \(report.title)", items: [
-                    OWSTableItem(customCellBlock: { () -> UITableViewCell in
-                        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-                        let textView = UITextView()
-                        textView.text = report.text
-                        cell.contentView.addSubview(textView)
-                        textView.autoPinEdgesToSuperviewEdges()
+            let item = OWSTableItem(customCellBlock: { () -> UITableViewCell in
+                    let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+                    let textView = UITextView()
+                    textView.text = report.text
+                    cell.contentView.addSubview(textView)
+                    textView.autoPinEdgesToSuperviewEdges()
 
-                        return cell
-                    }, customRowHeight: 400)
-                ])
+                    return cell
+                })
+            item.customRowHeight = NSNumber(value: 400)
+
+            contents.addSection(
+                OWSTableSection(title: "Report: \(report.title)", items: [ item ])
             )
         }
 

@@ -198,7 +198,6 @@ extension RecipientPickerViewController {
 
                     return cell
                 },
-                customRowHeight: UITableView.automaticDimension,
                 actionBlock: { [weak self] in
                     self?.tryToSelectRecipient(recipient)
                 }
@@ -221,7 +220,6 @@ extension RecipientPickerViewController {
 
                     return cell
                 },
-                customRowHeight: UITableView.automaticDimension,
                 actionBlock: { [weak self] in
                     self?.tryToSelectRecipient(recipient)
                 }

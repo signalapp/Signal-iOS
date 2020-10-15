@@ -255,7 +255,6 @@ NS_ASSUME_NONNULL_BEGIN
 
                             return cell;
                         }
-                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             typeof(self) strongSelf = weakSelf;
                             if (!strongSelf) {
@@ -304,7 +303,6 @@ NS_ASSUME_NONNULL_BEGIN
                             [cell configureWithRecipientAddress:signalAccount.recipientAddress];
                             return cell;
                         }
-                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf signalAccountWasSelected:signalAccount];
                         }]];

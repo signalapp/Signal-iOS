@@ -1589,7 +1589,7 @@ typedef struct {
 
     cellSize = CGSizeCeil(cellSize);
 
-    OWSAssertDebug(cellSize.width <= self.conversationStyle.maxMessageWidth);
+    //    OWSAssertDebug(cellSize.width <= self.conversationStyle.maxMessageWidth);
     cellSize.width = MIN(cellSize.width, self.conversationStyle.maxMessageWidth);
 
     OWSMessageBubbleViewMeasurement measurement;
