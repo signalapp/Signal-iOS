@@ -133,7 +133,7 @@ extension MessageSender {
                                       ignoreErrors: Bool) -> [Promise<Void>] {
         let recipient: SignalRecipient = messageSend.recipient
         let recipientAddress = recipient.address
-        var deviceIds = messageSend.deviceids.map { $0.uint32Value }
+        var deviceIds = messageSend.deviceIds.map { $0.uint32Value }
         if messageSend.isLocalAddress {
             let localDeviceId = tsAccountManager.storedDeviceId()
             deviceIds = deviceIds.filter { $0 != localDeviceId }

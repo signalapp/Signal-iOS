@@ -1274,7 +1274,7 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(messageSend.recipient);
 
     SignalRecipient *recipient = messageSend.recipient;
-    NSMutableArray<NSNumber *> *deviceIds = [messageSend.deviceids mutableCopy];
+    NSMutableArray<NSNumber *> *deviceIds = [messageSend.deviceIds mutableCopy];
     OWSAssertDebug(deviceIds);
 
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:deviceIds.count];

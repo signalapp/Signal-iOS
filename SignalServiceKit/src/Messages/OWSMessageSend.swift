@@ -22,7 +22,7 @@ public class OWSMessageSend: NSObject {
     public let recipient: SignalRecipient
 
     @objc
-    public var deviceids: [NSNumber] {
+    public var deviceIds: [NSNumber] {
         get {
             recipient.devices.compactMap { value in
                 guard let deviceId = value as? NSNumber else {
