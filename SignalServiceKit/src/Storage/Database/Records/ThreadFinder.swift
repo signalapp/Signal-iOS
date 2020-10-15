@@ -236,6 +236,8 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
 
     @objc
     public class func isPreMessageRequestsThread(_ thread: TSThread, transaction: GRDBReadTransaction) -> Bool {
+        guard !RemoteConfig.profilesForAll else { return false }
+
         // Grandfather legacy threads where you haven't shared your profile.
         guard !thread.isNoteToSelf else { return false }
 
