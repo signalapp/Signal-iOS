@@ -4,7 +4,7 @@
 
 import Foundation
 import PromiseKit
-import Argon2
+import SignalArgon2
 
 @objc(OWSKeyBackupService)
 public class KeyBackupService: NSObject {
