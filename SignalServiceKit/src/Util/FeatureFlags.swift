@@ -179,9 +179,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let deviceTransferThrowAway = false
 
-    // Don't consult this flags; consult RemoteConfig.mentions.
-    static let mentionsSupported = groupsV2Supported
-
     @objc
     public static let attachmentUploadV3ForV1GroupAvatars = false
 
@@ -364,9 +361,6 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     @objc
-    public static let groupsV2ForceInviteLinks = build.includes(.qa)
-
-    @objc
     public static let isMessageProcessingVerbose = false
 
     // Currently this flag is only honored by TSNetworkManager,
@@ -398,16 +392,8 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
 
-    // We currently want to force-enable versioned profiles for
-    // all beta users, but not production.
-    static let forceVersionedProfiles = build.includes(.beta)
-
     @objc
     public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
-
-    static let forceMentions = build.includes(.beta)
-
-    static let forceAttachmentUploadV3 = build.includes(.beta)
 
     @objc
     public static let messageDetailsExtraInfo = build.includes(.qa)

@@ -31,8 +31,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var groupsV2InviteLinks: Bool {
-        if DebugFlags.groupsV2ForceInviteLinks { return true }
-        return isEnabled(.groupsV2InviteLinksV2)
+        true
     }
 
     private static let forceDisableUuidSafetyNumbers = true
@@ -41,18 +40,6 @@ public class RemoteConfig: BaseFlags {
     public static var uuidSafetyNumbers: Bool {
         guard !forceDisableUuidSafetyNumbers else { return false }
         return isEnabled(.uuidSafetyNumbers)
-    }
-
-    @objc
-    public static var versionedProfileFetches: Bool {
-        if DebugFlags.forceVersionedProfiles { return true }
-        return isEnabled(.versionedProfiles)
-    }
-
-    @objc
-    public static var versionedProfileUpdate: Bool {
-        if DebugFlags.forceVersionedProfiles { return true }
-        return isEnabled(.versionedProfiles)
     }
 
     @objc
@@ -77,21 +64,8 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var mentions: Bool {
-        guard FeatureFlags.mentionsSupported else { return false }
-        if DebugFlags.forceMentions { return true }
-        return isEnabled(.mentions)
-    }
-
-    @objc
     public static var usernames: Bool {
         FeatureFlags.usernamesSupported
-    }
-
-    @objc
-    public static var attachmentUploadV3: Bool {
-        if DebugFlags.forceAttachmentUploadV3 { return true }
-        return isEnabled(.attachmentUploadV3v1)
     }
 
     @objc
@@ -259,7 +233,6 @@ private struct Flags {
     // Values defined in this array remain forever true once they are
     // marked true regardless of the remote state.
     enum StickyIsEnabledFlags: String, FlagType {
-        case versionedProfiles
         case uuidSafetyNumbers
     }
 
@@ -270,10 +243,7 @@ private struct Flags {
     // to production.
     enum SupportedIsEnabledFlags: String, FlagType {
         case kbs
-        case versionedProfiles
-        case mentions
         case uuidSafetyNumbers
-        case attachmentUploadV3v1
         case groupsV2InviteLinksV2
     }
 
