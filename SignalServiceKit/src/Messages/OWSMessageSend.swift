@@ -23,15 +23,12 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public var deviceIds: [NSNumber] {
-        get {
-            recipient.devices.compactMap { value in
-                guard let deviceId = value as? NSNumber else {
-                    owsFailDebug("Invalid device id: \(value)")
-                    return nil
-                }
-                return deviceId
+        recipient.devices.compactMap { value in
+            guard let deviceId = value as? NSNumber else {
+                owsFailDebug("Invalid device id: \(value)")
+                return nil
             }
-
+            return deviceId
         }
     }
 

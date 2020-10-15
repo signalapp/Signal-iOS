@@ -129,7 +129,7 @@ extension MessageSender {
         return promise
     }
 
-    public class func ensureSessions(forMessageSend messageSend: OWSMessageSend,
+    private class func ensureSessions(forMessageSend messageSend: OWSMessageSend,
                                       ignoreErrors: Bool) -> [Promise<Void>] {
         let recipient: SignalRecipient = messageSend.recipient
         let recipientAddress = recipient.address
