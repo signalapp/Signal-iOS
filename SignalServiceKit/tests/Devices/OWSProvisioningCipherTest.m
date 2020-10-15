@@ -5,7 +5,7 @@
 #import "SSKBaseTestObjC.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
-#import <SignalServiceKit/OWSProvisioningCipher.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface OWSProvisioningCipher(Testing)
 
