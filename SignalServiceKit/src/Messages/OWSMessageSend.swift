@@ -21,14 +21,18 @@ public class OWSMessageSend: NSObject {
     @objc
     public let recipient: SignalRecipient
 
-    private var _deviceIds = AtomicArray<NSNumber>()
     @objc
-    public var deviceIds: [NSNumber] {
-        get { return _deviceIds.get() }
-    }
-    @objc
-    public func removeDeviceId(_ deviceId: NSNumber) {
-        _deviceIds.remove(deviceId)
+    public var deviceids: [NSNumber] {
+        get {
+            recipient.devices.compactMap { value in
+                guard let deviceId = value as? NSNumber else {
+                    owsFailDebug("Invalid device id: \(value)")
+                    return nil
+                }
+                return deviceId
+            }
+
+        }
     }
 
     private static let kMaxRetriesPerRecipient: Int = 3
@@ -103,11 +107,6 @@ public class OWSMessageSend: NSObject {
         super.init()
 
         self.udSendingAccess = udSendingAccess
-        if let deviceIds = recipient.devices.array as? [NSNumber] {
-            _deviceIds.set(deviceIds)
-        } else {
-            owsFailDebug("Invalid deviceIds.")
-        }
     }
 
     @objc

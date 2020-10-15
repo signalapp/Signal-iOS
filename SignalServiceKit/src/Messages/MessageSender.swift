@@ -54,7 +54,7 @@ public extension MessageSender {
         return SSKEnvironment.shared.udManager
     }
 
-    fileprivate var deviceManager: OWSDeviceManager {
+    fileprivate static var deviceManager: OWSDeviceManager {
         return OWSDeviceManager.shared()
     }
 
@@ -100,7 +100,7 @@ public extension MessageSender {
 
 // MARK: -
 
-fileprivate extension MessageSender {
+extension MessageSender {
 
     private struct SessionStates {
         let deviceAlreadyHasSession = AtomicUInt(0)
@@ -129,11 +129,11 @@ fileprivate extension MessageSender {
         return promise
     }
 
-    private class func ensureSessions(forMessageSend messageSend: OWSMessageSend,
+    public class func ensureSessions(forMessageSend messageSend: OWSMessageSend,
                                       ignoreErrors: Bool) -> [Promise<Void>] {
         let recipient: SignalRecipient = messageSend.recipient
         let recipientAddress = recipient.address
-        var deviceIds = messageSend.deviceIds.map { $0.uint32Value }
+        var deviceIds = messageSend.deviceids.map { $0.uint32Value }
         if messageSend.isLocalAddress {
             let localDeviceId = tsAccountManager.storedDeviceId()
             deviceIds = deviceIds.filter { $0 != localDeviceId }
@@ -186,11 +186,11 @@ fileprivate extension MessageSender {
                 switch error {
                 case MessageSenderError.missingDevice:
                     self.databaseStorage.write { transaction in
-                        recipient.updateRegisteredRecipientWithDevices(toAdd: nil,
-                                                                       devicesToRemove: [NSNumber(value: deviceId)],
-                                                                       transaction: transaction)
+                        MessageSender.updateDevices(messageSend: messageSend,
+                                                    devicesToAdd: [],
+                                                    devicesToRemove: [NSNumber(value: deviceId)],
+                                                    transaction: transaction)
                     }
-                    messageSend.removeDeviceId(NSNumber(value: deviceId))
                 default:
                     break
                 }
@@ -854,7 +854,7 @@ public extension MessageSender {
             // to avoid unnecessary message sends for sync messages until we learn
             // of a linked device (e.g. through the device linking UI or by receiving
             // a sync message, etc.).
-            deviceManager.clearMayHaveLinkedDevices()
+            Self.deviceManager.clearMayHaveLinkedDevices()
         }
 
         Self.databaseStorage.write { transaction in
@@ -901,7 +901,7 @@ public extension MessageSender {
         let recipient: SignalRecipient = messageSend.recipient
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.info("Failed to send message: \(type(of: message)), recipient: \(recipient.address), timestamp: \(message.timestamp), to recipient: \(recipient.address)")
+        Logger.info("Failed to send message: \(type(of: message)), recipient: \(recipient.address), timestamp: \(message.timestamp), to recipient: \(recipient.address), statusCode: \(statusCode), error: \(responseError)")
 
         let retrySend = {
             if messageSend.remainingAttempts <= 0 {
@@ -941,7 +941,7 @@ public extension MessageSender {
                 return
             }
 
-            handleMismatchedDevices(response, recipient: recipient)
+            handleMismatchedDevices(response, messageSend: messageSend)
 
             if messageSend.isLocalAddress {
                 // Don't use websocket; it may have obsolete cached state.
@@ -1024,39 +1024,19 @@ public extension MessageSender {
 
 extension MessageSender {
     private func handleMismatchedDevices(_ response: MessageSendFailureResponse,
-                                         recipient: SignalRecipient) {
+                                         messageSend: OWSMessageSend) {
         owsAssertDebug(!Thread.isMainThread)
 
-        let extraDevices = response.extraDevices ?? []
-        let missingDevices = response.missingDevices ?? []
-
-        Logger.info("extraDevices: \(extraDevices) for \(recipient.address)")
-        Logger.info("missingDevices: \(missingDevices) for \(recipient.address)")
-
-        if !missingDevices.isEmpty {
-            if recipient.address.isLocalAddress {
-                self.deviceManager.setMayHaveLinkedDevices()
-            }
-        }
-
-        guard !extraDevices.isEmpty || !missingDevices.isEmpty else {
-            owsFailDebug("No extra or missing device.")
-            return
-        }
+        let extraDevices: [Int] = response.extraDevices ?? []
+        let missingDevices: [Int] = response.missingDevices ?? []
+        let devicesToAdd = missingDevices.map { NSNumber(value: $0) }
+        let devicesToRemove = extraDevices.map { NSNumber(value: $0) }
 
         Self.databaseStorage.write { transaction in
-            let devicesToAdd = missingDevices.map { NSNumber(value: $0) }
-            let devicesToRemove = extraDevices.map { NSNumber(value: $0) }
-            recipient.updateRegisteredRecipientWithDevices(toAdd: devicesToAdd,
-                                                           devicesToRemove: devicesToRemove,
-                                                           transaction: transaction)
-
-            if !extraDevices.isEmpty {
-                Logger.info("Deleting sessions for extra devices: \(extraDevices)")
-                for extraDeviceId in extraDevices {
-                    Self.sessionStore.deleteSession(for: recipient.address, deviceId: Int32(extraDeviceId), transaction: transaction)
-                }
-            }
+            MessageSender.updateDevices(messageSend: messageSend,
+                                        devicesToAdd: devicesToAdd,
+                                        devicesToRemove: devicesToRemove,
+                                        transaction: transaction)
         }
     }
 
@@ -1078,6 +1058,37 @@ extension MessageSender {
         Self.databaseStorage.write { transaction in
             for staleDeviceId in staleDevices {
                 Self.sessionStore.deleteSession(for: recipient.address, deviceId: Int32(staleDeviceId), transaction: transaction)
+            }
+        }
+    }
+
+    @objc
+    public static func updateDevices(messageSend: OWSMessageSend,
+                                     devicesToAdd: [NSNumber],
+                                     devicesToRemove: [NSNumber],
+                                     transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(!Thread.isMainThread)
+        guard !devicesToAdd.isEmpty || !devicesToRemove.isEmpty else {
+            owsFailDebug("No devices to add or remove.")
+            return
+        }
+        owsAssertDebug(Set(devicesToAdd).intersection(Set(devicesToRemove)).isEmpty)
+
+        let recipient = messageSend.recipient
+
+        if !devicesToAdd.isEmpty,
+            recipient.address.isLocalAddress {
+            deviceManager.setMayHaveLinkedDevices()
+        }
+
+        recipient.updateRegisteredRecipientWithDevices(toAdd: devicesToAdd,
+                                                       devicesToRemove: devicesToRemove,
+                                                       transaction: transaction)
+
+        if !devicesToRemove.isEmpty {
+            Logger.info("Deleting sessions for extra devices: \(devicesToRemove)")
+            for deviceId in devicesToRemove {
+                sessionStore.deleteSession(for: recipient.address, deviceId: deviceId.int32Value, transaction: transaction)
             }
         }
     }

@@ -1274,8 +1274,10 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(messageSend.recipient);
 
     SignalRecipient *recipient = messageSend.recipient;
+    NSMutableArray<NSNumber *> *deviceIds = [messageSend.deviceids mutableCopy];
+    OWSAssertDebug(deviceIds);
 
-    NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
+    NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:deviceIds.count];
 
     __block NSData *_Nullable plainText;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -1292,12 +1294,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
 
     OWSLogVerbose(@"building device messages for: %@ %@ (isLocalAddress: %d, isUDSend: %d)",
         recipient.address,
-        recipient.devices,
+        deviceIds,
         messageSend.isLocalAddress,
         messageSend.isUDSend);
-
-    NSMutableArray<NSNumber *> *deviceIds = [messageSend.deviceIds mutableCopy];
-    OWSAssertDebug(deviceIds);
 
     if (messageSend.isLocalAddress) {
         [deviceIds removeObject:@(self.tsAccountManager.storedDeviceId)];
@@ -1310,11 +1309,11 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:MessageSenderInvalidDeviceException]) {
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    [recipient updateRegisteredRecipientWithDevicesToAdd:nil
-                                                         devicesToRemove:@[ deviceId ]
-                                                             transaction:transaction];
+                    [MessageSender updateDevicesWithMessageSend:messageSend
+                                                   devicesToAdd:@[]
+                                                devicesToRemove:@[ deviceId ]
+                                                    transaction:transaction];
                 });
-                [messageSend removeDeviceId:deviceId];
                 [deviceIds removeObject:deviceId];
             } else {
                 @throw exception;
