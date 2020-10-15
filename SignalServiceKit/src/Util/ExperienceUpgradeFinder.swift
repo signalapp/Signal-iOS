@@ -60,7 +60,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .researchMegaphone1:
             return RemoteConfig.researchMegaphone
         case .groupsV2AndMentionsSplash:
-            return true
+            return FeatureFlags.groupsV2showSplash
         }
     }
 
