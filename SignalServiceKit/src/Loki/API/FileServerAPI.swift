@@ -53,29 +53,6 @@ public final class FileServerAPI : DotNetAPI {
         }
     }
     
-    // MARK: Attachments
-    @objc(downloadAttachmentFrom:)
-    public static func objc_downloadAttachment(from url: String) -> AnyPromise {
-        return AnyPromise.from(downloadAttachment(from: url))
-    }
-    
-    public static func downloadAttachment(from url: String) -> Promise<Data> {
-        var error: NSError?
-        let url = url.replacingOccurrences(of: fileStorageBucketURL, with: "\(server)/loki/v1")
-        let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: url, parameters: nil, error: &error)
-        if let error = error {
-            print("[Loki] Couldn't download attachment due to error: \(error).")
-            return Promise(error: error)
-        }
-        return OnionRequestAPI.sendOnionRequest(request, to: server, using: fileServerPublicKey, isJSONRequired: false).map2 { json in
-            guard let body = json["body"] as? JSON, let data = body["data"] as? [UInt8] else {
-                print("[Loki] Couldn't parse attachment from: \(json).")
-                throw DotNetAPIError.parsingFailed
-            }
-            return Data(data)
-        }
-    }
-    
     // MARK: Open Group Server Public Key
     public static func getPublicKey(for openGroupServer: String) -> Promise<String> {
         let url = URL(string: "\(server)/loki/v1/getOpenGroupKey/\(URL(string: openGroupServer)!.host!)")!

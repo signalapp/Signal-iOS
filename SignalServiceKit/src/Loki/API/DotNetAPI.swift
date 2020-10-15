@@ -101,6 +101,39 @@ public class DotNetAPI : NSObject {
     }
 
     // MARK: Public API
+    @objc(downloadAttachmentFrom:)
+    public static func objc_downloadAttachment(from url: String) -> AnyPromise {
+        return AnyPromise.from(downloadAttachment(from: url))
+    }
+
+    public static func downloadAttachment(from url: String) -> Promise<Data> {
+        var error: NSError?
+        var host = "https://\(URL(string: url)!.host!)"
+        let sanitizedURL: String
+        if FileServerAPI.fileStorageBucketURL.contains(host) {
+            sanitizedURL = url.replacingOccurrences(of: FileServerAPI.fileStorageBucketURL, with: "\(FileServerAPI.server)/loki/v1")
+            host = FileServerAPI.server
+        } else {
+            sanitizedURL = url.replacingOccurrences(of: host, with: "\(host)/loki/v1")
+        }
+        let request = AFHTTPRequestSerializer().request(withMethod: "GET", urlString: sanitizedURL, parameters: nil, error: &error)
+        if let error = error {
+            print("[Loki] Couldn't download attachment due to error: \(error).")
+            return Promise(error: error)
+        }
+        let serverPublicKeyPromise = FileServerAPI.server.contains(host) ? Promise.value(FileServerAPI.fileServerPublicKey)
+            : PublicChatAPI.getOpenGroupServerPublicKey(for: host)
+        return serverPublicKeyPromise.then2 { serverPublicKey in
+            return OnionRequestAPI.sendOnionRequest(request, to: host, using: serverPublicKey, isJSONRequired: false).map2 { json in
+                guard let body = json["body"] as? JSON, let data = body["data"] as? [UInt8] else {
+                    print("[Loki] Couldn't parse attachment from: \(json).")
+                    throw DotNetAPIError.parsingFailed
+                }
+                return Data(data)
+            }
+        }
+    }
+
     @objc(uploadAttachment:withID:toServer:)
     public static func objc_uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
         return AnyPromise.from(uploadAttachment(attachment, with: attachmentID, to: server))
