@@ -264,9 +264,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     // can markRecipientAsUnregistered:... if the recipient has
     // no devices left.
     if (devicesToAdd.count > 0) {
+        OWSLogInfo(@"devicesToAdd: %@ for %@", devicesToAdd, self.address);
         [self addDevicesToRegisteredRecipient:[NSSet setWithArray:devicesToAdd] transaction:transaction];
     }
     if (devicesToRemove.count > 0) {
+        OWSLogInfo(@"devicesToRemove: %@ for %@", devicesToRemove, self.address);
         [self removeDevicesFromRecipient:[NSSet setWithArray:devicesToRemove] transaction:transaction];
     }
 

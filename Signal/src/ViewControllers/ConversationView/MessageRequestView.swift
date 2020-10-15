@@ -237,27 +237,15 @@ class MessageRequestView: UIStackView {
     // MARK: - Group V2 Invites
 
     func prepareGroupV2InvitePrompt() -> UILabel {
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("missing local address")
-            return UILabel()
-        }
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return UILabel()
-        }
-        let groupMembership = groupThread.groupModel.groupMembership
-        guard let addedByUuid = groupMembership.addedByUuid(forInvitedMember: localAddress) else {
-            owsFailDebug("missing addedByUuid")
-            return UILabel()
-        }
-        let addedByName = contactsManager.displayName(for: SignalServiceAddress(uuid: addedByUuid))
-
-        let formatString = NSLocalizedString(
-            "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT",
-            comment: "A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}."
+        let string = NSLocalizedString(
+            "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
+            comment: "A prompt asking if the user wants to accept a group invite."
         )
 
-        return preparePromptLabel(formatString: formatString, embeddedString: addedByName)
+        return prepareLabel(attributedString: NSAttributedString(string: string, attributes: [
+            .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            .foregroundColor: Theme.secondaryTextAndIconColor
+        ]))
     }
 
     func prepareGroupV2InviteButtons() -> UIStackView {

@@ -377,7 +377,10 @@ public class OWSURLSession: NSObject {
             return nil
         }
 
-        if urlString.hasPrefix(censorshipCircumventionHost) {
+        let hasValidUrl = (urlString.hasPrefix(censorshipCircumventionHost) ||
+            urlString.hasPrefix("http://" + censorshipCircumventionHost) ||
+            urlString.hasPrefix("https://" + censorshipCircumventionHost))
+        if hasValidUrl {
             // urlString has expected protocol/host.
         } else if urlString.lowercased().hasPrefix("http") {
             // Censorship circumvention will work with relative URLs and

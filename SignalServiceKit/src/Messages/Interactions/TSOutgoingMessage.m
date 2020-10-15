@@ -4,6 +4,7 @@
 
 #import "TSOutgoingMessage.h"
 #import "MessageSender.h"
+#import "NSError+OWSOperation.h"
 #import "OWSContact.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
@@ -852,6 +853,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
+
+    OWSLogWarn(@"Send to recipient failed, address: %@, timestamp: %llu, error: %@ (isRetryable: %d)",
+        recipientAddress,
+        self.timestamp,
+        error,
+        error.isRetryable);
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {

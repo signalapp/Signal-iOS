@@ -104,7 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(BlockListViewController, @"user");
                                 return cell;
                             }
-                            customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
                                 [BlockListUIUtils showUnblockAddressActionSheet:address
                                                              fromViewController:weakSelf
@@ -139,7 +138,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 detailText:nil];
                                                   return cell;
                                               }
-                                              customRowHeight:UITableViewAutomaticDimension
                                               actionBlock:^{
                                                   [BlockListUIUtils showUnblockGroupActionSheet:blockedGroup
                                                                              fromViewController:weakSelf

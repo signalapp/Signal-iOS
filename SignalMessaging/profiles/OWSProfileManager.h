@@ -83,19 +83,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 // Only use this method in profile manager methods on the swift extension.
 - (OWSUserProfile *)localUserProfile;
 
-// If avatarData is nil, we are clearing the avatar.
-- (void)updateServiceWithUnversionedProfileAvatarData:(nullable NSData *)avatarData
-                                              success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
-                                              failure:(ProfileManagerFailureBlock)failureBlock
-    NS_SWIFT_NAME(updateService(unversionedProfileAvatarData:success:failure:));
-
-// If profileName is nil, we are clearing the profileName.
-- (void)updateServiceWithUnversionedGivenName:(nullable NSString *)givenName
-                                   familyName:(nullable NSString *)familyName
-                                      success:(void (^)(void))successBlock
-                                      failure:(ProfileManagerFailureBlock)failureBlock
-    NS_SWIFT_NAME(updateService(unversionedGivenName:familyName:success:failure:));
-
 #pragma mark - Profile Whitelist
 
 // These methods are for debugging.

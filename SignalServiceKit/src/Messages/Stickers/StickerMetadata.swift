@@ -10,6 +10,7 @@ public enum StickerType: UInt {
     case webp
     case signalLottie
     case apng
+    case gif
 
     public static func stickerType(forContentType contentType: String?) -> StickerType {
         if let contentType = contentType {
@@ -20,6 +21,8 @@ public enum StickerType: UInt {
                 return .signalLottie
             case OWSMimeTypeImagePng:
                 return .apng
+            case OWSMimeTypeImageGif:
+                return .gif
             default:
                 owsFailDebug("Unknown content type: \(contentType)")
                 return .webp
@@ -38,6 +41,8 @@ public enum StickerType: UInt {
             return OWSMimeTypeLottieSticker
         case .apng:
             return OWSMimeTypeImagePng
+        case .gif:
+            return OWSMimeTypeImageGif
         }
     }
 
@@ -49,6 +54,8 @@ public enum StickerType: UInt {
             return kLottieStickerFileExtension
         case .apng:
             return "png"
+        case .gif:
+            return "gif"
         }
     }
 }

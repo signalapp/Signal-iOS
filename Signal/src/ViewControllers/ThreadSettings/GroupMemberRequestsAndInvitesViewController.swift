@@ -150,8 +150,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
                     cell.configure(withRecipientAddress: address)
                     return cell
-                    },
-                                              customRowHeight: UITableView.automaticDimension) { [weak self] in
+                    }) { [weak self] in
                                                 self?.showMemberActionSheet(for: address)
                 })
             }
@@ -243,8 +242,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
                     cell.configure(withRecipientAddress: address)
                     return cell
-                    },
-                                              customRowHeight: UITableView.automaticDimension) { [weak self] in
+                    }) { [weak self] in
                                                 self?.inviteFromLocalUserWasTapped(address,
                                                                                    canRevoke: canRevokeInvites)
                 })
@@ -300,8 +298,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     cell.configure(withRecipientAddress: inviterAddress)
 
                     return cell
-                    },
-                                                   customRowHeight: UITableView.automaticDimension) { [weak self] in
+                    }) { [weak self] in
                                                     self?.invitesFromOtherUserWasTapped(invitedAddresses: invitedAddresses,
                                                                                         inviterAddress: inviterAddress,
                                                                                         canRevoke: canRevokeInvites)

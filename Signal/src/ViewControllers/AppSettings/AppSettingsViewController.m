@@ -109,13 +109,11 @@
 #endif
 
     OWSTableSection *section = [OWSTableSection new];
-    [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        return [weakSelf profileHeaderCell];
-    }
-                         customRowHeight:100.f
-                         actionBlock:^{
-                             [weakSelf showProfile];
-                         }]];
+    OWSTableItem *profileHeaderItem = [OWSTableItem
+        itemWithCustomCellBlock:^{ return [weakSelf profileHeaderCell]; }
+        actionBlock:^{ [weakSelf showProfile]; }];
+    profileHeaderItem.customRowHeight = @(100.f);
+    [section addItem:profileHeaderItem];
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")

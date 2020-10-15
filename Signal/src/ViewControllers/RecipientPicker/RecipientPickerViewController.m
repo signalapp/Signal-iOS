@@ -383,7 +383,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
                 return cell;
             }
-                    customRowHeight:UITableViewAutomaticDimension
                         actionBlock:nil];
 
         OWSTableSection *reminderSection = [OWSTableSection new];
@@ -413,7 +412,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
                             return cell;
                         }
-                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf newGroupButtonPressed];
                         }]];
@@ -438,7 +436,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
                             return cell;
                         }
-                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             FindByPhoneNumberViewController *viewController = [[FindByPhoneNumberViewController alloc]
                                         initWithDelegate:self
@@ -466,7 +463,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
                             return cell;
                         }
-                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf presentInviteFlow];
                         }]];
@@ -789,7 +785,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
                                 return cell;
                             }
-                            customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
                                 [weakSelf tryToSelectRecipient:recipient];
                             }]];
@@ -849,7 +844,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
                                              return cell;
                                          }
-                                         customRowHeight:UITableViewAutomaticDimension
                                          actionBlock:^{
                                              [weakSelf lookupUsername:usernameMatch];
                                          }]];

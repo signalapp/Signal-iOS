@@ -290,7 +290,6 @@ public class AddToGroupViewController: OWSTableViewController {
                 cell.configure(thread: groupThread)
                 return cell
             },
-            customRowHeight: UITableView.automaticDimension,
             actionBlock: { [weak self] in
                 self?.didSelectGroup(groupThread)
             }

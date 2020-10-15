@@ -3550,8 +3550,12 @@ typedef enum : NSUInteger {
         return;
     }
 
-    NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
-        stringByAppendingPathExtension:@"m4a"];
+    NSString *filename = [NSString stringWithFormat:@"%@ %@.%@",
+                                   NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages."),
+                                   [NSDateFormatter localizedStringFromDate:[NSDate new]
+                                                                  dateStyle:NSDateFormatterShortStyle
+                                                                  timeStyle:NSDateFormatterShortStyle],
+                                   @"m4a"];
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];

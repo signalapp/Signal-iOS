@@ -931,14 +931,12 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 
     public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
-        guard RemoteConfig.mentions else { return [] }
         return approvalDelegate?.attachmentApprovalMentionableAddresses ?? []
     }
 
     public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        guard RemoteConfig.mentions else { return false }
         return approvalDelegate?.attachmentApprovalMentionableAddresses.contains(address) ?? false
     }
 
