@@ -2476,14 +2476,17 @@
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Feloldod a csoport tiltását? Amíg nem oldod fel a tiltást, a tagok nem értesülnek róla, hogy megkaptad -e az üzeneteiket.";
 
+/* A button used to continue a conversation and share your profile. */
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Folytatás";
+
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Törlés";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Profiod megosztása szükséges a beszélgetés folytatásához %@ ismerősöddel.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Profilod megosztása szükséges a beszélgetés folyatatásához ebben a csoportban.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Engedélyezed, hogy %@ üzenetet küldjön számodra és lássa a profilodat? Amíg nem fogadod el a felkérést, nem fog tudni arról, hogy megkaptad az üzeneteit.";
@@ -2493,9 +2496,6 @@
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Belépsz ebbe a csoportba? Amíg ezt meg nem erősíted, senki nem értesül róla, hogy láttad az eddigi üzeneteket.";
-
-/* A button used to share your profile with an existing thread. */
-"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profil megosztása";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Tiltás feloldása";

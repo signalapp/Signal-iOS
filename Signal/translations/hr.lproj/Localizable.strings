@@ -68,7 +68,7 @@
 "ADD_TO_CONTACTS_OFFER" = "Želite li dodati ovog korisnika u vaše kontakte?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Dodaj u drugu drugu";
+"ADD_TO_GROUP" = "Dodaj u drugu grupu";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Dodaj u grupu";
@@ -89,7 +89,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ je dodan u %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Dodaj u drugu drugu";
+"ADD_TO_GROUP_TITLE" = "Dodaj u drugu grupu";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Želite li podijeliti svoj profil s ovim korisnikom?";
@@ -842,7 +842,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Samo administratori";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Odaberite tko može promijeniti naziv grupe, sliku i poruke koje nestaju:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Odaberite tko može promijeniti naziv grupe, sliku i poruke koje nestaju.";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Svi članovi";
@@ -863,7 +863,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Svi članovi";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Grupna poveznica";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Poveznica grupe";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Postavi za administratora";
@@ -1553,58 +1553,58 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "Nevažeće pozivnice su opozvane.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "Grupna poveznica je isključena.";
+"GROUP_INVITE_LINK_DISABLED" = "Poveznica grupe je isključena.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Isključili ste grupnu poveznicu.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Isključili ste poveznicu grupe.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ je isključio/la grupnu poveznicu.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ je isključio/la poveznicu grupe.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Uključena je grupna poveznica s uključenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Uključena je poveznica grupe s omogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Uključili ste grupnu poveznicu s uključenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Uključili ste poveznicu grupe s omogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la grupnu poveznicu s uključenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la poveznicu grupe s omogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Uključena je grupna poveznica s isključenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Uključena je poveznica grupe s onemogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Uključili ste grupnu poveznicu s isključenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Uključili ste poveznicu grupe s onemogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la grupnu poveznicu s isključenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la poveznicu grupe s onemogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Grupna poveznica je poništena.";
+"GROUP_INVITE_LINK_RESET" = "Poveznica grupe je poništena.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Poništili ste grupnu poveznicu.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Poništili ste poveznicu grupe.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ je poništio/la grupnu poveznicu.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ je poništio/la poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Isključili ste odobrenje administratora za grupnu poveznicu.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Onemogućili ste odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Isključili ste odobrenje administratora za grupnu poveznicu.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Onemogućili ste odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je isključio/la odobrenje administratora za grupnu poveznicu.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je onemogućio/la odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Uključili ste odobrenje administratora za grupnu poveznicu.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Omogućili ste odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Uključili ste odobrenje administratora za grupnu poveznicu.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Omogućili ste odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la odobrenje administratora za grupnu poveznicu.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je omogućio/la odobrenje administratora za poveznicu grupe.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Ne možete automatski dodati %@ u grupu. Korisnik je pozvan i neće vidjeti poruke grupe dok ne prihvati pozivnicu.";
@@ -1622,7 +1622,7 @@
 "GROUP_INVITES_VIEW_TITLE" = "Pozivnice za članove";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Grupna poveznica je nevažeća.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Poveznica grupe je nevažeća.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Ne možete se pridružiti grupi";
@@ -1646,7 +1646,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Pokušajte ponovo.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ovo nije valjana grupna poveznica. Prije pokušaja pridruživanja, provjerite je li cijela poveznica netaknuta i ispravna.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ovo nije valjana poveznica grupe. Prije pokušaja pridruživanja, provjerite je li cijela poveznica netaknuta i ispravna.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Nevažeća poveznica";
@@ -1676,13 +1676,13 @@
 "GROUP_LINK_VIEW_COPY_LINK" = "Kopiraj poveznicu";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Grupna poveznica";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Poveznica grupe";
 
 /* Title for the 'manage and share' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MANAGE_AND_SHARE_SECTION_TITLE" = "Upravljanje i dijeljenje";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Zahtjeva da administrator odobri pridruživanje novih članova putem grupne poveznice.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Zahtjeva da administrator odobri pridruživanje novih članova putem poveznice grupe.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Zahtjevi za članove";
@@ -1691,7 +1691,7 @@
 "GROUP_LINK_VIEW_RESET_LINK" = "Poništi poveznicu";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Jeste li sigurni da želite poništiti grupnu poveznicu? Osobe se više neće moći pridružiti grupi koristeći trenutnu poveznicu.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Jeste li sigurni da želite poništiti poveznicu grupe? Osobe se više neće moći pridružiti grupi koristeći trenutnu poveznicu.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Podijeli";
@@ -1709,7 +1709,7 @@
 "GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Bilo tko s ovom poveznicom može se pridružiti grupi ili poslati zahtjev za pridruživanje. Podijelite s osobama kojima vjerujete.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Grupna poveznica";
+"GROUP_LINK_VIEW_TITLE" = "Poveznica grupe";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ vas je dodao.";
@@ -1748,7 +1748,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Pridružili ste se grupi.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Pridružili ste se grupi putem grupne poveznice.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Pridružili ste se grupi putem poveznice grupe.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ vas je uklonio.";
@@ -1886,7 +1886,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ se pridružio/la grupi.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ se pridružio/la grupi putem grupne poveznice.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ se pridružio/la grupi putem poveznice grupe.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ je napustio/la grupu.";
@@ -1919,7 +1919,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Odbili ste zahtjev za pridruživanje u grupu od %@.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ je zatražio/la pridruživanje grupi putem grupne poveznice.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ je zatražio/la pridruživanje grupi putem poveznice grupe.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Opozvana su administratorska prava za %@.";
@@ -2476,14 +2476,17 @@
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Odblokiraj ovu grupu? Oni neće znati da ste vidjeli njihove poruke dok ih ne odblokirate.";
 
+/* A button used to continue a conversation and share your profile. */
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Nastavi";
+
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Izbriši";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Morate podijeliti svoj profil kako biste nastavili razgovor s %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Morate podijeliti svoj profil kako biste nastavili razgovor s ovom grupom.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Želite li dopustiti %@ da vam pošalje poruku i da dijelite svoje ime i fotografiju s njima? Neće znati da ste vidjeli njihovu poruku dok ne prihvatite.";
@@ -2493,9 +2496,6 @@
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Pridružiti se ovoj grupi? Neće znati da ste vidjeli njihove poruke dok ne prihvatite.";
-
-/* A button used to share your profile with an existing thread. */
-"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Podijeli profil";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Odblokiraj";
@@ -2972,7 +2972,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Pojedinosti o osobama koje su pozvali drugi članovi grupe nisu prikazani. Ako se pozvane osobe odluče pridružiti, njihovi će se podaci tada podijeliti s grupom. Neće vidjeti poruke u grupi dok se ne pridruže.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Osobe s ovog popisa pokušavaju se pridružiti “%@” putem grupne poveznice.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Osobe s ovog popisa pokušavaju se pridružiti “%@” putem poveznice grupe.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Nevažeće pozivnice";
@@ -2984,7 +2984,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Zahtjevi za članove na čekanju";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Osobe koje ste pozvali";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Osobe koje ste vi pozvali";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Pogreška prilikom rukovanja dolaznom porukom";
@@ -4268,7 +4268,7 @@
 "SOUNDS_NONE" = "Bez zvuka";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these updates in a future update.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Postojeće grupe će automatski dobiti ove značajke u budućem ažuriranju.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nova grupa";
@@ -4277,10 +4277,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Nove grupe su ovdje!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Nove značajke grupe uključuju @spominjanja, administratore i još mnogo toga. Isprobajte pritiskom na:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Naljepnica";

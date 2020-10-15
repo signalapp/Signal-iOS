@@ -2476,14 +2476,17 @@
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deblokkeer deze groep? Ze zullen niet kunnen zien dat je hun berichten hebt gelezen zolang je ze niet deblokkeert.";
 
+/* A button used to continue a conversation and share your profile. */
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Doorgaan";
+
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wissen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Je moet je profiel zichtbaar maken voor je je gesprek met %@ kunt voortzetten.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Je moet je profiel zichtbaar maken voor alle leden van deze groep voor je je gesprek met deze groep kunt voortzetten.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam en -foto kan zien? Hij of zij zal totdat je de gespreksuitnodiging aanvaardt niet kunnen zien dat je zijn of haar berichten hebt gelezen.";
@@ -2493,9 +2496,6 @@
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Deelnemen aan deze groep? Ze zullen niet kunnen zien dat je hun berichten hebt gelezen zolang je de uitnodiging nog niet hebt geaccepteerd.";
-
-/* A button used to share your profile with an existing thread. */
-"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profiel zichtbaar maken";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Deblokkeren";

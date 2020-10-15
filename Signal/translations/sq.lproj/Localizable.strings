@@ -2476,14 +2476,17 @@
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Të zhbllokohet ky grup? S’do ta dinë se i keni parë mesazhet e tyre, deri sa t’i zhbllokoni.";
 
+/* A button used to continue a conversation and share your profile. */
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Vazhdo";
+
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Fshije";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Që të vazhdoni fjalosjen tuaj me %@, duhet të ndani me të profilin tuaj.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Që të vazhdohet biseda juaj me këtë grup, duhet të ndani me të profilin tuaj.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Të lejohet %@ t’ju dërgojë mesazh dhe të ndajë emrin dhe foton tuaj me të tjerë? S’do ta dijë se e keni parë mesazhin e tij, para se të pranoni këtë.";
@@ -2493,9 +2496,6 @@
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Doni të bëheni pjesë e këtij grupi? S’do ta dinë se i keni parë mesazhet e tyre, deri sa të pranoni.";
-
-/* A button used to share your profile with an existing thread. */
-"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Ndaje Profilin Me të Tjerët";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Zhbllokoje";

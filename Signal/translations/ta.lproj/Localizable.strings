@@ -2476,14 +2476,17 @@
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "இந்த குழுவைத் தடைசெய்யவா? நீங்கள் அவர்களின் செய்திகளைத் தடைசெய்யும் வரை நீங்கள் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
 
+/* A button used to continue a conversation and share your profile. */
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "தொடர்ந்து செல் ";
+
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "அழி";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your chat with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your chat with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "உங்களுக்கு %@ செய்தி அனுப்பவும், உங்கள் பெயரையும் புகைப்படத்தையும்  அவர்களுடன் பகிர்ந்து கொள்ளலாமா? நீங்கள் ஏற்றுக்கொள்ளும் வரை அவர்களின் செய்தியை நீங்கள் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
@@ -2493,9 +2496,6 @@
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "இந்த குழுவில் சேரவா? நீங்கள் ஏற்றுக்கொள்ளும் வரை அவர்களின் செய்திகளைப் பார்த்திருப்பதை அவர்கள் அறிய மாட்டார்கள்.";
-
-/* A button used to share your profile with an existing thread. */
-"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "சுயவிவரத்தைப் பகிரவும்";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "தடைநீக்கு ";
