@@ -511,5 +511,9 @@ public class SignalServiceAddressCache: NSObject {
 
         // Notify any existing address objects to update their backing phone number
         SignalServiceAddress.notifyMappingDidChange(forUuid: uuid)
+
+        if AppReadiness.isAppReady {
+            SSKEnvironment.shared.bulkProfileFetch.fetchProfile(uuid: uuid)
+        }
     }
 }
