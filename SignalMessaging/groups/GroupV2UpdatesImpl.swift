@@ -736,14 +736,14 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
             let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
             let newDisappearingMessageToken = snapshot.disappearingMessageToken
-            let mightBeAddingLocalUserToGroup = self.mightBeAddingLocalUserToGroup(groupChange: firstGroupChange,
-                                                                                   groupV2Params: groupV2Params)
+            let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(groupChange: firstGroupChange,
+                                                                         groupV2Params: groupV2Params)
 
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                        newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        canInsert: true,
-                                                                                                       mightBeAddingLocalUserToGroup: mightBeAddingLocalUserToGroup,
+                                                                                                       didAddLocalUserToV2Group: didAddLocalUserToV2Group,
                                                                                                        transaction: transaction)
 
             // NOTE: We don't need to worry about profile keys here.  This method is
@@ -757,8 +757,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
     }
 
-    private func mightBeAddingLocalUserToGroup(groupChange: GroupV2Change,
-                                               groupV2Params: GroupV2Params) -> Bool {
+    private func didAddLocalUserToV2Group(groupChange: GroupV2Change,
+                                          groupV2Params: GroupV2Params) -> Bool {
         guard let localUuid = tsAccountManager.localUuid else {
             return false
         }
@@ -866,7 +866,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                                                        newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                                                        canInsert: true,
-                                                                                                       mightBeAddingLocalUserToGroup: false,
+                                                                                                       didAddLocalUserToV2Group: false,
                                                                                                        transaction: transaction)
 
             GroupManager.storeProfileKeysFromGroupProtos(groupV2Snapshot.profileKeys)

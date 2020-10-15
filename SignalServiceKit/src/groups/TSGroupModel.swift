@@ -41,7 +41,8 @@ public class TSGroupModelV2: TSGroupModel {
                          secretParamsData: Data,
                          avatarUrlPath: String?,
                          inviteLinkPassword: Data?,
-                         isPlaceholderModel: Bool) {
+                         isPlaceholderModel: Bool,
+                         addedByAddress: SignalServiceAddress?) {
         assert(secretParamsData.count > 0)
 
         self.membership = groupMembership
@@ -55,7 +56,8 @@ public class TSGroupModelV2: TSGroupModel {
         super.init(groupId: groupId,
                    name: name,
                    avatarData: avatarData,
-                   members: Array(groupMembership.fullMembers))
+                   members: Array(groupMembership.fullMembers),
+                   addedBy: addedByAddress)
     }
 
     // MARK: - MTLModel
@@ -129,6 +131,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "revision: \(revision),\n"
         result += "avatarUrlPath: \(String(describing: avatarUrlPath)),\n"
         result += "inviteLinkPassword: \(inviteLinkPassword?.hexadecimalString ?? "None"),\n"
+        result += "addedByAddress: \(addedByAddress?.debugDescription ?? "None"),\n"
         result += "]"
         return result
     }

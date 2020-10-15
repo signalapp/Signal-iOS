@@ -35,6 +35,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
                            name:(nullable NSString *)name
                      avatarData:(nullable NSData *)avatarData
                         members:(NSArray<SignalServiceAddress *> *)members
+                 addedByAddress:(nullable SignalServiceAddress *)addedByAddress
 {
     self = [super init];
     if (!self) {
@@ -45,6 +46,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     _groupName = name;
     _groupAvatarData = avatarData;
     _groupMembers = members;
+    _addedByAddress = addedByAddress;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
 
     OWSAssertDebug([GroupManager isValidGroupId:groupId groupsVersion:self.groupsVersion]);
@@ -170,6 +172,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![NSObject isNullableObject:self.groupAvatarData equalTo:other.groupAvatarData]) {
         return NO;
     }
+    if (![NSObject isNullableObject:self.addedByAddress equalTo:other.addedByAddress]) {
+        return NO;
+    }
     NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
     NSSet<SignalServiceAddress *> *otherGroupMembersSet = [NSSet setWithArray:other.groupMembers];
     if (![myGroupMembersSet isEqualToSet:otherGroupMembersSet]) {
@@ -216,6 +221,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     [result appendFormat:@"groupName: %@,\n", self.groupName];
     [result appendFormat:@"groupAvatarData: %@,\n", self.groupAvatarData];
     [result appendFormat:@"groupMembers: %@,\n", [GroupMembership normalize:self.groupMembers]];
+    [result appendFormat:@"addedByAddress: %@,\n", self.addedByAddress];
     [result appendString:@"]"];
     return [result copy];
 }
