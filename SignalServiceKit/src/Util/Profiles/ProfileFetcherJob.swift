@@ -377,7 +377,7 @@ public class ProfileFetcherJob: NSObject {
     private var shouldUseVersionedFetchForUuids: Bool {
         switch options.fetchType {
         case .default:
-            return RemoteConfig.versionedProfileFetches
+            return true
         case .versioned:
             return true
         case .unversioned:

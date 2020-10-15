@@ -194,15 +194,8 @@ extension OWSProfileManager {
                 self.updateLocalProfile(with: attempt, transaction: transaction)
             }
 
-            if RemoteConfig.versionedProfileUpdate {
-                // TODO: Remove
-                Logger.info("Versioned profile update.")
-                return updateProfileOnServiceVersioned(attempt: attempt)
-            } else {
-                // TODO: Remove
-                Logger.info("Unversioned profile update.")
-                return updateProfileOnServiceUnversioned(attempt: attempt)
-            }
+            Logger.info("Versioned profile update.")
+            return updateProfileOnServiceVersioned(attempt: attempt)
         }.done(on: DispatchQueue.global()) { _ in
             _ = self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
                 guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
@@ -302,54 +295,16 @@ extension OWSProfileManager {
         return promise
     }
 
-    private class func updateProfileOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
-        Logger.info("avatar?: \(attempt.update.profileAvatarData != nil), " +
-            "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
-            "profileFamilyName?: \(attempt.update.profileFamilyName != nil).")
-        return updateProfileNameOnServiceUnversioned(attempt: attempt)
-            .then { _ in
-                return updateProfileAvatarOnServiceUnversioned(attempt: attempt)
-        }
-    }
-
-    private class func updateProfileNameOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
-        let (promise, resolver) = Promise<Void>.pending()
-        DispatchQueue.global().async {
-            self.profileManager.updateService(unversionedGivenName: attempt.update.profileGivenName,
-                                              familyName: attempt.update.profileFamilyName,
-                                              success: {
-                                                resolver.fulfill(())
-            }, failure: { error in
-                resolver.reject(error)
-            })
-        }
-        return promise
-    }
-
-    private class func updateProfileAvatarOnServiceUnversioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
-        let (promise, resolver) = Promise<Void>.pending()
-        DispatchQueue.global().async {
-            self.profileManager.updateService(unversionedProfileAvatarData: attempt.update.profileAvatarData,
-                                              success: { avatarUrlPath in
-                                                attempt.avatarUrlPath = avatarUrlPath
-
-                                                resolver.fulfill(())
-            }, failure: { error in
-                resolver.reject(error)
-            })
-        }
-        return promise
-    }
-
     private class func updateProfileOnServiceVersioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
         Logger.info("avatar?: \(attempt.update.profileAvatarData != nil), " +
             "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
             "profileFamilyName?: \(attempt.update.profileFamilyName != nil).")
-        return self.versionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
-                                                           profileFamilyName: attempt.update.profileFamilyName,
-                                                           profileAvatarData: attempt.update.profileAvatarData)
-            .map(on: .global()) { versionedUpdate in
-                attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
+        return firstly(on: .global()) {
+            versionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
+                                                   profileFamilyName: attempt.update.profileFamilyName,
+                                                   profileAvatarData: attempt.update.profileAvatarData)
+        }.map(on: .global()) { versionedUpdate in
+            attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }
     }
 
