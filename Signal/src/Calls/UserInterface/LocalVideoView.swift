@@ -21,6 +21,10 @@ class LocalVideoView: UIView {
 
         addSubview(localVideoCapturePreview)
 
+        if Platform.isSimulator {
+            backgroundColor = .green
+        }
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateLocalVideoOrientation),

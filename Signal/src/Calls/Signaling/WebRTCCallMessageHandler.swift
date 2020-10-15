@@ -54,7 +54,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         }
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedOffer(
+        self.callService.individualCallService.handleReceivedOffer(
             thread: thread,
             callId: offer.id,
             sourceDevice: sourceDevice,
@@ -72,14 +72,26 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sourceDevice: sourceDevice, sdp: answer.sdp, opaque: answer.opaque, supportsMultiRing: supportsMultiRing)
+        self.callService.individualCallService.handleReceivedAnswer(
+            thread: thread,
+            callId: answer.id,
+            sourceDevice: sourceDevice,
+            sdp: answer.sdp,
+            opaque: answer.opaque,
+            supportsMultiRing: supportsMultiRing
+        )
     }
 
     public func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: SignalServiceAddress, sourceDevice: UInt32) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedIceCandidates(thread: thread, callId: iceUpdate[0].id, sourceDevice: sourceDevice, candidates: iceUpdate)
+        self.callService.individualCallService.handleReceivedIceCandidates(
+            thread: thread,
+            callId: iceUpdate[0].id,
+            sourceDevice: sourceDevice,
+            candidates: iceUpdate
+        )
     }
 
     public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from caller: SignalServiceAddress, sourceDevice: UInt32) {
@@ -101,13 +113,23 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         }
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedHangup(thread: thread, callId: hangup.id, sourceDevice: sourceDevice, type: type, deviceId: deviceId)
+        self.callService.individualCallService.handleReceivedHangup(
+            thread: thread,
+            callId: hangup.id,
+            sourceDevice: sourceDevice,
+            type: type,
+            deviceId: deviceId
+        )
     }
 
     public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from caller: SignalServiceAddress, sourceDevice: UInt32) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedBusy(thread: thread, callId: busy.id, sourceDevice: sourceDevice)
+        self.callService.individualCallService.handleReceivedBusy(
+            thread: thread,
+            callId: busy.id,
+            sourceDevice: sourceDevice
+        )
     }
 }

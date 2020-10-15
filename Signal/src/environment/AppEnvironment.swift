@@ -32,7 +32,7 @@ import SignalMessaging
     public var callService: CallService
 
     @objc
-    public var outboundCallInitiator: OutboundCallInitiator
+    public var outboundIndividualCallInitiator: OutboundIndividualCallInitiator
 
     @objc
     public var accountManager: AccountManager
@@ -64,7 +64,7 @@ import SignalMessaging
     private override init() {
         self.callMessageHandler = WebRTCCallMessageHandler()
         self.callService = CallService()
-        self.outboundCallInitiator = OutboundCallInitiator()
+        self.outboundIndividualCallInitiator = OutboundIndividualCallInitiator()
         self.accountManager = AccountManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
@@ -85,7 +85,7 @@ import SignalMessaging
 
     @objc
     public func setup() {
-        callService.createCallUIAdapter()
+        callService.individualCallService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManager = notificationPresenter

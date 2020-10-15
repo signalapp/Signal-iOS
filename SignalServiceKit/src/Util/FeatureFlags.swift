@@ -191,6 +191,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let supportAnimatedStickers_AnimatedWebp = true
 
+    @objc
+    public static let groupCalling = build.includes(.dev)
+
     private static let _ignoreCDSUndiscoverableUsersInMessageSends = AtomicBool(true)
     @objc
     public static var ignoreCDSUndiscoverableUsersInMessageSends: Bool {
@@ -406,6 +409,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let forceProfilesForAll = build.includes(.beta)
+
+    @objc
+    public static let groupCallingIgnoreMembershipProof = true
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

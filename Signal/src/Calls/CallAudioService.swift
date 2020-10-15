@@ -61,28 +61,42 @@ protocol CallAudioServiceDelegate: class {
 
     // MARK: - CallObserver
 
-    internal func stateDidChange(call: SignalCall, state: CallState) {
+    internal func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
-        self.handleState(call: call)
+        handleState(call: call.individualCall)
     }
 
-    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
-        AssertIsOnMainThread()
-
-        ensureProperAudioSession(call: call)
-    }
-
-    internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
+    internal func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
     }
 
-    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
+    internal func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
     }
+
+    internal func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+        AssertIsOnMainThread()
+
+        ensureProperAudioSession(call: call)
+    }
+
+    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+        // do nothing
+    }
+
+    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
+        ensureProperAudioSession(call: call)
+    }
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {}
+    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
+    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
+    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
     private let routePicker = AVRoutePickerView()
     public func presentRoutePicker() -> Bool {
@@ -122,6 +136,28 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private func ensureProperAudioSession(call: SignalCall?) {
+        switch call?.mode {
+        case .individual(let call):
+            ensureProperAudioSession(call: call)
+        case .group(let call):
+            ensureProperAudioSession(call: call)
+        default:
+            // Revert to default audio
+            setAudioSession(category: .soloAmbient, mode: .default)
+        }
+    }
+
+    private func ensureProperAudioSession(call: GroupCall?) {
+        guard let call = call, !call.isEnded else {
+            // Revert to default audio
+            setAudioSession(category: .soloAmbient, mode: .default)
+            return
+        }
+
+        setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+    }
+
+    private func ensureProperAudioSession(call: IndividualCall?) {
         AssertIsOnMainThread()
 
         guard let call = call, !call.isEnded else {
@@ -159,11 +195,10 @@ protocol CallAudioServiceDelegate: class {
 
     public func didUpdateVideoTracks(call: SignalCall?) {
         Logger.verbose("")
-
-        self.ensureProperAudioSession(call: call)
+        ensureProperAudioSession(call: call)
     }
 
-    public func handleState(call: SignalCall) {
+    public func handleState(call: IndividualCall) {
         assert(Thread.isMainThread)
 
         Logger.verbose("new state: \(call.state)")
@@ -192,11 +227,11 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func handleIdle(call: SignalCall) {
+    private func handleIdle(call: IndividualCall) {
         Logger.debug("")
     }
 
-    private func handleDialing(call: SignalCall) {
+    private func handleDialing(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -207,44 +242,36 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func handleAnswering(call: SignalCall) {
+    private func handleAnswering(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
     }
 
-    private func handleRemoteRinging(call: SignalCall) {
+    private func handleRemoteRinging(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
         self.play(sound: .callOutboundRinging)
     }
 
-    private func handleLocalRinging(call: SignalCall) {
+    private func handleLocalRinging(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
         startRinging(call: call)
     }
 
-    private func handleConnected(call: SignalCall) {
+    private func handleConnected(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
     }
 
-    private func handleReconnecting(call: SignalCall) {
+    private func handleReconnecting(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
     }
 
-    private func handleLocalFailure(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
-
-        play(sound: .callEnded)
-        handleCallEnded(call: call)
-    }
-
-    private func handleLocalHangup(call: SignalCall) {
+    private func handleLocalFailure(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -252,7 +279,15 @@ protocol CallAudioServiceDelegate: class {
         handleCallEnded(call: call)
     }
 
-    private func handleRemoteHangup(call: SignalCall) {
+    private func handleLocalHangup(call: IndividualCall) {
+        AssertIsOnMainThread()
+        Logger.debug("")
+
+        play(sound: .callEnded)
+        handleCallEnded(call: call)
+    }
+
+    private func handleRemoteHangup(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -262,7 +297,7 @@ protocol CallAudioServiceDelegate: class {
         handleCallEnded(call: call)
     }
 
-    private func handleBusy(call: SignalCall) {
+    private func handleBusy(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -274,7 +309,7 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func handleAnsweredElsewhere(call: SignalCall) {
+    private func handleAnsweredElsewhere(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -282,7 +317,7 @@ protocol CallAudioServiceDelegate: class {
         handleCallEnded(call: call)
     }
 
-    private func handleCallEnded(call: SignalCall) {
+    private func handleCallEnded(call: IndividualCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -333,7 +368,7 @@ protocol CallAudioServiceDelegate: class {
 
     // MARK: - Ringing
 
-    private func startRinging(call: SignalCall) {
+    private func startRinging(call: IndividualCall) {
         guard handleRinging else {
             Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
             return

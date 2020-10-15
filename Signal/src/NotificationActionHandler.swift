@@ -20,7 +20,7 @@ class NotificationActionHandler {
     }
 
     private var callUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callService.callUIAdapter
+        AppEnvironment.shared.callService.individualCallService.callUIAdapter
     }
 
     private var notificationPresenter: NotificationPresenter {

@@ -107,6 +107,16 @@ public extension StorageService {
                                        authCredential: authCredential)
     }
 
+    static func buildFetchGroupExternalCredentials(groupV2Params: GroupV2Params,
+                                                   authCredential: AuthCredential) throws -> GroupsV2Request {
+
+        return try buildGroupV2Request(protoData: nil,
+                                       urlString: "/v1/groups/token",
+                                       method: .get,
+                                       groupV2Params: groupV2Params,
+                                       authCredential: authCredential)
+    }
+
     private static func buildGroupV2Request(protoData: Data?,
                                             urlString: String,
                                             method: HTTPMethod,

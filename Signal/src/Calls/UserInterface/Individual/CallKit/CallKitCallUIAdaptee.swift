@@ -18,7 +18,6 @@ import SignalMessaging
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     private let callManager: CallKitCallManager
-    internal let callService: CallService
     internal let notificationPresenter: NotificationPresenter
     internal let contactsManager: OWSContactsManager
     private let showNamesOnCallScreen: Bool
@@ -89,13 +88,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return providerConfiguration
     }
 
-    init(callService: CallService, contactsManager: OWSContactsManager, notificationPresenter: NotificationPresenter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
+    init(contactsManager: OWSContactsManager, notificationPresenter: NotificationPresenter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
         AssertIsOnMainThread()
 
         Logger.debug("")
 
         self.callManager = CallKitCallManager(showNamesOnCallScreen: showNamesOnCallScreen)
-        self.callService = callService
         self.contactsManager = contactsManager
         self.notificationPresenter = notificationPresenter
 
@@ -133,15 +131,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
-    func failCall(_ call: SignalCall, error: CallError) {
+    func failCall(_ call: SignalCall, error: SignalCall.CallError) {
         AssertIsOnMainThread()
         Logger.info("")
 
         switch error {
         case .timeout(description: _):
-            provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.unanswered)
+            provider.reportCall(with: call.individualCall.localId, endedAt: Date(), reason: CXCallEndedReason.unanswered)
         default:
-            provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
+            provider.reportCall(with: call.individualCall.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
         }
 
         callManager.removeCall(call)
@@ -155,23 +153,23 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
 
         if showNamesOnCallScreen {
-            update.localizedCallerName = self.contactsManager.displayName(for: call.remoteAddress)
-            if let phoneNumber = call.remoteAddress.phoneNumber {
+            update.localizedCallerName = self.contactsManager.displayName(for: call.individualCall.remoteAddress)
+            if let phoneNumber = call.individualCall.remoteAddress.phoneNumber {
                 update.remoteHandle = CXHandle(type: .phoneNumber, value: phoneNumber)
             }
         } else {
-            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.individualCall.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
-            CallKitIdStore.setAddress(call.remoteAddress, forCallKitId: callKitId)
+            CallKitIdStore.setAddress(call.individualCall.remoteAddress, forCallKitId: callKitId)
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         }
 
-        update.hasVideo = call.offerMediaType == .video
+        update.hasVideo = call.individualCall.offerMediaType == .video
 
         disableUnsupportedFeatures(callUpdate: update)
 
         // Report the incoming call to the system
-        provider.reportNewIncomingCall(with: call.localId, update: update) { error in
+        provider.reportNewIncomingCall(with: call.individualCall.localId, update: update) { error in
             /*
              Only add incoming call to the app's list of calls if the call was allowed (i.e. there was no error)
              since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
@@ -208,18 +206,18 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        self.provider.reportOutgoingCall(with: call.localId, connectedAt: nil)
+        self.provider.reportOutgoingCall(with: call.individualCall.localId, connectedAt: nil)
 
         let update = CXCallUpdate()
         disableUnsupportedFeatures(callUpdate: update)
 
-        provider.reportCall(with: call.localId, updated: update)
+        provider.reportCall(with: call.individualCall.localId, updated: update)
 
         // When we tell CallKit about the call, it tries
         // to unmute the call. We can work around this
         // by ignoring the next "unmute" request from
         // CallKit after the call is answered.
-        ignoreFirstUnuteAfterRemoteAnswer = call.isMuted
+        ignoreFirstUnuteAfterRemoteAnswer = call.individualCall.isMuted
     }
 
     func localHangupCall(localId: UUID) {
@@ -239,7 +237,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
+        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
         callManager.removeCall(call)
     }
 
@@ -247,7 +245,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
+        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
         callManager.removeCall(call)
     }
 
@@ -255,7 +253,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.localId, endedAt: nil, reason: .answeredElsewhere)
+        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: .answeredElsewhere)
         callManager.removeCall(call)
     }
 
@@ -263,7 +261,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.localId, endedAt: nil, reason: .declinedElsewhere)
+        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: .declinedElsewhere)
         callManager.removeCall(call)
     }
 
@@ -282,9 +280,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         update.hasVideo = hasLocalVideo
 
         // Update the CallKit UI.
-        provider.reportCall(with: call.localId, updated: update)
+        provider.reportCall(with: call.individualCall.localId, updated: update)
 
-        self.callService.setHasLocalVideo(hasLocalVideo: hasLocalVideo)
+        self.callService.updateIsLocalVideoMuted(isLocalVideoMuted: !hasLocalVideo)
     }
 
     // MARK: CXProviderDelegate
@@ -295,7 +293,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // End any ongoing calls if the provider resets, and remove them from the app's list of calls,
         // since they are no longer valid.
-        callService.handleCallKitProviderReset()
+        callService.individualCallService.handleCallKitProviderReset()
 
         // Remove all calls from the app's list of calls.
         callManager.removeAllCalls()
@@ -314,10 +312,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't 
         // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by 
         // manually failing the call.
-        self.callService.handleOutgoingCall(call)
+        self.callService.individualCallService.handleOutgoingCall(call)
 
         action.fulfill()
-        self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
+        self.provider.reportOutgoingCall(with: call.individualCall.localId, startedConnectingAt: nil)
 
         // Update the name used in the CallKit UI for outgoing calls when the user prefers not to show names
         // in ther notifications
@@ -325,7 +323,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             let update = CXCallUpdate()
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
                                                            comment: "The generic name used for calls if CallKit privacy is enabled")
-            provider.reportCall(with: call.localId, updated: update)
+            provider.reportCall(with: call.individualCall.localId, updated: update)
         }
     }
 
@@ -340,7 +338,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        self.callService.handleAcceptCall(call)
+        self.callService.individualCallService.handleAcceptCall(call)
         action.fulfill()
     }
 
@@ -354,7 +352,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        self.callService.handleLocalHangupCall(call)
+        self.callService.individualCallService.handleLocalHangupCall(call)
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
@@ -372,8 +370,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        // Update the SignalCall's underlying hold state.
-        self.callService.setIsOnHold(call: call, isOnHold: action.isOnHold)
+        // Update the IndividualCall's underlying hold state.
+        self.callService.individualCallService.setIsOnHold(call: call, isOnHold: action.isOnHold)
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
@@ -392,7 +390,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         defer { ignoreFirstUnuteAfterRemoteAnswer = false }
         guard !ignoreFirstUnuteAfterRemoteAnswer || action.isMuted else { return }
 
-        self.callService.setIsMuted(call: call, isMuted: action.isMuted)
+        self.callService.updateIsLocalAudioMuted(call: call, isLocalAudioMuted: action.isMuted)
         action.fulfill()
     }
 

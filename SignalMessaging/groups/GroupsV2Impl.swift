@@ -2095,6 +2095,26 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
+    public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential> {
+        let requestBuilder: RequestBuilder = { authCredential in
+            firstly(on: .global()) { () -> GroupsV2Request in
+                try StorageService.buildFetchGroupExternalCredentials(groupV2Params: try groupModel.groupV2Params(),
+                                                                      authCredential: authCredential)
+            }
+        }
+
+        return firstly { () -> Promise<OWSHTTPResponse> in
+            return self.performServiceRequest(requestBuilder: requestBuilder,
+                                              groupId: groupModel.groupId,
+                                              behavior403: .fetchGroupUpdates)
+        }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoGroupExternalCredential in
+            guard let groupProtoData = response.responseData else {
+                throw OWSAssertionError("Invalid responseObject.")
+            }
+            return try GroupsProtoGroupExternalCredential(serializedData: groupProtoData)
+        }
+    }
+
     // MARK: - Utils
 
     private var daysSinceEpoch: UInt32 {

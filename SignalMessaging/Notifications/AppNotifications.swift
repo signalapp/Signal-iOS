@@ -223,7 +223,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-    public func presentIncomingCall(_ call: SignalCallNotificationInfo, callerName: String) {
+    public func presentIncomingCall(_ call: IndividualCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -261,7 +261,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCall(_ call: SignalCallNotificationInfo, callerName: String) {
+    public func presentMissedCall(_ call: IndividualCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -300,7 +300,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCallNotificationInfo, callerName: String) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: IndividualCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -332,7 +332,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(call: SignalCallNotificationInfo, callerName: String) {
+    public func presentMissedCallBecauseOfNewIdentity(call: IndividualCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -775,7 +775,7 @@ extension TruncatedList: Collection {
     }
 }
 
-public protocol SignalCallNotificationInfo {
+public protocol IndividualCallNotificationInfo {
     var remoteAddress: SignalServiceAddress { get }
     var localId: UUID { get }
     var offerMediaType: TSRecentCallOfferType { get }

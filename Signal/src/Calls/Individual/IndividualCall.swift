@@ -32,20 +32,12 @@ public enum CallDirection {
     case outgoing, incoming
 }
 
-// All Observer methods will be invoked from the main thread.
-public protocol CallObserver: class {
-    func stateDidChange(call: SignalCall, state: CallState)
-    func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
-    func muteDidChange(call: SignalCall, isMuted: Bool)
-    func holdDidChange(call: SignalCall, isOnHold: Bool)
-}
-
-public enum CallError: Error {
-    case providerReset
-    case disconnected
-    case externalError(underlyingError: Error)
-    case timeout(description: String)
-    case messageSendFailure(underlyingError: Error)
+public protocol IndividualCallDelegate: class {
+    func individualCallStateDidChange(_ call: IndividualCall, state: CallState)
+    func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
+    func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
+    func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
+    func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
 }
 
 /**
@@ -54,7 +46,7 @@ public enum CallError: Error {
  * This class' state should only be accessed on the main queue.
  */
 @objc
-public class SignalCall: NSObject, SignalCallNotificationInfo {
+public class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
     // Mark -
 
@@ -76,21 +68,12 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     let callAdapterType: CallAdapterType
 
-    let videoCaptureController = VideoCaptureController()
-
-    weak var localCaptureSession: AVCaptureSession? {
-        didSet {
-            AssertIsOnMainThread()
-
-            Logger.info("")
-        }
-    }
-
     weak var remoteVideoTrack: RTCVideoTrack? {
         didSet {
             AssertIsOnMainThread()
 
             Logger.info("")
+            delegate?.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
         }
     }
 
@@ -99,6 +82,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
             AssertIsOnMainThread()
 
             Logger.info("\(isRemoteVideoEnabled)")
+            delegate?.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
         }
     }
 
@@ -107,19 +91,6 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     // tracking cleanup
     var wasReportedToSystem = false
     var wasRemovedFromSystem = false
-    var didCallTerminate = false
-
-    public func terminate() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-        assert(!didCallTerminate)
-        didCallTerminate = true
-
-        removeAllObservers()
-    }
-
-    var observers: WeakArray<CallObserver> = []
 
     @objc
     public let remoteAddress: SignalServiceAddress
@@ -156,9 +127,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
         didSet {
             AssertIsOnMainThread()
 
-            for observer in observers.elements {
-                observer.hasLocalVideoDidChange(call: self, hasLocalVideo: hasLocalVideo)
-            }
+            delegate?.individualCallLocalVideoMuteDidChange(self, isVideoMuted: !hasLocalVideo)
         }
     }
 
@@ -167,19 +136,9 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
             AssertIsOnMainThread()
             Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self)")
 
-            // Update connectedDate
-            if case .connected = self.state {
-                // if it's the first time we've connected (not a reconnect)
-                if connectedDate == nil {
-                    connectedDate = NSDate()
-                }
-            }
-
             updateCallRecordType()
 
-            for observer in observers.elements {
-                observer.stateDidChange(call: self, state: state)
-            }
+            delegate?.individualCallStateDidChange(self, state: state)
         }
     }
 
@@ -194,28 +153,20 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
             Logger.debug("muted changed: \(oldValue) -> \(self.isMuted)")
 
-            for observer in observers.elements {
-                observer.muteDidChange(call: self, isMuted: isMuted)
-            }
+            delegate?.individualCallLocalAudioMuteDidChange(self, isAudioMuted: isMuted)
         }
     }
-
-    public let audioActivity: AudioActivity
 
     public var isOnHold = false {
         didSet {
             AssertIsOnMainThread()
             Logger.debug("isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
-            for observer in observers.elements {
-                observer.holdDidChange(call: self, isOnHold: isOnHold)
-            }
+            delegate?.individualCallHoldDidChange(self, isOnHold: isOnHold)
         }
     }
 
-    public var connectedDate: NSDate?
-
-    public var error: CallError?
+    public weak var delegate: IndividualCallDelegate?
 
     // MARK: Initializers and Factory Methods
 
@@ -225,7 +176,6 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
         self.state = state
         self.remoteAddress = remoteAddress
         self.thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
-        self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remoteAddress)", behavior: .call)
         self.sentAtTimestamp = sentAtTimestamp
         self.callAdapterType = callAdapterType
     }
@@ -234,9 +184,6 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
         Logger.debug("")
         if !isEnded {
             owsFailDebug("isEnded was unexpectedly false")
-        }
-        if !didCallTerminate {
-            owsFailDebug("didCallTerminate was unexpectedly false")
         }
         if wasReportedToSystem {
             if !wasRemovedFromSystem {
@@ -250,49 +197,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
     }
 
     override public var description: String {
-        return "SignalCall: {\(remoteAddress), localId: \(localId), signalingId: \(callId as Optional)))}"
-    }
-
-    public class func outgoingCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
-        return SignalCall(direction: .outgoing, localId: localId, state: .dialing, remoteAddress: remoteAddress, sentAtTimestamp: Date.ows_millisecondTimestamp(), callAdapterType: .default)
-    }
-
-    public class func incomingCall(localId: UUID, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64, offerMediaType: TSRecentCallOfferType) -> SignalCall {
-        // If this is a video call, we want to use in the in app call screen
-        // because CallKit has poor support for video calls.
-        let callAdapterType: CallAdapterType
-        if offerMediaType == .video {
-            callAdapterType = .nonCallKit
-        } else {
-            callAdapterType = .default
-        }
-
-        let call = SignalCall(direction: .incoming, localId: localId, state: .answering, remoteAddress: remoteAddress, sentAtTimestamp: sentAtTimestamp, callAdapterType: callAdapterType)
-        call.offerMediaType = offerMediaType
-        return call
-    }
-
-    // -
-
-    public func addObserverAndSyncState(observer: CallObserver) {
-        AssertIsOnMainThread()
-
-        observers.append(observer)
-
-        // Synchronize observer with current call state
-        observer.stateDidChange(call: self, state: state)
-    }
-
-    public func removeObserver(_ observer: CallObserver) {
-        AssertIsOnMainThread()
-
-        observers.removeAll { $0 === observer }
-    }
-
-    public func removeAllObservers() {
-        AssertIsOnMainThread()
-
-        observers = []
+        return "IndividualCall: {\(remoteAddress), localId: \(localId), signalingId: \(callId as Optional)))}"
     }
 
     private func updateCallRecordType() {
@@ -315,12 +220,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     // MARK: Equatable
 
-    static func == (lhs: SignalCall, rhs: SignalCall) -> Bool {
+    static func == (lhs: IndividualCall, rhs: IndividualCall) -> Bool {
         return lhs.localId == rhs.localId
-    }
-
-    // This method should only be called when the call state is "connected".
-    public func connectionDuration() -> TimeInterval {
-        return -connectedDate!.timeIntervalSinceNow
     }
 }

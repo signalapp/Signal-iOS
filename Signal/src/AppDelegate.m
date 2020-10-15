@@ -777,10 +777,12 @@ void uncaughtExceptionHandler(NSException *exception)
             // * It can be received if the user taps the "video" button for a contact in the
             //   contacts app.  If so, the correct response is to try to initiate a new call
             //   to that user - unless there already is another call in progress.
-            if (AppEnvironment.shared.callService.currentCall != nil) {
-                if ([address isEqualToAddress:AppEnvironment.shared.callService.currentCall.remoteAddress]) {
+            SignalCall *_Nullable currentCall = AppEnvironment.shared.callService.currentCall;
+            if (currentCall != nil) {
+                if (currentCall.isIndividualCall &&
+                    [address isEqualToAddress:currentCall.individualCall.remoteAddress]) {
                     OWSLogWarn(@"trying to upgrade ongoing call to video.");
-                    [AppEnvironment.shared.callService handleCallKitStartVideo];
+                    [AppEnvironment.shared.callService.individualCallService handleCallKitStartVideo];
                     return;
                 } else {
                     OWSLogWarn(@"ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.");
@@ -788,9 +790,10 @@ void uncaughtExceptionHandler(NSException *exception)
                 }
             }
 
-            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-            OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithAddress:address];
+            OutboundIndividualCallInitiator *outboundIndividualCallInitiator
+                = AppEnvironment.shared.outboundIndividualCallInitiator;
+            OWSAssertDebug(outboundIndividualCallInitiator);
+            [outboundIndividualCallInitiator initiateCallWithAddress:address];
         }];
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
@@ -827,9 +830,10 @@ void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-            OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithAddress:address];
+            OutboundIndividualCallInitiator *outboundIndividualCallInitiator
+                = AppEnvironment.shared.outboundIndividualCallInitiator;
+            OWSAssertDebug(outboundIndividualCallInitiator);
+            [outboundIndividualCallInitiator initiateCallWithAddress:address];
         }];
         return YES;
 
@@ -874,9 +878,10 @@ void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-            OWSAssertDebug(outboundCallInitiator);
-            [outboundCallInitiator initiateCallWithAddress:address];
+            OutboundIndividualCallInitiator *outboundIndividualCallInitiator
+                = AppEnvironment.shared.outboundIndividualCallInitiator;
+            OWSAssertDebug(outboundIndividualCallInitiator);
+            [outboundIndividualCallInitiator initiateCallWithAddress:address];
         }];
         return YES;
     } else if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {

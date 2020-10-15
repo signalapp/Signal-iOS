@@ -1206,10 +1206,10 @@ typedef enum : NSUInteger {
             [self scrollToDefaultPositionAnimated:YES];
             break;
         case ConversationViewActionAudioCall:
-            [self startAudioCall];
+            [self startIndividualAudioCall];
             break;
         case ConversationViewActionVideoCall:
-            [self startVideoCall];
+            [self startIndividualVideoCall];
             break;
     }
 
@@ -1402,25 +1402,38 @@ typedef enum : NSUInteger {
             }
             NSMutableArray<UIBarButtonItem *> *barButtons = [NSMutableArray new];
             if ([self canCall]) {
-                UIBarButtonItem *audioCallButton =
-                    [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconAudioCall]
-                                                     style:UIBarButtonItemStylePlain
-                                                    target:self
-                                                    action:@selector(startAudioCall)];
-                audioCallButton.enabled = !OWSWindowManager.shared.hasCall;
-                audioCallButton.accessibilityLabel
-                    = NSLocalizedString(@"AUDIO_CALL_LABEL", "Accessibility label for placing an audio call");
-                [barButtons addObject:audioCallButton];
+                if (self.isGroupConversation) {
+                    // TODO: Show different state if the group call is started.
+                    UIBarButtonItem *videoCallButton =
+                        [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconVideoCall]
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:self
+                                                        action:@selector(showGroupCallLobby)];
+                    videoCallButton.enabled = !OWSWindowManager.shared.hasCall;
+                    videoCallButton.accessibilityLabel
+                        = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
+                    [barButtons addObject:videoCallButton];
+                } else {
+                    UIBarButtonItem *audioCallButton =
+                        [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconAudioCall]
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:self
+                                                        action:@selector(startIndividualAudioCall)];
+                    audioCallButton.enabled = !OWSWindowManager.shared.hasCall;
+                    audioCallButton.accessibilityLabel
+                        = NSLocalizedString(@"AUDIO_CALL_LABEL", "Accessibility label for placing an audio call");
+                    [barButtons addObject:audioCallButton];
 
-                UIBarButtonItem *videoCallButton =
-                    [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconVideoCall]
-                                                     style:UIBarButtonItemStylePlain
-                                                    target:self
-                                                    action:@selector(startVideoCall)];
-                videoCallButton.enabled = !OWSWindowManager.shared.hasCall;
-                videoCallButton.accessibilityLabel
-                    = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
-                [barButtons addObject:videoCallButton];
+                    UIBarButtonItem *videoCallButton =
+                        [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconVideoCall]
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:self
+                                                        action:@selector(startIndividualVideoCall)];
+                    videoCallButton.enabled = !OWSWindowManager.shared.hasCall;
+                    videoCallButton.accessibilityLabel
+                        = NSLocalizedString(@"VIDEO_CALL_LABEL", "Accessibility label for placing a video call");
+                    [barButtons addObject:videoCallButton];
+                }
             }
 
             self.navigationItem.rightBarButtonItems = [barButtons copy];
@@ -1522,17 +1535,35 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (void)startAudioCall
+- (void)showGroupCallLobby
 {
-    [self callWithVideo:NO];
+    if (!self.isGroupConversation) {
+        OWSFailDebug(@"Tried to present group call for non-group thread.");
+        return;
+    }
+
+    if (!self.canCall) {
+        OWSFailDebug(@"Tried to initiate a call but thread is not callable.");
+        return;
+    }
+
+    // We initiated a call, so if there was a pending message request we should accept it.
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
+
+    [GroupCallViewController presentLobbyForThread:(TSGroupThread *)self.thread];
 }
 
-- (void)startVideoCall
+- (void)startIndividualAudioCall
 {
-    [self callWithVideo:YES];
+    [self individualCallWithVideo:NO];
 }
 
-- (void)callWithVideo:(BOOL)isVideo
+- (void)startIndividualVideoCall
+{
+    [self individualCallWithVideo:YES];
+}
+
+- (void)individualCallWithVideo:(BOOL)isVideo
 {
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         OWSFailDebug(@"unexpected thread: %@", self.thread);
@@ -1549,7 +1580,7 @@ typedef enum : NSUInteger {
     if ([self isBlockedConversation]) {
         [self showUnblockConversationUI:^(BOOL isBlocked) {
             if (!isBlocked) {
-                [weakSelf callWithVideo:isVideo];
+                [weakSelf individualCallWithVideo:isVideo];
             }
         }];
         return;
@@ -1559,7 +1590,7 @@ typedef enum : NSUInteger {
         [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[CallStrings confirmAndCallButtonTitle]
                                                                completion:^(BOOL didConfirmIdentity) {
                                                                    if (didConfirmIdentity) {
-                                                                       [weakSelf callWithVideo:isVideo];
+                                                                       [weakSelf individualCallWithVideo:isVideo];
                                                                    }
                                                                }];
     if (didShowSNAlert) {
@@ -1569,7 +1600,7 @@ typedef enum : NSUInteger {
     // We initiated a call, so if there was a pending message request we should accept it.
     [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction:self.thread];
 
-    [self.outboundCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
+    [self.outboundIndividualCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
 }
 
 - (BOOL)canCall
@@ -1579,7 +1610,7 @@ typedef enum : NSUInteger {
     }
 
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        return NO;
+        return SSKFeatureFlags.groupCalling && self.thread.isGroupV2Thread;
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -1970,10 +2001,10 @@ typedef enum : NSUInteger {
                                          handler:^(ActionSheetAction *action) {
                                              switch (call.offerType) {
                                                  case TSRecentCallOfferTypeAudio:
-                                                     [weakSelf startAudioCall];
+                                                     [weakSelf startIndividualAudioCall];
                                                      break;
                                                  case TSRecentCallOfferTypeVideo:
-                                                     [weakSelf startVideoCall];
+                                                     [weakSelf startIndividualVideoCall];
                                                      break;
                                              }
                                          }];

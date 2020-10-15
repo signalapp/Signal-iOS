@@ -148,6 +148,8 @@ public protocol GroupsV2Swift: GroupsV2 {
     func cancelMemberRequests(groupModel: TSGroupModelV2) -> Promise<TSGroupThread>
 
     func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2)
+
+    func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential>
 }
 
 // MARK: -
@@ -640,6 +642,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(groupModel: TSGroupModelV2) {
         owsFail("Not implemented.")
+    }
+
+    public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential> {
+        owsFail("Not implemented")
     }
 }
 

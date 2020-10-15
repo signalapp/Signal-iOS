@@ -241,7 +241,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
 - (void)didChangeCallLoggingPreference:(NSNotification *)notification
 {
-    [AppEnvironment.shared.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService.individualCallService createCallUIAdapter];
 }
 
 #pragma mark - Methods

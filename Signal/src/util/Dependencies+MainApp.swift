@@ -27,11 +27,11 @@ public extension UIResponder {
     }
 
     var callUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callService.callUIAdapter
+        AppEnvironment.shared.callService.individualCallService.callUIAdapter
     }
 
     static var callUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callService.callUIAdapter
+        AppEnvironment.shared.callService.individualCallService.callUIAdapter
     }
 
     var notificationPresenter: NotificationPresenter {
@@ -42,12 +42,12 @@ public extension UIResponder {
         AppEnvironment.shared.notificationPresenter
     }
 
-    var outboundCallInitiator: OutboundCallInitiator {
-        AppEnvironment.shared.outboundCallInitiator
+    var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
+        AppEnvironment.shared.outboundIndividualCallInitiator
     }
 
-    static var outboundCallInitiator: OutboundCallInitiator {
-        AppEnvironment.shared.outboundCallInitiator
+    static var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
+        AppEnvironment.shared.outboundIndividualCallInitiator
     }
 
     var pushRegistrationManager: PushRegistrationManager {
