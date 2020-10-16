@@ -174,7 +174,7 @@ public class GroupLinkViewController: OWSTableViewController {
         guard canEditGroupLinkSettings else {
             let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
                                             comment: "Message indicating that a feature can only be used by group admins.")
-            OWSActionSheets.showErrorAlert(message: message)
+            showToast(message: message)
             updateTableContents()
             return
         }
@@ -195,7 +195,7 @@ public class GroupLinkViewController: OWSTableViewController {
         guard canEditGroupLinkSettings && groupModelV2.isGroupInviteLinkEnabled else {
             let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
                                             comment: "Message indicating that a feature can only be used by group admins.")
-            OWSActionSheets.showErrorAlert(message: message)
+            showToast(message: message)
             updateTableContents()
             return
         }
@@ -204,6 +204,12 @@ public class GroupLinkViewController: OWSTableViewController {
         let linkMode = self.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
                                      approveNewMembers: sender.isOn)
         updateLinkMode(linkMode: linkMode)
+    }
+
+    private func showToast(message: String) {
+        let toastController = ToastController(text: message)
+        let toastInset = bottomLayoutGuide.length + 8
+        toastController.presentToastView(fromBottomOfView: view, inset: toastInset)
     }
 
     func shareLinkPressed() {
