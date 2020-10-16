@@ -337,6 +337,16 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     }];
 }
 
+#if TESTABLE_BUILD
+- (void)removeAll:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogWarn(@"");
+
+    [self.keyStore removeAllWithTransaction:transaction];
+    [self.metadataStore removeAllWithTransaction:transaction];
+}
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

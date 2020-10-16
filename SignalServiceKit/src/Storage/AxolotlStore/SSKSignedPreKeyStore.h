@@ -48,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)logSignedPreKeyReport;
 
+#if TESTABLE_BUILD
+- (void)removeAll:(SDSAnyWriteTransaction *)transaction;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

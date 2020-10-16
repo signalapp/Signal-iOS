@@ -140,6 +140,18 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)checkPreKeysIfNecessary
 {
+    [self checkPreKeysWithShouldThrottle:YES];
+}
+
+#if TESTABLE_BUILD
++ (void)checkPreKeysImmediately
+{
+    [self checkPreKeysWithShouldThrottle:NO];
+}
+#endif
+
++ (void)checkPreKeysWithShouldThrottle:(BOOL)shouldThrottle
+{
     if (!CurrentAppContext().isMainAppAndActive) {
         return;
     }
@@ -147,44 +159,47 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         return;
     }
 
+    // Order matters here - if we rotated *before* refreshing, we'd risk uploading
+    // two SPK's in a row since RefreshPreKeysOperation can also upload a new SPK.
+    NSMutableArray<NSOperation *> *operations = [NSMutableArray new];
+
     // Don't rotate or clean up prekeys until all incoming messages
     // have been drained, decrypted and processed.
     MessageProcessingOperation *messageProcessingOperation = [MessageProcessingOperation new];
+    [operations addObject:messageProcessingOperation];
 
     SSKRefreshPreKeysOperation *refreshOperation = [SSKRefreshPreKeysOperation new];
 
-    __weak SSKRefreshPreKeysOperation *weakRefreshOperation = refreshOperation;
-    NSBlockOperation *checkIfRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
-        NSDate *_Nullable lastPreKeyCheckTimestamp = TSPreKeyManager.shared.lastPreKeyCheckTimestamp;
-        BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
-                            || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
-        if (!shouldCheck) {
-            [weakRefreshOperation cancel];
-        }
-    }];
+    if (shouldThrottle) {
+        __weak SSKRefreshPreKeysOperation *weakRefreshOperation = refreshOperation;
+        NSBlockOperation *checkIfRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
+            NSDate *_Nullable lastPreKeyCheckTimestamp = TSPreKeyManager.shared.lastPreKeyCheckTimestamp;
+            BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
+                || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
+            if (!shouldCheck) {
+                [weakRefreshOperation cancel];
+            }
+        }];
+        [operations addObject:checkIfRefreshNecessaryOperation];
+    }
+    [operations addObject:refreshOperation];
 
     SSKRotateSignedPreKeyOperation *rotationOperation = [SSKRotateSignedPreKeyOperation new];
 
-    __weak SSKRotateSignedPreKeyOperation *weakRotationOperation = rotationOperation;
-    NSBlockOperation *checkIfRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
-        SignedPreKeyRecord *_Nullable signedPreKey = [self.signedPreKeyStore currentSignedPreKey];
+    if (shouldThrottle) {
+        __weak SSKRotateSignedPreKeyOperation *weakRotationOperation = rotationOperation;
+        NSBlockOperation *checkIfRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
+            SignedPreKeyRecord *_Nullable signedPreKey = [self.signedPreKeyStore currentSignedPreKey];
 
-        BOOL shouldCheck
-        = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
-        if (!shouldCheck) {
-            [weakRotationOperation cancel];
-        }
-    }];
-
-    // Order matters here - if we rotated *before* refreshing, we'd risk uploading
-    // two SPK's in a row since RefreshPreKeysOperation can also upload a new SPK.
-    NSArray<NSOperation *> *operations = @[
-        messageProcessingOperation,
-        checkIfRefreshNecessaryOperation,
-        refreshOperation,
-        checkIfRotationNecessaryOperation,
-        rotationOperation
-    ];
+            BOOL shouldCheck
+                = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
+            if (!shouldCheck) {
+                [weakRotationOperation cancel];
+            }
+        }];
+        [operations addObject:checkIfRotationNecessaryOperation];
+    }
+    [operations addObject:rotationOperation];
 
     // Set up dependencies; we want to perform these operations serially.
     NSOperation *_Nullable lastOperation;
@@ -239,7 +254,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         }
     });
 }
-
 
 + (void)clearSignedPreKeyRecords {
     NSNumber *_Nullable currentSignedPrekeyId = [self.signedPreKeyStore currentSignedPrekeyId];
