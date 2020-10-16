@@ -14,7 +14,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case contactPermissionReminder
     case linkPreviews
     case researchMegaphone1
-    case groupsV2AndMentionsSplash
+    case groupsV2AndMentionsSplash2
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -59,7 +59,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return true
         case .researchMegaphone1:
             return RemoteConfig.researchMegaphone
-        case .groupsV2AndMentionsSplash:
+        case .groupsV2AndMentionsSplash2:
             return FeatureFlags.groupsV2showSplash
         }
     }
@@ -114,7 +114,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return .medium
         case .researchMegaphone1:
             return .low
-        case .groupsV2AndMentionsSplash:
+        case .groupsV2AndMentionsSplash2:
             return .medium
         }
     }
@@ -176,7 +176,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
-        case .groupsV2AndMentionsSplash:        return .groupsV2AndMentionsSplash
+        case .groupsV2AndMentionsSplash2:       return .groupsV2AndMentionsSplash2
         }
     }
 }
@@ -335,7 +335,7 @@ public enum ObjcExperienceUpgradeId: Int {
     case contactPermissionReminder
     case linkPreviews
     case researchMegaphone1
-    case groupsV2AndMentionsSplash
+    case groupsV2AndMentionsSplash2
 
     public var swiftRepresentation: ExperienceUpgradeId {
         switch self {
@@ -346,7 +346,7 @@ public enum ObjcExperienceUpgradeId: Int {
         case .contactPermissionReminder:        return .contactPermissionReminder
         case .linkPreviews:                     return .linkPreviews
         case .researchMegaphone1:               return .researchMegaphone1
-        case .groupsV2AndMentionsSplash:        return .groupsV2AndMentionsSplash
+        case .groupsV2AndMentionsSplash2:       return .groupsV2AndMentionsSplash2
         }
     }
 }
