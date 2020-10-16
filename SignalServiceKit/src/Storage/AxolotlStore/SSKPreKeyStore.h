@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <AxolotlKit/PreKeyStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 
 @interface SSKPreKeyStore : NSObject <PreKeyStore>
@@ -14,6 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
 - (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords NS_SWIFT_NAME(storePreKeyRecords(_:));
+
+#if TESTABLE_BUILD
+- (void)removeAll:(SDSAnyWriteTransaction *)transaction;
+#endif
 
 @end
 

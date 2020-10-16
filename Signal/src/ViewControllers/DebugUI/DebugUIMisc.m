@@ -20,6 +20,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 
@@ -229,7 +230,32 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Update account attributes"
                                      actionBlock:^() { [TSAccountManager.shared updateAccountAttributes]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Check Prekeys"
+                                     actionBlock:^() { [TSPreKeyManager checkPreKeysImmediately]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Remove All Prekeys"
+                                     actionBlock:^() { [DebugUIMisc removeAllPrekeys]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Remove All Sessions"
+                                     actionBlock:^() { [DebugUIMisc removeAllSessions]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
+}
+
++ (void)removeAllPrekeys
+{
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [SSKEnvironment.shared.signedPreKeyStore removeAll:transaction];
+        [SSKEnvironment.shared.preKeyStore removeAll:transaction];
+    });
+}
+
++ (void)removeAllSessions
+{
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [SSKEnvironment.shared.signedPreKeyStore removeAll:transaction];
+        [SSKEnvironment.shared.preKeyStore removeAll:transaction];
+    });
 }
 
 + (void)reregister

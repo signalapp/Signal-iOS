@@ -31,6 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)checkPreKeysIfNecessary;
 
+#if TESTABLE_BUILD
++ (void)checkPreKeysImmediately;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END
