@@ -5398,13 +5398,13 @@ typedef enum : NSUInteger {
     }
     dispatch_async(dispatch_get_main_queue(), ^{
         __block TSInteraction *targetInteraction;
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *t) {
                 if (interaction.timestampForUI == timestamp.unsignedLongLongValue) {
                     targetInteraction = interaction;
                 }
             }];
-        } error:nil];
+        }];
         if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
         NSString *hexEncodedPublicKey = targetInteraction.thread.contactIdentifier;
         if (hexEncodedPublicKey == nil) { return; }

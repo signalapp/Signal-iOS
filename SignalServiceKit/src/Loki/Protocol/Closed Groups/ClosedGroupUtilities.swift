@@ -10,6 +10,7 @@ public final class ClosedGroupUtilities : NSObject {
         @objc public static let invalidGroupPublicKey = SSKDecryptionError(domain: "SSKErrorDomain", code: 1, userInfo: [ NSLocalizedDescriptionKey : "Invalid group public key." ])
         @objc public static let noData = SSKDecryptionError(domain: "SSKErrorDomain", code: 2, userInfo: [ NSLocalizedDescriptionKey : "Received an empty envelope." ])
         @objc public static let noGroupPrivateKey = SSKDecryptionError(domain: "SSKErrorDomain", code: 3, userInfo: [ NSLocalizedDescriptionKey : "Missing group private key." ])
+        @objc public static let selfSend = SSKDecryptionError(domain: "SSKErrorDomain", code: 4, userInfo: [ NSLocalizedDescriptionKey : "Message addressed at self." ])
     }
 
     @objc(encryptData:usingGroupPublicKey:transaction:error:)
@@ -59,6 +60,7 @@ public final class ClosedGroupUtilities : NSObject {
         // 4. ) Parse the closed group ciphertext message
         let closedGroupCiphertextMessage = ClosedGroupCiphertextMessage(_throws_with: closedGroupCiphertextMessageAsData)
         let senderPublicKey = closedGroupCiphertextMessage.senderPublicKey.toHexString()
+        guard senderPublicKey != getUserHexEncodedPublicKey() else { throw SSKDecryptionError.selfSend }
         // 5. ) Use the info inside the closed group ciphertext message to decrypt the actual message content
         let plaintext = try SharedSenderKeysImplementation.shared.decrypt(closedGroupCiphertextMessage.ivAndCiphertext, forGroupWithPublicKey: groupPublicKey,
             senderPublicKey: senderPublicKey, keyIndex: UInt(closedGroupCiphertextMessage.keyIndex), protocolContext: transaction)
