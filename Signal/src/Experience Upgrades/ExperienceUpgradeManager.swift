@@ -134,7 +134,7 @@ class ExperienceUpgradeManager: NSObject {
             return OWSProfileManager.shared().localFullName()?.isEmpty != false
         case .introducingPins:
             return true
-        case .groupsV2AndMentionsSplash:
+        case .groupsV2AndMentionsSplash2:
             return true
         default:
             return false
@@ -147,7 +147,7 @@ class ExperienceUpgradeManager: NSObject {
             return IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
         case .messageRequests:
             return MessageRequestsSplash(experienceUpgrade: experienceUpgrade)
-        case .groupsV2AndMentionsSplash:
+        case .groupsV2AndMentionsSplash2:
             return GroupsV2AndMentionsSplash(experienceUpgrade: experienceUpgrade)
         default:
             return nil
@@ -168,7 +168,7 @@ class ExperienceUpgradeManager: NSObject {
         case .messageRequests:
             // no need to annoy user with banner for message requests. They are self explanatory.
             return false
-        case .groupsV2AndMentionsSplash:
+        case .groupsV2AndMentionsSplash2:
             return false
         default:
             return false
