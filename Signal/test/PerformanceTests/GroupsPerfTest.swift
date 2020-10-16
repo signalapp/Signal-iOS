@@ -8,7 +8,7 @@ import SignalServiceKit
 
 class GroupsPerfTest: PerformanceBaseTest {
 
-    private let iterationCount: UInt64 = 5 * 1000
+    private let iterationCount: UInt64 = DebugFlags.fastPerfTests ? 5 : 5 * 1000
 
     func testMembershipSerialization() {
         let membership = Self.buildMembership()

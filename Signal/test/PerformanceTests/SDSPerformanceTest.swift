@@ -32,7 +32,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
             XCTAssertEqual(0, TSInteraction.anyFetchAll(transaction: transaction).count)
         }
 
-        let messageCount = 100
+        let messageCount = DebugFlags.fastPerfTests ? 5 : 100
         var uniqueIds = [String]()
 
         let messageFactory = OutgoingMessageFactory()
@@ -76,7 +76,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
     }
 
     func fetchMessages() {
-        let messageCount = 100
+        let messageCount = DebugFlags.fastPerfTests ? 5 : 100
         let fetchCount = messageCount * 5
 
         var uniqueIds = [String]()
@@ -136,7 +136,7 @@ class SDSPerformanceTest: PerformanceBaseTest {
     }
 
     func enumerateMessages(batched: Bool) {
-        let messageCount = 100
+        let messageCount = DebugFlags.fastPerfTests ? 5 : 100
         let enumerationCount = 10
 
         var uniqueIds = [String]()

@@ -413,6 +413,9 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let groupCallingIgnoreMembershipProof = true
 
+    @objc
+    public static let fastPerfTests = false
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)

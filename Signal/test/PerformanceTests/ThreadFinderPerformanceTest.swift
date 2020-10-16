@@ -8,20 +8,6 @@ import SignalServiceKit
 
 class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
-    func testYDBPerf_enumerateVisibleThreads() {
-        storageCoordinator.useYDBForTests()
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateVisibleThreads(isArchived: false)
-        }
-    }
-
-    func testYDBPerf_enumerateVisibleThreads_isArchived() {
-        storageCoordinator.useYDBForTests()
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            enumerateVisibleThreads(isArchived: true)
-        }
-    }
-
     func testGRDBPerf_enumerateVisibleThreads() {
         storageCoordinator.useGRDBForTests()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
@@ -41,7 +27,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         // of threads with a large number of messages.
         //
         // NOTE: the total thread count is 4 x threadCount.
-        let threadCount = 100
+        let threadCount = DebugFlags.fastPerfTests ? 5 : 100
         var emptyThreads = [TSThread]()
         var hasMessageThreads = [TSThread]()
         var archivedThreads = [TSThread]()
@@ -73,7 +59,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         }
 
         // Note that we enumerate _twice_ (archived & non-archived)
-        let readCount = 10
+        let readCount = DebugFlags.fastPerfTests ? 2 : 10
 
         read { transaction in
             self.startMeasuring()
@@ -118,7 +104,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         return result
     }
 
-    private let threadMessageCount = 10
+    private let threadMessageCount = DebugFlags.fastPerfTests ? 2 : 10
 
     func insertThread(threadType: ThreadType) -> TSThread {
         // .empty

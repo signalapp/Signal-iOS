@@ -8,7 +8,7 @@ import SignalServiceKit
 
 class UnfairLockPerformanceTest: PerformanceBaseTest {
 
-    private let iterationCount: UInt64 = 1000 * 1000
+    private let iterationCount: UInt64 = DebugFlags.fastPerfTests ? 100 : 1000 * 1000
 
     // A simple "happy path" test with no contention or load.
     func testUnfairLock() {

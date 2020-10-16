@@ -46,6 +46,8 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
         MockSSKEnvironment.shared.messageSender = MessageSender()
         MockSSKEnvironment.shared.messageSenderJobQueue.setup()
 
+        try! databaseStorage.grdbStorage.setup()
+
         // Observe DB changes so we can know when all the async processing is done
         let dbObserver = BlockObserver(block: { self.dbObserverBlock?() })
         self.dbObserver = dbObserver
@@ -59,13 +61,6 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     // MARK: -
 
-    func testYapDBPerf_messageSending_contactThread() {
-        storageCoordinator.useYDBForTests()
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            sendMessages_contactThread()
-        }
-    }
-
     func testGRDBPerf_messageSending_contactThread() {
         // This is an example of a performance test case.
         storageCoordinator.useGRDBForTests()
@@ -74,13 +69,6 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
             sendMessages_contactThread()
         }
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
-    }
-
-    func testYapDBPerf_messageSending_groupThread() {
-        storageCoordinator.useYDBForTests()
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            sendMessages_groupThread()
-        }
     }
 
     func testGRDBPerf_messageSending_groupThread() {
@@ -150,12 +138,11 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
     }
 
     func sendMessages(thread: TSThread) {
-        let totalNumberToSend = 50
+        let totalNumberToSend = DebugFlags.fastPerfTests ? 5 : 50
         let expectMessagesSent = expectation(description: "messages sent")
-        var hasFulfilled = false
+        let hasFulfilled = AtomicBool(false)
         let fulfillOnce = {
-            if !hasFulfilled {
-                hasFulfilled = true
+            if hasFulfilled.tryToSetFlag() {
                 expectMessagesSent.fulfill()
             }
         }

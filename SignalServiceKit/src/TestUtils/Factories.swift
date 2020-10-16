@@ -436,7 +436,8 @@ public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var groupsVersionBuilder: () -> GroupsVersion = {
-        return GroupManager.defaultGroupsVersion
+        // TODO: Make this .V2.
+        return .V1
     }
 
     @objc
@@ -638,7 +639,7 @@ public class ContactFactory {
     public var lastNameBuilder: () -> String? = {
         return CommonGenerator.lastName()
     }
-    
+
     public var nicknameBuilder: () -> String? = {
         return CommonGenerator.nickname()
     }
@@ -1760,7 +1761,7 @@ public class CommonGenerator: NSObject {
         "Zamora",
         "Zimmerman"
     ]
-    
+
     @objc
     static public let nicknames = [
         "AAAA",

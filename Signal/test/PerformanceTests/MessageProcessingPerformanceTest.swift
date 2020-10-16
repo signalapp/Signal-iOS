@@ -46,6 +46,9 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
+        storageCoordinator.useGRDBForTests()
+        try! databaseStorage.grdbStorage.setupUIDatabase()
+
         // for unit tests, we must manually start the decryptJobQueue
         SSKEnvironment.shared.messageDecryptJobQueue.setup()
 
@@ -62,20 +65,10 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     // MARK: - Tests
 
     func testGRDBPerf_messageProcessing() {
-        storageCoordinator.useGRDBForTests()
-        try! databaseStorage.grdbStorage.setupUIDatabase()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             processIncomingMessages()
         }
         databaseStorage.grdbStorage.testing_tearDownUIDatabase()
-    }
-
-    func testYapDBPerf_messageProcessing() {
-        // Getting this working will require a new observer pattern.
-        storageCoordinator.useYDBForTests()
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            processIncomingMessages()
-        }
     }
 
     func processIncomingMessages() {
@@ -103,13 +96,13 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
             return try! envelopeBuilder.buildSerializedData()
         }
 
-        let envelopeDatas: [Data] = (0..<500).map { _ in buildEnvelopeData() }
+        let envelopeCount: Int = DebugFlags.fastPerfTests ? 5 : 500
+        let envelopeDatas: [Data] = (0..<envelopeCount).map { _ in buildEnvelopeData() }
 
         let expectMessagesProcessed = expectation(description: "messages processed")
-        var hasFulfilled = false
+        let hasFulfilled = AtomicBool(false)
         let fulfillOnce = {
-            if !hasFulfilled {
-                hasFulfilled = true
+            if hasFulfilled.tryToSetFlag() {
                 expectMessagesProcessed.fulfill()
             }
         }
@@ -125,7 +118,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         startMeasuring()
         for envelopeData in envelopeDatas {
-            messageReceiver.handleReceivedEnvelopeData(envelopeData)
+            messageReceiver.handleReceivedEnvelopeData(envelopeData, serverDeliveryTimestamp: 0)
         }
 
         waitForExpectations(timeout: 15.0) { _ in
