@@ -232,8 +232,12 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
 
     override public func run() {
         self.messageSender.sendMessage(message.asPreparer,
-                                       success: reportSuccess,
-                                       failure: reportError(withUndefinedRetry:))
+                                       success: {
+                                        self.reportSuccess()
+        },
+                                       failure: { error in
+                                        self.reportError(withUndefinedRetry: error)
+        })
     }
 
     override public func didSucceed() {

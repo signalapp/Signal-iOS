@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,8 +8,8 @@ import SignalServiceKit
 
 class ThreadPerformanceTest: PerformanceBaseTest {
 
-    let threadCount = 10
-    let interactionCount: UInt = 100
+    let threadCount = DebugFlags.fastPerfTests ? 2 : 10
+    let interactionCount: UInt = DebugFlags.fastPerfTests ? 5 : 100
 
     // MARK: - writeThreadAndInteractions
 

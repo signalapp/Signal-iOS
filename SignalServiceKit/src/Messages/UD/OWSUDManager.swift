@@ -595,9 +595,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     public func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
                                          success: @escaping (SenderCertificates) -> Void,
                                          failure: @escaping (Error) -> Void) {
-        ensureSenderCertificates(certificateExpirationPolicy: certificateExpirationPolicy)
-            .done(success)
-            .catch(failure)
+        firstly {
+            self.ensureSenderCertificates(certificateExpirationPolicy: certificateExpirationPolicy)
+        }.done { senderCertificates in
+            success(senderCertificates)
+        }.catch { error in
+            failure(error)
+        }
     }
 
     public func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificates> {
@@ -607,7 +611,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
         let defaultPromise = ensureSenderCertificate(uuidOnly: false, certificateExpirationPolicy: certificateExpirationPolicy)
         let uuidOnlyPromise = ensureSenderCertificate(uuidOnly: true, certificateExpirationPolicy: certificateExpirationPolicy)
-        return when(fulfilled: defaultPromise, uuidOnlyPromise).map { defaultCert, uuidOnlyCert in
+        return firstly {
+            when(fulfilled: defaultPromise, uuidOnlyPromise)
+        }.map(on: .global()) { defaultCert, uuidOnlyCert in
             return SenderCertificates(defaultCert: defaultCert, uuidOnlyCert: uuidOnlyCert)
         }
     }
@@ -637,6 +643,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
 
             return certificate
+        }.recover { error -> Promise<SMKSenderCertificate> in
+            throw error
         }
     }
 

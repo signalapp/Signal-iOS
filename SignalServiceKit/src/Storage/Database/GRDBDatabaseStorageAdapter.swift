@@ -62,7 +62,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             defer { BenchEventComplete(eventId: "GRDB Setup") }
             do {
                 try self.setup()
-                try self.setupUIDatabase()
             } catch {
                 owsFail("unable to setup database: \(error)")
             }
@@ -113,6 +112,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     @objc
     public func setupUIDatabase() throws {
+        owsAssertDebug(self.uiDatabaseObserver == nil)
+
         // UIDatabaseObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
@@ -140,6 +141,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     func setup() throws {
         GRDBMediaGalleryFinder.setup(storage: self)
+        try setupUIDatabase()
     }
 
     // MARK: -
