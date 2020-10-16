@@ -32,7 +32,7 @@ public extension TSInfoMessage {
                                                                  transaction: transaction)
         }
 
-        return groupUpdateDescription(oldGroupModel: self.previousGroupModel,
+        return groupUpdateDescription(oldGroupModel: self.oldGroupModel,
                                       newGroupModel: newGroupModel,
                                       transaction: transaction)
     }
@@ -47,7 +47,7 @@ public extension TSInfoMessage {
             return nil
         }
 
-        return groupUpdateItems(oldGroupModel: self.previousGroupModel,
+        return groupUpdateItems(oldGroupModel: self.oldGroupModel,
                                 newGroupModel: newGroupModel,
                                 transaction: transaction)
     }
@@ -167,19 +167,21 @@ extension TSInfoMessage {
         return groupModel
     }
 
-    fileprivate var previousGroupModel: TSGroupModel? {
+    @objc
+    public var oldGroupModel: TSGroupModel? {
         return infoMessageValue(forKey: .oldGroupModel)
     }
 
-    fileprivate var newGroupModel: TSGroupModel? {
+    @objc
+    public var newGroupModel: TSGroupModel? {
         return infoMessageValue(forKey: .newGroupModel)
     }
 
-    fileprivate var oldDisappearingMessageToken: DisappearingMessageToken? {
+    public var oldDisappearingMessageToken: DisappearingMessageToken? {
         return infoMessageValue(forKey: .oldDisappearingMessageToken)
     }
 
-    fileprivate var newDisappearingMessageToken: DisappearingMessageToken? {
+    public var newDisappearingMessageToken: DisappearingMessageToken? {
         return infoMessageValue(forKey: .newDisappearingMessageToken)
     }
 

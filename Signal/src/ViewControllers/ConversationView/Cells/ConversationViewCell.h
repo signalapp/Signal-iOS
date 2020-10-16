@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message;
 - (void)showFingerprintWithAddress:(SignalServiceAddress *)address;
 - (void)showConversationSettings;
+- (void)showConversationSettingsAndShowMemberRequests;
 - (void)handleCallTap:(TSCall *)call;
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
                  withNewNameComponents:(NSPersonNameComponents *)newNameComponents;
