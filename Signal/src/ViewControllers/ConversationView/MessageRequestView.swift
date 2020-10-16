@@ -325,6 +325,10 @@ class MessageRequestView: UIStackView {
         textView.contentInset = .zero
         textView.textContainer.lineFragmentPadding = 0
         textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+        textView.linkTextAttributes = [
+            .foregroundColor: Theme.accentBlueColor
+        ]
 
         if appendLearnMoreLink {
             textView.attributedText = .composed(of: [
@@ -332,9 +336,7 @@ class MessageRequestView: UIStackView {
                 " ",
                 CommonStrings.learnMore.styled(
                     with: .link(URL(string: "https://support.signal.org/hc/articles/360007459591")!),
-                    .font(.ows_dynamicTypeSubheadlineClamped),
-                    .underline([], nil),
-                    .color(Theme.accentBlueColor)
+                    .font(.ows_dynamicTypeSubheadlineClamped)
                 )
             ])
         } else {
