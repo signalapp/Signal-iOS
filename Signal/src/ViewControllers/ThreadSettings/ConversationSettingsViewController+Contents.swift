@@ -72,7 +72,8 @@ extension ConversationSettingsViewController {
             contents.addSection(buildNotificationsSection())
         }
 
-        if let groupModel = currentGroupModel {
+        if let groupModel = currentGroupModel,
+            !groupModel.isPlaceholder {
             if let groupModelV2 = groupModel as? TSGroupModelV2 {
                 if canEditConversationAccess {
                     buildGroupAccessSections(groupModelV2: groupModelV2, contents: contents)

@@ -44,7 +44,7 @@ public class GroupInviteLinksUI: UIView {
         // If the group already exists in the database, open it.
         if let existingGroupThread = (databaseStorage.read { transaction in
             TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
-        }), existingGroupThread.isLocalUserFullMember {
+        }), existingGroupThread.isLocalUserFullMember || existingGroupThread.isLocalUserRequestingMember {
             SignalApp.shared().presentConversation(for: existingGroupThread, animated: true)
             return
         }

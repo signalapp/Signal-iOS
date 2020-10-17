@@ -73,7 +73,7 @@ public class GroupLinkViewController: OWSTableViewController {
                 let switchView = UISwitch()
                 switchView.isOn = groupModelV2.isGroupInviteLinkEnabled
                 switchView.addTarget(self, action: switchAction, for: .valueChanged)
-                switchView.isEnabled = canEditGroupLinkSettings
+                switchView.isEnabled = true
 
                 let topRow = UIStackView(arrangedSubviews: [ rowLabel, switchView ])
                 topRow.spacing = 16
@@ -142,7 +142,9 @@ public class GroupLinkViewController: OWSTableViewController {
             section.add(OWSTableItem.switch(withText: NSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
                                                                         comment: "Label for the 'approve new members' switch in the 'group link' view."),
                                             isOn: { groupModelV2.access.addFromInviteLink == .administrator },
-                                            isEnabledBlock: { canEditGroupLinkSettings && groupModelV2.isGroupInviteLinkEnabled },
+                                            isEnabledBlock: {
+                                                true
+            },
                                             target: self,
                                             selector: #selector(didToggleApproveNewMembers(_:))))
             contents.addSection(section)
@@ -168,6 +170,15 @@ public class GroupLinkViewController: OWSTableViewController {
 
     @objc
     func didToggleGroupLinkEnabled(_ sender: UISwitch) {
+        let canEditGroupLinkSettings = groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator
+        guard canEditGroupLinkSettings else {
+            let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
+                                            comment: "Message indicating that a feature can only be used by group admins.")
+            showToast(message: message)
+            updateTableContents()
+            return
+        }
+
         let isGroupInviteLinkEnabled = sender.isOn
         // Whenever we activate the group link, default to requiring admin approval.
         let approveNewMembers = (groupModelV2.access.addFromInviteLink == .administrator ||
@@ -180,10 +191,25 @@ public class GroupLinkViewController: OWSTableViewController {
 
     @objc
     func didToggleApproveNewMembers(_ sender: UISwitch) {
+        let canEditGroupLinkSettings = groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator
+        guard canEditGroupLinkSettings && groupModelV2.isGroupInviteLinkEnabled else {
+            let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
+                                            comment: "Message indicating that a feature can only be used by group admins.")
+            showToast(message: message)
+            updateTableContents()
+            return
+        }
+
         let isGroupInviteLinkEnabled = groupModelV2.isGroupInviteLinkEnabled
         let linkMode = self.linkMode(isGroupInviteLinkEnabled: isGroupInviteLinkEnabled,
                                      approveNewMembers: sender.isOn)
         updateLinkMode(linkMode: linkMode)
+    }
+
+    private func showToast(message: String) {
+        let toastController = ToastController(text: message)
+        let toastInset = bottomLayoutGuide.length + 8
+        toastController.presentToastView(fromBottomOfView: view, inset: toastInset)
     }
 
     func shareLinkPressed() {

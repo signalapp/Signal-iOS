@@ -1504,6 +1504,9 @@
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Členstvo v skupine môžu zmeniť “%@“.";
 
+/* Message indicating that a feature can only be used by group admins. */
+"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Vytvorili ste skupinu.";
 
@@ -2053,6 +2056,12 @@
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Vybrať nového admina";
 
+/* Label for button that lets the user view the request to join the group. */
+"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+
+/* Label for button that lets the user view the requests to join the group. */
+"GROUPS_VIEW_REQUESTS_BUTTON" = "Zobraziť žiadosti";
+
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "Kontaktujte nás";
 
@@ -2483,10 +2492,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Vymazať";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Pokračovať v chate s %@ a zdieľať  s týmto používateľom vaše meno a fotku?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Pokračovať v chate v tejto skupine a zdieľať vaše meno a fotku s jej členmi?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Povoliť používateľovi %@, aby vám posielal  správy a zdieľať s ním vaše meno a foto? Kým s tým nebudete súhlasiť, nebude vedieť, že ste jeho správu videli.";

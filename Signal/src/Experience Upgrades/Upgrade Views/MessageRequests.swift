@@ -12,6 +12,7 @@ class MessageRequestsSplash: SplashViewController {
     override var canDismissWithGesture: Bool { return false }
 
     // MARK: - View lifecycle
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         animationView.play()

@@ -148,6 +148,17 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         cell.ows_setAccessoryView(self.buildMemberRequestButtons(address: address))
                     }
 
+                    if address.isLocalAddress {
+                        // Use a custom avatar to avoid using the "note to self" icon.
+                        let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kSmallAvatarSize).buildDefaultImage()
+                        cell.setCustomAvatar(customAvatar)
+                        cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
+                                                             comment: "Label indicating the local user."))
+                        cell.selectionStyle = .none
+                    } else {
+                        cell.selectionStyle = .default
+                    }
+
                     cell.configure(withRecipientAddress: address)
                     return cell
                     }) { [weak self] in

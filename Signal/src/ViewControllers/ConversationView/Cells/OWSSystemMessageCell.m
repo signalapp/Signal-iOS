@@ -651,8 +651,29 @@ typedef void (^SystemMessageActionBlock)(void);
             // Unused.
             OWSFailDebug(@"TSInfoMessageAddGroupToProfileWhitelistOffer");
             return nil;
-        case TSInfoMessageTypeGroupUpdate:
+        case TSInfoMessageTypeGroupUpdate: {
+            TSGroupModel *_Nullable oldGroupModel = infoMessage.oldGroupModel;
+            TSGroupModel *_Nullable newGroupModel = infoMessage.newGroupModel;
+            if (oldGroupModel != nil && newGroupModel != nil) {
+                NSMutableSet<SignalServiceAddress *> *newlyRequestingMembers = [NSMutableSet new];
+                [newlyRequestingMembers unionSet:newGroupModel.groupMembership.requestingMembers];
+                [newlyRequestingMembers minusSet:oldGroupModel.groupMembership.requestingMembers];
+
+                if (newlyRequestingMembers.count > 0) {
+                    NSString *title = (newlyRequestingMembers.count > 1
+                            ? NSLocalizedString(@"GROUPS_VIEW_REQUESTS_BUTTON",
+                                @"Label for button that lets the user view the requests to join the group.")
+                            : NSLocalizedString(@"GROUPS_VIEW_REQUEST_BUTTON",
+                                @"Label for button that lets the user view the request to join the group."));
+                    return [SystemMessageAction
+                                actionWithTitle:title
+                                          block:^{ [weakSelf.delegate showConversationSettingsAndShowMemberRequests]; }
+                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                    self, @"show_group_requests_button")];
+                }
+            }
             return nil;
+        }
         case TSInfoMessageTypeGroupQuit:
             return nil;
         case TSInfoMessageUnknownProtocolVersion: {

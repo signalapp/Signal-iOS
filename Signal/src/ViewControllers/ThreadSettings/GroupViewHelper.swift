@@ -160,4 +160,12 @@ class GroupViewHelper: NSObject {
         }
         return groupThread.isLocalUserFullOrInvitedMember
     }
+
+    func isFullOrInvitedMember(_ address: SignalServiceAddress) -> Bool {
+        guard let groupThread = thread as? TSGroupThread else {
+            return false
+        }
+        let groupMembership = groupThread.groupModel.groupMembership
+        return groupMembership.isFullMember(address) || groupMembership.isInvitedMember(address)
+    }
 }
