@@ -132,8 +132,10 @@ class MemberActionSheet: NSObject {
         safetyNumberAction.leadingIcon = .settingsViewSafetyNumber
         actionSheet.addAction(safetyNumberAction)
 
-        if let groupViewHelper = self.groupViewHelper {
-            let address = self.address
+        let address = self.address
+        if let groupViewHelper = self.groupViewHelper,
+            groupViewHelper.isFullOrInvitedMember(address) {
+
             if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address) {
                 let action = ActionSheetAction(
                     title: NSLocalizedString("CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",

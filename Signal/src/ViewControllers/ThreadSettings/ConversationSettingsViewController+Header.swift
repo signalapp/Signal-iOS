@@ -172,17 +172,19 @@ extension ConversationSettingsViewController {
     private func buildHeaderForGroup(groupThread: TSGroupThread) -> UIView {
         var builder = HeaderBuilder(viewController: self)
 
-        let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
-        var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
-        if groupThread.isGroupV1Thread {
-            groupMembersText.append(" ")
-            groupMembersText.append("•")
-            groupMembersText.append(" ")
-            groupMembersText.append(NSLocalizedString("GROUPS_LEGACY_GROUP_INDICATOR",
-                                                      comment: "Label indicating a legacy group."))
+        if !groupThread.groupModel.isPlaceholder {
+            let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
+            var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
+            if groupThread.isGroupV1Thread {
+                groupMembersText.append(" ")
+                groupMembersText.append("•")
+                groupMembersText.append(" ")
+                groupMembersText.append(NSLocalizedString("GROUPS_LEGACY_GROUP_INDICATOR",
+                                                          comment: "Label indicating a legacy group."))
+            }
+            builder.addSubtitleLabel(text: groupMembersText,
+                                     font: .ows_dynamicTypeSubheadline)
         }
-        builder.addSubtitleLabel(text: groupMembersText,
-                                 font: .ows_dynamicTypeSubheadline)
 
         if groupThread.isGroupV1Thread {
             let legacyGroupView = builder.addLegacyGroupView()

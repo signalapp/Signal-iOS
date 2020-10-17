@@ -163,3 +163,15 @@ public extension TSGroupModelV2 {
         return false
     }
 }
+
+// MARK: -
+
+@objc
+public extension TSGroupModel {
+    var isPlaceholder: Bool {
+        guard let groupModelV2 = self as? TSGroupModelV2 else {
+            return false
+        }
+        return groupModelV2.isPlaceholderModel
+    }
+}
