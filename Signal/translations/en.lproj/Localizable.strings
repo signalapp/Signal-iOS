@@ -1504,6 +1504,9 @@
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
 
+/* Message indicating that a feature can only be used by group admins. */
+"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
 
