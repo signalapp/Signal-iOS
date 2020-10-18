@@ -10,6 +10,7 @@ public final class LokiPushNotificationManager : NSObject {
     private static let server = "https://live.apns.getsession.org"
     #endif
     internal static let pnServerPublicKey = "642a6585919742e5a2d4dc51244964fbcd8bcab2b75612407de58b810740d049"
+    private static let maxRetryCount: UInt = 4
     private static let tokenExpirationInterval: TimeInterval = 12 * 60 * 60
 
     public enum ClosedGroupOperation: String {
@@ -28,12 +29,14 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/unregister")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise: Promise<Void> = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response["body"] as? JSON else {
-                return print("[Loki] Couldn't unregister from push notifications.")
-            }
-            guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't unregister from push notifications due to error: \(json["message"] as? String ?? "nil").")
+        let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+                guard let json = response["body"] as? JSON else {
+                    return print("[Loki] Couldn't unregister from push notifications.")
+                }
+                guard json["code"] as? Int != 0 else {
+                    return print("[Loki] Couldn't unregister from push notifications due to error: \(json["message"] as? String ?? "nil").")
+                }
             }
         }
         promise.catch2 { error in
@@ -68,16 +71,18 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise: Promise<Void> = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response["body"] as? JSON else {
-                return print("[Loki] Couldn't register device token.")
+        let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+                guard let json = response["body"] as? JSON else {
+                    return print("[Loki] Couldn't register device token.")
+                }
+                guard json["code"] as? Int != 0 else {
+                    return print("[Loki] Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
+                }
+                userDefaults[.deviceToken] = hexEncodedToken
+                userDefaults[.lastDeviceTokenUpload] = now
+                userDefaults[.isUsingFullAPNs] = true
             }
-            guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't register device token due to error: \(json["message"] as? String ?? "nil").")
-            }
-            userDefaults[.deviceToken] = hexEncodedToken
-            userDefaults[.lastDeviceTokenUpload] = now
-            userDefaults[.isUsingFullAPNs] = true
         }
         promise.catch2 { error in
             print("[Loki] Couldn't register device token.")
@@ -103,14 +108,15 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/\(operation.rawValue)")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response["body"] as? JSON else {
-                return print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
+        let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+                guard let json = response["body"] as? JSON else {
+                    return print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
+                }
+                guard json["code"] as? Int != 0 else {
+                    return print("[Loki] Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(json["message"] as? String ?? "nil").")
+                }
             }
-            guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(json["message"] as? String ?? "nil").")
-            }
-            return
         }
         promise.catch2 { error in
             print("[Loki] Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
@@ -124,14 +130,15 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: "\(server)/notify")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
-            guard let json = response["body"] as? JSON else {
-                return print("[Loki] Couldn't notify PN server.")
+        let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: pnServerPublicKey).map2 { response in
+                guard let json = response["body"] as? JSON else {
+                    return print("[Loki] Couldn't notify PN server.")
+                }
+                guard json["code"] as? Int != 0 else {
+                    return print("[Loki] Couldn't notify PN server due to error: \(json["message"] as? String ?? "nil").")
+                }
             }
-            guard json["code"] as? Int != 0 else {
-                return print("[Loki] Couldn't notify PN server due to error: \(json["message"] as? String ?? "nil").")
-            }
-            return
         }
         promise.catch2 { error in
             print("[Loki] Couldn't notify PN server.")
