@@ -1,4 +1,5 @@
 import Accelerate
+import NVActivityIndicatorView
 
 @objc(LKVoiceMessageView)
 final class VoiceMessageView : UIView {
@@ -13,6 +14,8 @@ final class VoiceMessageView : UIView {
 
     // MARK: Components
     private lazy var toggleImageView = UIImageView(image: #imageLiteral(resourceName: "Play"))
+
+    private lazy var spinner = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: .black, padding: nil)
 
     private lazy var durationLabel: UILabel = {
         let result = UILabel()
@@ -97,6 +100,10 @@ final class VoiceMessageView : UIView {
         toggleImageView.set(.width, to: 12)
         toggleImageView.set(.height, to: 12)
         toggleImageView.center(in: toggleContainer)
+        toggleContainer.addSubview(spinner)
+        spinner.set(.width, to: 24)
+        spinner.set(.height, to: 24)
+        spinner.center(in: toggleContainer)
         toggleContainer.set(.width, to: toggleContainerSize)
         toggleContainer.set(.height, to: toggleContainerSize)
         toggleContainer.layer.cornerRadius = toggleContainerSize / 2
@@ -116,6 +123,9 @@ final class VoiceMessageView : UIView {
     // MARK: UI & Updating
     private func showLoader() {
         isLoading = true
+        toggleImageView.isHidden = true
+        spinner.startAnimating()
+        spinner.isHidden = false
         Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] timer in
             guard let self = self else { return timer.invalidate() }
             if self.isLoading {
@@ -134,6 +144,9 @@ final class VoiceMessageView : UIView {
 
     private func hideLoader() {
         isLoading = false
+        toggleImageView.isHidden = false
+        spinner.stopAnimating()
+        spinner.isHidden = true
     }
 
     override func layoutSubviews() {
