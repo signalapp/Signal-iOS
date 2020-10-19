@@ -3,7 +3,6 @@
 //
 
 #import "ConversationViewItem.h"
-#import "OWSAudioMessageView.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
 #import "OWSMessageHeaderView.h"
@@ -476,7 +475,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     _audioPlaybackState = audioPlaybackState;
 
-    [self.lastAudioMessageView updateContents];
+    BOOL isPlaying = (audioPlaybackState == AudioPlaybackState_Playing);
+    [self.lastAudioMessageView setIsPlaying:isPlaying];
 }
 
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration
@@ -485,7 +485,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     self.audioProgressSeconds = progress;
 
-    [self.lastAudioMessageView updateContents];
+    [self.lastAudioMessageView setProgress:progress / duration];
 }
 
 #pragma mark - Displayable Text

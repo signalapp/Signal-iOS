@@ -5,7 +5,6 @@
 #import "OWSMessageBubbleView.h"
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
-#import "OWSAudioMessageView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
 #import "OWSContactShareButtonsView.h"
@@ -840,13 +839,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(attachment);
     OWSAssertDebug([attachment isAudio]);
 
-    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:attachment
-                                                                                 isIncoming:self.isIncoming
-                                                                                   viewItem:self.viewItem
-                                                                          conversationStyle:self.conversationStyle];
-    self.viewItem.lastAudioMessageView = audioMessageView;
-    [audioMessageView createContents];
-    [self addProgressViewsIfNecessary:audioMessageView shouldShowDownloadProgress:NO];
+    LKVoiceMessageView *voiceMessageView = [[LKVoiceMessageView alloc] initWithVoiceMessage:attachment isOutgoing:self.isOutgoing];
+    [voiceMessageView setDuration:(int)self.viewItem.audioDurationSeconds];
+    [voiceMessageView setProgress:self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds];
+    [voiceMessageView initialize];
+
+    self.viewItem.lastAudioMessageView = voiceMessageView;
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -855,7 +853,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     };
 
-    return audioMessageView;
+    return voiceMessageView;
 }
 
 - (UIView *)loadViewForGenericAttachment
@@ -1068,7 +1066,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            result = CGSizeMake(maxMessageWidth, LKVoiceMessageView.contentHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
@@ -1531,6 +1529,22 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate didTapImageViewItem:self.viewItem attachmentStream:attachmentStream imageView:mediaView];
             break;
         }
+    }
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    switch (self.cellType) {
+        case OWSMessageCellType_Audio: {
+            LKVoiceMessageView *voiceMessageView = self.viewItem.lastAudioMessageView;
+            NSTimeInterval currentTime = [voiceMessageView getCurrentTime:sender];
+            [self.viewItem setAudioProgress:((CGFloat)currentTime) duration:self.viewItem.audioDurationSeconds];
+            CGFloat progress = self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds;
+            [voiceMessageView setProgress:progress];
+            [self.delegate didPanAudioViewItemToCurrentTime:currentTime];
+            return;
+        }
+        default: return;
     }
 }
 
