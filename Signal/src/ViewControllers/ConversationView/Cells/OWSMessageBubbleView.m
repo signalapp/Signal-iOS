@@ -1532,6 +1532,22 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    switch (self.cellType) {
+        case OWSMessageCellType_Audio: {
+            LKVoiceMessageView *voiceMessageView = self.viewItem.lastAudioMessageView;
+            NSTimeInterval currentTime = [voiceMessageView getCurrentTime:sender];
+            [self.viewItem setAudioProgress:((CGFloat)currentTime) duration:self.viewItem.audioDurationSeconds];
+            CGFloat progress = self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds;
+            [voiceMessageView setProgress:progress];
+            [self.delegate didPanAudioViewItem:self.viewItem attachmentStream:self.viewItem.attachmentStream currentTime:currentTime];
+            return;
+        }
+        default: return;
+    }
+}
+
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
 {
     if (self.quotedMessageView) {

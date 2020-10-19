@@ -197,4 +197,18 @@ final class VoiceMessageView : UIView {
     private func updateToggleImageView() {
         toggleImageView.image = isPlaying ? #imageLiteral(resourceName: "Pause") : #imageLiteral(resourceName: "Play")
     }
+
+    // MARK: Interaction
+    @objc(getCurrentTime:)
+    func getCurrentTime(for panGestureRecognizer: UIPanGestureRecognizer) -> TimeInterval {
+        guard voiceMessage.isDownloaded else { return 0 }
+        let locationInSelf = panGestureRecognizer.location(in: self)
+        let waveformFrameOrigin = CGPoint(x: leadingInset + toggleContainerSize + Values.smallSpacing, y: vMargin)
+        let waveformFrameSize = CGSize(width: width() - leadingInset - toggleContainerSize - durationLabel.width() - 2 * Values.smallSpacing,
+            height: height() - 2 * vMargin)
+        let waveformFrame = CGRect(origin: waveformFrameOrigin, size: waveformFrameSize)
+        guard waveformFrame.contains(locationInSelf) else { return 0 }
+        let fraction = (locationInSelf.x - waveformFrame.minX) / (waveformFrame.maxX - waveformFrame.minX)
+        return Double(fraction) * Double(duration)
+    }
 }

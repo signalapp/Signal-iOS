@@ -669,6 +669,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         audioAttachmentPlayer.play()
     }
 
+    func didPanAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, currentTime: TimeInterval) {
+        // TODO: Implement
+    }
+
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {
         guard let navigationController = self.navigationController else {
             owsFailDebug("navigationController was unexpectedly nil")

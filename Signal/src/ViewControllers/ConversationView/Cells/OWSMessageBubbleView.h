@@ -36,6 +36,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
                   imageView:(UIView *)imageView;
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
+- (void)didPanAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream currentTime:(NSTimeInterval)currentTime;
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem;
 
@@ -102,6 +103,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (void)addTapGestureHandler;
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender;
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender;
 
 @end
 

@@ -46,6 +46,7 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
                         delegate:(id<OWSAudioPlayerDelegate>)delegate;
 
 - (void)play;
+- (void)setCurrentTime:(NSTimeInterval)currentTime;
 - (void)pause;
 - (void)stop;
 - (void)togglePlayState;

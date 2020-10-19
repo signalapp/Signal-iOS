@@ -78,6 +78,10 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
+
+    UIPanGestureRecognizer *pan =
+        [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+    [self.contentView addGestureRecognizer:pan];
 }
 
 - (void)dealloc
@@ -486,6 +490,11 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
     }
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    [self.messageBubbleView handlePanGesture:sender];
 }
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender

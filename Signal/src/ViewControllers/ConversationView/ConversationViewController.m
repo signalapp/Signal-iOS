@@ -2454,6 +2454,11 @@ typedef enum : NSUInteger {
     [self.audioAttachmentPlayer play];
 }
 
+- (void)didPanAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream currentTime:(NSTimeInterval)currentTime
+{
+    [self.audioAttachmentPlayer setCurrentTime:currentTime];
+}
+
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
 {
     OWSAssertIsOnMainThread();
