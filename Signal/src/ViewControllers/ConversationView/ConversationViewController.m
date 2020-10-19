@@ -2455,7 +2455,7 @@ typedef enum : NSUInteger {
     [self.audioAttachmentPlayer setCurrentTime:viewItem.audioProgressSeconds];
 }
 
-- (void)didPanAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream currentTime:(NSTimeInterval)currentTime
+- (void)didPanAudioViewItemToCurrentTime:(NSTimeInterval)currentTime
 {
     [self.audioAttachmentPlayer setCurrentTime:currentTime];
 }

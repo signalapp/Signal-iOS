@@ -1541,7 +1541,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.viewItem setAudioProgress:((CGFloat)currentTime) duration:self.viewItem.audioDurationSeconds];
             CGFloat progress = self.viewItem.audioProgressSeconds / self.viewItem.audioDurationSeconds;
             [voiceMessageView setProgress:progress];
-            [self.delegate didPanAudioViewItem:self.viewItem attachmentStream:self.viewItem.attachmentStream currentTime:currentTime];
+            [self.delegate didPanAudioViewItemToCurrentTime:currentTime];
             return;
         }
         default: return;

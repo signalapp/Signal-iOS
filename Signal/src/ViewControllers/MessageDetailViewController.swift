@@ -669,7 +669,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         audioAttachmentPlayer.play()
     }
 
-    func didPanAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, currentTime: TimeInterval) {
+    func didPanAudioViewItem(toCurrentTime currentTime: TimeInterval) {
         // TODO: Implement
     }
 
