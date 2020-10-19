@@ -2452,6 +2452,7 @@ typedef enum : NSUInteger {
     // Associate the player with this media adapter.
     self.audioAttachmentPlayer.owner = viewItem;
     [self.audioAttachmentPlayer play];
+    [self.audioAttachmentPlayer setCurrentTime:viewItem.audioProgressSeconds];
 }
 
 - (void)didPanAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream currentTime:(NSTimeInterval)currentTime
