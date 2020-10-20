@@ -81,8 +81,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 // This method can be used to get the conversation color for a given
 // recipient without using a read/write transaction to create a
 // contact thread.
-+ (NSString *)conversationColorNameForContactAddress:(SignalServiceAddress *)address
-                                         transaction:(SDSAnyReadTransaction *)transaction;
++ (ConversationColorName)conversationColorNameForContactAddress:(SignalServiceAddress *)address
+                                                    transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

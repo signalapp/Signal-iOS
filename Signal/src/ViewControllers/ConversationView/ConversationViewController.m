@@ -1057,7 +1057,7 @@ typedef enum : NSUInteger {
         }
         BOOL hasMultiple = noLongerVerifiedAddresses.count > 1;
 
-        ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil message:nil];
+        ActionSheetController *actionSheet = [ActionSheetController new];
 
         __weak ConversationViewController *weakSelf = self;
         ActionSheetAction *verifyAction = [[ActionSheetAction alloc]
@@ -1717,6 +1717,10 @@ typedef enum : NSUInteger {
     }
 
     [self.navigationController setViewControllers:viewControllers animated:YES];
+}
+
+- (void)showGroupMigrationLearnMoreActionSheetWithInfoMessage:(TSInfoMessage *)infoMessage
+{
 }
 
 - (NSArray<UIViewController *> *)viewControllersUpToSelf

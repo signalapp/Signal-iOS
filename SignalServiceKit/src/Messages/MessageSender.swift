@@ -684,7 +684,7 @@ extension MessageSender {
             return Promise.value(addresses)
         }
 
-        let knownUndiscoverable = ContactDiscoveryTask.addressesRecentlyMarkedAsUndiscoverable(invalidRecipients)
+        let knownUndiscoverable = ContactDiscoveryTask.addressesRecentlyMarkedAsUndiscoverableForMessageSends(invalidRecipients)
         if Set(knownUndiscoverable) == Set(invalidRecipients) {
             // If CDS has recently indicated that all of the invalid recipients are undiscoverable,
             // assume they are still undiscoverable and skip them.

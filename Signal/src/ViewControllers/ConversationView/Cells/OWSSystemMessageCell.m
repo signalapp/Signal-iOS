@@ -384,7 +384,7 @@ typedef void (^SystemMessageActionBlock)(void);
     return result;
 }
 
-- (NSString *)iconNameForGroupUpdate:(GroupUpdateType)type
+- (nullable NSString *)iconNameForGroupUpdate:(GroupUpdateType)type
 {
     NSString *iconName;
 
@@ -431,6 +431,15 @@ typedef void (^SystemMessageActionBlock)(void);
         case GroupUpdateTypeDisappearingMessagesState_disabled:
             iconName = [Theme iconName:ThemeIconTimerDisabled16];
             break;
+        case GroupUpdateTypeGroupMigrated:
+            iconName = [Theme iconName:ThemeIconMegaphone16];
+            break;
+        case GroupUpdateTypeGroupMigrated_usersInvited:
+            iconName = [Theme iconName:ThemeIconMemberAdded16];
+            break;
+        case GroupUpdateTypeGroupMigrated_usersDropped:
+            iconName = [Theme iconName:ThemeIconGroup16];
+            break;
     }
 
     return iconName;
@@ -447,12 +456,15 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (self.viewItem.systemMessageGroupUpdates.count > 0) {
         for (GroupUpdateCopyItem *update in self.viewItem.systemMessageGroupUpdates) {
-            NSString *iconName = [self iconNameForGroupUpdate:update.type];
-
-            [labelText appendTemplatedImageNamed:iconName
-                                            font:label.font
-                                 heightReference:ImageAttachmentHeightReferenceLineHeight];
-            [labelText append:@"  " attributes:@{}];
+            NSString *_Nullable iconName = [self iconNameForGroupUpdate:update.type];
+            if (iconName != nil) {
+                [labelText appendTemplatedImageNamed:iconName
+                                                font:label.font
+                                     heightReference:ImageAttachmentHeightReferenceLineHeight];
+                [labelText append:@"  " attributes:@{}];
+            } else {
+                OWSFailDebug(@"Missing iconName.");
+            }
             [labelText append:update.text attributes:@{}];
 
             if (![update isEqual:self.viewItem.systemMessageGroupUpdates.lastObject]) {
@@ -655,6 +667,21 @@ typedef void (^SystemMessageActionBlock)(void);
             TSGroupModel *_Nullable oldGroupModel = infoMessage.oldGroupModel;
             TSGroupModel *_Nullable newGroupModel = infoMessage.newGroupModel;
             if (oldGroupModel != nil && newGroupModel != nil) {
+
+                for (GroupUpdateCopyItem *update in self.viewItem.systemMessageGroupUpdates) {
+                    if (update.type == GroupUpdateTypeGroupMigrated) {
+                        return [SystemMessageAction
+                                    actionWithTitle:CommonStrings.learnMore
+                                              block:^{
+                                                  [weakSelf.delegate
+                                                      showGroupMigrationLearnMoreActionSheetWithInfoMessage:
+                                                          infoMessage];
+                                              }
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                        self, @"group_migration_learn_more")];
+                    }
+                }
+
                 NSMutableSet<SignalServiceAddress *> *newlyRequestingMembers = [NSMutableSet new];
                 [newlyRequestingMembers unionSet:newGroupModel.groupMembership.requestingMembers];
                 [newlyRequestingMembers minusSet:oldGroupModel.groupMembership.requestingMembers];

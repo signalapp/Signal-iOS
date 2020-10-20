@@ -228,8 +228,8 @@ lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
     return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
 }
 
-+ (NSString *)conversationColorNameForContactAddress:(SignalServiceAddress *)address
-                                         transaction:(SDSAnyReadTransaction *)transaction
++ (ConversationColorName)conversationColorNameForContactAddress:(SignalServiceAddress *)address
+                                                    transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address);
 

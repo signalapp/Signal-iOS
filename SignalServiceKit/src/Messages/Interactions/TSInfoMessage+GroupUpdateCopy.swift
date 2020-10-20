@@ -38,6 +38,9 @@ public enum GroupUpdateType: Int {
     case disappearingMessagesState_disabled
     case groupInviteLink
     case generic
+    case groupMigrated
+    case groupMigrated_usersDropped
+    case groupMigrated_usersInvited
     case debug
 
     var typeForDeduplication: GroupUpdateType {
@@ -161,6 +164,8 @@ struct GroupUpdateCopy {
             if isReplacingJoinRequestPlaceholder {
                 addMembershipUpdates(oldGroupMembership: oldGroupMembership,
                                      forLocalUserOnly: true)
+            } else if wasJustMigrated {
+                addMigrationUpdates(oldGroupMembership: oldGroupMembership)
             } else {
                 addMembershipUpdates(oldGroupMembership: oldGroupMembership)
 
@@ -648,14 +653,20 @@ extension GroupUpdateCopy {
     }
 
     mutating func addUserWasGrantedAdministrator(for address: SignalServiceAddress) {
+
+        if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
+            newGroupModelV2.wasJustMigrated {
+            // All v1 group members become admins when the
+            // group is migrated to v2. We don't need to
+            // surface this to the user.
+            return
+        }
+
         let isLocalUser = localAddress == address
         if isLocalUser {
             switch updater {
             case .localUser:
-                if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-                    newGroupModelV2.wasJustMigrated {
-                    // Do nothing.
-                } else if !DebugFlags.permissiveGroupUpdateInfoMessages {
+                if !DebugFlags.permissiveGroupUpdateInfoMessages {
                     owsFailDebug("Local user made themself administrator.")
                 } else {
                     addItem(.debug, copy: "Error: Local user made themself administrator.")
@@ -1062,7 +1073,7 @@ extension GroupUpdateCopy {
         guard count > 0 else {
             return
         }
-        let countString = String.localizedStringWithFormat("%d", count)
+        let countString = OWSFormat.formatUInt(count)
 
         switch updater {
         case .localUser:
@@ -1272,7 +1283,7 @@ extension GroupUpdateCopy {
             }
             addUnnamedUsersWereInvitedPassiveTense(count: count)
         case .otherUser(let updaterName, _):
-            let countString = String.localizedStringWithFormat("%d", count)
+            let countString = OWSFormat.formatUInt(count)
             if count == 1 {
                 let format = NSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT",
                                                comment: "Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}.")
@@ -1290,7 +1301,7 @@ extension GroupUpdateCopy {
     }
 
     mutating func addUnnamedUsersWereInvitedPassiveTense(count: UInt) {
-        let countString = String.localizedStringWithFormat("%d", count)
+        let countString = OWSFormat.formatUInt(count)
         if count == 1 {
             self.addItem(.userMembershipState_invitesNew,
                          copy: NSLocalizedString("GROUP_REMOTE_USER_INVITED_1",
@@ -1674,6 +1685,58 @@ extension GroupUpdateCopy {
                 owsFailDebug("Learned of group without any membership status.")
             } else {
                 addItem(.debug, copy: "Error: Learned of group without any membership status.")
+            }
+        }
+    }
+
+    // MARK: - Migration
+
+    var wasJustMigrated: Bool {
+        guard let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
+            newGroupModelV2.wasJustMigrated else {
+                return false
+        }
+        return true
+    }
+
+    mutating func addMigrationUpdates(oldGroupMembership: GroupMembership) {
+        owsAssertDebug(wasJustMigrated)
+
+        addItem(.groupMigrated,
+                copy: NSLocalizedString("GROUP_WAS_MIGRATED",
+                                        comment: "Message indicating that the group was migrated."))
+
+        let invitedMembers = oldGroupMembership.allMembersOfAnyKind.intersection(newGroupMembership.invitedMembers)
+        let droppedMembers = oldGroupMembership.allMembersOfAnyKind.subtracting(newGroupMembership.allMembersOfAnyKind)
+
+        if !invitedMembers.isEmpty {
+            if invitedMembers.count == 1 {
+                let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_1",
+                                             comment: "Message indicating that 1 user was invited while migrating the group.")
+                addItem(.groupMigrated_usersDropped,
+                        copy: copy)
+            } else {
+                let format = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT",
+                                               comment: "Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}.")
+                let countString = OWSFormat.formatInt(invitedMembers.count)
+                addItem(.groupMigrated_usersInvited,
+                        format: format, countString)
+            }
+        }
+
+        // TODO: We need final copy here.
+        if !droppedMembers.isEmpty {
+            if droppedMembers.count == 1 {
+                let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_1",
+                                             comment: "Message indicating that 1 user was dropped while migrating the group.")
+                addItem(.groupMigrated_usersDropped,
+                        copy: copy)
+            } else {
+                let format = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT",
+                                               comment: "Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}.")
+                let countString = OWSFormat.formatInt(droppedMembers.count)
+                addItem(.groupMigrated_usersDropped,
+                        format: format, countString)
             }
         }
     }

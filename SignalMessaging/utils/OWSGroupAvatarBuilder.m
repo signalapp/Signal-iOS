@@ -47,6 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.thread.groupModel.groupAvatarImage;
 }
 
+- (nullable UIImage *)buildSavedImageWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return self.thread.groupModel.groupAvatarImage;
+}
+
 - (nullable UIImage *)buildDefaultImage
 {
     return [self.class defaultAvatarForGroupId:self.thread.groupModel.groupId

@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentStream;
 @class TSCall;
 @class TSErrorMessage;
+@class TSInfoMessage;
 @class TSInteraction;
 @class TSInvalidIdentityKeyErrorMessage;
 @class TSMessage;
@@ -59,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showFingerprintWithAddress:(SignalServiceAddress *)address;
 - (void)showConversationSettings;
 - (void)showConversationSettingsAndShowMemberRequests;
+- (void)showGroupMigrationLearnMoreActionSheetWithInfoMessage:(TSInfoMessage *)infoMessage;
 - (void)handleCallTap:(TSCall *)call;
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
                  withNewNameComponents:(NSPersonNameComponents *)newNameComponents;

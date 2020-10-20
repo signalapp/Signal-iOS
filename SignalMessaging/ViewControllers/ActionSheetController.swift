@@ -7,6 +7,8 @@ import UIKit
 @objc
 open class ActionSheetController: OWSViewController {
 
+    private var isFullWidth = false
+
     private let contentView = UIView()
     private let stackView = UIStackView()
     private let scrollView = UIScrollView()
@@ -62,7 +64,13 @@ open class ActionSheetController: OWSViewController {
 
     @objc
     public convenience init(title: String? = nil, message: String? = nil) {
+        self.init(title: title, message: message, isFullWidth: false)
+    }
+
+    @objc
+    public convenience init(title: String? = nil, message: String? = nil, isFullWidth: Bool = false) {
         self.init()
+        self.isFullWidth = isFullWidth
         createHeader(title: title, message: message)
     }
 
@@ -113,7 +121,12 @@ open class ActionSheetController: OWSViewController {
         scrollView.clipsToBounds = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.autoPinEdge(toSuperviewEdge: .bottom)
-        scrollView.autoHCenterInSuperview()
+        if isFullWidth {
+            scrollView.autoPinEdge(toSuperviewEdge: .leading)
+            scrollView.autoPinEdge(toSuperviewEdge: .trailing)
+        } else {
+            scrollView.autoHCenterInSuperview()
+        }
         scrollView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
 
         // Prefer to be full width, but don't exceed the maximum width

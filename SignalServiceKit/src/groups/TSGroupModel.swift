@@ -102,7 +102,7 @@ public class TSGroupModelV2: TSGroupModel {
             switch comparisonMode {
             case .compareAll:
                 return false
-            case .userFacingOnly:
+            case .userFacingOnly, .migration:
                 return true
             }
         }

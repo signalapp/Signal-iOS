@@ -56,6 +56,17 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithAddress:address nameComponents:nameComponents colorName:colorName diameter:diameter];
 }
 
+- (instancetype)initWithAddress:(SignalServiceAddress *)address
+                      colorName:(ConversationColorName)colorName
+                       diameter:(NSUInteger)diameter
+                    transaction:(SDSAnyReadTransaction *)transaction
+{
+    // Components for avatar initials.
+    NSPersonNameComponents *_Nullable nameComponents =
+        [OWSContactAvatarBuilder.contactsManager nameComponentsForAddress:address transaction:transaction];
+    return [self initWithAddress:address nameComponents:nameComponents colorName:colorName diameter:diameter];
+}
+
 - (instancetype)initWithNonSignalNameComponents:(NSPersonNameComponents *)nonSignalNameComponents
                                       colorSeed:(NSString *)colorSeed
                                        diameter:(NSUInteger)diameter
@@ -90,27 +101,46 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.address.isLocalAddress) {
-        NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
-        UIImage *_Nullable cachedAvatar =
-            [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:noteToSelfCacheKey
-                                                                    diameter:(CGFloat)self.diameter];
-        if (cachedAvatar) {
-            return cachedAvatar;
-        }
-
-        UIImage *image = [self noteToSelfImageWithConversationColorName:self.colorName diameter:(CGFloat)self.diameter];
-        if (!image) {
-            OWSFailDebug(@"Could not generate avatar.");
-            return nil;
-        }
-
-        [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image
-                                                               forKey:noteToSelfCacheKey
-                                                             diameter:self.diameter];
-        return image;
+        return self.buildImageForLocalUser;
     }
 
     return [OWSContactAvatarBuilder.contactsManager imageForAddressWithSneakyTransaction:self.address];
+}
+
+- (nullable UIImage *)buildSavedImageWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    if (!self.address.isValid) {
+        return nil;
+    }
+
+    if (self.address.isLocalAddress) {
+        return self.buildImageForLocalUser;
+    }
+
+    return [OWSContactAvatarBuilder.contactsManager imageForAddress:self.address transaction:transaction];
+}
+
+- (nullable UIImage *)buildImageForLocalUser
+{
+    OWSCAssertDebug(self.address.isLocalAddress);
+    NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
+    UIImage *_Nullable cachedAvatar =
+        [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:noteToSelfCacheKey
+                                                                diameter:(CGFloat)self.diameter];
+    if (cachedAvatar) {
+        return cachedAvatar;
+    }
+
+    UIImage *image = [self noteToSelfImageWithConversationColorName:self.colorName diameter:(CGFloat)self.diameter];
+    if (!image) {
+        OWSFailDebug(@"Could not generate avatar.");
+        return nil;
+    }
+
+    [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image
+                                                           forKey:noteToSelfCacheKey
+                                                         diameter:self.diameter];
+    return image;
 }
 
 - (id)cacheKey

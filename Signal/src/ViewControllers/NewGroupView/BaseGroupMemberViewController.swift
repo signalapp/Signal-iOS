@@ -139,15 +139,17 @@ public class BaseGroupMemberViewController: OWSViewController {
         }
 
         memberCountWrapper.isHidden = false
-        let format = NSLocalizedString("GROUP_MEMBER_COUNT_FORMAT",
-                                       comment: "Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}.")
+        let format = NSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT",
+                                       comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.")
         let memberCount = groupMemberViewDelegate.groupMemberViewGroupMemberCountForDisplay()
 
-        // maxGroupsV2MemberCount will have values like 101, 151 to
-        // leave a slot for the local user.  We render the max count - 1.
         memberCountLabel.text = String(format: format,
-                                       OWSFormat.formatInt(memberCount),
-                                       OWSFormat.formatUInt(GroupManager.maxGroupsV2MemberCount - 1))
+                                       OWSFormat.formatInt(memberCount))
+        if memberCount >= GroupManager.groupsV2MaxGroupSizeRecommended {
+            memberCountLabel.textColor = .ows_accentRed
+        } else {
+            memberCountLabel.textColor = Theme.primaryTextColor
+        }
     }
 
     public func removeRecipient(_ recipient: PickedRecipient) {
