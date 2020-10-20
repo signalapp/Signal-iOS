@@ -22,7 +22,6 @@
 #import "NotificationSettingsViewController.h"
 #import "OWSAddToContactViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
-#import "OWSAudioMessageView.h"
 #import "OWSAudioPlayer.h"
 #import "OWSBackup.h"
 #import "OWSBackupIO.h"

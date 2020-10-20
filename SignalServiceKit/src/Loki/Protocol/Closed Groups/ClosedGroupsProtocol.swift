@@ -132,6 +132,11 @@ public final class ClosedGroupsProtocol : NSObject {
             when(resolved: promises).done2 { _ in seal.fulfill(()) }.catch2 { seal.reject($0) }
             promise.done {
                 try! Storage.writeSync { transaction in
+                    let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
+                    for (senderPublicKey, oldRatchet) in allOldRatchets {
+                        let collection = Storage.ClosedGroupRatchetCollectionType.old
+                        Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: oldRatchet, in: collection, using: transaction)
+                    }
                     // Delete all ratchets (it's important that this happens * after * sending out the update)
                     Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
                     // Remove the group from the user's set of public keys to poll for if the user is leaving. Otherwise generate a new ratchet and
@@ -363,6 +368,11 @@ public final class ClosedGroupsProtocol : NSObject {
         let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
         let wasUserRemoved = !members.contains(userPublicKey)
         if Set(members).intersection(oldMembers) != Set(oldMembers) {
+            let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
+            for (senderPublicKey, oldRatchet) in allOldRatchets {
+                let collection = Storage.ClosedGroupRatchetCollectionType.old
+                Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: oldRatchet, in: collection, using: transaction)
+            }
             Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
             if wasUserRemoved {
                 Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)

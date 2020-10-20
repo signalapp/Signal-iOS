@@ -18,6 +18,7 @@ public final class FileServerAPI : DotNetAPI {
     public static let fileSizeORMultiplier: Double = 1.25
 
     @objc public static let server = "https://file.getsession.org"
+    @objc public static let fileStorageBucketURL = "https://file-static.lokinet.org"
 
     // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }

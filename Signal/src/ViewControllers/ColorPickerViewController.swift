@@ -228,6 +228,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
     }
 
     private func updateMockConversationView() {
+        /*
         conversationStyle.viewWidth = max(bounds.size.width, kMinimumConversationWidth)
         mockConversationView.subviews.forEach { $0.removeFromSuperview() }
 
@@ -275,6 +276,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
 
         mockConversationView.addSubview(messagesStackView)
         messagesStackView.autoPinEdgesToSuperviewMargins()
+         */
     }
 
     private func buildPaletteView(colorViews: [ColorView]) -> UIView {
@@ -303,6 +305,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
 
 // MARK: Mock Classes for rendering demo conversation
 
+/*
 @objc
 private class MockConversationViewItem: NSObject, ConversationViewItem {
     var userCanDeleteGroupMessage: Bool = false
@@ -444,6 +447,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return false
     }
 }
+ */
 
 private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: String) {
