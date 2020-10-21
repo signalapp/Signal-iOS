@@ -11,11 +11,12 @@ public final class FileServerAPI : DotNetAPI {
 
     public static let maxFileSize = 10_000_000 // 10 MB
     /// The file server has a file size limit of `maxFileSize`, which the Service Nodes try to enforce as well. However, the limit applied by the Service Nodes
-    /// is on the **HTTP request** and not the file size. Because of onion request encryption, a file that's about 8 MB will result in a request that's about 10 MB.
-    /// On average the multiplier appears to be about 1.25, so when checking whether the file will exceed the file size limit when uploading a file we just divide
-    /// the size of the file by this number. The alternative would be to actually check the size of the HTTP request but that's only possible after proof of work
-    /// has been calculated and the onion request encryption has happened, which takes several seconds.
-    public static let fileSizeORMultiplier: Double = 1.25
+    /// is on the **HTTP request** and not the actual file size. Because the file server expects the file data to be base 64 encoded, the size of the HTTP
+    /// request for a given file will be at least `ceil(n / 3) * 4` bytes, where n is the file size in bytes. This is the minimum size because there might also
+    /// be other parameters in the request. On average the multiplier appears to be about 1.5, so when checking whether the file will exceed the file size limit when
+    /// uploading a file we just divide the size of the file by this number. The alternative would be to actually check the size of the HTTP request but that's only
+    /// possible after proof of work has been calculated and the onion request encryption has happened, which takes several seconds.
+    public static let fileSizeORMultiplier: Double = 1.5
 
     @objc public static let server = "https://file.getsession.org"
     @objc public static let fileStorageBucketURL = "https://file-static.lokinet.org"
