@@ -64,8 +64,8 @@ public final class Values : NSObject {
     @objc public static let onboardingButtonBottomOffset = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(72)
     
     // MARK: - Animation Values
-    @objc public static let fakeChatStartDelay: TimeInterval = 1.5
+    @objc public static let fakeChatStartDelay: TimeInterval = 1
     @objc public static let fakeChatAnimationDuration: TimeInterval = 0.4
-    @objc public static let fakeChatDelay: TimeInterval = 2
+    @objc public static let fakeChatDelay: TimeInterval = 1.5
     @objc public static let fakeChatMessagePopAnimationStartScale: CGFloat = 0.6
 }

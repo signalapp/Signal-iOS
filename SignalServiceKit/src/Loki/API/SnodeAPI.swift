@@ -89,7 +89,11 @@ public final class SnodeAPI : NSObject {
                         return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
                     })
                     // randomElement() uses the system's default random generator, which is cryptographically secure
-                    return snodePool.randomElement()!
+                    if !snodePool.isEmpty {
+                        return snodePool.randomElement()!
+                    } else {
+                        throw SnodeAPIError.randomSnodePoolUpdatingFailed
+                    }
                 }
             }.done2 { snode in
                 seal.fulfill(snode)

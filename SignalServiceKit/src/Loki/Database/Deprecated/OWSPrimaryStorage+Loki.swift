@@ -53,38 +53,6 @@ public extension OWSPrimaryStorage {
         return result
     }
 
-    // MARK: Onion Request Paths
-    public func setOnionRequestPaths(_ paths: [OnionRequestAPI.Path], in transaction: YapDatabaseReadWriteTransaction) {
-        // FIXME: This is a bit of a dirty approach that assumes 2 paths of length 3 each. We should do better than this.
-        guard paths.count == 2 else { return }
-        let path0 = paths[0]
-        let path1 = paths[1]
-        guard path0.count == 3, path1.count == 3 else { return }
-        let collection = Storage.onionRequestPathCollection
-        transaction.setObject(path0[0], forKey: "0-0", inCollection: collection)
-        transaction.setObject(path0[1], forKey: "0-1", inCollection: collection)
-        transaction.setObject(path0[2], forKey: "0-2", inCollection: collection)
-        transaction.setObject(path1[0], forKey: "1-0", inCollection: collection)
-        transaction.setObject(path1[1], forKey: "1-1", inCollection: collection)
-        transaction.setObject(path1[2], forKey: "1-2", inCollection: collection)
-    }
-
-    public func getOnionRequestPaths(in transaction: YapDatabaseReadTransaction) -> [OnionRequestAPI.Path] {
-        let collection = Storage.onionRequestPathCollection
-        guard
-            let path0Snode0 = transaction.object(forKey: "0-0", inCollection: collection) as? Snode,
-            let path0Snode1 = transaction.object(forKey: "0-1", inCollection: collection) as? Snode,
-            let path0Snode2 = transaction.object(forKey: "0-2", inCollection: collection) as? Snode,
-            let path1Snode0 = transaction.object(forKey: "1-0", inCollection: collection) as? Snode,
-            let path1Snode1 = transaction.object(forKey: "1-1", inCollection: collection) as? Snode,
-            let path1Snode2 = transaction.object(forKey: "1-2", inCollection: collection) as? Snode else { return [] }
-        return [ [ path0Snode0, path0Snode1, path0Snode2 ], [ path1Snode0, path1Snode1, path1Snode2 ] ]
-    }
-
-    public func clearOnionRequestPaths(in transaction: YapDatabaseReadWriteTransaction) {
-        transaction.removeAllObjects(inCollection: Storage.onionRequestPathCollection)
-    }
-
     // MARK: Session Requests
     public func setSessionRequestTimestamp(for publicKey: String, to timestamp: Date, in transaction: YapDatabaseReadWriteTransaction) {
         transaction.setDate(timestamp, forKey: publicKey, inCollection: Storage.sessionRequestTimestampCollection)
