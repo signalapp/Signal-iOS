@@ -266,7 +266,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Os gwelwch yn dda, crëwch archif gywasgedig o'r ffeil neu'r cyfeiriadur hwn a cheisiwch anfon hwnnw yn lle.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Ffeil Heb Gefnogaeth";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Ffeil na Chefnogir";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Sain";
@@ -815,7 +815,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Analluogwyd";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Dewiswch pwy all golygu enw, llun ac amserydd negeseuon byrhoedlog y grŵp.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Dewiswch pwy all golygu enw, llun a chyfnod negeseuon byrhoedlog y grŵp.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Ni fyddwch bellach yn derbyn negeseuon na diweddariadau gan y defnyddiwr hwn.";
@@ -1505,7 +1505,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Gall \"%@\" newid aelodaeth grŵp.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Dim ond gweinyddwyr gall newid y dewis hwn.";
+
+/* Button to join an ongoing group call */
+"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+
+/* String indicating how many people are current in the call */
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+
+/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+
+/* Text explaining that you are the only person currently in the group call */
+"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+
+/* String indicating one person is currently in the call */
+"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+
+/* Text explaining that there is one person in the group call. Embeds {member name} */
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+
+/* Button to start a group call */
+"GROUP_CALL_START_BUTTON" = "Cychwyn Galwad";
+
+/* Text explaining that there are two people in the group call. Embeds {member name} */
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Crëwyd y grŵp gennych chi.";
@@ -1967,7 +1991,7 @@
 "GROUP_UPDATED_BY_LOCAL_USER" = "Rydych chi wedi diweddaru'r grŵp.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "Diweddarwyd %@ y grŵp.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "Diweddarodd %@ y grŵp.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Dilëwyd enw'r grŵp.";
@@ -2057,7 +2081,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Dewiswch gweinyddwr newydd";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Gweld Cais";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Gweld Ceisiadau";
@@ -2144,7 +2168,7 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Gwrthodwyd ar ddyfais arall.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Ailgysylltu...";
+"IN_CALL_RECONNECTING" = "Yn Ailgysylltu...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Yn canu...";
@@ -2492,10 +2516,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Dileu";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Parhau'r sgwrs hwn gyda %@ a rhannu eich enw a llun â hwy?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Parhau'r sgwrs gyda'r grŵp hwn a rhannu eich enw a llun â'i aelodau?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Gadael i %@ anfon negeseuon atoch, a rhannu eich enw a llun gyda nhw? Ni fyddant yn gwybod eich bod wedi gweld eu neges nes i chi dderbyn.";
@@ -2903,10 +2927,10 @@
 "OPEN_SETTINGS_BUTTON" = "Gosodiadau";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Analluogwyd %@ negeseuon byrhoedlog.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Analluogodd %@ negeseuon byrhoedlog.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Gosododd %@ amser negeseuon byrhoedlog i %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Gosododd %@ cyfnod negeseuon byrhoedlog i %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Mae Signal yn profi anawsterau technegol. Rydym yn gweithio'n galed i adfer y gwasanaeth cyn gynted ā phosib.";
@@ -3794,7 +3818,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Diweddarwch Signal ar y ddyfais hon i'w gysylltu a'ch ffôn.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Fersiwn ni Chefnogir";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Fersiwn na Chefnogir";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Mae'ch dyfais arall yn rhedeg hen fersiwn o Signal na all sganio côd QR iPad. Gosodwch y fersiwn diweddaraf o Signal a rhowch gynnig arall arni.";
@@ -4277,7 +4301,7 @@
 "SOUNDS_NONE" = "Dim";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these updates in a future update.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Bydd grwpiau presennol yn derbyn y diweddariadau rhain yn awtomatig mewn diweddariad yn y dyfodol..";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Grŵp Newydd";
@@ -4286,10 +4310,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Mae Grwpiau Newydd yma!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Mae nodweddion Grwpiau Newydd yn cynnwys @crybwylliadau, gweinyddwyr, a mwy. Rhowch gynning arni wrth gyffwrdd:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Neges Sticer";
@@ -4388,7 +4412,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Aelod o %@, %@, a %lu grŵp ychwanegol";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Gallwch ychwanegu nodiadau i chi'ch hun yn y sgwrs hon. Os oes gan eich cyfrif unrhyw ddyfeisiau cysylltiedig, bydd nodiadau newydd yn cael eu cydweddu.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Gallwch ychwanegu nodiadau i chi'ch hun yn y sgwrs hon. Os oes gan eich cyfrif unrhyw ddyfeisiau cysylltiedig, bydd nodiadau newydd yn cael eu cysoni.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Aelod o %@";
@@ -4499,7 +4523,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Analluogwyd negeseuon byrhoedlog.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Gosodwyd terfyn amser negeseuon byrhoedlog i %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Gosodwyd cyfnod negeseuon byrhoedlog i %@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Anhysbys";
@@ -4667,7 +4691,7 @@
 "YOU_DELETED_THIS_MESSAGE" = "Chi wnaeth ddileu'r neges hon.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Rydych chi'n wedi analluogi negeseuon byrhoedlog .";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Rydych wedi analluogi negeseuon byrhoedlog.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Mae'n rhaid i chi orffen gosod eich cyfrif cyn parhau.";

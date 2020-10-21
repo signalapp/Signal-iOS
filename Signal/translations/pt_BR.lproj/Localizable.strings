@@ -1505,7 +1505,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Os membros do grupo podem ser modificados por \"%@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Somente os administradores podem mudar esta opção.";
+
+/* Button to join an ongoing group call */
+"GROUP_CALL_JOIN_BUTTON" = "Participe em Chamada";
+
+/* String indicating how many people are current in the call */
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+
+/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+
+/* Text explaining that you are the only person currently in the group call */
+"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+
+/* String indicating one person is currently in the call */
+"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+
+/* Text explaining that there is one person in the group call. Embeds {member name} */
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+
+/* Button to start a group call */
+"GROUP_CALL_START_BUTTON" = "Começar a Chamada";
+
+/* Text explaining that there are two people in the group call. Embeds {member name} */
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Você criou o grupo.";
@@ -2057,7 +2081,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Escolha novo admin";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Ver a Solicitação";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Ver os Pedidos";

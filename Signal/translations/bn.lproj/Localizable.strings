@@ -1507,6 +1507,30 @@
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
 
+/* Button to join an ongoing group call */
+"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+
+/* String indicating how many people are current in the call */
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+
+/* Text explaining that there are three or more people in the group call. Embeds {member name} */
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+
+/* Text explaining that you are the only person currently in the group call */
+"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+
+/* String indicating one person is currently in the call */
+"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+
+/* Text explaining that there is one person in the group call. Embeds {member name} */
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+
+/* Button to start a group call */
+"GROUP_CALL_START_BUTTON" = "Start Call";
+
+/* Text explaining that there are two people in the group call. Embeds {member name} */
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "আপনি গ্রুপ তৈরি করেছেন।";
 
@@ -2510,7 +2534,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "মূক্ত করুন";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "অনুরোধ বাতিল করুন";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -3128,7 +3152,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "সতর্কতা";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "আপনার পিন সংরক্ষণ করা হয়নি। আমরা আপনাকে পরে একটি পিন তৈরি করতে অনুরোধ করব।";
@@ -4664,7 +4688,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal ডেস্কটপ থেকে সেটাপ শেষ করুন।";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "আপনি এই বার্তাটি মুছে দিয়েছিলেন। ";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "আপনি অদৃশ্য হয়ে যাওয়া বার্তাগুলি অক্ষম করেছেন।";
