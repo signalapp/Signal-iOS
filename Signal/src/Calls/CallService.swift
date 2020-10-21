@@ -194,7 +194,7 @@ public final class CallService: NSObject {
         case .group(let groupCall):
             groupCall.isOutgoingAudioMuted = isLocalAudioMuted
         case .individual(let individualCall):
-            individualCall.isMuted = true
+            individualCall.isMuted = isLocalAudioMuted
         }
 
         ensureAudioState(call: call)
