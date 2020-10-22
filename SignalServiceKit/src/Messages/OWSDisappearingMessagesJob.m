@@ -228,7 +228,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)schedulePass
 {
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{ [self runLoop]; });
     }];
 }
