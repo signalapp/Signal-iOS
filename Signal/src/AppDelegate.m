@@ -1157,16 +1157,18 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [self enableBackgroundRefreshIfNecessary];
 
-    if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
+    if ([self.tsAccountManager isRegisteredAndReady]) {
+        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
 
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [ExperienceUpgradeFinder markAllCompleteForNewUserWithTransaction:transaction.unwrapGrdbWrite];
-        });
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                [ExperienceUpgradeFinder markAllCompleteForNewUserWithTransaction:transaction.unwrapGrdbWrite];
+            });
 
-        // Start running the disappearing messages job in case the newly registered user
-        // enables this feature
-        [self.disappearingMessagesJob startIfNecessary];
+            // Start running the disappearing messages job in case the newly registered user
+            // enables this feature
+            [self.disappearingMessagesJob startIfNecessary];
+        }];
     }
 }
 
