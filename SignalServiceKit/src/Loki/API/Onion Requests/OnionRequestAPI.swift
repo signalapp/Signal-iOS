@@ -4,6 +4,7 @@ import PromiseKit
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {
     private static var pathFailureCount: [Path:UInt] = [:]
+    private static var snodeFailureCount: [Snode:UInt] = [:]
     public static var guardSnodes: Set<Snode> = []
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
@@ -11,7 +12,9 @@ public enum OnionRequestAPI {
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
     /// The number of times a path can fail before it's replaced.
-    private static let pathFailureThreshold: UInt = 3
+    private static let pathFailureThreshold: UInt = 2
+    /// The number of times a path can fail before it's replaced.
+    private static let snodeFailureThreshold: UInt = 2
     /// The number of paths to maintain.
     public static let targetPathCount: UInt = 2
 
@@ -197,6 +200,7 @@ public enum OnionRequestAPI {
         // We repair the path here because we can do it sync. In the case where we drop a whole
         // path we leave the re-building up to getPath(excluding:) because re-building the path
         // in that case is async.
+        OnionRequestAPI.snodeFailureCount[snode] = 0
         var oldPaths = paths
         guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
         var path = oldPaths[pathIndex]
@@ -217,6 +221,7 @@ public enum OnionRequestAPI {
     }
 
     private static func drop(_ path: Path) {
+        OnionRequestAPI.pathFailureCount[path] = 0
         var paths = OnionRequestAPI.paths
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
@@ -403,11 +408,17 @@ public enum OnionRequestAPI {
             if let message = json?["result"] as? String, message.hasPrefix(prefix) {
                 let ed25519PublicKey = message.substring(from: prefix.count)
                 if let path = path, let snode = path.first(where: { $0.publicKeySet?.ed25519Key == ed25519PublicKey }) {
-                    SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
-                    do {
-                        try drop(snode)
-                    } catch {
-                        handleUnspecificError()
+                    var snodeFailureCount = OnionRequestAPI.snodeFailureCount[snode] ?? 0
+                    snodeFailureCount += 1
+                    if snodeFailureCount >= snodeFailureThreshold {
+                        SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                        do {
+                            try drop(snode)
+                        } catch {
+                            handleUnspecificError()
+                        }
+                    } else {
+                        OnionRequestAPI.snodeFailureCount[snode] = snodeFailureCount
                     }
                 } else {
                     handleUnspecificError()
