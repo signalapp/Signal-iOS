@@ -11,7 +11,7 @@ public enum OnionRequestAPI {
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
     /// The number of times a path can fail before it's replaced.
-    private static let pathFailureThreshold: UInt = 2
+    private static let pathFailureThreshold: UInt = 3
     /// The number of paths to maintain.
     public static let targetPathCount: UInt = 2
 
@@ -313,8 +313,8 @@ public enum OnionRequestAPI {
         }
         let payload: JSON = [
             "body" : parametersAsString,
-            "endpoint": endpoint,
-            "method" : request.httpMethod,
+            "endpoint" : endpoint,
+            "method" : request.httpMethod!,
             "headers" : headers
         ]
         let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
