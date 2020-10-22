@@ -634,7 +634,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 let newProfileKeys: [UUID: Data]
 
                 if let snapshot = groupChange.snapshot {
-                    let builder = try TSGroupModelBuilder(groupV2Snapshot: snapshot)
+                    let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
+                                                                             transaction: transaction)
                     newGroupModel = try builder.build(transaction: transaction)
                     newDisappearingMessageToken = snapshot.disappearingMessageToken
                     newProfileKeys = snapshot.profileKeys
@@ -723,7 +724,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let snapshot = firstGroupChange.snapshot else {
                 throw OWSAssertionError("Missing snapshot.")
             }
-            let builder = try TSGroupModelBuilder(groupV2Snapshot: snapshot)
+            let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
+                                                                     transaction: transaction)
             let newGroupModel = try builder.build(transaction: transaction)
 
             // Many change actions have author info, e.g. addedByUserID. But we can
@@ -856,7 +858,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
 
         return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
-            let builder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
+            let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
+                                                                     transaction: transaction)
             let newGroupModel = try builder.build(transaction: transaction)
             let newDisappearingMessageToken = groupV2Snapshot.disappearingMessageToken
             // groupUpdateSourceAddress is nil because we don't know the

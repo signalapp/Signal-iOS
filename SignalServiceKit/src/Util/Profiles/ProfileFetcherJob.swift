@@ -60,7 +60,7 @@ public class ProfileFetchOptions: NSObject {
                      ignoreThrottling: Bool = false,
                      fetchType: ProfileFetchType = .default) {
         self.mainAppOnly = mainAppOnly
-        self.ignoreThrottling = ignoreThrottling
+        self.ignoreThrottling = ignoreThrottling || DebugFlags.aggressiveProfileFetching.get()
         self.fetchType = fetchType
     }
 }

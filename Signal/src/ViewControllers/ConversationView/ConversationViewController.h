@@ -95,6 +95,7 @@ typedef NS_CLOSED_ENUM(NSUInteger,
 - (void)updateBarButtonItems;
 - (void)reloadBottomBar;
 - (UIView *)bottomBar;
+- (void)ensureBannerState;
 
 #pragma mark - Search
 

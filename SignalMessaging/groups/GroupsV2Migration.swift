@@ -7,7 +7,8 @@ import PromiseKit
 import ZKGroup
 import HKDFKit
 
-public class GroupsV2Migration {
+@objc
+public class GroupsV2Migration: NSObject {
 
     // MARK: - Dependencies
 
@@ -29,7 +30,7 @@ public class GroupsV2Migration {
 
     // MARK: -
 
-    private init() {}
+    private override init() {}
 
     // MARK: - Mapping
 
@@ -49,9 +50,8 @@ public extension GroupsV2Migration {
     // MARK: -
 
     static func tryManualMigration(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
-        guard FeatureFlags.groupsV2MigrationManualMigrationPolite ||
-            FeatureFlags.groupsV2MigrationManualMigrationAggressive else {
-                return Promise(error: OWSAssertionError("Manual migration not enabled."))
+        guard GroupManager.canManuallyMigrate else {
+            return Promise(error: OWSAssertionError("Manual migration not enabled."))
         }
         return tryToMigrate(groupThread: groupThread, migrationMode: manualMigrationMode)
     }
@@ -63,7 +63,12 @@ public extension GroupsV2Migration {
     static func tryToMigrate(groupThread: TSGroupThread,
                              migrationMode: GroupsV2MigrationMode) -> Promise<TSGroupThread> {
         firstly(on: .global()) {
-            Self.databaseStorage.read { transaction in
+            if migrationMode == .isAlreadyMigratedOnService ||
+                migrationMode == .possiblyAlreadyMigratedOnService {
+                return true
+            }
+
+            return Self.databaseStorage.read { transaction in
                 Self.canGroupBeMigratedByLocalUser(groupThread: groupThread,
                                                    migrationMode: migrationMode,
                                                    transaction: transaction)
@@ -72,8 +77,8 @@ public extension GroupsV2Migration {
             guard canGroupBeMigrated else {
                 throw OWSGenericError("Group can not be migrated.")
             }
-            return Self.localMigrationAttempt(groupId: groupThread.groupModel.groupId,
-                                              migrationMode: migrationMode)
+            return Self.enqueueMigration(groupId: groupThread.groupModel.groupId,
+                                         migrationMode: migrationMode)
         }
     }
 
@@ -93,12 +98,13 @@ public extension GroupsV2Migration {
             }
 
             return firstly(on: .global()) { () -> Promise<TSGroupThread> in
-                Self.localMigrationAttempt(groupId: v2GroupId,
-                                           migrationMode: .alreadyMigratedOnService)
+                Self.enqueueMigration(groupId: v2GroupId,
+                                      migrationMode: .isAlreadyMigratedOnService)
             }.asVoid()
         }
     }
 
+    @objc
     static func migrationInfoForManualMigration(groupThread: TSGroupThread) -> GroupsV2MigrationInfo {
         databaseStorage.read { transaction in
             migrationInfoForManualMigration(groupThread: groupThread,
@@ -111,9 +117,8 @@ public extension GroupsV2Migration {
     static func migrationInfoForManualMigration(groupThread: TSGroupThread,
                                                 transaction: SDSAnyReadTransaction) -> GroupsV2MigrationInfo {
 
-        guard FeatureFlags.groupsV2MigrationManualMigrationPolite ||
-            FeatureFlags.groupsV2MigrationManualMigrationAggressive else {
-                return .buildCannotBeMigrated(state: .cantBeMigrated_FeatureNotEnabled)
+        guard GroupManager.canManuallyMigrate else {
+            return .buildCannotBeMigrated(state: .cantBeMigrated_FeatureNotEnabled)
         }
         return migrationInfo(groupThread: groupThread,
                              migrationMode: manualMigrationMode,
@@ -121,21 +126,100 @@ public extension GroupsV2Migration {
     }
 
     private static var manualMigrationMode: GroupsV2MigrationMode {
-        owsAssertDebug(FeatureFlags.groupsV2MigrationManualMigrationPolite ||
-            FeatureFlags.groupsV2MigrationManualMigrationAggressive)
+        owsAssertDebug(GroupManager.canManuallyMigrate)
 
-        return (FeatureFlags.groupsV2MigrationManualMigrationAggressive
+        return (GroupManager.areManualMigrationsAggressive
             ? .manualMigrationAggressive
             : .manualMigrationPolite)
     }
 
     private static var autoMigrationMode: GroupsV2MigrationMode {
-        owsAssertDebug(FeatureFlags.groupsV2MigrationAutoMigrationPolite ||
-            FeatureFlags.groupsV2MigrationAutoMigrationAggressive)
+        owsAssertDebug(GroupManager.canAutoMigrate)
 
-        return (FeatureFlags.groupsV2MigrationAutoMigrationAggressive
-            ? .manualMigrationAggressive
-            : .manualMigrationPolite)
+        return (GroupManager.areAutoMigrationsAggressive
+            ? .autoMigrationAggressive
+            : .autoMigrationPolite)
+    }
+
+    static func doesUserHaveBothCapabilities(address: SignalServiceAddress,
+                                             transaction: SDSAnyReadTransaction) -> Bool {
+        if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
+                                                        transaction: transaction) {
+            Logger.warn("Member without Groups v2 capability: \(address).")
+            return false
+        }
+        if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address,
+                                                                 transaction: transaction) {
+            Logger.warn("Member without migration capability: \(address).")
+            return false
+        }
+        return true
+    }
+
+    static func tryToAutoMigrateAllGroups() {
+        AssertIsOnMainThread()
+
+        guard GroupManager.canAutoMigrate else {
+            return
+        }
+
+        // This is low priority work, so we want to
+        DispatchQueue.global().async {
+            var groupThreads = [TSGroupThread]()
+            Self.databaseStorage.read { transaction in
+                TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
+                    guard let groupThread = thread as? TSGroupThread else {
+                        return
+                    }
+                    guard groupThread.isGroupV1Thread else {
+                        return
+                    }
+                    groupThreads.append(groupThread)
+                }
+            }
+            let migrationMode = self.autoMigrationMode
+            for groupThread in groupThreads {
+                firstly {
+                    Self.tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
+                }.done(on: .global()) { _ in
+                    Logger.verbose("")
+                }.catch(on: .global()) { error in
+                    owsFailDebug("Error: \(error)")
+                }
+            }
+        }
+    }
+
+    @objc(autoMigrateThreadIfNecessary:)
+    static func autoMigrateThreadIfNecessary(thread: TSThread) {
+        AssertIsOnMainThread()
+
+        guard FeatureFlags.groupsV2Migrations else {
+            return
+        }
+        guard let groupThread = thread as? TSGroupThread else {
+            return
+        }
+        guard groupThread.isGroupV1Thread else {
+            return
+        }
+
+        let migrationMode = (GroupManager.canAutoMigrate
+                                ? self.autoMigrationMode
+                                : .possiblyAlreadyMigratedOnService)
+        firstly {
+            return tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
+        }.done(on: .global()) { (_: TSGroupThread) in
+            Logger.verbose("")
+        }.catch(on: .global()) { error in
+            if case GroupsV2Error.groupDoesNotExistOnService = error {
+                Logger.warn("Error: \(error)")
+            } else if case GroupsV2Error.localUserNotInGroup = error {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebug("Error: \(error)")
+            }
+        }
     }
 }
 
@@ -143,9 +227,35 @@ public extension GroupsV2Migration {
 
 fileprivate extension GroupsV2Migration {
 
+    private static let migrationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "GroupsV2MigrationQueue"
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
+    // Ensure only one migration is in flight at a time.
+    static func enqueueMigration(groupId: Data,
+                                 migrationMode: GroupsV2MigrationMode) -> Promise<TSGroupThread> {
+        let operation = MigrateGroupOperation(groupId: groupId, migrationMode: migrationMode)
+        migrationQueue.addOperation(operation)
+        return operation.promise
+    }
+
     // groupId might be the v1 or v2 group id.
-    static func localMigrationAttempt(groupId: Data,
-                                      migrationMode: GroupsV2MigrationMode) -> Promise<TSGroupThread> {
+    static func attemptMigration(groupId: Data,
+                                 migrationMode: GroupsV2MigrationMode) -> Promise<TSGroupThread> {
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return Promise(error: OWSAssertionError("Not registered."))
+        }
+        if migrationMode.isAutoMigration {
+            guard GroupManager.canAutoMigrate else {
+                return Promise(error: OWSAssertionError("Auto migrations not enabled."))
+            }
+        }
+
+        Logger.verbose("migrationMode: \(migrationMode)")
 
         return firstly(on: .global()) { () -> Promise<Void> in
             return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
@@ -158,15 +268,15 @@ fileprivate extension GroupsV2Migration {
                 return unmigratedState
             }
         }.then(on: .global()) { (unmigratedState: UnmigratedState) -> Promise<TSGroupThread> in
-            addMigratingV2GroupId(unmigratedState.migrationMetadata.v1GroupId)
-            addMigratingV2GroupId(unmigratedState.migrationMetadata.v2GroupId)
+            addMigratingGroupId(unmigratedState.migrationMetadata.v1GroupId)
+            addMigratingGroupId(unmigratedState.migrationMetadata.v2GroupId)
 
             return firstly(on: .global()) { () -> Promise<TSGroupThread> in
                 attemptToMigrateByPullingFromService(unmigratedState: unmigratedState,
                                                      migrationMode: migrationMode)
             }.recover(on: .global()) { (error: Error) -> Promise<TSGroupThread> in
                 if case GroupsV2Error.groupDoesNotExistOnService = error,
-                migrationMode.canMigrateToService {
+                    migrationMode.canMigrateToService {
                     // If the group is not already on the service, try to
                     // migrate by creating on the service.
                     return attemptToMigrateByCreatingOnService(unmigratedState: unmigratedState,
@@ -207,6 +317,12 @@ fileprivate extension GroupsV2Migration {
             if case GroupsV2Error.groupDoesNotExistOnService = error {
                 // Convert error if the group is not already on the service.
                 throw GroupsV2Error.groupDoesNotExistOnService
+            } else if case GroupsV2Error.localUserNotInGroup = error {
+                try databaseStorage.write { transaction in
+                    let groupId = unmigratedState.migrationMetadata.v1GroupId
+                    GroupManager.handleNotInGroup(groupId: groupId, transaction: transaction)
+                }
+                throw error
             } else {
                 throw error
             }
@@ -227,8 +343,9 @@ fileprivate extension GroupsV2Migration {
         }
 
         return firstly(on: .global()) { () -> TSGroupModelV2 in
-            try self.databaseStorage.read { transaction in
-                let builder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
+            try self.databaseStorage.write { transaction in
+                let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
+                                                                         transaction: transaction)
                 return try builder.buildAsV2(transaction: transaction)
             }
         }.then(on: .global()) { (newGroupModelV2: TSGroupModelV2) throws -> Promise<TSGroupThread> in
@@ -363,6 +480,12 @@ fileprivate extension GroupsV2Migration {
         var v2MembershipBuilder = GroupMembership.Builder()
         let membersToMigrate = membersToTryToMigrate(groupMembership: v1GroupModel.groupMembership)
         for address in membersToMigrate {
+            if DebugFlags.groupsV2migrationsDropOtherMembers.get(),
+                !address.isLocalAddress {
+                Logger.warn("Dropping non-local user.")
+                continue
+            }
+
             guard address.uuid != nil else {
                 Logger.warn("Member missing uuid: \(address).")
                 owsAssertDebug(migrationMode.canSkipMembersWithoutUuids)
@@ -370,21 +493,16 @@ fileprivate extension GroupsV2Migration {
                 continue
             }
 
-            if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
-                                                            transaction: transaction) {
-                Logger.warn("Member without Groups v2 capability: \(address).")
-                owsAssertDebug(migrationMode.canSkipMembersWithoutCapabilities)
-                continue
-            }
-            if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address,
-                                                            transaction: transaction) {
-                Logger.warn("Member without migration capability: \(address).")
+            if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
                 owsAssertDebug(migrationMode.canSkipMembersWithoutCapabilities)
                 continue
             }
 
             var isInvited = false
-            if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
+            if DebugFlags.groupsV2migrationsInviteOtherMembers.get() {
+                Logger.warn("Inviting user with unknown profile key: \(address).")
+                isInvited = true
+            } else if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
                 Logger.warn("Inviting user with unknown profile key: \(address).")
                 owsAssertDebug(migrationMode.canInviteMembersWithoutProfileKey)
                 isInvited = true
@@ -417,9 +535,10 @@ fileprivate extension GroupsV2Migration {
         }.then(on: .global()) { _ in
             self.groupsV2.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModel)
         }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModelV2 in
-            let createdGroupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModelV2 in
-                let groupModelBuilder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
-                return try groupModelBuilder.buildAsV2(transaction: transaction)
+            let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModelV2 in
+                let builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
+                                                                         transaction: transaction)
+                return try builder.buildAsV2(transaction: transaction)
             }
             if proposedGroupModel != createdGroupModel {
                 Logger.verbose("proposedGroupModel: \(proposedGroupModel.debugDescription)")
@@ -481,28 +600,27 @@ fileprivate extension GroupsV2Migration {
                 continue
             }
 
+            if DebugFlags.groupsV2migrationsDropOtherMembers.get() {
+                Logger.warn("Dropping non-local user.")
+                membersWithoutCapabilities.append(address)
+                continue
+            }
+
             guard nil != address.uuid else {
                 Logger.warn("Member without uuid: \(address).")
                 membersWithoutUuids.append(address)
                 continue
             }
 
-            if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
-                                                            transaction: transaction) {
-                Logger.warn("Member without Groups v2 capability: \(address).")
-                membersWithoutCapabilities.append(address)
-                continue
-            }
-            if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address,
-                                                                     transaction: transaction) {
-                Logger.warn("Member without migration capability: \(address).")
+            if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
                 membersWithoutCapabilities.append(address)
                 continue
             }
 
             membersMigrated.append(address)
 
-            if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
+            if DebugFlags.groupsV2migrationsInviteOtherMembers.get() ||
+                !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
                 Logger.warn("Member without profile key: \(address).")
                 membersWithoutProfileKeys.append(address)
                 continue
@@ -581,7 +699,8 @@ public enum GroupsV2MigrationState {
 
 // MARK: -
 
-public struct GroupsV2MigrationInfo {
+@objc
+public class GroupsV2MigrationInfo: NSObject {
     // These properties only have valid values if canGroupBeMigrated is true.
     public let isGroupInProfileWhitelist: Bool
     public let membersWithoutUuids: [SignalServiceAddress]
@@ -591,6 +710,19 @@ public struct GroupsV2MigrationInfo {
     // Always consult this property first.
     public let state: GroupsV2MigrationState
 
+    fileprivate init(isGroupInProfileWhitelist: Bool,
+                     membersWithoutUuids: [SignalServiceAddress],
+                     membersWithoutCapabilities: [SignalServiceAddress],
+                     membersWithoutProfileKeys: [SignalServiceAddress],
+                     state: GroupsV2MigrationState) {
+        self.isGroupInProfileWhitelist = isGroupInProfileWhitelist
+        self.membersWithoutUuids = membersWithoutUuids
+        self.membersWithoutCapabilities = membersWithoutCapabilities
+        self.membersWithoutProfileKeys = membersWithoutProfileKeys
+        self.state = state
+    }
+
+    @objc
     public var canGroupBeMigrated: Bool {
         state == .canBeMigrated
     }
@@ -607,61 +739,112 @@ public struct GroupsV2MigrationInfo {
 // MARK: -
 
 public enum GroupsV2MigrationMode {
-    // TODO: We may want to rename polite/aggressive to
-    // auto-migration/manual-migration.
+    // Manual migration; only available if all users can be
+    // added (but not invited).
+    //
+    // TODO: Should this include invitations?
     case manualMigrationPolite
+    // Manual migration; only available if all users can be
+    // migrated.
     case manualMigrationAggressive
+    // Auto migration; only available if all users can be
+    // added (but not invited).
+    //
+    // TODO: Should this include invitations?
     case autoMigrationPolite
+    // Auto migration; only available if all users can be
+    // migrated.
     case autoMigrationAggressive
-    case alreadyMigratedOnService
+    // When an incoming message (including sync messages)
+    // or storage service update indicates that a group
+    // has been migrated to the service, we should update
+    // the local DB immediately to reflect the group state
+    // on the service.
+    //
+    // TODO: Make sure we're handling the storage service &
+    // sync message cases correctly.
+    case isAlreadyMigratedOnService
+    // We need to check periodically if the group has
+    // already been migrated to the service by another client.
+    // If so, we should update the local DB immediately to
+    // reflect the group state on the service.
+    case possiblyAlreadyMigratedOnService
 
-    private var isManualMigration: Bool {
+    fileprivate var isManualMigration: Bool {
         self == .manualMigrationPolite || self == .manualMigrationAggressive
     }
 
-    private var isAutoMigration: Bool {
+    fileprivate var isAutoMigration: Bool {
         self == .autoMigrationPolite || self == .autoMigrationAggressive
     }
 
-    private var isPolite: Bool {
+    fileprivate var isPolite: Bool {
         self == .manualMigrationPolite || self == .autoMigrationPolite
     }
 
-    private var isAggressive: Bool {
+    fileprivate var isAggressive: Bool {
         self == .manualMigrationAggressive || self == .autoMigrationAggressive
     }
 
-    private var isAlreadyMigratedOnService: Bool {
-        self == .alreadyMigratedOnService
+    private var isOnlyUpdatingIfAlreadyMigrated: Bool {
+        switch self {
+        case .isAlreadyMigratedOnService,
+             .possiblyAlreadyMigratedOnService:
+            return true
+        case .manualMigrationPolite,
+             .manualMigrationAggressive,
+             .autoMigrationPolite,
+             .autoMigrationAggressive:
+            return false
+        }
     }
 
     public var canSkipMembersWithoutUuids: Bool {
-        isAggressive || isAlreadyMigratedOnService
+        isAggressive || isOnlyUpdatingIfAlreadyMigrated
     }
 
     public var canSkipMembersWithoutCapabilities: Bool {
-        isAggressive || isAlreadyMigratedOnService
+        isAggressive || isOnlyUpdatingIfAlreadyMigrated
     }
 
     public var canInviteMembersWithoutProfileKey: Bool {
-        isManualMigration || isAggressive || isAlreadyMigratedOnService
+        isManualMigration || isAggressive || isOnlyUpdatingIfAlreadyMigrated
     }
 
     public var canMigrateIfNotInProfileWhitelist: Bool {
         // TODO: What about manual?
-        isAlreadyMigratedOnService
+        isOnlyUpdatingIfAlreadyMigrated
     }
 
     public var canMigrateToService: Bool {
-        !isAlreadyMigratedOnService
+        !isOnlyUpdatingIfAlreadyMigrated
     }
 
     public var canMigrateIfNotMember: Bool {
-        isAlreadyMigratedOnService
+        isOnlyUpdatingIfAlreadyMigrated
     }
 
     public var canMigrateWithTooManyMembers: Bool {
-        isAlreadyMigratedOnService
+        isOnlyUpdatingIfAlreadyMigrated
+    }
+
+    fileprivate var queuePriority: Operation.QueuePriority {
+        switch self {
+        case .isAlreadyMigratedOnService:
+            // These migrations block message processing and have high priority.
+            return .high
+        case .possiblyAlreadyMigratedOnService:
+            // These migrations reflect view state and have higher priority than
+            // auto-migrations.
+            return .normal
+        case .manualMigrationPolite,
+             .manualMigrationAggressive:
+            // Manual migrations block the UI and have the highest priority.
+            return .veryHigh
+        case .autoMigrationPolite,
+             .autoMigrationAggressive:
+            return .low
+        }
     }
 }
 
@@ -675,7 +858,7 @@ extension GroupsV2Migration {
     private static let unfairLock = UnfairLock()
     private static var migratingV2GroupIds = Set<Data>()
 
-    private static func addMigratingV2GroupId(_ groupId: Data) {
+    private static func addMigratingGroupId(_ groupId: Data) {
         _ = unfairLock.withLock {
             migratingV2GroupIds.insert(groupId)
         }
@@ -765,6 +948,44 @@ fileprivate extension GroupsV2Migration {
             return UnmigratedState(groupThread: groupThread,
                                    disappearingMessagesConfiguration: disappearingMessagesConfiguration,
                                    migrationMetadata: migrationMetadata)
+        }
+    }
+}
+
+// MARK: -
+
+private class MigrateGroupOperation: OWSOperation {
+
+    private let groupId: Data
+    private let migrationMode: GroupsV2MigrationMode
+
+    fileprivate let promise: Promise<TSGroupThread>
+    fileprivate let resolver: Resolver<TSGroupThread>
+
+    fileprivate required init(groupId: Data,
+                              migrationMode: GroupsV2MigrationMode) {
+        self.groupId = groupId
+        self.migrationMode = migrationMode
+
+        let (promise, resolver) = Promise<TSGroupThread>.pending()
+        self.promise = promise
+        self.resolver = resolver
+
+        super.init()
+
+        self.queuePriority = migrationMode.queuePriority
+    }
+
+    public override func run() {
+        firstly(on: .global()) {
+            GroupsV2Migration.attemptMigration(groupId: self.groupId,
+                                               migrationMode: self.migrationMode)
+        }.done(on: .global()) { groupThread in
+            self.reportSuccess()
+            self.resolver.fulfill(groupThread)
+        }.catch(on: .global()) { error in
+            self.reportError(error.asUnretryableError)
+            self.resolver.reject(error)
         }
     }
 }

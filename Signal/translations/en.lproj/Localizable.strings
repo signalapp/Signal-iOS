@@ -445,6 +445,9 @@
 /* Label for the 'no' button. */
 "BUTTON_NO" = "No";
 
+/* Label for the 'not now' button. */
+"BUTTON_NOT_NOW" = "Not Now";
+
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "Okay";
 
@@ -2020,11 +2023,17 @@
 /* Message indicating that 1 user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
 
+/* Message indicating that the local user was dropped while migrating the group. */
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+
+/* Message indicating that the local user was invited while migrating the group. */
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
@@ -2074,10 +2083,10 @@
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
 
-/* Explanation group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
+/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
-/* Explanation group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
+/* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
@@ -2104,17 +2113,56 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
 
+/* Title for the the 'dropped group member' banner. */
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+
+/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Legacy Group";
 
 /* A \"learn more\" link with more information about legacy groups. */
 "GROUPS_LEGACY_GROUP_LEARN_MORE_LINK" = "Learn More";
 
+/* Label for the 'migrate' button in the 'migrate group' banner. */
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+
+/* Title for the the 'migrate group' banner. */
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+
+/* Title for the 'migrated group' alert view. */
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "What are New Groups?";
+
+/* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
+
+/* Label for the 'add members' button in the 're-add dropped group members' alert view. */
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Add Members";
+
+/* Title for the 're-add dropped group members' alert view. */
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+
+/* Title for the 're-add dropped group members' alert view. */
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+
+/* Label for the 'add members' button in the 're-add dropped groups members' banner. */
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Add Members";
+
+/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+
+/* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+
+/* Message indicating the dropped group members were successfully re-added to the group succeeded. */
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_MEMBERS_SUCCEEDED" = "Members Added.";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";

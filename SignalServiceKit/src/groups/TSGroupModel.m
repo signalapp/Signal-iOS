@@ -174,7 +174,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
             }
             break;
         case TSGroupModelComparisonMode_UserFacingOnly:
-        case TSGroupModelComparisonMode_Migration:
             break;
     }
 
@@ -184,8 +183,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![NSObject isNullableObject:self.groupAvatarData equalTo:other.groupAvatarData]) {
         return NO;
     }
-    if (comparisonMode != TSGroupModelComparisonMode_Migration
-        && ![NSObject isNullableObject:self.addedByAddress equalTo:other.addedByAddress]) {
+    if (![NSObject isNullableObject:self.addedByAddress equalTo:other.addedByAddress]) {
         return NO;
     }
     NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];

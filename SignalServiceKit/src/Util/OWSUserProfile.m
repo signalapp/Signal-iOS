@@ -772,6 +772,18 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                 transaction:transaction
                  completion:nil];
 }
+
+- (void)discardProfileKeyWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // We use wasLocallyInitiated = NO because we don't need
+    // to sync lastMessagingDate to the storage service.
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) { userProfile.profileKey = nil; }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:NO
+                transaction:transaction
+                 completion:nil];
+}
 #endif
 
 // This should only be used in verbose, developer-only logs.

@@ -162,6 +162,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 #if TESTABLE_BUILD
 - (void)updateWithLastFetchDate:(NSDate *)lastFetchDate transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)discardProfileKeyWithTransaction:(SDSAnyWriteTransaction *)transaction;
 #endif
 
 #pragma mark - Profile Avatars Directory

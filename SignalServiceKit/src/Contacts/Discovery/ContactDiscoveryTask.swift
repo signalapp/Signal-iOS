@@ -177,9 +177,6 @@ public extension ContactDiscoveryTask {
         guard !addresses.isEmpty else {
             return
         }
-        guard FeatureFlags.ignoreCDSUndiscoverableUsersInMessageSends else {
-            return
-        }
         Logger.verbose("Marking users as known to be undiscoverable: \(addresses.count)")
 
         let markAsUndiscoverableDate = Date() as NSDate
@@ -200,9 +197,6 @@ public extension ContactDiscoveryTask {
     }
 
     static func addressesRecentlyMarkedAsUndiscoverableForMessageSends(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
-        guard FeatureFlags.ignoreCDSUndiscoverableUsersInMessageSends else {
-            return []
-        }
         return addressesRecentlyMarkedAsUndiscoverable(addresses)
     }
 

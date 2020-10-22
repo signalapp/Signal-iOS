@@ -89,9 +89,13 @@ class DebugUIGroupsV2: DebugUIPage {
         }
 
         if let groupThread = thread as? TSGroupThread {
-            sectionItems.append(OWSTableItem(title: "Try to migrate group (already migrated on service).") {
+            sectionItems.append(OWSTableItem(title: "Try to migrate group (is already migrated on service).") {
                 Self.migrate(groupThread: groupThread,
-                             migrationMode: .alreadyMigratedOnService)
+                             migrationMode: .isAlreadyMigratedOnService)
+            })
+            sectionItems.append(OWSTableItem(title: "Try to migrate group (only if already migrated on service).") {
+                Self.migrate(groupThread: groupThread,
+                             migrationMode: .possiblyAlreadyMigratedOnService)
             })
             sectionItems.append(OWSTableItem(title: "Try to migrate group (polite manual migration).") {
                 Self.migrate(groupThread: groupThread,

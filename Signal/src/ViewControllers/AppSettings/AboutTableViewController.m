@@ -209,15 +209,20 @@
 {
     SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
     __block BOOL hasGroupsV2Capability;
+    __block BOOL hasGroupMigrationCapability;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasGroupsV2Capability = [GroupManager doesUserHaveGroupsV2CapabilityWithAddress:localAddress
                                                                             transaction:transaction];
+        hasGroupsV2Capability = [GroupManager doesUserHaveGroupsV2MigrationCapabilityWithAddress:localAddress
+                                                                                     transaction:transaction];
     }];
 
     OWSTableSection *section = [OWSTableSection new];
     section.headerTitle = @"Groups v2";
     [section addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Has Groups v2 capability: %@",
                                                                @(hasGroupsV2Capability)]]];
+    [section addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Has Group Migration capability: %@",
+                                                               @(hasGroupMigrationCapability)]]];
 
     [contents addSection:section];
 }

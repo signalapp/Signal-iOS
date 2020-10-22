@@ -156,11 +156,14 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2showSplash = build.includes(.qa)
 
     // TODO: Make this a remote config flag?
+    private static let _groupsV2Migrations = false
     @objc
-    public static let groupsV2Migration = build.includes(.dev)
+    public static var groupsV2Migrations: Bool {
+        _groupsV2Migrations || DebugFlags.groupsV2migrationsForceEnable.get()
+    }
 
     @objc
-    public static let groupsV2MigrationSetCapability = groupsV2Migration && build.includes(.dev)
+    public static let groupsV2MigrationSetCapability = groupsV2Migrations && build.includes(.dev)
 
     @objc
     public static let groupsV2MigrationRequireCapability = false
@@ -171,7 +174,7 @@ public class FeatureFlags: BaseFlags {
     // TODO: Make this a remote config flag?
     // TODO: We might not need this flag.
     @objc
-    public static let groupsV2MigrationManualMigrationPolite = groupsV2Migration && build.includes(.dev)
+    public static let groupsV2MigrationManualMigrationPolite = groupsV2Migrations && build.includes(.dev)
 
     // Controls whether or not the client will show the manual migration UI.
     // Will offer migrations even if some members cannot be migrated.
@@ -179,7 +182,7 @@ public class FeatureFlags: BaseFlags {
     // TODO: Make this a remote config flag?
     // TODO: We might not need this flag.
     @objc
-    public static let groupsV2MigrationManualMigrationAggressive = groupsV2Migration && false
+    public static let groupsV2MigrationManualMigrationAggressive = groupsV2Migrations && false
 
     // Controls whether or not the client will try to auto-migrate groups in the background.
     // Will only migrate groups if all members can be migrated.
@@ -187,7 +190,7 @@ public class FeatureFlags: BaseFlags {
     // TODO: Make this a remote config flag?
     // TODO: We might not need this flag.
     @objc
-    public static let groupsV2MigrationAutoMigrationPolite = groupsV2Migration && build.includes(.dev)
+    public static let groupsV2MigrationAutoMigrationPolite = groupsV2Migrations && build.includes(.dev)
 
     // Controls whether or not the client will try to auto-migrate groups in the background.
     // Will migrate groups even if some members cannot be migrated.
@@ -195,7 +198,7 @@ public class FeatureFlags: BaseFlags {
     // TODO: Make this a remote config flag?
     // TODO: We might not need this flag.
     @objc
-    public static let groupsV2MigrationAutoMigrationAggressive = groupsV2Migration && false
+    public static let groupsV2MigrationAutoMigrationAggressive = groupsV2Migrations && false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -236,20 +239,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupCalling = build.includes(.dev)
 
-    private static let _ignoreCDSUndiscoverableUsersInMessageSends = AtomicBool(true)
-    @objc
-    public static var ignoreCDSUndiscoverableUsersInMessageSends: Bool {
-        get {
-            guard build.includes(.qa) else {
-                return true
-            }
-            return _ignoreCDSUndiscoverableUsersInMessageSends.get()
-        }
-        set {
-            _ignoreCDSUndiscoverableUsersInMessageSends.set(newValue)
-        }
-    }
-
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -273,6 +262,8 @@ public class FeatureFlags: BaseFlags {
         }
     }
 }
+
+// MARK: -
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
 /// development should go here, rather than cluttering up FeatureFlags.
@@ -308,99 +299,54 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2IgnoreMigrationCapability = false
 
     // We can use this to test recovery from "missed updates".
-    private static let _groupsV2dontSendUpdates = AtomicBool(false)
     @objc
-    public static var groupsV2dontSendUpdates: Bool {
-        get {
-            guard build.includes(.qa) else {
-                return false
-            }
-            return _groupsV2dontSendUpdates.get()
-        }
-        set {
-            _groupsV2dontSendUpdates.set(newValue)
-        }
-    }
+    public static let groupsV2dontSendUpdates = TestableFlag(false)
 
     @objc
     public static let groupsV2showV2Indicator = FeatureFlags.groupsV2Supported && build.includes(.qa)
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
-    private static let _groupsV2corruptAvatarUrlPaths = AtomicBool(false)
     @objc
-    public static var groupsV2corruptAvatarUrlPaths: Bool {
-        get {
-            guard build.includes(.qa) else {
-                return false
-            }
-            return _groupsV2corruptAvatarUrlPaths.get()
-        }
-        set {
-            _groupsV2corruptAvatarUrlPaths.set(newValue)
-        }
-    }
+    public static let groupsV2corruptAvatarUrlPaths = TestableFlag(false)
 
     // If set, v2 groups will be created and updated with
     // corrupt avatars, group names, and/or dm state
     // so that we can test clients' robustness to this case.
-    private static let _groupsV2corruptBlobEncryption = AtomicBool(false)
     @objc
-    public static var groupsV2corruptBlobEncryption: Bool {
-        get {
-            guard build.includes(.qa) else {
-                return false
-            }
-            return _groupsV2corruptBlobEncryption.get()
-        }
-        set {
-            _groupsV2corruptBlobEncryption.set(newValue)
-        }
-    }
+    public static let groupsV2corruptBlobEncryption = TestableFlag(false)
 
     // If set, client will invite instead of adding other users.
-    private static let _groupsV2forceInvites = AtomicBool(false)
     @objc
-    public static var groupsV2forceInvites: Bool {
-        get {
-            guard build.includes(.qa) else {
-                return false
-            }
-            return _groupsV2forceInvites.get()
-        }
-        set {
-            _groupsV2forceInvites.set(newValue)
-        }
-    }
+    public static let groupsV2forceInvites = TestableFlag(false)
 
     // If set, client will always send corrupt invites.
-    private static let _groupsV2corruptInvites = AtomicBool(false)
     @objc
-    public static var groupsV2corruptInvites: Bool {
-        get {
-            guard build.includes(.qa) else {
-                return false
-            }
-            return _groupsV2corruptInvites.get()
-        }
-        set {
-            _groupsV2corruptInvites.set(newValue)
-        }
-    }
+    public static let groupsV2corruptInvites = TestableFlag(false)
 
-    private static let _groupsV2onlyCreateV1Groups = AtomicBool(false)
     @objc
-    public static var groupsV2onlyCreateV1Groups: Bool {
-        get {
-            guard build.includes(.qa) else {
-                return false
-            }
-            return _groupsV2onlyCreateV1Groups.get()
-        }
-        set {
-            _groupsV2onlyCreateV1Groups.set(newValue)
-        }
-    }
+    public static let groupsV2onlyCreateV1Groups = TestableFlag(true)
+
+    @objc
+    public static let groupsV2migrationsForceEnable = TestableFlag(true, affectsCapabilities: true)
+
+    @objc
+    public static let groupsV2migrationsDisableAutomigrations = TestableFlag(true)
+
+    @objc
+    public static let groupsV2migrationsDropOtherMembers = TestableFlag(false)
+
+    @objc
+    public static let groupsV2migrationsInviteOtherMembers = TestableFlag(false)
+
+    @objc
+    public static let groupsV2migrationsDisableMigrationCapability = TestableFlag(false, affectsCapabilities: true)
+
+    @objc
+    public static let groupsV2migrationsForceAggressive = TestableFlag(false)
+
+    @objc
+    public static let aggressiveProfileFetching = TestableFlag(false)
 
     @objc
     public static let groupsV2ignoreCorruptInvites = false
@@ -427,6 +373,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let showProfileKeyAndUuidsIndicator = build.includes(.qa)
+
+    @objc
+    public static let showCapabilityIndicators = build.includes(.qa)
 
     @objc
     public static let verboseNotificationLogging = build.includes(.qa)
@@ -457,6 +406,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let groupCallingIgnoreMembershipProof = true
+
+    @objc
+    public static let disableMessageProcessing = TestableFlag(false)
 
     @objc
     public static let fastPerfTests = false
@@ -508,5 +460,72 @@ public class BaseFlags: NSObject {
             }
         }
         return result
+    }
+}
+
+// MARK: -
+
+@objc
+public class TestableFlag: NSObject {
+    private let defaultValue: Bool
+    private let affectsCapabilities: Bool
+    private let flag: AtomicBool
+
+    fileprivate init(_ defaultValue: Bool, affectsCapabilities: Bool = false) {
+        self.defaultValue = defaultValue
+        self.affectsCapabilities = affectsCapabilities
+        self.flag = AtomicBool(defaultValue)
+
+        super.init()
+
+        NotificationCenter.default.addObserver(forName: Self.ResetAllTestableFlagsNotification,
+                                               object: nil, queue: nil) { [weak self] _ in
+            guard let self = self else { return }
+            self.set(self.defaultValue)
+        }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public var value: Bool {
+        self.get()
+    }
+
+    public func get() -> Bool {
+        guard build.includes(.qa) else {
+            return defaultValue
+        }
+        return flag.get()
+    }
+
+    public func set(_ value: Bool) {
+        flag.set(value)
+
+        if affectsCapabilities {
+            updateCapabilities()
+        }
+    }
+
+    @objc
+    public func switchDidChange(_ sender: UISwitch) {
+        set(sender.isOn)
+    }
+
+    @objc
+    public var switchSelector: Selector {
+        #selector(switchDidChange(_:))
+    }
+
+    @objc
+    public static let ResetAllTestableFlagsNotification = NSNotification.Name("ResetAllTestableFlags")
+
+    private func updateCapabilities() {
+        firstly(on: .global()) {
+            TSAccountManager.shared().updateAccountAttributes()
+        }.done {
+            Logger.info("")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 }

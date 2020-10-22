@@ -238,6 +238,23 @@ extension ConversationSettingsViewController {
             builder.addSubtitleLabel(attributedText: text.asAttributedString)
         }
 
+        // This will not appear in public builds.
+        if DebugFlags.showCapabilityIndicators {
+            var capabilities = [String]()
+            self.databaseStorage.uiRead { transaction in
+                if GroupManager.doesUserHaveGroupsV2Capability(address: recipientAddress,
+                                                               transaction: transaction) {
+                    capabilities.append("gv2")
+                }
+                if GroupManager.doesUserHaveGroupsV2MigrationCapability(address: recipientAddress,
+                                                               transaction: transaction) {
+                    capabilities.append("migration")
+                }
+            }
+            let text = String(format: "Capabilities: %@", capabilities.joined(separator: ", "))
+            builder.addSubtitleLabel(attributedText: text.asAttributedString)
+        }
+
         builder.addLastSubviews()
 
         return builder.build()

@@ -28,12 +28,13 @@ public struct TSGroupModelBuilder {
     public var isPlaceholderModel: Bool = false
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
+    public var droppedMembers = [SignalServiceAddress]()
 
     public init() {}
 
     // Convert a group state proto received from the service
     // into a group model.
-    public init(groupV2Snapshot: GroupV2Snapshot) throws {
+    private init(groupV2Snapshot: GroupV2Snapshot) throws {
         self.groupId = try groupsV2.groupId(forGroupSecretParamsData: groupV2Snapshot.groupSecretParamsData)
         self.name = groupV2Snapshot.title
         self.avatarData = groupV2Snapshot.avatarData
@@ -48,20 +49,38 @@ public struct TSGroupModelBuilder {
         self.wasJustMigrated = false
     }
 
-    public func buildForMinorChanges() throws -> TSGroupModel {
+    public
+    static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot,
+                                   transaction: SDSAnyWriteTransaction) throws -> TSGroupModelBuilder {
 
+        var builder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
+
+        guard let groupId = builder.groupId else {
+            owsFailDebug("Missing groupId.")
+            return builder
+        }
+        TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+        guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            // Group not uet in db.
+            return builder
+        }
+        let oldGroupModel = oldGroupThread.groupModel
+        builder.droppedMembers = oldGroupModel.asBuilder.droppedMembers
+        return builder
+    }
+
+    private func checkUsers() throws {
         let allUsers = groupMembership.allMembersOfAnyKind
         for recipientAddress in allUsers {
             guard recipientAddress.isValid else {
                 throw OWSAssertionError("Invalid address.")
             }
         }
+    }
 
-        var name: String?
-        if let strippedName = self.name?.stripped,
-            strippedName.count > 0 {
-            name = strippedName
-        }
+    public func buildForMinorChanges() throws -> TSGroupModel {
+
+        try checkUsers()
 
         guard let groupsVersion = self.groupsVersion else {
             throw OWSAssertionError("Missing groupsVersion.")
@@ -69,65 +88,25 @@ public struct TSGroupModelBuilder {
         guard let groupId = self.groupId else {
             throw OWSAssertionError("Missing groupId.")
         }
-        guard GroupManager.isValidGroupId(groupId, groupsVersion: groupsVersion) else {
-            throw OWSAssertionError("Invalid groupId.")
-        }
 
-        switch groupsVersion {
-        case .V1:
-            if !groupMembership.invitedMembers.isEmpty {
-                owsFailDebug("v1 group has pending profile key members.")
-            }
-            if !groupMembership.requestingMembers.isEmpty {
-                owsFailDebug("v1 group has pending request members.")
-            }
-            owsAssertDebug(!isPlaceholderModel)
-            return TSGroupModel(groupId: groupId,
-                                name: name,
-                                avatarData: avatarData,
-                                members: Array(groupMembership.fullMembers),
-                                addedBy: addedByAddress)
-        case .V2:
-            owsAssertDebug(addedByAddress == nil)
-
-            guard let groupSecretParamsData = self.groupSecretParamsData else {
+        var groupSecretParamsData: Data?
+        if groupsVersion == .V2 {
+            guard let secretParamsData = self.groupSecretParamsData else {
                 throw OWSAssertionError("Missing groupSecretParamsData.")
             }
-
-            let groupAccess = buildGroupAccess(groupsVersion: groupsVersion)
-            // Don't set avatarUrlPath unless we have avatarData.
-            let avatarUrlPath = avatarData != nil ? self.avatarUrlPath : nil
-
-            return TSGroupModelV2(groupId: groupId,
-                                  name: name,
-                                  avatarData: avatarData,
-                                  groupMembership: groupMembership,
-                                  groupAccess: groupAccess,
-                                  revision: groupV2Revision,
-                                  secretParamsData: groupSecretParamsData,
-                                  avatarUrlPath: avatarUrlPath,
-                                  inviteLinkPassword: inviteLinkPassword,
-                                  isPlaceholderModel: isPlaceholderModel,
-                                  wasJustMigrated: wasJustMigrated,
-                                  addedByAddress: addedByAddress)
+            groupSecretParamsData = secretParamsData
         }
+
+        return try build(groupsVersion: groupsVersion,
+                         groupId: groupId,
+                         groupSecretParamsData: groupSecretParamsData)
     }
 
     public func build(transaction: SDSAnyReadTransaction) throws -> TSGroupModel {
 
+        try checkUsers()
+
         let allUsers = groupMembership.allMembersOfAnyKind
-        for recipientAddress in allUsers {
-            guard recipientAddress.isValid else {
-                throw OWSAssertionError("Invalid address.")
-            }
-        }
-
-        var name: String?
-        if let strippedName = self.name?.stripped,
-            strippedName.count > 0 {
-            name = strippedName
-        }
-
         let groupsVersion = buildGroupsVersion(for: allUsers,
                                                transaction: transaction)
 
@@ -136,6 +115,33 @@ public struct TSGroupModelBuilder {
         let groupId = try buildGroupId(groupsVersion: groupsVersion,
                                        newGroupSeed: newGroupSeed)
 
+        var groupSecretParamsData: Data?
+        if groupsVersion == .V2 {
+            groupSecretParamsData = try buildGroupSecretParamsData(newGroupSeed: newGroupSeed)
+        }
+
+        return try build(groupsVersion: groupsVersion,
+                         groupId: groupId,
+                         groupSecretParamsData: groupSecretParamsData)
+    }
+
+    private func build(groupsVersion: GroupsVersion,
+                       groupId: Data,
+                       groupSecretParamsData: Data?) throws -> TSGroupModel {
+
+        let allUsers = groupMembership.allMembersOfAnyKind
+        for recipientAddress in allUsers {
+            guard recipientAddress.isValid else {
+                throw OWSAssertionError("Invalid address.")
+            }
+        }
+
+        var name: String?
+        if let strippedName = self.name?.stripped,
+            strippedName.count > 0 {
+            name = strippedName
+        }
+
         guard GroupManager.isValidGroupId(groupId, groupsVersion: groupsVersion) else {
             throw OWSAssertionError("Invalid groupId.")
         }
@@ -158,10 +164,14 @@ public struct TSGroupModelBuilder {
             owsAssertDebug(addedByAddress == nil)
 
             let groupAccess = buildGroupAccess(groupsVersion: groupsVersion)
-            let groupSecretParamsData = try buildGroupSecretParamsData(newGroupSeed: newGroupSeed)
+            guard let groupSecretParamsData = groupSecretParamsData else {
+                throw OWSAssertionError("Missing groupSecretParamsData.")
+            }
             // Don't set avatarUrlPath unless we have avatarData.
             let avatarUrlPath = avatarData != nil ? self.avatarUrlPath : nil
 
+            // Update droppedMembers, removing any current members.
+            let droppedMembers = Array(Set(self.droppedMembers).subtracting(groupMembership.allMembersOfAnyKind))
             return TSGroupModelV2(groupId: groupId,
                                   name: name,
                                   avatarData: avatarData,
@@ -173,7 +183,8 @@ public struct TSGroupModelBuilder {
                                   inviteLinkPassword: inviteLinkPassword,
                                   isPlaceholderModel: isPlaceholderModel,
                                   wasJustMigrated: wasJustMigrated,
-                                  addedByAddress: addedByAddress)
+                                  addedByAddress: addedByAddress,
+                                  droppedMembers: droppedMembers)
         }
     }
 
@@ -231,7 +242,7 @@ public struct TSGroupModelBuilder {
             return value
         }
 
-        if DebugFlags.groupsV2onlyCreateV1Groups {
+        if DebugFlags.groupsV2onlyCreateV1Groups.get() {
             Logger.info("Creating v1 group due to debug flag.")
             return .V1
         }
@@ -264,6 +275,7 @@ public extension TSGroupModel {
             builder.groupSecretParamsData = v2.secretParamsData
             builder.avatarUrlPath = v2.avatarUrlPath
             builder.inviteLinkPassword = v2.inviteLinkPassword
+            builder.droppedMembers = v2.droppedMembers
 
             // Do not copy isPlaceholderModel or wasJustMigrated;
             // We want to discard these values when updating group models.

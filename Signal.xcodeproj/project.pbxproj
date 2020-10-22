@@ -18,6 +18,8 @@
 		34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D782367747300F5215A /* VideoEditorModel.swift */; };
 		34035D7B2367747400F5215A /* VideoEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D792367747300F5215A /* VideoEditorView.swift */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
+		3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */; };
+		3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34080E4022E9F50200B4D9DA /* YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080E3F22E9F50200B4D9DA /* YDBToGRDBMigration.swift */; };
@@ -67,6 +69,7 @@
 		3416BCAC227798D100E761B4 /* StickerPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAB227798D000E761B4 /* StickerPackViewController.swift */; };
 		3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */; };
 		341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */; };
+		341D392925472F3B00996E7B /* CVCViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341D392825472F3B00996E7B /* CVCViewState.swift */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
 		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34235F3824213550008C74CB /* ConversationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34235F3724213550008C74CB /* ConversationSettingsViewController.swift */; };
@@ -924,6 +927,8 @@
 		34035D792367747300F5215A /* VideoEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
 		3403B95C20EA9527001A1F44 /* OWSContactShareButtonsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareButtonsView.h; sourceTree = "<group>"; };
+		3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMigrationActionSheet.swift; sourceTree = "<group>"; };
+		3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Banners.swift"; sourceTree = "<group>"; };
 		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
 		34074F60203D0CBE004596AE /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSounds.h; sourceTree = "<group>"; };
 		34080E3F22E9F50200B4D9DA /* YDBToGRDBMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YDBToGRDBMigration.swift; sourceTree = "<group>"; };
@@ -994,6 +999,7 @@
 		3416BCAB227798D000E761B4 /* StickerPackViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackViewController.swift; sourceTree = "<group>"; };
 		3416BCAD2277A24000E761B4 /* StickerPackDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackDataSource.swift; sourceTree = "<group>"; };
 		341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupsV2Impl+RestoreGroups.swift"; sourceTree = "<group>"; };
+		341D392825472F3B00996E7B /* CVCViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVCViewState.swift; sourceTree = "<group>"; };
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
 		3421981B21061D2E00C57195 /* ByteParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteParserTest.swift; sourceTree = "<group>"; };
@@ -2318,6 +2324,7 @@
 				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
 				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34D1F06E1F8678AA0066283D /* ConversationViewController.m */,
+				3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */,
 				88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */,
 				88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */,
 				8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */,
@@ -2331,6 +2338,7 @@
 				34D1F0721F8678AA0066283D /* ConversationViewLayout.m */,
 				341341ED2187467900192D59 /* ConversationViewModel.h */,
 				341341EE2187467900192D59 /* ConversationViewModel.m */,
+				341D392825472F3B00996E7B /* CVCViewState.swift */,
 				88535063240829950011D318 /* DateHeaderInteraction.swift */,
 				880D902824808830003D2B14 /* Emoji Picker */,
 				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
@@ -2609,6 +2617,7 @@
 				340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */,
+				3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
@@ -4949,6 +4958,7 @@
 				88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
 				887889B2247F2E72001B5FCF /* Emoji.swift in Sources */,
+				3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */,
@@ -5016,6 +5026,7 @@
 				34E20D4E2425672B002C011E /* ConversationSettingsViewController+Contents.swift in Sources */,
 				88238EBC24F21EE400F28079 /* EmojiSkinTonePicker.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
+				341D392925472F3B00996E7B /* CVCViewState.swift in Sources */,
 				88238EA224E9DDB700F28079 /* LocalVideoView.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
@@ -5188,6 +5199,7 @@
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				4C11AA5020FD59C700351FBD /* MessageStatusView.swift in Sources */,
+				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,

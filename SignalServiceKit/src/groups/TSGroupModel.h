@@ -22,11 +22,6 @@ typedef NS_CLOSED_ENUM(
 typedef NS_CLOSED_ENUM(NSUInteger, TSGroupModelComparisonMode) {
     TSGroupModelComparisonMode_CompareAll,
     TSGroupModelComparisonMode_UserFacingOnly,
-    // Migration mode only considers user-facing changes,
-    // but ignores changes in roles. All v1 group members
-    // become v2 admins, but we don't need to surface that
-    // to users.
-    TSGroupModelComparisonMode_Migration
 };
 
 // NOTE: This class is tightly coupled to TSGroupModelBuilder.
