@@ -182,6 +182,26 @@ extension CallUIAdaptee {
 
             guard let error = error else { return }
             owsFailDebug("Failed to report incoming call with error \(error)")
+
+            let nsError = error as NSError
+            Logger.warn("nsError: \(nsError.domain), \(nsError.code)")
+            if nsError.domain == CXErrorCodeIncomingCallError.errorDomain {
+                switch nsError.code {
+                case CXErrorCodeIncomingCallError.unknown.rawValue:
+                    Logger.warn("unknown")
+                case CXErrorCodeIncomingCallError.unentitled.rawValue:
+                    Logger.warn("unentitled")
+                case CXErrorCodeIncomingCallError.callUUIDAlreadyExists.rawValue:
+                    Logger.warn("callUUIDAlreadyExists")
+                case CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue:
+                    Logger.warn("filteredByDoNotDisturb")
+                case CXErrorCodeIncomingCallError.filteredByBlockList.rawValue:
+                    Logger.warn("filteredByBlockList")
+                default:
+                    Logger.warn("Unknown CXErrorCodeIncomingCallError")
+                }
+            }
+
             self.callService.handleFailedCall(failedCall: call, error: error)
         }
     }
