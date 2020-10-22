@@ -423,6 +423,8 @@ public enum OnionRequestAPI {
                 } else {
                     handleUnspecificError()
                 }
+            } else if let message = json?["result"] as? String, message == "Loki Server error" {
+                // Do nothing
             } else {
                 handleUnspecificError()
             }
