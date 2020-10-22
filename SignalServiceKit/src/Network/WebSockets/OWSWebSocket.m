@@ -970,6 +970,10 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         return NO;
     }
 
+    if (!AppReadiness.isAppReady) {
+        return NO;
+    }
+
     if (![self.tsAccountManager isRegisteredAndReady]) {
         return NO;
     }
