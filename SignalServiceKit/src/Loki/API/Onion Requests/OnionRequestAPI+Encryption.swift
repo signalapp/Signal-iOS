@@ -48,7 +48,7 @@ extension OnionRequestAPI {
                 guard let snodeED25519PublicKey = snode.publicKeySet?.ed25519Key else { return seal.reject(Error.snodePublicKeySetMissing) }
                 parameters = [ "destination" : snodeED25519PublicKey ]
             case .server(let host, _):
-                parameters = [ "host" : host, "target" : "/loki/v1/lsrpc", "method" : "POST" ]
+                parameters = [ "host" : host, "target" : "/loki/v2/lsrpc", "method" : "POST" ]
             }
             parameters["ephemeral_key"] = previousEncryptionResult.ephemeralPublicKey.toHexString()
             let x25519PublicKey: String

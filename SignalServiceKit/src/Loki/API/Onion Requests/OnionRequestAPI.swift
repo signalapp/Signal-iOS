@@ -264,7 +264,68 @@ public enum OnionRequestAPI {
         }.map2 { _ in (guardSnode, encryptionResult, targetSnodeSymmetricKey) }
     }
 
-    private static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
+    // MARK: Internal API
+    /// Sends an onion request to `snode`. Builds new paths as needed.
+    internal static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
+        let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
+        return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
+            guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json) = error else { throw error }
+            throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
+        }
+    }
+    
+    /// Sends an onion request to `server`. Builds new paths as needed.
+    internal static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
+        let rawHeaders = request.allHTTPHeaderFields ?? [:]
+        var headers: JSON = rawHeaders.mapValues { value in
+            switch value.lowercased() {
+            case "true": return true
+            case "false": return false
+            default: return value
+            }
+        }
+        guard let url = request.url?.absoluteString, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
+        var endpoint = ""
+        if server.count < url.count {
+            guard let serverEndIndex = url.range(of: server)?.upperBound else { return Promise(error: Error.invalidURL) }
+            let endpointStartIndex = url.index(after: serverEndIndex)
+            endpoint = String(url[endpointStartIndex..<url.endIndex])
+        }
+        let parametersAsString: String
+        if let tsRequest = request as? TSRequest {
+            headers["Content-Type"] = "application/json"
+            let tsRequestParameters = tsRequest.parameters
+            if !tsRequestParameters.isEmpty {
+                guard let parameters = try? JSONSerialization.data(withJSONObject: tsRequestParameters, options: [ .fragmentsAllowed ]) else {
+                    return Promise(error: HTTP.Error.invalidJSON)
+                }
+                parametersAsString = String(bytes: parameters, encoding: .utf8) ?? "null"
+            } else {
+                parametersAsString = "null"
+            }
+        } else {
+            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
+            if let parametersAsInputStream = request.httpBodyStream, let parameters = try? Data(from: parametersAsInputStream) {
+                parametersAsString = "{ \"fileUpload\" : \"\(String(data: parameters.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
+            } else {
+                parametersAsString = "null"
+            }
+        }
+        let payload: JSON = [
+            "body" : parametersAsString,
+            "endpoint": endpoint,
+            "method" : request.httpMethod,
+            "headers" : headers
+        ]
+        let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
+        let promise = sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired)
+        promise.catch2 { error in
+            print("[Loki] [Onion Request API] Couldn't reach server: \(url) due to error: \(error).")
+        }
+        return promise
+    }
+    
+    internal static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode!
         SnodeAPI.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
@@ -354,67 +415,6 @@ public enum OnionRequestAPI {
             } else {
                 handleUnspecificError()
             }
-        }
-        return promise
-    }
-
-    // MARK: Internal API
-    /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String) -> Promise<JSON> {
-        let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
-        return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
-            guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json) = error else { throw error }
-            throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
-        }
-    }
-    
-    /// Sends an onion request to `server`. Builds new paths as needed.
-    internal static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
-        let rawHeaders = request.allHTTPHeaderFields ?? [:]
-        var headers: JSON = rawHeaders.mapValues { value in
-            switch value.lowercased() {
-            case "true": return true
-            case "false": return false
-            default: return value
-            }
-        }
-        guard let url = request.url?.absoluteString, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
-        var endpoint = ""
-        if server.count < url.count {
-            guard let serverEndIndex = url.range(of: server)?.upperBound else { return Promise(error: Error.invalidURL) }
-            let endpointStartIndex = url.index(after: serverEndIndex)
-            endpoint = String(url[endpointStartIndex..<url.endIndex])
-        }
-        let parametersAsString: String
-        if let tsRequest = request as? TSRequest {
-            headers["Content-Type"] = "application/json"
-            let tsRequestParameters = tsRequest.parameters
-            if !tsRequestParameters.isEmpty {
-                guard let parameters = try? JSONSerialization.data(withJSONObject: tsRequestParameters, options: [ .fragmentsAllowed ]) else {
-                    return Promise(error: HTTP.Error.invalidJSON)
-                }
-                parametersAsString = String(bytes: parameters, encoding: .utf8) ?? "null"
-            } else {
-                parametersAsString = "null"
-            }
-        } else {
-            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
-            if let parametersAsInputStream = request.httpBodyStream, let parameters = try? Data(from: parametersAsInputStream) {
-                parametersAsString = "{ \"fileUpload\" : \"\(String(data: parameters.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
-            } else {
-                parametersAsString = "null"
-            }
-        }
-        let payload: JSON = [
-            "body" : parametersAsString,
-            "endpoint": endpoint,
-            "method" : request.httpMethod,
-            "headers" : headers
-        ]
-        let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
-        let promise = sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired)
-        promise.catch2 { error in
-            print("[Loki] [Onion Request API] Couldn't reach server: \(url) due to error: \(error).")
         }
         return promise
     }

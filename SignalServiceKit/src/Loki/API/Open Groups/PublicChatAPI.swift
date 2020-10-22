@@ -388,27 +388,11 @@ public final class PublicChatAPI : DotNetAPI {
             if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
                 storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
                 if let profilePictureURL = info.profilePictureURL {
-                    let configuration = URLSessionConfiguration.default
-                    let manager = AFURLSessionManager.init(sessionConfiguration: configuration)
-                    let url = URL(string: "\(server)\(profilePictureURL)")!
-                    let request = URLRequest(url: url)
-                    let task = manager.downloadTask(with: request, progress: nil,
-                        destination: { (targetPath: URL, response: URLResponse) -> URL in
-                            let tempFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth()).appendingPathComponent(UUID().uuidString)
-                            return tempFilePath
-                        },
-                        completionHandler: { (response: URLResponse, filePath: URL?, error: Error?) in
-                            if let error = error {
-                                print("[Loki] Couldn't download profile picture for public chat channel with ID: \(channel) on server: \(server).")
-                                return
-                            }
-                            if let filePath = filePath, let avatarData = try? Data.init(contentsOf: filePath) {
-                                let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(avatarData.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
-                                try! attachmentStream.write(avatarData)
-                                groupThread.updateAvatar(with: attachmentStream)
-                            }
-                    })
-                    task.resume()
+                    FileServerAPI.downloadAttachment(from: "\(server)\(profilePictureURL)").map2 { data in
+                        let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
+                        try attachmentStream.write(data)
+                        groupThread.updateAvatar(with: attachmentStream)
+                    }
                 }
             }
         }

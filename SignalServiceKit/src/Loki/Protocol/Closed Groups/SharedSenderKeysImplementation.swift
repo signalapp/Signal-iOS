@@ -40,11 +40,13 @@ public final class SharedSenderKeysImplementation : NSObject {
     public enum RatchetingError : LocalizedError {
         case loadingFailed(groupPublicKey: String, senderPublicKey: String)
         case messageKeyMissing(targetKeyIndex: UInt, groupPublicKey: String, senderPublicKey: String)
+        case generic
 
         public var errorDescription: String? {
             switch self {
             case .loadingFailed(let groupPublicKey, let senderPublicKey): return "Couldn't get ratchet for closed group with public key: \(groupPublicKey), sender public key: \(senderPublicKey)."
             case .messageKeyMissing(let targetKeyIndex, let groupPublicKey, let senderPublicKey): return "Couldn't find message key for old key index: \(targetKeyIndex), public key: \(groupPublicKey), sender public key: \(senderPublicKey)."
+            case .generic: return "An error occurred"
             }
         }
     }
@@ -66,7 +68,8 @@ public final class SharedSenderKeysImplementation : NSObject {
         let nextMessageKey = try HMAC(key: Data(hex: ratchet.chainKey).bytes, variant: .sha256).authenticate([ UInt8(1) ])
         let nextChainKey = try HMAC(key: Data(hex: ratchet.chainKey).bytes, variant: .sha256).authenticate([ UInt8(2) ])
         let nextKeyIndex = ratchet.keyIndex + 1
-        return ClosedGroupRatchet(chainKey: nextChainKey.toHexString(), keyIndex: nextKeyIndex, messageKeys: [ nextMessageKey.toHexString() ])
+        let messageKeys = ratchet.messageKeys + [ nextMessageKey.toHexString() ]
+        return ClosedGroupRatchet(chainKey: nextChainKey.toHexString(), keyIndex: nextKeyIndex, messageKeys: messageKeys)
     }
 
     /// - Note: Sync. Don't call from the main thread.
@@ -90,11 +93,12 @@ public final class SharedSenderKeysImplementation : NSObject {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    private func stepRatchet(for groupPublicKey: String, senderPublicKey: String, until targetKeyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction) throws -> ClosedGroupRatchet {
+    private func stepRatchet(for groupPublicKey: String, senderPublicKey: String, until targetKeyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction, isRetry: Bool = false) throws -> ClosedGroupRatchet {
         #if DEBUG
         assert(!Thread.isMainThread)
         #endif
-        guard let ratchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey) else {
+        let collection: Storage.ClosedGroupRatchetCollectionType = (isRetry) ? .old : .current
+        guard let ratchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, from: collection) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
             print("[Loki] \(error.errorDescription!)")
             throw error
@@ -109,20 +113,18 @@ public final class SharedSenderKeysImplementation : NSObject {
             return ratchet
         } else {
             var currentKeyIndex = ratchet.keyIndex
-            var current = ratchet
-            var messageKeys: [String] = []
+            var result = ratchet
             while currentKeyIndex < targetKeyIndex {
                 do {
-                    current = try step(current)
-                    messageKeys += current.messageKeys
-                    currentKeyIndex = current.keyIndex
+                    result = try step(result)
+                    currentKeyIndex = result.keyIndex
                 } catch {
                     print("[Loki] Couldn't step ratchet due to error: \(error).")
                     throw error
                 }
             }
-            let result = ClosedGroupRatchet(chainKey: current.chainKey, keyIndex: current.keyIndex, messageKeys: messageKeys) // Includes any skipped message keys
-            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, using: transaction)
+            let collection: Storage.ClosedGroupRatchetCollectionType = (isRetry) ? .old : .current
+            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, in: collection, using: transaction)
             return result
         }
     }
@@ -161,30 +163,49 @@ public final class SharedSenderKeysImplementation : NSObject {
         return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction)
     }
 
-    public func decrypt(_ ivAndCiphertext: Data, for groupPublicKey: String, senderPublicKey: String, keyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction) throws -> Data {
+    public func decrypt(_ ivAndCiphertext: Data, for groupPublicKey: String, senderPublicKey: String, keyIndex: UInt, using transaction: YapDatabaseReadWriteTransaction, isRetry: Bool = false) throws -> Data {
         let ratchet: ClosedGroupRatchet
         do {
-            ratchet = try stepRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, until: keyIndex, using: transaction)
+            ratchet = try stepRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, until: keyIndex, using: transaction, isRetry: isRetry)
         } catch {
-            // FIXME: It'd be cleaner to handle this in OWSMessageDecrypter (where all the other decryption errors are handled), but this was a lot more
-            // convenient because there's an easy way to get the sender public key from here.
-            if case RatchetingError.loadingFailed(_, _) = error {
-                ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+            if !isRetry {
+                return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction, isRetry: true)
+            } else {
+                // FIXME: It'd be cleaner to handle this in OWSMessageDecrypter (where all the other decryption errors are handled), but this was a lot more
+                // convenient because there's an easy way to get the sender public key from here.
+                if case RatchetingError.loadingFailed(_, _) = error {
+                    ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
+                }
+                throw error
             }
-            throw error
         }
         let iv = ivAndCiphertext[0..<Int(SharedSenderKeysImplementation.ivSize)]
         let ciphertext = ivAndCiphertext[Int(SharedSenderKeysImplementation.ivSize)...]
         let gcm = GCM(iv: iv.bytes, tagLength: Int(SharedSenderKeysImplementation.gcmTagSize), mode: .combined)
-        guard let messageKey = ratchet.messageKeys.last else {
+        let messageKeys = ratchet.messageKeys
+        let lastNMessageKeys: [String]
+        if messageKeys.count > 16 { // Pick an arbitrary number of message keys to try; this helps resolve issues caused by messages arriving out of order
+            lastNMessageKeys = [String](messageKeys[messageKeys.index(messageKeys.endIndex, offsetBy: -16)..<messageKeys.endIndex])
+        } else {
+            lastNMessageKeys = messageKeys
+        }
+        guard !lastNMessageKeys.isEmpty else {
             throw RatchetingError.messageKeyMissing(targetKeyIndex: keyIndex, groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
         }
-        let aes = try AES(key: Data(hex: messageKey).bytes, blockMode: gcm, padding: .noPadding)
-        do {
-            return Data(try aes.decrypt(ciphertext.bytes))
-        } catch {
+        var error: Error?
+        for messageKey in lastNMessageKeys.reversed() { // Reversed because most likely the last one is the one we need
+            let aes = try AES(key: Data(hex: messageKey).bytes, blockMode: gcm, padding: .noPadding)
+            do {
+                return Data(try aes.decrypt(ciphertext.bytes))
+            } catch (let e) {
+                error = e
+            }
+        }
+        if !isRetry {
+            return try decrypt(ivAndCiphertext, for: groupPublicKey, senderPublicKey: senderPublicKey, keyIndex: keyIndex, using: transaction, isRetry: true)
+        } else {
             ClosedGroupsProtocol.requestSenderKey(for: groupPublicKey, senderPublicKey: senderPublicKey, using: transaction)
-            throw error
+            throw error ?? RatchetingError.generic
         }
     }
 

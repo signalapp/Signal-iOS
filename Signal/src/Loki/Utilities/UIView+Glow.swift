@@ -10,7 +10,7 @@ extension UIView {
         let opacity: Float
         let radius: CGFloat
 
-        init(size: CGFloat, color: UIColor, isAnimated: Bool, animationDuration: TimeInterval = 0.25, offset: CGSize = CGSize(width: 0, height: 0.8), opacity: Float = isLightMode ? 0.4 : 1, radius: CGFloat) {
+        init(size: CGFloat, color: UIColor, isAnimated: Bool = false, animationDuration: TimeInterval = 0.25, offset: CGSize = CGSize(width: 0, height: 0.8), opacity: Float = isLightMode ? 0.4 : 1, radius: CGFloat) {
             self.size = size
             self.color = color
             self.isAnimated = isAnimated
