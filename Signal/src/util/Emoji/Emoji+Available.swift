@@ -4,7 +4,8 @@
 
 extension Emoji {
     private static let availableCache = AtomicDictionary<Emoji, Bool>()
-    private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+Available")
+    private static let metadataStore = SDSKeyValueStore(collection: "Emoji+metadataStore")
+    private static let availableStore = SDSKeyValueStore(collection: "Emoji+availableStore")
     private static let iosVersionKey = "iosVersion"
 
     static func warmAvailableCache() {
@@ -17,7 +18,7 @@ extension Emoji {
         var iosVersionNeedsUpdate = false
 
         SDSDatabaseStorage.shared.read { transaction in
-            guard let lastIosVersion = keyValueStore.getString(iosVersionKey, transaction: transaction) else {
+            guard let lastIosVersion = metadataStore.getString(iosVersionKey, transaction: transaction) else {
                 Logger.info("Building initial emoji availability cache.")
                 iosVersionNeedsUpdate = true
                 uncachedEmoji = Emoji.allCases
@@ -31,8 +32,9 @@ extension Emoji {
                 return
             }
 
+            let availableMap = availableStore.allBoolValuesMap(transaction: transaction)
             for emoji in Emoji.allCases {
-                if let available = keyValueStore.getBool(emoji.rawValue, transaction: transaction) {
+                if let available = availableMap[emoji.rawValue] {
                     availableCache[emoji] = available
                 } else {
                     uncachedEmoji.append(emoji)
@@ -53,9 +55,9 @@ extension Emoji {
         if uncachedAvailability.count > 0 || iosVersionNeedsUpdate {
             SDSDatabaseStorage.shared.write { transaction in
                 for (emoji, available) in uncachedAvailability {
-                    keyValueStore.setBool(available, key: emoji.rawValue, transaction: transaction)
+                    availableStore.setBool(available, key: emoji.rawValue, transaction: transaction)
                 }
-                keyValueStore.setString(iosVersion, key: iosVersionKey, transaction: transaction)
+                metadataStore.setString(iosVersion, key: iosVersionKey, transaction: transaction)
             }
         }
 
