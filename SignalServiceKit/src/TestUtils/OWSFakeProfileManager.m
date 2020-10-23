@@ -322,6 +322,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (void)reuploadLocalProfile
+{
+    // Do nothing.
+}
+
 @end
 
 #endif

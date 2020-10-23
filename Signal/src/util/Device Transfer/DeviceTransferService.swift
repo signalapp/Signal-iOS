@@ -83,6 +83,7 @@ class DeviceTransferService: NSObject {
     static let databaseIdentifier = "database"
     static let databaseWALIdentifier = "database-wal"
 
+    // This must also be updated in the info.plist
     private static let newDeviceServiceIdentifier = "sgnl-new-device"
 
     private let serialQueue = DispatchQueue(label: "DeviceTransferService")

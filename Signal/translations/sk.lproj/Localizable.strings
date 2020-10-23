@@ -1159,6 +1159,9 @@
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Umiestnite tento QR kód do rámu vášho druhého zariadenia.";
 
+/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Čaká sa na druhé zariadenie...";
 
@@ -1508,28 +1511,28 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Toto nastavenie môžu zmeniť len admini.";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Pripojiť sa k hovoru";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "V tomto hovore · %ld ľudí";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, a %ld ďalší sú v tomto hovore";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Nikto iný tu nie je";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "V tomto hovore · 1 osoba";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ je v tomto hovore";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "Začať hovor";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ a %@ sú v tomto hovore";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Vytvorili ste skupinu.";
@@ -2328,6 +2331,24 @@
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Pozrite si predbežne akýkoľvek odkaz";
+
+/* Body for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+
+/* A button asking the user if they need further help getting their transfer working. */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Potrebujete pomoc?";
+
+/* First step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+
+/* Third step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+
+/* Second step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+
+/* Title for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Hľadať podľa mena alebo adresy";

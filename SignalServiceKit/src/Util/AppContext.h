@@ -142,6 +142,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL didLastLaunchNotTerminate;
 
+@property (nonatomic, readonly) NSString *debugLogsDirPath;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

@@ -133,7 +133,9 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
-    
+
+    OWSLogInfo(@"Removing prekeyID: %lu", (unsigned long)preKeyId);
+
     [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
 }
 
