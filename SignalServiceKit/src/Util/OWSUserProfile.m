@@ -409,6 +409,21 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                                                                   equalTo:profile.familyName];
                                    BOOL avatarUrlPathDidChange = ![NSObject isNullableObject:avatarUrlPathBefore
                                                                                      equalTo:profile.avatarUrlPath];
+
+                                   if ([profile.address.phoneNumber
+                                           isEqualToString:kLocalProfileInvariantPhoneNumber]) {
+                                       BOOL hasValidProfileNameBefore
+                                           = givenNameBefore.filterStringForDisplay.length > 0;
+                                       BOOL hasValidProfileNameAfter
+                                           = profile.givenName.filterStringForDisplay.length > 0;
+                                       if (hasValidProfileNameBefore && !hasValidProfileNameAfter) {
+                                           OWSFailDebug(@"Restoring local profile name.");
+                                           // Profile names are required; never clear the profile
+                                           // name for the local user.
+                                           profile.givenName = givenNameBefore;
+                                       }
+                                   }
+
                                    NSString *profileKeyDescription;
                                    if (profile.profileKey.keyData != nil) {
                                        if (SSKDebugFlags.internalLogging) {
