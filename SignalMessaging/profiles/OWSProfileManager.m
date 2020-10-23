@@ -453,6 +453,13 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     });
 }
 
+- (void)reuploadLocalProfile
+{
+    [self reuploadLocalProfilePromiseObjc].then(^{ OWSLogInfo(@"Done."); }).catch(^(NSError *error) {
+        OWSFailDebug(@"Error: %@", error);
+    });
+}
+
 #pragma mark - Profile Key Rotation
 
 - (nullable NSString *)groupKeyForGroupId:(NSData *)groupId {
