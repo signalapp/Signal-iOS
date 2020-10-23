@@ -130,6 +130,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
                                transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)reuploadLocalProfile;
+
 @end
 
 NS_ASSUME_NONNULL_END

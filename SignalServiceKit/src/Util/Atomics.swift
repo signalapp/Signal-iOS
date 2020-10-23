@@ -34,7 +34,7 @@ private class Atomics {
 public class AtomicBool: NSObject {
     private let value = AtomicValue<Bool>(false)
 
-    @objc
+    @objc(initWithValue:)
     public required init(_ value: Bool) {
         self.value.set(value)
     }
