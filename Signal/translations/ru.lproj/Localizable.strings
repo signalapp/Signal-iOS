@@ -1169,7 +1169,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Получение данных";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Соединение…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Подключает…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поместите этот QR-код внутри круга";
@@ -1511,25 +1511,25 @@
 "GROUP_CALL_JOIN_BUTTON" = "Присоединиться к звонку";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "В этом звонке · %ld человек(-а)";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ и ещё %ld человек(-а) в этом звонке";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Здесь нет никого, кроме вас";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "В этом звонке · 1 человек";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ в этом звонке";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Начать звонок";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ и %@ в этом звонке";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Вы создали группу.";
@@ -2156,7 +2156,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не удалось выбрать вложение.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Соединеняемся…";
+"IN_CALL_CONNECTING" = "Подключает…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Принят на другом устройстве.";
@@ -2168,7 +2168,7 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Отклонён на другом устройстве.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Переподключаемся…";
+"IN_CALL_RECONNECTING" = "Переподключает…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Звоним…";

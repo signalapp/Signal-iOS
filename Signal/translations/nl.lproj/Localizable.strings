@@ -1511,25 +1511,25 @@
 "GROUP_CALL_JOIN_BUTTON" = "Aan oproep deelnemen";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "%ld personen in dit gesprek aanwezig";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "In dit gesprek zijn %@, %@ en %ld anderen aanwezig";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Er is niemand behalve jou in dit gesprek";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "1 persoon in dit gesprek";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "Gesprek met %@";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Oproep beginnen";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "Gesprek met %@ en %@";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Je hebt de groep aangemaakt.";
@@ -1823,7 +1823,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Jij";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Spraakoproep";
+"GROUP_MEMBERS_CALL" = "Audio-oproep";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Geen andere leden.";
@@ -2174,10 +2174,10 @@
 "IN_CALL_RINGING" = "Bellen …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audiogesprek …";
+"IN_CALL_RINGING_AUDIO" = "Audio-oproep …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Videogesprek …";
+"IN_CALL_RINGING_VIDEO" = "Video-oproep …";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Beantwoord. Aan het beveiligen …";
@@ -2858,7 +2858,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ongeldig nummer";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen resterend om je pincode te raden, maar je kunt nog wel gebruik blijven maken van Signal door een nieuwe pincode aan te maken. Ter beveiliging van je profielinformatie, zullen je instellingen en profielnaam en -foto dan verloren gaan.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen resterend om je pincode te raden, maar je kunt nog wel gebruik blijven maken van Signal door een nieuwe pincode aan te maken. Ter beveiliging van je profielinformatie, zullen je instellingen, profielnaam en profielfoto niet worden herstelt.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Lees meer over pincodes";
