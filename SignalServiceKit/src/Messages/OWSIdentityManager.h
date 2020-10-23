@@ -37,6 +37,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (void)generateNewIdentityKey;
 - (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (int)localRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (nullable ECKeyPair *)identityKeyPairWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
