@@ -28,6 +28,10 @@ extension DeviceTransferService: MCNearbyServiceAdvertiserDelegate {
         Logger.info("Accepting invitation from old device \(peerId)")
         invitationHandler(true, session)
     }
+
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Swift.Error) {
+        Logger.error("Failed to start advertising for peers \(error)")
+    }
 }
 
 extension DeviceTransferService: MCSessionDelegate {

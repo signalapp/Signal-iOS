@@ -27,7 +27,7 @@ public class ContactSupportAlert {
         fromViewController.present(actionSheet, animated: true)
     }
 
-    private class func presentStep2(emailSubject: String, fromViewController: UIViewController) {
+    public class func presentStep2(emailSubject: String, fromViewController: UIViewController) {
         let submitWithLogTitle = NSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITH_LOG", comment: "Button text")
         let submitWithLogAction = ActionSheetAction(title: submitWithLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
