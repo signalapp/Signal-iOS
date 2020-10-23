@@ -68,7 +68,10 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+
+      - name: Fetch base commit
+        run: git fetch origin --depth 1 ${{ github.base_ref }}
 
       - name: Install Dependencies
         run: brew install swiftlint clang-format
