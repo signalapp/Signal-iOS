@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OWSLinkDeviceViewControllerDelegate> delegate;
 
-- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string;
+- (void)controller:(nullable OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string;
 
 @end
 

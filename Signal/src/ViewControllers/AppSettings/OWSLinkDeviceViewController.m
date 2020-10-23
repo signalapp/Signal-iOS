@@ -73,6 +73,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title
         = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", "Navigation title when scanning QR code to add new device.");
+
+#if TESTABLE_BUILD
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:LocalizationNotNeeded(@"ENTER")
+                                                                              style:UIBarButtonItemStylePlain
+                                                                             target:self
+                                                                             action:@selector(manuallyEnterLinkURL)];
+#endif
 }
 
 #pragma mark -
@@ -100,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - OWSQRScannerDelegate
 
-- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
+- (void)controller:(nullable OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
 {
     OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:string];
     if (!parser.isValid) {
@@ -241,6 +248,29 @@ NS_ASSUME_NONNULL_BEGIN
                                                       [UIViewController attemptRotationToDeviceOrientation];
                                                   }];
 }
+
+#if TESTABLE_BUILD
+- (IBAction)manuallyEnterLinkURL
+{
+    UIAlertController *alertController = [UIAlertController
+        alertControllerWithTitle:LocalizationNotNeeded(@"Manually enter linking code.")
+                         message:LocalizationNotNeeded(@"Copy the URL represented by the QR code into the field below.")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:nil];
+    [alertController
+        addAction:[UIAlertAction
+                      actionWithTitle:CommonStrings.okayButton
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction *action) {
+                                  [self controller:nil
+                                      didDetectQRCodeWithString:[alertController textFields].firstObject.text];
+                              }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:CommonStrings.cancelButton
+                                                        style:UIAlertActionStyleCancel
+                                                      handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+#endif
 
 #pragma mark - Orientation
 
