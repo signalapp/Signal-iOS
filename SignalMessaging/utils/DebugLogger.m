@@ -57,10 +57,12 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     return dirPath;
 }
 
+#ifdef TESTABLE_BUILD
 + (NSString *)testDebugLogsDirPath
 {
     return TestAppContext.testDebugLogsDirPath;
 }
+#endif
 
 + (NSArray<NSString *> *)allLogsDirPaths
 {

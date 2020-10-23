@@ -27,7 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, class) NSString *mainAppDebugLogsDirPath;
 @property (nonatomic, readonly, class) NSString *shareExtensionDebugLogsDirPath;
 @property (nonatomic, readonly, class) NSString *nseDebugLogsDirPath;
+#ifdef TESTABLE_BUILD
 @property (nonatomic, readonly, class) NSString *testDebugLogsDirPath;
+#endif
 
 @end
 
