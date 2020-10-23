@@ -87,7 +87,7 @@ class TurnOnPermissionView: UIStackView {
         let text: String
     }
 
-    init(title: String, message: String, steps: [Step]) {
+    init(title: String, message: String, steps: [Step], button: OWSFlatButton? = nil) {
         super.init(frame: .zero)
 
         addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
@@ -105,10 +105,12 @@ class TurnOnPermissionView: UIStackView {
             addStepStack(step: step, number: index + 1)
         }
 
-        addArrangedSubview(button(title: NSLocalizedString(
+        let button = button ?? self.button(title: NSLocalizedString(
             "GO_TO_SETTINGS_BUTTON",
             comment: "Turn on permission view 'go to settings' button"
-        ), selector: #selector(goToSettings)))
+        ), selector: #selector(goToSettings))
+
+        addArrangedSubview(button)
     }
 
     @objc
