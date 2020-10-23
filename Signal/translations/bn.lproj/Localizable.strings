@@ -1159,6 +1159,9 @@
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "আপনার অন্য ডিভাইসের ফ্রেমে এই কিউআর কোডটি অবস্থান করুন।";
 
+/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "অন্য ডিভাইসের জন্য অপেক্ষা করা হচ্ছে ...";
 
@@ -2305,6 +2308,24 @@
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
 
+/* Body for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+
+/* A button asking the user if they need further help getting their transfer working. */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "সাহায্য দরকার?";
+
+/* First step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+
+/* Third step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+
+/* Second step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+
+/* Title for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "নাম বা ঠিকানা অনুসন্ধান করুন";
 
@@ -2510,7 +2531,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "মূক্ত করুন";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "অনুরোধ বাতিল করুন";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -3128,7 +3149,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
 
 /* Title of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Warning";
+"PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "সতর্কতা";
 
 /* Error body indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_MESSAGE" = "আপনার পিন সংরক্ষণ করা হয়নি। আমরা আপনাকে পরে একটি পিন তৈরি করতে অনুরোধ করব।";
@@ -4664,7 +4685,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal ডেস্কটপ থেকে সেটাপ শেষ করুন।";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "আপনি এই বার্তাটি মুছে দিয়েছিলেন। ";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "আপনি অদৃশ্য হয়ে যাওয়া বার্তাগুলি অক্ষম করেছেন।";

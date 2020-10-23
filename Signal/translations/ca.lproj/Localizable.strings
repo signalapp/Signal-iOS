@@ -1159,6 +1159,9 @@
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Situeu aquest codi QR al marc de l’altre dispositiu.";
 
+/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "S'espera l'altre dispositiu...";
 
@@ -1505,7 +1508,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Els membres del grup poden ser canviats per %@.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Només els administradors poden canviar aquesta opció.";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Heu creat el grup.";
@@ -2057,7 +2060,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Trieu un administrador nou";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Mostra la sol·licitud";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Mostra les sol·licituds";
@@ -2304,6 +2307,24 @@
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Previsualitza qualsevol enllaç";
+
+/* Body for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+
+/* A button asking the user if they need further help getting their transfer working. */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Us cal ajuda?";
+
+/* First step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+
+/* Third step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+
+/* Second step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+
+/* Title for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cerca per nom o adreça";

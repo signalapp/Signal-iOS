@@ -1159,6 +1159,9 @@
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positioneer deze QR code in het frame van het andere apparaat.";
 
+/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Aan het wachten op het andere apparaat …";
 
@@ -1505,7 +1508,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Groepslidmaatschap kan vanaf nu door %@ worden gewijzigd.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Alleen beheerders kunnen deze instelling wijzigen.";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Je hebt de groep aangemaakt.";
@@ -1799,7 +1802,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Jij";
 
 /* Accessibility label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Spraakoproep";
+"GROUP_MEMBERS_CALL" = "Audio-oproep";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Geen andere leden.";
@@ -2057,10 +2060,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Kies een nieuwe beheerder";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Lidmaatschapsverzoek weergeven";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "Zie lidmaatschapsverzoeken";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "Lidmaatschapsverzoeken weergeven";
 
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "Neem contact met ons op";
@@ -2150,10 +2153,10 @@
 "IN_CALL_RINGING" = "Bellen …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Audiogesprek …";
+"IN_CALL_RINGING_AUDIO" = "Audio-oproep …";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Videogesprek …";
+"IN_CALL_RINGING_VIDEO" = "Video-oproep …";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Beantwoord. Aan het beveiligen …";
@@ -2304,6 +2307,24 @@
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Voor elke website voorbeeldafbeeldingen";
+
+/* Body for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+
+/* A button asking the user if they need further help getting their transfer working. */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Hulp nodig?";
+
+/* First step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+
+/* Third step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+
+/* Second step for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+
+/* Title for local network permission action sheet */
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Zoek op naam of adres";
@@ -2492,16 +2513,16 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wissen";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Wil je je profielnaam en -foto voor je gesprekspartner zichtbaar maken om je gesprek met %@ voort te kunnen zetten?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Wil je je profielnaam en -foto voor deze groep zichtbaar maken om je gesprek met de groep voort te kunnen zetten?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam en -foto kan zien? Hij of zij zal totdat je de gespreksuitnodiging aanvaardt niet kunnen zien dat je zijn of haar berichten hebt gelezen.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je berichten van %@ ontvangen, en sta je toe dat hij of zij je profielnaam en -foto kan zien? Hij of zij zal totdat je het gespreksverzoek aanvaardt niet kunnen zien dat je zijn of haar berichten hebt gelezen.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van deze groep je profielnaam en -foto kunnen zien? De leden van deze groep zullen totdat je de gespreksuitnodiging aanvaardt niet kunnen zien dat je hun berichten hebt gelezen.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Wil je berichten van deze groep ontvangen, en sta je toe dat alle leden van deze groep je profielnaam en -foto kunnen zien? De leden van deze groep zullen totdat je het gespreksverzoek aanvaardt niet kunnen zien dat je hun berichten hebt gelezen.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Deelnemen aan deze groep? Ze zullen niet kunnen zien dat je hun berichten hebt gelezen zolang je de uitnodiging nog niet hebt geaccepteerd.";
@@ -2834,7 +2855,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ongeldig nummer";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen resterend om je pincode te raden, maar je kunt nog wel gebruik blijven maken van Signal door een nieuwe pincode aan te maken. Ter beveiliging van je profielinformatie, zullen je instellingen en profielnaam en -foto dan verloren gaan.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Je hebt geen pogingen resterend om je pincode te raden, maar je kunt nog wel gebruik blijven maken van Signal door een nieuwe pincode aan te maken. Ter beveiliging van je profielinformatie, zullen je instellingen, profielnaam en profielfoto niet worden herstelt.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Lees meer over pincodes";
@@ -4277,7 +4298,7 @@
 "SOUNDS_NONE" = "Geen";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these updates in a future update.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Groepen waar je nu al lid van bent zullen deze nieuwe functies ook krijgen in een toekomstige versie van Signal.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nieuwe groep";
@@ -4286,10 +4307,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Groepsgesprekken zijn vernieuwd!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Tot de nieuwe mogelijkheden behoord onder andere @vermeldingen en groepsbeheerder. Probeer het eens door te tikken op:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Stickerbericht";
