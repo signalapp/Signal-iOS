@@ -204,6 +204,18 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (NSString *)debugLogsDirPath
+{
+    return TestAppContext.testDebugLogsDirPath;
+}
+
++ (NSString *)testDebugLogsDirPath
+{
+    NSString *dirPath = [OWSTemporaryDirectory() stringByAppendingPathComponent:@"TestLogs"];
+    [OWSFileSystem ensureDirectoryExists:dirPath];
+    return dirPath;
+}
+
 @end
 
 #endif
