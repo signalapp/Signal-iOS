@@ -125,6 +125,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         switch self {
         case .pinReminder:
             return false
+        case .messageRequests:
+            return false
         default:
             return true
         }
@@ -139,6 +141,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .notificationPermissionReminder:
             return false
         case .contactPermissionReminder:
+            return false
+        case .messageRequests:
             return false
         default:
             return true
@@ -261,7 +265,10 @@ public class ExperienceUpgradeFinder: NSObject {
 
         while true {
             guard let experienceUpgrade = try? cursor.next() else { break }
-
+            guard experienceUpgrade.id.shouldSave else {
+                // Ignore saved upgrades that we don't currently save.
+                continue
+            }
             if !experienceUpgrade.isComplete && !experienceUpgrade.hasCompletedVisibleDuration {
                 experienceUpgrades.append(experienceUpgrade)
             }
