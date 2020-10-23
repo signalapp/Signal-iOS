@@ -351,6 +351,18 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 #pragma mark - Update With... Methods
 
++ (BOOL)shouldReuploadProtectedProfileName
+{
+    // Only re-upload once per launch.
+    //
+    // This value will only be accessed within write transactions,
+    // so it is thread-safe.
+    static BOOL hasReuploaded = NO;
+    BOOL canReupload = !hasReuploaded;
+    hasReuploaded = YES;
+    return canReupload;
+}
+
 // Similar in spirit to anyUpdateWithTransaction,
 // but with significant differences.
 //
@@ -409,6 +421,25 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                                                                   equalTo:profile.familyName];
                                    BOOL avatarUrlPathDidChange = ![NSObject isNullableObject:avatarUrlPathBefore
                                                                                      equalTo:profile.avatarUrlPath];
+
+                                   if ([profile.address.phoneNumber
+                                           isEqualToString:kLocalProfileInvariantPhoneNumber]) {
+                                       BOOL hasValidProfileNameBefore = givenNameBefore.length > 0;
+                                       BOOL hasValidProfileNameAfter = profile.givenName.length > 0;
+                                       if (hasValidProfileNameBefore && !hasValidProfileNameAfter) {
+                                           OWSFailDebug(@"Restoring local profile name.");
+                                           // Profile names are required; never clear the profile
+                                           // name for the local user.
+                                           profile.givenName = givenNameBefore;
+
+                                           if (OWSUserProfile.shouldReuploadProtectedProfileName) {
+                                               [transaction addAsyncCompletionOffMain:^{
+                                                   [self.profileManager reuploadLocalProfile];
+                                               }];
+                                           }
+                                       }
+                                   }
+
                                    NSString *profileKeyDescription;
                                    if (profile.profileKey.keyData != nil) {
                                        if (SSKDebugFlags.internalLogging) {
