@@ -38,6 +38,12 @@ public class PinnedThreadManager: NSObject {
                 owsFailDebug("pinned thread record no longer exists \(threadId)")
                 return nil
             }
+            // Ignore deleted or archived pinned threads. These should exist, but it's
+            // possible they are incorrectly received from linked devices.
+            guard thread.shouldThreadBeVisible, !thread.isArchived else {
+                owsFailDebug("Ignoring deleted or archived pinned thread \(threadId)")
+                return nil
+            }
             return thread
         }
     }
@@ -46,9 +52,6 @@ public class PinnedThreadManager: NSObject {
     public class func isThreadPinned(_ thread: TSThread) -> Bool {
         return pinnedThreadIds.contains(thread.uniqueId)
     }
-
-    @objc
-    public class var canPinMoreThreads: Bool { pinnedThreadIds.count < maxPinnedThreads }
 
     @objc
     public class var pinnedThreadIds: [String] { cachedPinnedThreadIds.get() }
@@ -99,7 +102,7 @@ public class PinnedThreadManager: NSObject {
             throw OWSGenericError("Attempted to pin thread that is already pinned.")
         }
 
-        guard canPinMoreThreads else { throw tooManyPinnedThreadsError }
+        guard pinnedThreadIds.count < maxPinnedThreads else { throw tooManyPinnedThreadsError }
 
         pinnedThreadIds.append(thread.uniqueId)
         updatePinnedThreadIds(pinnedThreadIds, transaction: transaction)

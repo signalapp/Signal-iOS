@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Ο/Η χρήστης/τρια δεν μπορεί να προστεθεί στην ομάδα μέχρι να αναβαθμίσει το Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Φτάσατε το μέγιστο όριο 100 μελών στην ομάδα.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Έφτασες το μέγιστο όριο 100 μελών στην ομάδα.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Μη έγκυρη φωτογραφία.";
