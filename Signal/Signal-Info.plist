@@ -113,6 +113,10 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Signal needs to use Apple Music to play media attachments.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_sgnl-new-device._tcp</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Signal uses your camera to take photos and for video calls.</string>
 	<key>NSContactsUsageDescription</key>
