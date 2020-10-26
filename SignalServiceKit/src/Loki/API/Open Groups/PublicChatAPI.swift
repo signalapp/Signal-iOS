@@ -388,7 +388,8 @@ public final class PublicChatAPI : DotNetAPI {
             if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
                 storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
                 if let profilePictureURL = info.profilePictureURL {
-                    FileServerAPI.downloadAttachment(from: "\(server)\(profilePictureURL)").map2 { data in
+                    let url = server.hasSuffix("/") ? "\(server)\(profilePictureURL)" : "\(server)/\(profilePictureURL)"
+                    FileServerAPI.downloadAttachment(from: url).map2 { data in
                         let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(data.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
                         try attachmentStream.write(data)
                         groupThread.updateAvatar(with: attachmentStream)
