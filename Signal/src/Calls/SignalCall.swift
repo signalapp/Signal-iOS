@@ -66,7 +66,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
-    let videoCaptureController = VideoCaptureController()
+    private(set) lazy var videoCaptureController = VideoCaptureController()
 
     // Should be used only on the main thread
     public var connectedDate: Date? {
@@ -109,16 +109,16 @@ public class SignalCall: NSObject, CallManagerCallReference {
     public class func groupCall(thread: TSGroupThread) -> SignalCall? {
         owsAssertDebug(thread.groupModel.groupsVersion == .V2)
 
-        guard let localUuid = TSAccountManager.shared().localUuid else {
-            owsFailDebug("Failed to query local UUID")
-            return nil
-        }
+        let videoCaptureController = VideoCaptureController()
 
         let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
-            groupIdToLog: thread.groupModel.groupId.hexadecimalString
+            groupIdToLog: thread.groupModel.groupId.hexadecimalString,
+            videoCaptureController: videoCaptureController
         )
 
-        return SignalCall(groupCall: groupCall, groupThread: thread)
+        let call = SignalCall(groupCall: groupCall, groupThread: thread)
+        call.videoCaptureController = videoCaptureController
+        return call
     }
 
     public class func outgoingIndividualCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
