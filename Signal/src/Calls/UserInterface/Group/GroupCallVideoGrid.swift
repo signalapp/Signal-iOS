@@ -30,7 +30,7 @@ class GroupCallVideoGrid: UICollectionView {
 
 extension GroupCallVideoGrid: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return min(maxItems, call.groupCall.sortedRemoteDeviceStates.count)
+        return min(maxItems, call.groupCall.remoteDeviceStates.count)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

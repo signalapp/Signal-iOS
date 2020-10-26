@@ -283,22 +283,24 @@ class GroupCallMemberSheet: UIViewController {
     private var sortedMembers = [JoinedMember]()
     func updateMembers() {
         let unsortedMembers: [JoinedMember] = databaseStorage.uiRead { transaction in
-            var members: [JoinedMember] = self.call.groupCall.sortedRemoteDeviceStates.map { member in
-                let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
-                let displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
-                let comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
-
-                return JoinedMember(
-                    address: member.address,
-                    conversationColorName: thread?.conversationColorName ?? .default,
-                    displayName: displayName,
-                    comparableName: comparableName,
-                    isAudioMuted: member.audioMuted,
-                    isVideoMuted: member.videoMuted
-                )
-            }
+            var members = [JoinedMember]()
 
             if self.call.groupCall.localDeviceState.joinState == .joined {
+                members += self.call.groupCall.sortedRemoteDeviceStates.map { member in
+                    let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
+                    let displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
+                    let comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
+
+                    return JoinedMember(
+                        address: member.address,
+                        conversationColorName: thread?.conversationColorName ?? .default,
+                        displayName: displayName,
+                        comparableName: comparableName,
+                        isAudioMuted: member.audioMuted,
+                        isVideoMuted: member.videoMuted
+                    )
+                }
+
                 guard let localAddress = self.tsAccountManager.localAddress else { return members }
 
                 let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
@@ -313,6 +315,24 @@ class GroupCallMemberSheet: UIViewController {
                     isAudioMuted: self.call.groupCall.localDeviceState.audioMuted,
                     isVideoMuted: self.call.groupCall.localDeviceState.videoMuted
                 ))
+            } else {
+                // If we're not yet in the call, `remoteDeviceStates` will not exist.
+                // We can get the list of joined members still, provided we are connected.
+                members += self.call.groupCall.joinedGroupMembers.map { uuid in
+                    let address = SignalServiceAddress(uuid: uuid)
+                    let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
+                    let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
+                    let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
+
+                    return JoinedMember(
+                        address: address,
+                        conversationColorName: thread?.conversationColorName ?? .default,
+                        displayName: displayName,
+                        comparableName: comparableName,
+                        isAudioMuted: nil,
+                        isVideoMuted: nil
+                    )
+                }
             }
 
             return members

@@ -130,7 +130,7 @@ class GroupCallViewController: UIViewController {
         }, completion: nil)
     }
 
-    private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.sortedRemoteDeviceStates.count }
+    private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.remoteDeviceStates.count }
 
     private func updateScrollViewFrames(size: CGSize? = nil) {
         view.layoutIfNeeded()

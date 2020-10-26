@@ -188,9 +188,17 @@ class CallHeader: UIView {
     func updateCallTitleLabel() {
         let callTitleText: String
 
-        let memberNames = databaseStorage.uiRead { transaction in
-            return self.call.groupCall.sortedRemoteDeviceStates
-                .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
+        let memberNames: [String] = databaseStorage.uiRead { transaction in
+            if self.call.groupCall.localDeviceState.joinState == .joined {
+                return self.call.groupCall.sortedRemoteDeviceStates
+                    .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
+            } else {
+                // TODO: For now, we can only use `joinedGroupMembers` before you join.
+                // We might be able to just always use it here.
+                return self.call.groupCall.joinedGroupMembers
+                    .filter { !SignalServiceAddress(uuid: $0).isLocalAddress }
+                    .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) }
+            }
         }
 
         switch call.groupCall.localDeviceState.joinState {
@@ -237,7 +245,9 @@ class CallHeader: UIView {
 
     func updateGroupMembersButton() {
         groupMembersButton.setTitle(" \(call.groupCall.joinedGroupMembers.count)", for: .normal)
-        groupMembersButton.isHidden = call.groupCall.sortedRemoteDeviceStates.count < 2
+        groupMembersButton.isHidden = call.groupCall.localDeviceState.joinState == .joined
+            ? call.groupCall.remoteDeviceStates.count < 2
+            : call.groupCall.joinedGroupMembers.count < 2
         groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 
