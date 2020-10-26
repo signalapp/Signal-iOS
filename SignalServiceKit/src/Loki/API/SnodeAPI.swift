@@ -125,8 +125,10 @@ public final class SnodeAPI : NSObject {
         } else {
             print("[Loki] Getting swarm for: \(publicKey == getUserHexEncodedPublicKey() ? "self" : publicKey).")
             let parameters: [String:Any] = [ "pubKey" : publicKey ]
-            return getRandomSnode().then2 {
-                invoke(.getSwarm, on: $0, associatedWith: publicKey, parameters: parameters)
+            return getRandomSnode().then2 { snode in
+                attempt(maxRetryCount: 4, recoveringOn: SnodeAPI.workQueue) {
+                    invoke(.getSwarm, on: snode, associatedWith: publicKey, parameters: parameters)
+                }
             }.map2 { rawSnodes in
                 let swarm = parseSnodes(from: rawSnodes)
                 swarmCache[publicKey] = swarm
