@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 protocol GroupCallVideoOverflowDelegate: class {
     var firstOverflowMemberIndex: Int { get }
@@ -56,7 +57,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     var overflowedRemoteDeviceStates: [RemoteDeviceState] {
         guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
 
-        let joinedRemoteDeviceStates = call.groupCall.joinedRemoteDeviceStates
+        let joinedRemoteDeviceStates = call.groupCall.sortedRemoteDeviceStates
 
         guard joinedRemoteDeviceStates.count > firstOverflowMemberIndex else { return [] }
 
@@ -100,7 +101,7 @@ extension GroupCallVideoOverflow: CallObserver {
         reloadData()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
@@ -109,9 +110,8 @@ extension GroupCallVideoOverflow: CallObserver {
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}

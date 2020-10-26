@@ -30,9 +30,7 @@ class GroupCallViewController: UIViewController {
         owsAssertDebug(call.isGroupCall)
 
         self.call = call
-        self.thread = Self.databaseStorage.uiRead { transaction in
-            return TSGroupThread.fetch(groupId: call.groupCall.groupId, transaction: transaction)
-        }
+        self.thread = call.thread as? TSGroupThread
 
         super.init(nibName: nil, bundle: nil)
 
@@ -132,14 +130,14 @@ class GroupCallViewController: UIViewController {
         }, completion: nil)
     }
 
-    private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.joinedRemoteDeviceStates.count }
+    private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.sortedRemoteDeviceStates.count }
 
     private func updateScrollViewFrames(size: CGSize? = nil) {
         view.layoutIfNeeded()
 
         let size = size ?? view.frame.size
 
-        if groupCall.joinedGroupMembers.count < 3 || groupCall.localDevice.joinState != .joined {
+        if groupCall.joinedGroupMembers.count < 3 || groupCall.localDeviceState.joinState != .joined {
             videoGrid.frame = .zero
             videoGrid.isHidden = true
             speakerPage.frame = CGRect(
@@ -177,7 +175,7 @@ class GroupCallViewController: UIViewController {
     }
 
     func updateCallUI(size: CGSize? = nil) {
-        let localDevice = groupCall.localDevice
+        let localDevice = groupCall.localDeviceState
 
         localMemberView.configure(
             device: localDevice,
@@ -188,7 +186,7 @@ class GroupCallViewController: UIViewController {
         switch localDevice.connectionState {
         case .connected:
             break
-        case .connecting, .disconnected, .reconnecting:
+        case .connecting, .notConnected, .reconnecting:
             // todo: show spinner
             return
         }
@@ -198,7 +196,7 @@ class GroupCallViewController: UIViewController {
 
         switch localDevice.joinState {
         case .joined:
-            if let speakerState = groupCall.joinedRemoteDeviceStates.first {
+            if let speakerState = groupCall.sortedRemoteDeviceStates.first {
                 speakerPage.addSubview(speakerView)
                 speakerView.autoPinEdgesToSuperviewEdges()
                 speakerView.configure(device: speakerState, isFullScreen: true)
@@ -313,7 +311,7 @@ extension GroupCallViewController: CallObserver {
 
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
@@ -325,9 +323,8 @@ extension GroupCallViewController: CallObserver {
         owsAssertDebug(call.isGroupCall)
     }
 
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
@@ -373,7 +370,7 @@ extension GroupCallViewController: CallControlsDelegate {
 
 extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
-        if groupCall.localDevice.joinState == .joined {
+        if groupCall.localDeviceState.joinState == .joined {
             OWSWindowManager.shared.leaveCallView()
         } else {
             dismissCall()

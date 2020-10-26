@@ -181,7 +181,7 @@ public class OWSURLSession: NSObject {
     }
 
     @objc
-    public init(baseUrl: URL?,
+    public init(baseUrl: URL? = nil,
                 securityPolicy: AFSecurityPolicy,
                 configuration: URLSessionConfiguration,
                 censorshipCircumventionHost: String? = nil,

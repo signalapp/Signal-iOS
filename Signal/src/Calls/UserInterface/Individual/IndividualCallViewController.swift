@@ -7,6 +7,7 @@ import WebRTC
 import PromiseKit
 import SignalServiceKit
 import SignalMessaging
+import SignalRingRTC
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
@@ -1175,10 +1176,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {}
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
     // MARK: - CallAudioServiceDelegate

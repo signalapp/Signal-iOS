@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 class GroupCallVideoGrid: UICollectionView {
     let layout: GroupCallVideoGridLayout
@@ -29,7 +30,7 @@ class GroupCallVideoGrid: UICollectionView {
 
 extension GroupCallVideoGrid: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return min(maxItems, call.groupCall.joinedRemoteDeviceStates.count)
+        return min(maxItems, call.groupCall.sortedRemoteDeviceStates.count)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -38,7 +39,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             for: indexPath
         ) as! GroupCallVideoGridCell
 
-        guard let remoteDevice = call.groupCall.joinedRemoteDeviceStates[safe: indexPath.row] else {
+        guard let remoteDevice = call.groupCall.sortedRemoteDeviceStates[safe: indexPath.row] else {
             owsFailDebug("missing member address")
             return cell
         }
@@ -64,7 +65,7 @@ extension GroupCallVideoGrid: CallObserver {
         reloadData()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
@@ -73,9 +74,8 @@ extension GroupCallVideoGrid: CallObserver {
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
@@ -106,7 +106,7 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
     var maxItems: Int { maxColumns * maxRows }
 
     func deviceState(for index: Int) -> RemoteDeviceState? {
-        return call.groupCall.joinedRemoteDeviceStates[safe: index]
+        return call.groupCall.sortedRemoteDeviceStates[safe: index]
     }
 }
 
@@ -134,10 +134,8 @@ class GroupCallVideoGridCell: UICollectionViewCell {
 }
 
 extension GroupCall {
-    var joinedRemoteDeviceStates: [RemoteDeviceState] {
-        return remoteDevices
-            .filter { joinedGroupMembers.contains($0.uuid) }
-            .filter { !$0.address.isLocalAddress }
+    var sortedRemoteDeviceStates: [RemoteDeviceState] {
+        return remoteDeviceStates
             .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
     }
 }

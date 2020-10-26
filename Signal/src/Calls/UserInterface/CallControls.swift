@@ -166,15 +166,15 @@ class CallControls: UIView {
     }
 
     private func updateControls() {
-        flipCameraButton.isHidden = call.groupCall.localDevice.videoMuted
-        videoButton.isSelected = !call.groupCall.localDevice.videoMuted
-        muteButton.isSelected = call.groupCall.localDevice.audioMuted
-        hangUpButton.isHidden = call.groupCall.localDevice.joinState != .joined
+        flipCameraButton.isHidden = call.groupCall.localDeviceState.videoMuted
+        videoButton.isSelected = !call.groupCall.localDeviceState.videoMuted
+        muteButton.isSelected = call.groupCall.localDeviceState.audioMuted
+        hangUpButton.isHidden = call.groupCall.localDeviceState.joinState != .joined
 
         //  TODO: audio source selection
-        audioSourceButton.isHidden = !call.groupCall.localDevice.videoMuted
+        audioSourceButton.isHidden = !call.groupCall.localDeviceState.videoMuted
 
-        bottomStackView.isHidden = call.groupCall.localDevice.joinState == .joined
+        bottomStackView.isHidden = call.groupCall.localDeviceState.joinState == .joined
 
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
@@ -207,13 +207,12 @@ extension CallControls: CallObserver {
         updateControls()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         updateControls()
     }
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 }

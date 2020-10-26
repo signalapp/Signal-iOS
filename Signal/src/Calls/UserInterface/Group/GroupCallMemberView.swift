@@ -214,6 +214,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
 extension RemoteDeviceState {
     var address: SignalServiceAddress {
-        return SignalServiceAddress(uuid: uuid)
+        return SignalServiceAddress(uuid: userId)
     }
 }

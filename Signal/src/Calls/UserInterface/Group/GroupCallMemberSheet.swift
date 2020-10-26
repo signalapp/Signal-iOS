@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 @objc
 class GroupCallMemberSheet: UIViewController {
@@ -282,7 +283,7 @@ class GroupCallMemberSheet: UIViewController {
     private var sortedMembers = [JoinedMember]()
     func updateMembers() {
         let unsortedMembers: [JoinedMember] = databaseStorage.uiRead { transaction in
-            var members: [JoinedMember] = self.call.groupCall.joinedRemoteDeviceStates.map { member in
+            var members: [JoinedMember] = self.call.groupCall.sortedRemoteDeviceStates.map { member in
                 let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
                 let displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
                 let comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
@@ -297,7 +298,7 @@ class GroupCallMemberSheet: UIViewController {
                 )
             }
 
-            if self.call.groupCall.localDevice.joinState == .joined {
+            if self.call.groupCall.localDeviceState.joinState == .joined {
                 guard let localAddress = self.tsAccountManager.localAddress else { return members }
 
                 let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
@@ -309,8 +310,8 @@ class GroupCallMemberSheet: UIViewController {
                     conversationColorName: thread?.conversationColorName ?? .default,
                     displayName: displayName,
                     comparableName: comparableName,
-                    isAudioMuted: self.call.groupCall.localDevice.audioMuted,
-                    isVideoMuted: self.call.groupCall.localDevice.videoMuted
+                    isAudioMuted: self.call.groupCall.localDeviceState.audioMuted,
+                    isVideoMuted: self.call.groupCall.localDeviceState.videoMuted
                 ))
             }
 
@@ -455,7 +456,7 @@ extension GroupCallMemberSheet: CallObserver {
         updateMembers()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
@@ -464,9 +465,8 @@ extension GroupCallMemberSheet: CallObserver {
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}

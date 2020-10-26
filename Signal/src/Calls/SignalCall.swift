@@ -15,10 +15,9 @@ public protocol CallObserver: class {
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall)
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall)
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall)
-    func groupCallUpdateSfuInfo(_ call: SignalCall)
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall)
-    func groupCallUpdateGroupMembers(_ call: SignalCall)
+    func groupCallJoinedMembersChanged(_ call: SignalCall)
+    func groupCallRequestMembershipProof(_ call: SignalCall)
+    func groupCallRequestGroupMembers(_ call: SignalCall)
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
 }
 
@@ -88,7 +87,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
     init(groupCall: GroupCall, groupThread: TSGroupThread) {
         mode = .group(groupCall)
         audioActivity = AudioActivity(
-            audioDescription: "[SignalCall] with group \(groupCall.groupId)",
+            audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
             behavior: .call
         )
         thread = groupThread
@@ -116,8 +115,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
 
         let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
-            groupId: thread.groupModel.groupId,
-            userId: localUuid
+            groupIdToLog: thread.groupModel.groupId.hexadecimalString
         )
 
         return SignalCall(groupCall: groupCall, groupThread: thread)
@@ -207,7 +205,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
 extension SignalCall: GroupCallDelegate {
     public func groupCall(onLocalDeviceStateChanged groupCall: GroupCall) {
-        if groupCall.localDevice.joinState == .joined, connectedDate == nil {
+        if groupCall.localDeviceState.joinState == .joined, connectedDate == nil {
             connectedDate = Date()
         }
 
@@ -218,20 +216,16 @@ extension SignalCall: GroupCallDelegate {
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
-    public func groupCall(onJoinedGroupMembersChanged groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallJoinedGroupMembersChanged(self) }
+    public func groupCall(onJoinedMembersChanged groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallJoinedMembersChanged(self) }
     }
 
-    public func groupCall(updateSfuInfo groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallUpdateSfuInfo(self) }
+    public func groupCall(requestMembershipProof groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallRequestMembershipProof(self) }
     }
 
-    public func groupCall(updateGroupMembershipProof groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallUpdateGroupMembershipProof(self) }
-    }
-
-    public func groupCall(updateGroupMembers groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallUpdateGroupMembers(self) }
+    public func groupCall(requestGroupMembers groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallRequestGroupMembers(self) }
     }
 
     public func groupCall(onEnded groupCall: GroupCall, reason: GroupCallEndReason) {

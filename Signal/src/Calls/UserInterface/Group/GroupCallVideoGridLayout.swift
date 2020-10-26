@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 protocol GroupCallVideoGridLayoutDelegate: class {
     var maxColumns: Int { get }

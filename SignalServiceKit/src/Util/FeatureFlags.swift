@@ -370,9 +370,6 @@ public class DebugFlags: BaseFlags {
     public static let forceProfilesForAll = build.includes(.beta)
 
     @objc
-    public static let groupCallingIgnoreMembershipProof = true
-
-    @objc
     public static let disableMessageProcessing = TestableFlag(false)
 
     @objc

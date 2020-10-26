@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 @objc
 protocol CallHeaderDelegate: class {
@@ -138,7 +139,7 @@ class CallHeader: UIView {
 
     private func updateCallStatusLabel() {
         let callStatusText: String
-        switch call.groupCall.localDevice.joinState {
+        switch call.groupCall.localDeviceState.joinState {
         case .notJoined, .joining:
             callStatusText = ""
         case .joined:
@@ -160,10 +161,10 @@ class CallHeader: UIView {
         }
 
         callStatusLabel.text = callStatusText
-        callStatusLabel.isHidden = call.groupCall.localDevice.joinState != .joined || call.groupCall.joinedRemoteDeviceStates.count > 1
+        callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.sortedRemoteDeviceStates.count > 1
 
         // Handle reconnecting blinking
-        if call.groupCall.localDevice.connectionState == .reconnecting {
+        if call.groupCall.localDeviceState.connectionState == .reconnecting {
             if !isBlinkingReconnectLabel {
                 isBlinkingReconnectLabel = true
                 UIView.animate(withDuration: 0.7, delay: 0, options: [.autoreverse, .repeat],
@@ -188,12 +189,11 @@ class CallHeader: UIView {
         let callTitleText: String
 
         let memberNames = databaseStorage.uiRead { transaction in
-            return self.call.groupCall.joinedRemoteDeviceStates
-                .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
+            return self.call.groupCall.sortedRemoteDeviceStates
                 .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
         }
 
-        switch call.groupCall.localDevice.joinState {
+        switch call.groupCall.localDeviceState.joinState {
         case .joined:
             switch memberNames.count {
             case 0:
@@ -237,7 +237,7 @@ class CallHeader: UIView {
 
     func updateGroupMembersButton() {
         groupMembersButton.setTitle(" \(call.groupCall.joinedGroupMembers.count)", for: .normal)
-        groupMembersButton.isHidden = call.groupCall.joinedRemoteDeviceStates.count < 2
+        groupMembersButton.isHidden = call.groupCall.sortedRemoteDeviceStates.count < 2
         groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 
@@ -256,7 +256,7 @@ extension CallHeader: CallObserver {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
 
-        if call.groupCall.localDevice.joinState == .joined {
+        if call.groupCall.localDeviceState.joinState == .joined {
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(
@@ -277,14 +277,13 @@ extension CallHeader: CallObserver {
         updateCallStatusLabel()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         updateCallTitleLabel()
         updateGroupMembersButton()
     }
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 }

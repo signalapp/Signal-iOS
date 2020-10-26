@@ -678,7 +678,6 @@
 		88588D18252D312800405414 /* GroupCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D17252D312800405414 /* GroupCallViewController.swift */; };
 		88588D1B252D3DFF00405414 /* CallControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1A252D3DFF00405414 /* CallControls.swift */; };
 		88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */; };
-		88588D23252E513300405414 /* GroupCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D22252E513200405414 /* GroupCall.swift */; };
 		88588D26252E59CE00405414 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D25252E59CE00405414 /* CallService.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		885AC56723AB42430077705E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885AC56623AB42430077705E /* NotificationService.swift */; };
@@ -1690,7 +1689,6 @@
 		88588D17252D312800405414 /* GroupCallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallViewController.swift; sourceTree = "<group>"; };
 		88588D1A252D3DFF00405414 /* CallControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControls.swift; sourceTree = "<group>"; };
 		88588D1C252D5D3D00405414 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
-		88588D22252E513200405414 /* GroupCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCall.swift; sourceTree = "<group>"; };
 		88588D25252E59CE00405414 /* CallService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallService.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
 		885AC56423AB42430077705E /* NotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3313,14 +3311,6 @@
 			path = Individual;
 			sourceTree = "<group>";
 		};
-		88588D28252E5A4A00405414 /* Group */ = {
-			isa = PBXGroup;
-			children = (
-				88588D22252E513200405414 /* GroupCall.swift */,
-			);
-			path = Group;
-			sourceTree = "<group>";
-		};
 		885AC56523AB42430077705E /* NotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -3458,7 +3448,6 @@
 		88D23D1323CEC0C700B0E74B /* Calls */ = {
 			isa = PBXGroup;
 			children = (
-				88588D28252E5A4A00405414 /* Group */,
 				88588D24252E593500405414 /* Individual */,
 				88D23D1D23CEC0C700B0E74B /* Signaling */,
 				88D23D1723CEC0C700B0E74B /* UserInterface */,
@@ -4943,7 +4932,6 @@
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
 				88F8195C238375C7007914E8 /* ReactionCountsView.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
-				88588D23252E513300405414 /* GroupCall.swift in Sources */,
 				4CFF115523A9C6DC0007F9D7 /* OWSUnreadIndicatorCell.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
 				34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */,

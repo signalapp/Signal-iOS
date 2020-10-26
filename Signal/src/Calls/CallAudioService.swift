@@ -7,6 +7,7 @@ import AVFoundation
 import SignalServiceKit
 import SignalMessaging
 import AVKit
+import SignalRingRTC
 
 protocol CallAudioServiceDelegate: class {
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService)
@@ -92,10 +93,9 @@ protocol CallAudioServiceDelegate: class {
         ensureProperAudioSession(call: call)
     }
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {}
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
     private let routePicker = AVRoutePickerView()
@@ -148,7 +148,7 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private func ensureProperAudioSession(call: GroupCall?) {
-        guard let call = call, !call.isEnded else {
+        guard let call = call, call.localDeviceState.joinState != .notJoined else {
             // Revert to default audio
             setAudioSession(category: .soloAmbient, mode: .default)
             return
