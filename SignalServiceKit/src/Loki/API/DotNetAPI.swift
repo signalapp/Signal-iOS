@@ -8,6 +8,7 @@ public class DotNetAPI : NSObject {
 
     // MARK: Settings
     private static let attachmentType = "network.loki"
+    private static let maxRetryCount: UInt = 4
     
     // MARK: Error
     @objc(LKDotNetAPIError)
@@ -123,13 +124,15 @@ public class DotNetAPI : NSObject {
         }
         let serverPublicKeyPromise = FileServerAPI.server.contains(host) ? Promise.value(FileServerAPI.fileServerPublicKey)
             : PublicChatAPI.getOpenGroupServerPublicKey(for: host)
-        return serverPublicKeyPromise.then2 { serverPublicKey in
-            return OnionRequestAPI.sendOnionRequest(request, to: host, using: serverPublicKey, isJSONRequired: false).map2 { json in
-                guard let body = json["body"] as? JSON, let data = body["data"] as? [UInt8] else {
-                    print("[Loki] Couldn't parse attachment from: \(json).")
-                    throw DotNetAPIError.parsingFailed
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: SnodeAPI.workQueue) {
+            serverPublicKeyPromise.then2 { serverPublicKey in
+                return OnionRequestAPI.sendOnionRequest(request, to: host, using: serverPublicKey, isJSONRequired: false).map2 { json in
+                    guard let body = json["body"] as? JSON, let data = body["data"] as? [UInt8] else {
+                        print("[Loki] Couldn't parse attachment from: \(json).")
+                        throw DotNetAPIError.parsingFailed
+                    }
+                    return Data(data)
                 }
-                return Data(data)
             }
         }
     }
