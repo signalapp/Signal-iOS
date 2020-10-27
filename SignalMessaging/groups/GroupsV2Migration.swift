@@ -159,10 +159,6 @@ public extension GroupsV2Migration {
     static func tryToAutoMigrateAllGroups() {
         AssertIsOnMainThread()
 
-        guard GroupManager.canAutoMigrate else {
-            return
-        }
-
         // This is low priority work, so we want to
         DispatchQueue.global().async {
             var groupThreads = [TSGroupThread]()
@@ -177,7 +173,17 @@ public extension GroupsV2Migration {
                     groupThreads.append(groupThread)
                 }
             }
-            let migrationMode = self.autoMigrationMode
+
+            // Check up to N groups on every launch.
+            let maxCheckCount: Int = 50
+            if groupThreads.count > maxCheckCount {
+                groupThreads.shuffle()
+                groupThreads = Array(groupThreads.prefix(upTo: maxCheckCount))
+            }
+
+            let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
+                                                            ? self.autoMigrationMode
+                                                            : .possiblyAlreadyMigratedOnService)
             for groupThread in groupThreads {
                 firstly {
                     Self.tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
