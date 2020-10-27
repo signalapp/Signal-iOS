@@ -1798,8 +1798,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 builder.groupMembership = membershipBuilder.build()
                 let newGroupModel = try builder.build(transaction: transaction)
 
-                TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
-
                 groupThread.update(with: newGroupModel, transaction: transaction)
 
                 let dmConfiguration = groupThread.disappearingMessagesConfiguration(with: transaction)
@@ -1961,6 +1959,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return try databaseStorage.write { transaction -> TSGroupThread in
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing groupThread.")
             }
@@ -1988,8 +1987,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             membershipBuilder.remove(localUuid)
             builder.groupMembership = membershipBuilder.build()
             let newGroupModel = try builder.build(transaction: transaction)
-
-            TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
 
             groupThread.update(with: newGroupModel, transaction: transaction)
 
@@ -2101,6 +2098,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 guard let localUuid = self.tsAccountManager.localUuid else {
                     throw OWSAssertionError("Missing localUuid.")
                 }
+                TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     // Thread not yet in database.
                     return
@@ -2126,8 +2124,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
                 builder.groupMembership = membershipBuilder.build()
                 let newGroupModel = try builder.build(transaction: transaction)
-
-                TSGroupThread.ensureGroupIdMapping(forGroupId: newGroupModel.groupId, transaction: transaction)
 
                 groupThread.update(with: newGroupModel, transaction: transaction)
 
