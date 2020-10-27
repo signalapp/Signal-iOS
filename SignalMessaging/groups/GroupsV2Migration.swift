@@ -159,7 +159,6 @@ public extension GroupsV2Migration {
     static func tryToAutoMigrateAllGroups() {
         AssertIsOnMainThread()
 
-        // This is low priority work, so we want to
         DispatchQueue.global().async {
             var groupThreads = [TSGroupThread]()
             Self.databaseStorage.read { transaction in
@@ -174,6 +173,20 @@ public extension GroupsV2Migration {
                 }
             }
 
+            var phoneNumbersWithoutUuids = Set<String>()
+            for groupThread in groupThreads {
+                for address in groupThread.groupModel.groupMembership.allMembersOfAnyKind {
+                    guard address.uuid == nil else {
+                        continue
+                    }
+                    guard let phoneNumber = address.phoneNumber else {
+                        owsFailDebug("Missing phone number.")
+                        continue
+                    }
+                    phoneNumbersWithoutUuids.insert(phoneNumber)
+                }
+            }
+
             // Check up to N groups on every launch.
             let maxCheckCount: Int = 50
             if groupThreads.count > maxCheckCount {
@@ -181,17 +194,32 @@ public extension GroupsV2Migration {
                 groupThreads = Array(groupThreads.prefix(upTo: maxCheckCount))
             }
 
-            let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
-                                                            ? self.autoMigrationMode
-                                                            : .possiblyAlreadyMigratedOnService)
-            for groupThread in groupThreads {
-                firstly {
-                    Self.tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
-                }.done(on: .global()) { _ in
-                    Logger.verbose("")
-                }.catch(on: .global()) { error in
-                    owsFailDebug("Error: \(error)")
+            firstly(on: .global()) { () -> Promise<Void> in
+                guard !phoneNumbersWithoutUuids.isEmpty else {
+                    return Promise.value(())
                 }
+                return ContactDiscoveryTask(phoneNumbers: phoneNumbersWithoutUuids).perform().asVoid()
+            }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+                // Log but otherwise ignore errors in CDS lookup.
+                owsFailDebug("Error: \(error)")
+                return Promise.value(())
+            }.map(on: .global()) { _ in
+                Logger.verbose("")
+
+                let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
+                                                                ? self.autoMigrationMode
+                                                                : .possiblyAlreadyMigratedOnService)
+                for groupThread in groupThreads {
+                    firstly {
+                        Self.tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
+                    }.done(on: .global()) { _ in
+                        Logger.verbose("")
+                    }.catch(on: .global()) { error in
+                        owsFailDebug("Error: \(error)")
+                    }
+                }
+            }.catch(on: .global()) { error in
+                owsFailDebug("Error: \(error)")
             }
         }
     }
