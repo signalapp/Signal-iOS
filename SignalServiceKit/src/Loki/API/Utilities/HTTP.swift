@@ -41,17 +41,28 @@ public enum HTTP {
     }
 
     // MARK: Main
-    public static func execute(_ verb: Verb, _ url: String, parameters: JSON? = nil, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
-        var request = URLRequest(url: URL(string: url)!)
-        request.httpMethod = verb.rawValue
+    public static func execute(_ verb: Verb, _ url: String, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
+        return execute(verb, url, body: nil, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
+    }
+
+    public static func execute(_ verb: Verb, _ url: String, parameters: JSON?, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
         if let parameters = parameters {
             do {
                 guard JSONSerialization.isValidJSONObject(parameters) else { return Promise(error: Error.invalidJSON) }
-                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [ .fragmentsAllowed ])
+                let body = try JSONSerialization.data(withJSONObject: parameters, options: [ .fragmentsAllowed ])
+                return execute(verb, url, body: body, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
             } catch (let error) {
                 return Promise(error: error)
             }
+        } else {
+            return execute(verb, url, body: nil, timeout: timeout, useSeedNodeURLSession: useSeedNodeURLSession)
         }
+    }
+
+    public static func execute(_ verb: Verb, _ url: String, body: Data?, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
+        var request = URLRequest(url: URL(string: url)!)
+        request.httpMethod = verb.rawValue
+        request.httpBody = body
         request.timeoutInterval = timeout
         let (promise, seal) = Promise<JSON>.pending()
         let urlSession = useSeedNodeURLSession ? seedNodeURLSession : defaultURLSession

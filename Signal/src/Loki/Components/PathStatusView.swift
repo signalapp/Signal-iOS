@@ -16,13 +16,10 @@ final class PathStatusView : UIView {
     private func setUpViewHierarchy() {
         layer.cornerRadius = Values.pathStatusViewSize / 2
         layer.masksToBounds = false
-        if OnionRequestAPI.paths.count < OnionRequestAPI.pathCount {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadConnection.read { transaction in
-                OnionRequestAPI.paths = storage.getOnionRequestPaths(in: transaction)
-            }
+        if OnionRequestAPI.paths.isEmpty {
+            OnionRequestAPI.paths = Storage.getOnionRequestPaths()
         }
-        let color = (OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount) ? Colors.accent : Colors.pathsBuilding
+        let color = (!OnionRequestAPI.paths.isEmpty) ? Colors.accent : Colors.pathsBuilding
         setColor(to: color, isAnimated: false)
     }
 

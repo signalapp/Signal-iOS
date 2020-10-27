@@ -500,12 +500,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     OWSAssertDebug(job);
     TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
 
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-
     // We want to avoid large downloads from a compromised or buggy service.
     const long kMaxDownloadSize = 10 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
@@ -513,7 +507,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     NSString *tempFilePath =
         [OWSTemporaryDirectoryAccessibleAfterFirstAuth() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
     NSURL *tempFileURL = [NSURL fileURLWithPath:tempFilePath];
-
     __block NSURLSessionDownloadTask *task;
     void (^failureHandler)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Failed to download attachment with error: %@", error.description);
@@ -524,125 +517,27 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
         failureHandlerParam(task, error);
     };
-
-    NSString *method = @"GET";
-    NSError *serializationError = nil;
-    NSMutableURLRequest *request = [manager.requestSerializer requestWithMethod:method
-                                                                      URLString:location
-                                                                     parameters:nil
-                                                                          error:&serializationError];
-    if (serializationError) {
-        return failureHandler(serializationError);
-    }
-
-    task = [manager downloadTaskWithRequest:request
-        progress:^(NSProgress *progress) {
-            OWSAssertDebug(progress != nil);
-
-            // Don't do anything until we've received at least one byte of data.
-            if (progress.completedUnitCount < 1) {
-                return;
-            }
-
-            void (^abortDownload)(void) = ^{
-                OWSFailDebug(@"Download aborted.");
-                [task cancel];
-            };
-
-            if (progress.totalUnitCount > kMaxDownloadSize || progress.completedUnitCount > kMaxDownloadSize) {
-                // A malicious service might send a misleading content length header,
-                // so....
-                //
-                // If the current downloaded bytes or the expected total byes
-                // exceed the max download size, abort the download.
-                OWSLogError(@"Attachment download exceed expected content length: %lld, %lld.",
-                    (long long)progress.totalUnitCount,
-                    (long long)progress.completedUnitCount);
-                abortDownload();
-                return;
-            }
-
-            job.progress = progress.fractionCompleted;
-
-            [self fireProgressNotification:MAX(kAttachmentDownloadProgressTheta, progress.fractionCompleted)
-                              attachmentId:attachmentPointer.uniqueId];
-
-            // We only need to check the content length header once.
-            if (hasCheckedContentLength) {
-                return;
-            }
-
-            // Once we've received some bytes of the download, check the content length
-            // header for the download.
-            //
-            // If the task doesn't exist, or doesn't have a response, or is missing
-            // the expected headers, or has an invalid or oversize content length, etc.,
-            // abort the download.
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-            if (![httpResponse isKindOfClass:[NSHTTPURLResponse class]]) {
-                OWSLogError(@"Attachment download has missing or invalid response.");
-                abortDownload();
-                return;
-            }
-
-            NSDictionary *headers = [httpResponse allHeaderFields];
-            if (![headers isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"Attachment download invalid headers.");
-                abortDownload();
-                return;
-            }
-
-
-            NSString *contentLength = headers[@"Content-Length"];
-            if (![contentLength isKindOfClass:[NSString class]]) {
-                OWSLogError(@"Attachment download missing or invalid content length.");
-                abortDownload();
-                return;
-            }
-
-
-            if (contentLength.longLongValue > kMaxDownloadSize) {
-                OWSLogError(@"Attachment download content length exceeds max download size.");
-                abortDownload();
-                return;
-            }
-
-            // This response has a valid content length that is less
-            // than our max download size.  Proceed with the download.
-            hasCheckedContentLength = YES;
-        }
-        destination:^(NSURL *targetPath, NSURLResponse *response) {
-            return tempFileURL;
-        }
-        completionHandler:^(NSURLResponse *response, NSURL *_Nullable filePath, NSError *_Nullable error) {
-            if (error) {
-                failureHandler(error);
-                return;
-            }
-            if (![tempFileURL isEqual:filePath]) {
-                OWSLogError(@"Unexpected temp file path.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-                return failureHandler(error);
-            }
-
-            NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:tempFilePath];
-            if (!fileSize) {
-                OWSLogError(@"Could not determine attachment file size.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-                return failureHandler(error);
-            }
-            if (fileSize.unsignedIntegerValue > kMaxDownloadSize) {
-                OWSLogError(@"Attachment download length exceeds max size.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-                return failureHandler(error);
-            }
+    
+    [[LKFileServerAPI downloadAttachmentFrom:location].then(^(NSData *data) {
+        BOOL success = [data writeToFile:tempFilePath atomically:YES];
+        if (success) {
             successHandler(tempFilePath);
-        }];
+        }
 
-    [task resume];
+        NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:tempFilePath];
+        if (!fileSize) {
+            OWSLogError(@"Could not determine attachment file size.");
+            NSError *error = OWSErrorWithCodeDescription(
+                OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+            return failureHandler(error);
+        }
+        if (fileSize.unsignedIntegerValue > kMaxDownloadSize) {
+            OWSLogError(@"Attachment download length exceeds max size.");
+            NSError *error = OWSErrorWithCodeDescription(
+                OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+            return failureHandler(error);
+        }
+    }) retainUntilComplete];
 }
 
 - (void)fireProgressNotification:(CGFloat)progress attachmentId:(NSString *)attachmentId

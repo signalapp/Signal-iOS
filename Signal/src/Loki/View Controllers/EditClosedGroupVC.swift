@@ -22,6 +22,14 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         return result
     }()
 
+    private lazy var addMembersButton: Button = {
+            let result = Button(style: .prominentOutline, size: .large)
+            result.setTitle("Add Members", for: UIControl.State.normal)
+            result.addTarget(self, action: #selector(addMembers), for: UIControl.Event.touchUpInside)
+            result.contentEdgeInsets = UIEdgeInsets(top: 0, leading: Values.mediumSpacing, bottom: 0, trailing: Values.mediumSpacing)
+            return result
+        }()
+
     @objc private lazy var tableView: UITableView = {
         let result = UITableView()
         result.dataSource = self
@@ -56,13 +64,13 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
-        setUpViewHierarchy()
-        updateNavigationBarButtons()
-        name = thread.groupModel.groupName!
         func getDisplayName(for publicKey: String) -> String {
             return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
         }
         members = GroupUtilities.getClosedGroupMembers(thread).sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
+        setUpViewHierarchy()
+        updateNavigationBarButtons()
+        name = thread.groupModel.groupName!
     }
 
     private func setUpViewHierarchy() {
@@ -88,11 +96,8 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         membersLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         membersLabel.text = "Members"
         // Add members button
-        let addMembersButton = Button(style: .prominentOutline, size: .large)
-        addMembersButton.setTitle("Add Members", for: UIControl.State.normal)
-        addMembersButton.addTarget(self, action: #selector(addMembers), for: UIControl.Event.touchUpInside)
-        addMembersButton.contentEdgeInsets = UIEdgeInsets(top: 0, leading: Values.mediumSpacing, bottom: 0, trailing: Values.mediumSpacing)
-        if (Set(ContactUtilities.getAllContacts()).subtracting(members).isEmpty) {
+        let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.members).isEmpty
+        if (!hasContactsToAdd) {
             addMembersButton.isUserInteractionEnabled = false
             let disabledColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
             addMembersButton.layer.borderColor = disabledColor.cgColor
@@ -222,6 +227,11 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
                 return UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) ?? publicKey
             }
             self.members = members.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
+            let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.members).isEmpty
+            self.addMembersButton.isUserInteractionEnabled = hasContactsToAdd
+            let color = hasContactsToAdd ? Colors.accent : Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
+            self.addMembersButton.layer.borderColor = color.cgColor
+            self.addMembersButton.setTitleColor(color, for: UIControl.State.normal)
         }
         navigationController!.pushViewController(userSelectionVC, animated: true, completion: nil)
     }
@@ -241,13 +251,17 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         guard members != Set(thread.groupModel.groupMemberIds) || name != thread.groupModel.groupName else {
             return popToConversationVC(self)
         }
-        try! Storage.writeSync { [weak self] transaction in
-            ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
-                guard let self = self else { return }
-                popToConversationVC(self)
-            }.catch(on: DispatchQueue.main) { error in
-                guard let self = self else { return }
-                self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+            try! Storage.writeSync { [weak self] transaction in
+                ClosedGroupsProtocol.update(groupPublicKey, with: members, name: name, transaction: transaction).done(on: DispatchQueue.main) {
+                    guard let self = self else { return }
+                    self.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    popToConversationVC(self)
+                }.catch(on: DispatchQueue.main) { error in
+                    guard let self = self else { return }
+                    self.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    self.showError(title: "Couldn't Update Group", message: "Please check your internet connection and try again.")
+                }
             }
         }
     }

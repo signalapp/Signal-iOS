@@ -18,7 +18,7 @@ public final class SnodeAPI : NSObject {
     private static let minimumSnodePoolCount = 64
     private static let minimumSwarmSnodeCount = 2
     private static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
-    private static let snodeFailureThreshold = 2
+    private static let snodeFailureThreshold = 4
     private static let targetSwarmSnodeCount = 2
 
     internal static var powDifficulty: UInt = 1
@@ -89,7 +89,11 @@ public final class SnodeAPI : NSObject {
                         return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
                     })
                     // randomElement() uses the system's default random generator, which is cryptographically secure
-                    return snodePool.randomElement()!
+                    if !snodePool.isEmpty {
+                        return snodePool.randomElement()!
+                    } else {
+                        throw SnodeAPIError.randomSnodePoolUpdatingFailed
+                    }
                 }
             }.done2 { snode in
                 seal.fulfill(snode)
@@ -121,8 +125,10 @@ public final class SnodeAPI : NSObject {
         } else {
             print("[Loki] Getting swarm for: \(publicKey == getUserHexEncodedPublicKey() ? "self" : publicKey).")
             let parameters: [String:Any] = [ "pubKey" : publicKey ]
-            return getRandomSnode().then2 {
-                invoke(.getSwarm, on: $0, associatedWith: publicKey, parameters: parameters)
+            return getRandomSnode().then2 { snode in
+                attempt(maxRetryCount: 4, recoveringOn: SnodeAPI.workQueue) {
+                    invoke(.getSwarm, on: snode, associatedWith: publicKey, parameters: parameters)
+                }
             }.map2 { rawSnodes in
                 let swarm = parseSnodes(from: rawSnodes)
                 swarmCache[publicKey] = swarm

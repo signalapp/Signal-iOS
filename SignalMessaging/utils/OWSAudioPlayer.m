@@ -156,6 +156,11 @@ NS_ASSUME_NONNULL_BEGIN
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 }
 
+- (void)setCurrentTime:(NSTimeInterval)currentTime
+{
+    [self.audioPlayer setCurrentTime:currentTime];
+}
+
 - (void)pause
 {
     OWSAssertIsOnMainThread();

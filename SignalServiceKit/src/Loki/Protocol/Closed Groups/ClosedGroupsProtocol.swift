@@ -118,13 +118,25 @@ public final class ClosedGroupsProtocol : NSObject {
                 print("[Loki] Can't remove self and others simultaneously.")
                 return Promise(error: Error.invalidUpdate)
             }
-            // Send the update to the group (don't include new ratchets as everyone should regenerate new ratchets individually)
-            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: [],
-                members: membersAsData, admins: adminsAsData)
-            let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-            SSKEnvironment.shared.messageSender.send(closedGroupUpdateMessage, success: { seal.fulfill(()) }, failure: { seal.reject($0) })
+            // Establish sessions if needed
+            establishSessionsIfNeeded(with: [String](members), using: transaction)
+            // Send the update to the existing members using established channels (don't include new ratchets as everyone should regenerate new ratchets individually)
+            let promises: [Promise<Void>] = oldMembers.map { member in
+                let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+                thread.save(with: transaction)
+                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: [],
+                    members: membersAsData, admins: adminsAsData)
+                let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+                return SSKEnvironment.shared.messageSender.sendPromise(message: closedGroupUpdateMessage)
+            }
+            when(resolved: promises).done2 { _ in seal.fulfill(()) }.catch2 { seal.reject($0) }
             promise.done {
                 try! Storage.writeSync { transaction in
+                    let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
+                    for (senderPublicKey, oldRatchet) in allOldRatchets {
+                        let collection = Storage.ClosedGroupRatchetCollectionType.old
+                        Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: oldRatchet, in: collection, using: transaction)
+                    }
                     // Delete all ratchets (it's important that this happens * after * sending out the update)
                     Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
                     // Remove the group from the user's set of public keys to poll for if the user is leaving. Otherwise generate a new ratchet and
@@ -134,8 +146,6 @@ public final class ClosedGroupsProtocol : NSObject {
                         // Notify the PN server
                         LokiPushNotificationManager.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
                     } else {
-                        // Establish sessions if needed
-                        establishSessionsIfNeeded(with: [String](members), using: transaction)
                         // Send closed group update messages to any new members using established channels
                         for member in newMembers {
                             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
@@ -203,13 +213,13 @@ public final class ClosedGroupsProtocol : NSObject {
         return promise
     }
 
-    /// The returned promise is fulfilled when the message has been sent **to the group**. It doesn't wait for the user's new ratchet to be distributed.
+    /// The returned promise is fulfilled when the group update message has been sent. It doesn't wait for the user's new ratchet to be distributed.
     @objc(leaveGroupWithPublicKey:transaction:)
     public static func objc_leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
         return AnyPromise.from(leave(groupPublicKey, using: transaction))
     }
 
-    /// The returned promise is fulfilled when the message has been sent **to the group**. It doesn't wait for the user's new ratchet to be distributed.
+    /// The returned promise is fulfilled when the group update message has been sent. It doesn't wait for the user's new ratchet to be distributed.
     public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -358,6 +368,11 @@ public final class ClosedGroupsProtocol : NSObject {
         let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
         let wasUserRemoved = !members.contains(userPublicKey)
         if Set(members).intersection(oldMembers) != Set(oldMembers) {
+            let allOldRatchets = Storage.getAllClosedGroupRatchets(for: groupPublicKey)
+            for (senderPublicKey, oldRatchet) in allOldRatchets {
+                let collection = Storage.ClosedGroupRatchetCollectionType.old
+                Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: oldRatchet, in: collection, using: transaction)
+            }
             Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
             if wasUserRemoved {
                 Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)

@@ -3,16 +3,23 @@ import PromiseKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {
+    private static var pathFailureCount: [Path:UInt] = [:]
+    private static var snodeFailureCount: [Snode:UInt] = [:]
     public static var guardSnodes: Set<Snode> = []
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
     // MARK: Settings
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
+    /// The number of times a path can fail before it's replaced.
+    private static let pathFailureThreshold: UInt = 3
+    /// The number of times a snode can fail before it's replaced.
+    private static let snodeFailureThreshold: UInt = 3
+    /// The number of paths to maintain.
+    public static let targetPathCount: UInt = 2
 
-    public static let pathCount: UInt = 2
-
-    private static var guardSnodeCount: UInt { return pathCount } // One per path
+    /// The number of guard snodes required to maintain `targetPathCount` paths.
+    private static var targetGuardSnodeCount: UInt { return targetPathCount } // One per path
 
     // MARK: Destination
     internal enum Destination {
@@ -56,7 +63,7 @@ public enum OnionRequestAPI {
             let timeout: TimeInterval = 3 // Use a shorter timeout for testing
             HTTP.execute(.get, url, timeout: timeout).done2 { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
-                if version >= "2.0.0" {
+                if version >= "2.0.7" {
                     seal.fulfill(())
                 } else {
                     print("[Loki] [Onion Request API] Unsupported snode version: \(version).")
@@ -69,16 +76,17 @@ public enum OnionRequestAPI {
         return promise
     }
 
-    /// Finds `guardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
+    /// Finds `targetGuardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func getGuardSnodes() -> Promise<Set<Snode>> {
-        if guardSnodes.count >= guardSnodeCount {
+    private static func getGuardSnodes(reusing reusableGuardSnodes: [Snode]) -> Promise<Set<Snode>> {
+        if guardSnodes.count >= targetGuardSnodeCount {
             return Promise<Set<Snode>> { $0.fulfill(guardSnodes) }
         } else {
             print("[Loki] [Onion Request API] Populating guard snode cache.")
             return SnodeAPI.getRandomSnode().then2 { _ -> Promise<Set<Snode>> in // Just used to populate the snode pool
-                var unusedSnodes = SnodeAPI.snodePool // Sync on LokiAPI.workQueue
-                guard unusedSnodes.count >= guardSnodeCount else { throw Error.insufficientSnodes }
+                var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes) // Sync on LokiAPI.workQueue
+                let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
+                guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else { throw Error.insufficientSnodes }
                 func getGuardSnode() -> Promise<Snode> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     guard let candidate = unusedSnodes.randomElement() else { return Promise<Snode> { $0.reject(Error.insufficientSnodes) } }
@@ -86,12 +94,12 @@ public enum OnionRequestAPI {
                     print("[Loki] [Onion Request API] Testing guard snode: \(candidate).")
                     // Loop until a reliable guard snode is found
                     return testSnode(candidate).map2 { candidate }.recover(on: DispatchQueue.main) { _ in
-                        withDelay(0.25, completionQueue: SnodeAPI.workQueue) { getGuardSnode() }
+                        withDelay(0.1, completionQueue: SnodeAPI.workQueue) { getGuardSnode() }
                     }
                 }
-                let promises = (0..<guardSnodeCount).map { _ in getGuardSnode() }
+                let promises = (0..<(targetGuardSnodeCount - reusableGuardSnodeCount)).map { _ in getGuardSnode() }
                 return when(fulfilled: promises).map2 { guardSnodes in
-                    let guardSnodesAsSet = Set(guardSnodes)
+                    let guardSnodesAsSet = Set(guardSnodes + reusableGuardSnodes)
                     OnionRequestAPI.guardSnodes = guardSnodesAsSet
                     return guardSnodesAsSet
                 }
@@ -99,20 +107,22 @@ public enum OnionRequestAPI {
         }
     }
 
-    /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
+    /// Builds and returns `targetPathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func buildPaths() -> Promise<[Path]> {
+    private static func buildPaths(reusing reusablePaths: [Path]) -> Promise<[Path]> {
         print("[Loki] [Onion Request API] Building onion request paths.")
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .buildingPaths, object: nil)
         }
         return SnodeAPI.getRandomSnode().then2 { _ -> Promise<[Path]> in // Just used to populate the snode pool
-            return getGuardSnodes().map2 { guardSnodes -> [Path] in
-                var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes)
-                let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
+            let reusableGuardSnodes = reusablePaths.map { $0[0] }
+            return getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
+                var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes).subtracting(reusablePaths.flatMap { $0 })
+                let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
+                let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
                 // Don't test path snodes as this would reveal the user's IP to them
-                return guardSnodes.map { guardSnode in
+                return guardSnodes.subtracting(reusableGuardSnodes).map { guardSnode in
                     let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
                         // randomElement() uses the system's default random generator, which is cryptographically secure
                         let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
@@ -123,10 +133,10 @@ public enum OnionRequestAPI {
                     return result
                 }
             }.map2 { paths in
-                OnionRequestAPI.paths = paths
+                OnionRequestAPI.paths = paths + reusablePaths
                 try! Storage.writeSync { transaction in
                     print("[Loki] Persisting onion request paths to database.")
-                    OWSPrimaryStorage.shared().setOnionRequestPaths(paths, in: transaction)
+                    Storage.setOnionRequestPaths(paths, using: transaction)
                 }
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: .pathsBuilt, object: nil)
@@ -137,32 +147,42 @@ public enum OnionRequestAPI {
     }
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
-    ///
-    /// - Note: Exposed for testing purposes.
     private static func getPath(excluding snode: Snode?) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         var paths = OnionRequestAPI.paths
-        if paths.count < pathCount {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadConnection.read { transaction in
-                paths = storage.getOnionRequestPaths(in: transaction)
-                OnionRequestAPI.paths = paths
-                if paths.count >= pathCount {
-                    guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
+        if paths.isEmpty {
+            paths = Storage.getOnionRequestPaths()
+            OnionRequestAPI.paths = paths
+            if !paths.isEmpty {
+                guardSnodes.formUnion([ paths[0][0] ])
+                if paths.count >= 2 {
+                    guardSnodes.formUnion([ paths[1][0] ])
                 }
             }
         }
         // randomElement() uses the system's default random generator, which is cryptographically secure
-        if paths.count >= pathCount {
-            return Promise<Path> { seal in
-                if let snode = snode {
-                    seal.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!)
+        if paths.count >= targetPathCount {
+            if let snode = snode {
+                return Promise { $0.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!) }
+            } else {
+                return Promise { $0.fulfill(paths.randomElement()!) }
+            }
+        } else if !paths.isEmpty {
+            if let snode = snode {
+                if let path = paths.first(where: { !$0.contains(snode) }) {
+                    buildPaths(reusing: paths).retainUntilComplete() // Re-build paths in the background
+                    return Promise { $0.fulfill(path) }
                 } else {
-                    seal.fulfill(paths.randomElement()!)
+                    return buildPaths(reusing: paths).map2 { paths in
+                        return paths.filter { !$0.contains(snode) }.randomElement()!
+                    }
                 }
+            } else {
+                buildPaths(reusing: paths).retainUntilComplete() // Re-build paths in the background
+                return Promise { $0.fulfill(paths.randomElement()!) }
             }
         } else {
-            return buildPaths().map2 { paths in
+            return buildPaths(reusing: []).map2 { paths in
                 if let snode = snode {
                     return paths.filter { !$0.contains(snode) }.randomElement()!
                 } else {
@@ -172,15 +192,48 @@ public enum OnionRequestAPI {
         }
     }
 
-    private static func dropAllPaths() {
-        paths.removeAll()
+    private static func dropGuardSnode(_ snode: Snode) {
+        guardSnodes = guardSnodes.filter { $0 != snode }
+    }
+
+    private static func drop(_ snode: Snode) throws {
+        // We repair the path here because we can do it sync. In the case where we drop a whole
+        // path we leave the re-building up to getPath(excluding:) because re-building the path
+        // in that case is async.
+        OnionRequestAPI.snodeFailureCount[snode] = 0
+        var oldPaths = paths
+        guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
+        var path = oldPaths[pathIndex]
+        guard let snodeIndex = path.firstIndex(of: snode) else { return }
+        path.remove(at: snodeIndex)
+        let unusedSnodes = SnodeAPI.snodePool.subtracting(oldPaths.flatMap { $0 })
+        guard !unusedSnodes.isEmpty else { throw Error.insufficientSnodes }
+        // randomElement() uses the system's default random generator, which is cryptographically secure
+        path.append(unusedSnodes.randomElement()!)
+        // Don't test the new snode as this would reveal the user's IP
+        oldPaths.remove(at: pathIndex)
+        let newPaths = oldPaths + [ path ]
+        paths = newPaths
         try! Storage.writeSync { transaction in
-            OWSPrimaryStorage.shared().clearOnionRequestPaths(in: transaction)
+            print("[Loki] Persisting onion request paths to database.")
+            Storage.setOnionRequestPaths(newPaths, using: transaction)
         }
     }
 
-    private static func dropGuardSnode(_ snode: Snode) {
-        guardSnodes = guardSnodes.filter { $0 != snode }
+    private static func drop(_ path: Path) {
+        OnionRequestAPI.pathFailureCount[path] = 0
+        var paths = OnionRequestAPI.paths
+        guard let pathIndex = paths.firstIndex(of: path) else { return }
+        paths.remove(at: pathIndex)
+        OnionRequestAPI.paths = paths
+        try! Storage.writeSync { transaction in
+            if !paths.isEmpty {
+                print("[Loki] Persisting onion request paths to database.")
+                Storage.setOnionRequestPaths(paths, using: transaction)
+            } else {
+                Storage.clearOnionRequestPaths(using: transaction)
+            }
+        }
     }
 
     /// Builds an onion around `payload` and returns the result.
@@ -265,15 +318,16 @@ public enum OnionRequestAPI {
         }
         let payload: JSON = [
             "body" : parametersAsString,
-            "endpoint": endpoint,
-            "method" : request.httpMethod,
+            "endpoint" : endpoint,
+            "method" : request.httpMethod!,
             "headers" : headers
         ]
         let destination = Destination.server(host: host, x25519PublicKey: x25519PublicKey)
-        return sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired).recover2 { error -> Promise<JSON> in
+        let promise = sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired)
+        promise.catch2 { error in
             print("[Loki] [Onion Request API] Couldn't reach server: \(url) due to error: \(error).")
-            throw error
         }
+        return promise
     }
     
     internal static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
@@ -282,18 +336,23 @@ public enum OnionRequestAPI {
         SnodeAPI.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
-                let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
+                let url = "\(guardSnode.address):\(guardSnode.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
                 if case Destination.server = destination, Double(onion.count) > 0.75 * Double(FileServerAPI.maxFileSize) {
                     print("[Loki] Approaching request size limit: ~\(onion.count) bytes.")
                 }
                 let parameters: JSON = [
-                    "ciphertext" : onion.base64EncodedString(),
                     "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
                 ]
+                let body: Data
+                do {
+                    body = try encode(ciphertext: onion, json: parameters)
+                } catch {
+                    return seal.reject(error)
+                }
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
-                HTTP.execute(.post, url, parameters: parameters).done2 { rawResponse in
+                HTTP.execute(.post, url, body: body).done2 { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= EncryptionUtilities.ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
                     do {
@@ -330,14 +389,45 @@ public enum OnionRequestAPI {
         }
         promise.catch2 { error in // Must be invoked on LokiAPI.workQueue
             guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { return }
-            // Marking all the snodes in the path as unreliable here is aggressive, but otherwise users
-            // can get stuck with a failing path that just refreshes to the same path.
             let path = paths.first { $0.contains(guardSnode) }
-            path?.forEach { snode in
-                SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+            func handleUnspecificError() {
+                guard let path = path else { return }
+                var pathFailureCount = OnionRequestAPI.pathFailureCount[path] ?? 0
+                pathFailureCount += 1
+                if pathFailureCount >= pathFailureThreshold {
+                    dropGuardSnode(guardSnode)
+                    path.forEach { snode in
+                        SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                    }
+                    drop(path)
+                } else {
+                    OnionRequestAPI.pathFailureCount[path] = pathFailureCount
+                }
             }
-            dropAllPaths() // A snode in the path is bad; retry with a different path
-            dropGuardSnode(guardSnode)
+            let prefix = "Next node not found: "
+            if let message = json?["result"] as? String, message.hasPrefix(prefix) {
+                let ed25519PublicKey = message.substring(from: prefix.count)
+                if let path = path, let snode = path.first(where: { $0.publicKeySet?.ed25519Key == ed25519PublicKey }) {
+                    var snodeFailureCount = OnionRequestAPI.snodeFailureCount[snode] ?? 0
+                    snodeFailureCount += 1
+                    if snodeFailureCount >= snodeFailureThreshold {
+                        SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                        do {
+                            try drop(snode)
+                        } catch {
+                            handleUnspecificError()
+                        }
+                    } else {
+                        OnionRequestAPI.snodeFailureCount[snode] = snodeFailureCount
+                    }
+                } else {
+                    handleUnspecificError()
+                }
+            } else if let message = json?["result"] as? String, message == "Loki Server error" {
+                // Do nothing
+            } else {
+                handleUnspecificError()
+            }
         }
         return promise
     }

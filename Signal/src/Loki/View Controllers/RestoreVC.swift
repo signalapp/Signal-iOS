@@ -7,8 +7,8 @@ final class RestoreVC : BaseVC {
     private var bottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
-    private lazy var mnemonicTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("vc_restore_seed_text_field_hint", comment: ""))
+    private lazy var mnemonicTextView: TextView = {
+        let result = TextView(placeholder: NSLocalizedString("vc_restore_seed_text_field_hint", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
         return result
     }()
@@ -77,7 +77,7 @@ final class RestoreVC : BaseVC {
         restoreButtonContainer.pin(.trailing, to: .trailing, of: restoreButton, withInset: Values.massiveSpacing)
         restoreButtonContainer.pin(.bottom, to: .bottom, of: restoreButton)
         // Set up top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextField, spacer3, legalLabel ])
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextView, spacer3, legalLabel ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
         // Set up top stack view container
@@ -111,7 +111,7 @@ final class RestoreVC : BaseVC {
         // On small screens we hide the legal label when the keyboard is up, but it's important that the user sees it so
         // in those instances we don't make the keyboard come up automatically
         if !isIPhone5OrSmaller {
-            mnemonicTextField.becomeFirstResponder()
+            mnemonicTextView.becomeFirstResponder()
         }
     }
     
@@ -121,7 +121,7 @@ final class RestoreVC : BaseVC {
     
     // MARK: General
     @objc private func dismissKeyboard() {
-        mnemonicTextField.resignFirstResponder()
+        mnemonicTextView.resignFirstResponder()
     }
     
     // MARK: Updating
@@ -159,7 +159,7 @@ final class RestoreVC : BaseVC {
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         }
-        let mnemonic = mnemonicTextField.text!
+        let mnemonic = mnemonicTextView.text!
         do {
             let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
             let seed = Data(hex: hexEncodedSeed)
@@ -171,7 +171,7 @@ final class RestoreVC : BaseVC {
             TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
             OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
             UserDefaults.standard[.hasViewedSeed] = true
-            mnemonicTextField.resignFirstResponder()
+            mnemonicTextView.resignFirstResponder()
             Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
                 let displayNameVC = DisplayNameVC()
                 self.navigationController!.pushViewController(displayNameVC, animated: true)

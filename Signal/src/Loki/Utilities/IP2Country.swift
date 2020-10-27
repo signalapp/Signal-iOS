@@ -51,14 +51,11 @@ final class IP2Country {
     }
 
     func populateCacheIfNeeded() -> Bool {
-        if OnionRequestAPI.paths.count < OnionRequestAPI.pathCount {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadConnection.read { transaction in
-                OnionRequestAPI.paths = storage.getOnionRequestPaths(in: transaction)
-            }
+        if OnionRequestAPI.paths.isEmpty {
+            OnionRequestAPI.paths = Storage.getOnionRequestPaths()
         }
         let paths = OnionRequestAPI.paths
-        guard paths.count >= OnionRequestAPI.pathCount else { return false }
+        guard !paths.isEmpty else { return false }
         let pathToDisplay = paths.first!
         pathToDisplay.forEach { snode in
             let _ = self.cacheCountry(for: snode.ip) // Preload if needed

@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageCell ()
+@interface OWSMessageCell () <UIGestureRecognizerDelegate>
 
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
@@ -78,6 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
+
+    UIPanGestureRecognizer *pan =
+        [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+    pan.delegate = self;
+    [self.contentView addGestureRecognizer:pan];
 }
 
 - (void)dealloc
@@ -486,6 +491,22 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
     }
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    [self.messageBubbleView handlePanGesture:sender];
+}
+
+-(BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    LKVoiceMessageView *voiceMessageView = self.viewItem.lastAudioMessageView;
+    if (![gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class] || voiceMessageView == nil) { return NO; }
+    UIPanGestureRecognizer *panGestureRecognizer = (UIPanGestureRecognizer *)gestureRecognizer;
+    CGPoint location = [panGestureRecognizer locationInView:voiceMessageView];
+    if (!CGRectContainsPoint(voiceMessageView.bounds, location)) { return NO; }
+    CGPoint velocity = [panGestureRecognizer velocityInView:voiceMessageView];
+    return fabs(velocity.x) > fabs(velocity.y);
 }
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender

@@ -13,7 +13,6 @@
         return "LokiSwarmCollection-\(publicKey)"
     }
 
-    @objc public static let onionRequestPathCollection = "LokiOnionRequestPathCollection"
     @objc public static let openGroupCollection = "LokiPublicChatCollection"
     @objc public static let openGroupProfilePictureURLCollection = "LokiPublicChatAvatarURLCollection"
     @objc public static let openGroupUserCountCollection = "LokiPublicChatUserCountCollection"
