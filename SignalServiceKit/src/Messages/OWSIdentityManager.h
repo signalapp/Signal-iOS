@@ -8,6 +8,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSPrimaryStorageIdentityKeyStoreIdentityKey;
+extern NSString *const LKSeedKey;
+extern NSString *const LKED25519SecretKey;
+extern NSString *const LKED25519PublicKey;
 extern NSString *const OWSPrimaryStorageIdentityKeyStoreCollection;
 
 extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
@@ -30,6 +33,8 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
+
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
@@ -70,9 +75,9 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;
 
-#pragma mark - Debug
-
 - (nullable ECKeyPair *)identityKeyPair;
+
+#pragma mark - Debug
 
 #if DEBUG
 // Clears everything except the local identity key.

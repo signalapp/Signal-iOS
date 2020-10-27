@@ -5,13 +5,10 @@ public enum LKUserDefaults {
     public enum Bool : Swift.String {
         case hasLaunchedOnce
         case hasSeenGIFMetadataWarning
-        case hasSeenLightModeSheet
-        case hasSeenMultiDeviceRemovalSheet
-        case hasSeenOpenGroupSuggestionSheet
         case hasViewedSeed
+        case isUsingFullAPNs
         /// Whether the device was unlinked as a slave device (used to notify the user on the landing screen).
         case wasUnlinked
-        case isUsingFullAPNs
     }
 
     public enum Date : Swift.String {

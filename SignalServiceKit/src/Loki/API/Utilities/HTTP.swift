@@ -6,7 +6,7 @@ public enum HTTP {
     private static let defaultURLSessionDelegate = DefaultURLSessionDelegateImplementation()
 
     // MARK: Settings
-    public static let timeout: TimeInterval = 20
+    public static let timeout: TimeInterval = 10
 
     // MARK: URL Session Delegate Implementation
     private final class DefaultURLSessionDelegateImplementation : NSObject, URLSessionDelegate {

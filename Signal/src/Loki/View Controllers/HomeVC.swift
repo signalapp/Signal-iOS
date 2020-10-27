@@ -158,39 +158,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         DispatchQueue.global(qos: .utility).async {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
-        // Preload device links to make message sending quicker
-        var publicKeys: Set<String> = []
-        let storage = OWSPrimaryStorage.shared()
-        storage.dbReadConnection.read { transaction in
-            TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
-                guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible else { return }
-                let publicKey = thread.contactIdentifier()
-                guard UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) != nil,
-                    storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) == nil else { return }
-                publicKeys.insert(publicKey)
-            }
-        }
-        let _ = FileServerAPI.getDeviceLinks(associatedWith: publicKeys)
         // Do initial update
         reload()
-        // Clear all data if this is a secondary device
-        if UserDefaults.standard[.masterHexEncodedPublicKey] != nil {
-            UserDefaults.standard[.wasUnlinked] = true
-            NotificationCenter.default.post(name: .dataNukeRequested, object: nil, userInfo: nil)
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
-        let hasSeenLightModeSheet = UserDefaults.standard[.hasSeenLightModeSheet]
-        if !hasSeenLightModeSheet {
-            let lightModeSheet = LightModeSheet()
-            lightModeSheet.modalPresentationStyle = .overFullScreen
-            lightModeSheet.modalTransitionStyle = .crossDissolve
-            present(lightModeSheet, animated: true, completion: nil)
-            UserDefaults.standard[.hasSeenLightModeSheet] = true
-        }
         UserDefaults.standard[.hasLaunchedOnce] = true
     }
     
