@@ -116,6 +116,10 @@ NS_ASSUME_NONNULL_BEGIN
         _recipientAddress = sentProto.destinationAddress;
     }
 
+    if (_groupId != nil) {
+        [TSGroupThread ensureGroupIdMappingForGroupId:_groupId transaction:transaction];
+    }
+
     if (_dataMessage.hasFlags) {
         uint32_t flags = _dataMessage.flags;
         _isExpirationTimerUpdate = (flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
