@@ -75,6 +75,10 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         didSet { videoView.frame = bounds }
     }
 
+    override var frame: CGRect {
+        didSet { videoView.frame = bounds }
+    }
+
     lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
 
     override init() {
@@ -137,7 +141,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 }
 
 class GroupCallRemoteMemberView: GroupCallMemberView {
-    let videoView = RemoteVideoView()
+    var videoView: RemoteVideoView?
     var currentDevice: RemoteDeviceState?
     var currentTrack: RTCVideoTrack?
 
@@ -145,7 +149,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
 
     override var bounds: CGRect {
-        didSet { videoView.frame = bounds }
+        didSet { videoView?.frame = bounds }
+    }
+
+    override var frame: CGRect {
+        didSet { videoView?.frame = bounds }
     }
 
     var avatarDiameter: UInt {
@@ -167,8 +175,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
         avatarView.autoCenterInSuperview()
-
-        insertSubview(videoView, belowSubview: muteIndicatorImage)
     }
 
     required init?(coder: NSCoder) {
@@ -176,9 +182,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     }
 
     func configure(call: SignalCall, device: RemoteDeviceState, isFullScreen: Bool = false) {
-        videoView.isHidden = device.videoMuted ?? false
-        videoView.isFullScreenVideo = isFullScreen
-
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
                 self.profileManager.profileAvatar(for: device.address, transaction: transaction),
@@ -205,16 +208,32 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             colorName: conversationColorName
         ).themeColor
 
-        // Register the video view as belonging to this device.
-        // This allows us to tell RingRTC was resolutions we
-        // are rendering video out.
-        if let currentDevice = currentDevice, currentDevice.demuxId != device.demuxId {
-            call.unregisterRemoteVideoView(videoView, for: currentDevice)
-        } else {
+        // We can't re-use the same video view if the device has changed,
+        // otherwise we'd end up rendering frames from someone elses video
+        if currentDevice?.demuxId != device.demuxId {
+            if let oldVideoView = videoView, let oldDevice = currentDevice {
+                call.unregisterRemoteVideoView(oldVideoView, for: oldDevice)
+            }
+            videoView?.removeFromSuperview()
+            videoView = nil
+        }
+
+        if videoView == nil {
+            let videoView = RemoteVideoView()
+            self.videoView = videoView
+            insertSubview(videoView, belowSubview: muteIndicatorImage)
+            videoView.frame = bounds
             call.registerRemoteVideoView(videoView, for: device)
         }
 
         currentDevice = device
+
+        guard let videoView = videoView else {
+            return owsFailDebug("Missing remote video view")
+        }
+
+        videoView.isHidden = device.videoMuted ?? false || device.videoTrack == nil
+        videoView.isFullScreenVideo = isFullScreen
 
         currentTrack?.remove(videoView)
         currentTrack = nil

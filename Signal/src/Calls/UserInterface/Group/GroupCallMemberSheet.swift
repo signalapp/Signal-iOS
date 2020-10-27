@@ -304,8 +304,11 @@ class GroupCallMemberSheet: UIViewController {
                 guard let localAddress = self.tsAccountManager.localAddress else { return members }
 
                 let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
-                let displayName = self.contactsManager.displayName(for: localAddress, transaction: transaction)
-                let comparableName = self.contactsManager.comparableName(for: localAddress, transaction: transaction)
+                let displayName = NSLocalizedString(
+                    "REACTIONS_DETAIL_YOU",
+                    comment: "Text describing the local user in the reaction details pane."
+                )
+                let comparableName = displayName
 
                 members.append(JoinedMember(
                     address: localAddress,
@@ -557,10 +560,7 @@ private class GroupCallMemberCell: UITableViewCell {
         audioMutedIndicator.isHidden = item.isAudioMuted != true
 
         if item.address.isLocalAddress {
-            nameLabel.text = NSLocalizedString(
-                "REACTIONS_DETAIL_YOU",
-                comment: "Text describing the local user in the reaction details pane."
-            )
+            nameLabel.text = item.displayName
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
             nameLabel.text = item.displayName

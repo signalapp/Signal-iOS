@@ -174,52 +174,64 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    private func updateMemberViewFrames(size: CGSize? = nil) {
+        view.layoutIfNeeded()
+
+        let size = size ?? view.frame.size
+
+        speakerPage.subviews.forEach { $0.removeFromSuperview() }
+        localMemberView.removeFromSuperview()
+
+        switch groupCall.localDeviceState.joinState {
+        case .joined:
+            if let speakerState = groupCall.sortedRemoteDeviceStates.first {
+                speakerPage.addSubview(speakerView)
+                speakerView.frame = CGRect(origin: .zero, size: size)
+                speakerView.configure(call: call, device: speakerState, isFullScreen: true)
+
+                view.addSubview(localMemberView)
+
+                if groupCall.remoteDeviceStates.count > 1 {
+                    let pipWidth = GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio
+                    let pipHeight = GroupCallVideoOverflow.itemHeight
+                    let shouldShiftUp = !hasOverflowMembers && scrollView.contentOffset.y < view.height
+                    localMemberView.frame = CGRect(
+                        x: size.width - pipWidth - 16,
+                        y: videoOverflow.frame.origin.y + (shouldShiftUp ? -16 : 0),
+                        width: pipWidth,
+                        height: pipHeight
+                    )
+                } else {
+                    let pipWidth = ReturnToCallViewController.pipSize.width
+                    let pipHeight = ReturnToCallViewController.pipSize.height
+
+                    localMemberView.frame = CGRect(
+                        x: size.width - pipWidth - 16,
+                        y: callControls.frame.minY - pipHeight,
+                        width: pipWidth,
+                        height: pipHeight
+                    )
+                }
+            } else {
+                speakerPage.addSubview(localMemberView)
+                localMemberView.frame = CGRect(origin: .zero, size: size)
+            }
+        case .notJoined, .joining:
+            speakerPage.addSubview(localMemberView)
+            localMemberView.frame = CGRect(origin: .zero, size: size)
+        }
+    }
+
     func updateCallUI(size: CGSize? = nil) {
         let localDevice = groupCall.localDeviceState
 
         localMemberView.configure(
             device: localDevice,
             session: call.videoCaptureController.captureSession,
-            isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.count < 2
+            isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
         )
 
-        // todo: show spinner when not connected
-
-        speakerPage.subviews.forEach { $0.removeFromSuperview() }
-        localMemberView.removeFromSuperview()
-
-        switch localDevice.joinState {
-        case .joined:
-            if let speakerState = groupCall.sortedRemoteDeviceStates.first {
-                speakerPage.addSubview(speakerView)
-                speakerView.autoPinEdgesToSuperviewEdges()
-                speakerView.configure(call: call, device: speakerState, isFullScreen: true)
-
-                view.addSubview(localMemberView)
-
-                if groupCall.remoteDeviceStates.count > 1 {
-                    localMemberView.autoSetDimension(.height, toSize: GroupCallVideoOverflow.itemHeight)
-                    localMemberView.autoSetDimension(
-                        .width,
-                        toSize: GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio
-                    )
-                    let shouldShiftUp = !hasOverflowMembers && scrollView.contentOffset.y < view.height
-                    localMemberView.autoPinEdge(.top, to: .top, of: videoOverflow, withOffset: shouldShiftUp ? -16 : 0)
-                } else {
-                    localMemberView.autoSetDimensions(to: ReturnToCallViewController.pipSize)
-                    localMemberView.autoPinEdge(.bottom, to: .top, of: callControls)
-                }
-
-                localMemberView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
-            } else {
-                speakerPage.addSubview(localMemberView)
-                localMemberView.autoPinEdgesToSuperviewEdges()
-            }
-        case .notJoined, .joining:
-            speakerPage.addSubview(localMemberView)
-            localMemberView.autoPinEdgesToSuperviewEdges()
-        }
-
+        updateMemberViewFrames(size: size)
         updateScrollViewFrames(size: size)
     }
 
