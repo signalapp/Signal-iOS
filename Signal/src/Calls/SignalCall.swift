@@ -111,10 +111,13 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
         let videoCaptureController = VideoCaptureController()
 
-        let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
+        guard let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
             groupIdToLog: thread.groupModel.groupId.hexadecimalString,
             videoCaptureController: videoCaptureController
-        )
+        ) else {
+            owsFailDebug("Failed to create group call")
+            return nil
+        }
 
         let call = SignalCall(groupCall: groupCall, groupThread: thread)
         call.videoCaptureController = videoCaptureController

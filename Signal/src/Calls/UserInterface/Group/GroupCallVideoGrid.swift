@@ -136,6 +136,7 @@ class GroupCallVideoGridCell: UICollectionViewCell {
 extension GroupCall {
     var sortedRemoteDeviceStates: [RemoteDeviceState] {
         return remoteDeviceStates
+            .values
             .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
     }
 }

@@ -404,7 +404,6 @@ public final class CallService: NSObject {
         currentCall = call
 
         // TODO: Initialize this in a real way?
-        call.groupCall.outgoingVideoSource = call.videoCaptureController
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = false
         call.groupCall.connect()
@@ -618,7 +617,7 @@ extension CallService: CallManagerDelegate {
         url: String,
         method: CallManagerHttpMethod,
         headers: [String: String],
-        body: Data
+        body: Data?
     ) {
         AssertIsOnMainThread()
         Logger.info("shouldSendHttpRequest")
