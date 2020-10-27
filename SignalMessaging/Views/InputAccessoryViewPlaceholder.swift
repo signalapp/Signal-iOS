@@ -21,7 +21,7 @@ public class InputAccessoryViewPlaceholder: UIView {
     /// The amount of the application frame that is overlapped
     /// by the keyboard.
     @objc
-    var keyboardOverlap: CGFloat {
+    public var keyboardOverlap: CGFloat {
         // Subtract our own height as this view is not actually
         // visible, but is represented in the keyboard.
 
@@ -70,7 +70,8 @@ public class InputAccessoryViewPlaceholder: UIView {
     /// accessory view to overlap the presenting view, primarily
     /// for the purpose of defining the start point for interactive
     /// dismissals.
-    @objc var desiredHeight: CGFloat {
+    @objc
+    public var desiredHeight: CGFloat {
         set {
             guard newValue != desiredHeight else { return }
             heightConstraint.constant = newValue
@@ -95,7 +96,7 @@ public class InputAccessoryViewPlaceholder: UIView {
     }
     private var keyboardState: KeyboardState = .dismissed
 
-    init() {
+    public init() {
         super.init(frame: .zero)
 
         // Disable user interaction, the accessory view

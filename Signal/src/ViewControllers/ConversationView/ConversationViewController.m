@@ -128,15 +128,10 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 
-@property (nonatomic, readonly) UIView *bottomBar;
-@property (nonatomic, nullable) NSLayoutConstraint *bottomBarBottomConstraint;
-@property (nonatomic, readonly) InputAccessoryViewPlaceholder *inputAccessoryPlaceholder;
-@property (nonatomic) BOOL isDismissingInteractively;
-
-@property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
-@property (nonatomic, readonly) ConversationStyle *conversationStyle;
+
+@property (nonatomic, readonly) CVCViewState *viewState;
 
 @property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
 @property (nonatomic, nullable) OWSAudioPlayer *audioAttachmentPlayer;
@@ -148,11 +143,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) ConversationHeaderView *headerView;
 
 @property (nonatomic, nullable) UIView *bannerView;
-@property (nonatomic) CVCViewState *viewState;
 
 @property (nonatomic) ConversationViewAction actionOnOpen;
-
-@property (nonatomic, getter=isInPreviewPlatter) BOOL inPreviewPlatter;
 
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic, nullable) NSDate *lastMessageSentDate;
@@ -170,11 +162,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) ConversationScrollButton *scrollToNextMentionButton;
 @property (nonatomic) BOOL isHidingScrollToNextMentionButton;
 
-@property (nonatomic) BOOL isViewCompletelyAppeared;
-@property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL shouldAnimateKeyboardChanges;
-@property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic) BOOL hasViewWillAppearOccurred;
 @property (nonatomic) NSUInteger unreadMessageCount;
 @property (nonatomic, nullable) NSArray<TSMessage *> *unreadMentionMessages;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
@@ -189,8 +176,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 @property (nonatomic, nullable) NSString *lastSearchedText;
-
-@property (nonatomic, nullable) UIView *requestView;
 
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 
@@ -222,6 +207,13 @@ typedef enum : NSUInteger {
 {
     self = [super init];
 
+    _threadViewModel = threadViewModel;
+
+    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithThread:self.thread];
+    ConversationInputToolbar *inputToolbar = [self buildInputToolbar:conversationStyle];
+    _viewState = [[CVCViewState alloc] initWithConversationStyle:conversationStyle inputToolbar:inputToolbar];
+    self.inputAccessoryPlaceholder.delegate = self;
+
     // If we're not scrolling to a specific message AND we don't have
     // any unread messages, try and focus on the last visible interaction
     if (focusMessageId == nil && !threadViewModel.hasUnreadMessages) {
@@ -237,17 +229,10 @@ typedef enum : NSUInteger {
 
     self.scrollContinuity = kScrollContinuityBottom;
 
-    _inputAccessoryPlaceholder = [InputAccessoryViewPlaceholder new];
-    self.inputAccessoryPlaceholder.delegate = self;
-
-    _threadViewModel = threadViewModel;
-
     self.actionOnOpen = action;
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
-    _conversationStyle = [[ConversationStyle alloc] initWithThread:self.thread];
-    _viewState = [CVCViewState new];
 
     _selectedItems = @{};
 
@@ -419,10 +404,15 @@ typedef enum : NSUInteger {
     [self applyTheme];
 }
 
+- (BOOL)isInPreviewPlatter
+{
+    return self.viewState.isInPreviewPlatter;
+}
+
 - (void)setInPreviewPlatter:(BOOL)inPreviewPlatter
 {
-    if (_inPreviewPlatter != inPreviewPlatter) {
-        _inPreviewPlatter = inPreviewPlatter;
+    if (self.viewState.isInPreviewPlatter != inPreviewPlatter) {
+        self.viewState.isInPreviewPlatter = inPreviewPlatter;
         [self configureScrollDownButtons];
     }
 }
@@ -477,42 +467,6 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"reloading conversation view contents.");
     [self resetContentAndLayoutWithSneakyTransaction];
-}
-
-- (BOOL)userLeftGroup
-{
-    if (![self.thread isKindOfClass:[TSGroupThread class]]) {
-        return NO;
-    }
-
-    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return !groupThread.isLocalUserFullMember;
-}
-
-- (BOOL)isLocalUserRequestingMember
-{
-    if ([self.thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return groupThread.isLocalUserRequestingMember;
-    } else {
-        return NO;
-    }
-}
-
-- (void)updateInputVisibility
-{
-    if ([self isInPreviewPlatter]) {
-        self.inputToolbar.hidden = YES;
-        [self dismissKeyBoard];
-        return;
-    }
-
-    if (self.userLeftGroup) {
-        self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
-        [self dismissKeyBoard];
-    } else {
-        self.inputToolbar.hidden = NO;
-    }
 }
 
 - (void)viewDidLoad
@@ -574,7 +528,6 @@ typedef enum : NSUInteger {
     self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyBoard)];
     [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
 
-    _bottomBar = [UIView containerView];
     [self.view addSubview:self.bottomBar];
     self.bottomBarBottomConstraint = [self.bottomBar autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.bottomBar autoPinWidthToSuperview];
@@ -3713,17 +3666,6 @@ typedef enum : NSUInteger {
     });
 }
 
-- (void)popKeyBoard
-{
-    [self.inputToolbar beginEditingMessage];
-}
-
-- (void)dismissKeyBoard
-{
-    [self.inputToolbar endEditingMessage];
-    [self.inputToolbar clearDesiredKeyboard];
-}
-
 #pragma mark Drafts
 
 - (void)loadDraftInCompose
@@ -3884,7 +3826,7 @@ typedef enum : NSUInteger {
     [self updateNavigationTitle];
     [self updateNavigationBarSubtitleLabel];
 
-    [self createInputToolbar];
+    [self updateInputToolbar];
     [self updateInputToolbarLayout];
     [self updateBarButtonItems];
 
@@ -3911,28 +3853,6 @@ typedef enum : NSUInteger {
         // collection view has loaded.
         [self.collectionView reloadData];
         [self.collectionView.collectionViewLayout invalidateLayout];
-    }
-}
-
-- (void)createInputToolbar
-{
-    MessageBody *_Nullable existingDraft;
-    if (_inputToolbar != nil) {
-        existingDraft = _inputToolbar.messageBody;
-    }
-
-    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
-    self.inputToolbar.inputToolbarDelegate = self;
-    self.inputToolbar.inputTextViewDelegate = self;
-    self.inputToolbar.mentionDelegate = self;
-    [self.inputToolbar setMessageBody:existingDraft animated:NO];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
-    // reloadBottomBar is expensive and we need to avoid it while
-    // initially configuring the view. viewWillAppear() will call
-    // reloadBottomBar(). After viewWillAppear(), we need to call
-    // reloadBottomBar() to reflect changes in the theme.
-    if (self.hasViewWillAppearOccurred) {
-        [self reloadBottomBar];
     }
 }
 
@@ -4429,9 +4349,14 @@ typedef enum : NSUInteger {
 
 #pragma mark - Database Observation
 
+- (BOOL)isViewVisible
+{
+    return self.viewState.isViewVisible;
+}
+
 - (void)setIsViewVisible:(BOOL)isViewVisible
 {
-    _isViewVisible = isViewVisible;
+    self.viewState.isViewVisible = isViewVisible;
 
     [self updateCellsVisible];
 }
@@ -5271,82 +5196,6 @@ typedef enum : NSUInteger {
     [self updateInputToolbarLayout];
 }
 
-- (void)updateInputToolbarLayout
-{
-    [self.inputToolbar updateLayoutWithSafeAreaInsets:self.view.safeAreaInsets];
-}
-
-#pragma mark - Message Request
-
-- (void)showMessageRequestDialogIfRequiredAsync
-{
-    __weak ConversationViewController *weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{ [weakSelf showMessageRequestDialogIfRequired]; });
-}
-
-- (void)showMessageRequestDialogIfRequired
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.threadViewModel.hasPendingMessageRequest || self.isLocalUserRequestingMember) {
-        [self.requestView removeFromSuperview];
-        if (self.isLocalUserRequestingMember) {
-            MemberRequestView *memberRequestView =
-                [[MemberRequestView alloc] initWithThreadViewModel:self.threadViewModel fromViewController:self];
-            memberRequestView.delegate = self;
-            self.requestView = memberRequestView;
-        } else {
-            MessageRequestView *messageRequestView =
-                [[MessageRequestView alloc] initWithThreadViewModel:self.threadViewModel];
-            messageRequestView.delegate = self;
-            self.requestView = messageRequestView;
-        }
-        [self reloadBottomBar];
-    } else {
-        if (self.requestView != nil) {
-            [self dismissMessageRequestView];
-        } else {
-            [self reloadBottomBar];
-            [self updateInputVisibility];
-        }
-    }
-}
-
-- (void)dismissMessageRequestView
-{
-    OWSAssertIsOnMainThread();
-
-    if (!self.requestView) {
-        return;
-    }
-
-    // Slide the request view off the bottom of the screen.
-    CGFloat bottomInset = self.view.safeAreaInsets.bottom;
-
-    UIView *dismissingView = self.requestView;
-    self.requestView = nil;
-
-    [self reloadBottomBar];
-    [self updateInputVisibility];
-
-    // Add the view on top of the new bottom bar (if there is one),
-    // and then slide it off screen to reveal the new input view.
-    [self.view addSubview:dismissingView];
-    [dismissingView autoPinWidthToSuperview];
-    [dismissingView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    CGRect endFrame = dismissingView.bounds;
-    endFrame.origin.y -= endFrame.size.height + bottomInset;
-
-    [UIView animateWithDuration:0.2
-        animations:^{
-            dismissingView.bounds = endFrame;
-        }
-        completion:^(BOOL finished) {
-            [dismissingView removeFromSuperview];
-        }];
-}
-
 #pragma mark - LocationPickerDelegate
 
 - (void)didPickLocation:(LocationPicker *)locationPicker location:(Location *)location
@@ -5426,87 +5275,6 @@ typedef enum : NSUInteger {
 }
 
 // MARK: -
-
-- (void)reloadBottomBar
-{
-    UIView *bottomView;
-
-    if (self.requestView != nil) {
-        bottomView = self.requestView;
-    } else {
-        switch (self.uiMode) {
-            case ConversationUIMode_Search:
-                bottomView = self.searchController.resultsBar;
-                break;
-            case ConversationUIMode_Selection:
-                bottomView = self.selectionToolbar;
-                break;
-            case ConversationUIMode_Normal:
-                bottomView = self.inputToolbar;
-                break;
-        }
-    }
-
-    if (bottomView.superview == self.bottomBar && self.viewHasEverAppeared) {
-        // Do nothing, the view has not changed.
-        return;
-    }
-
-    for (UIView *subView in self.bottomBar.subviews) {
-        [subView removeFromSuperview];
-    }
-
-    [self.bottomBar addSubview:bottomView];
-
-    // The message requests view expects to extend into the safe area
-    if (self.requestView) {
-        [bottomView autoPinEdgesToSuperviewEdges];
-    } else {
-        [bottomView autoPinEdgesToSuperviewMargins];
-    }
-
-    [self updateInputAccessoryPlaceholderHeight];
-    [self updateContentInsetsAnimated:self.viewHasEverAppeared];
-}
-
-- (void)updateInputAccessoryPlaceholderHeight
-{
-    OWSAssertIsOnMainThread();
-
-    // If we're currently dismissing interactively, skip updating the
-    // input accessory height. Changing it while dismissing can lead to
-    // an infinite loop of keyboard frame changes as the listeners in
-    // InputAcessoryViewPlaceholder will end up calling back here if
-    // a dismissal is in progress.
-    if (self.isDismissingInteractively) {
-        return;
-    }
-
-    // Apply any pending layout changes to ensure we're measuring the up-to-date height.
-    [self.bottomBar.superview layoutIfNeeded];
-
-    self.inputAccessoryPlaceholder.desiredHeight = self.bottomBar.height;
-}
-
-- (void)updateBottomBarPosition
-{
-    OWSAssertIsOnMainThread();
-
-    // Don't update the bottom bar position if an interactive pop is in progress
-    switch (self.navigationController.interactivePopGestureRecognizer.state) {
-        case UIGestureRecognizerStatePossible:
-        case UIGestureRecognizerStateFailed:
-            break;
-        default:
-            return;
-    }
-
-    self.bottomBarBottomConstraint.constant = -self.inputAccessoryPlaceholder.keyboardOverlap;
-
-    // We always want to apply the new bottom bar position immediately,
-    // as this only happens during animations (interactive or otherwise)
-    [self.bottomBar.superview layoutIfNeeded];
-}
 
 - (void)updateContentInsetsAnimated:(BOOL)animated
 {
@@ -5616,6 +5384,17 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self showGifPicker];
+}
+
+- (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
+{
+    ConversationInputToolbar *inputToolbar =
+        [[ConversationInputToolbar alloc] initWithConversationStyle:conversationStyle];
+    inputToolbar.inputToolbarDelegate = self;
+    inputToolbar.inputTextViewDelegate = self;
+    inputToolbar.mentionDelegate = self;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, inputToolbar);
+    return inputToolbar;
 }
 
 @end

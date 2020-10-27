@@ -13,11 +13,11 @@ extension ConversationViewController: MentionTextViewDelegate {
     public func textViewDidEndTypingMention(_ textView: MentionTextView) {}
 
     public func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
-        return view
+        view
     }
 
     public func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
-        return bottomBar()
+        bottomBar
     }
 
     public func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
@@ -28,10 +28,10 @@ extension ConversationViewController: MentionTextViewDelegate {
     public func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     public func textView(_ textView: MentionTextView, shouldResolveMentionForAddress address: SignalServiceAddress) -> Bool {
-        return supportsMentions && thread.recipientAddresses.contains(address)
+        supportsMentions && thread.recipientAddresses.contains(address)
     }
 
     public func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
-        return .composing
+        .composing
     }
 }
