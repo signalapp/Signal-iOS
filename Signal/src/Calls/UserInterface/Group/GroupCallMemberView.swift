@@ -143,6 +143,10 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     let avatarView = AvatarImageView()
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
 
+    override var bounds: CGRect {
+        didSet { videoView.frame = bounds }
+    }
+
     var avatarDiameter: UInt {
         layoutIfNeeded()
 
@@ -163,9 +167,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
         avatarView.autoCenterInSuperview()
 
-        videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
-        videoView.autoPinEdgesToSuperviewEdges()
     }
 
     required init?(coder: NSCoder) {

@@ -70,7 +70,7 @@ class GroupCallViewController: UIViewController {
                 guard let groupCall = AppEnvironment.shared.callService.buildAndConnectGroupCallIfPossible(
                         thread: thread
                 ) else {
-                    return owsFailDebug("Failed to build g roup call")
+                    return owsFailDebug("Failed to build group call")
                 }
 
                 let vc = GroupCallViewController(call: groupCall)
@@ -137,7 +137,7 @@ class GroupCallViewController: UIViewController {
 
         let size = size ?? view.frame.size
 
-        if groupCall.joinedGroupMembers.count < 3 || groupCall.localDeviceState.joinState != .joined {
+        if groupCall.remoteDeviceStates.count < 2 || groupCall.localDeviceState.joinState != .joined {
             videoGrid.frame = .zero
             videoGrid.isHidden = true
             speakerPage.frame = CGRect(
@@ -180,16 +180,10 @@ class GroupCallViewController: UIViewController {
         localMemberView.configure(
             device: localDevice,
             session: call.videoCaptureController.captureSession,
-            isFullScreen: localDevice.joinState != .joined || groupCall.joinedGroupMembers.count < 2
+            isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.count < 2
         )
 
-        switch localDevice.connectionState {
-        case .connected:
-            break
-        case .connecting, .notConnected, .reconnecting:
-            // todo: show spinner
-            return
-        }
+        // todo: show spinner when not connected
 
         speakerPage.subviews.forEach { $0.removeFromSuperview() }
         localMemberView.removeFromSuperview()
@@ -203,7 +197,7 @@ class GroupCallViewController: UIViewController {
 
                 view.addSubview(localMemberView)
 
-                if groupCall.joinedGroupMembers.count > 2 {
+                if groupCall.remoteDeviceStates.count > 1 {
                     localMemberView.autoSetDimension(.height, toSize: GroupCallVideoOverflow.itemHeight)
                     localMemberView.autoSetDimension(
                         .width,
@@ -245,11 +239,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     var remoteVideoViewReference: UIView { speakerView }
 
     var remoteVideoAddress: SignalServiceAddress {
-        // TODO: get speaker
-        guard let firstMember = groupCall.joinedGroupMembers.first else {
+        guard let firstMember = groupCall.sortedRemoteDeviceStates.first else {
             return tsAccountManager.localAddress!
         }
-        return SignalServiceAddress(uuid: firstMember)
+        return firstMember.address
     }
 
     @objc
@@ -309,6 +302,7 @@ extension GroupCallViewController: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
+        updateCallUI()
     }
 
     func groupCallJoinedMembersChanged(_ call: SignalCall) {

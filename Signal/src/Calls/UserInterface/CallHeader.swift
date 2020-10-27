@@ -235,7 +235,7 @@ class CallHeader: UIView {
                     "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
                     comment: "Text explaining that there are three or more people in the group call. Embeds {member name}"
                 )
-                callTitleText = String(format: formatString, memberNames[0], memberNames[1], call.groupCall.joinedGroupMembers.count - 2)
+                callTitleText = String(format: formatString, memberNames[0], memberNames[1], memberNames.count - 2)
             }
         }
 
@@ -244,10 +244,10 @@ class CallHeader: UIView {
     }
 
     func updateGroupMembersButton() {
-        groupMembersButton.setTitle(" \(call.groupCall.joinedGroupMembers.count)", for: .normal)
-        groupMembersButton.isHidden = call.groupCall.localDeviceState.joinState == .joined
-            ? call.groupCall.remoteDeviceStates.count < 2
-            : call.groupCall.joinedGroupMembers.count < 2
+        let isJoined = call.groupCall.localDeviceState.joinState == .joined
+        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : call.groupCall.joinedGroupMembers.count
+        groupMembersButton.setTitle(" \(remoteMemberCount + (isJoined ? 1 : 0))", for: .normal)
+        groupMembersButton.isHidden = remoteMemberCount < 2
         groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 
@@ -292,7 +292,11 @@ extension CallHeader: CallObserver {
         updateGroupMembersButton()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        updateCallTitleLabel()
+        updateGroupMembersButton()
+    }
+
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}

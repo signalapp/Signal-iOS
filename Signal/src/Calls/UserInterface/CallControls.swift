@@ -211,7 +211,10 @@ extension CallControls: CallObserver {
         updateControls()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        updateControls()
+    }
+
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
