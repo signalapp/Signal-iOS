@@ -56,7 +56,7 @@ public extension ConversationViewController {
         bottomBar.addSubview(bottomView)
 
         // The message requests view expects to extend into the safe area
-        if let requestView = self.requestView {
+        if requestView != nil {
             bottomView.autoPinEdgesToSuperviewEdges()
         } else {
             bottomView.autoPinEdgesToSuperviewMargins()
