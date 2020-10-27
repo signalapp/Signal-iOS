@@ -159,6 +159,10 @@ public extension GroupsV2Migration {
     static func tryToAutoMigrateAllGroups() {
         AssertIsOnMainThread()
 
+        guard FeatureFlags.groupsV2Migrations else {
+            return
+        }
+
         DispatchQueue.global().async {
             var groupThreads = [TSGroupThread]()
             Self.databaseStorage.read { transaction in
@@ -215,7 +219,11 @@ public extension GroupsV2Migration {
                     }.done(on: .global()) { _ in
                         Logger.verbose("")
                     }.catch(on: .global()) { error in
-                        owsFailDebug("Error: \(error)")
+                        if case GroupsV2Error.groupDoesNotExistOnService = error {
+                            // Ignore.
+                        } else {
+                            owsFailDebug("Error: \(error)")
+                        }
                     }
                 }
             }.catch(on: .global()) { error in

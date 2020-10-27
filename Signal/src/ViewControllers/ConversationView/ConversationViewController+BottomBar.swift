@@ -43,7 +43,9 @@ public extension ConversationViewController {
             // The ordering of this method determines
             // precendence of the bottom views.
 
-            if hasBlockingGroupMigration {
+            if !hasViewWillAppearOccurred {
+                return .none
+            } else if hasBlockingGroupMigration {
                 return .blockingGroupMigration
             } else if threadViewModel.hasPendingMessageRequest {
                 return .messageRequestView

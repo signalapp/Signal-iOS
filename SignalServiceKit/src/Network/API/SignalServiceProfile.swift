@@ -39,7 +39,6 @@ public class SignalServiceProfile: NSObject {
 
         let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
         guard identityKeyWithType.count == kIdentityKeyLength else {
-           owsFailDebug("Malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count), \(self.address), \(self.address.isLocalAddress)")
             throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
         }
         do {
@@ -48,7 +47,7 @@ public class SignalServiceProfile: NSObject {
         } catch {
             // `removeKeyType` throws an SCKExceptionWrapperError, which, typically should
             // be unwrapped by any objc code calling this method.
-            owsFailDebug("Identify key had unexpected format: \(identityKeyWithType.count), \(self.address), \(self.address.isLocalAddress)")
+            owsFailDebug("identify key had unexpected format")
             throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with data: \(identityKeyWithType)")
         }
 
