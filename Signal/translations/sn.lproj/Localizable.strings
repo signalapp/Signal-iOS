@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Mushandisi uyu atadza kuwedzerwa kuboka kusvikira awedzera Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Mwero we boka wasvikwa we nhengo 100.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Mwero we boka wasvikwa we nhengo 100.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Mufananidzo usakarurama.";

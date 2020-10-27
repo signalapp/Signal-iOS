@@ -141,6 +141,14 @@ class TestingViewController: OWSTableViewController {
 
         do {
             let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Users will not be able to use v1 groups until they are migrated.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Force Blocking Migrations"),
+                                        testableFlag: DebugFlags.groupsV2MigrationForceBlockingMigrations))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
             section.footerTitle = LocalizationNotNeeded("Client will store but not process incoming messages.")
             section.add(buildSwitchItem(title: LocalizationNotNeeded("Disable message processing"),
                                         testableFlag: DebugFlags.disableMessageProcessing))

@@ -848,8 +848,9 @@ typedef enum : NSUInteger {
         [banners addObject:banner];
     }
 
-    GroupsV2MigrationInfo *_Nullable migrationInfo = [self migrationInfoForGroup];
-    if (migrationInfo != nil && migrationInfo.canGroupBeMigrated && !self.viewState.isMigrateGroupBannerHidden) {
+    GroupsV2MigrationInfo *_Nullable migrationInfo = [self manualMigrationInfoForGroup];
+    if (migrationInfo != nil && migrationInfo.canGroupBeMigrated && !self.viewState.isMigrateGroupBannerHidden
+        && !GroupManager.areMigrationsBlocking) {
         UIView *banner = [self createMigrateGroupBannerWithViewState:self.viewState migrationInfo:migrationInfo];
         [banners addObject:banner];
     }

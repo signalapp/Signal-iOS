@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Овој корисник не може да биде додаден во групата додека не го надгради својот Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Максималниот број од 100 членови по група е достигнат.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Максималниот број од 100 членови по група е достигнат.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Невалидна слика.";

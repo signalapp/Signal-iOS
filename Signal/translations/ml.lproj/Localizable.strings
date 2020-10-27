@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ഈ യൂസറിനെ അവർ Signal അപ്ഗ്രേഡ് ചെയ്യുന്നത് വരെ ഗ്രൂപ്പിൽ ചേർക്കാൻ കഴിയുകയില്ല.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "ഗ്രൂപ്പിൻ്റെ പരമാവധി സൈസ് ആയ 100 അംഗങ്ങൾ ആയിരിക്കുന്നു.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "ഗ്രൂപ്പിൻ്റെ പരമാവധി സൈസ് ആയ 100 അംഗങ്ങൾ ആയിരിക്കുന്നു.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "അസാധുവായ ഫോട്ടോ";

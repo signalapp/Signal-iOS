@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum CVCBottomViewType {
+enum CVCBottomViewType: Equatable {
     // For perf reasons, we don't use a bottom view until
     // the view is about to appear for the first time.
     case none
@@ -13,11 +13,14 @@ public enum CVCBottomViewType {
     case messageRequestView
     case search
     case selection
+    case blockingGroupMigration
 }
+
+// MARK: -
 
 public extension ConversationViewController {
 
-    var bottomViewType: CVCBottomViewType {
+    internal var bottomViewType: CVCBottomViewType {
         get { viewState.bottomViewType }
         set {
             // For perf reasons, we avoid adding any "bottom view"
@@ -37,20 +40,24 @@ public extension ConversationViewController {
         AssertIsOnMainThread()
 
         bottomViewType = { () -> CVCBottomViewType in
-            if threadViewModel.hasPendingMessageRequest {
-                return .messageRequestView
-            }
-            if isLocalUserRequestingMember {
-                return .memberRequestView
-            }
+            // The ordering of this method determines
+            // precendence of the bottom views.
 
-            switch uiMode {
-            case .search:
-                return .search
-            case .selection:
-                return .selection
-            case .normal:
-                return .inputToolbar
+            if hasBlockingGroupMigration {
+                return .blockingGroupMigration
+            } else if threadViewModel.hasPendingMessageRequest {
+                return .messageRequestView
+            } else if isLocalUserRequestingMember {
+                return .memberRequestView
+            } else {
+                switch uiMode {
+                case .search:
+                    return .search
+                case .selection:
+                    return .selection
+                case .normal:
+                    return .inputToolbar
+                }
             }
         }()
     }
@@ -85,6 +92,11 @@ public extension ConversationViewController {
             bottomView = selectionToolbar
         case .inputToolbar:
             bottomView = inputToolbar
+        case .blockingGroupMigration:
+            let migrationView = BlockingGroupMigrationView(threadViewModel: threadViewModel,
+                                                           fromViewController: self)
+            requestView = migrationView
+            bottomView = migrationView
         }
 
         for subView in bottomBar.subviews {
@@ -258,8 +270,7 @@ public extension ConversationViewController {
         }
     }
 
-    @objc
-    var isLocalUserRequestingMember: Bool {
+    private var isLocalUserRequestingMember: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
@@ -272,5 +283,15 @@ public extension ConversationViewController {
             return false
         }
         return !groupThread.isLocalUserFullMember
+    }
+
+    private var hasBlockingGroupMigration: Bool {
+        guard GroupManager.areMigrationsBlocking else {
+            return false
+        }
+        guard let groupThread = thread as? TSGroupThread else {
+            return false
+        }
+        return groupThread.isGroupV1Thread
     }
 }

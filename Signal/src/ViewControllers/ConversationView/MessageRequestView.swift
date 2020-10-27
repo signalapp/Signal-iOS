@@ -69,6 +69,13 @@ class MessageRequestView: UIStackView {
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 4
+        layer.shadowOffset = CGSize(width: 0, height: -2)
+        layer.shadowOpacity = 0.12
+        backgroundView.layer.cornerRadius = 8
+        backgroundView.layer.masksToBounds = true
+
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")

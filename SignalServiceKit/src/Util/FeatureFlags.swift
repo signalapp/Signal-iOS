@@ -351,6 +351,9 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2migrationsDisableMigrationCapability = TestableFlag(false, affectsCapabilities: true)
 
     @objc
+    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(true)
+
+    @objc
     public static let groupsV2migrationsForceAggressive = TestableFlag(false)
 
     @objc

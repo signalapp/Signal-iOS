@@ -92,8 +92,7 @@ public class NewGroupConfirmViewController: OWSViewController {
             lastSection = legacyGroupSection
 
             let legacyGroupText: String
-            let learnMoreText = NSLocalizedString("GROUPS_LEGACY_GROUP_LEARN_MORE_LINK",
-                                                  comment: "A \"learn more\" link with more information about legacy groups.")
+            let learnMoreText = CommonStrings.learnMore
             if membersDoNotSupportGroupsV2.count > 1 {
                 let memberCountText = OWSFormat.formatInt(membersDoNotSupportGroupsV2.count)
                 let legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N",

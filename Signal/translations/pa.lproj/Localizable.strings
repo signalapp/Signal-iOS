@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ਇਸ ਉਪਭੋਗਤਾ ਨੂੰ ਓਨਾਂ ਚਿਰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਜਿੰਨਾਂ ਚਿਰ ਉਹ Signal ਨੂੰ ਅਪਗ੍ਰੇਡ ਨਹੀਂ ਕਰ ਲੈਂਦੇ.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "ਗਰੁੱਪ ਦੀ 100 ਮੈਂਬਰਾਂ ਦੀ ਅਧਿਕਤਮ ਸੀਮਾ ਪੂਰੀ ਹੋ ਗਈ.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "ਗਰੁੱਪ ਦੀ 100 ਮੈਂਬਰਾਂ ਦੀ ਅਧਿਕਤਮ ਸੀਮਾ ਪੂਰੀ ਹੋ ਗਈ.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";

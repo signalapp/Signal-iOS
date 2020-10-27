@@ -204,6 +204,7 @@
 		347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */; };
 		347C3854252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */; };
 		347C3855252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json in Resources */ = {isa = PBXBuildFile; fileRef = 347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */; };
+		347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
@@ -1155,6 +1156,7 @@
 		347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AndMentionsSplash.swift; sourceTree = "<group>"; };
 		347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_groupsv2_iOS_dark.json; sourceTree = "<group>"; };
 		347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_groupsv2_iOS_light.json; sourceTree = "<group>"; };
+		347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingGroupMigrationView.swift; sourceTree = "<group>"; };
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
@@ -2314,6 +2316,7 @@
 		3448BFC01EDF0EA7005B2D69 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
+				347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */,
 				34D1F0951F867BFC0066283D /* Cells */,
 				34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */,
 				34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */,
@@ -5205,6 +5208,7 @@
 				4C11AA5020FD59C700351FBD /* MessageStatusView.swift in Sources */,
 				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
+				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,
 				347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,

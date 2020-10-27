@@ -16,8 +16,7 @@ class MemberRequestView: UIStackView {
     weak var delegate: MessageRequestDelegate?
 
     @objc
-    init(threadViewModel: ThreadViewModel,
-         fromViewController: UIViewController) {
+    init(threadViewModel: ThreadViewModel, fromViewController: UIViewController) {
         let thread = threadViewModel.threadRecord
         self.thread = thread
         owsAssertDebug(thread as? TSGroupThread != nil)
@@ -46,6 +45,13 @@ class MemberRequestView: UIStackView {
         backgroundView.backgroundColor = Theme.backgroundColor
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
+
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 4
+        layer.shadowOffset = CGSize(width: 0, height: -2)
+        layer.shadowOpacity = 0.12
+        backgroundView.layer.cornerRadius = 8
+        backgroundView.layer.masksToBounds = true
 
         let label = UILabel()
         label.font = .ows_dynamicTypeSubheadlineClamped

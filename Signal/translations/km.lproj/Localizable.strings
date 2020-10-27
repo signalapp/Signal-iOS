@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "អ្នកប្រើប្រាស់មួយនេះ មិនអាចបន្ថែមចូលក្នុងក្រុម លុះត្រាគេបានដំឡើង Signal។";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "ទំហំក្រុមអតិបរមានៃសមាជិក ១០០ នាក់បានដល់កំណត់។";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "ទំហំក្រុមអតិបរមានៃសមាជិក ១០០ នាក់បានដល់កំណត់។";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "រូបភាពមិនត្រឹមត្រូវ។";

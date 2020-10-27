@@ -1223,7 +1223,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Signal ను అప్‌గ్రేడ్ చేసే వరకు ఈ వినియోగదారుని సమూహానికి చేర్చలేరు.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "100 మంది సభ్యుల గరిష్ట సమూహ పరిమాణం చేరుకుంది.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "100 మంది సభ్యుల గరిష్ట సమూహ పరిమాణం చేరుకుంది.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
