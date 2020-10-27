@@ -714,7 +714,7 @@ typedef enum : NSUInteger {
         [BenchManager
             completeEventWithEventId:[NSString stringWithFormat:@"presenting-conversation-%@", self.thread.uniqueId]];
     }
-    [self reloadBottomBar];
+    [self ensureBottomViewType];
     [self updateInputToolbarLayout];
 
     // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.

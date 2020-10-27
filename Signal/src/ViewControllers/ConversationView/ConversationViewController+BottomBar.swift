@@ -4,8 +4,113 @@
 
 import Foundation
 
+public enum CVCBottomViewType {
+    // For perf reasons, we don't use a bottom view until
+    // the view is about to appear for the first time.
+    case none
+    case inputToolbar
+    case memberRequestView
+    case messageRequestView
+    case search
+    case selection
+}
+
 public extension ConversationViewController {
 
+    var bottomViewType: CVCBottomViewType {
+        get { viewState.bottomViewType }
+        set {
+            // For perf reasons, we avoid adding any "bottom view"
+            // to the view hierarchy until its necessary, e.g. when
+            // the view is about to appear.
+            owsAssertDebug(hasViewWillAppearOccurred)
+
+            if viewState.bottomViewType != newValue {
+                viewState.bottomViewType = newValue
+                updateBottomBar()
+            }
+        }
+    }
+
+    @objc
+    func ensureBottomViewType() {
+        AssertIsOnMainThread()
+
+        bottomViewType = { () -> CVCBottomViewType in
+            if threadViewModel.hasPendingMessageRequest {
+                return .messageRequestView
+            }
+            if isLocalUserRequestingMember {
+                return .memberRequestView
+            }
+
+            switch uiMode {
+            case .search:
+                return .search
+            case .selection:
+                return .selection
+            case .normal:
+                return .inputToolbar
+            }
+        }()
+    }
+
+    private func updateBottomBar() {
+        AssertIsOnMainThread()
+
+        // Animate the dismissal of any existing request view.
+        dismissRequestView()
+
+        requestView?.removeFromSuperview()
+        requestView = nil
+
+        let bottomView: UIView?
+        switch bottomViewType {
+        case .none:
+            bottomView = nil
+        case .messageRequestView:
+            let messageRequestView = MessageRequestView(threadViewModel: threadViewModel)
+            messageRequestView.delegate = self
+            requestView = messageRequestView
+            bottomView = messageRequestView
+        case .memberRequestView:
+            let memberRequestView = MemberRequestView(threadViewModel: threadViewModel,
+                                                      fromViewController: self)
+            memberRequestView.delegate = self
+            requestView = memberRequestView
+            bottomView = memberRequestView
+        case .search:
+            bottomView = searchController.resultsBar
+        case .selection:
+            bottomView = selectionToolbar
+        case .inputToolbar:
+            bottomView = inputToolbar
+        }
+
+        for subView in bottomBar.subviews {
+            subView.removeFromSuperview()
+        }
+
+        if let newBottomView = bottomView {
+            bottomBar.addSubview(newBottomView)
+
+            // The request views expect to extend into the safe area.
+            if requestView != nil {
+                newBottomView.autoPinEdgesToSuperviewEdges()
+            } else {
+                newBottomView.autoPinEdgesToSuperviewMargins()
+            }
+        }
+
+        updateInputAccessoryPlaceholderHeight()
+        updateContentInsets(animated: viewHasEverAppeared)
+        updateInputVisibility()
+    }
+
+    // This is expensive. We only need to do it if conversationStyle has changed.
+    //
+    // TODO: Once conversationStyle is immutable, compare the old and new
+    //       conversationStyle values and exit early if it hasn't changed.
     @objc
     func updateInputToolbar() {
         AssertIsOnMainThread()
@@ -16,54 +121,13 @@ public extension ConversationViewController {
         inputToolbar.setMessageBody(existingDraft, animated: false)
         self.inputToolbar = inputToolbar
 
-        // reloadBottomBar is expensive and we need to avoid it while
+        // updateBottomBar() is expensive and we need to avoid it while
         // initially configuring the view. viewWillAppear() will call
-        // reloadBottomBar(). After viewWillAppear(), we need to call
-        // reloadBottomBar() to reflect changes in the theme.
+        // updateBottomBar(). After viewWillAppear(), we need to call
+        // updateBottomBar() to reflect changes in the theme.
         if hasViewWillAppearOccurred {
-            reloadBottomBar()
+            updateBottomBar()
         }
-    }
-
-    @objc
-    func reloadBottomBar() {
-        AssertIsOnMainThread()
-
-        let bottomView: UIView
-
-        if let requestView = self.requestView {
-            bottomView = requestView
-        } else {
-            switch uiMode {
-            case .search:
-                bottomView = searchController.resultsBar
-            case .selection:
-                bottomView = selectionToolbar
-            case .normal:
-                bottomView = inputToolbar
-            }
-        }
-
-        if bottomView.superview == bottomBar && viewHasEverAppeared {
-            // Do nothing, the view has not changed.
-            return
-        }
-
-        for subView in bottomBar.subviews {
-            subView.removeFromSuperview()
-        }
-
-        bottomBar.addSubview(bottomView)
-
-        // The message requests view expects to extend into the safe area
-        if requestView != nil {
-            bottomView.autoPinEdgesToSuperviewEdges()
-        } else {
-            bottomView.autoPinEdgesToSuperviewMargins()
-        }
-
-        updateInputAccessoryPlaceholderHeight()
-        updateContentInsets(animated: viewHasEverAppeared)
     }
 
     @objc
@@ -121,27 +185,7 @@ public extension ConversationViewController {
     func showMessageRequestDialogIfRequired() {
         AssertIsOnMainThread()
 
-        if threadViewModel.hasPendingMessageRequest || isLocalUserRequestingMember {
-            requestView?.removeFromSuperview()
-            if self.isLocalUserRequestingMember {
-                let memberRequestView = MemberRequestView(threadViewModel: threadViewModel,
-                                                          fromViewController: self)
-                memberRequestView.delegate = self
-                requestView = memberRequestView
-            } else {
-                let messageRequestView = MessageRequestView(threadViewModel: threadViewModel)
-                messageRequestView.delegate = self
-                requestView = messageRequestView
-            }
-            reloadBottomBar()
-        } else {
-            if requestView != nil {
-                dismissMessageRequestView()
-            } else {
-                reloadBottomBar()
-                updateInputVisibility()
-            }
-        }
+        ensureBottomViewType()
     }
 
     @objc
@@ -185,8 +229,7 @@ public extension ConversationViewController {
         inputToolbar.clearDesiredKeyboard()
     }
 
-    @objc
-    func dismissMessageRequestView() {
+    private func dismissRequestView() {
         AssertIsOnMainThread()
 
         guard let requestView = self.requestView else {
@@ -198,9 +241,6 @@ public extension ConversationViewController {
 
         let dismissingView = requestView
         self.requestView = nil
-
-        reloadBottomBar()
-        updateInputVisibility()
 
         // Add the view on top of the new bottom bar (if there is one),
         // and then slide it off screen to reveal the new input view.

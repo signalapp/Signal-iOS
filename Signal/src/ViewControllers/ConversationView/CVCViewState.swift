@@ -48,6 +48,8 @@ public class CVCViewState: NSObject {
     @objc
     public var isInPreviewPlatter = false
 
+    var bottomViewType: CVCBottomViewType = .none
+
     @objc
     public required init(conversationStyle: ConversationStyle,
                          inputToolbar: ConversationInputToolbar) {
