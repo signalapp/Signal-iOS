@@ -134,6 +134,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                selector: #selector(didBecomeActive),
                                                name: NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object: nil)
+        loadTrending()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -483,6 +484,26 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
 
         search(query: query)
+    }
+    
+    private func loadTrending() {
+        assert(progressiveSearchTimer == nil)
+        assert(searchBar.text == nil || searchBar.text?.count == 0)
+
+        GiphyAPI.sharedInstance.trending().done { [weak self] imageInfos in
+            guard let self = self else { return }
+
+            Logger.info("showing trending")
+            if imageInfos.count > 0 {
+                self.imageInfos = imageInfos
+                self.viewMode = .results
+            } else {
+                owsFailDebug("trending results was unexpectedly empty")
+            }
+        }.catch { error in
+            // Don't both showing error UI feedback for default "trending" results.
+            Logger.error("error: \(error)")
+        }
     }
 
     private func search(query: String) {
