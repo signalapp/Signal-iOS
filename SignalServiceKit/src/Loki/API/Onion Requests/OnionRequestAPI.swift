@@ -12,9 +12,9 @@ public enum OnionRequestAPI {
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
     /// The number of times a path can fail before it's replaced.
-    private static let pathFailureThreshold: UInt = 2
+    private static let pathFailureThreshold: UInt = 3
     /// The number of times a snode can fail before it's replaced.
-    private static let snodeFailureThreshold: UInt = 2
+    private static let snodeFailureThreshold: UInt = 3
     /// The number of paths to maintain.
     public static let targetPathCount: UInt = 2
 
