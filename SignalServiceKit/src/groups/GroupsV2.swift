@@ -25,6 +25,7 @@ public enum GroupsV2Error: Error {
     case expiredGroupInviteLink
     case groupDoesNotExistOnService
     case groupNeedsToBeMigrated
+    case groupCannotBeMigrated
 }
 
 // MARK: -

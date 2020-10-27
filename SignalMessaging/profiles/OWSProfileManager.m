@@ -820,19 +820,21 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSAssertDebug(addresses);
 
     // Try to avoid opening a write transaction.
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
-        NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
-                                                                                   transaction:readTransaction];
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+        [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
+            NSSet<SignalServiceAddress *> *addressesToAdd = [self addressesNotBlockedOrInWhitelist:addresses
+                                                                                       transaction:readTransaction];
 
-        if (addressesToAdd.count < 1) {
-            return;
-        }
+            if (addressesToAdd.count < 1) {
+                return;
+            }
 
-        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-            [self addConfirmedUnwhitelistedAddresses:addressesToAdd
-                                 wasLocallyInitiated:YES
-                                         transaction:writeTransaction];
-        });
+            DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
+                [self addConfirmedUnwhitelistedAddresses:addressesToAdd
+                                     wasLocallyInitiated:YES
+                                             transaction:writeTransaction];
+            });
+        }];
     }];
 }
 

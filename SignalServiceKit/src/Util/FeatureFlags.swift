@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 enum FeatureBuild: Int {
     case dev
@@ -155,64 +156,23 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupsV2showSplash = build.includes(.qa)
 
-    // TODO: Make this a remote config flag?
-    private static let _groupsV2Migrations = false
+    // TODO: Revisit this once we've tested and merged migrations.
     @objc
     public static var groupsV2Migrations: Bool {
-        _groupsV2Migrations || DebugFlags.groupsV2migrationsForceEnable.get()
+        build.includes(.qa) && !isUsingProductionService
     }
 
     @objc
-    public static let groupsV2MigrationSetCapability = groupsV2Migrations && build.includes(.dev)
+    public static let groupsV2MigrationSetCapability = groupsV2Migrations
 
     @objc
     public static let groupsV2MigrationRequireCapability = false
-
-    // Controls whether or not the client will show the manual migration UI.
-    // Will only offer migrations if all members can be migrated.
-    //
-    // TODO: Make this a remote config flag?
-    // TODO: We might not need this flag.
-    @objc
-    public static let groupsV2MigrationManualMigrationPolite = groupsV2Migrations && build.includes(.dev)
-
-    // Controls whether or not the client will show the manual migration UI.
-    // Will offer migrations even if some members cannot be migrated.
-    //
-    // TODO: Make this a remote config flag?
-    // TODO: We might not need this flag.
-    @objc
-    public static let groupsV2MigrationManualMigrationAggressive = groupsV2Migrations && false
-
-    // Controls whether or not the client will try to auto-migrate groups in the background.
-    // Will only migrate groups if all members can be migrated.
-    //
-    // TODO: Make this a remote config flag?
-    // TODO: We might not need this flag.
-    @objc
-    public static let groupsV2MigrationAutoMigrationPolite = groupsV2Migrations && build.includes(.dev)
-
-    // Controls whether or not the client will try to auto-migrate groups in the background.
-    // Will migrate groups even if some members cannot be migrated.
-    //
-    // TODO: Make this a remote config flag?
-    // TODO: We might not need this flag.
-    @objc
-    public static let groupsV2MigrationAutoMigrationAggressive = groupsV2Migrations && false
-
-    // If set, users are forced to upgrade their v1 groups before they
-    // can interact with them.
-    //
-    // TODO: Make this a remote config flag?
-    // TODO: We might not need this flag.
-    @objc
-    public static let groupsV2MigrationBlockingMigrations = groupsV2Migrations && true
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let isUsingProductionService = false
+    public static let isUsingProductionService = true
 
     @objc
     public static let useOrphanDataCleaner = true
@@ -303,9 +263,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let groupsV2IgnoreCapability = false
 
-    @objc
-    public static let groupsV2IgnoreMigrationCapability = false
-
     // We can use this to test recovery from "missed updates".
     @objc
     public static let groupsV2dontSendUpdates = TestableFlag(false)
@@ -333,13 +290,16 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2corruptInvites = TestableFlag(false)
 
     @objc
-    public static let groupsV2onlyCreateV1Groups = TestableFlag(true)
+    public static let groupsV2onlyCreateV1Groups = TestableFlag(false)
 
     @objc
-    public static let groupsV2migrationsForceEnable = TestableFlag(true, affectsCapabilities: true)
+    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(false)
 
     @objc
-    public static let groupsV2migrationsDisableAutomigrations = TestableFlag(true)
+    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(false)
+
+    @objc
+    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(false)
 
     @objc
     public static let groupsV2migrationsDropOtherMembers = TestableFlag(false)
@@ -351,10 +311,7 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2migrationsDisableMigrationCapability = TestableFlag(false, affectsCapabilities: true)
 
     @objc
-    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(true)
-
-    @objc
-    public static let groupsV2migrationsForceAggressive = TestableFlag(false)
+    public static let groupsV2migrationsIgnoreMigrationCapability = false
 
     @objc
     public static let aggressiveProfileFetching = TestableFlag(false)
@@ -420,6 +377,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let disableMessageProcessing = TestableFlag(false)
+
+    @objc
+    public static let dontSendContactOrGroupSyncMessages = TestableFlag(false)
 
     @objc
     public static let fastPerfTests = false
@@ -531,8 +491,8 @@ public class TestableFlag: NSObject {
     public static let ResetAllTestableFlagsNotification = NSNotification.Name("ResetAllTestableFlags")
 
     private func updateCapabilities() {
-        firstly(on: .global()) {
-            TSAccountManager.shared().updateAccountAttributes()
+        firstly(on: .global()) { () -> Promise<Void> in
+            TSAccountManager.shared().updateAccountAttributes().asVoid()
         }.done {
             Logger.info("")
         }.catch { error in

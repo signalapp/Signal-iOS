@@ -240,24 +240,33 @@ public class GroupMigrationActionSheet: UIView {
                                                comment: "Body text for the second section of the 'upgrade legacy group' alert view."))
 
         databaseStorage.read { transaction in
-            // TODO: We need to break these out into separate sections.
-            // TODO: Scroll view?
-            //            let members = (migrationInfo.membersWithoutUuids +
-            //                migrationInfo.membersWithoutCapabilities +
-            //                migrationInfo.membersWithoutProfileKeys)
-            var members = (migrationInfo.membersWithoutUuids +
-                migrationInfo.membersWithoutCapabilities +
-                migrationInfo.membersWithoutProfileKeys)
-            // TODO: Remove.
-//            members = members + members
-//            members = members + members
-//            members = members + members
-//            members = members + members
-            if !members.isEmpty {
+            let membersToDrop = (migrationInfo.membersWithoutUuids +
+                                    migrationInfo.membersWithoutCapabilities)
+            let membersToInvite = migrationInfo.membersWithoutProfileKeys
+            if !membersToInvite.isEmpty {
                 builder.addVerticalSpacer(height: 20)
-                builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS",
-                                                       comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
-                for address in members {
+                if membersToInvite.count == 1 {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
+                                                           comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
+                } else {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
+                                                           comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
+                }
+                for address in membersToInvite {
+                    builder.addVerticalSpacer(height: 16)
+                    builder.addMemberRow(address: address, transaction: transaction)
+                }
+            }
+            if !membersToDrop.isEmpty {
+                builder.addVerticalSpacer(height: 20)
+                if membersToDrop.count == 1 {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1",
+                                                           comment: "Body text for the 'dropped member' section of the 'upgrade legacy group' alert view."))
+                } else {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N",
+                                                           comment: "Body text for the 'dropped members' section of the 'upgrade legacy group' alert view."))
+                }
+                for address in membersToDrop {
                     builder.addVerticalSpacer(height: 16)
                     builder.addMemberRow(address: address, transaction: transaction)
                 }
@@ -459,21 +468,6 @@ private extension GroupMigrationActionSheet {
                                      comment: "Message indicating the group update succeeded.")
         showToast(text: text)
     }
-
-    private func showUpgradeFailedAlert(error: Error) {
-        AssertIsOnMainThread()
-
-        guard let actionSheetController = actionSheetController else {
-            owsFailDebug("Missing actionSheetController.")
-            return
-        }
-
-        let title: String
-        // TODO: We need final copy.
-        title = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR",
-                                  comment: "Error indicating the group update failed.")
-        OWSActionSheets.showActionSheet(title: title, fromViewController: actionSheetController)
-    }
 }
 
 // MARK: -
@@ -502,7 +496,7 @@ private extension GroupMigrationActionSheet {
                                                             owsFailDebug("Error: \(error)")
 
                                                             modalActivityIndicator.dismiss {
-                                                                self.showReAddDroppedMembersFailedAlert(error: error)
+                                                                self.showUpgradeFailedAlert(error: error)
                                                             }
                                                         }
         }
@@ -570,7 +564,7 @@ private extension GroupMigrationActionSheet {
         showToast(text: text)
     }
 
-    private func showReAddDroppedMembersFailedAlert(error: Error) {
+    private func showUpgradeFailedAlert(error: Error) {
         AssertIsOnMainThread()
 
         guard let actionSheetController = actionSheetController else {
@@ -578,10 +572,16 @@ private extension GroupMigrationActionSheet {
             return
         }
 
-        let title: String
-        // TODO: We need final copy.
-        title = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR",
-                                  comment: "Error indicating the group update failed.")
-        OWSActionSheets.showActionSheet(title: title, fromViewController: actionSheetController)
+        let title = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE",
+                                      comment: "Title for error alert indicating the group update failed.")
+        let message: String
+        if IsNetworkConnectivityFailure(error) {
+            message = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK",
+                                          comment: "Message for error alert indicating the group update failed due to network connectivity.")
+        } else {
+            message = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE",
+                                        comment: "Message for error alert indicating the group update failed.")
+        }
+        OWSActionSheets.showActionSheet(title: title, message: message, fromViewController: actionSheetController)
     }
 }

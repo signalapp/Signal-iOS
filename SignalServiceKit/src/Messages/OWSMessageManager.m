@@ -712,7 +712,21 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Group message is missing type.");
             return nil;
         }
+
         SSKProtoGroupContextType groupContextType = groupContext.unwrappedType;
+
+        // Check whether this group has been migrated.
+        if (groupThread != nil && !groupThread.isGroupV1Thread) {
+            if (groupThread.isGroupV2Thread) {
+                [self sendV2UpdateForGroupThread:groupThread envelope:envelope transaction:transaction];
+            } else {
+                OWSFailDebug(@"Invalid group.");
+            }
+            if (groupContextType != SSKProtoGroupContextTypeDeliver) {
+                return nil;
+            }
+        }
+
         if (groupContextType == SSKProtoGroupContextTypeUpdate) {
             // Always accept group updates for groups.
             [self handleGroupStateChangeWithEnvelope:envelope
@@ -1242,10 +1256,16 @@ NS_ASSUME_NONNULL_BEGIN
     // state.
     TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (oldGroupThread) {
-        if (oldGroupThread.groupModel.groupsVersion != GroupsVersionV1) {
-            OWSFailDebug(@"Group update for invalid group version.");
+        // Check whether this group has been migrated.
+        if (!oldGroupThread.isGroupV1Thread) {
+            if (oldGroupThread.isGroupV2Thread) {
+                [self sendV2UpdateForGroupThread:oldGroupThread envelope:envelope transaction:transaction];
+            } else {
+                OWSFailDebug(@"Invalid group.");
+            }
             return;
         }
+
         if (oldGroupThread.isLocalUserFullMember) {
             // If the local user had left the group we couldn't trust our local group state - we'd
             // have to trust the remote membership.
@@ -1943,32 +1963,41 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Received 'Group Info Request' message for group: %@ from: %@", groupId, envelope.sourceAddress);
 
-    TSGroupThread *_Nullable gThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-    if (!gThread) {
-        OWSLogWarn(@"Unknown group: %@", groupId);
+    TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+    if (!groupThread) {
+        OWSLogWarn(@"Unknown group: %@", groupThread);
         return;
     }
-    if (gThread.groupModel.groupsVersion != GroupsVersionV1) {
+    // Check whether this group has been migrated.
+    if (!groupThread.isGroupV1Thread) {
+        if (groupThread.isGroupV2Thread) {
+            [self sendV2UpdateForGroupThread:groupThread envelope:envelope transaction:transaction];
+        } else {
+            OWSFailDebug(@"Invalid group.");
+        }
+        return;
+    }
+    if (groupThread.groupModel.groupsVersion != GroupsVersionV1) {
         OWSFailDebug(@"Invalid group version: %@", groupId);
         return;
     }
 
     // Ensure sender is in the group.
-    if (![gThread.groupModel.groupMembers containsObject:envelope.sourceAddress]) {
+    if (![groupThread.groupModel.groupMembers containsObject:envelope.sourceAddress]) {
         OWSLogWarn(@"Ignoring 'Group Info Request' message for non-member of group. %@ not in %@",
             envelope.sourceAddress,
-            gThread.groupModel.groupMembers);
+            groupThread.groupModel.groupMembers);
         return;
     }
 
     // Ensure we are in the group.
-    if (!gThread.isLocalUserFullOrInvitedMember) {
+    if (!groupThread.isLocalUserFullOrInvitedMember) {
         OWSLogWarn(@"Ignoring 'Group Info Request' message for group we no longer belong to.");
         return;
     }
 
-    uint32_t expiresInSeconds = [gThread disappearingMessagesDurationWithTransaction:transaction];
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:gThread
+    uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
+    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:groupThread
                                                            groupMetaMessage:TSGroupMetaMessageUpdate
                                                            expiresInSeconds:expiresInSeconds];
 
@@ -1976,8 +2005,8 @@ NS_ASSUME_NONNULL_BEGIN
     [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress transaction:transaction];
 
     NSData *_Nullable groupAvatarData;
-    if (gThread.groupModel.groupAvatarData) {
-        groupAvatarData = gThread.groupModel.groupAvatarData;
+    if (groupThread.groupModel.groupAvatarData) {
+        groupAvatarData = groupThread.groupModel.groupAvatarData;
         OWSAssertDebug(groupAvatarData.length > 0);
     }
     _Nullable id<DataSource> groupAvatarDataSource;
@@ -2387,6 +2416,31 @@ NS_ASSUME_NONNULL_BEGIN
     // We might be learning of a v1 group id for the first time that
     // corresponds to a v2 group without a v1-to-v2 group id mapping.
     [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
+}
+
+- (void)sendV2UpdateForGroupThread:(TSGroupThread *)groupThread
+                          envelope:(SSKProtoEnvelope *)envelope
+                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!groupThread.isGroupV2Thread) {
+        OWSFailDebug(@"Invalid thread.");
+        return;
+    }
+    SignalServiceAddress *senderAddress = envelope.sourceAddress;
+    if (!senderAddress.isValid) {
+        OWSFailDebug(@"Invalid sender: %@", senderAddress);
+        return;
+    }
+    BOOL isFullOrInvitedMember = ([groupThread.groupMembership isFullMember:senderAddress] ||
+        [groupThread.groupMembership isInvitedMember:senderAddress]);
+    if (!isFullOrInvitedMember) {
+        OWSFailDebug(@"Sender is not a member: %@", senderAddress);
+        return;
+    }
+
+    [transaction addAsyncCompletion:^{
+        [GroupManager sendGroupUpdateMessageObjcWithThread:groupThread singleRecipient:senderAddress];
+    }];
 }
 
 @end

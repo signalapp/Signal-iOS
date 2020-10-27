@@ -105,35 +105,27 @@ public class GroupManager: NSObject {
 
     @objc
     public static var canManuallyMigrate: Bool {
-        return (FeatureFlags.groupsV2MigrationManualMigrationPolite ||
-            FeatureFlags.groupsV2MigrationManualMigrationAggressive)
+        RemoteConfig.groupsV2MigrationManualMigrations
     }
 
     @objc
     public static var canAutoMigrate: Bool {
-        guard !DebugFlags.groupsV2migrationsDisableAutomigrations.get() else {
-            return false
-        }
-        return (FeatureFlags.groupsV2MigrationAutoMigrationPolite ||
-            FeatureFlags.groupsV2MigrationAutoMigrationAggressive)
+        RemoteConfig.groupsV2MigrationAutoMigrations
     }
 
     @objc
     public static var areManualMigrationsAggressive: Bool {
-        FeatureFlags.groupsV2MigrationManualMigrationAggressive ||
-            DebugFlags.groupsV2migrationsForceAggressive.get()
+        true
     }
 
     @objc
     public static var areAutoMigrationsAggressive: Bool {
-        FeatureFlags.groupsV2MigrationAutoMigrationAggressive ||
-            DebugFlags.groupsV2migrationsForceAggressive.get()
+        false
     }
 
     @objc
     public static var areMigrationsBlocking: Bool {
-        FeatureFlags.groupsV2MigrationBlockingMigrations ||
-            DebugFlags.groupsV2MigrationForceBlockingMigrations.get()
+        RemoteConfig.groupsV2MigrationBlockingMigrations
     }
 
     public static let maxGroupNameLength: Int = 32
@@ -1591,8 +1583,21 @@ public class GroupManager: NSObject {
         return AnyPromise(self.sendGroupUpdateMessage(thread: thread))
     }
 
+    @objc
+    public static func sendGroupUpdateMessageObjc(thread: TSGroupThread,
+                                                  singleRecipient: SignalServiceAddress) {
+        firstly {
+            self.sendGroupUpdateMessage(thread: thread, singleRecipient: singleRecipient)
+        }.done(on: .global()) {
+            Logger.verbose("")
+        }.catch(on: .global()) { error in
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
     public static func sendGroupUpdateMessage(thread: TSGroupThread,
-                                              changeActionsProtoData: Data? = nil) -> Promise<Void> {
+                                              changeActionsProtoData: Data? = nil,
+                                              singleRecipient: SignalServiceAddress? = nil) -> Promise<Void> {
 
         // Only honor groupsV2dontSendUpdates for v2 groups.
         let shouldSkipUpdate = thread.isGroupV2Thread && DebugFlags.groupsV2dontSendUpdates.get()
@@ -1609,22 +1614,32 @@ public class GroupManager: NSObject {
             // i.e. we need to flag this message as a group update that
             // is "durable but transient" - it should not be saved.
             messageBuilder.groupMetaMessage = .update
+
             if thread.isGroupV2Thread {
                 if FeatureFlags.groupsV2embedProtosInGroupUpdates {
                     messageBuilder.changeActionsProtoData = changeActionsProtoData
                 }
-                self.addAdditionalRecipients(to: messageBuilder,
-                                             groupThread: thread,
-                                             transaction: transaction)
+                if singleRecipient == nil {
+                    self.addAdditionalRecipients(to: messageBuilder,
+                                                 groupThread: thread,
+                                                 transaction: transaction)
+                }
             }
             return messageBuilder.build()
         }.then(on: .global()) { (message: TSOutgoingMessage) throws -> Promise<Void> in
+
+            if let singleRecipient = singleRecipient {
+                Self.databaseStorage.write { transaction in
+                    message.updateWithSending(toSingleGroupRecipient: singleRecipient, transaction: transaction)
+                }
+            }
+
             let groupModel = thread.groupModel
             // V1 group updates need to include the group avatar (if any)
             // as an attachment.
             if thread.isGroupV1Thread,
-                let avatarData = groupModel.groupAvatarData,
-                avatarData.count > 0 {
+               let avatarData = groupModel.groupAvatarData,
+               avatarData.count > 0 {
                 if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: "png") {
                     let attachment = GroupUpdateMessageAttachment(contentType: OWSMimeTypeImagePng, dataSource: dataSource)
                     return self.sendGroupUpdateMessage(message, thread: thread, attachment: attachment)
@@ -2260,7 +2275,7 @@ public class GroupManager: NSObject {
     @objc
     public static func doesUserHaveGroupsV2MigrationCapability(address: SignalServiceAddress,
                                                                transaction: SDSAnyReadTransaction) -> Bool {
-        if DebugFlags.groupsV2IgnoreMigrationCapability {
+        if DebugFlags.groupsV2migrationsIgnoreMigrationCapability {
             return true
         }
         guard let uuid = address.uuid else {

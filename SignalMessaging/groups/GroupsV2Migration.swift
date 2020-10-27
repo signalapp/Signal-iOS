@@ -75,7 +75,7 @@ public extension GroupsV2Migration {
             }
         }.then(on: .global()) { (canGroupBeMigrated: Bool) -> Promise<TSGroupThread> in
             guard canGroupBeMigrated else {
-                throw OWSGenericError("Group can not be migrated.")
+                throw GroupsV2Error.groupCannotBeMigrated
             }
             return Self.enqueueMigration(groupId: groupThread.groupModel.groupId,
                                          migrationMode: migrationMode)
@@ -179,7 +179,11 @@ public extension GroupsV2Migration {
 
             var phoneNumbersWithoutUuids = Set<String>()
             for groupThread in groupThreads {
-                for address in groupThread.groupModel.groupMembership.allMembersOfAnyKind {
+                // We want to fill in missing UUIDs for all members including
+                // "dropped" members.
+                let groupMembers = (groupThread.groupModel.groupMembership.allMembersOfAnyKind +
+                                        groupThread.groupModel.getDroppedMembers)
+                for address in groupMembers {
                     guard address.uuid == nil else {
                         continue
                     }
@@ -220,6 +224,10 @@ public extension GroupsV2Migration {
                         Logger.verbose("")
                     }.catch(on: .global()) { error in
                         if case GroupsV2Error.groupDoesNotExistOnService = error {
+                            // Ignore.
+                        } else if case GroupsV2Error.localUserNotInGroup = error {
+                            // Ignore.
+                        } else if case GroupsV2Error.groupCannotBeMigrated = error {
                             // Ignore.
                         } else {
                             owsFailDebug("Error: \(error)")
@@ -360,7 +368,7 @@ fileprivate extension GroupsV2Migration {
                 // Convert error if the group is not already on the service.
                 throw GroupsV2Error.groupDoesNotExistOnService
             } else if case GroupsV2Error.localUserNotInGroup = error {
-                try databaseStorage.write { transaction in
+                databaseStorage.write { transaction in
                     let groupId = unmigratedState.migrationMetadata.v1GroupId
                     GroupManager.handleNotInGroup(groupId: groupId, transaction: transaction)
                 }
@@ -414,12 +422,16 @@ fileprivate extension GroupsV2Migration {
                 }
             }
 
+            Logger.info("Group migrated using snapshot service")
+
             return groupThread
         }
     }
 
     static func attemptToMigrateByCreatingOnService(unmigratedState: UnmigratedState,
                                                     migrationMode: GroupsV2MigrationMode) -> Promise<TSGroupThread> {
+
+        Logger.info("migrationMode: \(migrationMode)")
 
         return firstly(on: .global()) { () -> Promise<TSGroupThread> in
             let groupThread = unmigratedState.groupThread
@@ -465,6 +477,9 @@ fileprivate extension GroupsV2Migration {
                                                          shouldSendMessage: true)
             }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
                 self.profileManager.addThread(toProfileWhitelist: groupThread)
+
+                Logger.info("Group migrated to service")
+
                 return groupThread
             }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                       description: "Migrate group") {

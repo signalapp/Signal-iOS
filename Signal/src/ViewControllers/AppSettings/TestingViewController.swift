@@ -93,17 +93,53 @@ class TestingViewController: OWSTableViewController {
 
         do {
             let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("Client will allow manual and auto-migrations.")
-            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Force enable migrations"),
-                                        testableFlag: DebugFlags.groupsV2migrationsForceEnable))
+            section.footerTitle = LocalizationNotNeeded("Client will store but not process incoming messages.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Disable message processing"),
+                                        testableFlag: DebugFlags.disableMessageProcessing))
             contents.addSection(section)
         }
 
         do {
             let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("Client will not auto-migrate legacy groups to new groups.")
-            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Disable auto-migrations"),
-                                        testableFlag: DebugFlags.groupsV2migrationsDisableAutomigrations))
+            section.footerTitle = LocalizationNotNeeded("Client will not send contact or group info to linked devices.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Don't send contact or group sync messages"),
+                                        testableFlag: DebugFlags.dontSendContactOrGroupSyncMessages))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Client will update profiles aggressively.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Aggressive profile fetching"),
+                                        testableFlag: DebugFlags.aggressiveProfileFetching))
+            contents.addSection(section)
+        }
+
+        // MARK: - Group Migrations
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Client will try to auto-migrate legacy groups." +
+            "\n\n" + "Do not use this on any device that communicates with devices that might not support migrations.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Force enable auto-migrations"),
+                                        testableFlag: DebugFlags.groupsV2migrationsForceEnableAutoMigrations))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Client will allow users to do manual migrations." +
+                                                            "\n\n" + "Do not use this on any device that communicates with devices that might not support migrations.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Force enable manual migrations"),
+                                        testableFlag: DebugFlags.groupsV2migrationsForceEnableManualMigrations))
+            contents.addSection(section)
+        }
+
+        do {
+            let section = OWSTableSection()
+            section.footerTitle = LocalizationNotNeeded("Users will not be able to use v1 groups until they are migrated.")
+            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Force Blocking Migrations"),
+                                        testableFlag: DebugFlags.groupsV2MigrationForceBlockingMigrations))
             contents.addSection(section)
         }
 
@@ -128,38 +164,6 @@ class TestingViewController: OWSTableViewController {
             section.footerTitle = LocalizationNotNeeded("The app will pretend not to support group migrations.")
             section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Disable Migration Capability"),
                                         testableFlag: DebugFlags.groupsV2migrationsDisableMigrationCapability))
-            contents.addSection(section)
-        }
-
-        do {
-            let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("Group migrations will proceed even if some members will be dropped.")
-            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Force Aggressive Migrations"),
-                                        testableFlag: DebugFlags.groupsV2migrationsForceAggressive))
-            contents.addSection(section)
-        }
-
-        do {
-            let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("Users will not be able to use v1 groups until they are migrated.")
-            section.add(buildSwitchItem(title: LocalizationNotNeeded("Groups v2: Force Blocking Migrations"),
-                                        testableFlag: DebugFlags.groupsV2MigrationForceBlockingMigrations))
-            contents.addSection(section)
-        }
-
-        do {
-            let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("Client will store but not process incoming messages.")
-            section.add(buildSwitchItem(title: LocalizationNotNeeded("Disable message processing"),
-                                        testableFlag: DebugFlags.disableMessageProcessing))
-            contents.addSection(section)
-        }
-
-        do {
-            let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("Client will update profiles aggressively.")
-            section.add(buildSwitchItem(title: LocalizationNotNeeded("Aggressive profile fetching"),
-                                        testableFlag: DebugFlags.aggressiveProfileFetching))
             contents.addSection(section)
         }
 

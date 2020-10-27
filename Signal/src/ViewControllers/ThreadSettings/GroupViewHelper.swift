@@ -68,6 +68,11 @@ class GroupViewHelper: NSObject {
             // Both users can edit contact threads.
             return true
         }
+        let isBlockedByMigration = (groupThread.isGroupV1Thread &&
+                                    GroupManager.areMigrationsBlocking)
+        guard !isBlockedByMigration else {
+            return false
+        }
         guard !blockingManager.isThreadBlocked(groupThread) else {
             return false
         }
