@@ -175,7 +175,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     }
 
     func configure(device: RemoteDeviceState, isFullScreen: Bool = false) {
-        videoView.isHidden = device.videoMuted != false
+        videoView.isHidden = device.videoMuted ?? false
         noVideoView.isHidden = !videoView.isHidden
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
