@@ -138,6 +138,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 
 class GroupCallRemoteMemberView: GroupCallMemberView {
     let videoView = RemoteVideoView()
+    var currentDevice: RemoteDeviceState?
     var currentTrack: RTCVideoTrack?
 
     let avatarView = AvatarImageView()
@@ -174,9 +175,9 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(device: RemoteDeviceState, isFullScreen: Bool = false) {
+    func configure(call: SignalCall, device: RemoteDeviceState, isFullScreen: Bool = false) {
         videoView.isHidden = device.videoMuted ?? false
-        noVideoView.isHidden = !videoView.isHidden
+        videoView.isFullScreenVideo = isFullScreen
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
@@ -203,6 +204,17 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         noVideoView.backgroundColor = OWSConversationColor.conversationColorOrDefault(
             colorName: conversationColorName
         ).themeColor
+
+        // Register the video view as belonging to this device.
+        // This allows us to tell RingRTC was resolutions we
+        // are rendering video out.
+        if let currentDevice = currentDevice, currentDevice.demuxId != device.demuxId {
+            call.unregisterRemoteVideoView(videoView, for: currentDevice)
+        } else {
+            call.registerRemoteVideoView(videoView, for: device)
+        }
+
+        currentDevice = device
 
         currentTrack?.remove(videoView)
         currentTrack = nil

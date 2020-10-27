@@ -44,7 +44,7 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
             return cell
         }
 
-        cell.configure(device: remoteDevice)
+        cell.configure(call: call, device: remoteDevice)
 
         return cell
     }
@@ -124,8 +124,8 @@ class GroupCallVideoGridCell: UICollectionViewCell {
         contentView.clipsToBounds = true
     }
 
-    func configure(device: RemoteDeviceState) {
-        memberView.configure(device: device)
+    func configure(call: SignalCall, device: RemoteDeviceState) {
+        memberView.configure(call: call, device: device)
     }
 
     required init?(coder: NSCoder) {

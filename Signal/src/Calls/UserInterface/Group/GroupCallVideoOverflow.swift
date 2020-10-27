@@ -80,7 +80,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
             return cell
         }
 
-        cell.configure(device: remoteDevice)
+        cell.configure(call: call, device: remoteDevice)
 
         return cell
     }

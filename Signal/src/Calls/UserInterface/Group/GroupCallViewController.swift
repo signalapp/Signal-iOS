@@ -193,7 +193,7 @@ class GroupCallViewController: UIViewController {
             if let speakerState = groupCall.sortedRemoteDeviceStates.first {
                 speakerPage.addSubview(speakerView)
                 speakerView.autoPinEdgesToSuperviewEdges()
-                speakerView.configure(device: speakerState, isFullScreen: true)
+                speakerView.configure(call: call, device: speakerState, isFullScreen: true)
 
                 view.addSubview(localMemberView)
 
