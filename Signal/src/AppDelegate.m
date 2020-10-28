@@ -1101,6 +1101,13 @@ void uncaughtExceptionHandler(NSException *exception)
         return;
     }
 
+    // If user is missing profile name, redirect to onboarding flow.
+    if (!SSKEnvironment.shared.profileManager.hasProfileName) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [self.tsAccountManager setIsOnboarded:NO transaction:transaction];
+        });
+    }
+
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localAddress: %@", TSAccountManager.localAddress);
 
