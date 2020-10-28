@@ -72,11 +72,11 @@ class GroupCallLocalMemberView: GroupCallMemberView {
     }
 
     override var bounds: CGRect {
-        didSet { videoView.frame = bounds }
+        didSet { updateDimensions() }
     }
 
     override var frame: CGRect {
-        didSet { videoView.frame = bounds }
+        didSet { updateDimensions() }
     }
 
     lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
@@ -91,7 +91,8 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoOffIndicatorImage.autoCenterInSuperview()
 
         videoOffLabel.font = .ows_dynamicTypeSubheadline
-        videoOffLabel.text = "Your video is off"
+        videoOffLabel.text = NSLocalizedString("YOUR_CAMERA_IS_OFF",
+                                               comment: "Indicates to the user that their camera is currently off.")
         videoOffLabel.textAlignment = .center
         videoOffLabel.textColor = Theme.darkThemePrimaryColor
         noVideoView.addSubview(videoOffLabel)
@@ -107,7 +108,10 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var hasBeenConfigured = false
     func configure(device: LocalDeviceState, session: AVCaptureSession, isFullScreen: Bool = false) {
+        hasBeenConfigured = true
+
         videoView.isHidden = device.videoMuted
         videoView.captureSession = session
         noVideoView.isHidden = !videoView.isHidden
@@ -138,6 +142,14 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         layer.cornerRadius = isFullScreen ? 0 : 10
         clipsToBounds = true
     }
+
+    private func updateDimensions() {
+        guard hasBeenConfigured else { return }
+        videoView.frame = bounds
+        muteLeadingConstraint.constant = muteInsets
+        muteBottomConstraint.constant = -muteInsets
+        videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
+    }
 }
 
 class GroupCallRemoteMemberView: GroupCallMemberView {
@@ -149,11 +161,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
 
     override var bounds: CGRect {
-        didSet { videoView?.frame = bounds }
+        didSet { updateDimensions() }
     }
 
     override var frame: CGRect {
-        didSet { videoView?.frame = bounds }
+        didSet { updateDimensions() }
     }
 
     var avatarDiameter: UInt {
@@ -181,7 +193,10 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var hasBeenConfigured = false
     func configure(call: SignalCall, device: RemoteDeviceState, isFullScreen: Bool = false) {
+        hasBeenConfigured = true
+
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
                 self.profileManager.profileAvatar(for: device.address, transaction: transaction),
@@ -242,6 +257,12 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             track.add(videoView)
             currentTrack = track
         }
+    }
+
+    private func updateDimensions() {
+        guard hasBeenConfigured else { return }
+        videoView?.frame = bounds
+        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
     }
 }
 

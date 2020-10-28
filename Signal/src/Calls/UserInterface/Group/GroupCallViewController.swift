@@ -25,6 +25,8 @@ class GroupCallViewController: UIViewController {
 
     private let scrollView = UIScrollView()
 
+    private var isCallMinimized = false
+
     init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
         owsAssertDebug(call.isGroupCall)
@@ -179,15 +181,14 @@ class GroupCallViewController: UIViewController {
 
         let size = size ?? view.frame.size
 
-        speakerPage.subviews.forEach { $0.removeFromSuperview() }
         localMemberView.removeFromSuperview()
+        speakerView.removeFromSuperview()
 
         switch groupCall.localDeviceState.joinState {
         case .joined:
             if let speakerState = groupCall.sortedRemoteDeviceStates.first {
                 speakerPage.addSubview(speakerView)
-                speakerView.frame = CGRect(origin: .zero, size: size)
-                speakerView.configure(call: call, device: speakerState, isFullScreen: true)
+                speakerView.autoPinEdgesToSuperviewEdges()
 
                 view.addSubview(localMemberView)
 
@@ -231,6 +232,12 @@ class GroupCallViewController: UIViewController {
             isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
         )
 
+        if let speakerState = groupCall.sortedRemoteDeviceStates.first {
+            speakerView.configure(call: call, device: speakerState, isFullScreen: true)
+        }
+
+        guard !isCallMinimized else { return }
+
         updateMemberViewFrames(size: size)
         updateScrollViewFrames(size: size)
     }
@@ -273,6 +280,8 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         guard let pipSnapshot = pipWindow.snapshotView(afterScreenUpdates: false) else {
             return owsFailDebug("failed to snapshot pip")
         }
+
+        isCallMinimized = false
 
         updateCallUI()
 
@@ -377,6 +386,7 @@ extension GroupCallViewController: CallControlsDelegate {
 extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
         if groupCall.localDeviceState.joinState == .joined {
+            isCallMinimized = true
             OWSWindowManager.shared.leaveCallView()
         } else {
             dismissCall()

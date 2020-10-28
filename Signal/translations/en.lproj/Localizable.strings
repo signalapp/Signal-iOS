@@ -4851,3 +4851,6 @@
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+
+/* Indicates to the user that their camera is currently off. */
+"YOUR_CAMERA_IS_OFF" = "Your camera is off";
