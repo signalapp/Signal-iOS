@@ -25,8 +25,8 @@ class CallHeader: UIView {
     private var callDurationTimer: Timer?
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
-    private let groupMembersButton = UIButton()
-    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 50)
+    private let groupMembersButton = GroupMembersButton()
+    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 40)
     private var isBlinkingReconnectLabel = false
 
     private let call: SignalCall
@@ -68,6 +68,7 @@ class CallHeader: UIView {
         let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
         backButton.setTemplateImage(backButtonImage, tintColor: .ows_white)
         backButton.autoSetDimensions(to: CGSize(square: 40))
+        backButton.imageEdgeInsets = UIEdgeInsets(top: -12, leading: -18, bottom: 0, trailing: 0)
         backButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapBackButton), for: .touchUpInside)
         addShadow(to: backButton)
 
@@ -114,11 +115,11 @@ class CallHeader: UIView {
 
         // Group members button
 
-        groupMembersButton.titleLabel?.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_monospaced
-        groupMembersButton.setTitleColor(.ows_white, for: .normal)
-        groupMembersButton.setTemplateImage(#imageLiteral(resourceName: "group-solid-16"), tintColor: .ows_white)
-        groupMembersButton.autoSetDimensions(to: CGSize(square: 50))
-        groupMembersButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapMembersButton), for: .touchUpInside)
+        groupMembersButton.addTarget(
+            delegate,
+            action: #selector(CallHeaderDelegate.didTapMembersButton),
+            for: .touchUpInside
+        )
         addShadow(to: groupMembersButton)
 
         hStack.addArrangedSubview(groupMembersButton)
@@ -246,7 +247,7 @@ class CallHeader: UIView {
     func updateGroupMembersButton() {
         let isJoined = call.groupCall.localDeviceState.joinState == .joined
         let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : call.groupCall.joinedGroupMembers.count
-        groupMembersButton.setTitle(" \(remoteMemberCount + (isJoined ? 1 : 0))", for: .normal)
+        groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
         groupMembersButton.isHidden = remoteMemberCount < 2
         groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
@@ -300,4 +301,43 @@ extension CallHeader: CallObserver {
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+}
+
+private class GroupMembersButton: UIButton {
+    private let iconImageView = UIImageView()
+    private let countLabel = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        autoSetDimension(.height, toSize: 40)
+
+        iconImageView.contentMode = .scaleAspectFit
+        iconImageView.setTemplateImage(#imageLiteral(resourceName: "group-solid-24"), tintColor: .ows_white)
+        addSubview(iconImageView)
+        iconImageView.autoPinEdge(toSuperviewEdge: .leading)
+        iconImageView.autoSetDimensions(to: CGSize(square: 22))
+        iconImageView.autoPinEdge(toSuperviewEdge: .top, withInset: 2)
+
+        countLabel.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_monospaced
+        countLabel.textColor = .ows_white
+        addSubview(countLabel)
+        countLabel.autoPinEdge(.leading, to: .trailing, of: iconImageView, withOffset: 5)
+        countLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
+        countLabel.autoAlignAxis(.horizontal, toSameAxisOf: iconImageView)
+    }
+
+    func updateMemberCount(_ count: Int) {
+        countLabel.text = String(OWSFormat.formatInt(count))
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            alpha = isHighlighted ? 0.5 : 1
+        }
+    }
 }

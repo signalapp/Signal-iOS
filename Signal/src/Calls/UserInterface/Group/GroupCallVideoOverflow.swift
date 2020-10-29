@@ -29,6 +29,7 @@ class GroupCallVideoOverflow: UICollectionView {
         super.init(frame: .zero, collectionViewLayout: layout)
 
         backgroundColor = .clear
+        alpha = 0
 
         showsHorizontalScrollIndicator = false
 
@@ -51,6 +52,29 @@ class GroupCallVideoOverflow: UICollectionView {
     }
 
     deinit { call.removeObserver(self) }
+
+    private var isAnimating = false
+    private var hadVisibleCells = false
+    override func reloadData() {
+        guard !isAnimating else { return }
+
+        let hasVisibleCells = overflowedRemoteDeviceStates.count > 0
+
+        if hasVisibleCells != hadVisibleCells {
+            hadVisibleCells = hasVisibleCells
+            isAnimating = true
+            if hasVisibleCells { super.reloadData() }
+            UIView.animate(
+                withDuration: 0.15,
+                animations: { self.alpha = hasVisibleCells ? 1 : 0 }
+            ) { _ in
+                self.isAnimating = false
+                self.reloadData()
+            }
+        } else {
+            super.reloadData()
+        }
+    }
 }
 
 extension GroupCallVideoOverflow: UICollectionViewDataSource {

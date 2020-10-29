@@ -91,7 +91,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoOffIndicatorImage.autoCenterInSuperview()
 
         videoOffLabel.font = .ows_dynamicTypeSubheadline
-        videoOffLabel.text = NSLocalizedString("YOUR_CAMERA_IS_OFF",
+        videoOffLabel.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
                                                comment: "Indicates to the user that their camera is currently off.")
         videoOffLabel.textAlignment = .center
         videoOffLabel.textColor = Theme.darkThemePrimaryColor
@@ -102,6 +102,10 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
         videoView.frame = bounds
+
+        layer.shadowOffset = .zero
+        layer.shadowOpacity = 0.25
+        layer.shadowRadius = 4
     }
 
     required init?(coder: NSCoder) {
@@ -208,11 +212,22 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         backgroundAvatarView.image = profileImage
 
-        avatarView.image = OWSContactAvatarBuilder(
+        let avatarBuilder = OWSContactAvatarBuilder(
             address: device.address,
             colorName: conversationColorName,
             diameter: avatarDiameter
-        ).build()
+        )
+
+        if device.address.isLocalAddress {
+            avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+        } else {
+            avatarView.image = OWSContactAvatarBuilder(
+                address: device.address,
+                colorName: conversationColorName,
+                diameter: avatarDiameter
+            ).build()
+        }
+
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
         muteIndicatorImage.isHidden = isFullScreen || device.audioMuted != true

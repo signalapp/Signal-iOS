@@ -104,6 +104,8 @@ class GroupCallViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.isPagingEnabled = true
         scrollView.showsVerticalScrollIndicator = false
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.alwaysBounceVertical = false
         scrollView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(callHeader)
@@ -132,10 +134,13 @@ class GroupCallViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
+        let wasOnSpeakerPage = scrollView.contentOffset.y >= view.height
+
         coordinator.animate(alongsideTransition: { _ in
             self.updateCallUI(size: size)
             self.videoGrid.reloadData()
             self.videoOverflow.reloadData()
+            self.scrollView.contentOffset = wasOnSpeakerPage ? CGPoint(x: 0, y: size.height) : .zero
         }, completion: nil)
     }
 
@@ -167,7 +172,7 @@ class GroupCallViewController: UIViewController {
                 x: 0,
                 y: view.safeAreaInsets.top,
                 width: size.width,
-                height: size.height - view.safeAreaInsets.top - (controlsAreHidden ? 16 : callControls.height) - (hasOverflowMembers ? videoOverflow.height + 16 : 0)
+                height: size.height - view.safeAreaInsets.top - (controlsAreHidden ? 16 : callControls.height) - (hasOverflowMembers ? videoOverflow.height + 32 : 0)
             )
             speakerPage.frame = CGRect(
                 x: 0,
@@ -188,7 +193,7 @@ class GroupCallViewController: UIViewController {
 
         let size = size ?? view.frame.size
 
-        let yMax = controlsAreHidden ? size.height - 16 : callControls.frame.minY
+        let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
 
         videoOverflowTopConstraint.constant = yMax - videoOverflow.height
         view.layoutIfNeeded()
@@ -207,10 +212,9 @@ class GroupCallViewController: UIViewController {
                 if groupCall.remoteDeviceStates.count > 1 {
                     let pipWidth = GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio
                     let pipHeight = GroupCallVideoOverflow.itemHeight
-                    let shouldShiftUp = !hasOverflowMembers && scrollView.contentOffset.y < view.height
                     localMemberView.frame = CGRect(
                         x: size.width - pipWidth - 16,
-                        y: videoOverflow.frame.origin.y + (shouldShiftUp ? -16 : 0),
+                        y: videoOverflow.frame.origin.y,
                         width: pipWidth,
                         height: pipHeight
                     )
@@ -259,14 +263,17 @@ class GroupCallViewController: UIViewController {
             UIView.animate(withDuration: 0.15, animations: {
                 self.callControls.alpha = hideRemoteControls ? 0 : 1
                 self.callHeader.alpha = hideRemoteControls ? 0 : 1
+
+                self.updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
+                self.updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
             }) { _ in
                 self.callControls.isHidden = hideRemoteControls
                 self.callHeader.isHidden = hideRemoteControls
             }
+        } else {
+            updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
+            updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
         }
-
-        updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
-        updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
 
         scheduleControlTimeoutIfNecessary()
     }
@@ -279,6 +286,10 @@ class GroupCallViewController: UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+
+    override var prefersHomeIndicatorAutoHidden: Bool {
+        return true
     }
 
     // MARK: - Video control timeout
@@ -396,6 +407,8 @@ extension GroupCallViewController: CallObserver {
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
+
+        dismissCall()
     }
 
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
@@ -475,6 +488,7 @@ extension GroupCallViewController: UIScrollViewDelegate {
         if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
             videoOverflow.reloadData()
             updateCallUI()
+            ImpactHapticFeedback.impactOccured(style: .light)
         }
     }
 }

@@ -535,6 +535,9 @@
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";
 
+/* Indicates to the user that their camera is currently off. */
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal User";
 
@@ -1539,6 +1542,12 @@
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+
+/* Text describing the local user in the group call members sheet. */
+"GROUP_CALL_YOU" = "You";
+
+/* Text describing the local user in the group call members sheet when connected from another device. */
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
@@ -4851,6 +4860,3 @@
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
-
-/* Indicates to the user that their camera is currently off. */
-"YOUR_CAMERA_IS_OFF" = "Your camera is off";

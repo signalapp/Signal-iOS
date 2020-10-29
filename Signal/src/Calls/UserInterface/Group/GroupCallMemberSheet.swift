@@ -288,8 +288,18 @@ class GroupCallMemberSheet: UIViewController {
             if self.call.groupCall.localDeviceState.joinState == .joined {
                 members += self.call.groupCall.sortedRemoteDeviceStates.map { member in
                     let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
-                    let displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
-                    let comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
+                    let displayName: String
+                    let comparableName: String
+                    if member.address.isLocalAddress {
+                        displayName = NSLocalizedString(
+                            "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
+                            comment: "Text describing the local user in the group call members sheet when connected from another device."
+                        )
+                        comparableName = displayName
+                    } else {
+                        displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
+                        comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
+                    }
 
                     return JoinedMember(
                         address: member.address,
@@ -305,8 +315,8 @@ class GroupCallMemberSheet: UIViewController {
 
                 let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
                 let displayName = NSLocalizedString(
-                    "REACTIONS_DETAIL_YOU",
-                    comment: "Text describing the local user in the reaction details pane."
+                    "GROUP_CALL_YOU",
+                    comment: "Text describing the local user in the group call members sheet."
                 )
                 let comparableName = displayName
 
