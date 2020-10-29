@@ -163,12 +163,9 @@ final class RestoreVC : BaseVC {
         do {
             let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
             let seed = Data(hex: hexEncodedSeed)
-            let keyPair = Curve25519.generateKeyPair(fromSeed: seed + seed)
-            let identityManager = OWSIdentityManager.shared()
-            let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
-            databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-            databaseConnection.setObject(keyPair, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-            TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = keyPair.hexEncodedPublicKey
+            let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
+            KeyPairUtilities.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
+            TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair.hexEncodedPublicKey
             OWSPrimaryStorage.shared().setRestorationTime(Date().timeIntervalSince1970)
             UserDefaults.standard[.hasViewedSeed] = true
             mnemonicTextView.resignFirstResponder()
