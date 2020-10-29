@@ -2217,6 +2217,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!incomingMessage.hasRenderableContent) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);
+        if (SSKDebugFlags.internalLogging) {
+            OWSLogInfo(@"Ignoring empty: %@", envelope.debugDescription);
+        }
         return nil;
     }
 
