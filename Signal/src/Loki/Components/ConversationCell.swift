@@ -131,9 +131,11 @@ final class ConversationCell : UITableViewCell {
     // MARK: Updating
     private func update() {
         AssertIsOnMainThread()
-        MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
+        let thread = threadViewModel.threadRecord
+        guard let threadID = thread.uniqueId else { return }
+        MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID) // FIXME: This is a terrible place to do this
         let isBlocked: Bool
-        if let thread = threadViewModel.threadRecord as? TSContactThread {
+        if let thread = thread as? TSContactThread {
             isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactIdentifier())
         } else {
             isBlocked = false
@@ -145,10 +147,10 @@ final class ConversationCell : UITableViewCell {
             accentView.backgroundColor = Colors.accent
             accentView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
         }
-        profilePictureView.update(for: threadViewModel.threadRecord)
+        profilePictureView.update(for: thread)
         displayNameLabel.text = getDisplayName()
         timestampLabel.text = DateUtil.formatDateShort(threadViewModel.lastMessageDate)
-        if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: self.threadViewModel.threadRecord) != nil {
+        if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: thread) != nil {
             snippetLabel.text = ""
             typingIndicatorView.isHidden = false
             typingIndicatorView.startAnimation()
