@@ -281,7 +281,8 @@ public enum OnionRequestAPI {
     
     /// Sends an onion request to `server`. Builds new paths as needed.
     internal static func sendOnionRequest(_ request: NSURLRequest, to server: String, using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
-        let rawHeaders = request.allHTTPHeaderFields ?? [:]
+        var rawHeaders = request.allHTTPHeaderFields ?? [:]
+        rawHeaders.removeValue(forKey: "User-Agent")
         var headers: JSON = rawHeaders.mapValues { value in
             switch value.lowercased() {
             case "true": return true

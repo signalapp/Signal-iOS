@@ -64,6 +64,7 @@ public enum HTTP {
         request.httpMethod = verb.rawValue
         request.httpBody = body
         request.timeoutInterval = timeout
+        request.allHTTPHeaderFields?.removeValue(forKey: "User-Agent")
         let (promise, seal) = Promise<JSON>.pending()
         let urlSession = useSeedNodeURLSession ? seedNodeURLSession : defaultURLSession
         let task = urlSession.dataTask(with: request) { data, response, error in
