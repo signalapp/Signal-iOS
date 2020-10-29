@@ -129,9 +129,6 @@ class ExperienceUpgradeManager: NSObject {
 
     private static func hasSplash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
         switch experienceUpgrade.id {
-        case .messageRequests:
-            // Only use a splash for message requests if the user doesn't have a profile name.
-            return OWSProfileManager.shared().localFullName()?.isEmpty != false
         case .introducingPins:
             return true
         case .groupsV2AndMentionsSplash2:
@@ -145,8 +142,6 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins:
             return IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
-        case .messageRequests:
-            return MessageRequestsSplash(experienceUpgrade: experienceUpgrade)
         case .groupsV2AndMentionsSplash2:
             return GroupsV2AndMentionsSplash(experienceUpgrade: experienceUpgrade)
         default:
@@ -165,9 +160,6 @@ class ExperienceUpgradeManager: NSObject {
              .linkPreviews,
              .researchMegaphone1:
             return true
-        case .messageRequests:
-            // no need to annoy user with banner for message requests. They are self explanatory.
-            return false
         case .groupsV2AndMentionsSplash2:
             return false
         default:

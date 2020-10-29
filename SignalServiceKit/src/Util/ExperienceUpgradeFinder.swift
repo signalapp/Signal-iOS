@@ -8,7 +8,6 @@ import Contacts
 
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
-    case messageRequests = "012"
     case pinReminder // Never saved, used to periodically prompt the user for their PIN
     case notificationPermissionReminder
     case contactPermissionReminder
@@ -26,8 +25,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return RemoteConfig.kbs &&
                 SSKEnvironment.shared.reachabilityManager.isReachable &&
                 !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
-        case .messageRequests:
-            return !SSKEnvironment.shared.profileManager.hasProfileName
         case .pinReminder:
             return OWS2FAManager.shared().isDueForV2Reminder(transaction: transaction.asAnyRead)
         case .notificationPermissionReminder:
@@ -80,8 +77,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     // If false, this will not be marked complete after registration.
     var skipForNewUsers: Bool {
         switch self {
-        case .messageRequests,
-             .introducingPins,
+        case .introducingPins,
              .researchMegaphone1:
             return false
         default:
@@ -101,8 +97,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     var priority: Priority {
         switch self {
         case .introducingPins:
-            return .high
-        case .messageRequests:
             return .high
         case .linkPreviews:
             return .medium
@@ -125,8 +119,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         switch self {
         case .pinReminder:
             return false
-        case .messageRequests:
-            return false
         default:
             return true
         }
@@ -141,8 +133,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .notificationPermissionReminder:
             return false
         case .contactPermissionReminder:
-            return false
-        case .messageRequests:
             return false
         default:
             return true
@@ -174,7 +164,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     var objcRepresentation: ObjcExperienceUpgradeId {
         switch self {
         case .introducingPins:                  return .introducingPins
-        case .messageRequests:                  return .messageRequests
         case .pinReminder:                      return .pinReminder
         case .notificationPermissionReminder:   return .notificationPermissionReminder
         case .contactPermissionReminder:        return .contactPermissionReminder
@@ -336,7 +325,6 @@ public extension ExperienceUpgrade {
 @objc(OWSObjcExperienceUpgradeId)
 public enum ObjcExperienceUpgradeId: Int {
     case introducingPins
-    case messageRequests
     case pinReminder
     case notificationPermissionReminder
     case contactPermissionReminder
@@ -347,7 +335,6 @@ public enum ObjcExperienceUpgradeId: Int {
     public var swiftRepresentation: ExperienceUpgradeId {
         switch self {
         case .introducingPins:                  return .introducingPins
-        case .messageRequests:                  return .messageRequests
         case .pinReminder:                      return .pinReminder
         case .notificationPermissionReminder:   return .notificationPermissionReminder
         case .contactPermissionReminder:        return .contactPermissionReminder
