@@ -135,11 +135,7 @@ final class RegisterVC : BaseVC {
     }
     
     private func updateKeyPair() {
-        let padding = Data(repeating: 0, count: 16)
-        ed25519KeyPair = Sodium().sign.keyPair(seed: (seed + padding).bytes)!
-        let x25519PublicKey = Sodium().sign.toX25519(ed25519PublicKey: ed25519KeyPair.publicKey)!
-        let x25519SecretKey = Sodium().sign.toX25519(ed25519SecretKey: ed25519KeyPair.secretKey)!
-        x25519KeyPair = ECKeyPair(publicKey: Data(x25519PublicKey), privateKey: Data(x25519SecretKey))
+        (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
     }
     
     private func updatePublicKeyLabel() {
@@ -171,12 +167,7 @@ final class RegisterVC : BaseVC {
     
     // MARK: Interaction
     @objc private func register() {
-        let dbConnection = OWSIdentityManager.shared().dbConnection
-        let collection = OWSPrimaryStorageIdentityKeyStoreCollection
-        dbConnection.setObject(seed.toHexString(), forKey: LKSeedKey, inCollection: collection)
-        dbConnection.setObject(ed25519KeyPair.secretKey.toHexString(), forKey: LKED25519SecretKey, inCollection: collection)
-        dbConnection.setObject(ed25519KeyPair.publicKey.toHexString(), forKey: LKED25519PublicKey, inCollection: collection)
-        dbConnection.setObject(x25519KeyPair!, forKey: OWSPrimaryStorageIdentityKeyStoreIdentityKey, inCollection: collection)
+        KeyPairUtilities.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
         TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair!.hexEncodedPublicKey
         OWSPrimaryStorage.shared().setRestorationTime(0)
         UserDefaults.standard[.hasViewedSeed] = false
