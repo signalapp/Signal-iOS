@@ -1979,11 +1979,7 @@ public class GroupManager: NSObject {
                                      groupUpdateSourceAddress: groupUpdateSourceAddress,
                                      transaction: transaction)
 
-        // TODO: Do we also need to insert some kind of "migration" info message
-        //       in the conversation history?
-
-        // TODO: Should we notify storage service of an inserted group?
-        //       Should we clean up the old group id in the storage service?
+        storageServiceManager.recordPendingDeletions(deletedGroupV1Ids: [groupIdV1])
         notifyStorageServiceOfInsertedGroup(groupModel: newGroupModelV2,
                                             transaction: transaction)
 
@@ -2193,10 +2189,10 @@ public class GroupManager: NSObject {
         }
         guard !groupsV2.isGroupKnownToStorageService(groupModel: groupModel,
                                                      transaction: transaction) else {
-                                                        // To avoid redundant storage service writes,
-                                                        // don't bother notifying the storage service
-                                                        // about v2 groups it already knows about.
-                                                        return
+            // To avoid redundant storage service writes,
+            // don't bother notifying the storage service
+            // about v2 groups it already knows about.
+            return
         }
 
         storageServiceManager.recordPendingUpdates(groupModel: groupModel)

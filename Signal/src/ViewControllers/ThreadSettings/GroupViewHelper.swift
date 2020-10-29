@@ -68,8 +68,6 @@ class GroupViewHelper: NSObject {
             // Both users can edit contact threads.
             return true
         }
-        let isBlockedByMigration = (groupThread.isGroupV1Thread &&
-                                    GroupManager.areMigrationsBlocking)
         guard !isBlockedByMigration else {
             return false
         }
@@ -100,6 +98,14 @@ class GroupViewHelper: NSObject {
         case .administrator:
             return (groupModelV2.groupMembership.isFullMemberAndAdministrator(localAddress))
         }
+    }
+
+    var isBlockedByMigration: Bool {
+        guard let groupThread = thread as? TSGroupThread else {
+            return false
+        }
+        return (groupThread.isGroupV1Thread &&
+                    GroupManager.areMigrationsBlocking)
     }
 
     // Can local user edit conversation attributes:

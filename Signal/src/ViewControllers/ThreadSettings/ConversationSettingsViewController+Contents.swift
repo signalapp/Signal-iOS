@@ -132,20 +132,22 @@ extension ConversationSettingsViewController {
                                     self?.showMediaGallery()
         }))
 
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-            let title = NSLocalizedString("CONVERSATION_SETTINGS_SEARCH",
-                                          comment: "Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated")
-            return OWSTableItem.buildDisclosureCell(name: title,
-                                                    icon: .settingsSearch,
-                                                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "search"))
+        if !groupViewHelper.isBlockedByMigration {
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+                let title = NSLocalizedString("CONVERSATION_SETTINGS_SEARCH",
+                                              comment: "Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated")
+                return OWSTableItem.buildDisclosureCell(name: title,
+                                                        icon: .settingsSearch,
+                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "search"))
             },
-                                 actionBlock: { [weak self] in
-                                    self?.tappedConversationSearch()
-        }))
+            actionBlock: { [weak self] in
+                self?.tappedConversationSearch()
+            }))
+        }
 
         if !isNoteToSelf && !isGroupThread && thread.hasSafetyNumbers() {
             // Safety Numbers

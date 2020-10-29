@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentStream;
 @class TSCall;
 @class TSErrorMessage;
+@class TSGroupModel;
 @class TSInfoMessage;
 @class TSInteraction;
 @class TSInvalidIdentityKeyErrorMessage;
@@ -60,7 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showFingerprintWithAddress:(SignalServiceAddress *)address;
 - (void)showConversationSettings;
 - (void)showConversationSettingsAndShowMemberRequests;
-- (void)showGroupMigrationLearnMoreActionSheetWithInfoMessage:(TSInfoMessage *)infoMessage;
+- (void)showGroupMigrationLearnMoreActionSheetWithInfoMessage:(TSInfoMessage *)infoMessage
+                                                oldGroupModel:(TSGroupModel *)oldGroupModel
+                                                newGroupModel:(TSGroupModel *)newGroupModel;
 - (void)handleCallTap:(TSCall *)call;
 - (void)updateSystemContactWithAddress:(SignalServiceAddress *)address
                  withNewNameComponents:(NSPersonNameComponents *)newNameComponents;

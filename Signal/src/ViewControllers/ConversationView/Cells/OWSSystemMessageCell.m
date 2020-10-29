@@ -674,8 +674,11 @@ typedef void (^SystemMessageActionBlock)(void);
                                     actionWithTitle:CommonStrings.learnMore
                                               block:^{
                                                   [weakSelf.delegate
-                                                      showGroupMigrationLearnMoreActionSheetWithInfoMessage:
-                                                          infoMessage];
+                                                      showGroupMigrationLearnMoreActionSheetWithInfoMessage:infoMessage
+                                                                                              oldGroupModel:
+                                                                                                  oldGroupModel
+                                                                                              newGroupModel:
+                                                                                                  newGroupModel];
                                               }
                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                         self, @"group_migration_learn_more")];

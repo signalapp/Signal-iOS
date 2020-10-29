@@ -224,11 +224,19 @@ public extension GroupsV2Migration {
                         Logger.verbose("")
                     }.catch(on: .global()) { error in
                         if case GroupsV2Error.groupDoesNotExistOnService = error {
-                            // Ignore.
+                            if migrationMode != .possiblyAlreadyMigratedOnService {
+                                Logger.warn("Error: \(error)")
+                            }
                         } else if case GroupsV2Error.localUserNotInGroup = error {
-                            // Ignore.
+                            if !migrationMode.isAutoMigration {
+                                Logger.warn("Error: \(error)")
+                            }
                         } else if case GroupsV2Error.groupCannotBeMigrated = error {
-                            // Ignore.
+                            if !migrationMode.isAutoMigration {
+                                Logger.warn("Error: \(error)")
+                            }
+                        } else if case GroupsV2Error.timeout = error {
+                            Logger.warn("Error: \(error)")
                         } else {
                             owsFailDebug("Error: \(error)")
                         }
@@ -714,6 +722,8 @@ fileprivate extension GroupsV2Migration {
             return .canBeMigrated
         }()
 
+        Logger.info("Can the group be migrated?: \(state)")
+
         return GroupsV2MigrationInfo(isGroupInProfileWhitelist: isGroupInProfileWhitelist,
                                      membersWithoutUuids: membersWithoutUuids,
                                      membersWithoutCapabilities: membersWithoutCapabilities,
@@ -798,16 +808,12 @@ public class GroupsV2MigrationInfo: NSObject {
 public enum GroupsV2MigrationMode {
     // Manual migration; only available if all users can be
     // added (but not invited).
-    //
-    // TODO: Should this include invitations?
     case manualMigrationPolite
     // Manual migration; only available if all users can be
     // migrated.
     case manualMigrationAggressive
     // Auto migration; only available if all users can be
-    // added (but not invited).
-    //
-    // TODO: Should this include invitations?
+    // added.
     case autoMigrationPolite
     // Auto migration; only available if all users can be
     // migrated.
@@ -817,9 +823,6 @@ public enum GroupsV2MigrationMode {
     // has been migrated to the service, we should update
     // the local DB immediately to reflect the group state
     // on the service.
-    //
-    // TODO: Make sure we're handling the storage service &
-    // sync message cases correctly.
     case isAlreadyMigratedOnService
     // We need to check periodically if the group has
     // already been migrated to the service by another client.
@@ -869,7 +872,6 @@ public enum GroupsV2MigrationMode {
     }
 
     public var canMigrateIfNotInProfileWhitelist: Bool {
-        // TODO: What about manual?
         isOnlyUpdatingIfAlreadyMigrated
     }
 

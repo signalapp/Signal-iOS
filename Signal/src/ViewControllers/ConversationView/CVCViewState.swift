@@ -4,8 +4,9 @@
 
 import Foundation
 
-// TODO: We need to decompose CVC. This can be a simple place to hang
-//       mutable view state. I'd like to slowly migrate more CVC state here.
+// This can be a simple place to hang CVC's mutable view state.
+//
+// TODO: Migrate more CVC state here.
 @objc
 public class CVCViewState: NSObject {
     @objc
