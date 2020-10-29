@@ -28,6 +28,10 @@ public class GroupsV2Migration: NSObject {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Impl
     }
 
+    private static var bulkProfileFetch: BulkProfileFetch {
+        return SSKEnvironment.shared.bulkProfileFetch
+    }
+
     // MARK: -
 
     private override init() {}
@@ -162,6 +166,12 @@ public extension GroupsV2Migration {
         guard FeatureFlags.groupsV2Migrations else {
             return
         }
+        guard CurrentAppContext().isMainAppAndActive else {
+            // Don't try to migrate groups in app extensions,
+            // nor if the app is in the background, e.g.
+            // waking up from a VOIP push.
+            return
+        }
 
         DispatchQueue.global().async {
             var groupThreads = [TSGroupThread]()
@@ -177,6 +187,7 @@ public extension GroupsV2Migration {
                 }
             }
 
+            var allMembers = Set<SignalServiceAddress>()
             var phoneNumbersWithoutUuids = Set<String>()
             for groupThread in groupThreads {
                 // We want to fill in missing UUIDs for all members including
@@ -184,6 +195,8 @@ public extension GroupsV2Migration {
                 let groupMembers = (groupThread.groupModel.groupMembership.allMembersOfAnyKind +
                                         groupThread.groupModel.getDroppedMembers)
                 for address in groupMembers {
+                    allMembers.insert(address)
+
                     guard address.uuid == nil else {
                         continue
                     }
@@ -192,6 +205,38 @@ public extension GroupsV2Migration {
                         continue
                     }
                     phoneNumbersWithoutUuids.insert(phoneNumber)
+                }
+            }
+
+            let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
+                                                            ? self.autoMigrationMode
+                                                            : .possiblyAlreadyMigratedOnService)
+
+            if migrationMode.isAutoMigration {
+                // Try to fill in missing capabilities and profile key
+                // credentials before trying to auto-migrate groups.
+                //
+                // We use BulkProfileFetch in order to de-bounce profile
+                // fetches.
+                //
+                // There's no good way to block on these profile fetches;
+                // but we try to auto-migrate groups on every launch.
+                var membersToFetchProfiles = Set<SignalServiceAddress>()
+                Self.databaseStorage.read { transaction in
+                    for address in allMembers {
+                        if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
+                            membersToFetchProfiles.insert(address)
+                        } else if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
+                            membersToFetchProfiles.insert(address)
+                        }
+                    }
+                }
+                // Ignore users we know to be unregistered.
+                let knownUndiscoverable = ContactDiscoveryTask.addressesRecentlyMarkedAsUndiscoverableForMessageSends(Array(membersToFetchProfiles))
+                membersToFetchProfiles.subtract(knownUndiscoverable)
+
+                if !membersToFetchProfiles.isEmpty {
+                    bulkProfileFetch.fetchProfiles(addresses: Array(membersToFetchProfiles))
                 }
             }
 
@@ -214,9 +259,6 @@ public extension GroupsV2Migration {
             }.map(on: .global()) { _ in
                 Logger.verbose("")
 
-                let migrationMode: GroupsV2MigrationMode = (GroupManager.canAutoMigrate
-                                                                ? self.autoMigrationMode
-                                                                : .possiblyAlreadyMigratedOnService)
                 for groupThread in groupThreads {
                     firstly {
                         Self.tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
