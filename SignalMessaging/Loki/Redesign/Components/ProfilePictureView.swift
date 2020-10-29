@@ -10,6 +10,7 @@ public final class ProfilePictureView : UIView {
     @objc public var hexEncodedPublicKey: String!
     @objc public var additionalHexEncodedPublicKey: String?
     @objc public var openGroupProfilePicture: UIImage?
+    private var isUsingDefualtPicture: Bool = true
     
     // MARK: Components
     private lazy var imageView = getImageView()
@@ -65,6 +66,7 @@ public final class ProfilePictureView : UIView {
             } else if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
                 self.openGroupProfilePicture = openGroupProfilePicture
                 isRSSFeed = false
+                isUsingDefualtPicture = false
             } else if thread.groupModel.groupType == .openGroup
                 || thread.groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
                 hexEncodedPublicKey = ""
@@ -91,6 +93,7 @@ public final class ProfilePictureView : UIView {
         func getProfilePicture(of size: CGFloat, for publicKey: String) -> UIImage? {
             guard !publicKey.isEmpty else { return nil }
             if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: publicKey) {
+                isUsingDefualtPicture = false
                 return profilePicture
             } else {
                 let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: publicKey) ?? publicKey
@@ -143,5 +146,10 @@ public final class ProfilePictureView : UIView {
         result.layer.borderWidth = Values.borderThickness
         result.contentMode = .scaleAspectFit
         return result
+    }
+    
+    @objc public func getProfilePicture() -> UIImage? {
+        if isUsingDefualtPicture { return nil }
+        return self.imageView.image
     }
 }
