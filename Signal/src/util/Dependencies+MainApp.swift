@@ -34,6 +34,14 @@ public extension UIResponder {
         AppEnvironment.shared.callService.individualCallService.callUIAdapter
     }
 
+    var callService: CallService {
+        return AppEnvironment.shared.callService
+    }
+
+    static var callService: CallService {
+        return AppEnvironment.shared.callService
+    }
+
     var notificationPresenter: NotificationPresenter {
         AppEnvironment.shared.notificationPresenter
     }

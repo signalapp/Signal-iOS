@@ -154,7 +154,11 @@ protocol CallAudioServiceDelegate: class {
             return
         }
 
-        setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+        if call.localDeviceState.videoMuted {
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+        } else {
+            setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+        }
     }
 
     private func ensureProperAudioSession(call: IndividualCall?) {
@@ -192,11 +196,6 @@ protocol CallAudioServiceDelegate: class {
     }
 
     // MARK: - Service action handlers
-
-    public func didUpdateVideoTracks(call: SignalCall?) {
-        Logger.verbose("")
-        ensureProperAudioSession(call: call)
-    }
 
     public func handleState(call: IndividualCall) {
         assert(Thread.isMainThread)

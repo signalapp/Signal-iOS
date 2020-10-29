@@ -213,7 +213,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.individualCall.remoteAddress)
         super.init()
 
-        allAudioSources = Set(callUIAdapter.audioService.availableInputs)
+        allAudioSources = Set(callService.audioService.availableInputs)
 
         self.shouldUseTheme = false
     }
@@ -279,8 +279,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)
 
-        assert(callUIAdapter.audioService.delegate == nil)
-        callUIAdapter.audioService.delegate = self
+        assert(callService.audioService.delegate == nil)
+        callService.audioService.delegate = self
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -466,7 +466,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     func presentAudioSourcePicker() {
         AssertIsOnMainThread()
 
-        guard !callUIAdapter.audioService.presentRoutePicker() else { return }
+        guard !callService.audioService.presentRoutePicker() else { return }
 
         // Fallback to action sheet based picker, which is buggy
         owsFailDebug("Failed to present native route picker, maybe a new iOS version broke it?")
@@ -476,10 +476,10 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         let dismissAction = ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel)
         actionSheetController.addAction(dismissAction)
 
-        let currentAudioSource = callUIAdapter.audioService.currentAudioSource
+        let currentAudioSource = callService.audioService.currentAudioSource
         for audioSource in self.appropriateAudioSources {
             let routeAudioAction = ActionSheetAction(title: audioSource.localizedName, style: .default) { _ in
-                self.callUIAdapter.audioService.currentAudioSource = audioSource
+                self.callService.audioService.currentAudioSource = audioSource
             }
 
             // create checkmark for active audio source.
@@ -861,7 +861,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         let videoControls = [videoModeAudioSourceButton, videoModeFlipCameraButton, videoModeVideoButton, videoModeMuteButton, videoModeHangUpButton]
 
         // Audio Source Handling (bluetooth)
-        if self.hasAlternateAudioSources, let audioSource = callUIAdapter.audioService.currentAudioSource {
+        if self.hasAlternateAudioSources, let audioSource = callService.audioService.currentAudioSource {
             audioModeSourceButton.isHidden = false
             videoModeAudioSourceButton.isHidden = false
 
@@ -944,7 +944,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         hasDismissed = true
 
-        callUIAdapter.audioService.delegate = nil
+        callService.audioService.delegate = nil
 
         contactNameLabel.removeFromSuperview()
         callStatusLabel.removeFromSuperview()
@@ -1073,7 +1073,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         Logger.info("")
 
         button.isSelected = !button.isSelected
-        callUIAdapter.audioService.requestSpeakerphone(isEnabled: button.isSelected)
+        callService.audioService.requestSpeakerphone(isEnabled: button.isSelected)
     }
 
     func didPressTextMessage(sender button: UIButton) {
@@ -1263,7 +1263,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     // MARK: - Dismiss
 
     internal func dismissIfPossible(shouldDelay: Bool, completion: (() -> Void)? = nil) {
-        callUIAdapter.audioService.delegate = nil
+        callService.audioService.delegate = nil
 
         if hasDismissed {
             // Don't dismiss twice.

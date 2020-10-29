@@ -23,8 +23,14 @@ public final class CallService: NSObject {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
+    private var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
     @objc
     public let individualCallService = IndividualCallService()
+
+    lazy private(set) var audioService = CallAudioService()
 
     private var _currentCall: SignalCall?
     @objc
@@ -43,12 +49,14 @@ public final class CallService: NSObject {
             // Prevent device from sleeping while we have an active call.
             if oldValue != newValue {
                 if let oldValue = oldValue {
+                    oldValue.removeObserver(audioService)
                     DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
                 }
 
                 if let newValue = newValue {
                     assert(calls.contains(newValue))
                     DeviceSleepManager.shared.addBlock(blockObject: newValue)
+                    newValue.addObserverAndSyncState(observer: audioService)
 
                     if newValue.isIndividualCall { individualCallService.startCallTimer() }
                 } else {
@@ -329,9 +337,14 @@ public final class CallService: NSObject {
             owsFailDebug("unknown call: \(call)")
         }
 
+        if !hasCallInProgress {
+            audioSession.isRTCAudioEnabled = false
+        }
+        audioSession.endAudioActivity(call.audioActivity)
+
         switch call.mode {
         case .individual:
-            individualCallService.callUIAdapter.didTerminateCall(call, hasCallInProgress: hasCallInProgress)
+            break
         case .group(let groupCall):
             groupCall.leave()
             groupCall.disconnect()

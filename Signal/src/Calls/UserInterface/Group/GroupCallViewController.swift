@@ -13,7 +13,6 @@ class GroupCallViewController: UIViewController {
     private var groupCall: GroupCall { call.groupCall }
     private lazy var callControls = CallControls(call: call, delegate: self)
     private lazy var callHeader = CallHeader(call: call, delegate: self)
-    private var callService: CallService { AppEnvironment.shared.callService }
 
     private lazy var videoGrid = GroupCallVideoGrid(call: call)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
@@ -417,7 +416,7 @@ extension GroupCallViewController: CallControlsDelegate {
     func didPressAudioSource(sender: UIButton) {
         // TODO: Multiple Audio Sources
         sender.isSelected = !sender.isSelected
-        callUIAdapter.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
+        callService.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
     }
 
     func didPressMute(sender: UIButton) {

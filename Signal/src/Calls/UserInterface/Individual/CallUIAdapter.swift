@@ -128,8 +128,6 @@ extension CallUIAdaptee {
         }
     }
 
-    lazy var audioService = CallAudioService()
-
     public required override init() {
         AssertIsOnMainThread()
 
@@ -241,19 +239,6 @@ extension CallUIAdaptee {
         adaptee(for: call).answerCall(call)
     }
 
-    internal func didTerminateCall(_ call: SignalCall?, hasCallInProgress: Bool) {
-        AssertIsOnMainThread()
-
-        // If the call we're terminating was terminated due to "busy", we still have a call in
-        // progress, otherwise, we terminate the audio.
-        if !hasCallInProgress {
-            self.audioSession.isRTCAudioEnabled = false
-        }
-        if let call = call {
-            self.audioSession.endAudioActivity(call.audioActivity)
-        }
-    }
-
     @objc public func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
@@ -346,19 +331,6 @@ extension CallUIAdaptee {
 
         guard let call = call, call.isIndividualCall else { return }
 
-        audioService.handleRinging = adaptee(for: call).hasManualRinger
-        call.addObserverAndSyncState(observer: audioService)
-    }
-
-    internal func didUpdateVideoTracks(call: SignalCall?,
-                                       localCaptureSession: AVCaptureSession?,
-                                       remoteVideoTrack: RTCVideoTrack?) {
-        AssertIsOnMainThread()
-
-        if let call = call {
-            audioService.handleRinging = adaptee(for: call).hasManualRinger
-        }
-
-        audioService.didUpdateVideoTracks(call: call)
+        callService.audioService.handleRinging = adaptee(for: call).hasManualRinger
     }
 }

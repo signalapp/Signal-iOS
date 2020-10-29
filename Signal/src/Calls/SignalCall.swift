@@ -31,6 +31,10 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     public let audioActivity: AudioActivity
 
+    private var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
     @objc
     var isGroupCall: Bool {
         switch mode {
@@ -254,6 +258,10 @@ extension SignalCall: GroupCallDelegate {
     public func groupCall(onLocalDeviceStateChanged groupCall: GroupCall) {
         if groupCall.localDeviceState.joinState == .joined, connectedDate == nil {
             connectedDate = Date()
+
+            // make sure we don't terminate audio session during call
+            audioSession.isRTCAudioEnabled = true
+            owsAssertDebug(audioSession.startAudioActivity(audioActivity))
         }
 
         observers.elements.forEach { $0.groupCallLocalDeviceStateChanged(self) }
