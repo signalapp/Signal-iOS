@@ -61,7 +61,7 @@ def shared_pods
   pod 'AFNetworking', '~> 3.2.1', inhibit_warnings: true
   pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
-  pod 'YYImage', :inhibit_warnings => true
+  pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
   pod 'ZXingObjC', '~> 3.6.4', :inhibit_warnings => true
 end
 
