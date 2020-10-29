@@ -170,7 +170,7 @@ const CGFloat kIconViewLength = 24;
     return [OWSPrimaryStorage sharedManager].dbReadWriteConnection;
 }
 
-- (NSString *)threadName
+- (nullable NSString *)threadName
 {
     NSString *threadName = self.thread.name;
     if (self.thread.contactIdentifier) {
@@ -947,13 +947,57 @@ const CGFloat kIconViewLength = 24;
     return cell;
 }
 
+static CGRect oldframe;
+
+-(void)showProfilePicture:(UITapGestureRecognizer *)tapGesture
+{
+    LKProfilePictureView *avatarImageView = (LKProfilePictureView *)tapGesture.view;
+    UIImage * _Nullable image = [avatarImageView getProfilePicture];
+    if (image == nil) { return; }
+    
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    UIView *backgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
+    oldframe = [avatarImageView convertRect:avatarImageView.bounds toView:window];
+    backgroundView.backgroundColor = [UIColor blackColor];
+    backgroundView.alpha = 0;
+    UIImageView *imageView = [[UIImageView alloc]initWithFrame:oldframe];
+    imageView.image = image;
+    imageView.tag = 1;
+    imageView.layer.cornerRadius = [UIScreen mainScreen].bounds.size.width / 2;
+    imageView.layer.masksToBounds = true;
+    [backgroundView addSubview:imageView];
+    [window addSubview:backgroundView];
+        
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideImage:)];
+    [backgroundView addGestureRecognizer: tap];
+        
+    [UIView animateWithDuration:0.2 animations:^{
+        imageView.frame = CGRectMake(0,([UIScreen mainScreen].bounds.size.height - oldframe.size.height * [UIScreen mainScreen].bounds.size.width / oldframe.size.width) / 2, [UIScreen mainScreen].bounds.size.width, oldframe.size.height * [UIScreen mainScreen].bounds.size.width / oldframe.size.width);
+        backgroundView.alpha = 1;
+    } completion:nil];
+}
+
+-(void)hideImage:(UITapGestureRecognizer *)tap{
+    UIView *backgroundView = tap.view;
+    UIImageView *imageView=(UIImageView *)[tap.view viewWithTag:1];
+    [UIView animateWithDuration:0.2 animations:^{
+        imageView.frame = oldframe;
+        backgroundView.alpha = 0;
+    } completion:^(BOOL finished) {
+        [backgroundView removeFromSuperview];
+    }];
+}
+
+
 - (UIView *)mainSectionHeader
 {
+    UITapGestureRecognizer *profilePictureTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showProfilePicture:)];
     LKProfilePictureView *profilePictureView = [LKProfilePictureView new];
     CGFloat size = LKValues.largeProfilePictureSize;
     profilePictureView.size = size;
     [profilePictureView autoSetDimension:ALDimensionWidth toSize:size];
     [profilePictureView autoSetDimension:ALDimensionHeight toSize:size];
+    [profilePictureView addGestureRecognizer:profilePictureTapGestureRecognizer];
     
     UILabel *titleView = [UILabel new];
     titleView.textColor = LKColors.text;
