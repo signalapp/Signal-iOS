@@ -951,16 +951,16 @@ static CGRect oldframe;
 
 -(void)showProfilePicture:(UITapGestureRecognizer *)tapGesture
 {
-    LKProfilePictureView *avatarImageView = (LKProfilePictureView *)tapGesture.view;
-    UIImage * _Nullable image = [avatarImageView getProfilePicture];
+    LKProfilePictureView *profilePictureView = (LKProfilePictureView *)tapGesture.view;
+    UIImage *image = [profilePictureView getProfilePicture];
     if (image == nil) { return; }
     
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     UIView *backgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
-    oldframe = [avatarImageView convertRect:avatarImageView.bounds toView:window];
+    oldframe = [profilePictureView convertRect:profilePictureView.bounds toView:window];
     backgroundView.backgroundColor = [UIColor blackColor];
     backgroundView.alpha = 0;
-    UIImageView *imageView = [[UIImageView alloc]initWithFrame:oldframe];
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:oldframe];
     imageView.image = image;
     imageView.tag = 1;
     imageView.layer.cornerRadius = [UIScreen mainScreen].bounds.size.width / 2;
@@ -971,7 +971,7 @@ static CGRect oldframe;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideImage:)];
     [backgroundView addGestureRecognizer: tap];
         
-    [UIView animateWithDuration:0.2 animations:^{
+    [UIView animateWithDuration:0.25 animations:^{
         imageView.frame = CGRectMake(0,([UIScreen mainScreen].bounds.size.height - oldframe.size.height * [UIScreen mainScreen].bounds.size.width / oldframe.size.width) / 2, [UIScreen mainScreen].bounds.size.width, oldframe.size.height * [UIScreen mainScreen].bounds.size.width / oldframe.size.width);
         backgroundView.alpha = 1;
     } completion:nil];
@@ -979,8 +979,8 @@ static CGRect oldframe;
 
 -(void)hideImage:(UITapGestureRecognizer *)tap{
     UIView *backgroundView = tap.view;
-    UIImageView *imageView=(UIImageView *)[tap.view viewWithTag:1];
-    [UIView animateWithDuration:0.2 animations:^{
+    UIImageView *imageView = (UIImageView *)[tap.view viewWithTag:1];
+    [UIView animateWithDuration:0.25 animations:^{
         imageView.frame = oldframe;
         backgroundView.alpha = 0;
     } completion:^(BOOL finished) {
