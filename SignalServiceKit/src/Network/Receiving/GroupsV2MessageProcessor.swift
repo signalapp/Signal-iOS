@@ -18,32 +18,12 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 
     // MARK: - Dependencies
 
-    private var messageManager: OWSMessageManager {
-        return SSKEnvironment.shared.messageManager
-    }
-
     private var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }
 
     private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
-    }
-
-    private var groupsV2: GroupsV2Swift {
-        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
-    }
-
-    private var groupV2Updates: GroupV2UpdatesSwift {
-        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
-    }
-
-    private var blockingManager: OWSBlockingManager {
-        return SSKEnvironment.shared.blockingManager
-    }
-
-    private var notificationsManager: NotificationsProtocol {
-        return SSKEnvironment.shared.notificationsManager
     }
 
     private var pipelineSupervisor: MessagePipelineSupervisor {
@@ -53,11 +33,6 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
     // MARK: -
 
     private let finder = GRDBGroupsV2MessageJobFinder()
-    // This property should only be accessed on serialQueue.
-    private var isDrainingQueue = false
-    private var isAppInBackground = AtomicBool(false)
-
-    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], Bool, SDSAnyWriteTransaction) -> Void
 
     override init() {
         super.init()
@@ -102,13 +77,13 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
     @objc func applicationWillEnterForeground() {
         AssertIsOnMainThread()
 
-        isAppInBackground.set(false)
+        drainQueueWhenReady()
     }
 
     @objc func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
-        isAppInBackground.set(true)
+        drainQueueWhenReady()
     }
 
     @objc func registrationStateDidChange() {
@@ -137,8 +112,6 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 
     // MARK: -
 
-    private let serialQueue: DispatchQueue = DispatchQueue(label: "org.whispersystems.message.groupv2")
-
     fileprivate func enqueue(envelopeData: Data,
                              plaintextData: Data?,
                              groupId: Data,
@@ -160,58 +133,244 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
             return
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.drainQueue()
+            DispatchQueue.global().async {
+                self.drainQueues()
+            }
         }
     }
 
-    private func drainQueue(retryDelayAfterFailure: TimeInterval = 1.0) {
+    private let unfairLock = UnfairLock()
+    private var groupsMessageProcessors = [Data: GroupsMessageProcessor]()
+
+    // At any given time, we need to ensure that there is exactly
+    // one GroupsMessageProcessor for each group that needs to
+    // process incoming messages.
+    private func drainQueues() {
+        owsAssertDebug(!Thread.isMainThread)
+
         guard AppReadiness.isAppReady || CurrentAppContext().isRunningTests else {
             owsFailDebug("App is not ready.")
             return
         }
-        guard self.pipelineSupervisor.isMessageProcessingPermitted else {
-            return
-        }
-        guard tsAccountManager.isRegisteredAndReady else {
-            return
-        }
-
-        serialQueue.async {
-            guard !self.isDrainingQueue else {
-                return
-            }
-            self.isDrainingQueue = true
-            self.drainQueueWorkStep(retryDelayAfterFailure: retryDelayAfterFailure)
-        }
-    }
-
-    private func drainQueueWorkStep(retryDelayAfterFailure: TimeInterval = 1.0) {
-        assertOnQueue(serialQueue)
-
-        guard !DebugFlags.suppressBackgroundActivity else {
+        let canProcess = (pipelineSupervisor.isMessageProcessingPermitted &&
+                            tsAccountManager.isRegisteredAndReady &&
+                            !DebugFlags.suppressBackgroundActivity)
+        guard canProcess else {
             // Don't process queues.
             return
         }
 
-        // We want a value that is just high enough to yield perf benefits.
-        let kIncomingMessageBatchSize: UInt = 32
-        // If the app is in the background, use batch size of 1.
-        // This reduces the cost of being interrupted and rolled back if
-        // app is suspended.
-        let batchSize: UInt = isAppInBackground.get() ? 1 : kIncomingMessageBatchSize
+        // Obtain the list of groups that currently need processing.
+        let groupIdsWithJobs = Set(databaseStorage.read { transaction in
+            self.finder.allEnqueuedGroupIds(transaction: transaction.unwrapGrdbRead)
+        })
 
-        let batchJobs = databaseStorage.read { transaction in
-            return self.finder.nextJobs(batchSize: batchSize, transaction: transaction.unwrapGrdbRead)
-        }
-        guard batchJobs.count > 0 else {
-            self.isDrainingQueue = false
+        guard !groupIdsWithJobs.isEmpty else {
             Logger.verbose("Queue is drained")
             NotificationCenter.default.postNotificationNameAsync(GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue, object: nil)
             return
         }
 
-        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
+        var groupIdsToProcess = Set<Data>()
+        unfairLock.withLock {
+            groupIdsToProcess = groupIdsWithJobs.subtracting(groupsMessageProcessors.keys)
 
+            for groupId in groupIdsToProcess {
+                let groupsMessageProcessor = GroupsMessageProcessor(groupId: groupId)
+                groupsMessageProcessors[groupId] = groupsMessageProcessor
+
+                firstly(on: .global()) { () -> Promise<Void> in
+                    groupsMessageProcessor.promise
+                }.ensure(on: .global()) {
+                    self.unfairLock.withLock {
+                        _ = self.groupsMessageProcessors.removeValue(forKey: groupId)
+                    }
+                    self.drainQueues()
+                }.catch(on: .global()) { error in
+                    owsFailDebug("Error: \(error)")
+                }
+            }
+        }
+
+        guard !groupIdsToProcess.isEmpty else {
+            return
+        }
+    }
+
+    func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
+        return self.finder.jobCount(transaction: transaction) > 0
+    }
+}
+
+// MARK: -
+
+// The entity tries to process all pending jobs for a given group.
+//
+// * It retries with exponential backoff.
+// * It retries immediately if reachability, etc. change.
+//
+// It's promise is fulfilled when all jobs are processed _or_
+// we give up.
+private class GroupsMessageProcessor: MessageProcessingPipelineStage {
+
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        return SSKEnvironment.shared.tsAccountManager
+    }
+
+    private var pipelineSupervisor: MessagePipelineSupervisor {
+        return SSKEnvironment.shared.messagePipelineSupervisor
+    }
+
+    private var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+    }
+
+    private var blockingManager: OWSBlockingManager {
+        return SSKEnvironment.shared.blockingManager
+    }
+
+    private var groupV2Updates: GroupV2UpdatesSwift {
+        return SSKEnvironment.shared.groupV2Updates as! GroupV2UpdatesSwift
+    }
+
+    private var messageManager: OWSMessageManager {
+        return SSKEnvironment.shared.messageManager
+    }
+
+    private var notificationsManager: NotificationsProtocol {
+        return SSKEnvironment.shared.notificationsManager
+    }
+
+    // MARK: -
+
+    private let groupId: Data
+    private let finder = GRDBGroupsV2MessageJobFinder()
+
+    fileprivate let promise: Promise<Void>
+    private let resolver: Resolver<Void>
+
+    fileprivate required init(groupId: Data) {
+        self.groupId = groupId
+
+        let (promise, resolver) = Promise<Void>.pending()
+        self.promise = promise
+        self.resolver = resolver
+
+        observeNotifications()
+
+        tryToProcess()
+    }
+
+    private func observeNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationWillEnterForeground),
+                                               name: .OWSApplicationWillEnterForeground,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidEnterBackground),
+                                               name: .OWSApplicationDidEnterBackground,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(registrationStateDidChange),
+                                               name: .registrationStateDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(webSocketStateDidChange),
+                                               name: .webSocketStateDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reachabilityChanged),
+                                               name: SSKReachability.owsReachabilityDidChange,
+                                               object: nil)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.pipelineSupervisor.register(pipelineStage: self)
+        }
+    }
+
+    // MARK: - Notifications
+
+    @objc func applicationWillEnterForeground() {
+        AssertIsOnMainThread()
+
+        tryToProcess()
+    }
+
+    @objc func applicationDidEnterBackground() {
+        AssertIsOnMainThread()
+
+        tryToProcess()
+    }
+
+    @objc func registrationStateDidChange() {
+        AssertIsOnMainThread()
+
+        tryToProcess()
+    }
+
+    @objc func webSocketStateDidChange() {
+        AssertIsOnMainThread()
+
+        tryToProcess()
+    }
+
+    @objc func reachabilityChanged() {
+        AssertIsOnMainThread()
+
+        tryToProcess()
+    }
+
+    // MARK: -
+
+    private let isDrainingQueue = AtomicBool(false)
+
+    private func tryToProcess(retryDelayAfterFailure: TimeInterval = 1.0) {
+        guard isDrainingQueue.tryToSetFlag() else {
+            // Batch already in flight.
+            return
+        }
+        processWorkStep(retryDelayAfterFailure: retryDelayAfterFailure)
+    }
+
+    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], Bool, SDSAnyWriteTransaction) -> Void
+
+    private func processWorkStep(retryDelayAfterFailure: TimeInterval = 1.0) {
+        owsAssertDebug(isDrainingQueue.get())
+
+        let canProcess = (pipelineSupervisor.isMessageProcessingPermitted &&
+                            tsAccountManager.isRegisteredAndReady &&
+                            !DebugFlags.suppressBackgroundActivity)
+        guard canProcess else {
+            Logger.warn("Cannot process.")
+            resolver.fulfill(())
+            return
+        }
+
+        // We want a value that is just high enough to yield perf benefits.
+        let kIncomingMessageBatchSize: UInt = 16
+        // If the app is in the background, use batch size of 1.
+        // This reduces the cost of being interrupted and rolled back if
+        // app is suspended.
+        let batchSize: UInt = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
+
+        let batchJobs = databaseStorage.read { transaction in
+            self.finder.nextJobs(forGroupId: self.groupId, batchSize: batchSize, transaction: transaction.unwrapGrdbRead)
+        }
+        guard !batchJobs.isEmpty else {
+            Logger.verbose("No jobs for \(groupId.hexadecimalString).")
+            resolver.fulfill(())
+            return
+        }
+
+        Logger.verbose("Processing \(batchJobs.count) jobs for \(groupId.hexadecimalString)")
+
+        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
         let completion: BatchCompletionBlock = { (processedJobs, shouldWaitBeforeRetrying, transaction) in
             // NOTE: This transaction is the same transaction as the transaction
             //       passed to processJobs() in the "sync" case but is a different
@@ -221,34 +380,33 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                 Logger.warn("shouldWaitBeforeRetrying")
             }
 
-            let uniqueIds = processedJobs.map { $0.uniqueId }
-            self.finder.removeJobs(withUniqueIds: uniqueIds,
-                                   transaction: transaction.unwrapGrdbWrite)
+            let processedUniqueIds = processedJobs.map { $0.uniqueId }
+            self.finder.removeJobs(withUniqueIds: processedUniqueIds, transaction: transaction.unwrapGrdbWrite)
 
-            let jobCount: UInt = self.finder.jobCount(transaction: transaction)
+            let jobCount: UInt = self.finder.jobCount(forGroupId: self.groupId, transaction: transaction.unwrapGrdbRead)
 
-            Logger.verbose("completed \(processedJobs.count)/\(batchJobs.count) jobs. \(jobCount) jobs left.")
+            Logger.verbose("Completed \(processedJobs.count)/\(batchJobs.count) jobs. \(jobCount) jobs left.")
 
             transaction.addAsyncCompletion {
                 assert(backgroundTask != nil)
                 backgroundTask = nil
 
                 if shouldWaitBeforeRetrying {
-                    // Retry with exponential backoff.
-                    self.serialQueue.async {
-                        // After successfully processing a batch drainQueueWorkStep()
-                        // calls itself to process the next batch, if any.
-                        // The isDrainingQueue flag is cleared when all batches have
-                        // been processed.
-                        //
-                        // After failures, we clear isDrainingQueue immediately and
-                        // call drainQueue(), not drainQueueWorkStep() after a delay.
-                        // That allows us to kick off another batch immediately if
-                        // reachability changes, etc.
-                        self.isDrainingQueue = false
-                        self.serialQueue.asyncAfter(deadline: DispatchTime.now() + retryDelayAfterFailure) {
-                            self.drainQueue(retryDelayAfterFailure: retryDelayAfterFailure * 2)
-                        }
+                    // After successfully processing a batch drainQueueWorkStep()
+                    // calls itself to process the next batch, if any.
+                    // The isDrainingQueue flag is cleared when all batches have
+                    // been processed.
+                    //
+                    // After failures, we clear isDrainingQueue immediately and
+                    // call drainQueue(), not drainQueueWorkStep() after a delay.
+                    // That allows us to kick off another batch immediately if
+                    // reachability changes, etc.
+                    if !self.isDrainingQueue.tryToClearFlag() {
+                        self.resolver.reject(OWSAssertionError("Couldn't clear flag."))
+                        return
+                    }
+                    DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelayAfterFailure) {
+                        self.tryToProcess(retryDelayAfterFailure: retryDelayAfterFailure * 2)
                     }
                 } else {
                     // Wait always a bit in hopes of increasing the size of the next batch.
@@ -256,8 +414,8 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                     // so by definition we're receiving more than one message and can benefit from
                     // batching.
                     let batchSpacingSeconds: TimeInterval = 0.5
-                    self.serialQueue.asyncAfter(deadline: DispatchTime.now() + batchSpacingSeconds) {
-                        self.drainQueueWorkStep()
+                    DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + batchSpacingSeconds) {
+                        self.processWorkStep()
                     }
                 }
             }
@@ -489,7 +647,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
             }
             processedJobs.append(job)
 
-            if isAppInBackground.get() {
+            if CurrentAppContext().isInBackground() {
                 // If the app is in the background, stop processing this batch.
                 //
                 // Since this check is done after processing jobs, we'll continue
@@ -734,10 +892,6 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
         default:
             return false
         }
-    }
-
-    func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
-        return self.finder.jobCount(transaction: transaction) > 0
     }
 }
 
