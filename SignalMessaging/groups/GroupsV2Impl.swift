@@ -1347,7 +1347,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     public func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
                                              transaction: SDSAnyReadTransaction) -> Bool {
-        return GroupsV2Impl.isGroupKnownToStorageService(groupModel: groupModel, transaction: transaction)
+        GroupsV2Impl.isGroupKnownToStorageService(groupModel: groupModel, transaction: transaction)
     }
 
     public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {

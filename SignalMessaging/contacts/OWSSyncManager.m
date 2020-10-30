@@ -299,6 +299,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    if (SSKDebugFlags.dontSendContactOrGroupSyncMessages.value) {
+        OWSLogInfo(@"Skipping group sync message.");
+        return;
+    }
+
     TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
     if (thread == nil) {
         OWSFailDebug(@"Missing thread.");
@@ -374,6 +379,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                               skipIfRedundant:(BOOL)skipIfRedundant
                                      debounce:(BOOL)debounce
 {
+    if (SSKDebugFlags.dontSendContactOrGroupSyncMessages.value) {
+        OWSLogInfo(@"Skipping contact sync message.");
+        return [AnyPromise promiseWithValue:@(YES)];
+    }
     if (!self.contactsManager.isSetup) {
         return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Contacts manager not yet ready.")];
     }

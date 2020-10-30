@@ -95,6 +95,45 @@ public class RemoteConfig: BaseFlags {
         FeatureFlags.usernamesSupported
     }
 
+    // Controls whether or not the client will show the manual migration UI.
+    // Will only offer migrations if all members can be migrated.
+    @objc
+    public static var groupsV2MigrationAutoMigrations: Bool {
+        if groupsV2MigrationManualMigrations {
+            return true
+        }
+        guard FeatureFlags.groupsV2Migrations else {
+            return false
+        }
+        return (DebugFlags.groupsV2migrationsForceEnableAutoMigrations.get() ||
+                    isEnabled(.groupsV2autoMigrations))
+    }
+
+    // Controls whether or not the client will show the manual migration UI.
+    // Will only offer migrations if all members can be migrated.
+    @objc
+    public static var groupsV2MigrationManualMigrations: Bool {
+        if groupsV2MigrationBlockingMigrations {
+            return true
+        }
+        guard FeatureFlags.groupsV2Migrations else {
+            return false
+        }
+        return (DebugFlags.groupsV2migrationsForceEnableManualMigrations.get() ||
+            isEnabled(.groupsV2manualMigrations))
+    }
+
+    // Controls whether or not the client will show the manual migration UI.
+    // Will only offer migrations if all members can be migrated.
+    @objc
+    public static var groupsV2MigrationBlockingMigrations: Bool {
+        guard FeatureFlags.groupsV2Migrations else {
+            return false
+        }
+        return (DebugFlags.groupsV2MigrationForceBlockingMigrations.get() ||
+            isEnabled(.groupsV2blockingMigrations))
+    }
+
     @objc
     public static var researchMegaphone: Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else { return false }
@@ -273,6 +312,9 @@ private struct Flags {
         case uuidSafetyNumbers
         case groupsV2InviteLinksV2
         case profilesForAll
+        case groupsV2autoMigrations
+        case groupsV2manualMigrations
+        case groupsV2blockingMigrations
     }
 
     // Values defined in this array remain set once they are
