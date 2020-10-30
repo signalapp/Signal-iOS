@@ -441,9 +441,12 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressAudioSource(sender: UIButton) {
-        // TODO: Multiple Audio Sources
-        sender.isSelected = !sender.isSelected
-        callService.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
+        if callService.audioService.hasExternalInputs {
+            callService.audioService.presentRoutePicker()
+        } else {
+            sender.isSelected = !sender.isSelected
+            callService.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
+        }
     }
 
     func didPressMute(sender: UIButton) {
@@ -502,7 +505,6 @@ extension GroupCallViewController: UIScrollViewDelegate {
         if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
             videoOverflow.reloadData()
             updateCallUI()
-            ImpactHapticFeedback.impactOccured(style: .light)
         }
     }
 }

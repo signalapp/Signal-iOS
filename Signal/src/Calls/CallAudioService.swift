@@ -92,11 +92,18 @@ protocol CallAudioServiceDelegate: class {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         ensureProperAudioSession(call: call)
     }
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        ensureProperAudioSession(call: call)
+    }
+
     func groupCallJoinedMembersChanged(_ call: SignalCall) {}
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+
+    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        ensureProperAudioSession(call: call)
+    }
 
     private let routePicker = AVRoutePickerView()
     public func presentRoutePicker() -> Bool {
@@ -447,6 +454,8 @@ protocol CallAudioServiceDelegate: class {
             return AudioSource(portDescription: portDescription)
         }
     }
+
+    var hasExternalInputs: Bool { return availableInputs.count > 2 }
 
     var currentAudioSource: AudioSource? {
         get {
