@@ -171,7 +171,7 @@ class TestingViewController: OWSTableViewController {
             let section = OWSTableSection()
             section.footerTitle = LocalizationNotNeeded("Make sure to force-enable auto-migrations above first.")
             section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Groups v2: Auto-migrate all v1 groups")) {
-                GroupsV2Migration.tryToAutoMigrateAllGroups()
+                GroupsV2Migration.tryToAutoMigrateAllGroups(shouldLimitBatchSize: false)
             })
             contents.addSection(section)
         }

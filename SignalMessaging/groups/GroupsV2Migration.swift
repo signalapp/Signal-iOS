@@ -160,7 +160,7 @@ public extension GroupsV2Migration {
         return true
     }
 
-    static func tryToAutoMigrateAllGroups() {
+    static func tryToAutoMigrateAllGroups(shouldLimitBatchSize: Bool) {
         AssertIsOnMainThread()
 
         guard FeatureFlags.groupsV2Migrations else {
@@ -211,7 +211,7 @@ public extension GroupsV2Migration {
 
             // Check up to N groups on every launch.
             let maxCheckCount: Int = 50
-            if groupThreads.count > maxCheckCount {
+            if shouldLimitBatchSize, groupThreads.count > maxCheckCount {
                 groupThreads.shuffle()
                 groupThreads = Array(groupThreads.prefix(upTo: maxCheckCount))
             }
