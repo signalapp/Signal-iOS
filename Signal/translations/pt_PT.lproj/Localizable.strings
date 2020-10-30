@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Posicione o código QR na moldura do seu outro dispositivo.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Não está a ver o caminho no seu dispositivo antigo?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "A aguardar por outro dispositivo...";
@@ -1514,25 +1514,25 @@
 "GROUP_CALL_JOIN_BUTTON" = "Entrar na chamada";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Nesta chamada · %ld pessoas";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "· %ld pessoas nesta chamada";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ e outros %ld estão nesta chamada";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Não está mais ninguém aqui";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "· 1 pessoa nesta chamada";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ está nesta chamada";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Iniciar chamada";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ e %@ estão nesta chamada";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Criou o grupo.";
@@ -2084,7 +2084,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Escolha um administrador novo";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Ver pedido";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Ver pedidos";
@@ -2333,22 +2333,22 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Pré-visualizar todos os links";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "De forma a poder transferir a sua conta do Signal, você necessita de ativar o acesso à rede local em ambos os dispositivos.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Necessita de ajuda?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Em cada um dos dispositivos, abra as 'Definições'";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Ative a \"Rede local\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navegue até ao Signal";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Ative o 'Acesso à rede local'";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Pesquisar por nome ou endereço";

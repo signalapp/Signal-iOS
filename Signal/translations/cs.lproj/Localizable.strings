@@ -1511,7 +1511,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Připojit se k hovoru";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";

@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positionnez ce code QR dans le cadre de votre autre appareil.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Ne voyez-vous pas l’invite sur l’ancien appareil ?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "En attente de l’autre appareil…";
@@ -1508,31 +1508,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Les membres du groupe peuvent être changés par « %@ ».";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Seuls les administrateurs peuvent modifier cette option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Seuls les administrateurs peuvent changer cette option.";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "Me joindre à l’appel";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dans cet appel · %ld personnes";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@ et %ld autres sont dans cet appel";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Il n’y a personne d’autre ici";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "Dans cet appel · 1 personne";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ est dans cet appel";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "Démarrer un appel";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ et %@ sont dans cet appel";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Vous avez créé le groupe.";
@@ -2084,10 +2084,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Choisir un nouvel administrateur";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "Visualiser la demande";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Afficher la demande";
 
 /* Label for button that lets the user view the requests to join the group. */
-"GROUPS_VIEW_REQUESTS_BUTTON" = "Visualiser les demandes";
+"GROUPS_VIEW_REQUESTS_BUTTON" = "Afficher les demandes";
 
 /* Help item allowing the user to file a support request */
 "HELP_CONTACT_US" = "Nous contacter";
@@ -2333,22 +2333,22 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Prévisualiser n’importe quel lien";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Afin de transférer votre compte Signal, vous devez activer l’accès au réseau local sur les deux appareils.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Besoin d’aide ?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Sur chaque appareil, ouvrez les Réglages";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activez « Réseau local »";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Naviguez vers Signal";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Activez Accès au réseau local";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Chercher par nom ou adresse";
@@ -2537,7 +2537,7 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Supprimer";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Poursuivre cette conversation avec %@ et partager votre nom et votre photo avec lui ?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Poursuivre cette conversation avec %@ et partager votre nom et votre photo avec cette personne ?";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Poursuivre votre conversation avec ce groupe et partager votre nom et votre photo avec ses membres ?";
@@ -3200,7 +3200,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Création du NIP…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Vous pouvez modifier votre NIP tant que cet appareil est inscrit.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Vous pouvez changer votre NIP tant que cet appareil est inscrit.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Changer votre NIP";
@@ -3266,7 +3266,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Le NIP doit comporter au moins quatre chiffres.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Vous ne pouvez pas épingler plus de quatre conversations.";
+"PINNED_CONVERSATION_LIMIT" = "Vous pouvez épingler jusqu’à quatre conversations.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Épinglées";
@@ -4322,7 +4322,7 @@
 "SOUNDS_NONE" = "Aucun";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these updates in a future update.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Les groupes existants seront automatiquement mis à jour ultérieurement.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nouveau groupe";
@@ -4331,10 +4331,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Les nouveaux groupes sont là !";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Les nouveaux groupes sont arrivés !";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Les fonctions des nouveaux groupes comprennent les @mentions, les administrateurs et plus encore. Essayez-les en touchant :";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Message — Autocollant";

@@ -875,7 +875,7 @@
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Jäsenkutsut";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Jäsenpyynnöt & kutsut";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Ryhmäänliittymispyynnöt & kutsut";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Jäsenet";
@@ -1160,7 +1160,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Sijoita tämä QR-koodi toisen laitteen kehykseen.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Etkö näe kehotetta vanhalla laitteellasi?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Odotetaan toista laitetta…";
@@ -1508,31 +1508,31 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Ryhmän jäsenyyttä voi muokata \"%@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "Vain ylläpitäjät voivat muuttaa tätä vaihtoehtoa.";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Liity puheluun";
 
 /* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "In this call · %ld people";
+"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Tässä puhelussa · %ld henkilöä";
 
 /* Text explaining that there are three or more people in the group call. Embeds {member name} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@, %@, and %ld others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%@,%@ ja %ld ovat tässä puhelussa";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "Kukaan muu ei ole täällä";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "In this call · 1 person";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "Tässä puhelussa · 1 henkilö";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ on tässä puhelussa";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Aloita puhelu";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ ja %@ ovat tässä puhelussa";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Sinä loit ryhmän.";
@@ -1715,7 +1715,7 @@
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Vaadi ylläpitäjän hyväksyä uudet jäsenet, jotka liittyvät ryhmälinkin kautta.";
 
 /* Title for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Jäsenpyynnöt";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_TITLE" = "Ryhmäänliittymispyynnöt";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Uudelleenaseta linkki";
@@ -1961,13 +1961,13 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ poisti ylläpito-oikeudet käyttäjältä %2$@.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Jäsenpyynnöt";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Ryhmäänliittymispyynnöt";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Odottavat kutsut";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Jäsenpyynnöt & kutsut";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Ryhmäänliittymispyynnöt & kutsut";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Ryhmä päivitetty.";
@@ -2084,7 +2084,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Valitse uusi ylläpitäjä";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Näytä pyyntö";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Näytä pyynnöt";
@@ -2333,22 +2333,22 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Esikatsele kaikkia linkkejä";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Signal-tilisi siirtämiseksi sinun on sallittava paikallisen verkon käyttö molemmissa laitteissa.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Tarvitsetko apua?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "On each device, open Settings";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Kummallakin laitteella, avaa Asetukset";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Ota käyttöön \"Paikallinen verkko\"";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Avaa Signal";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Ota käyttöön paikallinen verkkoyhteys";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Etsi nimen tai osoitteen perusteella";
@@ -2537,10 +2537,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Poista";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Jatka keskustelua käyttäjän %@ kanssa ja jaa nimesi ja kuvasi hänelle?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Jatka keskustelua tämän ryhmän kanssa ja jaa nimesi ja kuvasi sen jäsenille?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Salli henkilön %@ lähettää sinulle viestejä ja jaa nimesi ja profiilikuvasi hänelle? Hän ei tiedä että olet nähnyt hänen viestinsä ennen kuin hyväksyt.";
@@ -2984,7 +2984,7 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ kutsui %2$@ henkilöä";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Odottavia jäsenpyyntöjä ei ole.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Odottavia ryhmäänliittymispyyntöjä ei ole.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Ei odottavia kutsuja.";
@@ -2993,7 +2993,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "“%@“ lisätty.";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ odottavaa jäsenpyyntöä.";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ odottavaa ryhmäänliittymispyyntöä.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Näytä pyynnöt";
@@ -3035,7 +3035,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Muiden ryhmän jäsenten kutsumat";
 
 /* Title for the 'pending member requests' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Odottavat jäsenpyynnöt";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PENDING_MEMBER_REQUESTS" = "Odottavat ryhmäänliittymispyynnöt";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Kutsumasi henkilöt";
@@ -3605,7 +3605,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "Ei kiitos";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>Uskomme yksityisyyteen.</bold>\n\nSignal ei seuraa sinua tai kerää tietojasi. Parantaaksemme Signalia kaikille, olemme riippuvaisia käyttäjien palautteesta. <bold>Haluamme kuulla myös sinulta</bold>.\n\nSuoritamme kyselyä ymmärtääksemme kuinka käytät Signalia. Kyselymme ei kerää tietoja, jotka voisi tunnistaa sinua. Jos sinua kiinnostaa jakaa lisää palautetta, sinulla on mahdollisuus antaa yhteystietosi.\n\nJos sinulla on palautetta ja muutama minuutti aikaa, haluaisimme kuulla sinulta.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Vastaa kyselyyn";
@@ -4322,7 +4322,7 @@
 "SOUNDS_NONE" = "Ei mitään";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these updates in a future update.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Nykyiset ryhmät saavat nämä päivitykset automaattisesti tulevassa päivityksessä.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Uusi ryhmä";
@@ -4331,10 +4331,10 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
 
 /* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Uudet ryhmät ovat täällä!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Uusiin ryhmä-ominaisuuksiin kuuluu @maininnat, ylläpitäjät ja lisää. Kokeile napauttamalla:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Tarraviesti";

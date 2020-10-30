@@ -4427,7 +4427,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Hitelesítés";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "Ez az üzenet ki lett törölve.";
+"THIS_MESSAGE_WAS_DELETED" = "Ez az üzenet törölve lett.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Az alábbi csoportok tagja: '%@', '%@' és még %lu további";
