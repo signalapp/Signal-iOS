@@ -193,7 +193,7 @@ class GroupCallViewController: UIViewController {
         let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
 
         videoOverflowTopConstraint.constant = yMax - videoOverflow.height
-        videoOverflowTrailingConstraint.constant = GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4
+        videoOverflowTrailingConstraint.constant = -(GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4)
         view.layoutIfNeeded()
 
         localMemberView.removeFromSuperview()
