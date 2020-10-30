@@ -1598,6 +1598,8 @@ typedef enum : NSUInteger {
 }
 
 - (void)showGroupMigrationLearnMoreActionSheetWithInfoMessage:(TSInfoMessage *)infoMessage
+                                                oldGroupModel:(TSGroupModel *)oldGroupModel
+                                                newGroupModel:(TSGroupModel *)newGroupModel
 {
     OWSAssertIsOnMainThread();
     if (![self.thread isKindOfClass:[TSGroupThread class]]) {
@@ -1607,7 +1609,9 @@ typedef enum : NSUInteger {
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     GroupMigrationActionSheet *actionSheet =
-        [GroupMigrationActionSheet actionSheetForMigratedGroupWithGroupThread:groupThread];
+        [GroupMigrationActionSheet actionSheetForMigratedGroupWithGroupThread:groupThread
+                                                                oldGroupModel:oldGroupModel
+                                                                newGroupModel:newGroupModel];
     [actionSheet presentFromViewController:self];
 }
 

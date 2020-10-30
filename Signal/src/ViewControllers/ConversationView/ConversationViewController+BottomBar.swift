@@ -10,7 +10,7 @@ enum CVCBottomViewType: Equatable {
     case none
     case inputToolbar
     case memberRequestView
-    case messageRequestView
+    case messageRequestView(messageRequestType: MessageRequestType)
     case search
     case selection
     case blockingGroupMigration
@@ -45,12 +45,16 @@ public extension ConversationViewController {
 
             if !hasViewWillAppearOccurred {
                 return .none
-            } else if hasBlockingGroupMigration {
-                return .blockingGroupMigration
             } else if threadViewModel.hasPendingMessageRequest {
-                return .messageRequestView
+                let messageRequestType = Self.databaseStorage.read { transaction in
+                    MessageRequestView.messageRequestType(forThread: self.threadViewModel.threadRecord,
+                                                          transaction: transaction)
+                }
+                return .messageRequestView(messageRequestType: messageRequestType)
             } else if isLocalUserRequestingMember {
                 return .memberRequestView
+            } else if hasBlockingGroupMigration {
+                return .blockingGroupMigration
             } else {
                 switch uiMode {
                 case .search:

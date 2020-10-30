@@ -43,13 +43,6 @@ class BlockingGroupMigrationView: UIStackView {
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowRadius = 4
-        layer.shadowOffset = CGSize(width: 0, height: -2)
-        layer.shadowOpacity = 0.12
-        backgroundView.layer.cornerRadius = 8
-        backgroundView.layer.masksToBounds = true
-
         let format = NSLocalizedString("GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT",
                                        comment: "Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}.")
         let learnMoreText = CommonStrings.learnMore

@@ -96,7 +96,6 @@ class LegacyGroupView: UIView {
             Logger.verbose("Local user is not a member.")
             configureDefaultLabelContents()
         case .cantBeMigrated_NotInProfileWhitelist:
-            // TODO: Should we special-case this?
             Logger.verbose("Local user has not accepted message request.")
             configureDefaultLabelContents()
         case .cantBeMigrated_TooManyMembers:

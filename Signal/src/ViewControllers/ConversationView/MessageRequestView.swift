@@ -24,11 +24,34 @@ public enum MessageRequestMode: UInt {
 
 // MARK: -
 
+public struct MessageRequestType: Equatable {
+    let isGroupV1Thread: Bool
+    let isGroupV2Thread: Bool
+    let isThreadBlocked: Bool
+    let hasSentMessages: Bool
+}
+
+// MARK: -
+
 @objc
 class MessageRequestView: UIStackView {
 
     private let thread: TSThread
     private let mode: MessageRequestMode
+    private let messageRequestType: MessageRequestType
+
+    private var isGroupV1Thread: Bool {
+        messageRequestType.isGroupV1Thread
+    }
+    private var isGroupV2Thread: Bool {
+        messageRequestType.isGroupV2Thread
+    }
+    private var isThreadBlocked: Bool {
+        messageRequestType.isThreadBlocked
+    }
+    private var hasSentMessages: Bool {
+        messageRequestType.hasSentMessages
+    }
 
     @objc
     weak var delegate: MessageRequestDelegate?
@@ -37,6 +60,9 @@ class MessageRequestView: UIStackView {
     init(threadViewModel: ThreadViewModel) {
         let thread = threadViewModel.threadRecord
         self.thread = thread
+        self.messageRequestType = Self.databaseStorage.uiRead { transaction in
+            Self.messageRequestType(forThread: thread, transaction: transaction)
+        }
 
         if let groupThread = thread as? TSGroupThread,
             groupThread.isGroupV2Thread {
@@ -48,9 +74,6 @@ class MessageRequestView: UIStackView {
         }
 
         super.init(frame: .zero)
-
-        // TODO: Does this apply to the group invite path?
-        let isThreadBlocked = OWSBlockingManager.shared().isThreadBlocked(thread)
 
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset
@@ -69,30 +92,28 @@ class MessageRequestView: UIStackView {
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowRadius = 4
-        layer.shadowOffset = CGSize(width: 0, height: -2)
-        layer.shadowOpacity = 0.12
-        backgroundView.layer.cornerRadius = 8
-        backgroundView.layer.masksToBounds = true
-
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
         case .contactOrGroupRequest:
-            var hasSentMessages = false
-            databaseStorage.uiRead { transaction in
-        hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
-            }
-
-            addArrangedSubview(prepareMessageRequestPrompt(hasSentMessages: hasSentMessages,
-        isThreadBlocked: isThreadBlocked))
-            addArrangedSubview(prepareMessageRequestButtons(hasSentMessages: hasSentMessages,
-        isThreadBlocked: isThreadBlocked))
+            addArrangedSubview(prepareMessageRequestPrompt())
+            addArrangedSubview(prepareMessageRequestButtons())
         case .groupInviteRequest:
             addArrangedSubview(prepareGroupV2InvitePrompt())
             addArrangedSubview(prepareGroupV2InviteButtons())
         }
+    }
+
+    public static func messageRequestType(forThread thread: TSThread,
+                                          transaction: SDSAnyReadTransaction) -> MessageRequestType {
+        let isGroupV1Thread = thread.isGroupV1Thread
+        let isGroupV2Thread = thread.isGroupV2Thread
+        let isThreadBlocked = OWSBlockingManager.shared().isThreadBlocked(thread)
+        let hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
+        return MessageRequestType(isGroupV1Thread: isGroupV1Thread,
+                                  isGroupV2Thread: isGroupV2Thread,
+                                  isThreadBlocked: isThreadBlocked,
+                                  hasSentMessages: hasSentMessages)
     }
 
     required init(coder: NSCoder) {
@@ -110,7 +131,7 @@ class MessageRequestView: UIStackView {
     // * Contact threads
     // * v1 groups
     // * v2 groups if user does not have a pending invite.
-    func prepareMessageRequestPrompt(hasSentMessages: Bool, isThreadBlocked: Bool) -> UITextView {
+    func prepareMessageRequestPrompt() -> UITextView {
         if thread.isGroupThread {
             let string: String
             var appendLearnMoreLink = false
@@ -197,7 +218,7 @@ class MessageRequestView: UIStackView {
     // * Contact threads
     // * v1 groups
     // * v2 groups if user does not have a pending invite.
-    func prepareMessageRequestButtons(hasSentMessages: Bool, isThreadBlocked: Bool) -> UIStackView {
+    func prepareMessageRequestButtons() -> UIStackView {
         let mode = self.mode
         var buttons = [UIView]()
 

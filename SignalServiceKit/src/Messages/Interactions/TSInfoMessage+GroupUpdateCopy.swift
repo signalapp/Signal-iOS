@@ -1734,7 +1734,6 @@ extension GroupUpdateCopy {
             }
         }
 
-        // TODO: We need final copy here.
         if !droppedMembers.isEmpty {
             if droppedMembers.count == 1 {
                 let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_1",

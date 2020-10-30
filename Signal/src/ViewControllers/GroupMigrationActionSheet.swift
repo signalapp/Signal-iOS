@@ -13,7 +13,8 @@ public class GroupMigrationActionSheet: UIView {
         case upgradeGroup(migrationInfo: GroupsV2MigrationInfo)
         case tooManyMembers
         case someMembersCantMigrate
-        case migrationComplete
+        case migrationComplete(oldGroupModel: TSGroupModel,
+                               newGroupModel: TSGroupModel)
         case reAddDroppedMembers(members: Set<SignalServiceAddress>)
     }
 
@@ -34,11 +35,16 @@ public class GroupMigrationActionSheet: UIView {
     }
 
     @objc
-    public static func actionSheetForMigratedGroup(groupThread: TSGroupThread) -> GroupMigrationActionSheet {
+    public static func actionSheetForMigratedGroup(groupThread: TSGroupThread,
+                                                   oldGroupModel: TSGroupModel,
+                                                   newGroupModel: TSGroupModel) -> GroupMigrationActionSheet {
         let droppedMembers = groupThread.groupModel.getDroppedMembers
         if droppedMembers.isEmpty {
+            owsAssertDebug(oldGroupModel.groupsVersion == .V1)
+            owsAssertDebug(newGroupModel.groupsVersion == .V2)
             return GroupMigrationActionSheet(groupThread: groupThread,
-                                             mode: .migrationComplete)
+                                             mode: .migrationComplete(oldGroupModel: oldGroupModel,
+                                                                      newGroupModel: newGroupModel))
         } else {
             return GroupMigrationActionSheet(groupThread: groupThread,
                                              mode: .reAddDroppedMembers(members: Set(droppedMembers)))
@@ -125,8 +131,9 @@ public class GroupMigrationActionSheet: UIView {
             if hasBulletPoint {
                 let bullet = UIView()
                 bullet.autoSetDimensions(to: bulletSize)
-                // TODO: Dark theme value?
-                bullet.backgroundColor =  UIColor(rgbHex: 0xdedede)
+                bullet.backgroundColor = (Theme.isDarkThemeEnabled
+                                            ? UIColor.ows_gray60
+                                            : UIColor(rgbHex: 0xdedede))
                 bulletWrapper.addSubview(bullet)
                 bullet.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
                 bullet.autoPinEdge(toSuperviewEdge: .leading)
@@ -219,8 +226,9 @@ public class GroupMigrationActionSheet: UIView {
             return buildTooManyMembersContents()
         case .someMembersCantMigrate:
             return buildSomeMembersCantMigrateContents()
-        case .migrationComplete:
-            return buildMigrationCompleteContents()
+        case .migrationComplete(let oldGroupModel, let newGroupModel):
+            return buildMigrationCompleteContents(oldGroupModel: oldGroupModel,
+                                                  newGroupModel: newGroupModel)
         case .reAddDroppedMembers(let members):
             return buildReAddDroppedMembersContents(members: members)
         }
@@ -260,11 +268,11 @@ public class GroupMigrationActionSheet: UIView {
             if !membersToDrop.isEmpty {
                 builder.addVerticalSpacer(height: 20)
                 if membersToDrop.count == 1 {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1",
-                                                           comment: "Body text for the 'dropped member' section of the 'upgrade legacy group' alert view."))
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1",
+                                                           comment: "Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view."))
                 } else {
-                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N",
-                                                           comment: "Body text for the 'dropped members' section of the 'upgrade legacy group' alert view."))
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N",
+                                                           comment: "Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view."))
                 }
                 for address in membersToDrop {
                     builder.addVerticalSpacer(height: 16)
@@ -337,7 +345,8 @@ public class GroupMigrationActionSheet: UIView {
         return builder.subviews
     }
 
-    private func buildMigrationCompleteContents() -> [UIView] {
+    private func buildMigrationCompleteContents(oldGroupModel: TSGroupModel,
+                                                newGroupModel: TSGroupModel) -> [UIView] {
         var builder = Builder()
 
         builder.addTitleLabel(text: NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE",
@@ -350,7 +359,41 @@ public class GroupMigrationActionSheet: UIView {
         builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION",
                                                comment: "Explanation of group migration for a migrated group in the 'legacy group' alert views."))
 
-        builder.addVerticalSpacer(height: 100)
+        let invitedMembers = oldGroupModel.groupMembership.fullMembers.intersection(newGroupModel.groupMembership.invitedMembers)
+        let droppedMembers = oldGroupModel.groupMembership.fullMembers.subtracting(newGroupModel.groupMembership.allMembersOfAnyKind)
+
+        databaseStorage.read { transaction in
+            if !invitedMembers.isEmpty {
+                builder.addVerticalSpacer(height: 20)
+                if invitedMembers.count == 1 {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1",
+                                                           comment: "Body text for the 'invites member' section of the 'upgrade legacy group' alert view."))
+                } else {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N",
+                                                           comment: "Body text for the 'invites members' section of the 'upgrade legacy group' alert view."))
+                }
+                for address in invitedMembers {
+                    builder.addVerticalSpacer(height: 16)
+                    builder.addMemberRow(address: address, transaction: transaction)
+                }
+            }
+            if !droppedMembers.isEmpty {
+                builder.addVerticalSpacer(height: 20)
+                if droppedMembers.count == 1 {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1",
+                                                           comment: "Body text for the 'dropped member' section of the 'upgrade legacy group' alert view."))
+                } else {
+                    builder.addBodyLabel(NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N",
+                                                           comment: "Body text for the 'dropped members' section of the 'upgrade legacy group' alert view."))
+                }
+                for address in droppedMembers {
+                    builder.addVerticalSpacer(height: 16)
+                    builder.addMemberRow(address: address, transaction: transaction)
+                }
+            }
+        }
+
+        builder.addVerticalSpacer(height: 40)
 
         builder.addOkayButton(target: self, selector: #selector(dismissAlert))
 
@@ -489,9 +532,7 @@ private extension GroupMigrationActionSheet {
                                                         firstly {
                                                             self.reAddDroppedMembersPromise(members: members)
                                                         }.done { (_) in
-                                                            modalActivityIndicator.dismiss {
-                                                                self.dismissAndShowReAddDroppedMembersSuccessToast()
-                                                            }
+                                                            modalActivityIndicator.dismiss {}
                                                         }.catch { error in
                                                             owsFailDebug("Error: \(error)")
 
@@ -542,26 +583,6 @@ private extension GroupMigrationActionSheet {
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()
-    }
-
-    private func dismissAndShowReAddDroppedMembersSuccessToast() {
-        AssertIsOnMainThread()
-
-        guard let actionSheetController = actionSheetController else {
-            owsFailDebug("Missing actionSheetController.")
-            return
-        }
-
-        actionSheetController.dismiss(animated: true) {
-            self.showReAddDroppedMembersSuccessToast()
-        }
-    }
-
-    private func showReAddDroppedMembersSuccessToast() {
-        // TODO: we need final copy.
-        let text = NSLocalizedString("GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_MEMBERS_SUCCEEDED",
-                                     comment: "Message indicating the dropped group members were successfully re-added to the group succeeded.")
-        showToast(text: text)
     }
 
     private func showUpgradeFailedAlert(error: Error) {

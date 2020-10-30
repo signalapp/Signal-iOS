@@ -307,6 +307,10 @@ extension StorageServiceProtoGroupV1Record {
     }
 
     func mergeWithLocalGroup(transaction: SDSAnyWriteTransaction) -> MergeState {
+        // We might be learning of a v1 group id for the first time that
+        // corresponds to a v2 group without a v1-to-v2 group id mapping.
+        TSGroupThread.ensureGroupIdMapping(forGroupId: id, transaction: transaction)
+
         // Our general merge philosophy is that the latest value on the service
         // is always right. There are some edge cases where this could cause
         // user changes to get blown away, such as if you're changing values
@@ -478,6 +482,10 @@ extension StorageServiceProtoGroupV2Record {
             return .invalid
         }
         let groupId = groupContextInfo.groupId
+
+        // We might be learning of a v1 group id for the first time that
+        // corresponds to a v2 group without a v1-to-v2 group id mapping.
+        TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
         var mergeState: MergeState = .resolved(masterKey)
 
