@@ -129,6 +129,9 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
+    BOOL isIphone6OrSmaller = (UIScreen.mainScreen.bounds.size.height - 667) < 1;
+    CGFloat bottomInset = isIphone6OrSmaller ? LKValues.mediumSpacing : 34.0f;
+    self.tableViewController.tableView.contentInset = UIEdgeInsetsMake(0, 0, bottomInset, 0);
 }
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
