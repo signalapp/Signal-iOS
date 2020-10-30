@@ -15,10 +15,9 @@ public protocol CallObserver: class {
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall)
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall)
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall)
-    func groupCallUpdateSfuInfo(_ call: SignalCall)
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall)
-    func groupCallUpdateGroupMembers(_ call: SignalCall)
+    func groupCallJoinedMembersChanged(_ call: SignalCall)
+    func groupCallRequestMembershipProof(_ call: SignalCall)
+    func groupCallRequestGroupMembers(_ call: SignalCall)
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
 }
 
@@ -31,6 +30,10 @@ public class SignalCall: NSObject, CallManagerCallReference {
     }
 
     public let audioActivity: AudioActivity
+
+    private var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
 
     @objc
     var isGroupCall: Bool {
@@ -67,7 +70,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
-    let videoCaptureController = VideoCaptureController()
+    private(set) lazy var videoCaptureController = VideoCaptureController()
 
     // Should be used only on the main thread
     public var connectedDate: Date? {
@@ -88,7 +91,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
     init(groupCall: GroupCall, groupThread: TSGroupThread) {
         mode = .group(groupCall)
         audioActivity = AudioActivity(
-            audioDescription: "[SignalCall] with group \(groupCall.groupId)",
+            audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
             behavior: .call
         )
         thread = groupThread
@@ -110,17 +113,19 @@ public class SignalCall: NSObject, CallManagerCallReference {
     public class func groupCall(thread: TSGroupThread) -> SignalCall? {
         owsAssertDebug(thread.groupModel.groupsVersion == .V2)
 
-        guard let localUuid = TSAccountManager.shared().localUuid else {
-            owsFailDebug("Failed to query local UUID")
+        let videoCaptureController = VideoCaptureController()
+
+        guard let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
+            groupIdToLog: thread.groupModel.groupId.hexadecimalString,
+            videoCaptureController: videoCaptureController
+        ) else {
+            owsFailDebug("Failed to create group call")
             return nil
         }
 
-        let groupCall = AppEnvironment.shared.callService.callManager.createGroupCall(
-            groupId: thread.groupModel.groupId,
-            userId: localUuid
-        )
-
-        return SignalCall(groupCall: groupCall, groupThread: thread)
+        let call = SignalCall(groupCall: groupCall, groupThread: thread)
+        call.videoCaptureController = videoCaptureController
+        return call
     }
 
     public class func outgoingIndividualCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
@@ -203,12 +208,60 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
         return -connectedDate.timeIntervalSinceNow
     }
+
+    // MARK: - Remote Video Views
+    private var groupCallVideoViews = [RemoteDeviceState: [Weak<RemoteVideoView>]]()
+
+    func registerRemoteVideoView(_ videoView: RemoteVideoView, for device: RemoteDeviceState) {
+        AssertIsOnMainThread()
+        var videoViews = groupCallVideoViews[device] ?? []
+        if !videoViews.contains(where: { $0.value == videoView }) {
+            videoViews.append(Weak(value: videoView))
+        }
+        groupCallVideoViews[device] = videoViews.filter { $0.value != nil }
+
+        updateRenderedResolutions()
+    }
+
+    func unregisterRemoteVideoView(_ videoView: RemoteVideoView, for device: RemoteDeviceState) {
+        AssertIsOnMainThread()
+        let videoViews = groupCallVideoViews[device] ?? []
+        groupCallVideoViews[device] = videoViews.filter { $0.value != nil && $0.value != videoView }
+
+        updateRenderedResolutions()
+    }
+
+    func updateRenderedResolutions() {
+        AssertIsOnMainThread()
+
+        guard let groupCall = groupCall else {
+            return owsFailDebug("Tried to update resolutions for individual call")
+        }
+
+        groupCall.updateRenderedResolutions(resolutions: groupCallVideoViews.map { device, views -> RenderedResolution in
+            let renderedSize = views.reduce(into: CGSize.zero) { size, videoView in
+                guard let videoView = videoView.value else { return }
+                size = CGSize(width: max(videoView.width, size.width), height: max(videoView.height, size.height))
+            }
+
+            return RenderedResolution(
+                demuxId: device.demuxId,
+                width: UInt16(renderedSize.width),
+                height: UInt16(renderedSize.height),
+                framerate: nil
+            )
+        })
+    }
 }
 
 extension SignalCall: GroupCallDelegate {
     public func groupCall(onLocalDeviceStateChanged groupCall: GroupCall) {
-        if groupCall.localDevice.joinState == .joined, connectedDate == nil {
+        if groupCall.localDeviceState.joinState == .joined, connectedDate == nil {
             connectedDate = Date()
+
+            // make sure we don't terminate audio session during call
+            audioSession.isRTCAudioEnabled = true
+            owsAssertDebug(audioSession.startAudioActivity(audioActivity))
         }
 
         observers.elements.forEach { $0.groupCallLocalDeviceStateChanged(self) }
@@ -218,20 +271,16 @@ extension SignalCall: GroupCallDelegate {
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
-    public func groupCall(onJoinedGroupMembersChanged groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallJoinedGroupMembersChanged(self) }
+    public func groupCall(onJoinedMembersChanged groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallJoinedMembersChanged(self) }
     }
 
-    public func groupCall(updateSfuInfo groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallUpdateSfuInfo(self) }
+    public func groupCall(requestMembershipProof groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallRequestMembershipProof(self) }
     }
 
-    public func groupCall(updateGroupMembershipProof groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallUpdateGroupMembershipProof(self) }
-    }
-
-    public func groupCall(updateGroupMembers groupCall: GroupCall) {
-        observers.elements.forEach { $0.groupCallUpdateGroupMembers(self) }
+    public func groupCall(requestGroupMembers groupCall: GroupCall) {
+        observers.elements.forEach { $0.groupCallRequestGroupMembers(self) }
     }
 
     public func groupCall(onEnded groupCall: GroupCall, reason: GroupCallEndReason) {

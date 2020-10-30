@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 @objc
 class GroupCallMemberSheet: UIViewController {
@@ -282,36 +283,69 @@ class GroupCallMemberSheet: UIViewController {
     private var sortedMembers = [JoinedMember]()
     func updateMembers() {
         let unsortedMembers: [JoinedMember] = databaseStorage.uiRead { transaction in
-            var members: [JoinedMember] = self.call.groupCall.joinedRemoteDeviceStates.map { member in
-                let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
-                let displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
-                let comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
+            var members = [JoinedMember]()
 
-                return JoinedMember(
-                    address: member.address,
-                    conversationColorName: thread?.conversationColorName ?? .default,
-                    displayName: displayName,
-                    comparableName: comparableName,
-                    isAudioMuted: member.audioMuted,
-                    isVideoMuted: member.videoMuted
-                )
-            }
+            if self.call.groupCall.localDeviceState.joinState == .joined {
+                members += self.call.groupCall.sortedRemoteDeviceStates.map { member in
+                    let thread = TSContactThread.getWithContactAddress(member.address, transaction: transaction)
+                    let displayName: String
+                    let comparableName: String
+                    if member.address.isLocalAddress {
+                        displayName = NSLocalizedString(
+                            "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
+                            comment: "Text describing the local user in the group call members sheet when connected from another device."
+                        )
+                        comparableName = displayName
+                    } else {
+                        displayName = self.contactsManager.displayName(for: member.address, transaction: transaction)
+                        comparableName = self.contactsManager.comparableName(for: member.address, transaction: transaction)
+                    }
 
-            if self.call.groupCall.localDevice.joinState == .joined {
+                    return JoinedMember(
+                        address: member.address,
+                        conversationColorName: thread?.conversationColorName ?? .default,
+                        displayName: displayName,
+                        comparableName: comparableName,
+                        isAudioMuted: member.audioMuted,
+                        isVideoMuted: member.videoMuted
+                    )
+                }
+
                 guard let localAddress = self.tsAccountManager.localAddress else { return members }
 
                 let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction)
-                let displayName = self.contactsManager.displayName(for: localAddress, transaction: transaction)
-                let comparableName = self.contactsManager.comparableName(for: localAddress, transaction: transaction)
+                let displayName = NSLocalizedString(
+                    "GROUP_CALL_YOU",
+                    comment: "Text describing the local user in the group call members sheet."
+                )
+                let comparableName = displayName
 
                 members.append(JoinedMember(
                     address: localAddress,
                     conversationColorName: thread?.conversationColorName ?? .default,
                     displayName: displayName,
                     comparableName: comparableName,
-                    isAudioMuted: self.call.groupCall.localDevice.audioMuted,
-                    isVideoMuted: self.call.groupCall.localDevice.videoMuted
+                    isAudioMuted: self.call.groupCall.localDeviceState.audioMuted,
+                    isVideoMuted: self.call.groupCall.localDeviceState.videoMuted
                 ))
+            } else {
+                // If we're not yet in the call, `remoteDeviceStates` will not exist.
+                // We can get the list of joined members still, provided we are connected.
+                members += self.call.groupCall.joinedGroupMembers.map { uuid in
+                    let address = SignalServiceAddress(uuid: uuid)
+                    let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
+                    let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
+                    let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
+
+                    return JoinedMember(
+                        address: address,
+                        conversationColorName: thread?.conversationColorName ?? .default,
+                        displayName: displayName,
+                        comparableName: comparableName,
+                        isAudioMuted: nil,
+                        isVideoMuted: nil
+                    )
+                }
             }
 
             return members
@@ -455,7 +489,7 @@ extension GroupCallMemberSheet: CallObserver {
         updateMembers()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
@@ -464,9 +498,8 @@ extension GroupCallMemberSheet: CallObserver {
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
@@ -537,10 +570,7 @@ private class GroupCallMemberCell: UITableViewCell {
         audioMutedIndicator.isHidden = item.isAudioMuted != true
 
         if item.address.isLocalAddress {
-            nameLabel.text = NSLocalizedString(
-                "REACTIONS_DETAIL_YOU",
-                comment: "Text describing the local user in the reaction details pane."
-            )
+            nameLabel.text = item.displayName
             avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
         } else {
             nameLabel.text = item.displayName

@@ -23,8 +23,14 @@ public final class CallService: NSObject {
         return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
     }
 
+    private var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
     @objc
     public let individualCallService = IndividualCallService()
+
+    lazy private(set) var audioService = CallAudioService()
 
     private var _currentCall: SignalCall?
     @objc
@@ -43,12 +49,14 @@ public final class CallService: NSObject {
             // Prevent device from sleeping while we have an active call.
             if oldValue != newValue {
                 if let oldValue = oldValue {
+                    oldValue.removeObserver(audioService)
                     DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
                 }
 
                 if let newValue = newValue {
                     assert(calls.contains(newValue))
                     DeviceSleepManager.shared.addBlock(blockObject: newValue)
+                    newValue.addObserverAndSyncState(observer: audioService)
 
                     if newValue.isIndividualCall { individualCallService.startCallTimer() }
                 } else {
@@ -205,7 +213,7 @@ public final class CallService: NSObject {
 
         switch call.mode {
         case .group(let groupCall):
-            isLocalAudioMuted = groupCall.localDevice.joinState != .joined || groupCall.localDevice.audioMuted
+            isLocalAudioMuted = groupCall.localDeviceState.joinState != .joined || groupCall.localDeviceState.audioMuted
         case .individual(let individualCall):
             isLocalAudioMuted = individualCall.state != .connected || individualCall.isMuted || individualCall.isOnHold
         }
@@ -329,9 +337,14 @@ public final class CallService: NSObject {
             owsFailDebug("unknown call: \(call)")
         }
 
+        if !hasCallInProgress {
+            audioSession.isRTCAudioEnabled = false
+        }
+        audioSession.endAudioActivity(call.audioActivity)
+
         switch call.mode {
         case .individual:
-            individualCallService.callUIAdapter.didTerminateCall(call, hasCallInProgress: hasCallInProgress)
+            break
         case .group(let groupCall):
             groupCall.leave()
             groupCall.disconnect()
@@ -361,7 +374,7 @@ public final class CallService: NSObject {
         case .individual(let individualCall):
             return individualCall.state == .connected && individualCall.hasLocalVideo
         case .group(let groupCall):
-            return !groupCall.localDevice.videoMuted
+            return !groupCall.localDeviceState.videoMuted
         }
     }
 
@@ -404,7 +417,6 @@ public final class CallService: NSObject {
         currentCall = call
 
         // TODO: Initialize this in a real way?
-        call.groupCall.outgoingVideoSource = call.videoCaptureController
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = false
         call.groupCall.connect()
@@ -485,7 +497,7 @@ public final class CallService: NSObject {
                 return nil
             }
 
-            return GroupMemberInfo(uuid: uuid, uuidCipherText: uuidCipherText)
+            return GroupMemberInfo(userId: uuid, userIdCipherText: uuidCipherText)
         })
     }
 }
@@ -514,32 +526,13 @@ extension CallService: CallObserver {
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    public func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {}
+    public func groupCallJoinedMembersChanged(_ call: SignalCall) {}
 
-    public func groupCallUpdateSfuInfo(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
-        Logger.info("groupCallUpdateSfuInfo")
-
-        guard call === currentCall else { return cleanupStaleCall(call) }
-
-        // TODO: Get real SFU info
-        let sfuInfo = SfuInfo(ipv4: Data([127, 0, 0, 1]), ipv6: nil, port: 5060)
-        call.groupCall.updateSfuInfo(info: sfuInfo)
-    }
-
-    public func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {
+    public func groupCallRequestMembershipProof(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallUpdateGroupMembershipProof")
 
         guard call === currentCall else { return cleanupStaleCall(call) }
-
-        // TODO: Enable the real lookup below. Right now, the API is not
-        // available in production.
-
-        guard !DebugFlags.groupCallingIgnoreMembershipProof else {
-            call.groupCall.updateGroupMembershipProof(proof: Data())
-            return
-        }
 
         guard let groupThread = call.thread as? TSGroupThread,
               let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -547,12 +540,12 @@ extension CallService: CallObserver {
         }
 
         do {
-            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel).done { credential in
+            try groupsV2.fetchGroupExternalCredentials(groupModel: groupModel).done(on: .main) { credential in
                 guard let tokenData = credential.token?.data(using: .utf8) else {
                     throw OWSAssertionError("Invalid credential")
                 }
 
-                call.groupCall.updateGroupMembershipProof(proof: tokenData)
+                call.groupCall.updateMembershipProof(proof: tokenData)
             }.catch { error in
                 owsFailDebug("Failed to fetch group call credential \(error)")
             }
@@ -561,7 +554,7 @@ extension CallService: CallObserver {
         }
     }
 
-    public func groupCallUpdateGroupMembers(_ call: SignalCall) {
+    public func groupCallRequestGroupMembers(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallUpdateGroupMembers")
 
@@ -614,7 +607,7 @@ extension CallService: CallManagerDelegate {
      * Invoked on the main thread, asychronously.
      * If there is any error, the UI can reset UI state and invoke the reset() API.
      */
-    func callManager(
+    public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendCallMessage recipientUuid: UUID,
         message: Data
@@ -631,46 +624,41 @@ extension CallService: CallManagerDelegate {
      * Invoked on the main thread, asychronously.
      * The result of the call should be indicated by calling the receivedHttpResponse() function.
      */
-    func callManager(
+    public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
-        shouldSendHttpRequest requestId: UInt64,
-        url: URL,
+        shouldSendHttpRequest requestId: UInt32,
+        url: String,
         method: CallManagerHttpMethod,
         headers: [String: String],
-        body: Data
+        body: Data?
     ) {
         AssertIsOnMainThread()
         Logger.info("shouldSendHttpRequest")
 
-        var request = URLRequest(url: url)
+        let httpMethod: HTTPMethod
         switch method {
-        case .get: request.httpMethod = "GET"
-        case .post: request.httpMethod = "POST"
-        case .put: request.httpMethod = "PUT"
+        case .get: httpMethod = .get
+        case .post: httpMethod = .post
+        case .put: httpMethod = .put
         }
 
-        headers.forEach { request.addValue($0.value, forHTTPHeaderField: $0.key) }
+        let session = OWSURLSession(
+            securityPolicy: OWSURLSession.signalServiceSecurityPolicy(),
+            configuration: OWSURLSession.defaultURLSessionConfiguration()
+        )
+        session.require2xxOr3xx = false
 
-        request.httpBody = body
-
-        // TODO: Maybe we should use OWSURLSession here?
-        URLSession.shared.dataTask(
-            .promise,
-            with: request
-        ).done(on: .sharedUtility) { data, response in
-            guard let response = response as? HTTPURLResponse else {
-                throw OWSAssertionError("Unexpected response type")
-            }
-
+        firstly(on: .sharedUtility) {
+            session.dataTaskPromise(url, method: httpMethod, headers: headers, body: body)
+        }.done(on: .main) { response in
             self.callManager.receivedHttpResponse(
                 requestId: requestId,
-                statusCode: response.statusCode,
-                headers: response.allHeaderFields,
-                body: data
+                statusCode: UInt16(response.statusCode),
+                body: response.responseData
             )
-        }.catch(on: .sharedUtility) { error in
-            // TODO: How to surface these errors to RingRTC?
+        }.catch(on: .main) { error in
             owsFailDebug("Call manager http request failed \(error)")
+            self.callManager.httpRequestFailed(requestId: requestId)
         }
     }
 
@@ -680,14 +668,7 @@ extension CallService: CallManagerDelegate {
         call2: SignalCall
     ) -> Bool {
         Logger.info("shouldCompareCalls")
-        switch (call1.mode, call2.mode) {
-        case (.individual(let lhs), .individual(let rhs)):
-            return lhs.remoteAddress == rhs.remoteAddress
-        case (.group(let lhs), .group(let rhs)):
-            return lhs.groupId == rhs.groupId
-        default:
-            return false
-        }
+        return call1.thread?.uniqueId == call2.thread?.uniqueId
     }
 
     // MARK: - 1:1 Call Delegates

@@ -120,14 +120,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if DEVICE_SUPPORTS_METAL
     DispatchMainThreadSafe(^{
-        if (UIDevice.currentDevice.isIPad) {
-            CGSize currentWindowSize = CurrentAppContext().frame.size;
-            BOOL isLandscape = currentWindowSize.width > currentWindowSize.height;
+        if (UIDevice.currentDevice.isIPad || !self.isFullScreenVideo) {
+            BOOL isLandscape = self.width > self.height;
             BOOL remoteIsLandscape = frame.rotation == RTCVideoRotation_180 || frame.rotation == RTCVideoRotation_0;
+
+            self.metalRenderer.rotationOverride = nil;
 
             // If we're both in the same orientation, let the video fill the screen.
             // Otherwise, fit the video to the screen size respecting the aspect ratio.
-            if (isLandscape == remoteIsLandscape) {
+            if (isLandscape == remoteIsLandscape || self.width == self.height) {
                 self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFill;
             } else {
                 self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFit;

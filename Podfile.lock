@@ -354,7 +354,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :commit: 21c092e94b307690957b50f2305e5e65d28fa89e
+    :commit: cfefb262ba319a2d0051c97f0bdd4f6c98db3336
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 7addcc1c4bb837b3ad44a05f72bf18ad8869b30c

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 @objc
 protocol CallHeaderDelegate: class {
@@ -24,8 +25,8 @@ class CallHeader: UIView {
     private var callDurationTimer: Timer?
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
-    private let groupMembersButton = UIButton()
-    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 50)
+    private let groupMembersButton = GroupMembersButton()
+    private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 40)
     private var isBlinkingReconnectLabel = false
 
     private let call: SignalCall
@@ -67,6 +68,7 @@ class CallHeader: UIView {
         let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
         backButton.setTemplateImage(backButtonImage, tintColor: .ows_white)
         backButton.autoSetDimensions(to: CGSize(square: 40))
+        backButton.imageEdgeInsets = UIEdgeInsets(top: -12, leading: -18, bottom: 0, trailing: 0)
         backButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapBackButton), for: .touchUpInside)
         addShadow(to: backButton)
 
@@ -113,11 +115,11 @@ class CallHeader: UIView {
 
         // Group members button
 
-        groupMembersButton.titleLabel?.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_monospaced
-        groupMembersButton.setTitleColor(.ows_white, for: .normal)
-        groupMembersButton.setTemplateImage(#imageLiteral(resourceName: "group-solid-16"), tintColor: .ows_white)
-        groupMembersButton.autoSetDimensions(to: CGSize(square: 50))
-        groupMembersButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapMembersButton), for: .touchUpInside)
+        groupMembersButton.addTarget(
+            delegate,
+            action: #selector(CallHeaderDelegate.didTapMembersButton),
+            for: .touchUpInside
+        )
         addShadow(to: groupMembersButton)
 
         hStack.addArrangedSubview(groupMembersButton)
@@ -138,7 +140,7 @@ class CallHeader: UIView {
 
     private func updateCallStatusLabel() {
         let callStatusText: String
-        switch call.groupCall.localDevice.joinState {
+        switch call.groupCall.localDeviceState.joinState {
         case .notJoined, .joining:
             callStatusText = ""
         case .joined:
@@ -160,10 +162,10 @@ class CallHeader: UIView {
         }
 
         callStatusLabel.text = callStatusText
-        callStatusLabel.isHidden = call.groupCall.localDevice.joinState != .joined || call.groupCall.joinedRemoteDeviceStates.count > 1
+        callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.sortedRemoteDeviceStates.count > 1
 
         // Handle reconnecting blinking
-        if call.groupCall.localDevice.connectionState == .reconnecting {
+        if call.groupCall.localDeviceState.connectionState == .reconnecting {
             if !isBlinkingReconnectLabel {
                 isBlinkingReconnectLabel = true
                 UIView.animate(withDuration: 0.7, delay: 0, options: [.autoreverse, .repeat],
@@ -187,13 +189,20 @@ class CallHeader: UIView {
     func updateCallTitleLabel() {
         let callTitleText: String
 
-        let memberNames = databaseStorage.uiRead { transaction in
-            return self.call.groupCall.joinedRemoteDeviceStates
-                .sorted { $0.speakerIndex ?? .max < $1.speakerIndex ?? .max }
-                .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
+        let memberNames: [String] = databaseStorage.uiRead { transaction in
+            if self.call.groupCall.localDeviceState.joinState == .joined {
+                return self.call.groupCall.sortedRemoteDeviceStates
+                    .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
+            } else {
+                // TODO: For now, we can only use `joinedGroupMembers` before you join.
+                // We might be able to just always use it here.
+                return self.call.groupCall.joinedGroupMembers
+                    .filter { !SignalServiceAddress(uuid: $0).isLocalAddress }
+                    .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) }
+            }
         }
 
-        switch call.groupCall.localDevice.joinState {
+        switch call.groupCall.localDeviceState.joinState {
         case .joined:
             switch memberNames.count {
             case 0:
@@ -227,7 +236,7 @@ class CallHeader: UIView {
                     "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
                     comment: "Text explaining that there are three or more people in the group call. Embeds {member name}"
                 )
-                callTitleText = String(format: formatString, memberNames[0], memberNames[1], call.groupCall.joinedGroupMembers.count - 2)
+                callTitleText = String(format: formatString, memberNames[0], memberNames[1], memberNames.count - 2)
             }
         }
 
@@ -236,8 +245,10 @@ class CallHeader: UIView {
     }
 
     func updateGroupMembersButton() {
-        groupMembersButton.setTitle(" \(call.groupCall.joinedGroupMembers.count)", for: .normal)
-        groupMembersButton.isHidden = call.groupCall.joinedRemoteDeviceStates.count < 2
+        let isJoined = call.groupCall.localDeviceState.joinState == .joined
+        let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : call.groupCall.joinedGroupMembers.count
+        groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
+        groupMembersButton.isHidden = remoteMemberCount < 2
         groupMembersButtonPlaceholder.isHidden = !groupMembersButton.isHidden
     }
 
@@ -256,7 +267,7 @@ extension CallHeader: CallObserver {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
 
-        if call.groupCall.localDevice.joinState == .joined {
+        if call.groupCall.localDeviceState.joinState == .joined {
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(
@@ -277,14 +288,56 @@ extension CallHeader: CallObserver {
         updateCallStatusLabel()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         updateCallTitleLabel()
         updateGroupMembersButton()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        updateCallTitleLabel()
+        updateGroupMembersButton()
+    }
+
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
+}
+
+private class GroupMembersButton: UIButton {
+    private let iconImageView = UIImageView()
+    private let countLabel = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        autoSetDimension(.height, toSize: 40)
+
+        iconImageView.contentMode = .scaleAspectFit
+        iconImageView.setTemplateImage(#imageLiteral(resourceName: "group-solid-24"), tintColor: .ows_white)
+        addSubview(iconImageView)
+        iconImageView.autoPinEdge(toSuperviewEdge: .leading)
+        iconImageView.autoSetDimensions(to: CGSize(square: 22))
+        iconImageView.autoPinEdge(toSuperviewEdge: .top, withInset: 2)
+
+        countLabel.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_monospaced
+        countLabel.textColor = .ows_white
+        addSubview(countLabel)
+        countLabel.autoPinEdge(.leading, to: .trailing, of: iconImageView, withOffset: 5)
+        countLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 5)
+        countLabel.autoAlignAxis(.horizontal, toSameAxisOf: iconImageView)
+    }
+
+    func updateMemberCount(_ count: Int) {
+        countLabel.text = String(OWSFormat.formatInt(count))
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            alpha = isHighlighted ? 0.5 : 1
+        }
+    }
 }

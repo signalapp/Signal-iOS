@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 protocol GroupCallVideoOverflowDelegate: class {
     var firstOverflowMemberIndex: Int { get }
@@ -28,6 +29,7 @@ class GroupCallVideoOverflow: UICollectionView {
         super.init(frame: .zero, collectionViewLayout: layout)
 
         backgroundColor = .clear
+        alpha = 0
 
         showsHorizontalScrollIndicator = false
 
@@ -50,13 +52,36 @@ class GroupCallVideoOverflow: UICollectionView {
     }
 
     deinit { call.removeObserver(self) }
+
+    private var isAnimating = false
+    private var hadVisibleCells = false
+    override func reloadData() {
+        guard !isAnimating else { return }
+
+        let hasVisibleCells = overflowedRemoteDeviceStates.count > 0
+
+        if hasVisibleCells != hadVisibleCells {
+            hadVisibleCells = hasVisibleCells
+            isAnimating = true
+            if hasVisibleCells { super.reloadData() }
+            UIView.animate(
+                withDuration: 0.15,
+                animations: { self.alpha = hasVisibleCells ? 1 : 0 }
+            ) { _ in
+                self.isAnimating = false
+                self.reloadData()
+            }
+        } else {
+            super.reloadData()
+        }
+    }
 }
 
 extension GroupCallVideoOverflow: UICollectionViewDataSource {
     var overflowedRemoteDeviceStates: [RemoteDeviceState] {
         guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
 
-        let joinedRemoteDeviceStates = call.groupCall.joinedRemoteDeviceStates
+        let joinedRemoteDeviceStates = call.groupCall.sortedRemoteDeviceStates
 
         guard joinedRemoteDeviceStates.count > firstOverflowMemberIndex else { return [] }
 
@@ -79,7 +104,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
             return cell
         }
 
-        cell.configure(device: remoteDevice)
+        cell.configure(call: call, device: remoteDevice)
 
         return cell
     }
@@ -100,7 +125,7 @@ extension GroupCallVideoOverflow: CallObserver {
         reloadData()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
@@ -109,9 +134,8 @@ extension GroupCallVideoOverflow: CallObserver {
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
 
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}

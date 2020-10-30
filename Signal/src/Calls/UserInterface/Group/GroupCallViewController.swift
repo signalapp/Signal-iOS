@@ -13,7 +13,6 @@ class GroupCallViewController: UIViewController {
     private var groupCall: GroupCall { call.groupCall }
     private lazy var callControls = CallControls(call: call, delegate: self)
     private lazy var callHeader = CallHeader(call: call, delegate: self)
-    private var callService: CallService { AppEnvironment.shared.callService }
 
     private lazy var videoGrid = GroupCallVideoGrid(call: call)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
@@ -25,14 +24,21 @@ class GroupCallViewController: UIViewController {
 
     private let scrollView = UIScrollView()
 
+    private var isCallMinimized = false
+
+    lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
+    lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
+
+    var shouldRemoteVideoControlsBeHidden = false {
+        didSet { updateCallUI() }
+    }
+
     init(call: SignalCall) {
         // TODO: Eventually unify UI for group and individual calls
         owsAssertDebug(call.isGroupCall)
 
         self.call = call
-        self.thread = Self.databaseStorage.uiRead { transaction in
-            return TSGroupThread.fetch(groupId: call.groupCall.groupId, transaction: transaction)
-        }
+        self.thread = call.thread as? TSGroupThread
 
         super.init(nibName: nil, bundle: nil)
 
@@ -72,7 +78,7 @@ class GroupCallViewController: UIViewController {
                 guard let groupCall = AppEnvironment.shared.callService.buildAndConnectGroupCallIfPossible(
                         thread: thread
                 ) else {
-                    return owsFailDebug("Failed to build g roup call")
+                    return owsFailDebug("Failed to build group call")
                 }
 
                 let vc = GroupCallViewController(call: groupCall)
@@ -98,6 +104,8 @@ class GroupCallViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.isPagingEnabled = true
         scrollView.showsVerticalScrollIndicator = false
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.alwaysBounceVertical = false
         scrollView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(callHeader)
@@ -114,10 +122,11 @@ class GroupCallViewController: UIViewController {
             toSuperviewEdge: .trailing,
             withInset: GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio + 4
         )
-        videoOverflow.autoPinEdge(.bottom, to: .top, of: callControls)
 
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
+
+        view.addGestureRecognizer(tapGesture)
 
         updateCallUI()
     }
@@ -125,21 +134,24 @@ class GroupCallViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
+        let wasOnSpeakerPage = scrollView.contentOffset.y >= view.height
+
         coordinator.animate(alongsideTransition: { _ in
             self.updateCallUI(size: size)
             self.videoGrid.reloadData()
             self.videoOverflow.reloadData()
+            self.scrollView.contentOffset = wasOnSpeakerPage ? CGPoint(x: 0, y: size.height) : .zero
         }, completion: nil)
     }
 
-    private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.joinedRemoteDeviceStates.count }
+    private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.remoteDeviceStates.count }
 
-    private func updateScrollViewFrames(size: CGSize? = nil) {
+    private func updateScrollViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
         view.layoutIfNeeded()
 
         let size = size ?? view.frame.size
 
-        if groupCall.joinedGroupMembers.count < 3 || groupCall.localDevice.joinState != .joined {
+        if groupCall.remoteDeviceStates.count < 2 || groupCall.localDeviceState.joinState != .joined {
             videoGrid.frame = .zero
             videoGrid.isHidden = true
             speakerPage.frame = CGRect(
@@ -160,7 +172,7 @@ class GroupCallViewController: UIViewController {
                 x: 0,
                 y: view.safeAreaInsets.top,
                 width: size.width,
-                height: size.height - view.safeAreaInsets.top - callControls.height - (hasOverflowMembers ? videoOverflow.height + 16 : 0)
+                height: size.height - view.safeAreaInsets.top - (controlsAreHidden ? 16 : callControls.height) - (hasOverflowMembers ? videoOverflow.height + 32 : 0)
             )
             speakerPage.frame = CGRect(
                 x: 0,
@@ -176,59 +188,94 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    private func updateMemberViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
+        view.layoutIfNeeded()
+
+        let size = size ?? view.frame.size
+
+        let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
+
+        videoOverflowTopConstraint.constant = yMax - videoOverflow.height
+        view.layoutIfNeeded()
+
+        localMemberView.removeFromSuperview()
+        speakerView.removeFromSuperview()
+
+        switch groupCall.localDeviceState.joinState {
+        case .joined:
+            if groupCall.sortedRemoteDeviceStates.count > 0 {
+                speakerPage.addSubview(speakerView)
+                speakerView.autoPinEdgesToSuperviewEdges()
+
+                view.addSubview(localMemberView)
+
+                if groupCall.remoteDeviceStates.count > 1 {
+                    let pipWidth = GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio
+                    let pipHeight = GroupCallVideoOverflow.itemHeight
+                    localMemberView.frame = CGRect(
+                        x: size.width - pipWidth - 16,
+                        y: videoOverflow.frame.origin.y,
+                        width: pipWidth,
+                        height: pipHeight
+                    )
+                } else {
+                    let pipWidth = ReturnToCallViewController.pipSize.width
+                    let pipHeight = ReturnToCallViewController.pipSize.height
+
+                    localMemberView.frame = CGRect(
+                        x: size.width - pipWidth - 16,
+                        y: yMax - pipHeight,
+                        width: pipWidth,
+                        height: pipHeight
+                    )
+                }
+            } else {
+                speakerPage.addSubview(localMemberView)
+                localMemberView.frame = CGRect(origin: .zero, size: size)
+            }
+        case .notJoined, .joining:
+            speakerPage.addSubview(localMemberView)
+            localMemberView.frame = CGRect(origin: .zero, size: size)
+        }
+    }
+
     func updateCallUI(size: CGSize? = nil) {
-        let localDevice = groupCall.localDevice
+        let localDevice = groupCall.localDeviceState
 
         localMemberView.configure(
             device: localDevice,
             session: call.videoCaptureController.captureSession,
-            isFullScreen: localDevice.joinState != .joined || groupCall.joinedGroupMembers.count < 2
+            isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
         )
 
-        switch localDevice.connectionState {
-        case .connected:
-            break
-        case .connecting, .disconnected, .reconnecting:
-            // todo: show spinner
-            return
+        if let speakerState = groupCall.sortedRemoteDeviceStates.first {
+            speakerView.configure(call: call, device: speakerState, isFullScreen: true)
         }
 
-        speakerPage.subviews.forEach { $0.removeFromSuperview() }
-        localMemberView.removeFromSuperview()
+        guard !isCallMinimized else { return }
 
-        switch localDevice.joinState {
-        case .joined:
-            if let speakerState = groupCall.joinedRemoteDeviceStates.first {
-                speakerPage.addSubview(speakerView)
-                speakerView.autoPinEdgesToSuperviewEdges()
-                speakerView.configure(device: speakerState, isFullScreen: true)
+        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !groupCall.remoteDeviceStates.isEmpty
+        let remoteControlsAreHidden = callControls.isHidden && callHeader.isHidden
+        if hideRemoteControls != remoteControlsAreHidden {
+            callControls.isHidden = false
+            callHeader.isHidden = false
 
-                view.addSubview(localMemberView)
+            UIView.animate(withDuration: 0.15, animations: {
+                self.callControls.alpha = hideRemoteControls ? 0 : 1
+                self.callHeader.alpha = hideRemoteControls ? 0 : 1
 
-                if groupCall.joinedGroupMembers.count > 2 {
-                    localMemberView.autoSetDimension(.height, toSize: GroupCallVideoOverflow.itemHeight)
-                    localMemberView.autoSetDimension(
-                        .width,
-                        toSize: GroupCallVideoOverflow.itemHeight * ReturnToCallViewController.pipSize.aspectRatio
-                    )
-                    let shouldShiftUp = !hasOverflowMembers && scrollView.contentOffset.y < view.height
-                    localMemberView.autoPinEdge(.top, to: .top, of: videoOverflow, withOffset: shouldShiftUp ? -16 : 0)
-                } else {
-                    localMemberView.autoSetDimensions(to: ReturnToCallViewController.pipSize)
-                    localMemberView.autoPinEdge(.bottom, to: .top, of: callControls)
-                }
-
-                localMemberView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
-            } else {
-                speakerPage.addSubview(localMemberView)
-                localMemberView.autoPinEdgesToSuperviewEdges()
+                self.updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
+                self.updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
+            }) { _ in
+                self.callControls.isHidden = hideRemoteControls
+                self.callHeader.isHidden = hideRemoteControls
             }
-        case .notJoined, .joining:
-            speakerPage.addSubview(localMemberView)
-            localMemberView.autoPinEdgesToSuperviewEdges()
+        } else {
+            updateMemberViewFrames(size: size, controlsAreHidden: hideRemoteControls)
+            updateScrollViewFrames(size: size, controlsAreHidden: hideRemoteControls)
         }
 
-        updateScrollViewFrames(size: size)
+        scheduleControlTimeoutIfNecessary()
     }
 
     func dismissCall() {
@@ -240,6 +287,42 @@ class GroupCallViewController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
+
+    override var prefersHomeIndicatorAutoHidden: Bool {
+        return true
+    }
+
+    // MARK: - Video control timeout
+
+    @objc func didTouchRootView(sender: UIGestureRecognizer) {
+        shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
+    }
+
+    private var controlTimeoutTimer: Timer?
+    private func scheduleControlTimeoutIfNecessary() {
+        if  groupCall.remoteDeviceStates.isEmpty || shouldRemoteVideoControlsBeHidden {
+            controlTimeoutTimer?.invalidate()
+            controlTimeoutTimer = nil
+        }
+
+        guard controlTimeoutTimer == nil else { return }
+        controlTimeoutTimer = .weakScheduledTimer(
+            withTimeInterval: 5,
+            target: self,
+            selector: #selector(timeoutControls),
+            userInfo: nil,
+            repeats: false
+        )
+    }
+
+    @objc
+    private func timeoutControls() {
+        controlTimeoutTimer?.invalidate()
+        controlTimeoutTimer = nil
+
+        guard !isCallMinimized && !groupCall.remoteDeviceStates.isEmpty && !shouldRemoteVideoControlsBeHidden else { return }
+        shouldRemoteVideoControlsBeHidden = true
+    }
 }
 
 extension GroupCallViewController: CallViewControllerWindowReference {
@@ -247,11 +330,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     var remoteVideoViewReference: UIView { speakerView }
 
     var remoteVideoAddress: SignalServiceAddress {
-        // TODO: get speaker
-        guard let firstMember = groupCall.joinedGroupMembers.first else {
+        guard let firstMember = groupCall.sortedRemoteDeviceStates.first else {
             return tsAccountManager.localAddress!
         }
-        return SignalServiceAddress(uuid: firstMember)
+        return firstMember.address
     }
 
     @objc
@@ -271,7 +353,8 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             return owsFailDebug("failed to snapshot pip")
         }
 
-        updateCallUI()
+        isCallMinimized = false
+        shouldRemoteVideoControlsBeHidden = false
 
         animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
     }
@@ -311,9 +394,10 @@ extension GroupCallViewController: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
+        updateCallUI()
     }
 
-    func groupCallJoinedGroupMembersChanged(_ call: SignalCall) {
+    func groupCallJoinedMembersChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
@@ -323,11 +407,12 @@ extension GroupCallViewController: CallObserver {
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
+
+        dismissCall()
     }
 
-    func groupCallUpdateSfuInfo(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembershipProof(_ call: SignalCall) {}
-    func groupCallUpdateGroupMembers(_ call: SignalCall) {}
+    func groupCallRequestMembershipProof(_ call: SignalCall) {}
+    func groupCallRequestGroupMembers(_ call: SignalCall) {}
 
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
@@ -344,7 +429,7 @@ extension GroupCallViewController: CallControlsDelegate {
     func didPressAudioSource(sender: UIButton) {
         // TODO: Multiple Audio Sources
         sender.isSelected = !sender.isSelected
-        callUIAdapter.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
+        callService.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
     }
 
     func didPressMute(sender: UIButton) {
@@ -373,7 +458,8 @@ extension GroupCallViewController: CallControlsDelegate {
 
 extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
-        if groupCall.localDevice.joinState == .joined {
+        if groupCall.localDeviceState.joinState == .joined {
+            isCallMinimized = true
             OWSWindowManager.shared.leaveCallView()
         } else {
             dismissCall()
@@ -402,6 +488,7 @@ extension GroupCallViewController: UIScrollViewDelegate {
         if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
             videoOverflow.reloadData()
             updateCallUI()
+            ImpactHapticFeedback.impactOccured(style: .light)
         }
     }
 }

@@ -72,7 +72,11 @@ class GroupCallLocalMemberView: GroupCallMemberView {
     }
 
     override var bounds: CGRect {
-        didSet { videoView.frame = bounds }
+        didSet { updateDimensions() }
+    }
+
+    override var frame: CGRect {
+        didSet { updateDimensions() }
     }
 
     lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
@@ -87,7 +91,8 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoOffIndicatorImage.autoCenterInSuperview()
 
         videoOffLabel.font = .ows_dynamicTypeSubheadline
-        videoOffLabel.text = "Your video is off"
+        videoOffLabel.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
+                                               comment: "Indicates to the user that their camera is currently off.")
         videoOffLabel.textAlignment = .center
         videoOffLabel.textColor = Theme.darkThemePrimaryColor
         noVideoView.addSubview(videoOffLabel)
@@ -97,13 +102,20 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
         videoView.frame = bounds
+
+        layer.shadowOffset = .zero
+        layer.shadowOpacity = 0.25
+        layer.shadowRadius = 4
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var hasBeenConfigured = false
     func configure(device: LocalDeviceState, session: AVCaptureSession, isFullScreen: Bool = false) {
+        hasBeenConfigured = true
+
         videoView.isHidden = device.videoMuted
         videoView.captureSession = session
         noVideoView.isHidden = !videoView.isHidden
@@ -134,14 +146,31 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         layer.cornerRadius = isFullScreen ? 0 : 10
         clipsToBounds = true
     }
+
+    private func updateDimensions() {
+        guard hasBeenConfigured else { return }
+        videoView.frame = bounds
+        muteLeadingConstraint.constant = muteInsets
+        muteBottomConstraint.constant = -muteInsets
+        videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
+    }
 }
 
 class GroupCallRemoteMemberView: GroupCallMemberView {
-    let videoView = RemoteVideoView()
+    var videoView: RemoteVideoView?
+    var currentDevice: RemoteDeviceState?
     var currentTrack: RTCVideoTrack?
 
     let avatarView = AvatarImageView()
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
+
+    override var bounds: CGRect {
+        didSet { updateDimensions() }
+    }
+
+    override var frame: CGRect {
+        didSet { updateDimensions() }
+    }
 
     var avatarDiameter: UInt {
         layoutIfNeeded()
@@ -162,19 +191,15 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         noVideoView.insertSubview(avatarView, belowSubview: muteIndicatorImage)
         avatarView.autoCenterInSuperview()
-
-        videoView.contentMode = .scaleAspectFill
-        insertSubview(videoView, belowSubview: muteIndicatorImage)
-        videoView.autoPinEdgesToSuperviewEdges()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(device: RemoteDeviceState, isFullScreen: Bool = false) {
-        videoView.isHidden = device.videoMuted != false
-        noVideoView.isHidden = !videoView.isHidden
+    private var hasBeenConfigured = false
+    func configure(call: SignalCall, device: RemoteDeviceState, isFullScreen: Bool = false) {
+        hasBeenConfigured = true
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction in
             return (
@@ -187,11 +212,22 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         backgroundAvatarView.image = profileImage
 
-        avatarView.image = OWSContactAvatarBuilder(
+        let avatarBuilder = OWSContactAvatarBuilder(
             address: device.address,
             colorName: conversationColorName,
             diameter: avatarDiameter
-        ).build()
+        )
+
+        if device.address.isLocalAddress {
+            avatarView.image = OWSProfileManager.shared().localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+        } else {
+            avatarView.image = OWSContactAvatarBuilder(
+                address: device.address,
+                colorName: conversationColorName,
+                diameter: avatarDiameter
+            ).build()
+        }
+
         avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
         muteIndicatorImage.isHidden = isFullScreen || device.audioMuted != true
@@ -202,6 +238,33 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             colorName: conversationColorName
         ).themeColor
 
+        // We can't re-use the same video view if the device has changed,
+        // otherwise we'd end up rendering frames from someone elses video
+        if currentDevice?.demuxId != device.demuxId {
+            if let oldVideoView = videoView, let oldDevice = currentDevice {
+                call.unregisterRemoteVideoView(oldVideoView, for: oldDevice)
+            }
+            videoView?.removeFromSuperview()
+            videoView = nil
+        }
+
+        if videoView == nil {
+            let videoView = RemoteVideoView()
+            self.videoView = videoView
+            insertSubview(videoView, belowSubview: muteIndicatorImage)
+            videoView.frame = bounds
+            call.registerRemoteVideoView(videoView, for: device)
+        }
+
+        currentDevice = device
+
+        guard let videoView = videoView else {
+            return owsFailDebug("Missing remote video view")
+        }
+
+        videoView.isHidden = device.videoMuted ?? false || device.videoTrack == nil
+        videoView.isFullScreenVideo = isFullScreen
+
         currentTrack?.remove(videoView)
         currentTrack = nil
 
@@ -210,10 +273,16 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             currentTrack = track
         }
     }
+
+    private func updateDimensions() {
+        guard hasBeenConfigured else { return }
+        videoView?.frame = bounds
+        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
+    }
 }
 
 extension RemoteDeviceState {
     var address: SignalServiceAddress {
-        return SignalServiceAddress(uuid: uuid)
+        return SignalServiceAddress(uuid: userId)
     }
 }

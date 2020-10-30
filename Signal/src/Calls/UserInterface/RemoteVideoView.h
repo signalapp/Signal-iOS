@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RemoteVideoView : UIView <RTCVideoRenderer>
 
+@property (atomic) BOOL isFullScreenVideo;
+
 @end
 
 NS_ASSUME_NONNULL_END
