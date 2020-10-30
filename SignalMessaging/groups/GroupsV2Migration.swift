@@ -389,7 +389,17 @@ fileprivate extension GroupsV2Migration {
             Logger.info("Trying to fill in missing uuids: \(phoneNumbersWithoutUuids.count)")
 
             let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
-            return discoveryTask.perform().asVoid()
+            return firstly {
+                discoveryTask.perform().asVoid()
+            }.recover(on: .global()) { error -> Promise<Void> in
+                // Log but ignore errors.
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebug("Error: \(error)")
+                }
+                return Promise.value(())
+            }
         }.then(on: .global()) { () -> Promise<Void> in
             var membersToFetchProfiles = Set<SignalServiceAddress>()
             Self.databaseStorage.read { transaction in
@@ -408,9 +418,7 @@ fileprivate extension GroupsV2Migration {
             var promises = [Promise<Void>]()
             for address in membersToFetchProfiles {
                 let promise = firstly {
-                    self.profileManager.fetchProfile(forAddressPromise: address,
-                                                     mainAppOnly: false,
-                                                     ignoreThrottling: true).asVoid()
+                    ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
                 }.recover(on: .global()) { error -> Promise<Void> in
                     // Log but ignore errors.
                     if IsNetworkConnectivityFailure(error) {
