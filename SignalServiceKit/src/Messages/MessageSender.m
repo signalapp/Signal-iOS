@@ -465,6 +465,8 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                 [message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
         }
 
+        OWSLogInfo(@"Sending message: %@, timestamp: %llu.", message.class, message.timestamp);
+
         BOOL canUseV3 = (SSKFeatureFlags.attachmentUploadV3ForV1GroupAvatars
             || message.groupMetaMessage == TSGroupMetaMessageUnspecified
             || message.groupMetaMessage == TSGroupMetaMessageDeliver);
