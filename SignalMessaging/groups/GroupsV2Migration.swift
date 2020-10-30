@@ -411,7 +411,7 @@ fileprivate extension GroupsV2Migration {
                     }
                 }
             }
-            if !membersToFetchProfiles.isEmpty {
+            guard !membersToFetchProfiles.isEmpty else {
                 return Promise.value(())
             }
             Logger.info("Fetching profiles: \(membersToFetchProfiles.count)")
@@ -436,6 +436,10 @@ fileprivate extension GroupsV2Migration {
             firstly {
                 ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
             }.recover(on: .global()) { error -> Promise<Void> in
+                if case ProfileFetchError.throttled = error {
+                    // Do not ignore throttling errors.
+                    throw error
+                }
                 // Log but ignore errors.
                 if IsNetworkConnectivityFailure(error) {
                     Logger.warn("Error: \(error)")
