@@ -415,23 +415,59 @@ fileprivate extension GroupsV2Migration {
                 return Promise.value(())
             }
             Logger.info("Fetching profiles: \(membersToFetchProfiles.count)")
-            var promises = [Promise<Void>]()
-            for address in membersToFetchProfiles {
-                let promise = firstly {
-                    ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
-                }.recover(on: .global()) { error -> Promise<Void> in
-                    // Log but ignore errors.
-                    if IsNetworkConnectivityFailure(error) {
-                        Logger.warn("Error: \(error)")
-                    } else {
-                        owsFailDebug("Error: \(error)")
-                    }
-                    return Promise.value(())
-                }
-                promises.append(promise)
-            }
+            // Profile fetches are rate limited. We don't want to run afoul of those
+            // rate limits especially while trying to auto-migrate groups in the
+            // background. Therefore we throttle these requests for auto-migrations.
+            let profileFetchMode: ProfileFetchMode = (migrationMode.isManualMigration
+                                                        ? .parallel
+                                                        : .serialWithThrottling)
+            return fetchProfiles(addresses: Array(membersToFetchProfiles),
+                                 profileFetchMode: profileFetchMode)
+        }
+    }
 
+    private enum ProfileFetchMode {
+        case serialWithThrottling
+        case parallel
+    }
+
+    private static func fetchProfiles(addresses: [SignalServiceAddress], profileFetchMode: ProfileFetchMode) -> Promise<Void> {
+        func fetchProfilePromise(address: SignalServiceAddress) -> Promise<Void> {
+            firstly {
+                ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: false).asVoid()
+            }.recover(on: .global()) { error -> Promise<Void> in
+                // Log but ignore errors.
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebug("Error: \(error)")
+                }
+                return Promise.value(())
+            }
+        }
+
+        switch profileFetchMode {
+        case .parallel:
+            let promises = addresses.map { fetchProfilePromise(address: $0) }
             return when(fulfilled: promises)
+        case .serialWithThrottling:
+            guard let firstAddress = addresses.first else {
+                // No more profiles to fetch.
+                return Promise.value(())
+            }
+            let remainder = Array(addresses.suffix(from: 1))
+            return firstly {
+                fetchProfilePromise(address: firstAddress)
+            }.then(on: .global()) {
+                // We need to throttle these jobs.
+                //
+                // The profile fetch rate limit is a bucket size of 4320, which
+                // refills at a rate of 3 per minute.
+                after(seconds: 1.0 / 3.0)
+            }.then(on: .global()) {
+                // Recurse.
+                fetchProfiles(addresses: remainder, profileFetchMode: profileFetchMode)
+            }
         }
     }
 
