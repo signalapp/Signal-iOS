@@ -124,11 +124,13 @@ NS_ASSUME_NONNULL_BEGIN
             BOOL isLandscape = self.width > self.height;
             BOOL remoteIsLandscape = frame.rotation == RTCVideoRotation_180 || frame.rotation == RTCVideoRotation_0;
 
+            BOOL isSquarish = (MAX(self.width, self.height) / MIN(self.width, self.height)) <= 1.2;
+
             self.metalRenderer.rotationOverride = nil;
 
             // If we're both in the same orientation, let the video fill the screen.
             // Otherwise, fit the video to the screen size respecting the aspect ratio.
-            if (isLandscape == remoteIsLandscape || self.width == self.height) {
+            if (isLandscape == remoteIsLandscape || isSquarish) {
                 self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFill;
             } else {
                 self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFit;
