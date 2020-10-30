@@ -425,7 +425,7 @@ dispatch_queue_t NetworkManagerQueue()
             [OutageDetection.shared reportConnectionSuccess];
         });
     };
-    TSNetworkManagerSuccess failure = ^(NSURLSessionDataTask *task, NSError *error) {
+    TSNetworkManagerFailure failure = ^(NSURLSessionDataTask *task, NSError *error) {
         dispatch_async(NetworkManagerQueue(), ^{
             [sessionManagerPool returnToPool:sessionManager];
         });
