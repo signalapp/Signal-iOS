@@ -393,7 +393,9 @@ public class DebugFlags: BaseFlags {
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
-            if let value = value {
+            if let flag = value as? TestableFlag {
+                Logger.info("\(prefix): \(key) = \(flag.get())", function: "")
+            } else if let value = value {
                 Logger.info("\(prefix): \(key) = \(value)", function: "")
             } else {
                 Logger.info("\(prefix): \(key) = nil", function: "")
