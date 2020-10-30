@@ -62,6 +62,8 @@ class CallControls: UIView {
         return button
     }()
 
+    private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .white)
+
     private lazy var joinButton: UIButton = {
         let button = OWSButton()
         button.setTitleColor(.ows_white, for: .normal)
@@ -73,6 +75,8 @@ class CallControls: UIView {
             self?.delegate.didPressJoin(sender: button)
         }
         button.contentEdgeInsets = UIEdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 11)
+        button.addSubview(joinButtonActivityIndicator)
+        joinButtonActivityIndicator.autoCenterInSuperview()
         return button
     }()
 
@@ -178,7 +182,18 @@ class CallControls: UIView {
 
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
-        joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? startCallText : joinCallText, for: .normal)
+
+        if call.groupCall.localDeviceState.joinState == .joining {
+            joinButton.isUserInteractionEnabled = false
+            joinButtonActivityIndicator.startAnimating()
+
+            joinButton.setTitle("", for: .normal)
+        } else {
+            joinButton.isUserInteractionEnabled = true
+            joinButtonActivityIndicator.stopAnimating()
+
+            joinButton.setTitle(call.groupCall.joinedGroupMembers.isEmpty ? startCallText : joinCallText, for: .normal)
+        }
     }
 
     required init(coder: NSCoder) {

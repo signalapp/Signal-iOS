@@ -1537,11 +1537,17 @@
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ is in this call";
 
+/* Text indicating that the user has lost their connection to the call and we are reconnecting. */
+"GROUP_CALL_RECONNECTING" = "Reconnecting";
+
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "Start Call";
 
 /* Text explaining that there are two people in the group call. Embeds {member name} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%@ and %@ are in this call";
+
+/* An error displayed to the user when the group call unexpectedly ends. */
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "The connection to the call unexpectedly ended.";
 
 /* Text describing the local user in the group call members sheet. */
 "GROUP_CALL_YOU" = "You";
@@ -2172,9 +2178,6 @@
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
-
-/* Message indicating the dropped group members were successfully re-added to the group succeeded. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_MEMBERS_SUCCEEDED" = "Members Added.";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";

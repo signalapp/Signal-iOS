@@ -416,12 +416,31 @@ public final class CallService: NSObject {
 
         currentCall = call
 
-        // TODO: Initialize this in a real way?
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = false
         call.groupCall.connect()
 
         return call
+    }
+
+    func joinGroupCallIfNecessary(_ call: SignalCall) {
+        owsAssertDebug(call.isGroupCall)
+
+        guard currentCall == nil || currentCall == call else {
+            return owsFailDebug("A call is already in progress")
+        }
+
+        // The joined/joining call must always be the current call.
+        currentCall = call
+
+        // If we're not yet connected, connect now. This may happen if, for
+        // example, the call ended unexpectedly.
+        if call.groupCall.localDeviceState.connectionState == .notConnected { call.groupCall.connect() }
+
+        // If we're not yet joined, join now. In general, it's unexpected that
+        // this method would be called when you're already joined, but it is
+        // safe to do so.
+        if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
     }
 
     func buildOutgoingIndividualCallIfPossible(address: SignalServiceAddress, hasVideo: Bool) -> SignalCall? {
@@ -566,7 +585,6 @@ extension CallService: CallObserver {
     public func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallEnded \(reason)")
-        terminate(call: call)
     }
 }
 

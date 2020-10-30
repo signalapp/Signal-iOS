@@ -27,7 +27,6 @@ class CallHeader: UIView {
     private let callStatusLabel = UILabel()
     private let groupMembersButton = GroupMembersButton()
     private let groupMembersButtonPlaceholder = UIView.spacer(withWidth: 40)
-    private var isBlinkingReconnectLabel = false
 
     private let call: SignalCall
     private weak var delegate: CallHeaderDelegate!
@@ -163,80 +162,66 @@ class CallHeader: UIView {
 
         callStatusLabel.text = callStatusText
         callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.sortedRemoteDeviceStates.count > 1
-
-        // Handle reconnecting blinking
-        if call.groupCall.localDeviceState.connectionState == .reconnecting {
-            if !isBlinkingReconnectLabel {
-                isBlinkingReconnectLabel = true
-                UIView.animate(withDuration: 0.7, delay: 0, options: [.autoreverse, .repeat],
-                               animations: {
-                                self.callStatusLabel.alpha = 0.2
-                }, completion: nil)
-            } else {
-                // already blinking
-            }
-        } else {
-            // We're no longer in a reconnecting state, either the call failed or we reconnected.
-            // Stop the blinking animation
-            if isBlinkingReconnectLabel {
-                callStatusLabel.layer.removeAllAnimations()
-                callStatusLabel.alpha = 1
-                isBlinkingReconnectLabel = false
-            }
-        }
     }
 
     func updateCallTitleLabel() {
         let callTitleText: String
 
-        let memberNames: [String] = databaseStorage.uiRead { transaction in
-            if self.call.groupCall.localDeviceState.joinState == .joined {
-                return self.call.groupCall.sortedRemoteDeviceStates
-                    .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
-            } else {
-                // TODO: For now, we can only use `joinedGroupMembers` before you join.
-                // We might be able to just always use it here.
-                return self.call.groupCall.joinedGroupMembers
-                    .filter { !SignalServiceAddress(uuid: $0).isLocalAddress }
-                    .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) }
+        if call.groupCall.localDeviceState.connectionState == .reconnecting {
+            callTitleText = NSLocalizedString(
+                "GROUP_CALL_RECONNECTING",
+                comment: "Text indicating that the user has lost their connection to the call and we are reconnecting."
+            )
+        } else {
+            let memberNames: [String] = databaseStorage.uiRead { transaction in
+                if self.call.groupCall.localDeviceState.joinState == .joined {
+                    return self.call.groupCall.sortedRemoteDeviceStates
+                        .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
+                } else {
+                    // TODO: For now, we can only use `joinedGroupMembers` before you join.
+                    // We might be able to just always use it here.
+                    return self.call.groupCall.joinedGroupMembers
+                        .filter { !SignalServiceAddress(uuid: $0).isLocalAddress }
+                        .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) }
+                }
             }
-        }
 
-        switch call.groupCall.localDeviceState.joinState {
-        case .joined:
-            switch memberNames.count {
-            case 0:
-                callTitleText = NSLocalizedString(
-                    "GROUP_CALL_NO_ONE_HERE",
-                    comment: "Text explaining that you are the only person currently in the group call"
-                )
-            case 1:
-                callTitleText = memberNames[0]
+            switch call.groupCall.localDeviceState.joinState {
+            case .joined:
+                switch memberNames.count {
+                case 0:
+                    callTitleText = NSLocalizedString(
+                        "GROUP_CALL_NO_ONE_HERE",
+                        comment: "Text explaining that you are the only person currently in the group call"
+                    )
+                case 1:
+                    callTitleText = memberNames[0]
+                default:
+                    callTitleText = ""
+                }
             default:
-                callTitleText = ""
-            }
-        default:
-            switch memberNames.count {
-            case 0:
-                callTitleText = ""
-            case 1:
-                let formatString = NSLocalizedString(
-                    "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
-                    comment: "Text explaining that there is one person in the group call. Embeds {member name}"
-                )
-                callTitleText = String(format: formatString, memberNames[0])
-            case 2:
-                let formatString = NSLocalizedString(
-                    "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-                    comment: "Text explaining that there are two people in the group call. Embeds {member name}"
-                )
-                callTitleText = String(format: formatString, memberNames[0], memberNames[1])
-            default:
-                let formatString = NSLocalizedString(
-                    "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-                    comment: "Text explaining that there are three or more people in the group call. Embeds {member name}"
-                )
-                callTitleText = String(format: formatString, memberNames[0], memberNames[1], memberNames.count - 2)
+                switch memberNames.count {
+                case 0:
+                    callTitleText = ""
+                case 1:
+                    let formatString = NSLocalizedString(
+                        "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
+                        comment: "Text explaining that there is one person in the group call. Embeds {member name}"
+                    )
+                    callTitleText = String(format: formatString, memberNames[0])
+                case 2:
+                    let formatString = NSLocalizedString(
+                        "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
+                        comment: "Text explaining that there are two people in the group call. Embeds {member name}"
+                    )
+                    callTitleText = String(format: formatString, memberNames[0], memberNames[1])
+                default:
+                    let formatString = NSLocalizedString(
+                        "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
+                        comment: "Text explaining that there are three or more people in the group call. Embeds {member name}"
+                    )
+                    callTitleText = String(format: formatString, memberNames[0], memberNames[1], memberNames.count - 2)
+                }
             }
         }
 

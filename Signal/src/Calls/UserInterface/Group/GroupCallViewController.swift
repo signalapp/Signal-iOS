@@ -406,7 +406,23 @@ extension GroupCallViewController: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
-        dismissCall()
+        guard reason != .deviceExplicitlyDisconnected else { return }
+
+        owsFailDebug("Group call ended with reason \(reason)")
+
+        // TODO: Show better error to user?
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString(
+                "GROUP_CALL_UNEXPECTEDLY_ENDED",
+                comment: "An error displayed to the user when the group call unexpectedly ends."
+            )
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("OK", comment: ""),
+            style: .default,
+            handler: nil
+        ))
+        presentActionSheet(actionSheet)
     }
 
     func groupCallRequestMembershipProof(_ call: SignalCall) {}
@@ -450,7 +466,7 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressJoin(sender: UIButton) {
-        groupCall.join()
+        callService.joinGroupCallIfNecessary(call)
     }
 }
 
